@@ -1,4 +1,6 @@
-/**
+{{#copyright}}/* {{{copyright}}} */
+
+{{/copyright}}/**
     @module "ui/main.reel"
     @requires montage
     @requires montage/ui/component

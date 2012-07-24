@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Picasa Viewer</title>
+    <link rel="stylesheet" href="picasa-viewer.css">
+    <script src="../../../../montage.js" data-package="."></script>
+
+    <script type="text/montage-serialization">
+    {
+        "search": {
+            "prototype": "montage/ui/native/input-text.reel",
+            "properties": {
+                "element": {"#": "search"}
+            },
+            "bindings": {
+                "value": {"<->": "@picasaViewer.search"}
+            }
+        },
+
+        "message": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "value": "",
+                "element": {"#": "message"}
+            },
+            "bindings": {
+                "value": {"<-": "@picasaViewer.message"}
+            }
+        },
+
+        "images": {
+           "prototype": "montage/ui/controller/array-controller",
+           "properties": {
+               "selectObjectsOnAddition": true,
+               "automaticallyOrganizeObjects": true
+           },
+           "bindings": {
+               "content": {"<-": "@picasaViewer.searchResults"}
+           }
+        },
+
+        "list": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {
+                    "#": "thumbs-list"
+                },
+                "isSelectionEnabled": true,
+                "contentController": {"@": "images"}
+            }
+        },
+
+        "thumb": {
+            "prototype": "montage/ui/image.reel",
+            "properties": {
+                "element": {"#": "thumb"}
+            },
+            "bindings": {
+                "src": {"<-": "@list.objectAtCurrentIteration.thumb.src"}
+            }
+        },
+
+        "star": {
+            "prototype": "starring.reel",
+            "properties": {
+                "element": {"#": "star"}
+            },
+            "bindings": {
+                "rating": {"<->": "@list.objectAtCurrentIteration.rating"}
+            }
+        },
+
+        "title": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "value": "",
+                "element": {"#": "title"}
+            },
+            "bindings": {
+                "value": {"<-": "@list.objectAtCurrentIteration.title"}
+            }
+        },
+
+        "previous": {
+            "prototype": "montage/ui/native/button.reel",
+            "properties": {
+                "element": {"#": "previous-button"},
+                "identifier": "previous"
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "picasaViewer"}
+                }
+            ]
+        },
+
+        "next": {
+            "prototype": "montage/ui/native/button.reel",
+            "properties": {
+                "element": {"#": "next-button"},
+                "identifier": "next"
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "picasaViewer"}
+                }
+            ]
+        },
+
+        "picasaViewer": {
+            "prototype": "picasa-viewer",
+            "properties": {
+                "list": {"@": "list"},
+                "search": "Van Gogh"
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <label>Search:</label>
+        <input type="text" placeholder="all" data-montage-id="search" value="" maxlength="32"/>
+    </div>
+
+    <div class="main">
+        <div data-montage-id="thumbs-list" class="thumbs-list">
+            <div class="thumb">
+                <img data-montage-id="thumb" class="thumb-image" src="assets/image.png">
+                <div data-montage-id="title" class="thumb-title"></div>
+                <div data-montage-id="star" class="thumb-star"></div>
+            </div>
+        </div>
+        <div class="message">
+            <span data-montage-id="message"></span>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="buttons">
+            <button class="text btn" data-montage-id="previous-button">previous</button>
+            <button class="text btn" data-montage-id="next-button">next</button>
+       </div>
+    </div>
+</body>
+</html>

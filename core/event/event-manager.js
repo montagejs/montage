@@ -434,35 +434,35 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             // Note I think it may be implementation specific how these are implemented
             // so I'd rather preserve any native optimizations a browser has for
             // adding listeners to the document versus and element etc.
-            Element.prototype.nativeAddEventListener = Element.prototype.addEventListener;
+            aWindow.Element.prototype.nativeAddEventListener = aWindow.Element.prototype.addEventListener;
             Object.defineProperty(aWindow, "nativeAddEventListener", {
                 enumerable: false,
                 value: aWindow.addEventListener
             });
             Object.getPrototypeOf(aWindow.document).nativeAddEventListener = aWindow.document.addEventListener;
-            XMLHttpRequest.prototype.nativeAddEventListener = XMLHttpRequest.prototype.addEventListener;
+            aWindow.XMLHttpRequest.prototype.nativeAddEventListener = aWindow.XMLHttpRequest.prototype.addEventListener;
             if (Worker) {
                 Worker.prototype.nativeAddEventListener = Worker.prototype.addEventListener;
             }
 
-            Element.prototype.nativeRemoveEventListener = Element.prototype.removeEventListener;
+            aWindow.Element.prototype.nativeRemoveEventListener = aWindow.Element.prototype.removeEventListener;
             Object.defineProperty(aWindow, "nativeRemoveEventListener", {
                 enumerable: false,
                 value: aWindow.removeEventListener
             });
             Object.getPrototypeOf(aWindow.document).nativeRemoveEventListener = aWindow.document.removeEventListener;
-            XMLHttpRequest.prototype.nativeRemoveEventListener = XMLHttpRequest.prototype.removeEventListener;
+            aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener = aWindow.XMLHttpRequest.prototype.removeEventListener;
             if (Worker) {
                 Worker.prototype.nativeRemoveEventListener = Worker.prototype.removeEventListener;
             }
 
             Object.defineProperty(aWindow, "addEventListener", {
                 enumerable: false,
-                value: (XMLHttpRequest.prototype.addEventListener =
-                        Element.prototype.addEventListener =
+                value: (aWindow.XMLHttpRequest.prototype.addEventListener =
+                        aWindow.Element.prototype.addEventListener =
                             Object.getPrototypeOf(aWindow.document).addEventListener =
                                 function(eventType, listener, useCapture) {
-                                    return defaultEventManager.registerEventListener(this, eventType, listener, !!useCapture);
+                                    return aWindow.defaultEventManager.registerEventListener(this, eventType, listener, !!useCapture);
                                 })
             });
 
@@ -472,11 +472,11 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
             Object.defineProperty(aWindow, "removeEventListener", {
                 enumerable: false,
-                value: (XMLHttpRequest.prototype.removeEventListener =
-                        Element.prototype.removeEventListener =
+                value: (aWindow.XMLHttpRequest.prototype.removeEventListener =
+                        aWindow.Element.prototype.removeEventListener =
                             Object.getPrototypeOf(aWindow.document).removeEventListener =
                                 function(eventType, listener, useCapture) {
-                                    return defaultEventManager.unregisterEventListener(this, eventType, listener, !!useCapture);
+                                    return aWindow.defaultEventManager.unregisterEventListener(this, eventType, listener, !!useCapture);
                                 })
             });
 
@@ -486,29 +486,30 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
             // In some browsers each element has their own addEventLister/removeEventListener
             // Methodology to find all elements found in Chainvas
-            if(HTMLDivElement.prototype.addEventListener !== Element.prototype.nativeAddEventListener) {
-                if (window.HTMLElement &&
-                    'addEventListener' in window.HTMLElement.prototype &&
-                    window.Components &&
-                    window.Components.interfaces
+            if(aWindow.HTMLDivElement.prototype.addEventListener !== aWindow.Element.prototype.nativeAddEventListener) {
+                if (aWindow.HTMLElement &&
+                    'addEventListener' in aWindow.HTMLElement.prototype &&
+                    aWindow.Components &&
+                    aWindow.Components.interfaces
                 ) {
                     var candidate, candidatePrototype;
+
                     for(candidate in Components.interfaces) {
                         if(candidate.match(/^nsIDOMHTML\w*Element$/)) {
                             candidate = candidate.replace(/^nsIDOM/, '');
                             if(candidate = window[candidate]) {
                                 candidatePrototype = candidate.prototype;
                                 candidatePrototype.nativeAddEventListener = candidatePrototype.addEventListener;
-                                candidatePrototype.addEventListener = Element.prototype.addEventListener;
+                                candidatePrototype.addEventListener = aWindow.Element.prototype.addEventListener;
                                 candidatePrototype.nativeRemoveEventListener = candidatePrototype.removeEventListener;
-                                candidatePrototype.removeEventListener = Element.prototype.removeEventListener;
+                                candidatePrototype.removeEventListener = aWindow.Element.prototype.removeEventListener;
                             }
                         }
                     }
                 }
             }
 
-            defaultEventManager = exports.defaultEventManager = this;
+            defaultEventManager = aWindow.defaultEventManager = exports.defaultEventManager = this;
             this._registeredWindows.push(aWindow);
 
             this._windowsAwaitingFinalRegistration[aWindow.uuid] = aWindow;
@@ -632,10 +633,16 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
     */
     registeredEventListenersForEventType_onTarget_: {
         enumerable: false,
-        value: function(eventType, target) {
+        value: function(eventType, target, application) {
 
-            var eventRegistration = this.registeredEventListeners[eventType],
+            var eventRegistration,
                 targetRegistration;
+
+            if (target === application) {
+                eventRegistration = application.eventManager.registeredEventListeners[eventType];
+            } else {
+                eventRegistration = this.registeredEventListeners[eventType];
+            }
 
             if (!eventRegistration) {
                 return null;
@@ -1986,6 +1993,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             var targetCandidate  = target,
                 targetView = targetCandidate && targetCandidate.defaultView ? targetCandidate.defaultView : window,
                 targetDocument = targetView.document ? targetView.document : document,
+                targetApplication = this.application,
                 previousBubblingTarget,
                 eventPath = [];
 
@@ -1999,11 +2007,14 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 // use the structural DOM hierarchy until we run out of that and need
                 // to give listeners on document, window, and application a chance to respond
                 switch (targetCandidate) {
-                    case this.application:
-                        targetCandidate = null;
+                    case targetApplication:
+                        targetCandidate = targetCandidate.parentApplication;
+                        if (targetCandidate) {
+                            targetApplication = targetCandidate;
+                        }
                         break;
                     case targetView:
-                        targetCandidate = this.application;
+                        targetCandidate = targetApplication;
                         break;
                     case targetDocument:
                         targetCandidate = targetView;
@@ -2016,7 +2027,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
                         // Run out of hierarchy candidates? go up to the application
                         if (!targetCandidate) {
-                            targetCandidate = this.application;
+                            targetCandidate = targetApplication;
                         }
 
                         break;

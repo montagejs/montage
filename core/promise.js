@@ -665,16 +665,27 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
     },
 
     end: {
-        value: function () {
-            this.then(void 0, function (reason, error) {
-                // forward to a future turn so that ``when``
-                // does not catch it and turn it into a rejection.
-                nextTick(function () {
-                    console.error(error && error.stack || error || reason);
-                    throw error;
-                });
+        value: function (callback, errback) {
+            this.then(function (value) {
+                if (callback) {
+                    nextTick(function () {
+                        callback(value);
+                    });
+                }
+            }, function (reason, error) {
+                if (errback) {
+                    nextTick(function () {
+                        errback(error || reason);
+                    });
+                } else {
+                    // forward to a future turn so that ``when``
+                    // does not catch it and turn it into a rejection.
+                    nextTick(function () {
+                        throw error;
+                    });
+                }
             })
-            // Returns undefined
+            // Does not return a promise
         }
     },
 

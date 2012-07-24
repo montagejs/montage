@@ -513,6 +513,10 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
                 }
 
                 this.element.classList.add(LOADED_CLASS_NAME);
+
+                var loadEvent = document.createEvent("CustomEvent");
+                loadEvent.initCustomEvent("componentLoaded", true, true, this._mainComponent);
+                this.dispatchEvent(loadEvent, true, true);
             }
 
         }

@@ -91,9 +91,14 @@ var loadPackagedModule = function (directory, program, command, args) {
 };
 
 MontageBoot.loadPackage = function (location, config) {
-    var config = {};
 
-    config.location = URL.resolve(Require.getLocation(), location + '/');
+    if (location.slice(location.length - 1, location.length) !== "/") {
+        location += "/";
+    }
+
+    config = config || {};
+
+    config.location = URL.resolve(Require.getLocation(), location);
 
     // setup the reel loader
     config.makeLoader = function (config) {
@@ -121,6 +126,7 @@ MontageBoot.TemplateLoader = function (config, load) {
     return function(id, module) {
         var html = id.match(/(.*\/)?(?=[^\/]+\.html$)/);
         var serialization = id.match(/(?=[^\/]+\.json$)/); // XXX this is not necessarily a strong indicator of a serialization alone
+        var reelModule = id.match(/(.*\/)?([^\/]+)\.reel\/\2/);
         if (html) {
             return load(id, module)
             .then(function () {
@@ -132,6 +138,17 @@ MontageBoot.TemplateLoader = function (config, load) {
             .then(function () {
                 module.dependencies = collectSerializationDependencies(module.text, []);
                 return module;
+            });
+        } else if (reelModule) {
+            return load(id, module)
+            .then(function () {
+                var reelHtml = URL.resolve(module.location, reelModule[2] + ".html");
+                return Require.isFile(reelHtml)
+                .then(function (isFile) {
+                    if (isFile) {
+                        module.extraDependencies = [id + ".html"];
+                    }
+                })
             });
         } else {
             return load(id, module);
@@ -198,10 +215,20 @@ var collectSerializationDependencies = function (text, dependencies) {
     var serialization = JSON.parse(text);
     Object.keys(serialization).forEach(function (label) {
         var description = serialization[label];
-        if (typeof description.module === "string") {
+        if (description.lazy) {
+            return;
+        }
+        if (typeof description.module === "string") { // XXX deprecated
             dependencies.push(description.module);
+        }
+        if (typeof description.prototype === "string") {
+            dependencies.push(parsePrototypeForModule(description.prototype));
         }
     });
     return dependencies;
 };
+
+function parsePrototypeForModule(prototype) {
+    return prototype.replace(/\[[^\]]+\]$/, "");
+}
 

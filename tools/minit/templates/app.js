@@ -31,9 +31,29 @@ POSSIBILITY OF SUCH DAMAGE.
 
 var TemplateBase = require("../lib/template-base.js").TemplateBase,
     path = require("path"),
-    exec = require('child_process').exec;
+    exec = require('child_process').exec,
+    fs = require('fs');
 
 exports.Template = Object.create(TemplateBase, {
+
+    usage: {
+        value: function() {
+            return TemplateBase.usage.apply(this, arguments) + " [copyright file]";
+        }
+    },
+
+    processArguments: {
+        value: function(args) {
+            TemplateBase.processArguments.apply(this, arguments);
+
+            var copyright, copyrightFile = args[1];
+            if (copyrightFile) {
+                copyright = fs.readFileSync(copyrightFile, "utf-8");
+            }
+
+            this.variables.copyright = copyright;
+        }
+    },
 
     finish: {
         value: function() {
