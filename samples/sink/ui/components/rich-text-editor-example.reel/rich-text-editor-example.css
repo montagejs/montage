@@ -1,0 +1,143 @@
+
+header {
+    color: #0CAAE5;
+}
+
+article.hideSource {
+    margin-top: 20px;
+}
+
+.rte-controls  {
+    padding-bottom: 5px;
+}
+
+.rte-controls .montage-buttonGroup { 
+    margin-right: 4px;
+}
+
+.rte-controls select { 
+    margin: 0 4px 0 0;
+    vertical-align: middle;
+}
+
+.rte-controls .icon {
+    width: 32px;
+    background-repeat: no-repeat;
+    background-image: url(assets/icons-rte.svg);
+}
+.rte-controls .icon-bullet {
+    background-position: 0 0;
+}
+.rte-controls .icon-nr {
+    background-position: -30px 0;
+}
+.rte-controls .icon-left {
+    background-position: -60px 0;
+}
+.rte-controls .icon-center {
+    background-position: -90px 0;
+}
+.rte-controls .icon-right {
+    background-position: -120px 0;
+}
+
+
+
+.editor {
+    height: 350px;
+    overflow: auto;
+    background-color: #FFFFFF;
+    border: 1px solid #B9B9B9;
+    outline: none;
+    border-radius: 3px;
+}
+
+.editor .montage-editor {
+    outline: none;
+    padding: 8px 8px;
+
+    -moz-user-select: -moz-text;
+    -webkit-user-select: text;
+    user-select: text;
+}
+.readonly {
+    background-color: #F0F0F0;
+}
+
+.source pre {
+    font-size: 0.9em;
+}
+.source {
+    height: 300px;
+    margin: 10px 10px 10px 5px;
+    overflow: auto;
+    color: green;
+    background-color: #E0E0E0;
+    border: 1px solid #B9B9B9;
+    font-family: "courier monaco";
+    -moz-user-select: -moz-text;
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+.hideSource .source {
+}
+
+.source pre {
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    margin: 0;
+    padding: 2px 10px;
+}
+
+.source pre:nth-child(odd) {
+  background-color: #F0F0F0;
+}
+
+.source pre.type-text {
+    color: blue;
+}
+
+.source pre.type-br {
+    color: red;
+}
+
+.source pre.type-div {
+    color: maroon;
+}
+
+
+/* other controls */
+
+#resetButton {
+    margin-left: 5px;
+}
+
+#show-source {
+/    position: absolute;
+/    right: 10px;
+}
+
+#read-only {
+/    position: absolute;
+/    right: 50%;
+/    margin-right: 10px;
+}
+
+.leftBox {
+    /position: absolute;
+    /top: 0;
+    /right: 10px;
+}
+
+button.font-styles.pressed {
+    background-color: hsl(0,0%,85%);
+    border: 1px solid hsla(0,0%,0%,.1);
+    box-shadow: none;
+}
+
+/* Individual buttons */
+
+[data-montage-id=bold] { font-weight: bold; }
+[data-montage-id=italic] { font-style: italic; }
+[data-montage-id=underline] { text-decoration: underline; }

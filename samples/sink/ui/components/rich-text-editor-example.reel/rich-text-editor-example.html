@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+    <title>RichText Editor Test</title>
+    <link rel="stylesheet" href="rich-text-editor-example.css">
+
+    <script type="text/montage-serialization">{
+            "undoManager": {
+                "object": "montage/core/undo-manager[defaultUndoManager]"
+            },
+
+            "editor": {
+                "prototype": "montage/ui/rich-text-editor/rich-text-editor.reel",
+                "properties": {
+                    "element": {"#": "editor-frame"},
+                    "delegate": {"@": "owner"},
+                    "undoManager": {"@": "undoManager"}
+                },
+                "listeners": [
+                    {
+                        "type": "editorChange",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    },
+                    {
+                        "type": "editorSelect",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    }
+                ],
+                "bindings": {
+                    "fontName": {"<->": "@fontname.contentController.selectedIndexes", "converter": {"@": "fontnameConverter"}},
+                    "fontSize": {"<->": "@fontsize.contentController.selectedIndexes", "converter": {"@": "fontsizeConverter"}}
+                }
+            },
+
+            "boldToggle": {
+                "prototype": "montage/ui/toggle-button.reel",
+                "properties": {
+                    "element": {"#": "boldToggle"},
+                    "preventFocus": true
+                },
+                "bindings": {
+                    "pressed": {"<->": "@editor.bold"}
+                }
+            },
+
+            "underlineToggle": {
+                "prototype": "montage/ui/toggle-button.reel",
+                "properties": {
+                    "element": {"#": "underlineToggle" },
+                    "preventFocus": true
+                },
+                "bindings": {
+                    "pressed": {"<->": "@editor.underline"}
+                }
+            },
+
+            "italicToggle": {
+                "prototype": "montage/ui/toggle-button.reel",
+                "properties": {
+                    "element": {"#": "italicToggle" },
+                    "preventFocus": true
+                },
+                "bindings": {
+                    "pressed": {"<->": "@editor.italic"}
+                }
+            },
+
+            "unorderedListConverter": {
+                "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
+                "properties": {
+                    "value": "unordered",
+                    "defaultValue": "none"
+                }
+            },
+
+
+            "unorderedlistToggle": {
+                "prototype": "montage/ui/toggle-button.reel",
+                "properties": {
+                    "element": {"#": "unorderedlistToggle" },
+                    "preventFocus": true
+                },
+                "bindings": {
+                    "pressed": {"<->": "@editor.listStyle", "converter": {"@": "unorderedListConverter"}}
+                }
+            },
+
+            "orderedListConverter": {
+                "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
+                "properties": {
+                    "value": "ordered",
+                    "defaultValue": "none"
+                }
+            },
+
+            "orderedlistToggle": {
+                "prototype": "montage/ui/toggle-button.reel",
+                "properties": {
+                    "element": {"#": "orderedlistToggle" },
+                    "preventFocus": true
+                },
+                "bindings": {
+                    "pressed": {"<->": "@editor.listStyle", "converter": {"@": "orderedListConverter"}}
+                }
+            },
+
+            "justifyComparatorLeft": {
+                "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
+                "properties": {
+                    "value": "left"
+                }
+            },
+            "leftJustify": {
+                "prototype": "montage/ui/toggle-button.reel",
+                "properties": {
+                    "element": {"#": "justify-left"}
+                },
+                "bindings": {
+                    "pressed": {"<->": "@editor.justify", "converter": {"@": "justifyComparatorLeft"}}
+                }
+            },
+
+            "justifyComparatorCenter": {
+                "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
+                "properties": {
+                    "value": "center"
+                }
+            },
+            "centerJustify": {
+                "prototype": "montage/ui/toggle-button.reel",
+                "properties": {
+                    "element": {"#": "justify-center"}
+                },
+                "bindings": {
+                    "pressed": {"<->": "@editor.justify", "converter": {"@": "justifyComparatorCenter"}}
+                }
+            },
+
+            "justifyComparatorRight": {
+                "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
+                "properties": {
+                    "value": "right"
+                }
+            },
+            "rightJustify": {
+                "prototype": "montage/ui/toggle-button.reel",
+                "properties": {
+                    "element": {"#": "justify-right"}
+                },
+                "bindings": {
+                    "pressed": {"<->": "@editor.justify", "converter": {"@": "justifyComparatorRight"}}
+                }
+            },
+
+            "fontnameController": {
+                "prototype": "montage/ui/controller/array-controller",
+                "properties": {
+                    "selectObjectsOnAddition": false,
+                    "content": [
+                        {"text" : "Arial", "value": "Arial"},
+                        {"text" : "Arial Black", "value": "Arial Black"},
+                        {"text" : "Courier New", "value": "Courier New"},
+                        {"text" : "Garamond", "value": "Garamond"},
+                        {"text" : "Georgia", "value": "Georgia"},
+                        {"text" : "Open Sans", "value": "Open Sans"},
+                        {"text" : "Tahoma", "value": "Tahoma"},
+                        {"text" : "Times", "value": "Times New Roman"},
+                        {"text" : "Trebuchet", "value": "Trebuchet MS"},
+                        {"text" : "Verdana", "value": "Verdana"}
+                    ]
+                }
+            },
+
+            "fontnameConverter": {
+                "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[FontnameConverter]",
+                "properties": {
+                    "component": {"@": "fontname"}
+                }
+            },
+
+            "fontname": {
+                "prototype": "montage/ui/select.reel",
+                "properties": {
+                    "element": {"#": "fontname"},
+                    "preventFocus": true,
+                    "contentController": {"@": "fontnameController"}
+                }
+            },
+
+            "fontsizeController": {
+                "prototype": "montage/ui/controller/array-controller",
+                "properties": {
+                    "selectObjectsOnAddition": false,
+                    "content": [
+                        {"text" : "8pt", "value": "1"},
+                        {"text" : "10pt", "value": "2"},
+                        {"text" : "12pt", "value": "3"},
+                        {"text" : "14pt", "value": "4"},
+                        {"text" : "18pt", "value": "5"},
+                        {"text" : "24pt", "value": "6"},
+                        {"text" : "36pt", "value": "7"}
+                    ]
+                }
+            },
+
+            "fontsizeConverter": {
+                "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[IndexesConverter]",
+                "properties": {
+                    "component": {"@": "fontsize"}
+                }
+            },
+
+            "fontsize": {
+                "prototype": "montage/ui/select.reel",
+                "properties": {
+                    "element": {"#": "fontsize"},
+                    "preventFocus": true,
+                    "contentController": {"@": "fontsizeController"}
+                }
+            },
+
+
+            "undoButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "undoButton" },
+                    "identifier": "undo",
+                    "preventFocus": true
+                },
+                "bindings": {
+                    "enabled": {"<-": "@owner.undoManager.canUndo"},
+                    "title": {"<-": "@owner.undoManager.undoLabel"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "redoButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "redoButton" },
+                    "identifier": "redo",
+                    "preventFocus": true
+                },
+                "bindings": {
+                    "enabled": {"<-": "@owner.undoManager.canRedo"},
+                    "title": {"<-": "@owner.undoManager.redoLabel"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    }
+                ]
+            },
+
+
+            "accordion1": {
+                "prototype": "ui/accordion.reel",
+                "properties": {
+                    "element": {"#": "rich-text-editor-accordion1"}
+                }
+            },
+
+            "owner": {
+                "prototype": "ui/components/rich-text-editor-example.reel",
+                "properties": {
+                    "element": {"#": "rich-text-editor-example"},
+                    "editor": {"@": "editor"},
+                    "undoManager": {"@": "undoManager"},
+                    "source": {"#": "source-frame"},
+                    "showSource": true
+                }
+            }
+
+    }</script>
+</head>
+<body>
+    <div data-montage-id="rich-text-editor-example" class="rich-text-editor-example">
+        <div class="row">
+            <div class="span12">
+                <h3>RICHTEXT EDITOR</h3>
+                <p>
+                    The RichText Editor provides a way for the user to enter text that will be transformed to HTML and can have styles applied to it. The RichTextEditor is a wrapper around a div element with the HTML5 contentEditable attribute applied. There is no UI by default beyond the div for entering text, but an API is provided to allow you to hook up controls to enable the various styling options.
+                </p>
+            </div>
+        </div>
+
+
+        <article class="hideSource">
+
+           <div>
+               <h4>EDITOR</h4>
+               <header>
+                   <nav class="rte-controls">
+                       <span class="montage-buttonGroup">
+                           <button data-montage-id="boldToggle" class="btn font-styles" style="font-weight: bold;" title="Bold">B</button>
+                           <button data-montage-id="italicToggle" class="btn font-styles" style="font-family: serif; font-style: italic;" title="Italic">I</button>
+                           <button data-montage-id="underlineToggle" class="btn font-styles" style="text-decoration: underline;" title="Underline">U</button>
+                       </span>
+                       <span class="montage-buttonGroup">
+                           <button data-montage-id="unorderedlistToggle" class="btn font-styles icon icon-bullet" title="Unordered List"></button>
+                           <button data-montage-id="orderedlistToggle" class="btn font-styles icon icon-nr" title="Ordered List"></button>
+                       </span>
+                       <span class="montage-buttonGroup">
+                           <button data-montage-id="justify-left" class="btn font-styles icon icon-left" title="justify left"></button>
+                           <button data-montage-id="justify-center" class="btn font-styles icon icon-center" title="justify center"></button>
+                           <button data-montage-id="justify-right" class="btn font-styles icon icon-right" title="justify right"></button>
+                       </span>
+                       <span class="selectGroup">
+                           <select data-montage-id="fontname" class="font-styles"  title="Font Name"></select>
+                           <select data-montage-id="fontsize" class="font-styles"  title="Font Size"></select>
+                       </span>
+
+                       <span class="montage-buttonGroup">
+                           <button data-montage-id="undoButton" class="btn" title="Undo" disabled="disabled">Undo</button>
+                           <button data-montage-id="redoButton" class="btn" title="Redo" disabled="disabled">Redo</button>
+                       </span>
+                   </nav>
+               </header>
+               <section class="editor">
+                   <div data-montage-id="editor-frame"></div>
+               </section>
+           </div>
+
+            <h4>SOURCE</h4>
+            <section class="source" data-montage-id="source-frame"></section>
+
+
+        </article>
+
+
+        <!-- Source Code -->
+                                        <ul id="rich-text-editor-accordion1" class="accordion">
+                                           <li class="accordion-group">
+                                               <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                                               <div class="accordion-inner montage-hidden" >
+                                                    <pre class="prettyprint" >
+&lt;div&gt;<br/>               &lt;h4&gt;EDITOR&lt;/h4&gt;<br/>               &lt;header&gt;<br/>                   &lt;nav&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;button data-montage-id=&quot;boldToggle&quot; class=&quot;btn font-styles&quot; style=&quot;font-weight: bold;&quot; title=&quot;Bold&quot;&gt;B&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;italicToggle&quot; class=&quot;btn font-styles&quot; style=&quot;font-family: serif; font-style: italic;&quot; title=&quot;Italic&quot;&gt;I&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;underlineToggle&quot; class=&quot;btn font-styles&quot; style=&quot;text-decoration: underline;&quot; title=&quot;Underline&quot;&gt;U&lt;/button&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;button data-montage-id=&quot;unorderedlistToggle&quot; class=&quot;btn font-styles&quot; title=&quot;Unordered List&quot;&gt;&#x2022;&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;orderedlistToggle&quot; class=&quot;btn font-styles&quot; title=&quot;Ordered List&quot;&gt;1.&lt;/button&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;button data-montage-id=&quot;justify-left&quot; class=&quot;btn font-styles&quot; title=&quot;justify left&quot;&gt;L&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;justify-center&quot; class=&quot;btn font-styles&quot; title=&quot;justify center&quot;&gt;C&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;justify-right&quot; class=&quot;btn font-styles&quot; title=&quot;justify right&quot;&gt;R&lt;/button&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;select data-montage-id=&quot;fontname&quot; class=&quot;font-styles&quot;  title=&quot;Font Name&quot;&gt;&lt;/select&gt;<br/>                           &lt;select data-montage-id=&quot;fontsize&quot; class=&quot;font-styles&quot;  title=&quot;Font Size&quot;&gt;&lt;/select&gt;<br/>                       &lt;/span&gt;<br/><br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;button data-montage-id=&quot;undoButton&quot; class=&quot;btn&quot; title=&quot;Undo&quot; disabled=&quot;disabled&quot;&gt;Undo&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;redoButton&quot; class=&quot;btn&quot; title=&quot;Redo&quot; disabled=&quot;disabled&quot;&gt;Redo&lt;/button&gt;<br/>                       &lt;/span&gt;<br/>                   &lt;/nav&gt;<br/>               &lt;/header&gt;<br/>               &lt;section class=&quot;editor&quot;&gt;<br/>                   &lt;div data-montage-id=&quot;editor-frame&quot;&gt;&lt;/div&gt;<br/>               &lt;/section&gt;<br/>           &lt;/div&gt;</pre>
+                                               </div>
+                                           </li>
+                                           <li class="accordion-group">
+                                               <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                                               <div class="accordion-inner montage-hidden">
+                                                <pre class="prettyprint" >
+{
+    "undoManager": {
+        "object": "montage/core/undo-manager[defaultUndoManager]"
+    },
+
+    "editor": {
+        "prototype": "montage/ui/rich-text-editor/rich-text-editor.reel",
+        "properties": {
+            "element": {"#": "editor-frame"},
+            "delegate": {"@": "owner"},
+            "undoManager": {"@": "undoManager"}
+        },
+        "listeners": [
+            {
+                "type": "editorChange",
+                "listener": {"@": "owner"},
+                "capture": false
+            },
+            {
+                "type": "editorSelect",
+                "listener": {"@": "owner"},
+                "capture": false
+            }
+        ],
+        "bindings": {
+            "fontName": {"<->": "@fontname.contentController.selectedIndexes", "converter": {"@": "fontnameConverter"}},
+            "fontSize": {"<->": "@fontsize.contentController.selectedIndexes", "converter": {"@": "fontsizeConverter"}}
+        }
+    },
+
+    "boldToggle": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "boldToggle"},
+            "preventFocus": true
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.bold"}
+        }
+    },
+
+    "underlineToggle": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "underlineToggle" },
+            "preventFocus": true
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.underline"}
+        }
+    },
+
+    "italicToggle": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "italicToggle" },
+            "preventFocus": true
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.italic"}
+        }
+    },
+
+    "unorderedListConverter": {
+        "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
+        "properties": {
+            "value": "unordered",
+            "defaultValue": "none"
+        }
+    },
+
+
+    "unorderedlistToggle": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "unorderedlistToggle" },
+            "preventFocus": true
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.listStyle", "converter": {"@": "unorderedListConverter"}}
+        }
+    },
+
+    "orderedListConverter": {
+        "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
+        "properties": {
+            "value": "ordered",
+            "defaultValue": "none"
+        }
+    },
+
+    "orderedlistToggle": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "orderedlistToggle" },
+            "preventFocus": true
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.listStyle", "converter": {"@": "orderedListConverter"}}
+        }
+    },
+
+    "justifyComparatorLeft": {
+        "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
+        "properties": {
+            "value": "left"
+        }
+    },
+    "leftJustify": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "justify-left"}
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.justify", "converter": {"@": "justifyComparatorLeft"}}
+        }
+    },
+
+    "justifyComparatorCenter": {
+        "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
+        "properties": {
+            "value": "center"
+        }
+    },
+    "centerJustify": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "justify-center"}
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.justify", "converter": {"@": "justifyComparatorCenter"}}
+        }
+    },
+
+    "justifyComparatorRight": {
+        "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
+        "properties": {
+            "value": "right"
+        }
+    },
+    "rightJustify": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "justify-right"}
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.justify", "converter": {"@": "justifyComparatorRight"}}
+        }
+    },
+
+    "fontnameController": {
+        "prototype": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": false,
+            "content": [
+                {"text" : "Arial", "value": "Arial"},
+                {"text" : "Arial Black", "value": "Arial Black"},
+                {"text" : "Courier New", "value": "Courier New"},
+                {"text" : "Garamond", "value": "Garamond"},
+                {"text" : "Georgia", "value": "Georgia"},
+                {"text" : "Open Sans", "value": "Open Sans"},
+                {"text" : "Tahoma", "value": "Tahoma"},
+                {"text" : "Times", "value": "Times New Roman"},
+                {"text" : "Trebuchet", "value": "Trebuchet MS"},
+                {"text" : "Verdana", "value": "Verdana"}
+            ]
+        }
+    },
+
+    "fontnameConverter": {
+        "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[FontnameConverter]",
+        "properties": {
+            "component": {"@": "fontname"}
+        }
+    },
+
+    "fontname": {
+        "prototype": "montage/ui/select.reel",
+        "properties": {
+            "element": {"#": "fontname"},
+            "preventFocus": true,
+            "contentController": {"@": "fontnameController"}
+        }
+    },
+
+    "fontsizeController": {
+        "prototype": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": false,
+            "content": [
+                {"text" : "8pt", "value": "1"},
+                {"text" : "10pt", "value": "2"},
+                {"text" : "12pt", "value": "3"},
+                {"text" : "14pt", "value": "4"},
+                {"text" : "18pt", "value": "5"},
+                {"text" : "24pt", "value": "6"},
+                {"text" : "36pt", "value": "7"}
+            ]
+        }
+    },
+
+    "fontsizeConverter": {
+        "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[IndexesConverter]",
+        "properties": {
+            "component": {"@": "fontsize"}
+        }
+    },
+
+    "fontsize": {
+        "prototype": "montage/ui/select.reel",
+        "properties": {
+            "element": {"#": "fontsize"},
+            "preventFocus": true,
+            "contentController": {"@": "fontsizeController"}
+        }
+    },
+
+
+    "undoButton": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "undoButton" },
+            "identifier": "undo",
+            "preventFocus": true
+        },
+        "bindings": {
+            "enabled": {"<-": "@owner.undoManager.canUndo"},
+            "title": {"<-": "@owner.undoManager.undoLabel"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"},
+                "capture": false
+            }
+        ]
+    },
+
+    "redoButton": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "redoButton" },
+            "identifier": "redo",
+            "preventFocus": true
+        },
+        "bindings": {
+            "enabled": {"<-": "@owner.undoManager.canRedo"},
+            "title": {"<-": "@owner.undoManager.redoLabel"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"},
+                "capture": false
+            }
+        ]
+    },
+
+
+    "accordion1": {
+        "prototype": "ui/accordion.reel",
+        "properties": {
+            "element": {"#": "rich-text-editor-accordion1"}
+        }
+    },
+
+    "owner": {
+        "prototype": "ui/components/rich-text-editor-example.reel",
+        "properties": {
+            "element": {"#": "rich-text-editor-example"},
+            "editor": {"@": "editor"},
+            "undoManager": {"@": "undoManager"},
+            "source": {"#": "source-frame"},
+            "showSource": true
+        }
+    }
+
+}
+                                                </pre>
+
+                                               </div>
+                                           </li>
+                                           <li class="accordion-group">
+                                               <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">JavaScript</a></div>
+                                               <div class="accordion-inner montage-hidden">
+                                                   <pre class="prettyprint" >
+   var Montage = require("montage").Montage,
+       Component = require("montage/ui/component").Component,
+       Converter = require("montage/core/converter/converter").Converter;
+
+
+   /**
+   * Converter to Turn a justify value into boolean string
+   */
+   exports.ValueConverter = Montage.create(Converter, {
+       value: {value: null},
+       defaultValue: {value: undefined},
+
+       convert: {
+           enumerable: false,
+           value: function(value) {
+               return value === this.value ? true : false;
+           }
+       },
+
+       revert: {
+           enumerable: false,
+           value: function(value) {
+               return value === true ? this.value : this.defaultValue;
+           }
+       }
+   });
+
+   /**
+   * Converter to Turn a value into a array controller index
+   */
+   exports.IndexesConverter = Montage.create(Converter, {
+       component : { value: null },
+       debug : { value: false },
+
+       convert: {
+           enumerable: false,
+           value: function(indexes) {
+               var index = indexes && indexes.length ? indexes[0] : 0,
+                   value = this.component.content[index].value;
+               if (this.debug) {console.log("CONVERT:", indexes, value);}
+               return value;
+           }
+       },
+
+       revert: {
+           enumerable: false,
+           value: function(value) {
+               var index = this.component._indexOf(value);
+               if (this.debug) {console.log("REVERT:", value, index != -1 ? [index] : [0]);}
+               return index != -1 ? [index] : [0];
+           }
+       }
+   });
+
+   exports.RIndexesConverter = Montage.create(Converter, {
+       component : { value: null },
+
+
+       convert: {
+           enumerable: false,
+           value: function(value) {
+               var index = this.component._indexOf(value);
+               if (this.debug) {console.log("CONVERT:", value, index);}
+               return index != -1 ? [index] : [0];
+           }
+       },
+
+       revert: {
+           enumerable: false,
+           value: function(indexes) {
+               if (this.debug) {console.log("REVERT:", value);}
+               var index = indexes && indexes.length ? indexes[0] : 0,
+                   value = this.component.content[index].value;
+               return value;
+           }
+       }
+   });
+
+   exports.FontnameConverter = Montage.create(Converter, {
+       component : { value: null },
+       debug : { value: false },
+
+       convert: {
+           enumerable: false,
+           value: function(indexes) {
+               var index = indexes && indexes.length ? indexes[0] : 0,
+                   value = this.component.content[index].value;
+               if (this.debug) {console.log("CONVERT:", indexes, value);}
+               return value;
+           }
+       },
+
+       revert: {
+           enumerable: false,
+           value: function(value) {
+               var fontNames = value ? value.replace(" ,", ",").split(",") : null ,
+                   nbrFontnames = fontNames ? fontNames.length : 0,
+                   i,
+                   index = -1;
+
+               for (i = 0; i < nbrFontnames; i ++) {
+                   index = this.component._indexOf(fontNames[i]);
+                   if (index !== -1) {
+                       break;
+                   }
+               }
+
+               if (this.debug) {console.log("REVERT:", value, index != -1 ? [index] : [0]);}
+               return index != -1 ? [index] : [0];
+           }
+       }
+   });
+
+   exports.RichTextEditorExample = Montage.create(Component, {
+
+       __initvalue: {value: null},
+       _initValue: {
+           get: function() {
+               return this.__initValue;
+           },
+           set: function(value) {
+               this.__initValue = value;
+               console.log('initValue ', value, this.editor);
+               if(this.editor) {
+                   this.editor.value = this.__initValue;
+               }
+
+               this.needsDraw = true;
+           }
+       },
+
+       deserializedFromTemplate: {
+           value: function() {
+               var savedValue = null; //localStorage.getItem("savedValue");
+               if (savedValue) {
+                   this._initValue = savedValue;
+               } else {
+                   this.loadDefaultContent();
+               }
+               if(this.editor) {
+
+               }
+           }
+       },
+
+       loadDefaultContent: {
+           value: function() {
+               var editor = this.editor;
+
+               // Restore the editor content
+               var xhr = new XMLHttpRequest();
+               xhr.open('GET', 'ui/components/rich-text-editor-example.reel/assets/default-text.html', true);
+               xhr.responseType = 'text';
+               var self = this;
+
+               xhr.onload = function(event) {
+                   if (this.status == 200) {
+                       self._initValue = this.response;
+                   } else {
+                       self._initValue = "";
+                   }
+               };
+
+               xhr.send();
+           }
+       },
+
+       handleAction: {
+           value: function(event) {
+               var target = event.target;
+
+               switch (target.identifier) {
+
+                   case "undo":
+                       this.undoManager.undo();
+                       break;
+
+                   case "redo":
+                       this.undoManager.redo();
+                       break;
+               }
+           }
+       },
+
+       prepareForDraw: {
+           value: function() {
+               if(this._initValue) {
+                   this.editor.value = this._initValue;
+               }
+           }
+       },
+
+       // Rich Textfield event & delegate methods
+       handleEditorChange: {
+           enumerable: false,
+           value: function(event) {
+               var value = this.editor.value,
+                   selfClosingTags = ["area", "base", "basefont", "br", "bgsound", "col", "command", "embed", "frame", "hr",
+                       "input", "img", "isindex", "keygen", "link", "meta", "param", "source", "track", "wbr"],
+                   indent = 0,
+                   lastType,
+                   padding = "                                ",
+                   div = document.createElement("div"),
+                   output = "";
+
+               localStorage.setItem("savedValue", value);
+
+               // Reformat the value for the source panel
+               value = value.replace(/[\n\r]+/g, "");
+               value.replace(/\<(\/?)([a-z0-9]+)[^>]*>|([^<>]+)/g, function(match, closed, tag, text) {
+                   var currentPadding = padding.substr(0, Math.min(indent * 2, 32));
+
+                   if (text) {
+                       lastType = "text";
+                   } else {
+                       lastType = tag;
+                       if (selfClosingTags.indexOf(tag.toLowerCase()) == -1) {
+                           if (closed) {
+                               indent --;
+                               if (indent < 0) {
+                                   indent = 0;
+                               }
+                               currentPadding = padding.substr(0, Math.min(indent * 2, 32));
+                           } else {
+                               indent ++;
+                           }
+                       }
+                   }
+
+                   // Convert plain-text to HTML
+                   div.textContent = match;
+                   match = div.innerHTML;
+
+                   output += '<pre class="type-' + lastType+ '">' + currentPadding + match +'</pre>';
+               });
+
+               this.source.innerHTML = output;
+           }
+       }
+   });
+
+
+
+                                                   </pre>
+                                               </div>
+                                           </li>
+                                        </ul>
+                    </section>
+
+                    <section>
+                        <a href="https://github.com/Motorola-Mobility/montage/tree/v0.11/examples/sink/components/rich-text-editor-example.reel" target="_blank">View Demo Source</a>
+                    </section>
+
+
+    </div>
+</body>
+</html>

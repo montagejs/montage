@@ -59,7 +59,6 @@ var findClosestOfType = function(el, type, context, clazz) {
 	    return el;
 	}
 	return null;
-
 };
 
 exports.Accordion = Montage.create(Component, {
@@ -87,23 +86,19 @@ exports.Accordion = Montage.create(Component, {
         value: function(event) {
             event.preventDefault();
             var target = event.target;
-            var $li = findClosestOfType(target, 'li', this.element);
 
-            if($li) {
-                var $heading = findClosestOfType(target, 'div', this.element, "accordion-heading");
-                if($heading) {
-                    // user clicked on the header
-                    var a = $li.querySelector('a');
-                    if(a) {
-                        var $content = $li.querySelector('div.accordion-inner');
-                        $content.classList.toggle('montage-hidden');
-                    }
-
+            var classList = target.classList;
+            if(classList.contains('accordion-toggle') || classList.contains('accordion-heading') || classList.contains('accordion-group')) {
+                var $li = findClosestOfType(target, 'li', this.element);
+                var a = $li.querySelector('a');
+                if(a) {
+                    var $content = $li.querySelector('div.accordion-inner');
+                    $content.classList.toggle('montage-hidden');
                 }
-
-
             }
         }
     }
+        
+        
 
 });
