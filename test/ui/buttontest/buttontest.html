@@ -189,6 +189,13 @@ POSSIBILITY OF SUCH DAMAGE.
         ]
     },
 
+    "detailbutton": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "detailbutton"}
+        }
+    },
+
     "output": {
         "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
@@ -220,6 +227,7 @@ POSSIBILITY OF SUCH DAMAGE.
             "toggleinput3": {"@": "toggleinput3"},
             "scroll": {"@": "scroll"},
             "scroll_button": {"@": "scroll_button"},
+            "detailbutton": {"@": "detailbutton"},
             "output": {"@": "output"}
         }
     },
@@ -286,5 +294,7 @@ POSSIBILITY OF SUCH DAMAGE.
     <input type="button" value="regular button" onclick="alert('hello');" />
 
     <button id="loggingbutton">Logging button</button>
+    <button id="detailbutton">Detail button</button>
+
 </body>
 </html>
