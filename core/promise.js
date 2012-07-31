@@ -137,14 +137,18 @@ var AbstractPromise = Creatable.create({
                 result = this.Promise.reject(error && error.message, error);
             }
             resolve(result);
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     // Defers polymorphically to toString
     toSource: {
         value: function () {
             return this.toString();
-        }
+        },
+        writable: true,
+        configurable: true
     }
 
 });
@@ -181,13 +185,17 @@ var PrimordialPromise = Creatable.create({
             }
 
             return creation;
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     isPromise: {
         value: function (value) {
             return value && typeof value.sendPromise !== "undefined";
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     // deprecated
@@ -226,7 +234,9 @@ var PrimordialPromise = Creatable.create({
             } else {
                 return this.fulfill(object);
             }
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     fulfill: {
@@ -285,7 +295,9 @@ var PrimordialPromise = Creatable.create({
                 }
             }
 
-        })
+        }),
+        writable: true,
+        configurable: true
     },
 
     reject: {
@@ -298,7 +310,9 @@ var PrimordialPromise = Creatable.create({
             errors.push(error ? (error.stack ? error.stack : error) : reason);
             displayErrors();
             return self;
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     RejectedPromise: {
@@ -344,7 +358,9 @@ var PrimordialPromise = Creatable.create({
                 value: true
             }
 
-        })
+        }),
+        writable: true,
+        configurable: true
     },
 
     defer: {
@@ -358,7 +374,9 @@ var PrimordialPromise = Creatable.create({
             deferred.Promise = this;
             promise._deferred = deferred;
             return deferred;
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     Deferred: {
@@ -389,7 +407,9 @@ var PrimordialPromise = Creatable.create({
                 }
             }
 
-        })
+        }),
+        writable: true,
+        configurable: true
     },
 
     DeferredPromise: {
@@ -421,11 +441,15 @@ var PrimordialPromise = Creatable.create({
                 }
             }
 
-        })
+        }),
+        writable: true,
+        configurable: true
     },
 
     AbstractPromise: {
-        value: AbstractPromise
+        value: AbstractPromise,
+        writable: true,
+        configurable: true
     }
 
 });
@@ -438,7 +462,9 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
     when: {
         value: function (fulfilled, rejected) {
             return this.then(fulfilled, rejected);
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     spread: {
@@ -446,7 +472,9 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
             return this.all().then(function (args) {
                 return fulfilled.apply(void 0, args);
             }, rejected);
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     then: {
@@ -505,7 +533,9 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
             });
 
             return deferred.promise;
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     send: {
@@ -524,57 +554,75 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                 );
             })
             return deferred.promise;
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     get: {
         value: function () {
             return this.send(GET, arguments);
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     put: {
         value: function () {
             return this.send(PUT, arguments);
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     "delete": {
         value: function () {
             return this.send(DELETE, arguments);
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     post: {
         value: function () {
             return this.send(POST, arguments);
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     invoke: {
         value: function (name /*, ...args*/) {
             var args = Array.prototype.slice.call(arguments, 1);
             return this.send(POST, [name, args]);
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     apply: {
         value: function () {
             return this.send(APPLY, arguments);
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     call: {
         value: function (thisp /*, ...args*/) {
             var args = Array.prototype.slice.call(arguments, 1);
             return this.send(APPLY, [thisp, args]);
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     keys: {
         value: function () {
             return this.send(KEYS, []);
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     all: {
@@ -599,7 +647,9 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                 });
                 return deferred.promise;
             });
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     delay: {
@@ -619,7 +669,9 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                 }, timeout);
                 return deferred.promise;
             });
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     timeout: {
@@ -636,13 +688,17 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                 deferred.reject("Timed out", new Error("Timed out"));
             }, timeout);
             return deferred.promise;
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     fail: {
         value: function (rejected) {
             return this.then(void 0, rejected);
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     fin: {
@@ -661,38 +717,33 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
             // Guarantees that the same API gets
             // returned as received.
             .to(this.Promise);
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     end: {
-        value: function (callback, errback) {
-            this.then(function (value) {
-                if (callback) {
-                    nextTick(function () {
-                        callback(value);
-                    });
-                }
-            }, function (reason, error) {
-                if (errback) {
-                    nextTick(function () {
-                        errback(error || reason);
-                    });
-                } else {
-                    // forward to a future turn so that ``when``
-                    // does not catch it and turn it into a rejection.
-                    nextTick(function () {
-                        throw error;
-                    });
-                }
+        value: function () {
+            this.then(void 0, function (reason, error) {
+                // forward to a future turn so that ``when``
+                // does not catch it and turn it into a rejection.
+                nextTick(function () {
+                    console.error(error && error.stack || error || reason);
+                    throw error;
+                });
             })
-            // Does not return a promise
-        }
+            // Returns undefined
+        },
+        writable: true,
+        configurable: true
     },
 
     isResolved: {
         value: function () {
             return this.isFulfilled() || this.isRejected();
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     isFulfilled: {
@@ -701,20 +752,26 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                 !Promise.isPromise(this.valueOf()) &&
                 !this.isRejected()
             );
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     isRejected: {
         value: function () {
             var value = this.valueOf();
             return !!(value && value.promiseRejected);
-        }
+        },
+        writable: true,
+        configurable: true
     },
 
     to: {
         value: function (Type) {
             return Type.ref(this);
-        }
+        },
+        writable: true,
+        configurable: true
     }
 
 });
