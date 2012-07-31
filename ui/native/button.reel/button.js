@@ -407,6 +407,37 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
 
             this._drawLabel(this.label);
         }
+    },
+
+    _detail: {
+        value: null
+    },
+
+    /**
+        The data property of the action event.
+        example to toggle the complete class: "detail.selectedItem" : { "<-" : "@repetition.objectAtCurrentIteration"}
+        @type {Property}
+        @default null
+    */
+    detail: {
+        get: function() {
+            if (this._detail === null) {
+                this._detail = EventData.create();
+            }
+            return this._detail;
+        }
+    },
+
+    createActionEvent: {
+        value: function() {
+            var actionEvent = document.createEvent("CustomEvent"),
+                detail, eventDetail;
+            if(detail = this._detail) {
+                eventDetail = detail._data;
+            }
+            actionEvent.initCustomEvent("action", true, true, eventDetail);
+            return actionEvent;
+        }
     }
 });
 
@@ -491,4 +522,71 @@ Button.addAttributes( /** @lends module:"montage/ui/native/button.reel".Button# 
     @see label
 */
     value: null
+
+});
+
+var EventData = Montage.create(Montage, {
+
+    didCreate: {
+        value: function() {
+            this._data = Object.create(null);
+        }
+    },
+
+    initWithReservedAndOptions: {
+        value: function(reserved, options) {
+            Map.call(this, reserved, options);
+        }
+    },
+
+    get: {
+        value: function (key) {
+            return this.undefinedGet(key);
+        }
+    },
+
+    set: {
+        value: function (key, value) {
+            this.undefinedSet(key, value);
+        }
+    },
+
+    _data: {
+        value: null
+    },
+
+    _defineProperty: {
+        value: function(key, value) {
+            value = typeof value !== "undefined" ? value : null;
+            Montage.defineProperty(this, key, {
+                get: function() {
+                    return this._data[key];
+                },
+                set: function(value) {
+                    this._data[key] = value;
+                }
+            });
+            this._data[key] = value;
+        }
+    },
+
+    undefinedGet: {
+        value: function(key) {
+            if (typeof this._data[key] === "undefined") {
+                this._defineProperty(key);
+            }
+            return this._data[key];
+        }
+    },
+
+    undefinedSet: {
+        value: function(key, value) {
+            if (typeof this._data[key] === "undefined") {
+                this._defineProperty(key, value);
+            } else {
+                this._data[key] = value;
+            }
+        }
+    }
+
 });

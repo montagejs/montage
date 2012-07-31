@@ -177,6 +177,52 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
             });
 
 
+            describe("action event detail property", function() {
+                var detailButton = test.detailbutton,
+                    testHandler;
+                beforeEach(function() {
+                    testHandler = {
+                        handler: function(event) {
+                            testHandler.event = event;
+                        },
+                        event: null,
+                        valueToBeBound: "aValue"
+                    };
+                });
+                it("is undefined if not used", function() {
+                    spyOn(testHandler, 'handler').andCallThrough();
+                    detailButton.addEventListener("action", testHandler.handler, false);
+
+                    testPage.clickOrTouch({target: detailButton.element});
+                    expect(testHandler.handler).toHaveBeenCalled();
+                    expect(testHandler.event.detail).not.toBeDefined();
+                });
+                it("is is populated if used in a binding", function() {
+                    spyOn(testHandler, 'handler').andCallThrough();
+                    detailButton.addEventListener("action", testHandler.handler, false);
+                    Object.defineBinding(detailButton, "detail.prop", {
+                        boundObject: testHandler,
+                        boundObjectPropertyPath: "valueToBeBound"
+                    });
+
+                    testPage.clickOrTouch({target: detailButton.element});
+                    expect(testHandler.handler).toHaveBeenCalled();
+                    expect(testHandler.event.detail.prop).toEqual(testHandler.valueToBeBound);
+                    //cleanup
+                    Object.deleteBindings(detailButton);
+                });
+                it("is is populated if used programatically", function() {
+                    spyOn(testHandler, 'handler').andCallThrough();
+                    detailButton.addEventListener("action", testHandler.handler, false);
+                    detailButton.detail.set("prop2", "anotherValue");
+
+                    testPage.clickOrTouch({target: detailButton.element});
+                    expect(testHandler.handler).toHaveBeenCalled();
+                    expect(testHandler.event.detail.prop2).toEqual("anotherValue");
+                });
+            });
+
+
             it("responds when child elements are clicked on", function(){
                 expect(click(test.buttonnested, test.buttonnested.element.firstChild)).toHaveBeenCalled();
             });
