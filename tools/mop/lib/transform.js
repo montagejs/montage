@@ -151,7 +151,7 @@ var transforms = {
     css: function (file, rebase, options) {
         checkCopyright(file, options);
         if (options.optimize) {
-            return Q.call(rebaseCss, null, file.utf8, rebase, file.shortName)
+            return Q.fcall(rebaseCss, file.utf8, rebase, file.shortName)
             .then(function (css) {
                 file.utf8 = css;
             }, function (exception) {
@@ -428,7 +428,7 @@ function rebaseDocument(doc, rebase, fileName, config, options) {
                 }
             } else if (el.tagName === "STYLE") {
                 pending.push(
-                    Q.call(rebaseCss, null, getText(el), rebase, fileName)
+                    Q.fcall(rebaseCss, getText(el), rebase, fileName)
                     .then(function (css) {
                         setText(el, css, doc);
                     }, function (exception) {

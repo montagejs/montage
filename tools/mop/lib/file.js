@@ -101,7 +101,7 @@ Object.defineProperties(File.prototype, {
     write: {
         value: function (target) {
             var self = this;
-            return Q.call(function () {
+            return Q.fcall(function () {
                 if (self._shelved) {
                     return FS.read(self.name, "b");
                 } else {
