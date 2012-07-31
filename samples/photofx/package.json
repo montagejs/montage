@@ -5,7 +5,7 @@
         "montage": "../../"
     },
     "bundle": [
-        "main.reel"
+        "ui/main.reel"
     ],
     "shard": 4
 }

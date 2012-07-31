@@ -207,7 +207,7 @@ function bundleScript(script, file, config, catalog, options) {
     // sentinel to notify montage.js that it need not xhr its bootstrap
     bundle.unshift("BUNDLE=" + JSON.stringify(preload) + ";");
     var bundleFile = createBundle(bundle, catalog[file.package], 'bundle-0-');
-    console.log("Bundle:", bundleFile.shortName, bundleFile.content.length);
+    console.log("Bundle:", bundleFile.shortName, bundleFile.content.length, 'bytes');
 
     var toBundle = FS.relativeFromFile(file.name, bundleFile.name);
     var toMontage = FS.relativeFromFile(
@@ -238,7 +238,7 @@ function preloadBundle(modules, label, config, catalog, options) {
             // add a wee sentinel to the end to indicate that
             // the bundle has finished loading
             shardFile.utf8 += '\nbundleLoaded(' + JSON.stringify(shardFile.shortName) + ')';
-            console.log("Bundle:", shardFile.shortName, shardFile.content.length);
+            console.log("Bundle:", shardFile.shortName, shardFile.content.length, 'bytes');
             return shardFile;
         });
 
