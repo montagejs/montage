@@ -57,7 +57,7 @@ function build(applications, options, catalog) {
         applications = [applications];
     }
     var applicationConfigs = [];
-    return Q.call(function () {
+    return Q.fcall(function () {
         if (options.force) {
             return "";
         } else {
@@ -165,7 +165,7 @@ function buildPackage(config, catalog, options) {
     // reconfigure
     config.contents['package.json'].utf8 = JSON.stringify(reconfig(config, catalog));
 
-    return Q.call(function () {
+    return Q.fcall(function () {
         //console.log('Transforming', config.buildLocation);
         return transform(config, catalog, options);
     })
@@ -192,7 +192,7 @@ function write(config) {
             return;
         var buildName = FS.join(config.buildLocation, name);
         var directory = FS.directory(buildName);
-        return Q.call(function () {
+        return Q.fcall(function () {
             return FS.makeTree(directory)
         })
         .then(function () {
@@ -205,7 +205,7 @@ function write(config) {
 }
 
 function link(config) {
-    return Q.call(function () {
+    return Q.fcall(function () {
         if (config.linkLocation === void 0)
             return;
         if (config.buildLocation === config.linkLocation)

@@ -1,11 +1,11 @@
 {
     "name": "mop",
-    "version": "0.0.0",
+    "version": "0.0.2",
     "title": "Montage Optimizer",
     "main": "optimize.js",
     "dependencies": {
-        "q": "0.8.4",
-        "q-fs": "0.1.27",
+        "q": "0.8.6",
+        "q-fs": "0.1.30",
         "uglify-js": "1.0.7",
         "optimist": "0.2.6",
         "jsdom": "0.2.10",
