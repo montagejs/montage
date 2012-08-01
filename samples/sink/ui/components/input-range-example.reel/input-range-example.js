@@ -89,9 +89,16 @@ exports.InputRangeExample = Montage.create(Component, {
             return this._opacity;
         },
         set: function(value) {
-            this._opacity = value;
+            this._opacity = parseFloat(value, 10).toFixed(2);
             this.needsDraw = true;
         }
+    },
+
+    rgba: {
+        get: function() {
+            return "rgba(" + this.red + ", " + this.green + ", " + this.blue + ", " + this.opacity + ")";
+        },        
+        dependencies: ["red", "green", "blue", "opacity"]
     },
 
     prepareForDraw: {

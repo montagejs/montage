@@ -29,21 +29,29 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
+Component = require("montage/ui/component").Component,
 Converter = require("montage/core/converter/converter").Converter;
+
+exports.Main = Montage.create(Component, {
+
+    value: {
+        value: null
+    }
+});
 
 exports.TempConverter = Montage.create(Converter, {
 
     // convert fahrenheit to celsius (showing our non-metric heritage here)
     convert: {
         value: function(value) {
-            return (parseInt(value, 10) - 32) / 1.8;
+            return ((parseInt(value, 10) - 32) / 1.8).toFixed(2);
         }
     },
 
     // revert celsius to fahrenheit
     revert: {
         value: function(value) {
-            return (1.8 * parseInt(value, 10)) + 32;
+            return ((1.8 * parseInt(value, 10)) + 32).toFixed(2);
         }
     }
 

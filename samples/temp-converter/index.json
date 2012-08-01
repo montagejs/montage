@@ -1,6 +1,10 @@
 {
+    "owner": {
+        "prototype": "temp-converter[Main]"
+    },
+
     "converter": {
-        "prototype": "temp-converter"
+        "prototype": "temp-converter[TempConverter]"
     },
 
     "celsiusTextfield": {
@@ -9,7 +13,7 @@
             "element": {"#": "celsius"}
         },
         "bindings": {
-            "value": {"<->": "@fahrenheitTextfield.value", "converter": {"@": "converter"}}
+            "value": {"<->": "@owner.value", "converter": {"@": "converter"}}
         }
     },
 
@@ -18,16 +22,20 @@
         "properties": {
             "element": {"#": "fahrenheit"},
             "value": "32"
+        },
+        "bindings": {
+            "value": {"<->": "@owner.value"}
         }
     },
-    
+
     "barometer": {
-        "prototype": "montage/ui/native/input-range.reel",
+        "prototype": "montage/ui/input-range.reel",
         "properties": {
+            "orientation": "vertical",
             "element": {"#": "barometer"}
         },
         "bindings": {
-            "value": {"<->": "@fahrenheitTextfield.value"}
+            "value": {"<->": "@owner.value"}
         }
     }
 }

@@ -60,6 +60,59 @@ POSSIBILITY OF SUCH DAMAGE.
                 "element": {"#": "alpha"}
             }
         },
+
+        "vred": {
+            "prototype": "montage/ui/input-range.reel",
+            "properties": {
+                "orientation": "vertical",
+                "element": {"#": "v-red"}
+            },
+            "bindings": {
+                "value": {"<->": "@red.value"}
+            }
+        },
+
+        "vgreen": {
+            "prototype": "montage/ui/input-range.reel",
+            "properties": {
+                "orientation": "vertical",
+                "element": {"#": "v-green"}
+            },
+            "bindings": {
+                "value": {"<->": "@green.value"}
+            }
+        },
+
+        "vblue": {
+            "prototype": "montage/ui/input-range.reel",
+            "properties": {
+                "orientation": "vertical",
+                "element": {"#": "v-blue"}
+            },
+            "bindings": {
+                "value": {"<->": "@blue.value"}
+            }
+        },
+        "valpha": {
+            "prototype": "montage/ui/input-range.reel",
+            "properties": {
+                "orientation": "vertical",
+                "element": {"#": "v-alpha"}
+            },
+            "bindings": {
+                "value": {"<->": "@alpha.value"}
+            }
+        },
+        "rgba": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "rgba"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.rgba"}
+            }
+        },
+
         "rangeInputAccordion1": {
             "prototype": "ui/accordion.reel",
             "properties": {
@@ -131,13 +184,24 @@ POSSIBILITY OF SUCH DAMAGE.
             margin: 0 0 0 20px;
             list-style: none;
         }
-        .input-range-example .montage-inputRange {
+        .input-range-example .vertical-controls  {
+            display: inline-block;
+            margin: 20px 0 0 0;
+            list-style: none;
+        }
+        .input-range-example .montage-inputRange.horizontal {
             width: 130px;
         }
         .input-range-example .slider-item {
             position: relative;
             margin: 0px;
             padding: 12px 0;
+        }
+        .input-range-example .vertical-slider-item {
+            position: relative;
+            float: left;
+            margin: 0px;
+            padding: 0 12px;
         }
         .input-range-example .label {
             position: relative;
@@ -147,6 +211,15 @@ POSSIBILITY OF SUCH DAMAGE.
             border-radius: 4px;
             color: hsl(0,0%,100%);
             background-color: hsl(0,0%,80%);
+        }
+        .input-range-example .vertical-slider-item .label {
+            position: relative;
+            top: 5px;
+            left: -10px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            display: block;
+            color: hsl(0,0%,100%);
         }
         .label.red { background-color: hsl(0,100%,80%); }
         .label.green { background-color: hsl(130,70%,70%); }
@@ -158,6 +231,11 @@ POSSIBILITY OF SUCH DAMAGE.
         .range2 .bluemoonNumber {
             width: 100px;
             margin: 10px 0 10px 18px;
+        }
+        div.rgba {
+            padding-top: 5px;
+            line-height: 36px;
+            font-size: 1.6em;
         }
     </style>
 </head>
@@ -182,7 +260,7 @@ POSSIBILITY OF SUCH DAMAGE.
                         <span class="label red">Red</span>
                     </li>
                     <li class="slider-item">
-                        <input class="color-slider" data-montage-id="green" type="range" min="0" max="255" step="1" value="0"/>
+                        <input class="color-slider" data-montage-id="green" type="range" min="0" max="255" step="1" value="125"/>
                         <span class="label green">Green</span>
                     </li>
                     <li class="slider-item">
@@ -191,6 +269,29 @@ POSSIBILITY OF SUCH DAMAGE.
                     </li>
                     <li class="slider-item">
                         <input class="color-slider" data-montage-id="alpha" type="range" min="0" max="1" step="0.1" value="1"/>
+                        <span class="label">Opacity</span>
+                    </li>
+                </ul>
+
+                <div data-montage-id="rgba" class="rgba"></div>
+
+                <h5>Vertical Slider</h5>
+
+                <ul data-montage-id="vertical-controls" class="vertical-controls">
+                    <li class="vertical-slider-item">
+                        <input class="color-slider" data-montage-id="v-red" type="range" min="0" max="255" step="1" value="255" />
+                        <span class="label red">Red</span>
+                    </li>
+                    <li class="vertical-slider-item">
+                        <input class="color-slider" data-montage-id="v-green" type="range" min="0" max="255" step="1" value="0"/>
+                        <span class="label green">Green</span>
+                    </li>
+                    <li class="vertical-slider-item">
+                        <input class="color-slider" data-montage-id="v-blue" type="range" min="0" max="255" step="1" value="0"/>
+                        <span class="label blue">Blue</span>
+                    </li>
+                    <li class="vertical-slider-item">
+                        <input class="color-slider" data-montage-id="v-alpha" type="range" min="0" max="1" step="0.1" value="1"/>
                         <span class="label">Opacity</span>
                     </li>
                 </ul>
@@ -204,25 +305,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                     <div class="accordion-inner montage-hidden" >
                         <pre class="prettyprint" >
-&lt;div data-montage-id="chip" class="chip"&gt;&lt;/div&gt;
-&lt;ul data-montage-id="controls" class="controls"&gt;
-    &lt;li class="slider-item"&gt;
-        &lt;input data-montage-id="red" type="range" min="0" max="255" step="1" value="255"/&gt;
-        &lt;span class="label"&gt;Red&lt;/span&gt;
-    &lt;/li&gt;
-    &lt;li class="slider-item"&gt;
-        &lt;input data-montage-id="green" type="range" min="0" max="255" step="1" value="0"/&gt;
-        &lt;span class="label"&gt;Green&lt;/span&gt;
-    &lt;/li&gt;
-    &lt;li class="slider-item"&gt;
-        &lt;input data-montage-id="blue" type="range" min="0" max="255" step="1" value="0"/&gt;
-        &lt;span class="label"&gt;Blue&lt;/span&gt;
-    &lt;/li&gt;
-    &lt;li class="slider-item"&gt;
-        &lt;input data-montage-id="alpha" type="range" min="0" max="1" step="0.1" value="1"/&gt;
-        &lt;span class="label"&gt;Opacity&lt;/span&gt;
-    &lt;/li&gt;
-&lt;/ul&gt;
+&lt;div class=&quot;demo&quot;&gt;<br/><br/>                &lt;div data-montage-id=&quot;chip&quot; class=&quot;chip&quot;&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;<br/>                &lt;ul data-montage-id=&quot;controls&quot; class=&quot;controls&quot;&gt;<br/>                    &lt;li class=&quot;slider-item&quot;&gt;<br/>                        &lt;input class=&quot;color-slider&quot; data-montage-id=&quot;red&quot; type=&quot;range&quot; min=&quot;0&quot; max=&quot;255&quot; step=&quot;1&quot; value=&quot;255&quot; /&gt;<br/>                        &lt;span class=&quot;label red&quot;&gt;Red&lt;/span&gt;<br/>                    &lt;/li&gt;<br/>                    &lt;li class=&quot;slider-item&quot;&gt;<br/>                        &lt;input class=&quot;color-slider&quot; data-montage-id=&quot;green&quot; type=&quot;range&quot; min=&quot;0&quot; max=&quot;255&quot; step=&quot;1&quot; value=&quot;125&quot;/&gt;<br/>                        &lt;span class=&quot;label green&quot;&gt;Green&lt;/span&gt;<br/>                    &lt;/li&gt;<br/>                    &lt;li class=&quot;slider-item&quot;&gt;<br/>                        &lt;input class=&quot;color-slider&quot; data-montage-id=&quot;blue&quot; type=&quot;range&quot; min=&quot;0&quot; max=&quot;255&quot; step=&quot;1&quot; value=&quot;0&quot;/&gt;<br/>                        &lt;span class=&quot;label blue&quot;&gt;Blue&lt;/span&gt;<br/>                    &lt;/li&gt;<br/>                    &lt;li class=&quot;slider-item&quot;&gt;<br/>                        &lt;input class=&quot;color-slider&quot; data-montage-id=&quot;alpha&quot; type=&quot;range&quot; min=&quot;0&quot; max=&quot;1&quot; step=&quot;0.1&quot; value=&quot;1&quot;/&gt;<br/>                        &lt;span class=&quot;label&quot;&gt;Opacity&lt;/span&gt;<br/>                    &lt;/li&gt;<br/>                &lt;/ul&gt;<br/>                <br/>                &lt;div data-montage-id=&quot;rgba&quot; class=&quot;rgba&quot;&gt;&lt;/div&gt;<br/><br/>                &lt;h5&gt;Vertical Slider&lt;/h5&gt;<br/><br/>                &lt;ul data-montage-id=&quot;vertical-controls&quot; class=&quot;vertical-controls&quot;&gt;<br/>                    &lt;li class=&quot;vertical-slider-item&quot;&gt;<br/>                        &lt;input class=&quot;color-slider&quot; data-montage-id=&quot;v-red&quot; type=&quot;range&quot; min=&quot;0&quot; max=&quot;255&quot; step=&quot;1&quot; value=&quot;255&quot; /&gt;<br/>                        &lt;span class=&quot;label red&quot;&gt;Red&lt;/span&gt;<br/>                    &lt;/li&gt;<br/>                    &lt;li class=&quot;vertical-slider-item&quot;&gt;<br/>                        &lt;input class=&quot;color-slider&quot; data-montage-id=&quot;v-green&quot; type=&quot;range&quot; min=&quot;0&quot; max=&quot;255&quot; step=&quot;1&quot; value=&quot;0&quot;/&gt;<br/>                        &lt;span class=&quot;label green&quot;&gt;Green&lt;/span&gt;<br/>                    &lt;/li&gt;<br/>                    &lt;li class=&quot;vertical-slider-item&quot;&gt;<br/>                        &lt;input class=&quot;color-slider&quot; data-montage-id=&quot;v-blue&quot; type=&quot;range&quot; min=&quot;0&quot; max=&quot;255&quot; step=&quot;1&quot; value=&quot;0&quot;/&gt;<br/>                        &lt;span class=&quot;label blue&quot;&gt;Blue&lt;/span&gt;<br/>                    &lt;/li&gt;<br/>                    &lt;li class=&quot;vertical-slider-item&quot;&gt;<br/>                        &lt;input class=&quot;color-slider&quot; data-montage-id=&quot;v-alpha&quot; type=&quot;range&quot; min=&quot;0&quot; max=&quot;1&quot; step=&quot;0.1&quot; value=&quot;1&quot;/&gt;<br/>                        &lt;span class=&quot;label&quot;&gt;Opacity&lt;/span&gt;<br/>                    &lt;/li&gt;<br/>                &lt;/ul&gt;<br/><br/>            &lt;/div&gt;
                             </pre>
                     </div>
                 </li>
@@ -258,6 +341,71 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
 
+    "vred": {
+        "prototype": "montage/ui/input-range.reel",
+        "properties": {
+            "orientation": "vertical",
+            "element": {"#": "v-red"}
+        },
+        "bindings": {
+            "value": {"<->": "@red.value"}
+        }
+    },
+
+    "vgreen": {
+        "prototype": "montage/ui/input-range.reel",
+        "properties": {
+            "orientation": "vertical",
+            "element": {"#": "v-green"}
+        },
+        "bindings": {
+            "value": {"<->": "@green.value"}
+        }
+    },
+
+    "vblue": {
+        "prototype": "montage/ui/input-range.reel",
+        "properties": {
+            "orientation": "vertical",
+            "element": {"#": "v-blue"}
+        },
+        "bindings": {
+            "value": {"<->": "@blue.value"}
+        }
+    },
+    "valpha": {
+        "prototype": "montage/ui/input-range.reel",
+        "properties": {
+            "orientation": "vertical",
+            "element": {"#": "v-alpha"}
+        },
+        "bindings": {
+            "value": {"<->": "@alpha.value"}
+        }
+    },
+    "rgba": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "rgba"}
+        },
+        "bindings": {
+            "value": {"<-": "@owner.rgba"}
+        }
+    },
+
+    "rangeInputAccordion1": {
+        "prototype": "ui/accordion.reel",
+        "properties": {
+            "element": {"#": "rangeInputAccordion1"}
+        }
+    },
+    "rangeInputAccordion2": {
+        "prototype": "ui/accordion.reel",
+        "properties": {
+            "element": {"#": "rangeInputAccordion2"}
+        }
+    },
+
     "owner": {
         "prototype": "ui/components/input-range-example.reel",
         "properties": {
@@ -265,10 +413,31 @@ POSSIBILITY OF SUCH DAMAGE.
             "colorchip": {"#": "chip"}
         },
         "bindings": {
-            "red": {"&lt;&lt;-&gt;": "@red.value"},
-            "green": {"&lt;&lt;-&gt;": "@green.value"},
-            "blue": {"&lt;&lt;-&gt;": "@blue.value"},
-            "opacity": {"&lt;&lt;-&gt;": "@alpha.value"}
+            "red": {"<->": "@red.value"},
+            "green": {"<->": "@green.value"},
+            "blue": {"<->": "@blue.value"},
+            "opacity": {"<->": "@alpha.value"}
+        }
+    },
+
+    "bluemoonSlider": {
+        "prototype": "montage/ui/bluemoon/slider.reel",
+        "properties": {
+            "element": {"#": "bluemoonSlider"},
+            "minValue": "0",
+            "maxValue": "255",
+            "step": "1",
+            "value": "0"
+        }
+    },
+
+    "bluemoonNumber": {
+        "prototype": "montage/ui/input-text.reel",
+        "properties": {
+            "element": {"#": "bluemoonNumber"}
+        },
+        "bindings": {
+            "value": {"<->": "@bluemoonSlider.value"}
         }
     }
 }
@@ -283,7 +452,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage/core/core").Montage;
 var Component = require("montage/ui/component").Component;
 
-exports.RangeInputExample2 = Montage.create(Component, {
+exports.InputRangeExample = Montage.create(Component, {
 
     _red: {
         value: 125
@@ -340,9 +509,16 @@ exports.RangeInputExample2 = Montage.create(Component, {
             return this._opacity;
         },
         set: function(value) {
-            this._opacity = value;
+            this._opacity = parseFloat(value, 10).toFixed(2);
             this.needsDraw = true;
         }
+    },
+
+    rgba: {
+        get: function() {
+            return "rgba(" + this.red + ", " + this.green + ", " + this.blue + ", " + this.opacity + ")";
+        },
+        dependencies: ["red", "green", "blue", "opacity"]
     },
 
     prepareForDraw: {
@@ -355,10 +531,14 @@ exports.RangeInputExample2 = Montage.create(Component, {
 
     draw: {
         value: function() {
-            this.colorchip.style.background = "rgb(" + this.red + "," + this.green + ", " + this.blue + ")";
-            this.colorchip.style.opacity = this.opacity;
-            console.log(this.colorchip.style.background);
+            // border is faster than background in Chrome mobile
+            this.colorchip.firstChild.style.border = "100px solid rgba(" + this.red + "," + this.green + "," + this.blue + "," + this.opacity + ")";
+            // console.log(this.colorchip.style.background);
         }
+    },
+
+    logger: {
+        value: null
     }
 
 });

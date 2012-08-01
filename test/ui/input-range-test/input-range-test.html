@@ -72,12 +72,20 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "scroll_range"}
                 }
             },
+            "verticalRange": {
+                "prototype": "montage/ui/input-range.reel",
+                "properties": {
+                    "element": {"#": "vertical-range"},
+                    "orientation": "vertical"
+                }
+            },
 
             "test": {
                 "object": "ui/input-range-test/input-range-test[theTest]",
                 "properties": {
                     "range_input1": {"@": "range_input1"},
                     "range_input2": {"@": "range_input2"},
+                    "verticalRange": {"@": "verticalRange"},
                     "scroll": {"@": "scroll"},
                     "scroll_range": {"@": "scroll_range"}
                 }
@@ -96,6 +104,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
     <p>
         <input type="range" id="hello" data-montage-id="range_input2" style="width: 400px;"/>
+    </p>
+
+    <p>
+        <input type="range" id="vertical-range" data-montage-id="vertical-range" style="height: 130px;" min="0" max="255" value="100"/>
     </p>
 
     <h2>Scroll</h2>
