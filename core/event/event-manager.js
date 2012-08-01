@@ -441,8 +441,8 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             });
             Object.getPrototypeOf(aWindow.document).nativeAddEventListener = aWindow.document.addEventListener;
             aWindow.XMLHttpRequest.prototype.nativeAddEventListener = aWindow.XMLHttpRequest.prototype.addEventListener;
-            if (Worker) {
-                Worker.prototype.nativeAddEventListener = Worker.prototype.addEventListener;
+            if (aWindow.Worker) {
+                aWindow.Worker.prototype.nativeAddEventListener = aWindow.Worker.prototype.addEventListener;
             }
 
             aWindow.Element.prototype.nativeRemoveEventListener = aWindow.Element.prototype.removeEventListener;
@@ -452,8 +452,8 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             });
             Object.getPrototypeOf(aWindow.document).nativeRemoveEventListener = aWindow.document.removeEventListener;
             aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener = aWindow.XMLHttpRequest.prototype.removeEventListener;
-            if (Worker) {
-                Worker.prototype.nativeRemoveEventListener = Worker.prototype.removeEventListener;
+            if (aWindow.Worker) {
+                aWindow.Worker.prototype.nativeRemoveEventListener = aWindow.Worker.prototype.removeEventListener;
             }
 
             Object.defineProperty(aWindow, "addEventListener", {
@@ -466,8 +466,8 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                                 })
             });
 
-            if (Worker) {
-                Worker.prototype.addEventListener = aWindow.addEventListener;
+            if (aWindow.Worker) {
+                aWindow.Worker.prototype.addEventListener = aWindow.addEventListener;
             }
 
             Object.defineProperty(aWindow, "removeEventListener", {
@@ -480,8 +480,8 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                                 })
             });
 
-            if (Worker) {
-                Worker.prototype.removeEventListener = aWindow.removeEventListener;
+            if (aWindow.Worker) {
+                aWindow.Worker.prototype.removeEventListener = aWindow.removeEventListener;
             }
 
             // In some browsers each element has their own addEventLister/removeEventListener
