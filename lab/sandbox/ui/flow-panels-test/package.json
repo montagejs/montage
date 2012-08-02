@@ -1,0 +1,7 @@
+{
+    "name": "flow-panels-test",
+    "version": "0.0.0",
+    "mappings": {
+        "montage": "../../../../"
+    }
+}

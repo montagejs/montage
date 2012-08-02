@@ -351,13 +351,13 @@ exports.Viewport = Montage.create(Component, {
 
     drawKnots: {
         value: function (spline) {
-            var length = spline.knotsLength,
+            var length = spline._knots.length,
                 i;
 
             this._context.save();
             for (i = 0; i < length; i++) {
                 this._context.fillStyle = this.knotColor;
-                this._context.fillRect((spline.getKnot(i)[0] >> 0) - 2, (spline.getKnot(i)[1] >> 0) - 2, 5, 5);
+                this._context.fillRect((spline._knots[i][0] >> 0) - 2, (spline._knots[i][1] >> 0) - 2, 5, 5);
             }
             this._context.restore();
         }
@@ -377,15 +377,19 @@ exports.Viewport = Montage.create(Component, {
 
     drawDensities: {
         value: function(spline) {
-            var maxTime = spline.maxTime,
+            var maxTime = spline.computeMaxTime(),
+                indexTime,
                 b,
                 i;
 
             this._context.save();
             this._context.fillStyle= "rgba(231, 255, 87, .45)";
-            for (i = 0; i<maxTime; i++) {
-                b = spline.getPositionAtTime(i, [], []);
-                this._context.fillRect(b[0]-2, b[1]-2, 5, 5);
+            for (i = 0; i < maxTime; i++) {
+                indexTime = spline._convertSplineTimeToBezierIndexTime(i);
+                if (indexTime !== null) {
+                    b = spline.getPositionAtIndexTime(indexTime);
+                    this._context.fillRect(b[0]-2, b[1]-2, 5, 5);
+                }
             }
             this._context.restore();
         }
@@ -393,7 +397,7 @@ exports.Viewport = Montage.create(Component, {
 
     drawHandlers: {
         value: function(spline, indexes) {
-            var length = spline.knotsLength,
+            var length = spline._knots.length,
                 i;
 
             this._context.save();
@@ -402,13 +406,13 @@ exports.Viewport = Montage.create(Component, {
             this._context.fillStyle = this.handlerColor;
             if (!indexes) {
                 for (i = 0; i < length; i++) {
-                    this.drawHandler(spline.getKnot(i), spline.getPreviousHandler(i));
-                    this.drawHandler(spline.getKnot(i), spline.getNextHandler(i));
+                    this.drawHandler(spline._knots[i], spline._previousHandlers[i]);
+                    this.drawHandler(spline._knots[i], spline._nextHandlers[i]);
                 }
             } else {
                 for (i = 0; i < indexes.length; i++) {
-                    this.drawHandler(spline.getKnot(indexes[i]), spline.getPreviousHandler(indexes[i]));
-                    this.drawHandler(spline.getKnot(indexes[i]), spline.getNextHandler(indexes[i]));
+                    this.drawHandler(spline._knots[indexes[i]], spline._previousHandlers[indexes[i]]);
+                    this.drawHandler(spline._knots[indexes[i]], spline._nextHandler[indexes[i]]);
                 }
             }
             this._context.restore();
@@ -417,22 +421,22 @@ exports.Viewport = Montage.create(Component, {
 
     drawSpline: {
         value: function(spline) {
-            var length = spline.knotsLength - 1,
+            var length = spline._knots.length - 1,
                 i;
 
             this._context.save();
             this._context.strokeStyle = this.splineColor;
             this._context.beginPath();
             for (i = 0; i < length; i++) {
-                if (spline.getNextHandler(i) && spline.getPreviousHandler(i + 1)) {
-                    this._context.moveTo(spline.getKnot(i)[0] + .5, spline.getKnot(i)[1] + .5);
+                if (spline._nextHandlers[i] && spline._previousHandlers[i + 1]) {
+                    this._context.moveTo(spline._knots[i][0] + .5, spline._knots[i][1] + .5);
                     this._context.bezierCurveTo(
-                        spline.getNextHandler(i)[0] + .5,
-                        spline.getNextHandler(i)[1] + .5,
-                        spline.getPreviousHandler(i + 1)[0] + .5,
-                        spline.getPreviousHandler(i + 1)[1] + .5,
-                        spline.getKnot(i + 1)[0] + .5,
-                        spline.getKnot(i + 1)[1] + .5
+                        spline._nextHandlers[i][0] + .5,
+                        spline._nextHandlers[i][1] + .5,
+                        spline._previousHandlers[i + 1][0] + .5,
+                        spline._previousHandlers[i + 1][1] + .5,
+                        spline._knots[i + 1][0] + .5,
+                        spline._knots[i + 1][1] + .5
                     );
                 }
             }
@@ -554,12 +558,12 @@ exports.Viewport = Montage.create(Component, {
                 var minDist = null,
                     minIndex = null,
                     distance,
-                    length = spline.knotsLength,
+                    length = spline._knots.length,
                     iKnot,
                     i;
 
                 for (i = 0; i < length; i++) {
-                    iKnot = this._transformedSpline.getKnot(i);
+                    iKnot = this._transformedSpline._knots[i];
                     distance = (iKnot[0] - x) * (iKnot[0] - x) + (iKnot[1] - y) * (iKnot[1] - y);
                     if ((minDist === null) || (distance < minDist)) {
                         minIndex = i;
@@ -790,9 +794,9 @@ exports.Viewport = Montage.create(Component, {
                 if (this._isHighlightingCloserKnot && (this.closerKnot !== null)) {
                     this._context.save();
                     this._context.fillStyle = this.knotColor;
-                    this._context.fillRect((this._transformedSpline.getKnot(this.closerKnot)[0] >> 0) - 5, (this._transformedSpline.getKnot(this.closerKnot)[1] >> 0) - 5, 11, 11);
+                    this._context.fillRect((this._transformedSpline._knots[this.closerKnot][0] >> 0) - 5, (this._transformedSpline._knots[this.closerKnot][1] >> 0) - 5, 11, 11);
                     this._context.fillStyle = "black";
-                    this._context.fillRect((this._transformedSpline.getKnot(this.closerKnot)[0] >> 0) - 4, (this._transformedSpline.getKnot(this.closerKnot)[1] >> 0) - 4, 9, 9);
+                    this._context.fillRect((this._transformedSpline._knots[this.closerKnot][0] >> 0) - 4, (this._transformedSpline._knots[this.closerKnot][1] >> 0) - 4, 9, 9);
                     this._context.restore();
                 }
                 if (this._isHighlightingCloserHandler && (this.closerHandler !== null)) {

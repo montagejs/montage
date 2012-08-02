@@ -33,35 +33,77 @@ POSSIBILITY OF SUCH DAMAGE.
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>Picasa Carousel Test</title>
+    <title>Flow Panels Test</title>
     <script src="../../../../montage.js" data-package="."></script>
     <script type="text/montage-serialization">
         {
             "owner": {
-                "prototype": "picasa-carousel-test",
+                "prototype": "flow-panels-test",
                 "properties": {
-                    "picasa": {"@": "picasa"}
+                    "flowPanels": {"@": "flowPanels"}
                 }
             },
-            "picasa": {
-                "prototype": "montage/lab/sandbox/ui/picasa-carousel.reel",
+            "flowPanels": {
+                "prototype": "montage/ui/flow.reel",
                 "properties": {
-                    "element": {"#": "picasa"}
+                    "element": {"#": "flow-panels"},
+                    "objects": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+                    "isSelectionEnabled": false,
+                    "cameraFov": 30,
+                    "cameraPosition": [0, 0, 1500],
+                    "cameraTargetPoint": [0, 0, 0],
+                    "boundingBoxSize": [800, 600, 0],
+                    "stride": 1,
+                    "momentumDuration": 300,
+                    "linearScrollingVector": [-575, 0, 0]
+                }
+            },
+            "panel": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "panel"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "flowPanels"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration",
+                        "oneway": true
+                    }
                 }
             }
         }
     </script>
     <style>
-        .picasa {
+        html {
+            background: #555;
+        }
+        .flow-panels {
             position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
+            top: 0px;
+            right: 0px;
+            bottom: 0px;
+            left: 0px;
+        }
+        .panel {
+            width: 800px;
+            height: 600px;
+            margin-left: -400px;
+            margin-top: -300px;
+            line-height: 140px;
+            text-align: center;
+            background: #fff;
+            font-family: sans-serif;
+            font-size: 52px;
+            color: #666;
+        }
+        .flow-panels > div > div {
+            -webkit-backface-visibility: hidden;
         }
     </style>
 </head>
 <body>
-    <div data-montage-id="picasa" class="picasa"></div>
+    <div data-montage-id="flow-panels" class="flow-panels">
+        <div data-montage-id="panel" class="panel"></div>
+    </div>
 </body>
 </html>
