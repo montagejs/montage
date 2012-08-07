@@ -118,7 +118,14 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                 // Right
                 boundObject = this.target,
                 boundObjectPropertyPath = this.targetPropertyPath,
-                boundObjectValue;
+                boundObjectValue = boundObject.getProperty(boundObjectPropertyPath);
+
+            // Evaluate boundObject value for future use
+            if (this.bindingDescriptor.boundValueMutator) {
+                boundObjectValue = this.bindingDescriptor.boundValueMutator(boundObjectValue);
+            } else if (this.bindingDescriptor.converter) {
+                boundObjectValue = this.bindingDescriptor.converter.convert(boundObjectValue);
+            }
 
             // Determine if binding triggered by change on bindingOrigin
             if (boundObject !== bindingOrigin) {
@@ -136,6 +143,12 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                 // the value on the left side, that's where all this value changing started
                 // (The original right-to-left push installs this changeEvent key on the setProperty function)
                 if (bindingOrigin.setProperty.changeEvent) {
+
+                    if (bindingOriginValue !== boundObjectValue) {
+                        // Binding started from the bindingOrigin but in dispatching that change,
+                        // something changed such that the bindingOrigin needs to be updated
+                        bindingOrigin.setProperty(bindingOriginPropertyPath, boundObjectValue);
+                    }
                     return;
                 }
 
@@ -154,17 +167,9 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                     this.bindingOriginChangeTriggered = false;
                 }
 
-            } else if (!this.bindingOriginChangeTriggered) {
+            } else {
 
                 // Start the right-to-left value push
-                boundObjectValue = boundObject.getProperty(boundObjectPropertyPath);
-
-                if (this.bindingDescriptor.boundValueMutator) {
-                    boundObjectValue = this.bindingDescriptor.boundValueMutator(boundObjectValue);
-                } else if (this.bindingDescriptor.converter) {
-                    boundObjectValue = this.bindingDescriptor.converter.convert(boundObjectValue);
-                }
-
                 if (boundObjectValue !== bindingOriginValue) {
                     if (this.bindingOriginValueDeferred === true || bindingOrigin._bindingsDisabled) {
                         this.deferredValue = boundObjectValue;

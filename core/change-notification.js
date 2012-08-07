@@ -733,6 +733,14 @@ var ObjectPropertyChangeDispatcherManager = Object.create(null, {
                     target === descriptor.target &&
                     propertyName === descriptor.propertyPath &&
                     changeNotificationSetter.caller !== originalSetter) {
+
+                    // cycle detected, but value has changed while propagating the change
+                    // apply the change, but don't bother notifying others of this change
+                    // TODO would not notifying lead us into trouble i.e. should we allow some amount of cycles?
+                    if (previousValue !== value) {
+                        originalSetter.apply(this, arguments);
+                    }
+
                     //console.log("Cycle detected at ", target, " ", propertyName);
                     return;
                 }

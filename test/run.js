@@ -55,6 +55,7 @@ if (spec) {
         "string-spec",
 
         "binding/binding-converter-spec",
+        "binding/cycle-binding-spec",
         "binding/deferred-binding-spec",
         "binding/define-binding-spec",
         "binding/delete-binding-spec",
