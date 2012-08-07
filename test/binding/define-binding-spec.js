@@ -31,79 +31,15 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Serializer = require("montage/core/serializer").Serializer,
     Deserializer = require("montage/core/deserializer").Deserializer,
-    ChangeNotification = require("montage/core/change-notification").ChangeNotification;
+    ChangeNotification = require("montage/core/change-notification").ChangeNotification,
+    Alpha = require("montage/test/binding/support").Alpha,
+    Omega = require("montage/test/binding/support").Omega;
 
 var stripPP = function stripPrettyPrintting(str) {
     return str.replace(/\n\s*/g, "");
 };
 
-var Alpha = Montage.create(Montage, {
-
-    _foo: {
-        enumerable: false,
-        value: null
-    },
-
-    foo: {
-        enumerable: false,
-        set: function(value) {
-            this._foo = value;
-        },
-        get: function() {
-            return this._foo;
-        }
-    },
-
-    valueOnly: {
-        enumerable: false,
-        value: null
-    },
-
-    _getOnly: {
-        enumerable: false,
-        value: "getOnlyValue"
-    },
-
-    getOnly: {
-        enumerable: false,
-        get: function() {
-            return this._getOnly;
-        }
-    },
-
-    _setOnly: {
-        enumerable: false,
-        value: "setOnlyValue"
-    },
-
-    setOnly: {
-        enumerable: false,
-        set: function(value) {
-            this._setOnly = value;
-        }
-    }
-
-});
-
-var Omega = Montage.create(Montage, {
-
-    _bar: {
-        enumerable: false,
-        value: null
-    },
-
-    bar: {
-        enumerable: false,
-        set: function(value) {
-            this._bar = value;
-        },
-        get: function() {
-            return this._bar;
-        }
-    }
-});
-
-describe("binding/definebinding-spec", function() {
+describe("binding/define-binding-spec", function() {
 
     describe("a typical installed binding", function() {
 
@@ -239,213 +175,6 @@ describe("binding/definebinding-spec", function() {
             expect(sourceObject.bar).toBe("getOnlyValue");
         });
 
-        describe('deferred bindings', function() {
-            it("must not propagate a change from the bound object's bound property path to the source object's source property path if the binding is deferred", function() {
-                var sourceObject = Alpha.create(),
-                boundObject = Omega.create();
-
-                boundObject.bar = "foo";
-
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObject,
-                    boundObjectPropertyPath: "bar",
-                    oneway: false,
-                    deferred: true
-                });
-
-                expect(sourceObject.foo).toBeNull();
-
-                boundObject.bar = "bar";
-                expect(sourceObject.foo).toBeNull();
-            });
-
-            it("must not propagate a change from the source object's source property path to the bound object's bound property path if the binding is deferred", function() {
-                var sourceObject = Alpha.create(),
-                boundObject = Omega.create();
-
-                sourceObject.foo = "foo";
-                boundObject.bar = "bar";
-
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObject,
-                    boundObjectPropertyPath: "bar",
-                    oneway: false,
-                    deferred: true
-                });
-
-                expect(sourceObject.foo).toBe("foo");
-                expect(boundObject.bar).toBe("bar");
-
-                sourceObject.foo = "foo";
-                expect(boundObject.bar).toBe("bar");
-            });
-
-            it("should propagate the initial deferred value from the bound object's bound property path to the source object's source property path", function() {
-                var sourceObject = Alpha.create(),
-                boundObject = Omega.create();
-
-                boundObject.bar = "foo";
-
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObject,
-                    boundObjectPropertyPath: "bar",
-                    oneway: false,
-                    deferred: true
-                });
-
-                Object.applyBindingsDeferredValues(sourceObject);
-                expect(sourceObject.foo).toBe("foo");
-            });
-
-            it("should propagate a deferred change from the source object's source property path to the bound object's bound property path", function() {
-                var sourceObject = Alpha.create(),
-                boundObject = Omega.create();
-
-                boundObject.bar = "foo";
-
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObject,
-                    boundObjectPropertyPath: "bar",
-                    oneway: false,
-                    deferred: true
-                });
-
-                sourceObject.foo = "sourceFoo";
-                expect(boundObject.bar).toBe("foo");
-
-                Object.applyBindingsDeferredValues(sourceObject);
-                expect(boundObject.bar).toBe("sourceFoo");
-            });
-
-            it("should propagate a deferred change from the bound object's bound property path to the source object's source property path", function() {
-                var sourceObject = Alpha.create(),
-                boundObject = Omega.create(),
-                boundObjectWrapper = Omega.create();
-
-                boundObject.bar = "foo";
-                boundObjectWrapper.bar = boundObject;
-
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObjectWrapper,
-                    boundObjectPropertyPath: "bar.bar",
-                    oneway: false,
-                    deferred: true
-                });
-
-                boundObject.bar = "baz";
-                expect(sourceObject.foo).toBeNull();
-
-                Object.applyBindingsDeferredValues(sourceObject);
-                expect(sourceObject.foo).toBe("baz");
-            });
-
-            it("should propagate a deferred change from the bound object's bound property path to the source object's source property path after several deferred changes", function() {
-                var sourceObject = Alpha.create(),
-                boundObject = Alpha.create(),
-                boundObjectBaz = Alpha.create(),
-                boundObjectWrapper = Omega.create();
-
-                boundObject.foo = "foo";
-                boundObjectBaz.foo = "baz";
-                boundObjectWrapper.bar = boundObject;
-
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObjectWrapper,
-                    boundObjectPropertyPath: "bar.foo",
-                    oneway: false,
-                    deferred: true
-                });
-
-                boundObject.foo = "bar2";
-                boundObject.foo = "bar3";
-                boundObjectWrapper.bar = boundObjectBaz;
-
-                expect(sourceObject.foo).toBeNull();
-
-                Object.applyBindingsDeferredValues(sourceObject);
-                expect(sourceObject.foo).toBe("baz");
-            });
-
-            it("should propagate a deferred change from the bound object's bound property path to the source object's source property path to the entire chain", function() {
-                var sourceObject = Alpha.create(),
-                anotherSourceObject = Alpha.create(),
-                boundObject = Omega.create();
-
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObject,
-                    boundObjectPropertyPath: "bar",
-                    deferred: true
-                });
-
-                Object.defineBinding(anotherSourceObject, "foo", {
-                    boundObject: sourceObject,
-                    boundObjectPropertyPath: "foo"
-                });
-
-                boundObject.bar = "bar";
-
-                expect(sourceObject.foo).toBeNull();
-                expect(anotherSourceObject.foo).toBeNull();
-
-                Object.applyBindingsDeferredValues(sourceObject);
-                expect(sourceObject.foo).toBe("bar");
-                expect(anotherSourceObject.foo).toBe("bar");
-            });
-        });
-
-        describe('disabled bindings', function() {
-            it("must not propagate a change from the bound object's bound property path to the source object's source property path if the bindings are disabled", function() {
-                var sourceObject = Alpha.create(),
-                boundObject = Omega.create();
-
-                boundObject.bar = "foo";
-
-                Object.disableBindings(sourceObject);
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObject,
-                    boundObjectPropertyPath: "bar"
-                });
-
-                expect(sourceObject.foo).toBeNull();
-
-                boundObject.bar = "bar";
-                expect(sourceObject.foo).toBeNull();
-            });
-
-            it("should propagate a change from the bound object's bound property path to the source object's source property path when bindings are enabled", function() {
-                var sourceObject = Alpha.create(),
-                boundObject = Omega.create();
-
-                Object.disableBindings(sourceObject);
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObject,
-                    boundObjectPropertyPath: "bar"
-                });
-
-                boundObject.bar = "bar";
-
-                Object.enableBindings(sourceObject);
-                expect(sourceObject.foo).toBe("bar");
-            });
-
-            it("must not propagate a change from the bound object's bound property path to the source object's source property path for deferred bindings when bindings are enabled", function() {
-                var sourceObject = Alpha.create(),
-                boundObject = Omega.create();
-
-                Object.disableBindings(sourceObject);
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObject,
-                    boundObjectPropertyPath: "bar",
-                    deferred: true
-                });
-
-                boundObject.bar = "bar";
-
-                Object.enableBindings(sourceObject);
-                expect(sourceObject.foo).toBeNull();
-            });
-        });
-
         it("should give the specified boundValueMutator a chance to modify the value being passed from the source object to the bound object", function() {
             var sourceObject = Alpha.create(),
                     boundObject = Omega.create();
@@ -565,27 +294,6 @@ describe("binding/definebinding-spec", function() {
                     oneway: true
                 })
             }).toThrow("sourceObject property, foo, is already the source of a binding");
-        });
-
-        describe("when bound to the same object", function() {
-
-            it("should work as expected", function() {
-                var sourceObject = Alpha.create();
-
-                sourceObject.valueOnly = "startValue";
-
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: sourceObject,
-                    boundObjectPropertyPath: "valueOnly",
-                    oneway: true
-                });
-
-                expect(sourceObject.foo).toBe("startValue");
-
-                sourceObject.valueOnly = "newValue!";
-                expect(sourceObject.foo).toBe("newValue!");
-            });
-
         });
 
     });
@@ -752,6 +460,87 @@ describe("binding/definebinding-spec", function() {
                 expect(textItem.boldMode).toEqual("true");
 
           });
+        });
+
+    });
+
+    describe("when dynamically altering the binding descriptor", function() {
+
+        it("should add a binding that had its boundObjectPropertyPath changed by propertyChangeBindingListener", function() {
+            var sourceObject = Alpha.create(),
+                boundObject = Omega.create();
+
+            boundObject.propertyChangeBindingListener = function(type, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, bindingDescriptor) {
+                if (bindingDescriptor.boundObjectPropertyPath.match(/firstBarElement/)) {
+                    var usefulBindingDescriptor = {};
+                    var usefulType;
+                    var descriptorKeys = Object.keys(bindingDescriptor);
+                    var descriptorKeyCount = descriptorKeys.length;
+                    var iDescriptorKey;
+                    for (var i = 0; i < descriptorKeyCount; i++) {
+                        iDescriptorKey = descriptorKeys[i];
+                        usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
+                    }
+
+                    //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
+                    var modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/firstBarElement/, 'bar.0');
+                    usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
+
+                    usefulType = type.replace(/firstBarElement/, 'bar.0');
+
+                    return Object.prototype.propertyChangeBindingListener.call(this, usefulType, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, usefulBindingDescriptor);
+                }
+            };
+
+            boundObject.bar = ["initialFirstValueInBar"];
+            Object.defineBinding(sourceObject, "foo", {
+                boundObject: boundObject,
+                boundObjectPropertyPath: "firstBarElement"
+            });
+
+            expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0");
+            expect(sourceObject.foo).toBe("initialFirstValueInBar");
+        });
+
+        it("should add a binding that had its bindingObject and boundObjectPropertyPath properties changed by propertyChangeBindingListener", function() {
+            var sourceObject = Alpha.create(),
+            boundObject = Omega.create(),
+            realBoundObject = Omega.create();
+
+            boundObject.propertyChangeBindingListener = function(type, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, bindingDescriptor) {
+                if (bindingDescriptor.boundObjectPropertyPath.match(/firstBarElement/)) {
+                    bindingDescriptor.boundObject = realBoundObject;
+
+                    var usefulBindingDescriptor = {};
+                    var usefulType;
+                    var descriptorKeys = Object.keys(bindingDescriptor);
+                    var descriptorKeyCount = descriptorKeys.length;
+                    var iDescriptorKey;
+                    for (var i = 0; i < descriptorKeyCount; i++) {
+                        iDescriptorKey = descriptorKeys[i];
+                        usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
+                    }
+
+                    //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
+                    var modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/firstBarElement/, 'bar.0');
+                    usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
+                    usefulType = type.replace(/firstBarElement/, 'bar.0');
+                    return realBoundObject.propertyChangeBindingListener(usefulType, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, usefulBindingDescriptor);
+                }
+            };
+
+            realBoundObject.bar = [1];
+            Object.defineBinding(sourceObject, "foo", {
+                boundObject: boundObject,
+                boundObjectPropertyPath: "firstBarElement"
+            });
+
+            expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0");
+            expect(sourceObject.foo).toBe(1);
+
+            // if correctly installed the change should be propagated
+            realBoundObject.bar = [2];
+            expect(sourceObject.foo).toBe(2);
         });
 
     });
@@ -1312,133 +1101,6 @@ describe("binding/definebinding-spec", function() {
                     expect(sourceObject.foo).toBe(true);
                 });
             });
-        });
-    });
-
-    describe("bindings deletion", function() {
-        it("should remove a binding on an single level property path", function() {
-            var sourceObject = Alpha.create(),
-            boundObject = Omega.create();
-
-            Object.defineBinding(sourceObject, "foo", {
-                boundObject: boundObject,
-                boundObjectPropertyPath: "bar"
-            });
-
-            boundObject.bar = 1;
-            expect(sourceObject.foo).toBe(1);
-            Object.deleteBinding(sourceObject, "foo");
-
-            boundObject.bar = 2;
-            expect(sourceObject.foo).toBe(1);
-        });
-
-        it("should remove a binding on an multiple level property path", function() {
-            var sourceObject = Alpha.create(),
-            boundObject = Omega.create();
-
-            Object.defineBinding(sourceObject, "foo", {
-                boundObject: boundObject,
-                boundObjectPropertyPath: "bar.x"
-            });
-
-            boundObject.bar = {x: 1};
-            expect(sourceObject.foo).toBe(1);
-            Object.deleteBinding(sourceObject, "foo");
-
-            boundObject.bar = {x: 2};
-            expect(sourceObject.foo).toBe(1);
-        });
-
-        it("should remove a binding on an property path that includes an array index", function() {
-            var sourceObject = Alpha.create(),
-            boundObject = Omega.create();
-
-            Object.defineBinding(sourceObject, "foo", {
-                boundObject: boundObject,
-                boundObjectPropertyPath: "bar.0.x"
-            });
-
-            boundObject.bar = [{x: 1}];
-            expect(sourceObject.foo).toBe(1);
-            Object.deleteBinding(sourceObject, "foo");
-
-            boundObject.bar = [{x: 2}];
-            expect(sourceObject.foo).toBe(1);
-        });
-
-        it("should add a binding that had its boundObjectPropertyPath changed by propertyChangeBindingListener", function() {
-            var sourceObject = Alpha.create(),
-            boundObject = Omega.create();
-
-            boundObject.propertyChangeBindingListener = function(type, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, bindingDescriptor) {
-                if (bindingDescriptor.boundObjectPropertyPath.match(/firstBarElement/)) {
-                    usefulBindingDescriptor = {};
-                    var descriptorKeys = Object.keys(bindingDescriptor);
-                    var descriptorKeyCount = descriptorKeys.length;
-                    var iDescriptorKey;
-                    for (var i = 0; i < descriptorKeyCount; i++) {
-                        iDescriptorKey = descriptorKeys[i];
-                        usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
-                    }
-
-                    //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
-                    var modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/firstBarElement/, 'bar.0');
-                    usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
-
-                    usefulType = type.replace(/firstBarElement/, 'bar.0');
-
-                    return Object.prototype.propertyChangeBindingListener.call(this, usefulType, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, usefulBindingDescriptor);
-                }
-            };
-
-            boundObject.bar = [1];
-            Object.defineBinding(sourceObject, "foo", {
-                boundObject: boundObject,
-                boundObjectPropertyPath: "firstBarElement"
-            });
-expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0");
-            expect(sourceObject.foo).toBe(1);
-        });
-
-        it("should add a binding that had its bindingObject and boundObjectPropertyPath properties changed by propertyChangeBindingListener", function() {
-            var sourceObject = Alpha.create(),
-            boundObject = Omega.create(),
-            realBoundObject = Omega.create();
-
-            boundObject.propertyChangeBindingListener = function(type, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, bindingDescriptor) {
-                if (bindingDescriptor.boundObjectPropertyPath.match(/firstBarElement/)) {
-                    bindingDescriptor.boundObject = realBoundObject;
-
-                    usefulBindingDescriptor = {};
-                    var descriptorKeys = Object.keys(bindingDescriptor);
-                    var descriptorKeyCount = descriptorKeys.length;
-                    var iDescriptorKey;
-                    for (var i = 0; i < descriptorKeyCount; i++) {
-                        iDescriptorKey = descriptorKeys[i];
-                        usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
-                    }
-
-                    //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
-                    var modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/firstBarElement/, 'bar.0');
-                    usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
-                    usefulType = type.replace(/firstBarElement/, 'bar.0');
-                    return realBoundObject.propertyChangeBindingListener(usefulType, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, usefulBindingDescriptor);
-                }
-            };
-
-            realBoundObject.bar = [1];
-            Object.defineBinding(sourceObject, "foo", {
-                boundObject: boundObject,
-                boundObjectPropertyPath: "firstBarElement"
-            });
-
-    expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0");
-            expect(sourceObject.foo).toBe(1);
-
-            // if correctly installed the change should be propagated
-            realBoundObject.bar = [2];
-            expect(sourceObject.foo).toBe(2);
         });
     });
 

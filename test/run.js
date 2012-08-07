@@ -55,8 +55,11 @@ if (spec) {
         "string-spec",
 
         "binding/binding-converter-spec",
+        "binding/deferred-binding-spec",
+        "binding/define-binding-spec",
+        "binding/delete-binding-spec",
         "binding/dependent-properties-spec",
-        "binding/definebinding-spec",
+        "binding/disabled-binding-spec",
         "binding/self-binding-spec",
 
         "controllers/array-controller-spec",
