@@ -69,39 +69,84 @@ describe("binding/cycle-binding-spec", function() {
             }).not.toThrow();
         });
 
-        it("should be propagated back to the sourceObject if the change to the boundObject caused yet another change", function() {
-            var originalEndObject = Omega.create(),
+        describe("that causes a change that should return to the sourceObject", function() {
+
+            var originalEndObject, someOtherEndObject;
+
+            beforeEach(function() {
+                originalEndObject = Omega.create();
                 someOtherEndObject = Omega.create();
 
-            someOtherEndObject.baz = "changeReflectedFromBoundObject";
+                someOtherEndObject.baz = "changeReflectedFromBoundObject";
 
-            // This simulates some part of the property path changing due to a change to this value;
-            // this occurs sometimes within repetition
-            // (e.g. checkbox in repetition affects membership in underlying organizedObjects)
-            // In that example we want to make sure that a change from the checkbox is not ignored when
-            // presented to the checkbox again (with a different value) just becasue the change originated
-            // from the checkbox.
-            // TODO this required some changes to the PCL system as well that should be tested at that lower level
-            Montage.defineProperty(boundObject, "bar", {
-                dependencies: ["bar.baz"],
-                get: function() {
-                    if ("valueChangedAtSource" === this._bar.baz) {
-                        this._bar = someOtherEndObject;
+                // This simulates some part of the property path changing due to a change to this value;
+                // this occurs sometimes within repetition
+                // (e.g. checkbox in repetition affects membership in underlying organizedObjects)
+                // In that example we want to make sure that a change from the checkbox is not ignored when
+                // presented to the checkbox again (with a different value) just becasue the change originated
+                // from the checkbox.
+                // TODO this required some changes to the PCL system as well that should be tested at that lower level
+                Montage.defineProperty(boundObject, "bar", {
+                    dependencies: ["bar.baz"],
+                    get: function() {
+                        if ("valueChangedAtSource" === this._bar.baz) {
+                            this._bar = someOtherEndObject;
+                        }
+                        return this._bar;
+                    },
+                    set: function(value) {
+                        this._bar = value;
                     }
-                    return this._bar;
-                },
-                set: function(value) {
-                    this._bar = value;
-                }
+                });
+
+                boundObject.bar = originalEndObject;
+
+                bindingDescriptor.boundObjectPropertyPath = "bar.baz";
             });
 
-            boundObject.bar = originalEndObject;
+            it("should be propagated back to the sourceObject", function() {
+                Object.defineBinding(sourceObject, "foo", bindingDescriptor);
 
-            bindingDescriptor.boundObjectPropertyPath = "bar.baz";
-            Object.defineBinding(sourceObject, "foo", bindingDescriptor);
+                sourceObject.foo = "valueChangedAtSource";
+                expect(sourceObject.foo).toBe("changeReflectedFromBoundObject");
+            });
 
-            sourceObject.foo = "valueChangedAtSource";
-            expect(sourceObject.foo).toBe("changeReflectedFromBoundObject");
+            it("should be propagated to other bindings where this sourceObject ends up serving as the boundObject", function() {
+
+                // Add the tricky binding before our "source" is involved in another binding as the boundObject
+                Object.defineBinding(sourceObject, "foo", bindingDescriptor);
+
+                var yetAnotherSourceObject = {};
+
+                Object.defineBinding(yetAnotherSourceObject, "someProperty", {
+                    boundObject: sourceObject,
+                    boundObjectPropertyPath: "foo",
+                    oneway: true
+                });
+
+                sourceObject.foo = "valueChangedAtSource";
+
+                expect(yetAnotherSourceObject.someProperty).toBe("changeReflectedFromBoundObject");
+            });
+
+            it("should be propagated to other bindings where this sourceObject is already serving as the boundObject", function() {
+
+                var yetAnotherSourceObject = {};
+
+                Object.defineBinding(yetAnotherSourceObject, "someProperty", {
+                    boundObject: sourceObject,
+                    boundObjectPropertyPath: "foo",
+                    oneway: true
+                });
+
+                // Add the tricky binding after our "source" is already involved in another binding as the boundObject
+                Object.defineBinding(sourceObject, "foo", bindingDescriptor);
+
+                sourceObject.foo = "valueChangedAtSource";
+
+                expect(yetAnotherSourceObject.someProperty).toBe("changeReflectedFromBoundObject");
+            });
+
         });
 
     });
