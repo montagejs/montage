@@ -1,0 +1,65 @@
+/* @override http://localhost:8082/carconfigurator/assets/style/mcar/mcar.css */
+
+/*
+yellow: rgb(251,233,0)
+light-grey: rgb(239,240,240)
+divider grey: rgb(145, 144, 136)
+*/
+
+.Montage {
+    color: #6C6C6C;
+    background-color: rgb(239,240,240);
+}
+
+.Montage .title {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 20px;
+    right: 270px;
+}
+
+.Montage .title h1 {
+    margin: 0;
+}
+
+.Montage .title .manufacturerName {
+    display: inline-block;
+    vertical-align: top;
+    width: 114px;
+    height: 90px;
+    background: transparent url(montage-logo-gradients.svg) no-repeat;
+    background-size:114px 114px;
+    overflow: hidden;
+    font-size: 0; /* Hide text */
+}
+
+.Montage .title .modelName {
+    font-family: 'Courier New', Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    font-size: 28px;
+    top: 40px;
+    position: relative;
+    color: black;
+}
+
+.shareButton,
+.shareButton:focus {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    margin: 0;
+    background: transparent;
+    color: hsl(0,0%,40%);
+    border-color: hsl(0,0%,60%);
+}
+
+.shareButton:hover {
+    border-color: hsl(0,0%,40%);
+    background: transparent;
+}
+
+.shareButton:active {
+    border-color: hsl(0,0%,40%);
+    background: hsla(0,0%,0%,.1);
+}

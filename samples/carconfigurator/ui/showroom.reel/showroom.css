@@ -1,0 +1,15 @@
+/* @override http://localhost:8082/carconfigurator/ui/showroom.reel/showroom.css */
+
+.Showroom {
+    display: -webkit-box;
+    height: 100%;
+}
+
+.Showroom .stage {
+    -webkit-box-flex: 1;
+}
+
+.Showroom .configuratorSubstitution {
+    width: 270px;
+    height: 100%;
+}
