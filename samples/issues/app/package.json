@@ -1,0 +1,10 @@
+{
+    "name": "mugshot",
+    "version": "0.0.1",
+    "mappings": {
+        "montage": "node_modules/montage"
+    },
+    "directories": {
+        "lib": ""
+    }
+}

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html>
+    <meta charset="utf-8">
+    <head>
+        <link rel="stylesheet" href="milestone.css" />
+
+        <script type="text/montage-serialization">
+            {
+                "owner": {
+                    "prototype": "ui/milestone.reel",
+                    "properties": {
+                        "element": {"#": "milestone" }
+                    }
+                },
+
+                "title": {
+                    "prototype": "montage/ui/anchor.reel",
+                    "properties": {
+                        "element": {"#": "title"}
+                    },
+                    "bindings": {
+                        "href": {"<-": "@owner.milestoneUrl"},
+                        "textContent": {"<-": "@owner.data.title"}
+                    }
+                },
+
+                "description": {
+                    "prototype": "montage/ui/dynamic-text.reel",
+                    "properties": {
+                        "element": {"#": "description"}
+                    },
+                    "bindings": {
+                        "value": {"<-": "@owner.data.description"}
+                    }
+                },
+
+                "users": {
+                    "prototype": "montage/ui/repetition.reel",
+                    "properties": {
+                        "element": {"#": "users"}
+                    },
+                    "bindings": {
+                        "objects": {"<-": "@owner.userList"}
+                    }
+                },
+
+                "user": {
+                    "prototype": "ui/user.reel",
+                    "properties": {
+                        "element": {"#": "user"}
+                    },
+                    "bindings": {
+                        "data": {"<-": "@users.objectAtCurrentIteration"},
+                        "api": {"<->": "@owner.api"},
+                        "repo": {"<-": "@owner.repo"},
+                        "milestone": {"<-": "@owner.data.number"}
+                    }
+                },
+
+                "issueCount": {
+                    "prototype": "montage/ui/dynamic-text.reel",
+                    "properties": {
+                        "element": {"#": "issue-count"}
+                    },
+                    "bindings": {
+                        "value": {"<-": "@owner.data.open_issues"}
+                    }
+                },
+
+                "unassignedCondition": {
+                    "prototype": "montage/ui/condition.reel",
+                    "properties": {
+                        "element": {"#": "unassigned-condition"}
+                    },
+                    "bindings": {
+                        "condition": {"<-": "@owner.unassignedIssues.count()"}
+                    }
+                },
+
+                "unassignedIssues": {
+                    "prototype": "montage/ui/repetition.reel",
+                    "properties": {
+                        "element": {"#": "unassigned-issues"}
+                    },
+                    "bindings": {
+                        "objects": {"<-": "@owner.unassignedIssues"}
+                    }
+                },
+
+                "unassignedIssue": {
+                    "prototype": "ui/issue.reel",
+                    "properties": {
+                        "element": {"#": "unassigned-issue"}
+                    },
+                    "bindings": {
+                        "data": {"<-": "@unassignedIssues.objectAtCurrentIteration"}
+                    }
+                },
+
+                "unassignedIssueCount": {
+                    "prototype": "montage/ui/dynamic-text.reel",
+                    "properties": {
+                        "element": {"#": "unassigned-issue-count"}
+                    },
+                    "bindings": {
+                        "value": {"<-": "@owner.unassignedIssues.count()"}
+                    }
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div data-montage-id="milestone" class="milestone">
+            <h1><a data-montage-id="title"></a> (<span data-montage-id="issue-count"></span>)</h1>
+            <p data-montage-id="description"></p>
+            <div data-montage-id="users" class="users">
+                <div data-montage-id="user"></div>
+            </div>
+            <div data-montage-id="unassigned-condition" class="users">
+                <h2>
+                    Unassigned (<span data-montage-id="unassigned-issue-count"></span>)
+                </h2>
+                <div data-montage-id="unassigned-issues" class="issues">
+                    <div data-montage-id="unassigned-issue"></div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
