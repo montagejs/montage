@@ -934,8 +934,10 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 });
             }
 
-            // Force a selectionchange when we lose the focus
-            this.handleSelectionchange();
+            // As we lost focus, we need to prevent the selection change timer to fired, else it will cause the RTE to regain focus
+            if (this._selectionChangeTimer) {
+                clearTimeout(this._selectionChangeTimer);
+            }
 
             el.removeEventListener("blur", this, true);
             el.removeEventListener("input", this);
