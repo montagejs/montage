@@ -1,0 +1,47 @@
+* {
+	-webkit-user-select: none;
+	-webkit-user-drag: none;
+	box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background:	#000;
+}
+
+#montage-app-bootstrapper {
+    display: none;
+    padding-top: 200px;
+    color: white;
+    text-align: center;
+    font: 30px/1.8em "Lucida Grande", Lucida, Verdana, sans-serif;
+}
+
+.montage-app-bootstrapping #montage-app-bootstrapper {
+    display: block;
+}
+
+#montage-app-loader {
+    display: none;
+    text-align: center;
+    color: #777;
+    font: 20px/1.8em "Lucida Grande", Lucida, Verdana, sans-serif;
+}
+
+.montage-app-loading #montage-app-bootstrapper,
+.montage-app-loading #montage-app-loader {
+    display: block;
+}
+
+.main {
+    visibility: hidden;
+}
+
+.montage-app-loaded .main {
+    visibility: visible;
+}
