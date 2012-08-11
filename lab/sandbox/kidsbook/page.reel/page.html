@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="page.css">
+
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "page.reel",
+                "name": "Page",
+                "properties": {
+                    "element": {"#": "page"},
+                    "indicator": {"#": "indicator"}
+                }
+            },
+            "arraycontroller": {
+                "prototype": "montage/ui/controller/array-controller",
+                "properties": {
+                    "selectObjectsOnAddition": true,
+                    "automaticallyOrganizeObjects": true
+                },
+                "bindings": {
+                    "content": {"<-": "@owner.words"}
+                }
+            },
+
+            "wordList": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "word-list"},
+                    "contentController": {"@": "arraycontroller"}
+                }
+            },
+
+            "word": {
+                "prototype": "word.reel",
+                "properties": {
+                    "element": {"#": "word"}
+                },
+                "bindings": {
+                    "wordData": {"<-": "@wordList.objectAtCurrentIteration"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+
+    <div id="page" class="page">
+        <section data-montage-id="word-list" class="word-list">
+            <section data-montage-id="word" class="word"></section>
+        </section>
+        <div data-montage-id="indicator" class="indicator"></div>
+    </div>
+
+</body>
+</html>

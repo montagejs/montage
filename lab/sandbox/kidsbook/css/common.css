@@ -1,0 +1,180 @@
+/* @override http://localhost:8082/gettingstartedguide/css/common.css */
+
+/* Common */
+
+html {
+    height: 100%;
+    font-size: 62.5%;
+    color: #333;
+    background: #e8e8e8;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+strong {
+    font-weight: bold;
+    color: #222;
+}
+
+a {
+    text-decoration: none;
+    color: #15c;
+}
+a:visited {
+    color: #61c;
+}
+a:active {
+    color: #d14836;
+}
+
+
+/* Border-Box model */
+
+* {
+    box-sizing: border-box;
+}
+
+/* Bootstrap */
+
+
+
+/*
+ * Google Button Styles
+ */
+
+/* Button Group --------------------- */
+
+.buttonGroup {
+    display: -webkit-box;
+}
+.buttonGroup > .button:not(:first-child) {
+    margin-left: 4px;
+}
+
+
+/* Default (grey) --------------------- */
+
+.button {
+    display: block;
+    position: relative;
+    -webkit-user-select: none;
+    cursor: pointer;
+    outline: none;
+    margin: 0;
+    padding: 0 10px;
+    
+    min-width: 29px;
+    height: 29px;
+    line-height: 29px;
+    
+    font-size: 11px;
+    color: #666;
+    font-weight: bold;
+    
+    border-radius: 2px;
+    border: 1px solid gainsboro;
+    background-image: -webkit-linear-gradient(top,whiteSmoke,#F1F1F1);
+}
+
+.button:hover {
+    box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+    background-color: #F8F8F8;
+    background-image: -webkit-linear-gradient(top,#f8f8f8,#f1f1f1);
+    border: 1px solid #C6C6C6;
+    color: #333;
+}
+
+.button:active {
+    background-image: -webkit-linear-gradient(top,#f6f6f6,#f1f1f1);
+    box-shadow: inset 0px 1px 2px rgba(0,0,0,0.1);
+}
+.button:focus {
+    border: 1px solid #4D90FE;
+}
+
+.button.disabled {
+    opacity: .5;
+    pointer-events: none;
+}
+
+
+
+/* Action (blue) --------------------- */
+
+.button.action {
+    min-width: 72px;
+    color: #fff;
+    border-color: #3079ED;
+    background-image: -webkit-linear-gradient(top,#4d90fe,#4787ed);
+}
+.button.action:hover {
+    color: #fff;
+    border: 1px solid #2F5BB7;
+    background-image: -webkit-linear-gradient(top,#4d90fe,#357ae8);
+}
+.button.action:active {
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.button.action:focus {
+    box-shadow: inset 0 0 0 1px #fff, 0px 1px 1px rgba(0,0,0,0.1);
+}
+
+
+
+
+/* Icon (icon only) --------------------- */
+
+
+.button.icon:before {
+    content: "";
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+}
+
+.button.icon.svg:before {
+    background-color: #666;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center center;
+}
+.button.icon.svg:hover:before {
+    background-color: #333;
+}
+
+
+/* Close Button --------------------- */
+
+.closeButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 44px;
+    height: 44px;
+    padding: 11px;
+    border: none;
+    box-sizing: border-box;
+    background: url(../img/icons.png) center 11px no-repeat;
+    -webkit-background-clip: content-box;
+    opacity: .3;
+    outline: none;
+    cursor: pointer;
+    color: transparent;
+}
+.closeButton:hover {
+    opacity: 1;
+}
+.closeButton:active {
+    opacity: .1;
+}
