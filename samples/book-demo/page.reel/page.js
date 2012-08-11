@@ -1,11 +1,37 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
+
 var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component,
-    Logo = require("pages/logo.reel").Logo;
+    Logo = require("pages/logo.reel").Logo,
     Tempconverter = require("pages/tempconverter.reel").Tempconverter,
     TempconverterText = require("pages/tempconverter-text.reel").TempconverterText,
     MontageLogo = require("pages/montage-logo.reel").MontageLogo,
@@ -67,7 +93,7 @@ exports.Page = Montage.create(Component, {
                 this._needsToChangePageContent = true;
                 this.needsDraw = true;
             }
-            
+
         },
         get: function(){
             return this._pageData;
@@ -82,7 +108,7 @@ exports.Page = Montage.create(Component, {
 
 
     draw: {
-        value: function () {   
+        value: function () {
 
             if( this._needsToChangePageContent ){
 
@@ -95,38 +121,38 @@ exports.Page = Montage.create(Component, {
                         this._element.style.background = "url(resources/shared/page-right.jpg)";
                     }
                 }
-                
+
                 if (this.pageData.component) {
                     if( this.pageData.component === "Tempconverter"){
-                        var component = Tempconverter.create();                  
+                        var component = Tempconverter.create();
                     } else if( this.pageData.component === "TempconverterText"){
-                        var component = TempconverterText.create();                  
+                        var component = TempconverterText.create();
                     } else if( this.pageData.component === "Logo"){
-                        var component = Logo.create();                  
+                        var component = Logo.create();
                     } else if( this.pageData.component === "MontageText"){
-                        var component = MontageText.create();                  
+                        var component = MontageText.create();
                     } else if( this.pageData.component === "MontageLogo"){
-                        var component = MontageLogo.create();                  
+                        var component = MontageLogo.create();
                     } else if( this.pageData.component === "ScreeningLogo"){
-                        var component = ScreeningLogo.create();                  
+                        var component = ScreeningLogo.create();
                     } else if( this.pageData.component === "ScreeningText"){
-                        var component = ScreeningText.create();                  
+                        var component = ScreeningText.create();
                     } else if( this.pageData.component === "NinjaLogo"){
-                        var component = NinjaLogo.create();                  
+                        var component = NinjaLogo.create();
                     } else if( this.pageData.component === "NinjaText"){
-                        var component = NinjaText.create();                  
+                        var component = NinjaText.create();
                     } else if( this.pageData.component === "ScratchpadLogo"){
-                        var component = ScratchpadLogo.create();                  
+                        var component = ScratchpadLogo.create();
                     } else if( this.pageData.component === "ScratchpadText"){
-                        var component = ScratchpadText.create();                  
+                        var component = ScratchpadText.create();
                     } else if( this.pageData.component === "GSGLogo"){
-                        var component = GSGLogo.create();                  
+                        var component = GSGLogo.create();
                     } else if( this.pageData.component === "GSGText"){
-                        var component = GSGText.create();                  
+                        var component = GSGText.create();
                     } else if( this.pageData.component === "End"){
-                        var component = End.create();                  
+                        var component = End.create();
                     } else if( this.pageData.component === "EndLogo"){
-                        var component = EndLogo.create();                  
+                        var component = EndLogo.create();
                     } else if( this.pageData.component === "Architecture1"){
                         var component = Architecture1.create();
                     } else if( this.pageData.component === "Architecture2"){
@@ -156,9 +182,9 @@ exports.Page = Montage.create(Component, {
                     } else if( this.pageData.component === "Architecture14"){
                         var component = Architecture14.create();
                     }
-                    
-                    
-                    
+
+
+
                     this.pageContent = component;
                 } else {
                     this.pageContent = null;
@@ -177,10 +203,10 @@ exports.Page = Montage.create(Component, {
 
                 this._needsToChangePageContent = false;
             }
-            
+
         }
     }
 
-    
+
 
 });
