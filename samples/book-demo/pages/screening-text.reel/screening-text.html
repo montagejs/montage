@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "prototype": "pages/montage-text.reel",
+            "properties": {
+                "element": {"#": "content"}
+            }
+        }
+    }
+    </script>
+    <style>
+        .screening {
+            background-image: url(pages/screening-logo.reel/screening-logo.png);
+            background-repeat: no-repeat;
+            position: absolute;
+            top: 90px;
+            left: 200px;
+            width: 400px;
+            height: 400px;
+            -webkit-transform-origin: 0 0 0;
+            -webkit-transform: scale3d(.72, .72, 1);
+        }
+        .content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="content" data-montage-id="content"> 
+        <div class="screening"></div>
+        <ul style="margin-top: 390px">
+            <li>Part of Montage SDK</li>
+            <li>Simplify any web app testing</li>
+            <li>Advanced Montage instrumentation</li>
+            <li>Client-Server Architecture</li>
+            <li>APIs to integrate with third parties</li>
+        </ul>
+    </div>
+</body>
+</html>

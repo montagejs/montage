@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Book</title>
+    
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "prototype": "main.reel",
+                "properties": {
+                    "element": {"#": "main"},
+                    "appData": {"@": "appdata"},
+                    "pageList": {"@": "pageList"},
+                    "arrayController": {"@": "arraycontroller"}
+
+                },
+                "bindings": {
+                    "scroll": {"<-": "@pageList.scroll"}
+                }
+            },
+
+            "arraycontroller": {
+                "prototype": "montage/ui/controller/array-controller",
+                "properties": {
+                    "selectObjectsOnAddition": true,
+                    "automaticallyOrganizeObjects": true
+                },
+                "bindings": {
+                    "content": {"<-": "@owner.pagesArray"}
+                }
+            },
+
+            "pageList": {
+                "prototype": "montage/ui/flow.reel",
+                "properties": {
+                    "element": {"#": "page-list"},
+                    "isSelectionEnabled": false,
+                    "cameraFov": 17,
+                    "cameraPosition": [0, 0, 3000],
+                    "scrollingTransitionDuration": "1000ms",
+                    "stride": 1,
+                    "contentController": {"@": "arraycontroller"},
+                    "elementsBoundingSphereRadius": 1005,
+                    "momentumDuration": 180
+                }
+            },
+
+            "page": {
+                "prototype": "page.reel",
+                "properties": {
+                    "element": {"#": "page-content"}
+                },
+                "bindings": {
+                    "pageData": {"<-": "@pageList.objectAtCurrentIteration"}
+                }
+            },
+
+            
+
+            "appdata": {
+                "prototype": "appdata"
+            },
+
+            "inputController": {
+                "prototype": "inputcontroller"
+            }
+
+        }
+    </script>
+
+</head>
+<body>
+    <section data-montage-id="main" class="main">
+        <section data-montage-id="page-list" class="page-list">
+            <section data-montage-id="page-content" class="page-content"></section>
+        </section>     
+    </section>
+    
+</body>
+</html>

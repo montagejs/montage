@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="tempconverter.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "prototype": "pages/tempconverter.reel",
+            "properties": {
+                "element": {"#": "converter"},
+                "converter": {"@": "converter"}
+            }
+        },
+        "converter": {
+            "prototype": "pages/tempconverter.reel/tconverter"
+        },
+        "precisionConverter": {
+            "prototype": "pages/tempconverter.reel/tconverter[PrecisionConverter]"
+        },
+        "celsiusTextfield": {
+            "prototype": "montage/ui/input-text.reel",
+            "properties": {
+                "element": {"#": "celsius"},
+                "converter": {"@": "precisionConverter"}
+            },
+            "bindings": {
+                "value": {"<->": "@fahrenheitTextfield.value", "converter": {"@": "converter"}}
+            }
+        },
+        "fahrenheitTextfield": {
+            "prototype": "montage/ui/input-text.reel",
+            "properties": {
+                "element": {"#": "fahrenheit"},
+                "value": "32",
+                "converter": {"@": "precisionConverter"}
+            }
+        },
+        "barometer": {
+            "prototype": "montage/ui/bluemoon/slider.reel",
+            "properties": {
+                "element": {"#": "barometer"}
+            },
+            "bindings": {
+                "value": {"<->": "@fahrenheitTextfield.value"}
+            }
+        }
+
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="converter" class="converter">
+        <div class="controls">
+            <section>
+                <label>Celsius:
+                    <input type="number" name="celsius" data-montage-id="celsius"/>
+                </label>
+                <label>Fahrenheit:
+                    <input type="number" name="fahrenheit" data-montage-id="fahrenheit" >
+                </label>
+            </section>
+            <section class="barometerTrack">
+                <input type="range" name="barometer" min="-13" max="122" data-montage-id="barometer" />
+            </section>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "prototype": "pages/ninja-text.reel",
+            "properties": {
+                "element": {"#": "content"}
+            }
+        }
+    }
+    </script>
+    <style>
+        .content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        .ninja-logo {
+            background-image: url(pages/ninja-text.reel/ninja-logo.png);
+            position: absolute;
+            width: 115px;
+            height: 132px;
+            top: 70px;
+            left: 85px;
+            -webkit-transform-origin: 0 0 0;
+            -webkit-transform: scale3d(1.2, 1.2, 1);
+        }
+    </style>
+</head>
+<body>
+    <div data-montage-id="content" class="content">
+        <div class="ninja-logo"></div>
+        <h1 style="position: absoute; text-align: left; margin-left: 81px; margin-top: 245px">Ninja</h1>
+        <ul style="margin-top: 60px">
+            <li>The most complex Montage application</li>
+            <li>Full featured HTML5 tool</li>
+            <li>Native Look + Feel in Chrome</li>
+            <li>Full MVC architecture</li>
+            <li>Provides easy Montage app creation</li>
+        </ul>
+    </div>
+</body>
+</html>
