@@ -1,0 +1,18 @@
+.page {
+    position: absolute;
+    margin-left: -324px;
+    margin-top: -384px;
+    width: 648px;
+    height: 768px;
+    background: white;
+    -webkit-transform: translate3d(0, 0, 0);
+}
+
+.indicator {
+    position: absolute;
+    background-color: blue;
+    border-radius: 5px;
+    -webkit-transition: 2s 0;
+    -webkit-transition-property: translate3d opacity;
+    -webkit-transform: translate3d(0, 0, 0);
+}

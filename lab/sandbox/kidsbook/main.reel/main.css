@@ -1,0 +1,45 @@
+/* @override http://localhost:8082/gettingstartedguide/reels/main.reel/main.css */
+
+body,
+.main {
+    height: 100%;
+    overflow: hidden;
+    padding-top: 25px;
+}
+
+
+
+/* overview */
+
+
+/* Page Styles ------------------- */
+
+.page-list {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.page-list * {
+    -webkit-backface-visibility: hidden;
+}
+
+
+
+.play-btn {
+    position: absolute !important;
+    right: 10px;
+    top: 0px;  
+    width: 100px;
+}
+
+.turn-btn {
+    position: absolute !important;
+    right: 150px;
+    top: 0px;  
+    width: 100px;
+}
+
+

@@ -1,0 +1,6 @@
+.word {
+	position: absolute;
+	color: #25408f;
+    font: normal bold normal 24px BaskervilleGreekUpright;
+    -webkit-transform: translate3d(0, 0, 0);
+}

@@ -1,0 +1,10 @@
+{
+    "name": "book",
+    "version": "0.0.1",
+    "mappings": {
+        "montage": "../../.."
+    },
+    "directories": {
+        "lib": ""
+    }
+}

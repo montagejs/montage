@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <title>Montage book demo</title>
+    <link rel="stylesheet" href="./css/common.css" />
+    <script src="../../../montage.js" data-package="."></script>
+
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "prototype": "montage/ui/loader.reel",
+                "properties": {
+                    "mainModule": "main.reel"
+                }
+            }
+        }
+    </script>
+
+    <style type="text/css">
+
+        html {
+            background-color: black;
+            font: 20px/1.5em "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+        }
+        body {
+            position: relative;
+            -webkit-backface-visibility: hidden;
+        }
+
+        #montage-app-bootstrapper {
+            display: none;
+            color: red;
+        }
+        .montage-app-bootstrapping #montage-app-bootstrapper {
+            display: block;
+            color: red;
+            background-color: black;
+        }
+
+        #montage-app-loader {
+            color: red;
+            background-color: black;
+            display: none;
+        }
+        .montage-app-loading #montage-app-loader {
+            display: block;
+        }
+
+        .main {
+            visibility: hidden;
+        }
+        .montage-app-loaded .main {
+            visibility: visible;
+        }
+
+    </style>
+
+</head>
+<body>
+    <div id="montage-app-bootstrapper">
+        <h1>Initializing...</h1>
+    </div>
+    <div id="montage-app-loader">
+        <h1>Loading...</h1>
+    </div>
+</body>
+</html>
