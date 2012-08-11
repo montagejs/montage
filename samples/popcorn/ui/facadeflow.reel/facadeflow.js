@@ -44,6 +44,7 @@ exports.Facadeflow = Montage.create( Component, {
                 oneway: true
             });
             this.buttonController = controller;
+            this.application.addEventListener( "dataReceived", this, false);
         }
     },
 
@@ -117,6 +118,21 @@ exports.Facadeflow = Montage.create( Component, {
         }
     },
 
+    _categoryId: {
+        value: null
+    },
+    categoryId: {
+        get: function() {
+            return this._categoryId;
+        },
+        set: function(value) {
+            if (value) {
+                this._categoryId = value;
+                this._changeCategory(value);
+            }
+        }
+    },
+
     pointInCircleAt: { // returns a point in a unit radius circle with center at origin for a given angle
         value: function (angle) {
             return [Math.cos(angle), Math.sin(angle)];
@@ -138,34 +154,33 @@ exports.Facadeflow = Montage.create( Component, {
         }
     },
 
-    templateDidLoad: {
-        value: function () {
-            this.application.addEventListener( "dataReceived", this, false);
-        }
-    },
-
-    changeCategory: {
-        value: function(category) {
+    _changeCategory: {
+        value: function(categoryId) {
             var self = this;
 
             this.detailsFadeOut = true;
             this._fadeOut = true;
             this.needsDraw = true;
-
             // wait .5s until the fade out effect is completed
-            setTimeout( function(){
-                self.templateObjects.flow.scroll = 0;
-                self.category = self[category];
+            setTimeout( function() {
+                if (self.templateObjects && self.templateObjects.flow) {
+                    self.templateObjects.flow.scroll = 0;
+                }
+
+                self.category = self[categoryId];
                 self.selectedMovie = self.category[0];
 
                 self._fadeIn = true;
+                self._fadeOut = false;
                 self.detailsFadeIn = true;
+                self.detailsFadeOut = false;
                 self.needsDraw = true;
+
             }, 500 );
         }
     },
 
-    handleLaunchApp: {
+    handleDataReceived: {
         value: function (event) {
             // do it manually to avoid fade out effect
             this.category = this.latestBoxofficeMovies;
