@@ -1,0 +1,78 @@
+.selector {
+	position: absolute;
+	border: solid 3px green;
+	background: none;
+    display: none;
+    -webkit-transform: rotate(30deg);
+}
+
+.selector_active {
+    display: block;
+}
+
+.selector > .lr_handle {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    bottom: -40px;
+    right: -40px;
+    background:  url('handle.png');
+    cursor:             pointer;
+    -webkit-transform: scale(-1);
+}
+
+.selector > .ul_handle {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    top: -40px;
+    left: -40px;
+    cursor:             pointer;
+    background:  url('handle.png');
+}
+
+.selector > .ur_handle {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    top:                -40px;
+    right:              -40px;
+    cursor:             pointer;
+    background:  url('handle.png');
+    -webkit-transform: scaleX(-1);
+}
+
+.selector > .ll_handle {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    bottom:            -40px;
+    left:              -40px;
+    cursor:             pointer;
+    background:  url('handle.png');
+    -webkit-transform: scaleY(-1);
+}
+
+.selector > .move_handle {
+    position:           absolute;
+    width:              40px;
+    height:             40px;
+    top:                -40px;
+    left:               50%;
+    cursor:             pointer;
+    background: 		grey;
+    pointer-events: all;
+    cursor: move;
+}
+
+.selector > .rotate_handle {
+    position:           absolute;
+    width:              40px;
+    height:             40px;
+    bottom:             -40px;
+    left:               50%;
+    cursor:             pointer;
+    background:         grey;
+    pointer-events: all;
+    cursor: move;
+}

@@ -1,0 +1,20 @@
+/* @override http://localhost:8082/storyboard/lib/components/editor.reel/editor.css */
+
+@import url(http://fonts.googleapis.com/css?family=Sansita+One);
+
+.showBrowser .editor {
+	-webkit-transform: translate3d(160px,0,0);
+}
+
+.editor {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	background-color: hsl(0,0%,85%);
+	-webkit-transition: -webkit-transform .3s cubic-bezier(.36,.04,.15,1);
+}
+
+
+
+
+
+

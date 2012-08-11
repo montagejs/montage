@@ -1,0 +1,156 @@
+/* @override http://localhost:8082/storyboard/lib/components/browser.reel/browser.css */
+
+.browser {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	top: 0;
+	left: 90px;
+	
+	background-color: hsl(0,0%,40%);
+	
+	opacity: 0;
+
+	-webkit-transform: translate3d(-280px, 0, 0);	
+	
+	-webkit-transition: -webkit-transform .24s cubic-bezier(0.84, 0, 1, 0.6),
+						opacity .24s ease-in;	
+}
+
+.showBrowser .browser {
+	opacity: 1;
+	-webkit-transform: none;	
+	-webkit-transition: -webkit-transform .35s cubic-bezier(0,.28,.15,1),
+						opacity .35s ease-out;	
+} 
+
+.browserbuttons-container {
+	display: -webkit-box;
+	position: relative;
+	-webkit-box-flex: 1;
+	margin: 10px 0;
+	border-radius: 10px;
+	overflow: hidden;
+	background-color: hsl(0,0%,25%);
+	-webkit-box-shadow: inset 0px 0px 5px 2px #222;
+}
+
+.browserbuttons-container  > .montage-list-scrollView {
+    -webkit-box-flex: 1;
+}
+
+.browser ul {
+	position: relative;
+	-webkit-box-flex: 1;
+	margin: 10px 0;
+	border-radius: 10px;
+	overflow-x: hidden;
+	background-color: hsl(0,0%,25%);
+	-webkit-box-shadow: inset 0px 0px 5px 2px #222;
+}
+
+.browser li {
+	position: relative;
+	width: 140px;
+	height: 105px;
+	margin: 10px;
+	border-radius: 4px;
+	
+	-webkit-box-sizing: border-box;
+	background: hsla(0,0%,100%,.1);
+}
+
+.browser li > .slide {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	border-radius: 4px;	
+}
+
+
+
+/* current Item */
+
+.browser li.current {	
+	margin: 10px 10px 45px 10px;
+	overflow: visible;
+}
+.browser li.current > .slide {	
+	border-radius: 4px 4px 2px 2px;
+	-webkit-box-shadow: inset 0 0 0 2px hsl(0,0%,60%);
+}
+
+.browser li.current .buttons {	
+	position: absolute;
+	display: -webkit-box;
+	-webkit-box-pack: justify;
+	top: 105px;
+	left: 1px;
+}
+
+.browser li.current .buttons button {	
+	display: block;
+	width: 46px;
+	height: 34px;
+	border: 0;
+	border-radius: 0px 0px 22px 22px / 0px 0px 14px 14px;
+	background-color: hsl(0,0%,40%);
+	-webkit-background-size: 16px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+.browser li.current button:active { background-color: hsl(0,0%,20%); }
+.browser li.current .buttons button.add {	background-image: url(../../../assets/img/icons/add.png); }
+.browser li.current .buttons button.duplicate {	background-image: url(../../../assets/img/icons/duplicate.png); }
+.browser li.current .buttons button.remove {	background-image: url(../../../assets/img/icons/delete.png); }
+
+
+
+/* arrow */
+
+.browser li.current .arrow {
+	position: absolute;
+	display: block;
+	width: 30px;
+	height: 30px;
+	right: 0;
+	
+	background-color: hsl(0,0%,85%);
+	-webkit-transform: translate(50px, 35px) rotate(45deg) ;
+	-webkit-transition: -webkit-transform .3s cubic-bezier(0,.28,.15,1);	
+}
+.showBrowser .browser li.current .arrow {
+	-webkit-transform: translate(30px, 35px) rotate(45deg) ;	
+	-webkit-transition-delay: .25s;
+} 
+
+
+
+/* master */
+
+.browser .master {
+	width: 140px;
+	height: 60px;
+	margin: 0 10px;
+	border-radius: 0 0 10px 10px;	
+	background: hsl(0,0%,60%) no-repeat center center;
+	cursor: pointer;
+	
+	text-align: center;
+	line-height: 60px;
+	font-size: 18px;
+	text-shadow: hsla(0,0%,100%,.5) 0 1px;
+	
+}
+
+.browser .master.bottom {
+	border-radius: 10px 10px 0 0;
+	
+	-webkit-background-size: cover;
+	background: url(../../../assets/img/bg/texture.jpg) no-repeat center center;
+	color: #5a6a61;
+}
+
+.browser .master:active {
+	opacity: .7;
+}
+

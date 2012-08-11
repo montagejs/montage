@@ -1,0 +1,30 @@
+/* layout */
+
+body > .facade {
+	display: -webkit-box;
+	position:   absolute;
+	top: 0;
+	left: 0;
+	width:      100%;
+    height:     100%;
+	overflow:   hidden;
+}
+
+body > .facade > .menu {
+	width:      90px;
+	height:     100%;
+	position: relative;
+	z-index: 1;
+}
+
+body > .facade > .browser {
+	position: absolute;
+	width:  160px;
+	height: 100%;
+}
+
+body > .facade > .editor {
+	-webkit-box-flex: 1;
+	position: relative;
+	z-index: 1;
+}

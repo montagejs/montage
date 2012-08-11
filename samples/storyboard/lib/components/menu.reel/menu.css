@@ -1,0 +1,84 @@
+/* @override http://localhost:8082/storyboard/lib/components/menu.reel/menu.css */
+
+
+.menu {
+    position: relative;
+    z-index: 1;
+    background-color: hsl(0,0%,70%);
+}
+
+#logo {
+    height: 79px;
+    background: transparent no-repeat center center;
+}
+
+.menu ul {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    height: 100%;
+}
+
+
+.menu button {
+    border: 0;
+    display: block;
+    width: 80px;
+    height: 60px;
+    outline: none;  
+    
+    font-size: 20px;
+    
+    background: hsl(0,0%,90%) no-repeat center center;
+    -webkit-box-shadow: inset 0px 1px 0px 0px hsl(0,0%,96%), inset 0px -1px 0px 0px hsl(0,0%,82%);
+}
+.menu button:active {
+    background-color: hsl(0,0%,80%);
+}
+
+.menu .button-group {
+    margin: 0 0 12px 0;
+}
+.menu .button-group button:first-of-type { border-top-right-radius: 20px 30px; }
+.menu .button-group button:last-of-type { border-bottom-right-radius: 20px 30px; }
+
+.menu .btn-browse {
+    background-position-x: 68px;
+    background-image: url("../../../assets/img/icons/browse-right.png");
+}
+
+.menu .showBrowser {
+    color: #fff;
+    background-color: hsl(0,0%,50%);
+    background-position-x: 6px;
+    background-image: url("../../../assets/img/icons/browse-left.png");
+    -webkit-box-shadow: inset 0px 1px 0px 0px hsl(0,0%,30%), inset 0px -1px 0px 0px hsl(0,0%,95%);
+}
+
+
+.menu .button-group.share {
+    display: none;
+}
+
+
+
+/* icons */
+
+#logo                   { background-image: url(../../../assets/img/misc/logo.png); }
+
+.menu .btn-gallery      { background-image: url(../../../assets/img/icons/folder.png); }
+.menu .btn-play         { background-image: url(../../../assets/img/icons/play.png); }
+    
+.menu .btn-up           { background-image: url(../../../assets/img/icons/up.png); }
+.menu .btn-down         { background-image: url(../../../assets/img/icons/down.png); }
+    
+.menu .btn-media        { background-image: url(../../../assets/img/icons/media.png); }
+.menu .btn-text         { background-image: url(../../../assets/img/icons/text.png); }
+.menu .btn-shapes       { background-image: url(../../../assets/img/icons/shapes.png); }
+
+.menu .btn-undo         { background-image: url(../../../assets/img/icons/undo.png); }
+.menu .btn-redo         { background-image: url(../../../assets/img/icons/redo.png); }
+
+.menu .btn-gplus        { background-image: url(../../../assets/img/icons/share/gplus.png); }
+.menu .btn-twitter      { background-image: url(../../../assets/img/icons/share/twitter.png); }
+.menu .btn-facebook     { background-image: url(../../../assets/img/icons/share/facebook.png); }
+.menu .btn-email        { background-image: url(../../../assets/img/icons/share/email.png); }
