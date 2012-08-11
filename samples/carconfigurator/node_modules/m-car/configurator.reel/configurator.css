@@ -1,0 +1,154 @@
+/* @override http://localhost:8082/carconfigurator/node_modules/m-car/configurator.reel/configurator.css */
+
+.Configurator {
+    height: 100%;
+    border-left: 1px solid hsl(0,0%,80%);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    background-color: rgb(239,240,240);
+}
+
+.Configurator .scroller {
+    -webkit-box-flex: 1;
+}
+
+.Configurator h3 {
+    display: inline-block;
+    margin: 0 0 10px 0;
+    color: black;
+    line-height: 20px;
+
+}
+
+.Configurator .selectedInfo {
+    position: absolute;
+    top: 13px;
+    right: 15px;
+    display: inline-block;
+    margin: 0;
+}
+
+.Configurator .ConfiguratorGroup {
+    position: relative;
+    display: block;
+    padding: 15px;
+    border-top: 1px solid hsl(0,0%,80%);
+    background-color: rgb(239,240,240);
+    -webkit-transition: background 0.2s ease;
+}
+
+.Configurator .highlighted {
+    background-color: white;
+}
+
+.Configurator .ConfiguratorGroup:first-child {
+    border: none;
+}
+
+.Configurator .selectedInfo {
+    margin: 5px 0 0 0;
+}
+
+/* Color ------------------------------ */
+
+.Configurator .colorPicker {
+    font-size: 0;
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+}
+
+.Configurator .colorName {
+    display: none;
+}
+
+.Configurator .customColorPicker {
+    margin-top: 5px;
+    text-align: center;
+}
+
+.Configurator .customColor {
+    width: 4.5em;
+    padding: 0 2px;
+    border: 2px solid white;
+    border-radius: 4px;
+    font-size: 15px;
+    text-align: center;
+}
+
+
+
+/* wheelset ------------------------------ */
+
+.Configurator .wheelset {
+    display: inline-block;
+    width: 44px;
+    height: 44px;
+    border-radius: 30px;
+    box-sizing: border-box;
+    cursor: pointer;
+    border: 2px solid hsla(0,0%,97%,0);
+    background: url(../../../assets/images/wheelset.png) no-repeat center;
+    background-position: -5px center;
+    -webkit-transition: border-color .3s, -webkit-transform .3s;
+}
+
+.Configurator .wheelset:nth-child(2) {
+    background-position: -55px center;
+}
+
+.Configurator .wheelset:active {
+    -webkit-transform: scale(.7);
+    -webkit-transition-duration: .3s, .1s;
+}
+
+.Configurator .wheelset.selected {
+    border-color: hsl(0,0%,70%);
+}
+
+
+.Configurator .options li {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.Configurator .licensePlateField {
+    display: block;
+    width: 7.5em;
+}
+
+
+/* Price ------------------------------ */
+
+.Configurator .ConfiguratorGroup.PricingGroup {
+    background: hsl(0,0%,90%);
+}
+
+.Configurator .PricingGroup p {
+   margin: 0;
+   line-height: 20px;
+}
+
+.Configurator .PricingGroup .price-configured {
+   color: black;
+   font-size: 14px;
+}
+
+.Configurator .priceHolder {
+   display: inline-block;
+   float: right;
+}
+
+.Configurator .options .priceHolder {
+   margin-top: 3px;
+}
+
+
+/* Tablet ------------------------------ */
+
+/* Removes Custom Color Picker on tablets */
+
+@media only screen and (max-device-width: 1024px) {
+    .customColorPicker {
+        display: none;
+    }
+}

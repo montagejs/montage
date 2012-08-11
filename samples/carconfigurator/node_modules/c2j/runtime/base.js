@@ -1,0 +1,1 @@
+exports.Base=Object.create(Object.prototype,{_properties:{value:null,writable:!0},properties:{get:function(){return this._properties},set:function(e){this._properties=e}},__Base_init:{value:function(){this._properties={}}}})
