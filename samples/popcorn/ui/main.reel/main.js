@@ -42,6 +42,10 @@ exports.Main = Montage.create(Component, {
         value: Remotemediator.create()
     },
 
+    categoryId: {
+        value: null
+    },
+
     _categoryButtonGroup: {
         value: null
     },
@@ -106,7 +110,7 @@ exports.Main = Montage.create(Component, {
         value: function(category) {
             var buttons = this._categoryButtonGroup;
 
-            this.templateObjects.facadeflow.changeCategory(category);
+            this.categoryId = category;
             for (var i = 0; i < buttons.length; i++) {
                 buttons[i].pressed = (buttons[i].category === category);
             }
