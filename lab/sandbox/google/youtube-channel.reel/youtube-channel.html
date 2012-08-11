@@ -1,0 +1,158 @@
+<!doctype html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html>
+    <head>
+    <title></title>
+    <script type="text/montage-serialization">
+    {
+        "player": {
+            "prototype": "youtube-player.reel",
+            "properties": {
+                "element": {"#": "player"}
+            }
+        },
+        "imageA": {
+            "prototype": "montage/ui/image.reel",
+            "properties": {
+                "element": {"#": "imageA"}
+            }
+        },
+        "imageB": {
+            "prototype": "montage/ui/image.reel",
+            "properties": {
+                "element": {"#": "imageB"}
+            }
+        },
+        "imageC": {
+            "prototype": "montage/ui/image.reel",
+            "properties": {
+                "element": {"#": "imageC"}
+            }
+        },
+        "button": {
+            "prototype": "montage/ui/button.reel",
+            "properties": {
+                "element": {"#": "close"}
+            }
+        },
+
+        "owner": {
+            "name": "YoutubeChannel",
+            "properties": {
+                "element": {"#": "container"},
+                "player": {"@": "player"},
+                "_popupElement": {"#": "popup"},
+                "imageA": {"@": "imageA"},
+                "imageB": {"@": "imageB"},
+                "imageC": {"@": "imageC"}
+            }
+        }
+    }
+    </script>
+    <style type="text/css">
+        .montage-youtube-channel {
+            width: 370px;
+            position: relative;
+            -webkit-transform-style: preserve-3d;
+        }
+
+        .montage-youtube-channel img {
+            cursor: pointer;
+            height: 90px;
+            width: 120px;
+            background-color: #000;
+            opacity: 1;
+
+            visibility: visible;
+            -webkit-transition: all 0.5s ease-in-out;
+        }
+        .montage-youtube-channel.show img {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .montage-youtube-channel-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            opacity: 0;
+            visibility: hidden;
+            -webkit-transform: scale3d(0, 0, 1);
+            -webkit-transition: all 0.5s ease-in-out;
+        }
+        .montage-youtube-channel-popup.show {
+            opacity: 1;
+            visibility: visible;
+            -webkit-transform: scale3d(1, 1, 1);
+        }
+
+        .montage-youtube-channel-close {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+
+            width: 25px;
+            height: 25px;
+
+            background: #333;
+            border: 1px solid #999;
+            border-radius: 3px;
+
+            color: #EEE;
+            outline: none;
+            text-align: center;
+            padding: 0;
+        }
+
+        .montage-youtube-channel .montage-youtube-player {
+            border-top: 35px solid #000;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div data-montage-id="container" class="montage-youtube-channel">
+        <img src="" alt="" data-montage-id="imageA">
+        <img src="" alt="" data-montage-id="imageB">
+        <img src="" alt="" data-montage-id="imageC">
+
+        <div data-montage-id="popup" class="montage-youtube-channel-popup" class="hide">
+            <button data-montage-id="close" class="montage-youtube-channel-close">×</button>
+            <div data-montage-id="player"></div>
+        </div>
+    </div>
+</body>
+</html>
