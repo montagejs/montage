@@ -101,7 +101,7 @@ exports.Appdata = Montage.create( Component, {
                                 x: 219,
                                 y: 365,
                                 width: 151,
-                                height: 36,
+                                height: 42,
                                 id: 0,
                                 hide: true
                             }
