@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "prototype": "pages/gsg-text.reel",
+            "properties": {
+                "element": {"#": "content"}
+            }
+        }
+    }
+    </script>
+    <style>
+        .content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        .tips-logo {
+            background-image: url(pages/gsg-logo.reel/gsg-logo.png);
+            position: absolute;
+            width: 128px;
+            height: 128px;
+            top: 93px;
+            left: 81px;
+            -webkit-transform-origin: 0 0 0;
+            -webkit-transform: scale3d(1.04, 1.04, 1);
+        }
+        .gsg-screenshot {
+            background-image: url(pages/gsg-text.reel/gsg.jpg);
+            position: absolute;
+            width: 400px;
+            height: 296px;
+            top: 400px;
+            left: 81px;
+            -webkit-transform-origin: 0 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div data-montage-id="content" class="content">
+        <div class="tips-logo"></div>
+        <h1 style="position: absoute; text-align: left; margin-left: 81px; margin-top: 245px">Chrome OS Tips+Tricks</h1>
+        <div class="gsg-screenshot"></div>
+    </div>
+</body>
+</html>

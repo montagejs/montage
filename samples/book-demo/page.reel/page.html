@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="page.css">
+
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "page.reel",
+                "name": "Page",
+                "properties": {
+                    "element": {"#": "page"},
+                    "pageNumber": {"#": "page_number"}
+                }
+            },
+            "pageNumber": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "page_number"}
+                },
+                "bindings": {
+                    "value": {"<-": "@owner.pageData.index"}
+                }
+            },
+            "pageContent": {
+                "module": "montage/ui/slot.reel",
+                "name": "Slot",
+                "properties": {
+                    "element": {"#": "page_content"}
+                },
+                "bindings": {
+                    "content": {"<-": "@owner.pageContent" }
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+
+    <div data-montage-id="page" class="page">
+        <div data-montage-id="page_content" class="page_content"></div>
+        <div data-montage-id="page_number" class="page_number"></div>
+    </div>
+
+</body>
+</html>

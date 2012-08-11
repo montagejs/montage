@@ -1,0 +1,14 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+
+.logo {
+   padding: 10px;
+   text-shadow: #fff 0 1px 0;
+   border-radius: 8px;
+   background-color: hsl(0,0%,95%);
+   box-shadow: 	inset 0px 1px 2px 1px hsla(0,0%,100%,1), 0px 2px 5px hsla(0,0%,0%,.1);
+}

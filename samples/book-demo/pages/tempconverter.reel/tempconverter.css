@@ -1,0 +1,129 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+
+/* Base ----------------------------- */
+
+/* Converter ----------------------------- */
+
+.converter {
+   padding: 10px;
+   text-shadow: #fff 0 1px 0;
+   /*border-radius: 8px;
+   background-color: hsl(0,0%,95%);*/
+   /*box-shadow: 	inset 0px 1px 2px 1px hsla(0,0%,100%,1), 0px 2px 5px hsla(0,0%,0%,.1);*/
+}
+
+.converter .title {
+   margin: 0 0 5px 0;
+   text-align: center;
+   font: 24px/40px "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+}
+
+.converter .controls {
+    /*display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    display: -moz-box;
+    -moz-box-align: center;
+    -moz-box-pack: center;    
+    padding: 20px;
+    text-shadow: #fff 0 1px 0;
+    border-radius: 6px;
+    background-color: hsl(0,0%,98%);
+    box-shadow: 	inset 0px 1px 2px 1px hsla(0,0%,100%,1), 0px 2px 5px hsla(0,0%,0%,.1);*/
+    width: 350px;
+    -webkit-transform-origin: 108px -260px 0;
+    -webkit-transform: scale3d(1.95, 1.95, 1);
+}
+
+
+/* Number ----------------------------- */
+
+.converter label {
+    display: block;
+    text-align: right;
+    margin-bottom: 15px;
+    color: hsl(0,0%,50%);
+    font: 18px/1.4em "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+}
+.converter label:last-child {
+    margin-bottom: 0px;
+}
+
+.converter input[type="number"] {
+    display: inline-block;
+    width: 163px;
+    box-sizing: border-box;
+    font: inherit;
+    text-shadow: hsl(0,0%,95%) 0 1px 0;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid hsl(0,0%,70%);
+    background-color: hsl(0,0%,90%);
+    box-shadow: inset 0px 1px 2px hsla(0,0%,0%,.2), 0 2px 0 hsla(0,0%,100%,1);
+}
+.converter input[type="number"]:focus {
+    outline: none;
+
+    border: 1px solid hsl(200,100%,50%);
+    background-color: hsl(200,50%,95%);
+    box-shadow: inset 0px 1px 2px hsla(200,50%,30%,.3), 0 2px 0 hsla(0,0%,100%,1);
+}
+
+/* Spin button */
+.converter input[type="number"]::-webkit-outer-spin-button {
+    margin-left: 5px;
+}
+
+
+/* Barometer ----------------------------- */
+
+.converter .barometerTrack {
+    width: 230px;
+    height: 28px;
+    text-align: center;
+    font-size:0px;
+    line-height: 0px;
+    margin-left: 97px;
+    margin-top: 20px;
+    padding: 5px 5px;
+    border-radius: 12px;
+    box-sizing: border-box;
+    box-shadow: inset 0px 1px 2px hsla(0,0%,0%,.5), 0 2px 0 hsla(0,0%,100%,1);
+    background: -webkit-linear-gradient(left,  hsl(200,100%,50%),
+                                                 hsl(200,100%,80%) 30%,
+                                                 hsl(60,100%,65%) 50%,
+                                                 hsl(0,100%,80%) 70%,
+                                                 hsl(0,100%,50%) );
+    background: -moz-linear-gradient(left,     hsl(200,100%,50%),
+                                                 hsl(200,100%,80%) 30%,
+                                                 hsl(60,100%,65%) 50%,
+                                                 hsl(0,100%,80%) 70%,
+                                                 hsl(0,100%,50%) );
+}
+
+.converter .barometerTrack input[type="range"] {
+    -webkit-appearance: slider-horizontal;
+    /*-moz-appearance: scale-vertical; Looked promising, but doesn't work*/
+    border: none;
+    height: 16px;
+    width: 200px;
+    margin: 0;
+    background: transparent;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+.converter .barometerTrack input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border-radius: 15px;
+    box-shadow: inset 0 -1px 4px hsla(0,0%,0%,.2), inset 0 0 0 10px hsla(0,0%,100%,1), 0px 1px 2px 2px hsla(0,0%,0%,.2);
+}
+
+.converter .barometerTrack .montage-slider {
+    margin-top:-18px;
+}

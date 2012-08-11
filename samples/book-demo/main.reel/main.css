@@ -1,0 +1,31 @@
+
+* {
+    /* Border-Box model */
+    box-sizing: border-box;
+    -webkit-backface-visibility: hidden;
+    -webkit-transform: translate3d(0, 0, 0);
+}
+
+.montage-loading-panel > .loadingCount {
+    /* Added content box back */
+    box-sizing: content-box;
+}
+
+.main {
+    height: 100%;
+}
+
+
+/* Page Styles ------------------- */
+
+.page-list {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.page-list * {
+    -webkit-backface-visibility: hidden;
+}

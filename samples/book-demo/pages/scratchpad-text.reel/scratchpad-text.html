@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "prototype": "pages/scratchpad-text.reel",
+            "properties": {
+                "element": {"#": "content"}
+            }
+        }
+    }
+    </script>
+    <style>
+        .content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        .scratchpad-logo {
+            background-image: url(pages/scratchpad-logo.reel/scratchpad-logo.png);
+            position: absolute;
+            width: 128px;
+            height: 128px;
+            top: 82px;
+            left: 63px;
+            -webkit-transform-origin: 0 0 0;
+            -webkit-transform: scale3d(1.2, 1.2, 1);
+        }
+    </style>
+</head>
+<body>
+    <div data-montage-id="content" class="content">
+        <div class="scratchpad-logo"></div>
+        <h1 style="position: absoute; text-align: left; margin-left: 81px; margin-top: 245px">Scratchpad 3.0</h1>
+        <ul style="margin-top: 60px">
+            <li>New features, UI improvements</li>
+            <li>Closure replaced with Montage</li>
+            <li>Re-implemented 75% of app</li>
+            <li>Feature complete in 5 dev-months</li>
+            <li>Reduced 25% of code size</li>
+        </ul>
+    </div>
+</body>
+</html>
