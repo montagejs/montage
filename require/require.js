@@ -103,7 +103,7 @@ POSSIBILITY OF SUCH DAMAGE.
             if (!has(modules, id)) {
                 modules[id] = {
                     id: id,
-                    display: config.location + "#" + id, // EXTENSION
+                    display: (config.name || config.location) + "#" + id, // EXTENSION
                     require: require
                 };
             }
@@ -706,11 +706,15 @@ POSSIBILITY OF SUCH DAMAGE.
             return compile;
         }
         return function(module) {
-            try {
+            if (module.type === "javascript") {
+                try {
+                    compile(module);
+                } catch (error) {
+                    config.lint(module);
+                    throw error;
+                }
+            } else {
                 compile(module);
-            } catch (error) {
-                config.lint(module);
-                throw error;
             }
         };
     };
