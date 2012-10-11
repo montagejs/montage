@@ -740,7 +740,8 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
                 moduleId = desc.module;
                 objectName = name = desc.name;
             } else  if ("prototype" in desc || "object" in desc) {
-                bracketIndex = (desc.prototype || desc.object).indexOf("[");
+                name = desc.prototype || desc.object;
+                bracketIndex = name.indexOf("[");
                 // this code is actually only used when canEval == false,
                 // module+name are added when the modules are parsed but it's
                 // slow to redo the _serializationString in order to keep the

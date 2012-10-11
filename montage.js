@@ -59,7 +59,12 @@ if (typeof window !== "undefined") {
 (function (definition) {
     if (typeof require !== "undefined") {
         // CommonJS / NodeJS
-        definition(require, exports, module);
+        definition.call(
+            typeof global !== "undefined" ? global : this,
+            require,
+            exports,
+            module
+        );
     } else {
         // <script>
         definition({}, {}, {});
@@ -67,7 +72,7 @@ if (typeof window !== "undefined") {
 })(function (require, exports, module) {
 
     // The global context object
-    var global = new Function("return this")();
+    var global = this;
 
     /**
      * Initializes Montage and creates the application singleton if
@@ -562,4 +567,4 @@ if (typeof window !== "undefined") {
         exports.getPlatform();
     }
 
-});
+})

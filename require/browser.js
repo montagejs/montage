@@ -115,10 +115,14 @@ var __FILE__String = "__FILE__",
 
 Require.Compiler = function (config) {
     return function(module) {
-        if (module.exports || module.factory || module.text === void 0)
+        if (
+            module.exports !== void 0 || // already exports
+            module.factory !== void 0 || // already compiled
+            module.type !== "javascript" // not javascript
+        )
             return module;
         if (config.define)
-            throw new Error("Can't use eval to compile " + JSON.stringify(module.id));
+            throw new Error("Can't use eval to compile " + JSON.stringify(module));
 
         // Here we use a couple tricks to make debugging better in various browsers:
         // TODO: determine if these are all necessary / the best options
