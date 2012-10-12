@@ -32,7 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 .montage-progress {
     display: inline-block;
     position: relative;
-    width: 100px;
+    width: 150px;
     height: 10px;
     border-radius: 3px;
     border: 1px solid #b3b3b3;
