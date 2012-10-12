@@ -28,8 +28,8 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
- 
-.montage-inputRadio {
+
+.montage-InputRadio {
     -webkit-appearance: none;
     -moz-appearance: none;
     outline: none;
@@ -43,24 +43,24 @@ POSSIBILITY OF SUCH DAMAGE.
     cursor: pointer;
 }
 
-.montage-inputRadio:hover {
+.montage-InputRadio:hover {
     background-color: #ffffff;
 }
 
-.montage-inputRadio:active {
+.montage-InputRadio:active {
     background-color: #e5e5e5;
 }
 
-.montage-inputRadio:focus {
+.montage-InputRadio:focus {
     border-color: #7f7f7f;
 }
 
-.montage-inputRadio:checked {
+.montage-InputRadio:checked {
     background: #f2f2f2 url(radio.png) no-repeat center center;
 }
 
 
 /* Style for Touch */
-.montage-inputRadio {
+.montage-InputRadio {
   font-size: 16px;
 }

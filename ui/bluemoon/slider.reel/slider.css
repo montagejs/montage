@@ -29,29 +29,29 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-.montage-slider {
+.montage-Slider {
     padding: 16px 17px 16px 18px;
     overflow: hidden;
 }
 
-.montage-slider > div {
+.montage-Slider > div {
     position: relative;
     width: auto;
     height: 23px;
 }
 
-.montage-slider .handlerbg,
-.montage-slider .handler,
-.montage-slider .handler2,
-.montage-slider .handler3,
-.montage-slider .handler4,
-.montage-slider .handlerDragArea {
+.montage-Slider .handlerbg,
+.montage-Slider .handler,
+.montage-Slider .handler2,
+.montage-Slider .handler3,
+.montage-Slider .handler4,
+.montage-Slider .handlerDragArea {
     left: 0;
     right: 20px;
     position: absolute;
 }
 
-.montage-slider .bghl {
+.montage-Slider .bghl {
     position: absolute;
     margin-top: 7px;
     border-radius: 5px;
@@ -61,7 +61,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-box-shadow: 0 1px rgba(255,255,255,.4), 0 -1px rgba(0,0,0,.1);
 }
 
-.montage-slider .bg {
+.montage-Slider .bg {
     position: absolute;
     margin-top: 7px;
     border-radius: 5px;
@@ -71,7 +71,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,.3);
 }
 
-.montage-slider .handlerbg div {
+.montage-Slider .handlerbg div {
     position: absolute;
     margin-left: -17px;
     margin-top: -15px;
@@ -83,7 +83,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: scale3d(.433962263, .433962263, 1);
 }
 
-.montage-slider .handler div {
+.montage-Slider .handler div {
     position: absolute;
     margin-left: -16px;
     margin-top: -14px;
@@ -94,7 +94,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: scale3d(.411764705, .411764705, 1);
 }
 
-.montage-slider .crop {
+.montage-Slider .crop {
     position: absolute;
     left: 5px;
     right: 5px;
@@ -103,7 +103,7 @@ POSSIBILITY OF SUCH DAMAGE.
     overflow: hidden;
 }
 
-.montage-slider .line {
+.montage-Slider .line {
     position: absolute;
     margin-left: -100%;
     width: 100%;
@@ -111,7 +111,7 @@ POSSIBILITY OF SUCH DAMAGE.
     background: -webkit-gradient(linear, left top, left bottom, from(#F8F8F8), to(#EFEFEF));
 }
 
-.montage-slider .scale {
+.montage-Slider .scale {
     position: absolute;
     margin-left: 10000px;
     width: 1px;
@@ -119,7 +119,7 @@ POSSIBILITY OF SUCH DAMAGE.
     visibility: hidden;
 }
 
-.montage-slider .line3 {
+.montage-Slider .line3 {
     position: absolute;
     margin-left: 1px;
     margin-top: 8px;
@@ -129,7 +129,7 @@ POSSIBILITY OF SUCH DAMAGE.
     background: -webkit-gradient(linear, left top, left bottom, from(#F8F8F8), to(#EFEFEF));
 }
 
-.montage-slider .line2 {
+.montage-Slider .line2 {
     position: absolute;
     margin-left: -100%;
     margin-top: 2px;
@@ -138,7 +138,7 @@ POSSIBILITY OF SUCH DAMAGE.
     background: -webkit-gradient(linear, left top, left bottom, from(#35C9FF), to(#0A9BCF));
 }
 
-.montage-slider .line4 {
+.montage-Slider .line4 {
     position: absolute;
     margin-left: 3px;
     margin-top: 10px;
@@ -148,7 +148,7 @@ POSSIBILITY OF SUCH DAMAGE.
     background: -webkit-gradient(linear, left top, left bottom, from(#35C9FF), to(#0A9BCF));
 }
 
-.montage-slider .handler2 div {
+.montage-Slider .handler2 div {
     position: absolute;
     margin-left: -2px;
     border-radius: 12px;
@@ -158,7 +158,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: scale3d(.565217391, .565217391, 1);
 }
 
-.montage-slider .handler3 div {
+.montage-Slider .handler3 div {
     position: absolute;
     margin-left: -1px;
     margin-top: 1px;
@@ -169,7 +169,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: scale3d(.523809523, .523809523, 1);
 }
 
-.montage-slider .handler4 div {
+.montage-Slider .handler4 div {
     position: absolute;
     margin-left: 5px;
     margin-top: 7px;
@@ -181,7 +181,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: scale3d(.555555555, .555555555, 1);
 }
 
-.montage-slider .handlerDragArea div {
+.montage-Slider .handlerDragArea div {
     position: absolute;
     margin-left: -17px;
     margin-top: -15px;
@@ -190,91 +190,91 @@ POSSIBILITY OF SUCH DAMAGE.
     height: 53px;
 }
 
-.montage-slider.pressed .handlerbg div {
+.montage-Slider.pressed .handlerbg div {
     -webkit-transform: scale3d(1, 1, 1);
 }
 
-.montage-slider.pressed .handler div {
+.montage-Slider.pressed .handler div {
     background: -webkit-gradient(linear, left top, left bottom, from(#e5e5e5), to(#ffffff));
     -webkit-transform: scale3d(1, 1, 1);
 }
 
-.montage-slider.pressed .handler2 div {
+.montage-Slider.pressed .handler2 div {
     -webkit-transform: scale3d(1, 1, 1);
 }
 
-.montage-slider.pressed .handler3 div {
+.montage-Slider.pressed .handler3 div {
     -webkit-transform: scale3d(1, 1, 1);
 }
 
-.montage-slider.pressed .handler4 div {
+.montage-Slider.pressed .handler4 div {
     -webkit-transform: scale3d(1, 1, 1);
 }
 
-.montage-slider.pressed .line {
+.montage-Slider.pressed .line {
     background: -webkit-gradient(linear, left top, left bottom, from(#efefef), to(#f3f3f3));
 }
 
-.montage-slider.dark .bghl {
+.montage-Slider.dark .bghl {
     background: transparent;
     -webkit-box-shadow: 0 1px rgba(255,255,255,.2), 0 -1px rgba(0,0,0,.1);
 }
 
-.montage-slider.dark .bg {
+.montage-Slider.dark .bg {
     background: -webkit-gradient(linear, left top, left bottom, from(rgba(40,40,40,.6)), to(rgba(40,40,40,.5)));
     -webkit-box-shadow: none;
 }
 
-.montage-slider.dark .handlerbg div {
+.montage-Slider.dark .handlerbg div {
     background: -webkit-gradient(linear, left top, left bottom, from(rgba(40,40,40,.7)), to(rgba(40,40,40,.6)));
     -webkit-box-shadow: 0 1px rgba(255,255,255,.2), 0 -1px rgba(0,0,0,.1);
 }
 
-.montage-slider.dark .handler div {
+.montage-Slider.dark .handler div {
     background: -webkit-gradient(linear, left top, left bottom, from(#757575), to(#5c5c5c));
 }
 
-.montage-slider.dark .line {
+.montage-Slider.dark .line {
     background: -webkit-gradient(linear, left top, left bottom, from(#6f6f6f), to(#656565));
 }
 
-.montage-slider.dark .line2 {
+.montage-Slider.dark .line2 {
     background: -webkit-gradient(linear, left top, left bottom, from(#35C9FF), to(#0A9BCF));
 }
 
-.montage-slider.dark .line3 {
+.montage-Slider.dark .line3 {
     background: -webkit-gradient(linear, left top, left bottom, from(#6f6f6f), to(#656565));
 }
 
-.montage-slider.dark .line4 {
+.montage-Slider.dark .line4 {
     background: -webkit-gradient(linear, left top, left bottom, from(#35C9FF), to(#0A9BCF));
 }
 
-.montage-slider.dark .handler2 div {
+.montage-Slider.dark .handler2 div {
     background: #383838;
 }
 
-.montage-slider.dark .handler3 div {
+.montage-Slider.dark .handler3 div {
     background: -webkit-gradient(linear, left top, left bottom, from(#12BBF8), to(#0AA4DC));
 }
 
-.montage-slider.dark .handler4 div {
+.montage-Slider.dark .handler4 div {
     background: #07739A;
     -webkit-box-shadow: inset 0 2px 1px #05506B;
 }
 
-.montage-slider.dark.pressed .handler div {
+.montage-Slider.dark.pressed .handler div {
     background: -webkit-gradient(linear, left top, left bottom, from(#5c5c5c), to(#757575));
 }
 
-.montage-slider.dark.pressed .handler2 div {
+.montage-Slider.dark.pressed .handler2 div {
     background: #2f2f2f;
 }
 
-.montage-slider.dark.pressed .handler3 div {
+.montage-Slider.dark.pressed .handler3 div {
     background: -webkit-gradient(linear, left top, left bottom, from(#10bcfc), to(#0AA2DA));
 }
 
-.montage-slider.dark.pressed .line {
+.montage-Slider.dark.pressed .line {
     background: -webkit-gradient(linear, left top, left bottom, from(#666666), to(#6a6a6a));
 }

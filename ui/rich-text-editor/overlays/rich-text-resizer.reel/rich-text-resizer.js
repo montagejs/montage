@@ -148,7 +148,7 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
                 } else if (target.tagName === "IMG") {
                     if (target !== previousTarget) {
                         if (previousTarget) {
-                            previousTarget.classList.remove("montage-resizer-element");
+                            previousTarget.classList.remove("montage-Resizer-element");
                             if (previousTarget.classList.length == 0) {
                                 previousTarget.removeAttribute("class");
                             }
@@ -237,8 +237,8 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
                 style.top = offsetTop + "px";;
                 style.left = offsetLeft + "px";
 
-                this._editor.innerElement.classList.remove("montage-editor-resizing");
-                target.classList.add("montage-resizer-element");
+                this._editor.innerElement.classList.remove("montage-Editor--resizing");
+                target.classList.add("montage-Resizer-element");
 
                 // Setup the image
                 this.image.src = target.src;
@@ -265,7 +265,7 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
                     left = parseFloat(element.style.left, 10),
                     minSize = 15;
 
-                this._editor.innerElement.classList.add("montage-editor-resizing");
+                this._editor.innerElement.classList.add("montage-Editor--resizing");
 
                 if (direction == "n") {
                     height += framePosition.y - cursor.y;
@@ -324,8 +324,8 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
                 width = element.clientWidth;
                 height = element.clientHeight;
 
-                this._editor.innerElement.classList.remove("montage-editor-resizing");
-                target.classList.remove("montage-resizer-element");
+                this._editor.innerElement.classList.remove("montage-Editor--resizing");
+                target.classList.remove("montage-Resizer-element");
                 if (target.classList.length == 0) {
                     target.removeAttribute("class");
                 }
@@ -408,7 +408,7 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
 
             if (target) {
                 // Let's do some extra cleanup
-                target.classList.remove("montage-resizer-element");
+                target.classList.remove("montage-Resizer-element");
                 if (target.classList.length == 0) {
                     target.removeAttribute("class");
                 }
@@ -444,7 +444,7 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
             var target = event.target,
                 element = this.element;
 
-            if (target.classList.contains("montage-resizer-handle")) {
+            if (target.classList.contains("montage-Resizer-handle")) {
                 if (window.Touch) {
                     this._observePointer(target.id);
                     document.addEventListener("touchmove", this);

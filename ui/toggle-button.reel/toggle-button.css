@@ -29,10 +29,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-.montage-button.active {
+.montage-Button.active {
     background-color: #cccccc;
 }
 
-.montage-button.active:hover {
+.montage-Button.active:hover {
     background-color: #d8d8d8;
 }

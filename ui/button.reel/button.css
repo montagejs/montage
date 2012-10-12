@@ -28,8 +28,8 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
- 
-.montage-button {
+
+.montage-Button {
     outline: none;
     box-sizing: border-box;
     font-size: 12px;
@@ -45,36 +45,36 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 
 /* States */
-.montage-button:hover {
+.montage-Button:hover {
     background-color: #fff;
     color: #000;
 }
 
-.montage-button:active {
+.montage-Button:active {
     background-color: #e5e5e5;
 }
 
-.montage-button:focus {
+.montage-Button:focus {
     border-color: #7f7f7f;
 }
 
 
 /* ButtonGroup ------------------------------- */
 
-.montage-buttonGroup {
+.montage-ButtonGroup {
     padding-left: 5px; /* Add the negative margin back */
 }
 
-.montage-buttonGroup > .montage-button {
+.montage-ButtonGroup > .montage-Button {
     margin: 0;
     border-radius: 0;
     margin-left: -5px; /* Remove the space inbetween */
 }
 
-.montage-buttonGroup > .montage-button:first-child {
+.montage-ButtonGroup > .montage-Button:first-child {
     border-radius: 3px 0 0 3px;
 }
 
-.montage-buttonGroup > .montage-button:last-child {
+.montage-ButtonGroup > .montage-Button:last-child {
     border-radius: 0 3px 3px 0;
 }

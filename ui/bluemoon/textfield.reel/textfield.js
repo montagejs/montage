@@ -72,7 +72,7 @@ var Textfield = exports.Textfield = Montage.create(EditableText,/** @lends modul
     _drawSpecific: {
         enumerable: false,
         value: function() {
-            this.element.classList.add('montage-textfield');
+            this.element.classList.add('montage-Textfield');
 
             this.element.placeholder = this._placeholder;
         }

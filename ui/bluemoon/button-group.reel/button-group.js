@@ -82,7 +82,7 @@ var ButtonGroup = exports.ButtonGroup = Montage.create(ComponentGroup, /** @lend
     */
     prepareForDraw: {
         value: function() {
-            this.element.classList.add("montage-button-group");
+            this.element.classList.add("montage-ButtonGroup");
         }
     },
 

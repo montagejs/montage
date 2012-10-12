@@ -40,7 +40,7 @@ var Progress = exports.Progress = Montage.create(Component, {
     draw: {
         value: function() {
             // Just for now
-            this._element.querySelector(".montage-progress-bar").style["width"] = "50%";
+            this._element.querySelector(".montage-Progress-bar").style["width"] = "50%";
         }
     }
 

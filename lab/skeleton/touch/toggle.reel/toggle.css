@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
  
-.montage-toggle {
+.montage-Toggle {
     box-sizing: border-box;
     font-size: 12px;
     position: relative;
@@ -44,7 +44,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transition: background-color .2s cubic-bezier(.5,.15,.2,1);
 }
 
-.montage-toggle-thumb {
+.montage-Toggle-thumb {
     box-sizing: border-box;
     position: absolute;
     left: 0;
@@ -59,29 +59,29 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 
 /* States */
-.montage-toggle:hover > .montage-toggle-thumb {
+.montage-Toggle:hover > .montage-Toggle-thumb {
     background-color: #ffffff;
 }
 
-.montage-toggle:active > .montage-toggle-thumb {
+.montage-Toggle:active > .montage-Toggle-thumb {
     background-color: #e5e5e5;
 }
 
-.montage-toggle:focus {
+.montage-Toggle:focus {
     border-color: #7f7f7f;
 }
 
-.montage-toggle.isChecked {
+.montage-Toggle.isChecked {
     background: hsl(0,0%,70%);
 }
 
-.montage-toggle.isChecked > .montage-toggle-thumb {
+.montage-Toggle.isChecked > .montage-Toggle-thumb {
     -webkit-transform: translate3d(100%,0,0);
 }
 
 
 /* Style for Touch */
-.montage-toggle {
+.montage-Toggle {
   font-size: 16px;
   border-radius: 24px;
 }
