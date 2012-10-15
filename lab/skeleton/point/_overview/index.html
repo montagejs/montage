@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <!-- <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
@@ -28,154 +29,21 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> -->
- 
-<!DOCTYPE html>
 <html>
-
 <head>
-	<title>Montage Skeleton theme - Overview</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <link rel="stylesheet" href="index.css">
-    
-    <script src="../../../../montage.js" type="text/javascript"></script>
-    <link rel="serialization" type="text/montage-serialization" href="index.json">
+    <title>Montage Point - Overview</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="assets/style/base.css">
+    <script src="../../../../montage.js" data-auto-package></script>
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "prototype": "montage/ui/loader.reel"
+            }
+        }
+    </script>
 </head>
-
 <body>
-    
-    <h1><span class="txt">Skeleton</span><span class="tip" title="A.K.A. Desktop">Point</span><span class="logo"></span><span class="txt">Overview</span></h1>
-    
-    <table>
-        
-        <tr>
-            <th>Native</th>
-            <th>Skeleton<span class="tip" title="A.K.A. Desktop">Point</span></th>
-        </tr>
-        
-        
-        <!-- Button -->
-        <tr>
-            <td>
-                <button>Button</button>
-            </td>
-            <td>
-                <button data-montage-id="button">Button</button>
-            </td>
-        </tr>
-        
-        
-        <!-- Toggle -->
-        <tr>
-            <td>
-            </td>
-            <td>
-                <input type="checkbox" data-montage-id="toggle">
-            </td>
-        </tr>
-
-        
-        <!-- Checkbox -->
-        <tr>
-            <td>
-                <input type="checkbox">
-            </td>
-            <td>
-                <input type="checkbox" data-montage-id="inputCheckbox">
-            </td>
-        </tr>
-        
-        
-        <!-- Radio -->
-        <tr>
-            <td>
-                <input type="radio" name="radio-native" checked>
-                <input type="radio" name="radio-native">
-                <input type="radio" name="radio-native">
-            </td>
-            <td>
-                <input type="radio" name="radio" data-montage-id="inputRadio1" checked>
-                <input type="radio" name="radio" data-montage-id="inputRadio2">
-                <input type="radio" name="radio" data-montage-id="inputRadio3">
-            </td>
-        </tr>
-        
-        
-        <!-- Select -->
-        <tr>
-            <td>
-                <select>
-                    <option>One</option>
-                    <option>Two</option>
-                    <option>Three</option>
-                </select>
-            </td>
-            <td>
-                <select data-montage-id="select">
-                    <option>One</option>
-                    <option>Two</option>
-                    <option>Three</option>
-                </select>
-            </td>
-        </tr>
-
-
-        <!-- Text Input -->
-        <tr>
-            <td>
-                <input type="text">
-            </td>
-            <td>
-                <input type="text" data-montage-id="inputText">
-            </td>
-        </tr>
-        
-        
-        <!-- Textarea -->
-        <tr>
-            <td>
-                <textarea></textarea>
-            </td>
-            <td>
-                <textarea data-montage-id="textarea"></textarea>
-            </td>
-        </tr>
-        
-        
-        <!-- Number Input -->
-        <tr>
-            <td>
-                <input type="number">
-            </td>
-            <td>
-                <input type="number" data-montage-id="inputNumber">
-            </td>
-        </tr>
-
-      
-        <!-- Range -->
-        <tr>
-            <td>
-                <input type="range">
-            </td>
-            <td>
-                <input type="range" value="50%" data-montage-id="inputRange">
-            </td>
-        </tr>
-        
-        
-        <!-- Progress -->
-        <tr>
-            <td>
-                <progress value="0.5"></progress>
-            </td>
-            <td>
-                <progress value="0.5" data-montage-id="progress"></progress>
-            </td>
-        </tr>
-        
-        
-    </table>
-    
 </body>
 </html>

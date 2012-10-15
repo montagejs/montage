@@ -61,14 +61,7 @@
     "selectSkin": {
         "prototype": "montage/ui/select.reel",
         "properties": { "element": {"#": "selectSkin"} } },
-    
-    "textSlider": {
-        "prototype": "montage/ui/text-slider.reel",
-        "properties": { "element": {"#": "textSlider"} } },
-    "textSliderSkin": {
-        "prototype": "montage/ui/text-slider.reel",
-        "properties": { "element": {"#": "textSliderSkin"} } },
-    
+        
     "inputRange": {
         "prototype": "montage/ui/input-range.reel",
         "properties": { "element": {"#": "inputRange"} } },
