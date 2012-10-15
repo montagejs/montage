@@ -28,13 +28,56 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-/*global require,exports */
-var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
 
-/**
- * Textarea
- */
-var Textarea = exports.Textarea = Montage.create(Component, {
+h1 {
+    padding-right: 1em;
+    margin: 50px 0;
+    text-align: center;
+    line-height: 60px;
+    color: #aaa;
+    font-size: 50px;
+    font-family: 'Homenaje', sans-serif ;
+}
 
-});
+h1 .logo {
+    vertical-align: middle;
+    width: 75px;
+    height: 60px;
+    margin: 0 20px;
+    background: url(../../assets/image/logo.png) no-repeat center center;
+}
+
+h1 span {
+    display: inline-block;
+}
+
+.hl {
+    color: hsl(200,100%,50%);
+}
+
+
+table {
+    width: 100%;
+    margin: 0 auto 100px auto;
+    padding: 0;
+    list-style: none;
+    border-spacing: 0;
+    border-bottom: 1px solid hsla(0,0%,0%,.1);
+}
+
+th {
+    color: #aaa;
+    font-family: 'Homenaje', sans-serif ;
+    font-size: 1.8em;
+    font-weight: normal;
+}
+
+td {
+    text-align: center;
+    padding: 20px;
+    border-top: 1px solid hsla(0,0%,0%,.1);
+}
+
+td:nth-child(2) {
+    background: hsl(0,0%,92%);
+}

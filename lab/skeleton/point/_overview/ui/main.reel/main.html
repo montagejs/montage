@@ -38,20 +38,25 @@ POSSIBILITY OF SUCH DAMAGE.
 </head>
 <body data-montage-id="main">
 
-    <h1>Skeleton<span class="logo"></span><span class="txt">Overview</span></h1>
+    <h1>Montage <span class="logo"></span>
+                <span class="hl">Point</span>
+    </h1>
         
     <table>
         <thead>
             <tr>
-                <th>montage/ui/<span class="hl">xxx</span>.reel</th>
-                <th><span class="hl">Skeleton</span></th>
-                <th>Skeleton + <span class="hl">Skin</span></th>
                 <th>montage/ui/<span class="hl">native</span>/</th>
+                <th></th>
+                <th>montage/<span class="hl">ui</span>/</th>
+                <th>+ <span class="hl">Skin</span></th>
             </tr>
         </thead>
         <tbody>
                         
             <tr>
+                <td>
+                    <button>Button</button>
+                </td>
                 <td>
                     button
                 </td>
@@ -61,12 +66,12 @@ POSSIBILITY OF SUCH DAMAGE.
                 <td>
                     <button data-montage-id="buttonSkin" class="skin">Button</button>
                 </td>
-                <td>
-                    <button>Button</button>
-                </td>
             </tr>
             
             <tr>
+                <td>
+                    <input type="checkbox" checked />
+                </td>
                 <td>
                     input-checkbox
                 </td>
@@ -76,12 +81,14 @@ POSSIBILITY OF SUCH DAMAGE.
                 <td>
                     <input type="checkbox" checked data-montage-id="inputCheckboxSkin" class="skin" />
                 </td>
-                <td>
-                    <input type="checkbox" checked />
-                </td>
             </tr>
             
             <tr>
+                <td>
+                    <input type="radio" name="radio-native" checked />
+                    <input type="radio" name="radio-native" />
+                    <input type="radio" name="radio-native" />
+                </td>
                 <td>
                     input-radio
                 </td>
@@ -95,14 +102,18 @@ POSSIBILITY OF SUCH DAMAGE.
                     <input type="radio" name="radio-montage" data-montage-id="inputRadio2Skin" class="skin" />
                     <input type="radio" name="radio-montage" data-montage-id="inputRadio3Skin" class="skin" />
                 </td>
-                <td>
-                    <input type="radio" name="radio-native" checked />
-                    <input type="radio" name="radio-native" />
-                    <input type="radio" name="radio-native" />
-                </td>
             </tr>
             
             <tr>
+                <td>
+                    <select>
+                        <option value="AZ">Arizona</option>
+                        <option value="AL">Alabama</option>
+                        <option value="CA">California</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="NY">New York</option>
+                    </select>
+                </td>
                 <td>
                     select
                 </td>
@@ -124,18 +135,12 @@ POSSIBILITY OF SUCH DAMAGE.
                         <option value="NY">New York</option>
                     </select>
                 </td>
-                <td>
-                    <select>
-                        <option value="AZ">Arizona</option>
-                        <option value="AL">Alabama</option>
-                        <option value="CA">California</option>
-                        <option value="HI">Hawaii</option>
-                        <option value="NY">New York</option>
-                    </select>
-                </td>
             </tr>
             
             <tr>
+                <td>
+                    <input type="text" placeholder="Text Input" />
+                </td>
                 <td>
                     input-text
                 </td>
@@ -145,41 +150,27 @@ POSSIBILITY OF SUCH DAMAGE.
                 <td>
                     <input data-montage-id="inputTextSkin" type="text" placeholder="Text Input" class="skin" />
                 </td>
-                <td>
-                    <input type="text" placeholder="Text Input" />
-                </td>
             </tr>
             
             <tr>
+                <td>
+                    <textarea placeholder="Textarea"></textarea>
+                </td>
                 <td>
                     textarea
                 </td>
                 <td>
-                    <textarea data-montage-id="textarea" placeholder="Textarea">Textarea</textarea>
+                    <textarea data-montage-id="textarea" placeholder="Textarea"></textarea>
                 </td>
                 <td>
-                    <textarea data-montage-id="textareaSkin" placeholder="Textarea" class="skin">Textarea</textarea>
-                </td>
-                <td>
-                    <textarea placeholder="Textarea">Textarea</textarea>
+                    <textarea data-montage-id="textareaSkin" placeholder="Textarea" class="skin"></textarea>
                 </td>
             </tr>
-            
+                        
             <tr>
                 <td>
-                    text-slider
+                    <input type="range" value="50" min="0" max="100" /> 
                 </td>
-                <td>
-                    <span data-montage-id="textSlider"></span>
-                </td>
-                <td>
-                    <span data-montage-id="textSliderSkin" class="skin"></span>
-                </td>
-                <td>                    
-                </td>
-            </tr>
-            
-            <tr>
                 <td>
                     input-range
                 </td>
@@ -189,12 +180,12 @@ POSSIBILITY OF SUCH DAMAGE.
                 <td>
                     <input type="range" data-montage-id="inputRangeSkin" value="50" min="0" max="100" class="skin" />
                 </td>
-                <td>
-                    <input type="range" value="50" min="0" max="100" /> 
-                </td>
             </tr>
             
             <tr>
+                <td>
+                    <progress value="30" max="100" />
+                </td>
                 <td>
                     progress
                 </td>
@@ -203,9 +194,6 @@ POSSIBILITY OF SUCH DAMAGE.
                 </td>
                 <td>
                     <progress data-montage-id="progressSkin" value="30" max="100" class="skin" />
-                </td>
-                <td>
-                    <progress value="30" max="100" />
                 </td>
             </tr>
                         
