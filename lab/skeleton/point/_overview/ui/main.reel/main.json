@@ -6,7 +6,27 @@
         }
     },
    
-
+    
+    
+    "inputNumber": {
+        "prototype": "montage/lab/skeleton/point/input-number.reel",
+        "properties": { "element": {"#": "inputNumber"} } },
+    "inputNumberSkin": {
+        "prototype": "montage/lab/skeleton/point/input-number.reel",
+        "properties": { "element": {"#": "inputNumberSkin"} } },
+    
+    
+    "toggle": {
+        "prototype": "montage/lab/skeleton/point/toggle.reel",
+        "properties": { "element": {"#": "toggle"} } },
+    "toggleSkin": {
+        "prototype": "montage/lab/skeleton/point/toggle.reel",
+        "properties": { "element": {"#": "toggleSkin"} } },
+    
+    
+    
+    
+    
     
     "button": {
         "prototype": "montage/ui/button.reel",
@@ -41,6 +61,13 @@
         "prototype": "montage/ui/input-radio.reel",
         "properties": { "element": {"#": "inputRadio3Skin"} } },
    
+   "select": {
+       "prototype": "montage/ui/select.reel",
+       "properties": { "element": {"#": "select"} } },
+   "selectSkin": {
+       "prototype": "montage/ui/select.reel",
+       "properties": { "element": {"#": "selectSkin"} } },
+   
     "inputText": {
         "prototype": "montage/ui/input-text.reel",
         "properties": { "element": {"#": "inputText"} } },
@@ -54,13 +81,6 @@
     "textareaSkin": {
         "prototype": "montage/ui/textarea.reel",
         "properties": { "element": {"#": "textareaSkin"} } },
-    
-    "select": {
-        "prototype": "montage/ui/select.reel",
-        "properties": { "element": {"#": "select"} } },
-    "selectSkin": {
-        "prototype": "montage/ui/select.reel",
-        "properties": { "element": {"#": "selectSkin"} } },
         
     "inputRange": {
         "prototype": "montage/ui/input-range.reel",
