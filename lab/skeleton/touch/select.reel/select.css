@@ -28,7 +28,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
- 
+
 .montage-select {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -42,22 +42,42 @@ POSSIBILITY OF SUCH DAMAGE.
     background: #f2f2f2 url(select.png) no-repeat right center;
     cursor: pointer;
 }
-
+ 
 .montage-select:hover {
-    background-color: #ffffff;
+    background-color: #fff;
 }
-
+ 
 .montage-select:active {
     background-color: #e5e5e5;
 }
-
+ 
 .montage-select:focus {
     border-color: #7f7f7f;
+}
+
+.montage-select:disabled {
+    opacity: .5;
+    border-style: dashed;
+    pointer-events: none;
+}
+
+/* Multiple Select ------------------------------ */
+
+.montage-select[multiple] {
+    height: 5.5em;
+    cursor: default;
+    padding: 0 .5em;
+}
+
+.montage-select[multiple],
+.montage-select[multiple]:hover,
+.montage-select[multiple]:active {
+    background: #f2f2f2;
 }
 
 
 /* Style for Touch */
 .montage-select {
   font-size: 16px;
-  border-radius: 1.5em 1em 1em 1.5em;
+  border-radius: 1.5em .5em .5em 1.5em;
 }

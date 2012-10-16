@@ -28,20 +28,111 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-/*global require,exports */
+/**
+    @module "montage/ui/bluemoon/progress.reel"
+    @requires montage/core/core
+    @requires montage/ui/component
+*/
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
+    Component = require("ui/component").Component,
+    NativeProgress = require("ui/native/progress.reel").Progress;
+/**
+    @class module:montage/ui/progress.Progress
+    @extends module:montage/ui/component.Component
+*/
+exports.Progress = Montage.create(NativeProgress,/** @lends module:"montage/ui/bluemoon/progress.reel".Progress# */ {
+
+    hasTemplate: {value: true},
 
 /**
- * Progress
- */
-var Progress = exports.Progress = Montage.create(Component, {
+  Description TODO
+  @private
+*/
+    _barElement: {
+        enumerable: false,
+        value: null
+    },
+/**
+  Description TODO
+  @private
+*/
+    _value: {
+        enumerable: false,
+        value: null
+    },
+/**
+        Description TODO
+        @type {Function}
+        @default {Number} 0
+    */
+    value: {
+        get: function() {
+            return this._value;
+        },
+        set: function(val) {
+            if(val !== this._value) {
+                this._value = String.isString(val) ? parseInt(val, 10) : val;
 
-    draw: {
+                if(this._max && (this._value > this._max)) {
+                    this._value = this._max;
+                }
+                if(this._value < 0) {
+                    this._value = 0;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+/**
+  Description TODO
+  @private
+*/
+    _max: {
+        enumerable: false,
+        value: null
+    },
+/**
+        Description TODO
+        @type {Function}
+        @default {Number} 100
+    */
+    max: {
+        get: function() {
+            return this._max;
+        },
+        set: function(val) {
+            if(val !== this._max) {
+                this._max = String.isString(val) ? parseInt(val, 10) : val;
+                if(this._max <= 0) {
+                    this._max = 1; // Prevent divide by zero errors
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    didCreate: {
         value: function() {
-            // Just for now
-            this._element.querySelector(".montage-progress-bar").style["width"] = "50%";
+
+            if(NativeProgress.didCreate) {
+                NativeProgress.didCreate.call(this);
+            }
+        }
+    },
+
+/**
+    Description TODO
+    @function
+    */
+    draw: {
+        enumerable: false,
+        value: function() {
+            var ratio = this._value / this._max;
+            // constrain to interval [0, 1]
+            ratio = Math.min(Math.max(ratio, 0), 1);
+            // map into [0, 100]
+            var percentage = ratio * 100;
+            this._barElement.style.width = percentage + '%';
         }
     }
-
 });

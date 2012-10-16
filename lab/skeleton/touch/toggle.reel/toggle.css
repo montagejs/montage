@@ -31,12 +31,12 @@ POSSIBILITY OF SUCH DAMAGE.
  
 .montage-toggle {
     box-sizing: border-box;
-    font-size: 12px;
+    /font-size: 12px;
     position: relative;
     display: inline-block;
     width: 4em;
     height: 2em;
-    border-radius: 3px;
+    /border-radius: 3px;
     vertical-align: middle;
     border: 1px solid #b3b3b3;
     background: #d9d9d9;
@@ -78,6 +78,7 @@ POSSIBILITY OF SUCH DAMAGE.
 .montage-toggle.isChecked > .montage-toggle-thumb {
     -webkit-transform: translate3d(100%,0,0);
 }
+
 
 
 /* Style for Touch */
