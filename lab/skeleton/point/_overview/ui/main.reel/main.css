@@ -55,6 +55,16 @@ h1 span {
     color: hsl(200,100%,50%);
 }
 
+h2 {
+    margin: 50px 0 20px 0;
+    text-align: center;
+    color: #aaa;
+    font-size: 30px;
+    line-height: 1.5;
+    font-family: 'Homenaje', sans-serif;
+    border-bottom: 1px dashed hsla(0,0%,0%,.1);
+}
+
 
 table {
     width: 100%;
