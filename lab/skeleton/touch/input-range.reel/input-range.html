@@ -30,42 +30,34 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> -->
 <html>
-    <head>
-	    <meta charset="utf-8">
-        <link rel="stylesheet" href="input-range.css" />
-
-        <script type="text/montage-serialization">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="input-range.css">
+    <script type="text/montage-serialization">
 {
     "translateComposer1": {
-        "prototype": "montage/ui/composer/translate-composer",
+        "prototype": "ui/composer/translate-composer",
         "properties": {
             "component": {"@": "owner"},
             "axis": "horizontal",
             "hasMomentum": false
-        },
-        "bindings": {
-            "maxTranslateX": {"<-": "@owner.sliderWidth"},
-            "translateX": {"<-": "@owner.sliderLeft"},
-            "translateX": {"<->": "@owner.positionX"}
         }
     },
     "owner": {
-        "prototype": "montage/lab/skeleton/touch/input-range.reel",
         "properties": {
             "element": {"#": "inputRange"},
-            "sliderEl": {"#": "inputRange"},
-            "handleEl": {"#": "inputRangeThumb"},
-            "translateComposer": {"@": "translateComposer1"}
+            "_handleEl": {"#": "inputRangeThumb"},
+            "_translateComposer": {"@": "translateComposer1"}
         }
 
     }
 }
     </script>
-
-    </head>
-    <body>
-        <span id="inputRange" class="montage-InputRange">
-            <span id="inputRangeThumb" draggable="true" href="#" class="montage-InputRange-thumb"></span>
-        </span>
-    </body>
+</head>
+<body>
+    <!-- inputRange needs to be a div to work in Firefox -->
+    <div data-montage-id="inputRange" class="montage-InputRange">
+        <div data-montage-id="inputRangeThumb" draggable="true" class="montage-InputRange-thumb"></div>
+    </div>
+</body>
 </html>

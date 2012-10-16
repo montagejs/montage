@@ -28,14 +28,29 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
+/**
+    @module "montage/ui/select.reel"
+*/
 /*global require,exports */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
+    Component = require("ui/component").Component,
+    NativeSelect = require("ui/native/select.reel").Select;
 
 /**
  * Select
+ * @class module:"montage/ui/select.reel".Select
+ * @extends module:"montage/ui/native/select.reel".Select
  */
-var Select = exports.Select = Montage.create(Component, {
+exports.Select = Montage.create(NativeSelect, /** @lends module:"montage/ui/select.reel".Select# */ {
+
+    hasTemplate: {value: true},
+
+    didSetElement: {
+        value: function() {
+            NativeSelect.didSetElement.call(this);
+            this['class'] = (this['class'] || '') + ' montage-select';
+        }
+    }
 
 
 });

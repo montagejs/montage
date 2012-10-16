@@ -28,61 +28,9 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
- 
-.montage-Toggle {
-    box-sizing: border-box;
-    /font-size: 12px;
-    position: relative;
-    display: inline-block;
-    width: 4em;
-    height: 2em;
-    /border-radius: 3px;
-    vertical-align: middle;
-    border: 1px solid #b3b3b3;
-    background: #d9d9d9;
-    cursor: pointer;
-    -webkit-transition: background-color .2s cubic-bezier(.5,.15,.2,1);
-}
+var Montage = require("montage/core/core").Montage,
+    Component = require("montage/ui/component").Component;
 
-.montage-Toggle-thumb {
-    box-sizing: border-box;
-    position: absolute;
-    left: 0;
-    display: inline-block;
-    margin: -1px;
-    width: 2em;
-    height: inherit;
-    border-radius: inherit;
-    border: 1px solid #b3b3b3;
-    background: #f2f2f2;
-    -webkit-transition: -webkit-transform .2s cubic-bezier(.5,.15,.2,1);
-}
+exports.Main = Montage.create(Component, {
 
-/* States */
-.montage-Toggle:hover > .montage-Toggle-thumb {
-    background-color: #ffffff;
-}
-
-.montage-Toggle:active > .montage-Toggle-thumb {
-    background-color: #e5e5e5;
-}
-
-.montage-Toggle:focus {
-    border-color: #7f7f7f;
-}
-
-.montage-Toggle.isChecked {
-    background: hsl(0,0%,70%);
-}
-
-.montage-Toggle.isChecked > .montage-Toggle-thumb {
-    -webkit-transform: translate3d(100%,0,0);
-}
-
-
-
-/* Style for Touch */
-.montage-Toggle {
-  font-size: 16px;
-  border-radius: 24px;
-}
+});

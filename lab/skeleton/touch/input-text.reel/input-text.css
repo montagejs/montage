@@ -30,23 +30,41 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 .montage-InputText {
-  outline: none;
-  box-sizing: border-box;
-  font-size: 12px;
-  width: 10em;
-  height: 2.5em;
-  padding: 0.5em;
-  border: 1px solid #b3b3b3;
-  border-radius: 3px;
-  background-color: #ffffff;
+    outline: none;
+    box-sizing: border-box;
+    /font-size: 12px;
+    width: 150px;
+    height: 2.5em;
+    padding: 0.5em;
+    vertical-align: middle;
+    border: 1px solid #b3b3b3;
+    border-radius: 3px;
+    background-color: #fff;
 }
 
 .montage-InputText:hover {
-  border-color: #cccccc;
+    border-color: #ccc;
 }
 
 .montage-InputText:focus {
-  border-color: #7f7f7f;
+    border-color: #7f7f7f;
+}
+
+.montage-InputText:invalid {
+    border: 1px dashed #E73525;
+}
+
+.montage-InputText:disabled {
+    opacity: .5;
+    border-style: dashed;
+    pointer-events: none;
+}
+
+.montage-InputText[readonly] {
+    background-color: #e5e5e5;
+}
+.montage-InputText[readonly]:hover {
+    border-color: #b3b3b3;
 }
 
 

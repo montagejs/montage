@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="../../assets/style/skin.css">
+    <link rel="serialization" type="text/montage-serialization" href="main.json">
+</head>
+<body data-montage-id="main">
+
+    <h1>Montage <span class="logo"></span>
+                <span class="hl">Touch</span>
+    </h1>
+        
+    
+    <table>
+        <thead>
+            <tr>
+                <th>montage/ui/<span class="hl">native</span>/</th>
+                <th></th>
+                <th>montage/<span class="hl">lab/skeleton/touch</span>/</th>
+                <th>+ <span class="hl">Skin</span></th>
+            </tr>
+        </thead>
+        <tbody>
+                        
+            <tr>
+                <td>
+                    <button>Button</button>
+                </td>
+                <td>
+                    button
+                </td>
+                <td>
+                    <button data-montage-id="button">Button</button>
+                </td>
+                <td>
+                    <button data-montage-id="buttonSkin" class="skin">Button</button>
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    <input type="checkbox" checked />
+                </td>
+                <td>
+                    input-checkbox
+                </td>
+                <td>
+                    <input type="checkbox" checked data-montage-id="inputCheckbox" />
+                </td>
+                <td>
+                    <input type="checkbox" checked data-montage-id="inputCheckboxSkin" class="skin" />
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    <input type="radio" name="radio-native" checked />
+                    <input type="radio" name="radio-native" />
+                    <input type="radio" name="radio-native" />
+                </td>
+                <td>
+                    input-radio
+                </td>
+                <td>
+                    <input type="radio" name="radio-montage" data-montage-id="inputRadio1" checked />
+                    <input type="radio" name="radio-montage" data-montage-id="inputRadio2" />
+                    <input type="radio" name="radio-montage" data-montage-id="inputRadio3" />
+                </td>
+                <td>
+                    <input type="radio" name="radio-montage" data-montage-id="inputRadio1Skin" checked class="skin" />
+                    <input type="radio" name="radio-montage" data-montage-id="inputRadio2Skin" class="skin" />
+                    <input type="radio" name="radio-montage" data-montage-id="inputRadio3Skin" class="skin" />
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    <select>
+                        <option value="AZ">Arizona</option>
+                        <option value="AL">Alabama</option>
+                        <option value="CA">California</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="NY">New York</option>
+                    </select>
+                </td>
+                <td>
+                    select
+                </td>
+                <td>
+                    <select data-montage-id="select">
+                        <option value="AZ">Arizona</option>
+                        <option value="AL">Alabama</option>
+                        <option value="CA">California</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="NY">New York</option>
+                    </select>
+                </td>
+                <td>
+                    <select data-montage-id="selectSkin" class="skin">
+                        <option value="AZ">Arizona</option>
+                        <option value="AL">Alabama</option>
+                        <option value="CA">California</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="NY">New York</option>
+                    </select>
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    <input type="text" placeholder="Text Input" />
+                </td>
+                <td>
+                    input-text
+                </td>
+                <td>
+                    <input data-montage-id="inputText" type="text" placeholder="Text Input" />
+                </td>
+                <td>
+                    <input data-montage-id="inputTextSkin" type="text" placeholder="Text Input" class="skin" />
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    <textarea placeholder="Textarea"></textarea>
+                </td>
+                <td>
+                    textarea
+                </td>
+                <td>
+                    <textarea data-montage-id="textarea" placeholder="Textarea"></textarea>
+                </td>
+                <td>
+                    <textarea data-montage-id="textareaSkin" placeholder="Textarea" class="skin"></textarea>
+                </td>
+            </tr>
+                        
+            <tr>
+                <td>
+                    <input type="range" value="50" min="0" max="100" /> 
+                </td>
+                <td>
+                    input-range
+                </td>
+                <td>
+                    <input type="range" data-montage-id="inputRange" value="50" min="0" max="100" />
+                </td>
+                <td>
+                    <input type="range" data-montage-id="inputRangeSkin" value="50" min="0" max="100" class="skin" />
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    <progress value="30" max="100" />
+                </td>
+                <td>
+                    progress
+                </td>
+                <td>
+                    <progress data-montage-id="progress" value="30" max="100" />
+                </td>
+                <td>
+                    <progress data-montage-id="progressSkin" value="30" max="100" class="skin" />
+                </td>
+            </tr>
+                        
+        </tbody>
+    </table>
+    
+    
+    <h2>In progress</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>montage/ui/<span class="hl">native</span>/</th>
+                <th></th>
+                <th>montage/<span class="hl">lab/skeleton/touch</span>/</th>
+                <th>+ <span class="hl">Skin</span></th>
+            </tr>
+        </thead>
+        <tbody>
+                        
+            <tr>
+                <td>
+                    <input type="number" value="0" />
+                </td>
+                <td>
+                    input-number
+                </td>
+                <td>
+                    <input data-montage-id="inputNumber" type="number" value="0" />
+                </td>
+                <td>
+                    <input data-montage-id="inputNumberSkin" class="skin" type="number" value="0" />
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    
+                </td>
+                <td>
+                    toggle
+                </td>
+                <td>
+                    <input type="checkbox" data-montage-id="toggle" />
+                </td>
+                <td>
+                    <input type="checkbox" data-montage-id="toggleSkin" class="skin" />
+                </td>
+            </tr>
+                        
+        </tbody>
+    </table>
+    
+    
+</body>
+</html>

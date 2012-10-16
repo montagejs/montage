@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -moz-appearance: none;
     outline: none;
     box-sizing: border-box;
-    font-size: 12px;
+    /font-size: 12px;
     width: 1.5em;
     height: 1.5em;
     border-radius: 3px;
@@ -45,7 +45,7 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 
 .montage-InputCheckbox:hover {
-    background-color: #ffffff;
+    background-color: #fff;
 }
 
 .montage-InputCheckbox:active {
@@ -59,6 +59,7 @@ POSSIBILITY OF SUCH DAMAGE.
 .montage-InputCheckbox:checked {
     background: #f2f2f2 url(checkbox.png) no-repeat center center;
 }
+
 
 
 /* Style for Touch */

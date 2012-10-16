@@ -28,19 +28,27 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
+/**
+    @module "montage/ui/input-checkbox.reel"
+*/
 /*global require,exports */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
+    Component = require("ui/component").Component,
+    NativeInputCheckbox = require("ui/native/input-checkbox.reel").InputCheckbox;
 
 /**
  * Input Checkbox
+ * @class module:"montage/ui/input-checkbox.reel".InputCheckbox
+ * @extends module:"montage/ui/native/input-checkbox.reel".InputCheckbox
  */
-var InputCheckbox = exports.InputCheckbox = Montage.create(Component, {
+exports.InputCheckbox = Montage.create(NativeInputCheckbox, /** module:"montage/ui/input-checkbox.reel".InputCheckbox */ {
 
-    draw: {
+    hasTemplate: {value: true},
+
+    didSetElement: {
         value: function() {
-            //This is just a temporary fix to prevent the type to be doubled.
-            this._element.type = "checkbox";
+            NativeInputCheckbox.didSetElement.call(this);
+            this['class'] = (this['class'] || '') + ' montage-inputCheckbox';
         }
     }
 

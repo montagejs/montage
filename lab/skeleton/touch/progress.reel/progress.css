@@ -31,9 +31,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 .montage-Progress {
     position: relative;
-    font-size: 12px;
+    /font-size: 12px;
     display: inline-block;
-    width: 10em;
+    position: relative;
+    width: 150px;
     height: 10px;
     border-radius: 3px;
     border: 1px solid #b3b3b3;
@@ -50,7 +51,9 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 
 
+
+
 /* Style for Touch */
 .montage-Progress {
-  font-size: 16px;
+    font-size: 16px;
 }
