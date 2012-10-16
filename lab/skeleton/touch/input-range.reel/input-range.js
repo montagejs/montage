@@ -28,22 +28,26 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
+/**
+    @module "montage/ui/input-range.reel"
+*/
 /*global require,exports */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
+    Component = require("ui/component").Component,
+    dom = require("ui/dom");
 
 /**
- * Input Range
+ * The input type="range" field
+ * @class module:"montage/ui/input-range.reel".InputRange
+ * @extends module:"montage/ui/native/input-range.reel".InputRange
  */
-var InputRange = exports.InputRange = Montage.create(Component, {
-
-    DEFAULT_WIDTH: {value: 300},
-    HANDLE_ADJUST: {value: 5},
-
-    hasTemplate: {value: true},
+var InputRange = exports.InputRange = Montage.create(Component, /** @lends module:"montage/ui/input-range.reel".InputRange */  {
 
     // public API
-    _min: {value: null},
+    _min: {
+        value: null
+    },
+
     min: {
         get: function() {
             return this._min;
@@ -54,97 +58,132 @@ var InputRange = exports.InputRange = Montage.create(Component, {
         }
     },
 
-    _max: {value: null},
+    _max: {
+        value: null
+    },
+
     max: {
-       get: function() {
-           return this._max;
-       },
-       set: function(value) {
-           this._max = String.isString(value) ? parseFloat(value) : value;
-           this.needsDraw = true;
-       }
-   },
-
-    _step: {value: null},
-    step: {
-       get: function() {
-           return this._step;
-       },
-       set: function(value) {
-           this._step =  String.isString(value) ? parseFloat(value) : value;
-           this.needsDraw = true;
-       }
-   },
-
-   /** Width of the slider in px. Default = 300 */
-   _width: {value: null},
-   width: {
-         get: function() {
-             return this._width;
-         },
-         set: function(value) {
-             this._width =  String.isString(value) ? parseFloat(value) : value;
-             this.needsDraw = true;
-         }
-     },
-
-
-   _sliding: {value: false},
-
-   percent: {value: null},
-   _valueSyncedWithPosition: {value: null},
-   _value: {value: null},
-    value: {
-       get: function() {
-           return this._value;
-       },
-       set: function(value, fromInput) {
-           this._value =  String.isString(value) ? parseFloat(value) : value;
-
-           if(fromInput) {
-               this._valueSyncedWithPosition = true;
-           } else {
-               this._valueSyncedWithPosition = false;
-               this._calculatePositionFromValue();
-               this.needsDraw = true;
-           }
-       }
-   },
-
-    // private
-    sliderEl: {value: null, enumerable: false},
-    handleEl: {value: null, enumerable: false},
-    sliderLeft: {value: null, enumerable: false},
-    sliderWidth: {value: null, enumerable: false},
-    minX: {value: null, enumerable: false},
-    maxX: {value: null, enumerable: false},
-
-    _positionX: {value: null},
-    positionX: {
-        enumerable: false,
         get: function() {
-            return this._positionX;
+            return this._max;
         },
-        set: function(value, fromValue) {
+        set: function(value) {
+            this._max = String.isString(value) ? parseFloat(value) : value;
+            this.needsDraw = true;
+        }
+   },
 
-            if(value !== null && !isNaN(value)) {
-                this._positionX = value;
-                if(!fromValue) {
-                    this._calculateValueFromPosition();
-                    this._valueSyncedWithPosition = true;
-                }
-                this.needsDraw = true;
-            }
+    _step: {
+        value: null
+    },
 
+    step: {
+        get: function() {
+            return this._step;
+        },
+        set: function(value) {
+            this._step =  String.isString(value) ? parseFloat(value) : value;
+            this.needsDraw = true;
         }
     },
 
+    /** Width of the slider in px. Default = 300 */
+    _width: {
+        value: null
+    },
+
+    width: {
+        get: function() {
+            return this._width;
+        },
+        set: function(value) {
+            this._width =  String.isString(value) ? parseFloat(value) : value;
+            this.needsDraw = true;
+        }
+    },
+
+    percent: {
+        value: null
+    },
+
+    _valueSyncedWithPosition: {
+        value: null
+    },
+
+    _value: {
+        value: null
+    },
+
+    value: {
+        get: function() {
+            return this._value;
+        },
+        set: function(value, fromInput) {
+            this._value =  String.isString(value) ? parseFloat(value) : value;
+            //console.log('value set', this._value);
+            if(fromInput) {
+                this._valueSyncedWithPosition = true;
+            } else {
+                this._valueSyncedWithPosition = false;
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    // private
+    _handleEl: {
+        value: null
+    },
+
+    _translateComposer: {
+        value: null
+    },
+
+    _sliderWidth: {
+        value: null
+    },
+
+    __positionX: {
+        value: null
+    },
+
+    _positionX: {
+        get: function() {
+            return this.__positionX;
+        },
+        set: function(value, fromValue) {
+            //console.log('positionX', value);
+            if(value !== null && !isNaN(value)) {
+                this.__positionX = value;
+                if(!fromValue) {
+                    this._calculateValueFromPosition();
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    _touchOnHandle: {value: null},
+
+    __clickTarget: {value: null},
+    _clickTarget: {
+        get: function() {
+            return this.__clickTarget;
+        },
+        set: function(value) {
+            this.__clickTarget = value;
+            this.needsDraw = true;
+        }
+    },
+
+    _handleWidth: {value: null},
+
     _calculateValueFromPosition: {
         value: function() {
-            if(this.sliderWidth > 0) {
-                var percent = this.percent = (this.positionX / this.sliderWidth) * 100;
+            if(this._sliderWidth > 0) {
+                var percent = this.percent = (this._positionX / this._sliderWidth) * 100;
                 var value = (this.min + ((percent/100) * (this.max - this.min)));
                 Object.getPropertyDescriptor(this, "value").set.call(this, value, true);
+                this._valueSyncedWithPosition = true;
             }
 
         }
@@ -153,12 +192,13 @@ var InputRange = exports.InputRange = Montage.create(Component, {
     _calculatePositionFromValue: {
         value: function() {
             // unless the element is ready, we cannot position the handle
-            if(this.sliderWidth) {
+            if(this._sliderWidth) {
                 var percent, value = this.value;
                 var range = (this.max - this.min);
                 percent = ((this.value-this.min)/range) * 100;
-                var positionX = (percent/100)*this.sliderWidth;
-                Object.getPropertyDescriptor(this, "positionX").set.call(this, positionX, true);
+                var positionX = (percent/100)*this._sliderWidth;
+                Object.getPropertyDescriptor(this, "_positionX").set.call(this, positionX, true);
+
                 this.percent = percent;
                 this._valueSyncedWithPosition = true;
             } else {
@@ -167,68 +207,105 @@ var InputRange = exports.InputRange = Montage.create(Component, {
         }
     },
 
-    deserializedFromTemplate: {
+    prepareForDraw: {
         value: function() {
-
             // read initial values from the input type=range
-
             this.min = this.min || this.element.getAttribute('min') || 0;
             this.max = this.max || this.element.getAttribute('max') || 100;
             this.step = this.step || this.element.getAttribute('step') || 1;
             this.value = this.value || this.element.getAttribute('value') || 0;
+        }
+    },
 
+    // @todo: Without prepareForActivationEvents, the _translateComposer does not work
+    prepareForActivationEvents: {
+        value: function() {
+            this._translateComposer.addEventListener('translateStart', this, false);
+            this._translateComposer.addEventListener('translate', this, false);
+            this._translateComposer.addEventListener('translateEnd', this, false);
+            this._addEventListeners();
+        }
+    },
+
+    _addEventListeners: {
+        value: function() {
+            // support touching the scale to select only in Desktop
+            if(window.Touch) {
+                this.element.addEventListener('touchstart', this, false);
+            } else {
+                this.element.addEventListener('mousedown', this, false);
+            }
+            this._touchOnHandle = false;
 
         }
     },
 
-    prepareForDraw: {
+    _removeEventListeners: {
         value: function() {
-            this.minX = this.sliderLeft = this.element.offsetLeft;
-            this.sliderWidth =  (this.width || InputRange.DEFAULT_WIDTH); //this.element.offsetWidth || 300;
-            this.element.style.width = (this.sliderWidth + InputRange.HANDLE_ADJUST) + 'px';
-
-            this.maxX = this.sliderLeft + this.sliderWidth;
-
-            if(!this._valueSyncedWithPosition) {
-                this._calculatePositionFromValue();
+            // support touching the scale to select only in Desktop
+            if(window.Touch) {
+                this.element.removeEventListener('touchstart', this, false);
+            } else {
+                this.element.removeEventListener('mousedown', this, false);
             }
         }
     },
 
-    // @todo: Without prepareForActivationEvents, the translateComposer does not work
-    prepareForActivationEvents: {
-        value: function() {
-            this.translateComposer.addEventListener('translateStart', this, false);
-            this.translateComposer.addEventListener('translateEnd', this, false);
-        }
+    _startTranslateX: {
+        enumerable: false,
+        value: null
+    },
+
+    _startPositionX: {
+        enumerable: false,
+        value: null
     },
 
     handleTranslateStart: {
         value: function(e) {
+            this._startTranslateX = e.translateX;
+            this._startPositionX = this.__positionX;
+            this._removeEventListeners();
             this._valueSyncedWithPosition = false;
-            this._sliding = true;
+        }
+    },
+
+    handleTranslate: {
+        value: function (event) {
+            // handle translate on Touch devices only if initial touch was on the knob/handle
+            if(!window.Touch || (window.Touch && this._touchOnHandle)) {
+                var x = this._startPositionX + event.translateX - this._startTranslateX;
+                if (x < 0) {
+                    x = 0;
+                } else {
+                    if (x > this._sliderWidth) {
+                        x = this._sliderWidth;
+                    }
+                }
+                this._positionX = x;
+            }
         }
     },
 
     handleTranslateEnd: {
         value: function(e) {
-
-            if(this._sliding === true) {
-                this._sliding = false;
-            } else {
-                // do this only when the user clicks the slider directly instead of
-                // sliding the handle
-                var position = this.translateComposer._pointerX;
-                var positionX = ((position)- this.sliderLeft);
-                if(positionX > 0 && (positionX <= this.sliderWidth)) {
-                    this.positionX = positionX;
-                }
-
-            }
-
+            this._addEventListeners();
         }
     },
 
+    handleMousedown: {
+        value: function(e) {
+            this._clickTarget = {x: e.pageX, y: e.pageY};
+        }
+    },
+
+    handleTouchstart: {
+        value: function(e) {
+            var target = e.targetTouches[0];
+            // handle the translate only if touch target is the knob
+            this._touchOnHandle = (target.target === this._handleEl);
+        }
+    },
 
     surrenderPointer: {
         value: function(pointer, composer) {
@@ -238,22 +315,43 @@ var InputRange = exports.InputRange = Montage.create(Component, {
         }
     },
 
+    willDraw: {
+        value: function() {
+            if(!this._handleWidth) {
+                this._handleWidth = this._handleEl.offsetWidth;
+            }
+            this._sliderWidth = this.element.offsetWidth - (1.5*(this._handleWidth/2));
+            if(this._clickTarget) {
+                // the slider scale was clicked
+                var x = dom.convertPointFromNodeToPage(this.element).x;
+                var positionX = (this._clickTarget.x - (x + (this._handleWidth/2)));
+                if(positionX < 0) {
+                    positionX = 0;
+                }
+                this._positionX = positionX;
+                this._clickTarget = null;
+            }
+            if(!this._valueSyncedWithPosition) {
+                this._calculatePositionFromValue();
+            }
+        }
+    },
 
     draw: {
         value: function() {
-            var el = this.handleEl;
-
+            var el = this._handleEl;
             if(el.style.webkitTransform != null) {
                 // detection for webkitTransform to use Hardware acceleration where available
-                el.style.webkitTransform = 'translate(' + this.positionX + 'px)';
+                el.style.webkitTransform = 'translate3d(' + this._positionX + 'px,0,0)';
             } else if(el.style.MozTransform != null) {
-                el.style.MozTransform = 'translate(' + this.positionX + 'px)';
+                el.style.MozTransform = 'translate3d(' + this._positionX + 'px,0,0)';
             } else if(el.style.transform != null) {
-                el.style.transform = 'translate(' + this.positionX + 'px)';
+                el.style.transform = 'translate3d(' + this._positionX + 'px,0,0)';
             } else {
                 // fallback
-                el.style['left'] = this.positionX + 'px';
+                el.style['left'] = this._positionX + 'px';
             }
+
         }
     }
 });

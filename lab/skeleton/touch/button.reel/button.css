@@ -32,13 +32,13 @@ POSSIBILITY OF SUCH DAMAGE.
 .montage-button {
     outline: none;
     box-sizing: border-box;
-    font-size: 12px;
+    /font-size: 12px;
     height: 2.5em;
     min-width: 2.5em;
     margin: 0 2px;
     padding: 0 1em;
     vertical-align: middle;
-    border-radius: 3px;
+    /border-radius: 3px;
     border: 1px solid #b3b3b3;
     background-color: #f2f2f2;
     cursor: pointer;
@@ -46,7 +46,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* States */
 .montage-button:hover {
-    background-color: #ffffff;
+    background-color: #fff;
+    color: #000;
 }
 
 .montage-button:active {
@@ -60,6 +61,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* Style for Touch */
 .montage-button {
-  font-size: 16px;
-  border-radius: 24px;
+    font-size: 16px;
+    border-radius: 24px;
 }

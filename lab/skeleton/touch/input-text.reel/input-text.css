@@ -28,25 +28,43 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
- 
+
 .montage-inputText {
-  outline: none;
-  box-sizing: border-box;
-  font-size: 12px;
-  width: 10em;
-  height: 2.5em;
-  padding: 0.5em;
-  border: 1px solid #b3b3b3;
-  border-radius: 3px;
-  background-color: #ffffff;
+    outline: none;
+    box-sizing: border-box;
+    /font-size: 12px;
+    width: 150px;
+    height: 2.5em;
+    padding: 0.5em;
+    vertical-align: middle;
+    border: 1px solid #b3b3b3;
+    border-radius: 3px;
+    background-color: #fff;
 }
 
 .montage-inputText:hover {
-  border-color: #cccccc;
+    border-color: #ccc;
 }
 
 .montage-inputText:focus {
-  border-color: #7f7f7f;
+    border-color: #7f7f7f;
+}
+
+.montage-inputText:invalid {
+    border: 1px dashed #E73525;
+}
+
+.montage-inputText:disabled {
+    opacity: .5;
+    border-style: dashed;
+    pointer-events: none;
+}
+
+.montage-inputText[readonly] {
+    background-color: #e5e5e5;
+}
+.montage-inputText[readonly]:hover {
+    border-color: #b3b3b3;
 }
 
 

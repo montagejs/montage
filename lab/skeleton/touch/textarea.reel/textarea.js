@@ -28,13 +28,27 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
+/**
+    @module "montage/ui/textarea.reel"
+*/
 /*global require,exports */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
+    Component = require("ui/component").Component,
+    NativeTextarea = require("ui/native/textarea.reel").Textarea;
 
 /**
  * Textarea
+ * @class module:"montage/ui/textarea.reel".Textarea
+ * @lends module:"ui/native/textarea.reel".Textarea
  */
-var Textarea = exports.Textarea = Montage.create(Component, {
+exports.Textarea = Montage.create(NativeTextarea, /** @lends module:"montage/ui/textarea.reel".Textarea */ {
 
+    hasTemplate: {value: true},
+
+    didSetElement: {
+        value: function() {
+            NativeTextarea.didSetElement.call(this);
+            this['class'] = (this['class'] || '') + ' montage-textarea';
+        }
+    }
 });
