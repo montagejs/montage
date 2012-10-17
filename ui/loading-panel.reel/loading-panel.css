@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-.montage-loading-panel {
+.montage-LoadingPanel {
     position: absolute;
     z-index: 999;
     top: 0;
@@ -38,14 +38,14 @@ POSSIBILITY OF SUCH DAMAGE.
     left: 0;
 }
 
-.montage-loading-panel > .loadingIndicator {
+.montage-LoadingPanel > .montage-LoadingPanel-loadingIndicator {
     width: 200px;
     margin: 20px;
     display: none; /* disabled for now, because the loading doesn't really look continuos enough. */
 }
 
 
-.montage-loading-panel > .loadingCount {
+.montage-LoadingPanel > .montage-LoadingPanel-loadingCount {
     position: absolute;
     width: 160px;
     height: 160px;
@@ -65,6 +65,6 @@ POSSIBILITY OF SUCH DAMAGE.
     overflow: hidden;
 }
 
-.montage-loading-panel > .loadingCount > .divider {
+.montage-LoadingPanel > .montage-LoadingPanel-loadingCount > .montage-LoadingPanel-divider {
     color: hsl(200,100%,50%);
 }

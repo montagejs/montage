@@ -29,12 +29,12 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-.montage-flow {
+.montage-Flow {
     position: relative;
     overflow: hidden;
     -webkit-transform: translateZ(0);
 }
-.montage-flow-repetition {
+.montage-Flow-Repetition {
     position: absolute;
     top: 0;
     left: 0;
@@ -43,7 +43,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform-style: preserve-3d;
     -webkit-transform: translateZ(0);
 }
-.montage-flow-repetition > div {
+.montage-Flow-Repetition > div {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -52,6 +52,6 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: translateZ(0);
     -webkit-transform-style: preserve-3d;
 }
-.montage-flow-pointer-events-none {
+.montage-Flow--pointerEventsNone {
     pointer-events: none;
 }

@@ -157,7 +157,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
 
                 if (contentNode) {
                     // Temporary orphan the overlay slot while retrieving the content
-                    overlayElement = contentNode.querySelector(".montage-editor-overlay");
+                    overlayElement = contentNode.querySelector(".montage-Editor-overlay");
                     if (overlayElement) {
                         overlayParent = overlayElement.parentNode;
                         overlayNextSibling = overlayElement.nextSibling;
@@ -232,7 +232,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
 
                 if (contentNode) {
                     // Temporary orphan the overlay slot in order to retrieve the content
-                    overlayElement = contentNode.querySelector(".montage-editor-overlay");
+                    overlayElement = contentNode.querySelector(".montage-Editor-overlay");
                     if (overlayElement) {
                         overlayParent = overlayElement.parentNode;
                         overlayNextSibling = overlayElement.nextSibling;
