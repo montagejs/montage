@@ -397,7 +397,7 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
     */
     handleMousemove: {
         value: function (event) {
-            this.value = this.value + ((event.clientX - this._cursorPosition) * (this.valueRange)) / this._width;
+            this.value = this._value + ((event.clientX - this._cursorPosition) * (this.valueRange)) / this._width;
 
             this._cursorPosition = event.clientX;
             event.preventDefault();
