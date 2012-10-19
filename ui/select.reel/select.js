@@ -48,7 +48,7 @@ exports.Select = Montage.create(NativeSelect, /** @lends module:"montage/ui/sele
     didSetElement: {
         value: function() {
             NativeSelect.didSetElement.call(this);
-            this['class'] = (this['class'] || '') + ' montage-select';
+            this['class'] = (this['class'] || '') + ' montage-Select';
         }
     }
 

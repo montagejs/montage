@@ -28,10 +28,10 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
- .montage-autocomplete {
+ .montage-Autocomplete {
      padding-right: 20px;
  }
- .montage-autocomplete-loading {
+ .montage-Autocomplete--loading {
      background: url('loading.gif') no-repeat;
      background-position: right;
  }

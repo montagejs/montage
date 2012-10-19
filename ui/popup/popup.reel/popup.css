@@ -41,14 +41,7 @@ POSSIBILITY OF SUCH DAMAGE.
 	height: 0;
 }
 
-
-.montage-off-left {
-    position: absolute;
-    top: 0px;
-    left: -10000px;
-}
-
-.montage-popup-modal-mask {
+.montage-Popup-modal-mask {
     position: fixed;
     left: 0;
     top: 0;
@@ -58,7 +51,7 @@ POSSIBILITY OF SUCH DAMAGE.
     opacity: 0.8;
 }
 
-.montage-popup-container {
+.montage-Popup-container {
     border: 1px solid #eee;
     -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -77,28 +70,28 @@ POSSIBILITY OF SUCH DAMAGE.
     border-radius: 3px;
 }
 
-.montage-popup-noborder {
+.montage-Popup-noborder {
     border: 0px;
 }
 
-.montage-modal {
+.montage-Popup--modal {
     border: 3px solid #ccc;
 }
 
-.montage-popup-container *:focus {
+.montage-Popup-container *:focus {
     outline: none;
 }
 
-.montage-popup-wrapper {
+.montage-Popup-wrapper {
 
 }
 
-.montage-popup-header {
+.montage-Popup-header {
     background-color: whitesmoke;
     border-bottom: 1px solid #eee;
     padding: 5px 15px;
 }
-.montage-popup-footer {
+.montage-Popup-footer {
     background-color: whitesmoke;
     padding: 10px 15px;
     border-top: 1px solid #ddd;

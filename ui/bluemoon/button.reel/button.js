@@ -595,7 +595,7 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
                 this._element.tabIndex = 0;
             }
 
-            this._element.classList.add("montage-button");
+            this._element.classList.add("montage-Button");
             this._element.setAttribute("aria-role", "button");
 
             if (!!(this._isElementInput = (this._element.tagName === "INPUT")) && this.value === undefined) {

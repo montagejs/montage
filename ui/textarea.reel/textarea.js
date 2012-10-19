@@ -48,7 +48,7 @@ exports.Textarea = Montage.create(NativeTextarea, /** @lends module:"montage/ui/
     didSetElement: {
         value: function() {
             NativeTextarea.didSetElement.call(this);
-            this['class'] = (this['class'] || '') + ' montage-textarea';
+            this['class'] = (this['class'] || '') + ' montage-Textarea';
         }
     }
 });

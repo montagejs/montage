@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-.montage-tokenField {
+.montage-TokenField {
     background: white;
     border: 1px solid #bdbdbd;
     padding: 3px 5px;
@@ -37,11 +37,11 @@ POSSIBILITY OF SUCH DAMAGE.
     cursor: text;
 }
 
-.montage-tokenField-list {
+.montage-TokenField-list {
     display: inline;
 }
 
-.montage-tokenField-autocomplete.montage-inputText {
+.montage-TokenField-Autocomplete.montage-InputText {
     -webkit-appearance: none;
     -moz-appearance: none;
     border: none;
@@ -54,6 +54,6 @@ POSSIBILITY OF SUCH DAMAGE.
     width: 2px;
 }
 
-.montage-tokenField-autocomplete:focus {
+.montage-TokenField-Autocomplete:focus {
     width: 80%;
 }
