@@ -34,23 +34,23 @@ POSSIBILITY OF SUCH DAMAGE.
     -moz-appearance: none;
     outline: none;
     box-sizing: border-box;
-    font-size: 12px;
+    /font-size: 12px;
     height: 2.5em;
     padding: 0 2em 0 1em;
-    border-radius: 3px;
+    /border-radius: 3px;
     border: 1px solid #b3b3b3;
     background: #f2f2f2 url(select.png) no-repeat right center;
     cursor: pointer;
 }
- 
+
 .montage-Select:hover {
     background-color: #fff;
 }
- 
+
 .montage-Select:active {
     background-color: #e5e5e5;
 }
- 
+
 .montage-Select:focus {
     border-color: #7f7f7f;
 }
@@ -63,21 +63,21 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* Multiple Select ------------------------------ */
 
-.montage-select[multiple] {
+.montage-Select[multiple] {
     height: 5.5em;
     cursor: default;
     padding: 0 .5em;
 }
 
-.montage-select[multiple],
-.montage-select[multiple]:hover,
-.montage-select[multiple]:active {
+.montage-Select[multiple],
+.montage-Select[multiple]:hover,
+.montage-Select[multiple]:active {
     background: #f2f2f2;
 }
 
 
 /* Style for Touch */
 .montage-Select {
-  font-size: 16px;
-  border-radius: 1.5em .5em .5em 1.5em;
+    font-size: 16px;
+    border-radius: 1.5em .5em .5em 1.5em;
 }

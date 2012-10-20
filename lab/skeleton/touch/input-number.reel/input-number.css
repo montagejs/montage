@@ -72,26 +72,26 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* Style for Touch */
 .montage-InputNumber {
-  font-size: 16px;
-  width: auto;
-  margin: 0;
+    font-size: 16px;
+    width: auto;
+    margin: 0;
 }
 .montage-InputNumber > input {
-  font-size: inherit;
-  border-radius: 0;
-  text-align: center;
+    font-size: inherit;
+    border-radius: 0;
+    text-align: center;
 }
 .montage-InputNumber > button {
-  position: static;
-  height: 2.5em;
-  top: auto;
-  right: auto;
+    position: static;
+    height: 2.5em;
+    top: auto;
+    right: auto;
 }
 .montage-InputNumber > .montage-InputNumber-plus {
-  border-width: 1px 1px 1px 0;
-  border-radius: 0 2.5em 2.5em 0;
+    border-width: 1px 1px 1px 0;
+    border-radius: 0 2.5em 2.5em 0;
 }
 .montage-InputNumber > .montage-InputNumber-minus {
-  border-width: 1px 0 1px 1px;
-  border-radius: 2.5em 0 0 2.5em;
+    border-width: 1px 0 1px 1px;
+    border-radius: 2.5em 0 0 2.5em;
 }

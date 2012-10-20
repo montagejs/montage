@@ -37,11 +37,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 
 /* Buttons ------------------------------- */
-.montage-button.skin,
-.montage-select.skin,
-.skin > .montage-inputRange-thumb,
-.skin > .montage-toggle-thumb,
-.skin > .montage-button  {
+.montage-Button.skin,
+.montage-Select.skin,
+.skin > .montage-InputRange-thumb,
+.skin > .montage-Toggle-thumb,
+.skin > .montage-Button  {
     color: #fff;
     font-weight: bold;
     border-color: #407fbf;
@@ -52,7 +52,7 @@ POSSIBILITY OF SUCH DAMAGE.
     background-image:      -o-linear-gradient(top, #66b2ff, #007fff);
     background-image:         linear-gradient(top, #66b2ff, #007fff);
 }
-.montage-select.skin {
+.montage-Select.skin {
     background: url(../image/select-skin.png) no-repeat right center, -webkit-linear-gradient(top, #66b2ff, #007fff);
     background: url(../image/select-skin.png) no-repeat right center,    -moz-linear-gradient(top, #66b2ff, #007fff);
     background: url(../image/select-skin.png) no-repeat right center,     -ms-linear-gradient(top, #66b2ff, #007fff);
@@ -62,29 +62,29 @@ POSSIBILITY OF SUCH DAMAGE.
 
 
 /* Checkbox / Radio ------------------------------- */
-.montage-inputCheckbox.skin,
-.montage-inputRadio.skin {
+.montage-InputCheckbox.skin,
+.montage-InputRadio.skin {
     border-color: #007fff;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 0px rgba(255, 255, 255, 0.4);
 }
 
 
 /* Text ------------------------------- */
-.montage-inputText.skin,
-.montage-textarea.skin,
-.skin > .montage-inputText {
+.montage-InputText.skin,
+.montage-Textarea.skin,
+.skin > .montage-InputText {
     border-color: #007fff;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 0px rgba(255, 255, 255, 0.4);
 }
 
 
 /* Progress ------------------------------- */
-.montage-progress.skin {
+.montage-Progress.skin {
     border-color: #007fff;
     box-shadow: inset 0 1px 0px rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0);
     background-color: #f0f7ff;
 }
-.montage-progress.skin > .montage-progress-bar {
+.montage-Progress.skin > .montage-Progress-bar {
     background-image: -webkit-linear-gradient(top, #66b2ff, #007fff);
     background-image:    -moz-linear-gradient(top, #66b2ff, #007fff);
     background-image:     -ms-linear-gradient(top, #66b2ff, #007fff);

@@ -48,7 +48,7 @@ exports.InputText = Montage.create(NativeInputText, /** @lends module:"montage/u
     didSetElement: {
         value: function() {
             NativeInputText.didSetElement.call(this);
-            this['class'] = (this['class'] || '') + ' montage-inputText';
+            this['class'] = (this['class'] || '') + ' montage-InputText';
         }
     }
 });

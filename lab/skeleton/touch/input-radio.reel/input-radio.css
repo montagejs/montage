@@ -57,12 +57,17 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 
 .montage-InputRadio:checked {
-    background: #f2f2f2 url(radio.png) no-repeat center center;
+    background: #f2f2f2 url(radio.png) no-repeat center;
 }
 
+.montage-InputRadio:disabled {
+    opacity: .5;
+    border-style: dashed;
+    pointer-events: none;
+}
 
 
 /* Style for Touch */
 .montage-InputRadio {
-  font-size: 16px;
+    font-size: 16px;
 }

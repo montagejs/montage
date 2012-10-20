@@ -30,8 +30,6 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 .montage-Progress {
-    position: relative;
-    /font-size: 12px;
     display: inline-block;
     position: relative;
     width: 150px;
@@ -48,9 +46,12 @@ POSSIBILITY OF SUCH DAMAGE.
     top: 0;
     left: 0;
     background-color: #f2f2f2;
+    -webkit-transition: width .3s cubic-bezier(.25,.1,.3,.9);
+       -moz-transition: width .3s cubic-bezier(.25,.1,.3,.9);
+        -ms-transition: width .3s cubic-bezier(.25,.1,.3,.9);
+         -o-transition: width .3s cubic-bezier(.25,.1,.3,.9);
+            transition: width .3s cubic-bezier(.25,.1,.3,.9);
 }
-
-
 
 
 /* Style for Touch */

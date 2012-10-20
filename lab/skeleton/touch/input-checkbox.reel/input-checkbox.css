@@ -57,12 +57,17 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 
 .montage-InputCheckbox:checked {
-    background: #f2f2f2 url(checkbox.png) no-repeat center center;
+    background: #f2f2f2 url(checkbox.png) no-repeat center;
 }
 
+.montage-InputCheckbox:disabled {
+    opacity: .5;
+    border-style: dashed;
+    pointer-events: none;
+}
 
 
 /* Style for Touch */
 .montage-InputCheckbox {
-  font-size: 16px;
+    font-size: 16px;
 }
