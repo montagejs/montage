@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
     -moz-appearance: none;
     outline: none;
     box-sizing: border-box;
-    font-size: 12px;
+    vertical-align: middle;
+    /font-size: 12px;
     width: 1.5em;
     height: 1.5em;
     border-radius: 1em;
@@ -44,7 +45,7 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 
 .montage-InputRadio:hover {
-    background-color: #ffffff;
+    background-color: #fff;
 }
 
 .montage-InputRadio:active {
@@ -56,11 +57,17 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 
 .montage-InputRadio:checked {
-    background: #f2f2f2 url(radio.png) no-repeat center center;
+    background: #f2f2f2 url(radio.png) no-repeat center;
+}
+
+.montage-InputRadio:disabled {
+    opacity: .5;
+    border-style: dashed;
+    pointer-events: none;
 }
 
 
 /* Style for Touch */
 .montage-InputRadio {
-  font-size: 16px;
+    font-size: 16px;
 }

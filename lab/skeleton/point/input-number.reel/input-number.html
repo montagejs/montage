@@ -43,19 +43,19 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "inputText": {
-        "prototype": "montage/lab/skeleton/point/input-text.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "inputText"}
         }
     },
     "buttonPlus": {
-        "prototype": "montage/lab/skeleton/point/button.reel",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "buttonPlus"}
         }
     },
     "buttonMinus": {
-        "prototype": "montage/lab/skeleton/point/button.reel",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "buttonMinus"}
         }
@@ -66,7 +66,7 @@ POSSIBILITY OF SUCH DAMAGE.
     </head>
     <body>
         <span id="inputNumber" class="montage-InputNumber">
-            <input type="text" id="inputText" class="montage-InputNumber-input">
+            <input type="text" id="inputText" class="montage-InputNumber-input" value="0">
             <button id="buttonPlus" class="montage-InputNumber-plus">+</button>
             <button id="buttonMinus" class="montage-InputNumber-minus">-</button>
         </span>

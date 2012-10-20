@@ -55,6 +55,7 @@ POSSIBILITY OF SUCH DAMAGE.
     width: 2.5em;
     height: 1.25em;
     right: -2.5em;
+    line-height: 0;
 }
 .montage-InputNumber > .montage-InputNumber-plus {
     border-width: 1px 1px 0 0;

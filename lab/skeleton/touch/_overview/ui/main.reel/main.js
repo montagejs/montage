@@ -28,36 +28,9 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
+var Montage = require("montage/core/core").Montage,
+    Component = require("montage/ui/component").Component;
 
-.montage-Textarea {
-    outline: none;
-    box-sizing: border-box;
-    /font-size: 12px;
-    width: 150px;
-    min-width: 10em;
-    padding: 0.5em;
-    resize: vertical;
-    border: 1px solid #b3b3b3;
-    border-radius: 3px;
-    background-color: #fff;
-}
+exports.Main = Montage.create(Component, {
 
-.montage-Textarea:hover {
-    border-color: #ccc;
-}
-
-.montage-Textarea:focus {
-    border-color: #7f7f7f;
-}
-
-.montage-Textarea:disabled {
-    opacity: .5;
-    border-style: dashed;
-    pointer-events: none;
-}
-
-
-/* Style for Touch */
-.montage-Textarea {
-    font-size: 14px;
-}
+});

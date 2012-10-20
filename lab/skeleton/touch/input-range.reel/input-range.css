@@ -31,10 +31,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 .montage-InputRange {
     position: relative;
-    font-size: 12px;
     display: inline-block;
-    width: 10em;
-    height: 0.4em;
+    box-sizing: border-box;
+    width: 150px;
+    height: 10px;
     border-radius: 3px;
     border: 1px solid #b3b3b3;
     background-color: #d9d9d9;
@@ -44,12 +44,12 @@ POSSIBILITY OF SUCH DAMAGE.
     position: absolute;
     font-size: inherit;
     box-sizing: border-box;
-    margin: -0.65em;
-    border-radius: 1.5em;
-    width: 1.5em;
-    height: 1.5em;
+    margin: -14px 0 0 -1px;
+    border-radius: 14px;
+    width: 28px;
+    height: 28px;
     left: 0;
-    top: 0;
+    top: 50%;
     border: 1px solid #b3b3b3;
     background-color: #f2f2f2;
     cursor: pointer;
@@ -57,7 +57,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* States */
 .montage-InputRange-thumb:hover {
-    background-color: #ffffff;
+    background-color: #fff;
 }
 .montage-InputRange-thumb:active {
     background-color: #e5e5e5;
@@ -65,9 +65,12 @@ POSSIBILITY OF SUCH DAMAGE.
 .montage-InputRange-thumb:focus {
     border-color: #7f7f7f;
 }
-
-
-/* Style for Touch */
-.montage-InputRange {
-  font-size: 16px;
+.montage-InputRange-thumb:before {
+    content: "";
+    position: absolute;
+    top: -7px;
+    left: -7px;
+    right: -7px;
+    bottom: -7px;
+    border-radius: 50%;
 }

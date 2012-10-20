@@ -28,20 +28,27 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
+/**
+    @module "montage/ui/input-text.reel"
+
 /*global require,exports */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
+    Component = require("ui/component").Component,
+    NativeInputText = require("ui/native/input-text.reel").InputText;
 
 /**
  * Input Text
+ * @class module:"montage/ui/input-text.reel".InputText
+ * @extends module:"montage/ui/native/input-text.reel".InputText
  */
-var InputText = exports.InputText = Montage.create(Component, {
+exports.InputText = Montage.create(NativeInputText, /** @lends module:"montage/ui/input-text.reel".InputText# */ {
 
-    draw: {
+    hasTemplate: {value: true},
+
+    didSetElement: {
         value: function() {
-            //This is just a temporary fix to prevent the type to be doubled.
-            this._element.type = "text";
+            NativeInputText.didSetElement.call(this);
+            this['class'] = (this['class'] || '') + ' montage-InputText';
         }
     }
-
 });
