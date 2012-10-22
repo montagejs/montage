@@ -31,12 +31,12 @@ POSSIBILITY OF SUCH DAMAGE.
  
 .montage-Toggle {
     box-sizing: border-box;
-    font-size: 12px;
+    /font-size: 12px;
     position: relative;
     display: inline-block;
     width: 4em;
     height: 2em;
-    border-radius: 3px;
+    /border-radius: 3px;
     vertical-align: middle;
     border: 1px solid #b3b3b3;
     background: #d9d9d9;
@@ -80,8 +80,9 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 
 
+
 /* Style for Touch */
 .montage-Toggle {
-  font-size: 16px;
-  border-radius: 24px;
+    font-size: 16px;
+    border-radius: 24px;
 }
