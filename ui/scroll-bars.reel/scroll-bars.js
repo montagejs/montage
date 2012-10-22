@@ -241,9 +241,17 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
                         }
                         pos = range - size;
                     }
-                    this._right.style.webkitTransform = "translate3d(" + (size - this._offsetWidth + 9) + "px,0,0)";
-                    this._left.style.webkitTransform = this._rightClip.style.webkitTransform = "translate3d(" + (pos+2) + "px,0,0)";
+                    var rtranslate = (size - this._offsetWidth + 9) + "px,0px",
+                        ltranslate = (pos+2) + "px,0px";
+                    this._right.style.webkitTransform = "translate3d(" + rtranslate + ",0)";
+                    this._right.style.MozTransform = "translate(" + rtranslate + ")";
+                    this._right.style.transform = "translate(" + rtranslate + ")";
+                    this._left.style.webkitTransform = this._rightClip.style.webkitTransform = "translate3d(" + ltranslate + ",0)";
+                    this._left.style.MozTransform = this._rightClip.style.MozTransform = "translate(" + ltranslate + ")";
+                    this._left.style.transform = this._rightClip.style.transform = "translate(" + ltranslate + ")";
                     this._left.style.webkitTransition = this._right.style.webkitTransition = "none";
+                    this._left.style.MozTransition = this._right.style.MozTransition = "none";
+                    this._left.style.transition = this._right.style.transition = "none";
                     this._left.style.opacity = this._right.style.opacity = this._opacity;
                 }
                 if (this._displayVertical) {
@@ -269,9 +277,17 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
                         }
                         pos = range - size;
                     }
-                    this._bottom.style.webkitTransform = "translate3d(0," + (size - this._offsetHeight + 9) + "px,0)";
-                    this._top.style.webkitTransform = this._bottomClip.style.webkitTransform = "translate3d(0," + (pos+2) + "px,0)";
+                    var btranslate = "0px," + (size - this._offsetHeight + 9) + "px",
+                        ttranslate = "0px," + (pos+2) + "px";
+                    this._bottom.style.webkitTransform = "translate3d(" + btranslate + ",0)";
+                    this._bottom.style.MozTransform = "translate(" + btranslate + ")";
+                    this._bottom.style.transform = "translate(" + btranslate + ")";
+                    this._top.style.webkitTransform = this._bottomClip.style.webkitTransform = "translate3d(" + ttranslate + ",0)";
+                    this._top.style.MozTransform = this._bottomClip.style.MozTransform = "translate(" + ttranslate + ")";
+                    this._top.style.transform = this._bottomClip.style.transform = "translate(" + ttranslate + ")";
                     this._top.style.webkitTransition = this._bottom.style.webkitTransition = "none";
+                    this._top.style.MozTransition = this._bottom.style.MozTransition = "none";
+                    this._top.style.transition = this._bottom.style.transition = "none";
                     this._top.style.opacity = this._bottom.style.opacity = this._opacity;
                 }
             } else {

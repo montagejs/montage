@@ -201,6 +201,7 @@ exports.Scroller = Montage.create(Component, /** @lends module:"montage/ui/scrol
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
 
+            // BUG: Firefox doesn't seem to properly calculate the scrollWidth
             this._maxTranslateX = this._content.scrollWidth - this._width;
             if (this._maxTranslateX < 0) {
                 this._maxTranslateX = 0;
@@ -264,7 +265,10 @@ exports.Scroller = Montage.create(Component, /** @lends module:"montage/ui/scrol
 
     draw: {
         value: function () {
-            this._content.style.webkitTransform="translate3d("+(-this._scrollX)+"px, "+(-this._scrollY)+"px, 0)";
+            var str = (-this._scrollX)+"px, "+(-this._scrollY)+"px";
+            this._content.style.webkitTransform="translate3d(" + str + ", 0px)";
+            this._content.style.MozTransform = "translate(" + str + ")";
+            this._content.style.transform = "translate(" + str + ")";
         }
     }
 });
