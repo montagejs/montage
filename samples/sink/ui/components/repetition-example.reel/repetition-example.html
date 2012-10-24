@@ -508,7 +508,7 @@ POSSIBILITY OF SUCH DAMAGE.
             "element": {"#": "selection"}
         },
         "bindings": {
-            "checked": {"&lt;&lt;-&gt;": "@list1.selectionAtCurrentIteration"}
+            "checked": {"&lt;-&gt;": "@list1.selectionAtCurrentIteration"}
         }
     },
 
@@ -518,7 +518,7 @@ POSSIBILITY OF SUCH DAMAGE.
             "element": {"#": "selectedValue"}
         },
         "bindings": {
-            "value": {"&lt;&lt;-&gt;": "@owner.jsonSelectedItems"}
+            "value": {"&lt;-&gt;": "@owner.jsonSelectedItems"}
         }
     },
     "owner": {
@@ -532,7 +532,7 @@ POSSIBILITY OF SUCH DAMAGE.
             ]
         },
         "bindings": {
-            "selectedItems": {"&lt;&lt;-&gt;": "@controller.selectedObjects"}
+            "selectedItems": {"&lt;-&gt;": "@controller.selectedObjects"}
         }
     }
 }
@@ -668,7 +668,7 @@ table tr.selected {
             "element": {"#": "answerSelection"}
         },
         "bindings": {
-            "checked": {"&lt;&lt;-&gt;": "@list2.selectionAtCurrentIteration"}
+            "checked": {"&lt;-&gt;": "@list2.selectionAtCurrentIteration"}
         }
     },
 
@@ -688,7 +688,7 @@ table tr.selected {
             "element": {"#": "selectedAnswer"}
         },
         "bindings": {
-            "value": {"&lt;&lt;-&gt;": "@owner.selectedAnswer"}
+            "value": {"&lt;-&gt;": "@owner.selectedAnswer"}
         }
     },
 
@@ -701,7 +701,7 @@ table tr.selected {
             ]
         },
         "bindings": {
-            "selectedAnswer": {"&lt;&lt;-&gt;": "@answersController.selectedObjects.0"}
+            "selectedAnswer": {"&lt;-&gt;": "@answersController.selectedObjects.0"}
         }
     }
 }
