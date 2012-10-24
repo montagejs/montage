@@ -20,7 +20,7 @@ To get started with Montage, you will need the following:
 
 -   A Git client, and public SSH key. For details on installing Git and creating your key, see the setup guides on github.com.
 -   A local web server to serve Montage application. Montage applications can only be served from an HTTP address, not from a local file URL.
--   A recent stable release of Chrome or Safari.
+-   A recent stable release of Chrome, Safari or Firefox.
 
 ### Quick setup
 
