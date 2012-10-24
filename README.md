@@ -30,7 +30,7 @@ If you’re already familiar with using Git, GitHub, and how to configure a loca
     ``mkdir Projects``
     ``cd Projects``
 2.  Clone Montage into ~/Projects
-    ``git clone git@github.com:Motorola-Mobility/montage.git``
+    ``git clone git@github.com:montagejs/montage.git``
 3.  Configure your local web server to serve the ~/Projects folder over HTTP.
     Please refer to the suggested Apache configuration found at ``etc/apache-montage.conf``.  This
     will need to be configured and installed wherever your Apache installation will load other configuration files (eg /etc/apache2/other).
