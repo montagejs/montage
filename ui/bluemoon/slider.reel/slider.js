@@ -469,6 +469,30 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
     // used in draw() to do the slider animation in diff. browsers
     _transform: { value: null },
     _transition: { value: null },
+    prepareForDraw: {
+        value: function() {
+            // check for transform support
+            if("webkitTransform" in this.element.style) {
+                this._transform = "webkitTransform";
+            } else if("MozTransform" in this.element.style) {
+                this._transform = "MozTransform";
+            } else if("oTransform" in this.element.style) {
+                this._transform = "oTransform";
+            } else {
+                this._transform = "transform";
+            }
+            // check for transition support
+            if("webkitTransition" in this.element.style) {
+                this._transition = "webkitTransition";
+            } else if("MozTransition" in this.element.style ) {
+                this._transition = "MozTransition";
+            } else if("oTransition" in this.element.style ) {
+                this._transition = "oTransition";
+            } else {
+                this._transition = "transition";
+            }
+        }
+    },
 
     willDraw: {
         value: function () {
@@ -476,31 +500,6 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             if (this._scrollTo !== null) {
                 this.value = this._minValue + (this._scrollTo / this._width);
                 this._scrollTo = null;
-            }
-
-            if(this._transform === null) {
-                // check for transform support
-                if("webkitTransform" in this.element.style) {
-                    this._transform = "webkitTransform";
-                } else if("MozTransform" in this.element.style) {
-                    this._transform = "MozTransform";
-                } else if("oTransform" in this.element.style) {
-                    this._transform = "oTransform";
-                } else {
-                    this._transform = "transform";
-                }
-            }
-            if(this._transition === null) {
-                // check for transition support
-                if("webkitTransition" in this.element.style) {
-                    this._transition = "webkitTransition";
-                } else if("MozTransition" in this.element.style ) {
-                    this._transition = "MozTransition";
-                } else if("oTransition" in this.element.style ) {
-                    this._transition = "oTransition";
-                } else {
-                    this._transition = "transition";
-                }
             }
         }
     },
