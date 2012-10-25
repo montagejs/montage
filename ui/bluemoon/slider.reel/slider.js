@@ -489,7 +489,6 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
                 } else {
                     this._transform = "transform";
                 }
-                console.log("setting transform to " + this._transform);
             }
             if(this._transition === null) {
                 // check for transition support
@@ -502,7 +501,6 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
                 } else {
                     this._transition = "transition";
                 }
-                console.log("setting transition to " + this._transition);
             }
         }
     },
