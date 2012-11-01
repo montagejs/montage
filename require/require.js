@@ -36,6 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
         // Window
         if (typeof window !== "undefined") {
+            global = window;
             bootstrap("require/require", function (require, exports) {
                 var Promise = require("core/promise").Promise;
                 var URL = require("core/mini-url");
@@ -46,6 +47,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
         // Worker
         } else {
+            global = this;
             bootstrap("require/require", function (require, exports) {
                 var Promise = require("core/promise").Promise;
                 var URL = require("core/url");
