@@ -108,7 +108,9 @@ Object.defineProperty(Object, "getValueOf", {
             value = value.valueOf();
         }
         return value;
-    }
+    },
+    writable: true,
+    configurable: true
 });
 
 /**
