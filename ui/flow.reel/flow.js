@@ -123,8 +123,8 @@ var Flow = exports.Flow = Montage.create(Component, {
                 if (!this._paths) {
                     this._paths = [];
                 } else {
-                    this._paths.wipe();
-                    this._splinePaths.wipe();
+                    this._paths.clear();
+                    this._splinePaths.clear();
                 }
 
                 for (i = 0; i < length; i++) {
@@ -527,7 +527,7 @@ var Flow = exports.Flow = Montage.create(Component, {
         enumerable: false,
         value: function (spline, out) {
 
-            this._frustrumNormals.wipe();
+            this._frustrumNormals.clear();
 
             var splineLength = spline.knotsLength - 1,
             planeOrigin0 = this._cameraPosition[0],
@@ -745,7 +745,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 pathsLength = paths.length,
                 splinePaths = this.splinePaths;
 
-            newIndexMap = this._tmpIndexMap.wipe();
+            newIndexMap = this._tmpIndexMap.clear();
             if (this._isTransitioningScroll) {
                 time = (Date.now() - this._scrollingStartTime) / this._scrollingTransitionDurationMiliseconds; // TODO: division by zero
                 interpolant = this._computeCssCubicBezierValue(time, this._scrollingTransitionTimingFunctionBezier);
@@ -763,7 +763,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 div = (this._numberOfIterations - mod) / pathsLength;
                 for (k = 0; k < pathsLength; k++) {
                     iterations = div + ((k < mod) ? 1 : 0);
-                    intersections.wipe();
+                    intersections.clear();
                     this._computeVisibleRange(splinePaths[k], intersections);
                     splinePaths[k]._computeDensitySummation();
                     offset =  this._scroll - paths[k].headOffset;
@@ -837,8 +837,8 @@ var Flow = exports.Flow = Montage.create(Component, {
                 math = Math,
                 posParameter = this._cachedPosParameter;
 
-            slide = this._cachedSlide.wipe();
-            pos = this._cachedPos.wipe();
+            slide = this._cachedSlide.clear();
+            pos = this._cachedPos.clear();
             if (this._isTransitioningScroll) {
                 this.needsDraw = true;
             }

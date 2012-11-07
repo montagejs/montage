@@ -671,10 +671,10 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object#wipe", function () {
+    describe("Object#clear", function () {
 
-        it("should wipe all owned properties of the object", function () {
-            expect(Object.keys({a: 10}.wipe())).toEqual([]);
+        it("should clear all owned properties of the object", function () {
+            expect(Object.keys({a: 10}.clear())).toEqual([]);
         });
 
     });

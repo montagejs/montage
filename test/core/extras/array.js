@@ -411,11 +411,11 @@ describe("core/extras/array", function () {
 
     });
 
-    describe("Array#wipe", function () {
+    describe("Array#clear", function () {
 
         it("should remove all owned properties", function () {
             var array = [1, 2, 3];
-            array.wipe();
+            array.clear();
             expect(array).toEqual([]);
         });
 

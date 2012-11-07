@@ -845,9 +845,9 @@ Object.defineProperty(Array.prototype, "clone", {
     Removes all members of this array making the object suitable for reuse.
     Assumes that the array has no other named properties.
 
-    @function external:Aray#wipe
+    @function external:Aray#clear
 */
-Object.defineProperty(Array.prototype, "wipe", {
+Object.defineProperty(Array.prototype, "clear", {
     value: function() {
         this.length = 0;
         return this;

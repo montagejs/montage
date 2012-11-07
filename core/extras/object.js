@@ -834,10 +834,10 @@ Object.defineProperty(Object.prototype, "clone", {
     Removes all properties owned by this object making the object suitable for
     reuse.
 
-    @function external:Object#wipe
+    @function external:Object#clear
     @returns this
 */
-Object.defineProperty(Object.prototype, "wipe", {
+Object.defineProperty(Object.prototype, "clear", {
     value: function() {
         var keys = Object.keys(this),
             i = keys.length;
