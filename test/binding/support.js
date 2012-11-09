@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<!-- <copyright>
+/* <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
 
@@ -28,49 +27,71 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
-</copyright> -->
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Component Layout</title>
-    <script type="text/montage-serialization">{
+</copyright> */
+var Montage = require("montage").Montage;
 
-        "owner": {
-            "prototype": "ui/draw/component-layout.reel",
-            "properties": {
-                "element": {"#": "component-layout"}
-            }
+exports.Alpha = Montage.create(Montage, {
+
+    _foo: {
+        enumerable: false,
+        value: null
+    },
+
+    foo: {
+        enumerable: false,
+        set: function(value) {
+            this._foo = value;
         },
-
-        "left": {
-            "prototype": "montage/ui/component",
-            "properties": {
-                "element": {"#": "left"},
-                "hasTemplate": false
-            },
-            "bindings": {
-                "domContent": {"<-": "@owner.left"}
-            }
-        },
-
-        "right": {
-            "prototype": "montage/ui/component",
-            "properties": {
-                "element": {"#": "right"},
-                "hasTemplate": false
-            },
-            "bindings": {
-                "domContent": {"<-": "@owner.right"}
-            }
+        get: function() {
+            return this._foo;
         }
+    },
 
-    }</script>
+    valueOnly: {
+        enumerable: false,
+        value: null
+    },
 
-</head>
-<body>
-<div data-montage-id="component-layout">
-    <div data-montage-id="left" style="float: left"></div>
-    <div data-montage-id="right" style="float: right"></div>
-</div>
-</body>
-</html>
+    _getOnly: {
+        enumerable: false,
+        value: "getOnlyValue"
+    },
+
+    getOnly: {
+        enumerable: false,
+        get: function() {
+            return this._getOnly;
+        }
+    },
+
+    _setOnly: {
+        enumerable: false,
+        value: "setOnlyValue"
+    },
+
+    setOnly: {
+        enumerable: false,
+        set: function(value) {
+            this._setOnly = value;
+        }
+    }
+
+});
+
+exports.Omega = Montage.create(Montage, {
+
+    _bar: {
+        enumerable: false,
+        value: null
+    },
+
+    bar: {
+        enumerable: false,
+        set: function(value) {
+            this._bar = value;
+        },
+        get: function() {
+            return this._bar;
+        }
+    }
+});

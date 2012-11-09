@@ -729,14 +729,6 @@ var ObjectPropertyChangeDispatcherManager = Object.create(null, {
                     return;
                 }
 
-                if (descriptor.isActive &&
-                    target === descriptor.target &&
-                    propertyName === descriptor.propertyPath &&
-                    changeNotificationSetter.caller !== originalSetter) {
-                    //console.log("Cycle detected at ", target, " ", propertyName);
-                    return;
-                }
-
                 // TODO: recycle these notification objects
                 notification = Object.create(PropertyChangeNotification);
                 notification.target = this;
