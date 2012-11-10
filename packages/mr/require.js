@@ -1,33 +1,11 @@
-/* <copyright>
-Copyright (c) 2012, Motorola Mobility LLC.
-All Rights Reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+/*
+    Based in part on Motorola Mobility’s Montage
+    Copyright (c) 2012, Motorola Mobility LLC. All Rights Reserved.
+    3-Clause BSD License
+    https://github.com/motorola-mobility/montage/blob/master/LICENSE.md
+*/
 
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-
-* Neither the name of Motorola Mobility LLC nor the names of its
-  contributors may be used to endorse or promote products derived from this
-  software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-</copyright> */
 /*global bootstrap,define */
 (function (definition) {
 
@@ -36,40 +14,34 @@ POSSIBILITY OF SUCH DAMAGE.
 
         // Window
         if (typeof window !== "undefined") {
-            global = window;
-            bootstrap("require/require", function (require, exports) {
-                var Promise = require("core/promise").Promise;
-                var URL = require("core/mini-url");
-                var nextTick = require("core/next-tick").nextTick;
-                definition(exports, Promise, URL, nextTick);
+            bootstrap("require", function (require, exports) {
+                var Promise = require("promise");
+                var URL = require("mini-url");
+                definition(exports, Promise, URL);
                 require("require/browser");
             });
 
         // Worker
         } else {
-            global = this;
-            bootstrap("require/require", function (require, exports) {
-                var Promise = require("core/promise").Promise;
-                var URL = require("core/url");
-                var nextTick = require("core/next-tick").nextTick;
-                definition(exports, Promise, URL, nextTick);
+            bootstrap("require", function (require, exports) {
+                var Promise = require("promise").Promise;
+                var URL = require("mini-url");
+                definition(exports, Promise, URL);
             });
         }
 
     // Node Server
     } else if (typeof process !== "undefined") {
-        var Promise = (require)("../core/promise").Promise;
-        var URL = (require)("../core/url");
-        definition(exports, Promise, URL, process.nextTick);
-        require("./node");
-        if (require.main == module)
-            exports.main();
-
+        // the parens trick the heuristic scanner for static dependencies, so
+        // they are not pre-loaded by the asynchronous browser loader
+        var Promise = (require)("q");
+        var URL = (require)("url");
+        definition(exports, Promise, URL);
     } else {
         throw new Error("Can't support require on this platform");
     }
 
-})(function (Require, Promise, URL, nextTick) {
+})(function (Require, Promise, URL) {
 
     if (!this)
         throw new Error("Require does not work in strict mode.");
@@ -84,8 +56,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
         // Configuration defaults:
         config = config || {};
-        config.location = URL.resolve(config.location || Require.getLocation(), ".");
-        config.lib = URL.resolve(config.location, config.lib || ".");
+        config.location = URL.resolve(config.location || Require.getLocation(), "./");
+        config.lib = URL.resolve(config.location, config.lib || "./");
         config.paths = config.paths || [config.lib];
         config.mappings = config.mappings || {}; // EXTENSION
         config.exposedConfigs = config.exposedConfigs || Require.exposedConfigs;
@@ -93,6 +65,8 @@ POSSIBILITY OF SUCH DAMAGE.
         config.load = config.load || config.makeLoader(config);
         config.makeCompiler = config.makeCompiler || Require.makeCompiler;
         config.compile = config.compile || config.makeCompiler(config);
+        config.parseDependencies = config.parseDependencies || Require.parseDependencies;
+        config.read = config.read || Require.read;
 
         // Modules: { exports, id, location, directory, factory, dependencies,
         // dependees, text, type }
@@ -105,7 +79,7 @@ POSSIBILITY OF SUCH DAMAGE.
             if (!has(modules, id)) {
                 modules[id] = {
                     id: id,
-                    display: (config.name || config.location) + "#" + id, // EXTENSION
+                    display: config.location + "#" + id, // EXTENSION
                     require: require
                 };
             }
@@ -120,13 +94,16 @@ POSSIBILITY OF SUCH DAMAGE.
             var module = getModuleDescriptor(id);
             module.exports = exports;
             module.location = URL.resolve(config.location, id);
-            module.directory = URL.resolve(module.location, ".");
+            module.directory = URL.resolve(module.location, "./");
+            module.injected = true;
+            delete module.redirect;
+            delete module.mappingRedirect;
         }
 
         // Ensures a module definition is loaded, compiled, analyzed
         var load = memoize(function (topId, viaId) {
             var module = getModuleDescriptor(topId);
-            return Promise.call(function () {
+            return Promise.fcall(function () {
                 // if not already loaded, already instantiated, or
                 // configured as a redirection to another module
                 if (
@@ -134,13 +111,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     module.exports === void 0 &&
                     module.redirect === void 0
                 ) {
-                    // load and
-                    // trace progress
-                    Require.progress.requiredModules.push(module.display);
-                    return Promise.call(config.load, null, topId, module)
-                    .then(function () {
-                        Require.progress.loadedModules.push(module.display);
-                    });
+                    return Promise.fcall(config.load, topId, module);
                 }
             })
             .then(function () {
@@ -212,7 +183,7 @@ POSSIBILITY OF SUCH DAMAGE.
                 );
             }
 
-            module.directory = URL.resolve(module.location, "."); // EXTENSION
+            module.directory = URL.resolve(module.location, "./"); // EXTENSION
             module.exports = {};
 
             // Execute the factory function:
@@ -224,16 +195,10 @@ POSSIBILITY OF SUCH DAMAGE.
                 module // module
             );
 
-            // Modules should never have a return value.
+            // EXTENSION
             if (returnValue !== void 0) {
-                console.warn(
-                    "require: module " + JSON.stringify(topId) +
-                    " returned a value."
-                );
+                module.exports = returnValue;
             }
-
-            // Update the list of modules that are ready to use
-            Require.progress.initializedModules.push(module.display);
 
             return module.exports;
         }
@@ -281,7 +246,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
             // Asynchronous "require.async()" which ensures async executation
             // (even with synchronous loaders)
-            require.async = function(id, callback) {
+            require.async = function(id) {
                 var topId = resolve(id, viaId);
                 var module = getModuleDescriptor(id);
                 return deepLoad(topId, viaId)
@@ -289,33 +254,16 @@ POSSIBILITY OF SUCH DAMAGE.
                 // error, throw it in a separate turn so it gets logged
                 .then(function () {
                     return require(topId);
-                }, function (reason, error) {
-                    nextTick(function () {
+                }, function (error) {
+                    Promise.nextTick(function () {
                         throw error;
                     });
                     return require(topId);
-                })
-                // handle the callback if provided, by breaking out of the
-                // promise system using nextTick
-                .then(function (exports) {
-                    if (callback) {
-                        nextTick(function () {
-                            callback(exports);
-                        });
-                    }
-                    return exports;
-                }, function (reason, error, rejection) {
-                    if (callback) {
-                        nextTick(function() {
-                            throw error;
-                        });
-                    }
-                    return rejection;
                 });
             };
 
             require.resolve = function (id) {
-                return resolve(id, viaId);
+                return normalizeId(resolve(id, viaId));
             };
 
             require.getModule = getModuleDescriptor; // XXX deprecated, use:
@@ -345,7 +293,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
             require.identify = identify;
             require.inject = inject;
-            require.progress = Require.progress;
 
             config.exposedConfigs.forEach(function(name) {
                 require[name] = config[name];
@@ -362,19 +309,11 @@ POSSIBILITY OF SUCH DAMAGE.
         return require;
     };
 
-    Require.progress = {
-        requiredModules: [],
-        loadedModules: [],
-        initializedModules: []
-    };
-
     Require.injectPackageDescription = function (location, description, config) {
         var descriptions =
             config.descriptions =
                 config.descriptions || {};
-        descriptions[location] = Promise.call(function () {
-            return description;
-        });
+        descriptions[location] = Promise.resolve(description);
     };
 
     Require.injectPackageDescriptionLocation = function (location, descriptionLocation, config) {
@@ -558,7 +497,7 @@ POSSIBILITY OF SUCH DAMAGE.
         // directories
         description.directories = description.directories || {};
         description.directories.lib =
-            description.directories.lib === void 0 ? "." : description.directories.lib;
+            description.directories.lib === void 0 ? "./" : description.directories.lib;
         var lib = description.directories.lib;
         // lib
         config.lib = URL.resolve(location, "./" + lib);
@@ -576,7 +515,7 @@ POSSIBILITY OF SUCH DAMAGE.
             // loaded definition from the given path.
             modules[""] = {
                 id: "",
-                redirect: description.main,
+                redirect: normalizeId(description.main),
                 location: config.location
             };
 
@@ -678,7 +617,7 @@ POSSIBILITY OF SUCH DAMAGE.
     Require.DependenciesCompiler = function(config, compile) {
         return function(module) {
             if (!module.dependencies && module.text !== void 0) {
-                module.dependencies = Require.parseDependencies(module.text);
+                module.dependencies = config.parseDependencies(module.text);
             }
             compile(module);
             if (module && !module.dependencies) {
@@ -708,15 +647,13 @@ POSSIBILITY OF SUCH DAMAGE.
             return compile;
         }
         return function(module) {
-            if (module.type === "javascript") {
-                try {
-                    compile(module);
-                } catch (error) {
-                    config.lint(module);
-                    throw error;
-                }
-            } else {
+            try {
                 compile(module);
+            } catch (error) {
+                Promise.nextTick(function () {
+                    config.lint(module);
+                });
+                throw error;
             }
         };
     };
@@ -805,11 +742,11 @@ POSSIBILITY OF SUCH DAMAGE.
         var loadWithExtension = extensions.reduceRight(function (next, extension) {
             return function (id, module) {
                 return load(id + "." + extension, module)
-                .fail(function (reason, error, rejection) {
-                    if (/^Can't find /.test(reason)) {
+                .fail(function (error) {
+                    if (/^Can't find /.test(error.message)) {
                         return next(id, module);
                     } else {
-                        return rejection;
+                        throw error;
                     }
                 });
             };
@@ -837,11 +774,11 @@ POSSIBILITY OF SUCH DAMAGE.
             return function (id, module) {
                 var newId = URL.resolve(path, id);
                 return load(newId, module)
-                .fail(function (reason, error, rejection) {
-                    if (/^Can't find /.test(reason)) {
+                .fail(function (error) {
+                    if (/^Can't find /.test(error.message)) {
                         return next(id, module);
                     } else {
-                        return rejection;
+                        throw error;
                     }
                 });
             };
@@ -867,11 +804,19 @@ POSSIBILITY OF SUCH DAMAGE.
         return memoize(load, cache);
     };
 
+    var normalizeId = function (id) {
+        var match = /^(.*)\.js$/.exec(id);
+        if (match) {
+            id = match[1];
+        }
+        return id;
+    };
+
     var memoize = function (callback, cache) {
         cache = cache || {};
         return function (key, arg) {
             if (!has(cache, key)) {
-                cache[key] = Promise.call(callback, null, key, arg);
+                cache[key] = Promise.fcall(callback, key, arg);
             }
             return cache[key];
         };

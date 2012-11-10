@@ -149,7 +149,8 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                 // this is little bit ugly and I'd like to find a better solution
                 theTestPage.window.montageWillLoad = function() {
                     var firstDraw = true;
-                    this.window.montageRequire.async("ui/component", function (COMPONENT) {
+                    this.window.montageRequire.async("ui/component")
+                    .then(function (COMPONENT) {
                         var root = COMPONENT.__root__;
                         // override the default drawIfNeeded behaviour
                         var originalDrawIfNeeded = root.drawIfNeeded;
@@ -210,11 +211,14 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                         };
 
                         defaultEventManager = null;
-                        this.window.montageRequire.async("core/event/event-manager", function (exports) {
+
+                        return this.window.montageRequire.async("core/event/event-manager")
+                        .then(function (exports) {
                             defaultEventManager = exports.defaultEventManager;
                         });
 
-                    });
+                    })
+                    .done();
 
 
                 };

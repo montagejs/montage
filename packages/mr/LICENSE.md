@@ -1,4 +1,13 @@
-/* <copyright>
+Copyright (c) 2012, Kris Kowal.
+BSD 3-Clause License
+
+Includes TJ Holowaychuk’s QueryString parser.
+Copyright and license not disclosed.
+
+Includes Kris Kowal’s Q promise library.
+MIT License
+
+Based on Motorola Mobility’s Montage
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
 
@@ -27,8 +36,4 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
-</copyright> */
 
-var test = require("test");
-test.assert(require("returns") !== 10, 'module return value should not replace exports');
-test.print('DONE', 'info');

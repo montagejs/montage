@@ -637,16 +637,11 @@ var Blueprint = exports.Blueprint = Montage.create(BlueprintObject, /** @lends m
         value:function () {
             var self = this;
             if (this.customPrototype) {
-                var results = Promise.defer();
-                require.async(this.moduleId,
-                    function (exports) {
-                        results.resolve(exports);
-                    });
-                return results.promise.then(function (exports) {
-                        var prototype = exports[self.prototypeName];
-                        return (prototype ? prototype : null)
-                    }
-                )
+                return require.async(this.moduleId)
+                .then(function (exports) {
+                    var prototype = exports[self.prototypeName];
+                    return (prototype ? prototype : null)
+                });
             } else {
                 if (typeof exports[self.prototypeName] === "undefined") {
                     var parentInstancePrototype = (this.parent ? this.parent.newInstancePrototype() : Montage );
