@@ -33,12 +33,14 @@ var Promise = require("montage/core/promise").Promise;
 
 var spec = queryString("spec");
 if (spec) {
-    require.async(decodeURIComponent(spec)).then(function() {
+    require.async(decodeURIComponent(spec))
+    .then(function() {
         jasmine.getEnv().execute();
         if (window.testpage) {
             window.testpage.callNext();
         }
-    });
+    })
+    .done();
 } else {
     var modules = [
         // Please keep in alphabetical order
@@ -51,6 +53,7 @@ if (spec) {
         "getset-spec",
         "logger-spec",
         "propertychange-spec",
+        "require-spec",
         "state-chart-spec",
         "string-spec",
 
@@ -61,12 +64,7 @@ if (spec) {
 
         "controllers/array-controller-spec",
 
-        "core/core-require-spec",
         "core/core-spec",
-        "core/promise-spec",
-        "core/promise-queue-spec",
-        "core/promise-connection-spec",
-        "core/next-tick-spec",
         "core/selector-spec",
 
         "core/extras/array",
@@ -88,8 +86,6 @@ if (spec) {
         "geometry/point-spec",
 
         "reel/template-spec",
-
-        "require/spec",
 
         "serialization/deserializer-spec",
         "serialization/serializer-spec",
@@ -133,6 +129,7 @@ if (spec) {
         if (window.testpage) {
             window.testpage.callNext();
         }
-    });
+    })
+    .done();
 }
 
