@@ -239,10 +239,12 @@ jasmine.TrivialReporter.prototype.reportSpecResults = function(spec) {
 jasmine.TrivialReporter.prototype.loggerLoaded = false;
 jasmine.TrivialReporter.prototype.log = function() {
     if (!this.loggerLoaded && require) {
-        require.async("montage/core/logger", function(exports) {
+        require.async("montage/core/logger")
+        .then(function(exports) {
             jasmine.TrivialReporter.prototype.log = exports.logger("jasmine").debug;
             this.loggerLoaded = true;
-        });
+        })
+        .done();
     }
     var console = jasmine.getGlobal().console;
     if (console && console.log) {

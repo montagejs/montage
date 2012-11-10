@@ -19,18 +19,22 @@
             ],
             "resources": [
                 "montage.js",
-                "require/require.js",
-                "require/browser.js",
-                "core/next-tick.js",
-                "core/promise.js"
+                "node_modules/mr/require.js",
+                "node_modules/mr/browser.js",
+                "node_modules/q/q.js"
             ]
         }
     },
     "bin": {
         "montage": "bin/montage"
     },
-    "devDependencies": {
-        "test": ">=0.2.1"
+    "mappings": {
+        "mr": {
+            "location": "packages/mr"
+        },
+        "q": {
+            "location": "package/q"
+        }
     },
     "engines": {
         "node": ">=0.6.0 <0.6.11"

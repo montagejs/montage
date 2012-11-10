@@ -960,10 +960,12 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
             self._rootUrl = exports.directory;
             callback(self.createHtmlDocumentFromString(exports.content));
         } else {
-            requireFunction.async(moduleId, function(exports) {
+            requireFunction.async(moduleId)
+            .then(function(exports) {
                 self._rootUrl = (self._documentCache[moduleId] = exports).directory;
                 callback(self.createHtmlDocumentFromString(exports.content));
-            });
+            })
+            .done();
         }
     }},
 
