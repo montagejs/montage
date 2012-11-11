@@ -65,7 +65,7 @@ POSSIBILITY OF SUCH DAMAGE.
 .montage-InputRange-thumb:focus {
     border-color: #7f7f7f;
 }
-.montage-inputRange-thumb:before {
+.montage-InputRange-thumb:before {
     content: "";
     position: absolute;
     top: -7px;
