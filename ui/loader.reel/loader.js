@@ -342,7 +342,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
             .then(function (exports) {
                 return self._mainLoadedCallback(exports);
             })
-            .end();
+            .done();
         }
     },
 

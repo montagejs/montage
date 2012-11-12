@@ -539,13 +539,13 @@ if (typeof window !== "undefined") {
                         if (params.module) {
                             // If a module was specified in the config then we initialize it now
                             applicationRequire.async(params.module)
-                            .end();
+                            .done();
                         }
                     });
                 })
 
             })
-            .end();
+            .done();
 
         }
     };

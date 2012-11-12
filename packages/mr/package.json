@@ -1,0 +1,17 @@
+{
+    "name": "mr",
+    "version": "0.0.2",
+    "main": "require",
+    "bin": {
+        "mr": "bin/mr"
+    },
+    "mappings": {
+        "q": {
+            "name": "q",
+            "location": "packages/q"
+        }
+    },
+    "devDependencies": {
+        "qs": "0.5.x"
+    }
+}

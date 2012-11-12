@@ -32,7 +32,8 @@ POSSIBILITY OF SUCH DAMAGE.
 var parentWindow = window.opener;
 
 // Let's switch to the parent application package context
-require.loadPackage(parentWindow.require.location).then(function(require) {
+require.loadPackage(parentWindow.require.location)
+.then(function(require) {
     var loadInfo = window.loadInfo,
         module = loadInfo.module,
         name = loadInfo.name,
@@ -41,8 +42,9 @@ require.loadPackage(parentWindow.require.location).then(function(require) {
     // Switching the package context back to the parent application
     window.require = require;
 
-    require.async("montage/ui/component", function(exports) {
-        require.async("montage/ui/loader.reel")
+    return require.async("montage/ui/component")
+    .then(function(exports) {
+        return require.async("montage/ui/loader.reel")
         .then(function (exports) {
             var mainComponent = exports["Loader"].create();
             mainComponent.mainModule = module;
@@ -58,6 +60,8 @@ require.loadPackage(parentWindow.require.location).then(function(require) {
                 });
             }
         })
-        .end();
     });
-});
+
+})
+.done();
+

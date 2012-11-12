@@ -111,12 +111,11 @@ exports.Main = Montage.create(Component, {
             this.instancesController = ArrayController.create();
 
             var main = this;
-            var promises = [];
             var names = {};
-            main.modules.forEach(function(module) {
+            var promises = main.modules.map(function(module) {
                 var desc = Deserializer.parseForModuleAndName(module);
                 names[module] = desc.name;
-                promises.push(require.async(desc.module));
+                return require.async(desc.module);
             });
             Promise.all(promises)
             .then(function(exportsArray) {
@@ -128,7 +127,8 @@ exports.Main = Montage.create(Component, {
                         tempArray.push(Instance.newWithObject(exports[names[main.modules[i]]].create()));
                     }
 
-            });
+            })
+            .done();
        }
     },
 
