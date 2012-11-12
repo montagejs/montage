@@ -215,6 +215,8 @@
             for (var name in config.mappings) {
                 var mapping = config.mappings[name];
                 var location = mapping.location;
+                if (!config.hasPackage(location))
+                    continue;
                 var candidate = config.getPackage(location);
                 var id1 = candidate.identify(id2, require2, true);
                 if (id1 === null) {
@@ -277,6 +279,10 @@
                 } else { // inherited environment
                     return config.loadPackage(dependency, config);
                 }
+            };
+
+            require.hasPackage = function (dependency) {
+                return config.getPackage(dependency, config);
             };
 
             require.getPackage = function (dependency) {
@@ -360,6 +366,12 @@
         var loadingPackages = config.loadingPackages = config.loadingPackages || {};
         var loadedPackages = config.packages = {};
         var registry = config.registry = config.registry || Object.create(null);
+
+        config.hasPackage = function (dependency) {
+            dependency = normalizeDependency(dependency, config);
+            var location = dependency.location;
+            return !!loadedPackages[location];
+        };
 
         config.getPackage = function (dependency) {
             dependency = normalizeDependency(dependency, config);
