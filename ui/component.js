@@ -37,10 +37,13 @@ POSSIBILITY OF SUCH DAMAGE.
     @requires montage/core/logger | component
     @requires montage/core/logger | drawing
     @requires montage/core/event/event-manager
-*/
+    @requires montage/ui/component-description
+ */
 var Montage = require("montage").Montage,
     Template = require("ui/template").Template,
     Gate = require("core/gate").Gate,
+    ComponentDescription = require("ui/component-description").ComponentDescription,
+    Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("component"),
     drawLogger = require("core/logger").logger("drawing"),
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
@@ -1016,6 +1019,30 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     this.ownerComponent = this.rootComponent;
                 }
             }
+        }
+    },
+
+    _description:{
+        serializable:false,
+        enumerable:false,
+        value:null
+    },
+
+    /*
+     * Return the component description
+     * @function
+     * @return promise for the component description
+     */
+    description:{
+        serializable:false,
+        get:function () {
+            if (this._description === null) {
+                this._description = ComponentDescription.getComponentDescriptionFromComponentModule(this);
+            }
+            return this._description;
+        },
+        set:function (value) {
+            this._description = Promise.ref(value);
         }
     },
 
