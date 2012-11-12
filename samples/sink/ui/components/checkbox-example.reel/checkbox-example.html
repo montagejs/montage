@@ -434,7 +434,7 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
             ]
         },
         "bindings": {
-            "selectedItems": {"&lt;&lt;-&gt;": "@controller.selectedObjects"}
+            "selectedItems": {"&lt;-&gt;": "@controller.selectedObjects"}
         }
     },
 
@@ -488,7 +488,7 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
             "element": {"#": "selection"}
         },
         "bindings": {
-            "checked": {"&lt;&lt;-&gt;": "@list1.selectionAtCurrentIteration"}
+            "checked": {"&lt;-&gt;": "@list1.selectionAtCurrentIteration"}
         }
     },
 
@@ -498,7 +498,7 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
             "element": {"#": "selectedValue"}
         },
         "bindings": {
-            "value": {"&lt;&lt;-&gt;": "@owner.jsonSelectedItems"}
+            "value": {"&lt;-&gt;": "@owner.jsonSelectedItems"}
         }
     }
 
