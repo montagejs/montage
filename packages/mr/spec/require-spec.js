@@ -29,11 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-// dependency cycle including longer requires this module to be primed:
-require("montage");
-var logger = require("montage/core/logger").logger("require-spec");
-
-describe("require-spec", function () {
+describe("Require", function () {
     [
         "cyclic",
         "determinism",
@@ -54,13 +50,15 @@ describe("require-spec", function () {
         "load-package",
         "load-package-name",
         "not-found",
-        "comments"
+        "comments",
+        "identify"
     ].forEach(function (test) {
         it(test, function () {
             var spec = this;
             var done;
+            var message;
 
-            logger.debug(test + ":", "START");
+            console.log(test + ":", "START");
 
             return require.loadPackage(
                 module.directory + test + "/",
@@ -68,14 +66,14 @@ describe("require-spec", function () {
             )
             .then(function (pkg) {
                 pkg.inject("test", {
-                    print: function (message, level) {
-                        logger.debug(test + ":", message);
-                        if (message === "DONE") {
-                            done = message;
+                    print: function (_message, level) {
+                        console.log(test + ":", _message);
+                        if (_message === "DONE") {
+                            message = _message;
                         }
                     },
                     assert: function (guard, message) {
-                        logger.debug(test + ":", guard ? "PASS" : "FAIL", message);
+                        console.log(test + ":", guard ? "PASS" : "FAIL", message);
                         expect(!!guard).toBe(true);
                     }
                 });
@@ -87,9 +85,10 @@ describe("require-spec", function () {
                 spec.fail(error || reason);
             })
             .fin(function () {
-                expect(done).toBe("DONE");
-            })
-        })
+                expect(message).toBe("DONE");
+            });
+
+        });
     });
 });
 

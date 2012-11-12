@@ -87,7 +87,7 @@ var loadPackagedModule = function (directory, program, command, args) {
         var id = program.slice(directory.length + 1);
         return require.async(id);
     })
-    .end();
+    .done();
 };
 
 MontageBoot.loadPackage = function (location, config) {

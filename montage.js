@@ -72,7 +72,7 @@ if (typeof window !== "undefined") {
 })(function (require, exports, module) {
 
     // The global context object
-    var global = this;
+    global = this;
 
     /**
      * Initializes Montage and creates the application singleton if
@@ -82,7 +82,7 @@ if (typeof window !== "undefined") {
         var platform = exports.getPlatform();
 
         // Platform dependent
-        platform.bootstrap(function (Require, Promise, URL, Clock) {
+        platform.bootstrap(function (Require, Promise, URL) {
             var params = platform.getParams();
             var config = platform.getConfig();
 
@@ -115,18 +115,18 @@ if (typeof window !== "undefined") {
                 var getDefinition = function (name) {
                     return bundleDefinitions[name] =
                         bundleDefinitions[name] ||
-                            Promise.Promise.defer();
+                            Promise.defer();
                 };
                 global.bundleLoaded = function (name) {
                     getDefinition(name).resolve();
                 };
-                var preloading = Promise.Promise.defer();
+                var preloading = Promise.defer();
                 config.preloaded = preloading.promise;
                 // preload bundles sequentially
-                var preloaded = Promise.Promise.resolve();
+                var preloaded = Promise.resolve();
                 BUNDLE.forEach(function (bundleLocations) {
                     preloaded = preloaded.then(function () {
-                        return Promise.Promise.all(bundleLocations.map(function (bundleLocation) {
+                        return Promise.all(bundleLocations.map(function (bundleLocation) {
                             browser.load(bundleLocation);
                             return getDefinition(bundleLocation).promise;
                         }));
@@ -144,9 +144,8 @@ if (typeof window !== "undefined") {
                 hash: params.montageHash
             }, config)
             .then(function (montageRequire) {
-                montageRequire.inject("core/promise", Promise);
-                montageRequire.inject("core/next-tick", Clock);
                 montageRequire.inject("core/mini-url", URL);
+                montageRequire.inject("core/promise", {Promise: Promise});
 
                 // install the linter, which loads on the first error
                 config.lint = function (module) {
@@ -163,7 +162,8 @@ if (typeof window !== "undefined") {
                                 }
                             });
                         }
-                    });
+                    })
+                    .done();
                 };
 
                 if ("autoPackage" in params) {
@@ -195,7 +195,7 @@ if (typeof window !== "undefined") {
                     platform.initMontage(montageRequire, applicationRequire, params);
                 })
             })
-            .end();
+            .done();
 
         });
 
@@ -318,7 +318,8 @@ if (typeof window !== "undefined") {
         }
     };
 
-    var urlModuleFactory = function (require, exports) {
+    // mini-url library
+    var makeResolve = function () {
         var baseElement = document.querySelector("base");
         var existingBaseElement = baseElement;
         if (!existingBaseElement) {
@@ -327,7 +328,7 @@ if (typeof window !== "undefined") {
         }
         var head = document.querySelector("head");
         var relativeElement = document.createElement("a");
-        exports.resolve = function (base, relative) {
+        return function (base, relative) {
             if (!existingBaseElement) {
                 head.appendChild(baseElement);
             }
@@ -346,6 +347,8 @@ if (typeof window !== "undefined") {
             return resolved;
         };
     };
+
+    var resolve = makeResolve();
 
     var browser = {
 
@@ -414,7 +417,7 @@ if (typeof window !== "undefined") {
         },
 
         bootstrap: function (callback) {
-            var base, Require, DOM, Promise, URL, Clock;
+            var base, Require, DOM, Promise, URL;
 
             var params = this.getParams();
 
@@ -435,19 +438,18 @@ if (typeof window !== "undefined") {
             }
 
             // determine which scripts to load
-            var pending = [
-                "require/require",
-                "require/browser",
-                "core/promise",
-                "core/next-tick"
-            ];
+            var pending = {
+                "require": "packages/mr/require.js",
+                "require/browser": "packages/mr/browser.js",
+                "promise": "packages/mr/packages/q/q.js"
+            };
 
             // load in parallel, but only if we’re not using a preloaded cache.
             // otherwise, these scripts will be inlined after already
             if (typeof BUNDLE === "undefined") {
-                pending.forEach(function(name) {
-                    browser.load(params.montageLocation + name + ".js");
-                });
+                for (var id in pending) {
+                    browser.load(resolve(params.montageLocation, pending[id]));
+                }
             }
 
             // register module definitions for deferred,
@@ -455,16 +457,23 @@ if (typeof window !== "undefined") {
             var definitions = {};
             global.bootstrap = function (id, factory) {
                 definitions[id] = factory;
-                var at = pending.indexOf(id);
-                if (at !== -1) {
-                    pending.splice(at, 1);
+                delete pending[id];
+                for (var id in pending) {
+                    // this causes the function to exit if there are any remaining
+                    // scripts loading, on the first iteration.  consider it
+                    // equivalent to an array length check
+                    return;
                 }
-                if (pending.length === 0) {
-                    allModulesLoaded();
-                }
+                // if we get past the for loop, bootstrapping is complete.  get rid
+                // of the bootstrap function and proceed.
+                delete global.bootstrap;
+                allModulesLoaded();
             };
 
-            global.bootstrap("core/mini-url", urlModuleFactory);
+            // one module loaded for free, for use in require.js, browser.js
+            global.bootstrap("mini-url", function (require, exports) {
+                exports.resolve = resolve;
+            });
 
             // miniature module system
             var bootModules = {};
@@ -478,17 +487,16 @@ if (typeof window !== "undefined") {
 
             // execute bootstrap scripts
             function allModulesLoaded() {
-                Clock = bootRequire("core/next-tick");
-                Promise = bootRequire("core/promise");
-                URL = bootRequire("core/mini-url");
-                Require = bootRequire("require/require");
+                URL = bootRequire("mini-url");
+                Promise = bootRequire("promise");
+                Require = bootRequire("require");
                 delete global.bootstrap;
                 callbackIfReady();
             }
 
             function callbackIfReady() {
                 if (DOM && Require) {
-                    callback(Require, Promise, URL, Clock);
+                    callback(Require, Promise, URL);
                 }
             }
 
@@ -544,13 +552,13 @@ if (typeof window !== "undefined") {
                         if (params.module) {
                             // If a module was specified in the config then we initialize it now
                             applicationRequire.async(params.module)
-                            .end();
+                            .done();
                         }
                     });
                 })
 
             })
-            .end();
+            .done();
 
         }
     };

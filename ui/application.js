@@ -364,7 +364,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
             window.require.loadPackage({name: "montage"}).then(function(require) {
                 var newWindow = window.open(require.location + "ui/window-loader/index.html", "_blank", stringParamaters);
                 newWindow.loadInfo = loadInfo;
-            }).end();
+            }).done();
 
             return childWindow;
         }
@@ -456,7 +456,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
             exports.application = self;
 
             require.async("ui/component")
-            .end(function(exports) {
+            .then(function(exports) {
                 rootComponent = exports.__root__;
                 rootComponent.element = document;
                 template.instantiateWithOwnerAndDocument(null, window.document, function() {
@@ -467,6 +467,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                     }
                 });
             })
+            .done();
         }
     },
 
@@ -495,7 +496,8 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         value: function(type, content, callback) {
 
             var self = this;
-            require.async("ui/slot.reel/slot", function(exports) {
+            require.async("ui/slot.reel/slot")
+            .then(function(exports) {
                 Slot = Slot || exports.Slot;
                 type = type || "custom";
                 var isSystemPopup = self._isSystemPopup(type), zIndex, slotEl, popupSlot;
@@ -535,7 +537,8 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                 popupSlot.content = content;
                 callback.call(this, popupSlot);
 
-            });
+            })
+            .done();
         }
     },
 

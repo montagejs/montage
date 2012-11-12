@@ -34,12 +34,14 @@ var Promise = require("montage/core/promise").Promise;
 
 var spec = queryString("spec");
 if (spec) {
-    require.async(decodeURIComponent(spec)).then(function() {
+    require.async(decodeURIComponent(spec))
+    .then(function() {
         jasmine.getEnv().execute();
         if (window.testpage) {
             window.testpage.callNext();
         }
-    });
+    })
+    .done();
 } else {
     var modules = [
         // Please keep in alphabetical order
@@ -56,6 +58,7 @@ if (spec) {
         if (window.testpage) {
             window.testpage.callNext();
         }
-    });
+    })
+    .done();
 }
 

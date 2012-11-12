@@ -366,13 +366,15 @@ var KeyManagerProxy = Montage.create(Montage,  {
                 if (!this._loadingDefaultKeyManager) {
                     this._loadingDefaultKeyManager = true;
 
-                    require.async("core/event/key-manager", function(module) {
+                    require.async("core/event/key-manager")
+                    .then(function(module) {
                         var keyManager = thisRef._defaultKeyManager = module.defaultKeyManager;
                         thisRef._keysToRegister.forEach(function(keyComposer) {
                             keyManager.registerKey(keyComposer);
                         });
                         thisRef._keysToRegister.length = 0;
-                    });
+                    })
+                    .done();
                 }
             } else {
                 // This will happend only if somebody uses a cached return value from KeyManagerProxy.defaultKeyManager

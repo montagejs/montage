@@ -420,17 +420,16 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
 
             moduleIds.forEach(function(moduleId) {
                 if (callback) {
-                    Promise.when(_require.async(moduleId),
-                        function(module) {
-                            modules[moduleId] = module;
-                            if (++modulesLoaded === moduleIds.length) {
-                                callback(modules);
-                            }
-                        },
-                        function(reason, error) {
-                            console.log(error.stack);
+                    _require.async(moduleId)
+                    .then(function(module) {
+                        modules[moduleId] = module;
+                        if (++modulesLoaded === moduleIds.length) {
+                            callback(modules);
                         }
-                    );
+                    }, function(reason, error) {
+                        console.log(error.stack);
+                    })
+                    .done();
                 } else {
                     modules[moduleId] = _require(moduleId);
                 }
@@ -963,7 +962,8 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
      * @private
      */
     _reportParseError: {value: function(source, origin) {
-        require.async("core/jshint", function(module) {
+        require.async("core/jshint")
+        .then(function(module) {
             var JSHINT = module.JSHINT;
 
             if (!JSHINT(source)) {
@@ -980,7 +980,8 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
             } else {
                 logger.error("Syntax error in the serialization but not able to find it!\n" + source);
             }
-        });
+        })
+        .done();
     }},
 
     /**
