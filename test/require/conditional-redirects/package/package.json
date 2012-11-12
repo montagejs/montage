@@ -1,0 +1,14 @@
+{
+    "name": "package",
+    "version": "0.0.0",
+    "if": {
+        "condition=on": {
+            "redirects": {
+                "foo": "bar"
+            }
+        }
+    },
+    "dependencies": {
+        "test-package": "*"
+    }
+}
