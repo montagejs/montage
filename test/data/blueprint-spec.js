@@ -232,7 +232,7 @@ describe("data/blueprint-spec", function () {
             var companyBinder = BinderHelper.companyBinder();
 
             it("can serialize", function () {
-                expect(Serializer.create().initWithRequire(require).serialize(companyBinder)).not.toBeNull();
+                expect(Serializer.create().initWithRequire(require).serializeObject(companyBinder)).not.toBeNull();
             });
             it("can deserialize", function () {
                 var serializedBinder = Serializer.create().initWithRequire(require).serializeObject(companyBinder);

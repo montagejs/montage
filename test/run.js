@@ -97,6 +97,7 @@ if (spec) {
         "ui/check-spec",
         "ui/condition-spec",
         "ui/component-spec",
+        "ui/component-description-spec",
         "ui/composer-spec",
         "ui/composer/translate-composer-spec",
         "ui/dom-spec",

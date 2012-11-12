@@ -38,7 +38,9 @@ var waitsThen = function(promise, resolved) {
     waitsFor(function() {
         return promise._pending == null;
     }, "promise", 500);
-    resolved(promise.valueOf());
+    runs(function() {
+        resolved(promise.valueOf());
+    })
 };
 
 var expectationToDispatch = function(object, expectation, handleEvent) {
