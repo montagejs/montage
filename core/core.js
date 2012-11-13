@@ -53,6 +53,7 @@ require("core/extras/element");
 require("core/extras/function");
 require("core/extras/regexp");
 require("core/extras/string");
+require("core/path-changes");
 
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
@@ -747,6 +748,4 @@ Object.defineProperty(Montage, "callDelegateMethod", {
         }
     }
 });
-
-require("core/path-changes");
 
