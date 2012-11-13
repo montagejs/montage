@@ -1,11 +1,11 @@
 
-var Montage = require("montage").Montage;
+require("montage");
 
 describe("path-changes-spec", function () {
 
     it("should return incremental map-change array", function () {
 
-        var object = Montage.create();
+        var object = {};
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var foos = object.addPathChangeListener("array.map{foo}");
@@ -22,7 +22,7 @@ describe("path-changes-spec", function () {
 
     it("should watch value changes", function () {
 
-        var object = Montage.create();
+        var object = {};
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var spy = jasmine.createSpy();
@@ -44,7 +44,7 @@ describe("path-changes-spec", function () {
 
     it("should watch before value changes", function () {
 
-        var object = Montage.create();
+        var object = {};
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var spy = jasmine.createSpy();
@@ -66,7 +66,7 @@ describe("path-changes-spec", function () {
 
     it("should watch value changes with path change handler", function () {
 
-        var object = Montage.create();
+        var object = {};
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var spy = jasmine.createSpy();
@@ -90,7 +90,7 @@ describe("path-changes-spec", function () {
 
     it("should watch value changes with token change handler", function () {
 
-        var object = Montage.create();
+        var object = {};
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var spy = jasmine.createSpy();
@@ -114,7 +114,7 @@ describe("path-changes-spec", function () {
 
     it("should produce an error", function () {
 
-        var object = Montage.create();
+        var object = {};
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var sum = object.addPathChangeListener("array.sum{foo}");
@@ -123,6 +123,29 @@ describe("path-changes-spec", function () {
         expect(function () {
             object.array.push({foo: 4});
         }).toThrow();
+
+    });
+
+    it("should nest listeners", function () {
+
+        var object = {};
+        object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
+
+        var spy = jasmine.createSpy();
+        var cancel = object.addPathChangeListener("array.map{foo}", function (foos) {
+            return foos.addPathChangeListener("sum()", function (sum) {
+                spy(sum);
+            });
+        });
+        expect(spy).toHaveBeenCalledWith(6);
+
+        object.array.push({foo: 4});
+        expect(spy).toHaveBeenCalledWith(10);
+
+        spy = jasmine.createSpy();
+        cancel();
+        object.array.shift();
+        expect(spy).wasNotCalled();
 
     });
 
