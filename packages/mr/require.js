@@ -531,11 +531,13 @@
                 location: config.location
             };
 
-            modules[description.name] = {
-                id: description.name,
-                redirect: "",
-                location: URL.resolve(location, description.name)
-            };
+            if (description.name !== modules[""].redirect) {
+                modules[description.name] = {
+                    id: description.name,
+                    redirect: "",
+                    location: URL.resolve(location, description.name)
+                };
+            }
 
         }
 
