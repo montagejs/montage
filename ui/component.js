@@ -1533,6 +1533,40 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
             composerList.splice(0, length);
         }
+    },
+
+    /**
+     * Provides some descriptors that are useful when creating properties
+     * on components
+     * @type {Object}
+     * @static
+     */
+    descriptors: {
+        enumerable: false,
+        value: {
+            /**
+             * Creates a get/set descriptor. Get: returns the value of the
+             * given property. Set: if thre value differs, sets the given
+             * property and sets this.needsDraw to true.
+             * @param {string} property The property to change. Usually private
+             * and so should be prefixed with "_".
+             * @return {Object} Property descriptor.
+             */
+            setPropertyAndNeedsDraw: function(property) {
+                return {
+                    get: function() {
+                        return this[property];
+                    },
+                    set: function(value) {
+                        if (this[property] === value) {
+                            return;
+                        }
+                        this[property] = value;
+                        this.needsDraw = true;
+                    }
+                };
+            }
+        }
     }
 
 });

@@ -511,6 +511,34 @@ var testPage = TestPageLoader.queueTest("draw", function() {
 
         });
 
+        describe("descriptors", function() {
+            describe("setPropertyAndNeedsDraw", function() {
+                it("adds a get property", function() {
+                    expect(testPage.test.descriptors.text).toBe("hello");
+                    testPage.test.descriptors._text = "pass";
+                    expect(testPage.test.descriptors.text).toBe("pass");
+                    testPage.test.descriptors._text = "hello";
+                });
+
+                it("sets property", function() {
+                    expect(testPage.test.descriptors._text).toBe("hello");
+                    testPage.test.descriptors.text = "pass";
+                    expect(testPage.test.descriptors._text).toBe("pass");
+                    testPage.test.descriptors._text = "hello";
+                });
+
+                it("requests draw", function() {
+                    runs(function() {
+                        testPage.test.descriptors.text = "pass";
+                    });
+                    testPage.waitForDraw();
+                    runs(function() {
+                        expect(testPage.test.descriptors.textEl.textContent).toBe("pass");
+                    });
+                });
+            });
+        });
+
         it("does not allow the element to be changed", function() {
             var oldElement = testPage.test.text1.element;
             testPage.test.text1.element = testPage.document.createElement("div");
@@ -540,4 +568,5 @@ var testPage = TestPageLoader.queueTest("draw", function() {
            expect(element.getAttribute("id")).toBe("componentList");
         });
     });
+
 });
