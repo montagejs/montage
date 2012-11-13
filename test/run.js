@@ -52,6 +52,7 @@ if (spec) {
         "gate-spec",
         "getset-spec",
         "logger-spec",
+        "path-changes-spec",
         "propertychange-spec",
         "require-spec",
         "state-chart-spec",
