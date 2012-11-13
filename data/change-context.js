@@ -34,8 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
  @requires montage/data/store
  @requires montage/data/blueprint
  @requires montage/data/object-property
- @requires montage/core/shim/weak-map
- @requires montage/core/shim/structures
+ @requires montage/collections/weak-map
+ @requires montage/collections/set
  @requires montage/core/exception
  @requires montage/core/promise
  @requires montage/core/logger
@@ -45,8 +45,8 @@ var Store = require("data/store").Store;
 var Blueprint = require("data/blueprint").Blueprint;
 var ObjectProperty = require("data/object-property").ObjectProperty;
 // TODO [June 5 2011 PJYF] This is temporary implementation of WeakMap to let the browser catch up.
-var WeakMap = require("core/shim/weak-map").WeakMap;
-var Set = require("core/shim/structures").Set;
+var WeakMap = require("collections/weak-map");
+var Set = require("collections/set");
 var Exception = require("core/exception").Exception;
 var Promise = require("core/promise").Promise;
 var logger = require("core/logger").logger("change-context");
