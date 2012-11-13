@@ -57,6 +57,10 @@ if (spec) {
         "state-chart-spec",
         "string-spec",
 
+        // packages
+        "collections-spec",
+        "frb-spec",
+
         "binding/binding-converter-spec",
         "binding/dependent-properties-spec",
         "binding/definebinding-spec",
@@ -67,9 +71,7 @@ if (spec) {
         "core/core-spec",
         "core/selector-spec",
 
-        "core/extras/array",
         "core/extras/function",
-        "core/extras/object",
         "core/extras/string",
 
         "data/blueprint-spec",

@@ -40,6 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
  @requires core/extras/function
  @requires core/extras/date
 */
+require("collections/shim");
 require("core/shim/object");
 require("core/shim/array");
 require("core/shim/string");

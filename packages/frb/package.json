@@ -1,0 +1,40 @@
+{
+    "name": "frb",
+    "version": "0.1.1",
+    "description": "Functional reactive bindings",
+    "keywords": [
+        "functional",
+        "reactive",
+        "bindings",
+        "observe",
+        "change"
+    ],
+    "author": "Kris Kowal <kris@cixar.com> (http://github.com/kriskowal/)",
+    "contributors": [
+        "Kris Kowal <kris@cixar.com> (http://github.com/kriskowal/)"
+    ],
+    "bugs": {
+        "mail": "kris@cixar.com",
+        "url": "http://github.com/kriskowal/frb/issues"
+    },
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "http://github.com/kriskowal/frb/raw/master/LICENSE.md"
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/kriskowal/frb.git"
+    },
+    "main": "bindings",
+    "dependencies": {
+        "collections": "0.1.x"
+    },
+    "devDependencies": {
+        "jasmine-node": "1.x.x"
+    },
+    "scripts": {
+        "test": "jasmine-node spec"
+    }
+}
