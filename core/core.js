@@ -747,3 +747,6 @@ Object.defineProperty(Montage, "callDelegateMethod", {
         }
     }
 });
+
+require("core/path-changes");
+
