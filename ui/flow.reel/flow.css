@@ -43,6 +43,10 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform-style: preserve-3d;
     -webkit-transform: translateZ(0);
 }
+.montage-Flow-Repetition .no-transition,
+.montage-Flow-Repetition .no-transition * {
+    -webkit-transition: none !important;
+}
 .montage-Flow-Repetition > div {
     position: absolute;
     top: 50%;
@@ -51,7 +55,4 @@ POSSIBILITY OF SUCH DAMAGE.
     height: 0;
     -webkit-transform: translateZ(0);
     -webkit-transform-style: preserve-3d;
-}
-.montage-Flow--pointerEventsNone {
-    pointer-events: none;
 }
