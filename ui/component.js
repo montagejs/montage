@@ -37,16 +37,21 @@ POSSIBILITY OF SUCH DAMAGE.
     @requires montage/core/logger | component
     @requires montage/core/logger | drawing
     @requires montage/core/event/event-manager
-    @requires montage/ui/component-description
  */
 var Montage = require("montage").Montage,
     Template = require("ui/template").Template,
     Gate = require("core/gate").Gate,
-    ComponentDescription = require("ui/component-description").ComponentDescription,
     Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("component"),
     drawLogger = require("core/logger").logger("drawing"),
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
+
+/**
+    @requires montage/ui/component-description
+ */
+// This is loaded asynchronously if needed
+var ComponentDescriptionPromise;
+
 /**
  * @class module:montage/ui/component.Component
  * @classdesc Base class for all Montage components.
@@ -1037,7 +1042,13 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         serializable:false,
         get:function () {
             if (this._description === null) {
-                this._description = ComponentDescription.getComponentDescriptionFromComponentModule(this);
+                if (ComponentDescriptionPromise === null) {
+                    ComponentDescriptionPromise = require.async("ui/component-description").get("ComponentDescription");
+                }
+
+                this._description = ComponentDescriptionPromise.then(function(ComponentDescription) {
+                    return ComponentDescription.getComponentDescriptionFromComponentModule(this);
+                });
             }
             return this._description;
         },
