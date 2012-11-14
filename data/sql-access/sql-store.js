@@ -41,6 +41,7 @@ var SqlBinderMapping = require("data/sql-access/sql-mapping").SqlBinderMapping;
 var SqlBlueprintMapping = require("data/sql-access/sql-mapping").SqlBlueprintMapping;
 var SqlAttributeMapping = require("data/sql-access/sql-mapping").SqlAttributeMapping;
 var SqlAssociationMapping = require("data/sql-access/sql-mapping").SqlAssociationMapping;
+var SqlSemantics = require("data/sql-access/sql-selector-semantics").SqlSemantics;
 var logger = require("core/logger").logger("sql-store");
 
 /**
@@ -79,6 +80,28 @@ var SqlStore = exports.SqlStore = Montage.create(Store, /** @lends module:montag
             return null;
         }
     },
+
+
+    /**
+     Execute a query in the context of the current store.
+     @function
+     @param {Property} query describing the object to retrieve
+     @param {Property} context change context into which to insert the objects
+     @param {Id} transactionId transaction identifier
+     @returns {Array} PledgedSortedSet pledge for the object to retrieve
+     */
+    queryInContext$Implementation:{
+        value:function (query, context, transactionID) {
+            var sqlSemantics = SqlSemantics/create().initWithStore(this, transactionID);
+            var sqlExpression = sqlSemantics.evaluate(query.selector.syntax, query.blueprint, query.parameters, null);
+            // TODO [PJYF June 25 2012] We need to submit the expression to the database
+
+            // Placeholder
+            return new PledgedSortedSet.create().initWithQueryAndContext(query, context);
+        }
+    }
+,
+
 
     /**
      Create a new binder mapping.
