@@ -149,5 +149,33 @@ describe("path-changes-spec", function () {
 
     });
 
+    it("should nest path change and range change listeners", function () {
+
+        var object = {};
+        object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
+
+        var spy = jasmine.createSpy();
+        var cancel = object.addPathChangeListener("array.map{foo}", function (foos) {
+            return foos.addRangeChangeListener(function (plus, minus, index) {
+                spy(plus, minus, index);
+            });
+        });
+        expect(spy).wasNotCalled();
+
+        spy = jasmine.createSpy();
+        object.array.push({foo: 4});
+        expect(spy).toHaveBeenCalledWith([4], [], 3);
+
+        spy = jasmine.createSpy();
+        object.array = [{foo: 0}];
+        expect(spy).toHaveBeenCalledWith([0], [1, 2, 3, 4], 0);
+
+        spy = jasmine.createSpy();
+        cancel();
+        object.array.clear();
+        expect(spy).wasNotCalled();
+
+    });
+
 });
 
