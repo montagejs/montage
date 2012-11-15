@@ -24,7 +24,36 @@ var  ComponentDescriptionTest = exports. ComponentDescriptionTest = Montage.crea
     component3: {
         enumerable: false,
         value: null
+    },
+
+    button: {
+        enumerable: false,
+        value: null
+    },
+
+    inputrange: {
+        enumerable: false,
+        value: null
+    },
+
+    toggle: {
+        enumerable: false,
+        value: null
+    },
+
+    checkbox: {
+        enumerable: false,
+        value: null
+    },
+
+    inputtext: {
+        enumerable: false,
+        value: null
+    },
+
+    dynamictext: {
+        enumerable: false,
+        value: null
     }
-
-
+    
 });

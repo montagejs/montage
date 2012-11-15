@@ -1042,7 +1042,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             return this._description;
         },
         set:function (value) {
-            this._description = Promise.ref(value);
+            value._component = this;
+            this._description = Promise.resolve(value);
         }
     },
 

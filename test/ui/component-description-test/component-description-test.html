@@ -11,7 +11,13 @@
                     "properties": {
                         "component1": {"@": "component1"},
                         "component2": {"@": "component2"},
-                        "component3": {"@": "component3"}
+                        "component3": {"@": "component3"},
+                        "button": {"@": "button"},
+                        "inputrange": {"@": "inputrange"},
+                        "toggle": {"@": "toggle"},
+                        "checkbox": {"@": "checkbox"},
+                        "inputtext": {"@": "inputtext"},
+                        "dynamictext": {"@": "dynamictext"}
                     }
                 },
                 "component1": {
@@ -29,7 +35,43 @@
                 "component3": {
                     "prototype": "ui/component-description-test/component-description-test-3.reel",
                     "properties": {
-                        "element": {"#": "component3"}
+                         "element": {"#": "component3"}
+                    }
+                },
+                "button": {
+                    "prototype": "montage/ui/button.reel",
+                    "properties": {
+                        "element": {"#": "button"}
+                    }
+                },
+                "inputrange": {
+                    "prototype": "montage/ui/input-range.reel",
+                    "properties": {
+                        "element": {"#": "inputrange"}
+                    }
+                },
+                "toggle": {
+                    "prototype": "montage/ui/toggle-button.reel",
+                    "properties": {
+                        "element": {"#": "toggle"}
+                    }
+                },
+                "checkbox": {
+                    "prototype": "montage/ui/input-checkbox.reel",
+                    "properties": {
+                        "element": {"#": "checkbox"}
+                    }
+                },
+                "inputtext": {
+                    "prototype": "montage/ui/input-text.reel",
+                    "properties": {
+                        "element": {"#": "inputtext"}
+                    }
+                },
+                "dynamictext": {
+                    "prototype": "montage/ui/dynamic-text.reel",
+                    "properties": {
+                        "element": {"#": "dynamictext"}
                     }
                 },
                 "application": {
@@ -47,5 +89,11 @@
         <div id="component2"></div>
         <div id="component3"></div>
 
+        <div id="button"></div>
+        <div id="inputrange"></div>
+        <div id="toggle"></div>
+        <div id="checkbox"></div>
+        <div id="inputtext"></div>
+        <div id="dynamictext"></div>
     </body>
 </html>
