@@ -1,5 +1,5 @@
 /* <copyright>
-</copyright> */
+ </copyright> */
 /**
  @module montage/data/component-description
  @requires montage/core/core
@@ -46,6 +46,7 @@ var ComponentDescription = exports.ComponentDescription = Montage.create(Montage
     initWithComponent:{
         value:function (component) {
             this._component = component;
+            this._component.description = this;
             return this;
         }
     },
@@ -359,7 +360,7 @@ var ComponentDescription = exports.ComponentDescription = Montage.create(Montage
 
 });
 
-var ValueType = Enum.create().initWithMembers("string", "number", "boolean", "date", "set", "list", "map");
+var ValueType = Enum.create().initWithMembers("string", "number", "boolean", "date", "enum", "set", "list", "map", "url", "object");
 /**
  @class module:montage/data/component-description.ComponentPropertyDescription
  @extends module:montage/core/core.Montage
@@ -473,6 +474,7 @@ var ComponentPropertyDescription = exports.ComponentPropertyDescription = Montag
      * This is used by authoring tools to implement the correct UI interface.
      */
     valueType:{
+        serializable:false,
         get:function () {
             if (this._valueType === "") {
                 return "string";
@@ -483,7 +485,35 @@ var ComponentPropertyDescription = exports.ComponentPropertyDescription = Montag
             // TODO [PJYF July 12 2012] we need to check that the value is within the enum
             this._valueType = value;
         }
+    },
+
+    _enumValues: {
+        serializable:true,
+        enumerable:false,
+        value:null
+    },
+
+    enumValues: {
+        serializable:false,
+        get: function() {
+            if (!this._enumValues) {
+                return [];
+            }
+            return this._enumValues_enumValues;
+        },
+        set: function(value) {
+            if (Array.isArray(value)) {
+                this._enumValues = value;
+            }
+        }
+    },
+
+    helpString: {
+        serializable:true,
+        value: ""
     }
+
+
 });
 
 /**
@@ -562,7 +592,7 @@ var ComponentPropertyValidationRule = exports.ComponentPropertyValidationRule = 
      * @private
      */
     _validationSelector:{
-        serializable:true,
+//        serializable:true,
         enumerable:false,
         value:null
     },
@@ -571,9 +601,10 @@ var ComponentPropertyValidationRule = exports.ComponentPropertyValidationRule = 
      * Selector to evaluate to check this rule.
      */
     validationSelector:{
+        serializable:false,
         get:function () {
             if (!this._validationSelector) {
-                this._validationSelector = Selector.constants.false;
+                this._validationSelector = Selector.false;
             }
             return this._validationSelector;
         },
@@ -584,6 +615,7 @@ var ComponentPropertyValidationRule = exports.ComponentPropertyValidationRule = 
 
     _messageKey:{
         serializable:true,
+        enumerable:false,
         value:""
     },
 
@@ -591,6 +623,7 @@ var ComponentPropertyValidationRule = exports.ComponentPropertyValidationRule = 
      * Message key to display when the rule fires.
      */
     messageKey:{
+        serializable:false,
         get:function () {
             if ((!this._messageKey) || (this._messageKey.length == 0)) {
                 return ths._name;
@@ -660,25 +693,36 @@ var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantic
             return this;
         }
     },
-    //
-    //    /**
-    //     * Compile the syntax tree into a function that can be used for evaluating this selector.
-    //     * @function
-    //     * @param {Selector} selector syntax
-    //     * @returns function
-    //     */
-    //    compile:{
-    //        value:function (syntax) {
-    //        }
-    //    },
+
+    /**
+     * Compile the syntax tree into a function that can be used for evaluating this selector.
+     * @function
+     * @param {Selector} selector syntax
+     * @returns function
+     */
+    compile:{
+        value:function (syntax, parents) {
+            Semantics.compile.call(self, syntax, parents);
+        }
+    },
 
     operators:{
         value:{
+            isBound:function (a) {
+                return !a;
+            }
         }
     },
 
     evaluators:{
         value:{
+            isBound: function (collection, modify) {
+                 var self = this;
+                 return function (value, parameters) {
+                     var value = self.count(collection(value, parameters));
+                     return modify(value, parameters);
+                 };
+             }
         }
     }
 
