@@ -1,6 +1,6 @@
 {
     "button_description_autofocus":{
-        "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
+        "prototype":"ui/component-description[ComponentPropertyDescription]",
         "properties":{
             "_componentDescription":{
                 "@":"root"
@@ -12,7 +12,7 @@
     },
 
     "button_description_enabled":{
-        "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
+        "prototype":"ui/component-description[ComponentPropertyDescription]",
         "properties":{
             "_componentDescription":{
                 "@":"root"
@@ -24,7 +24,7 @@
     },
 
     "button_description_form":{
-        "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
+        "prototype":"ui/component-description[ComponentPropertyDescription]",
         "properties":{
             "_componentDescription":{
                 "@":"root"
@@ -36,7 +36,7 @@
     },
 
     "button_description_formaction":{
-        "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
+        "prototype":"ui/component-description[ComponentPropertyDescription]",
         "properties":{
             "_componentDescription":{
                 "@":"root"
@@ -48,7 +48,7 @@
     },
 
     "button_description_formenctype":{
-        "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
+        "prototype":"ui/component-description[ComponentPropertyDescription]",
         "properties":{
             "_componentDescription":{
                 "@":"root"
@@ -64,7 +64,7 @@
     },
 
     "button_description_formmethod":{
-        "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
+        "prototype":"ui/component-description[ComponentPropertyDescription]",
         "properties":{
             "_componentDescription":{
                 "@":"root"
@@ -79,7 +79,7 @@
     },
 
     "button_description_formnovalidate":{
-        "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
+        "prototype":"ui/component-description[ComponentPropertyDescription]",
         "properties":{
             "_componentDescription":{
                 "@":"root"
@@ -91,7 +91,7 @@
     },
 
     "button_description_formtarget":{
-        "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
+        "prototype":"ui/component-description[ComponentPropertyDescription]",
         "properties":{
             "_componentDescription":{
                 "@":"root"
@@ -103,7 +103,7 @@
     },
 
     "button_description_name":{
-        "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
+        "prototype":"ui/component-description[ComponentPropertyDescription]",
         "properties":{
             "_componentDescription":{
                 "@":"root"
@@ -115,7 +115,7 @@
     },
 
     "button_description_label":{
-        "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
+        "prototype":"ui/component-description[ComponentPropertyDescription]",
         "properties":{
             "_componentDescription":{
                 "@":"root"
@@ -127,7 +127,7 @@
     },
 
     "button_description_type":{
-        "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
+        "prototype":"ui/component-description[ComponentPropertyDescription]",
         "properties":{
             "_componentDescription":{
                 "@":"root"
@@ -143,7 +143,7 @@
     },
 
     "button_description_value":{
-        "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
+        "prototype":"ui/component-description[ComponentPropertyDescription]",
         "properties":{
             "_componentDescription":{
                 "@":"root"
@@ -155,7 +155,7 @@
     },
 
     "root":{
-        "prototype":"montage/ui/component-description",
+        "prototype":"ui/component-description",
         "properties":{
             "_componentPropertyDescriptions":{
                 "autofocus":{
