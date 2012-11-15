@@ -39,15 +39,15 @@ describe("data/transactionmanager-spec",
             function () {
                 it("with factory",
                     function () {
-                        var id = TransactionId.create().initWithMappingFolderName("folder");
+                        var id = TransactionId.create().initWithMappingSetName("folder");
 
                         // expect(id).toBe("manager.name");
                     });
 
                 it("in sequential order and check of before function",
                     function () {
-                        var id1 = TransactionId.create().initWithMappingFolderName("folder");
-                        var id2 = TransactionId.create().initWithMappingFolderName("folder");
+                        var id1 = TransactionId.create().initWithMappingSetName("folder");
+                        var id2 = TransactionId.create().initWithMappingSetName("folder");
 
                         expect(id1.before(id2)).toBe(true);
                         expect(id2.before(id1)).toBe(false);
@@ -55,8 +55,8 @@ describe("data/transactionmanager-spec",
 
                 it("in sequential order and check of after function",
                     function () {
-                        var id1 = TransactionId.create().initWithMappingFolderName("folder");
-                        var id2 = TransactionId.create().initWithMappingFolderName("folder");
+                        var id1 = TransactionId.create().initWithMappingSetName("folder");
+                        var id2 = TransactionId.create().initWithMappingSetName("folder");
 
                         expect(id1.after(id2)).toBe(false);
                         expect(id2.after(id1)).toBe(true);
