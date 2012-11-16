@@ -57,3 +57,9 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: translateZ(0);
     -webkit-transform-style: preserve-3d;
 }
+.montage-Flow-Slot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate3d(-50%, -50%, 0);
+}
