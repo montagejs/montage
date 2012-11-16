@@ -35,6 +35,12 @@ var Montage = require("montage").Montage,
 
 var Flow = exports.Flow = Montage.create(Component, {
 
+    didCreate: {
+        value: function () {
+            this._slideOffsets = {};
+        }
+    },
+
     _flowTranslateComposer: {
         serializable: true,
         value: null
@@ -997,7 +1003,6 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: function() {
             this._orphanedChildren = this.childComponents;
             this.childComponents = null;
-            this._slideOffsets = {};
         }
     },
 
@@ -1012,6 +1017,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             orphanedFragment = currentContentRange.extractContents();
             wrapper = this._repetition.element.appendChild(document.createElement("div"));
             wrapper.appendChild(orphanedFragment);
+            wrapper.setAttribute("data-montage-id","wrapper");
             this._repetition.indexMapEnabled = true;
             this._repetition.childComponents = this._orphanedChildren;
             this._repetition.willDraw = function () {
