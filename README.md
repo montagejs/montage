@@ -34,7 +34,7 @@ If you’re already familiar with using Git, GitHub, and how to configure a loca
 3.  Configure your local web server to serve the ~/Projects folder over HTTP.
     Please refer to the suggested Apache configuration found at ``etc/apache-montage.conf``.  This
     will need to be configured and installed wherever your Apache installation will load other configuration files (eg /etc/apache2/other).
-4.  Verify your setup by browsing to [http://localhost:8081/montage/samples/photofx/](http://localhost:8081/montage/samples/photofx/).
+4.  Verify your setup by browsing to [http://localhost:8081/montage/test/run.html](http://localhost:8081/montage/test/run.html).
 
 --------
 
