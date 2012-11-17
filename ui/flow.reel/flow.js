@@ -41,6 +41,10 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
+    slotContent: {
+        value: null
+    },
+
     _flowTranslateComposer: {
         serializable: true,
         value: null
@@ -189,6 +193,10 @@ var Flow = exports.Flow = Montage.create(Component, {
             }
             this.needsDraw = true;
         }
+    },
+
+    _cameraElement: {
+        value: null
     },
 
     _cameraPosition: {
@@ -865,7 +873,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 tmpZ = vX * -Math.sin(-yAngle) + vZ * Math.cos(-yAngle);
                 xAngle = Math.atan2(-vY, -tmpZ);
                 this._element.style.webkitPerspective = perspective + "px";
-                this._repetition._element.style.webkitTransform =
+                this._cameraElement.style.webkitTransform =
                     "translate3d(0,0," + perspective + "px)rotateX(" + xAngle + "rad)rotateY(" + (-yAngle) + "rad)" +
                     "translate3d(" + (-this.cameraPosition[0]) + "px," + (-this.cameraPosition[1]) + "px," + (-this.cameraPosition[2]) + "px)";
                 this._isCameraUpdated = false;
