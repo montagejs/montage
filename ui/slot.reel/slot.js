@@ -65,7 +65,13 @@ exports.Slot = Montage.create(Component, /** @lends module:"montage/ui/slot.reel
         value: null
     },
 
-/**
+    prepareForDraw:{
+        value:function () {
+            this.element.classList.add("montage-Slot");
+        }
+    },
+
+    /**
         Description TODO
         @type {Function}
         @default null
