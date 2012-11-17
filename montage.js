@@ -166,6 +166,32 @@ if (typeof window !== "undefined") {
                     .done();
                 };
 
+                // allows the bootstrapping to be remote controlled by the
+                // parent window, with a dynamically generated package
+                // description
+                var trigger = Promise.defer();
+                if ("remoteTrigger" in params) {
+                    window.addEventListener("message", function (event) {
+                        if (event.source === window.parent && event.data.type === "montageInit") {
+                            if (event.data.location) {
+                                location = event.data.location;
+                            }
+                            if (event.data.packageDescription) {
+                                montageRequire.injectPackageDescription(
+                                    location,
+                                    event.data.packageDescription
+                                );
+                            }
+                            trigger.resolve();
+                        }
+                    });
+                    window.parent.postMessage({
+                        type: "montageReady"
+                    }, "*");
+                } else {
+                    trigger.resolve();
+                }
+
                 if ("autoPackage" in params) {
                     montageRequire.injectPackageDescription(location, {
                         dependencies: {
@@ -174,26 +200,29 @@ if (typeof window !== "undefined") {
                     });
                 }
 
-                // handle explicit package.json location
-                if (location.slice(location.length - 5) === ".json") {
-                    var packageDescriptionLocation = location;
-                    location = URL.resolve(location, ".");
-                    montageRequire.injectPackageDescriptionLocation(
-                        location,
-                        packageDescriptionLocation
-                    );
-                }
+                return trigger.promise.then(function () {
 
-                return montageRequire.loadPackage({
-                    location: location,
-                    hash: applicationHash
-                })
-                .then(function (applicationRequire) {
+                    // handle explicit package.json location
+                    if (location.slice(location.length - 5) === ".json") {
+                        var packageDescriptionLocation = location;
+                        location = URL.resolve(location, ".");
+                        montageRequire.injectPackageDescriptionLocation(
+                            location,
+                            packageDescriptionLocation
+                        );
+                    }
 
-                    global.require = applicationRequire;
-                    global.montageRequire = montageRequire;
-                    platform.initMontage(montageRequire, applicationRequire, params);
-                })
+                    return montageRequire.loadPackage({
+                        location: location,
+                        hash: applicationHash
+                    })
+                    .then(function (applicationRequire) {
+                        global.require = applicationRequire;
+                        global.montageRequire = montageRequire;
+                        platform.initMontage(montageRequire, applicationRequire, params);
+                    })
+
+                });
             })
             .done();
 
@@ -517,7 +546,6 @@ if (typeof window !== "undefined") {
 
             return Promise.all(dependencies.map(montageRequire.deepLoad))
             .then(function () {
-
                 dependencies.forEach(montageRequire);
 
                 var EventManager = montageRequire("core/event/event-manager").EventManager;
