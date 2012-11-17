@@ -256,6 +256,83 @@ describe("Tutorial", function () {
         });
     });
 
+    it("Get", function () {
+        var object = {
+            array: [1, 2, 3],
+            second: null
+        };
+        var cancel = bind(object, "second", {
+            "<->": "array[1]"
+        });
+        expect(object.array.slice()).toEqual([1, 2, 3]);
+        expect(object.second).toBe(2);
+
+        object.array.shift();
+        expect(object.array.slice()).toEqual([2, 3]);
+        expect(object.second).toBe(3);
+
+        object.second = 4;
+        expect(object.array.slice()).toEqual([2, 4]);
+
+        cancel();
+        object.array.shift();
+        expect(object.second).toBe(4); // still
+    });
+
+    it("Get (Map)", function () {
+        var Map = require("collections/map");
+        var a = {id: 0}, b = {id: 1};
+        var object = {
+            source: Map([[a, 10], [b, 20]]),
+            key: null,
+            selected: null
+        };
+
+        var cancel = bind(object, "selected", {
+            "<-": "source[key]"
+        });
+        expect(object.selected).toBe(null);
+
+        object.key = a;
+        expect(object.selected).toBe(10);
+
+        object.key = b;
+        expect(object.selected).toBe(20);
+
+        object.source.set(b, 30);
+        expect(object.selected).toBe(30);
+
+        var SortedMap = require("collections/sorted-map");
+        object.source = SortedMap();
+        expect(object.selected).toBe(30); // no change
+
+        object.source.set(b, 40);
+        expect(object.selected).toBe(40);
+
+        cancel();
+        object.key = a; // no effect
+        expect(object.selected).toBe(40);
+    });
+
+    it("Get (all content)", function () {
+        var Map = require("collections/map");
+        var object = {
+            a: Map({a: 10}),
+            b: Map()
+        };
+        var cancel = bind(object, "a[*]", {"<->": "b[*]"});
+        expect(object.a.toObject()).toEqual({});
+        expect(object.b.toObject()).toEqual({});
+
+        object.a.set('a', 10);
+        expect(object.a.toObject()).toEqual({a: 10});
+        expect(object.b.toObject()).toEqual({a: 10});
+
+        object.b.set('b', 20);
+        expect(object.a.toObject()).toEqual({a: 10, b: 20});
+        expect(object.b.toObject()).toEqual({a: 10, b: 20});
+    });
+
     it("Equals", function () {
         var fruit = {apples: 1, oranges: 2};
         bind(fruit, "equal", {"<-": "apples == oranges"});
@@ -466,7 +543,7 @@ describe("Tutorial", function () {
     });
 
     it("Converters (convert, revert)", function () {
-        var bindings = Bindings.defineBindings({
+        var object = Bindings.defineBindings({
             a: 10
         }, {
             b: {
@@ -479,14 +556,14 @@ describe("Tutorial", function () {
                 }
             }
         });
-        expect(bindings.b).toEqual(20);
+        expect(object.b).toEqual(20);
 
-        bindings.b = 10;
-        expect(bindings.a).toEqual(5);
+        object.b = 10;
+        expect(object.a).toEqual(5);
     });
 
     it("Converters (converter)", function () {
-        var bindings = Bindings.defineBindings({
+        var object = Bindings.defineBindings({
             a: 10
         }, {
             b: {
@@ -502,10 +579,10 @@ describe("Tutorial", function () {
                 }
             }
         });
-        expect(bindings.b).toEqual(20);
+        expect(object.b).toEqual(20);
 
-        bindings.b = 10;
-        expect(bindings.a).toEqual(5);
+        object.b = 10;
+        expect(object.a).toEqual(5);
     });
 
     it("Computed Properties", function () {

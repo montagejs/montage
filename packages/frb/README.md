@@ -38,8 +38,6 @@ with [Node.js][] on the server side or [Mr][] on the client side.
 ❯ npm install frb
 ```
 
-[Node.js]: http://nodejs.org/
-[Mr]: https://github.com/kriskowal/mr
 
 
 
@@ -286,8 +284,6 @@ the [Collections][] package.  You might need to view a sliding window
 from that collection as an array.  The `view` binding reacts to changes
 to the collection and the position and length of the window.
 
-[Collections]: https://github.com/kriskowal/collections
-
 ```javascript
 var SortedSet = require("collections/sorted-set");
 var controller = {
@@ -415,8 +411,6 @@ updates are cheap.  The [Collections][] package contains Lists, Sets,
 and OrderedSets that all can send content change notifications and thus
 can be bound.
 
-[Collections]: https://github.com/kriskowal/collections
-
 ```javascript
 // Continued from above...
 var Set = require("collections/set");
@@ -452,7 +446,96 @@ cannot be used on the right-hand-side of a binding, and such bindings
 cannot be bidirectional.  With some DOM [Mutation Observers][], you
 might be able to help FRB overcome this limitation in the future.
 
-[Mutation Observers]: https://developer.mozilla.org/en-US/docs/DOM/DOM_Mutation_Observers
+### Get
+
+A binding can observe changes in key-to-value mappings in arrays and map
+[Collections][].
+
+```javascript
+var object = {
+    array: [1, 2, 3],
+    second: null
+};
+var cancel = bind(object, "second", {
+    "<->": "array[1]"
+});
+expect(object.array.slice()).toEqual([1, 2, 3]);
+expect(object.second).toBe(2);
+
+object.array.shift();
+expect(object.array.slice()).toEqual([2, 3]);
+expect(object.second).toBe(3);
+
+object.second = 4;
+expect(object.array.slice()).toEqual([2, 4]);
+
+cancel();
+object.array.shift();
+expect(object.second).toBe(4); // still
+```
+
+The source collection can be a Map, Dict, MultiMap, SortedMap,
+SortedArrayMap, or anything that implements `get` and
+`addMapChangeListener` as specified in [Collections][].  The key can
+also be a variable.
+
+```javascript
+var Map = require("collections/map");
+var a = {id: 0}, b = {id: 1};
+var object = {
+    source: Map([[a, 10], [b, 20]]),
+    key: null,
+    selected: null
+};
+
+var cancel = bind(object, "selected", {
+    "<-": "source[key]"
+});
+expect(object.selected).toBe(null);
+
+object.key = a;
+expect(object.selected).toBe(10);
+
+object.key = b;
+expect(object.selected).toBe(20);
+
+object.source.set(b, 30);
+expect(object.selected).toBe(30);
+
+var SortedMap = require("collections/sorted-map");
+object.source = SortedMap();
+expect(object.selected).toBe(30); // no change
+
+object.source.set(b, 40);
+expect(object.selected).toBe(40);
+
+cancel();
+object.key = a; // no effect
+expect(object.selected).toBe(40);
+```
+
+You can also bind the entire content of a map-like collection to the
+content of another.  Bear in mind that the content of the source
+replaces the content of the target initially.
+
+```javascript
+var Map = require("collections/map");
+var object = {
+    a: Map({a: 10}),
+    b: Map()
+};
+var cancel = bind(object, "a[*]", {"<->": "b[*]"});
+expect(object.a.toObject()).toEqual({});
+expect(object.b.toObject()).toEqual({});
+
+object.a.set('a', 10);
+expect(object.a.toObject()).toEqual({a: 10});
+expect(object.b.toObject()).toEqual({a: 10});
+
+object.b.set('b', 20);
+expect(object.a.toObject()).toEqual({a: 10, b: 20});
+expect(object.b.toObject()).toEqual({a: 10, b: 20});
+```
 
 ### Equals
 
@@ -836,7 +919,7 @@ In this example, `a` and `b` are synchronized such that `a` is always
 half of `b`, regardless of which property gets updated.
 
 ```javascript
-var bindings = Bindings.defineBindings({
+var object = Bindings.defineBindings({
     a: 10
 }, {
     b: {
@@ -849,17 +932,17 @@ var bindings = Bindings.defineBindings({
         }
     }
 });
-expect(bindings.b).toEqual(20);
+expect(object.b).toEqual(20);
 
-bindings.b = 10;
-expect(bindings.a).toEqual(5);
+object.b = 10;
+expect(object.a).toEqual(5);
 ```
 
 Converter objects are useful for reusable or modular converter types and
 converters that track additional state.
 
 ```javascript
-var bindings = Bindings.defineBindings({
+var object = Bindings.defineBindings({
     a: 10
 }, {
     b: {
@@ -875,10 +958,10 @@ var bindings = Bindings.defineBindings({
         }
     }
 });
-expect(bindings.b).toEqual(20);
+expect(object.b).toEqual(20);
 
-bindings.b = 10;
-expect(bindings.a).toEqual(5);
+object.b = 10;
+expect(object.a).toEqual(5);
 ```
 
 ### Computed Properties
@@ -942,8 +1025,6 @@ JavaScript.  It was ripped from the heart of the [Montage][] web
 application framework and beaten into this new, slightly magical form.
 It must prove itself worthy before it can return.
 
-[Montage]: https://github.com/montagejs/montage
-
 -   **functional**: The implementation uses functional building blocks
     to compose observers and binders.
 -   **generic**: The implementation uses generic methods on collections,
@@ -971,30 +1052,29 @@ It must prove itself worthy before it can return.
     methods, like `push` and `pop`, with variants that dispatch change
     notifications.  The methods are either replaced by swapping the
     `__proto__` or adding the methods to the instance with
-    `Object.defineProperties`.  These techniques should [work][]
-    starting in Internet Explorer 9, Firefox 4, Safari 5, Chrome 7, and
-    Opera 12.
-
-[work]: http://kangax.github.com/es5-compat-table/#define-property-webkit-note
+    `Object.defineProperties`.  These techniques should [work][Define
+    Property] starting in Internet Explorer 9, Firefox 4, Safari 5,
+    Chrome 7, and Opera 12.
 
 
 ### Architecture
 
--   **property and content change events** for objects and arrays using
-    getters and setters for observable objects and either prototype
-    swapping or method override for observable arrays.  Other collection
-    types can implement the same interface to be compatible with all
-    subsequent layers.  Caveats: you have to use a `set` method on
-    Arrays to dispatch property and content change events.  Does not
-    work in older Internet Explorers since they support neither
-    prototype assignment or ES5 property setters.
+-   [Collections][] provides **property, mapped content, and ranged
+    content change events** for objects, arrays, and other collections.
+    For objects, this adds a property descriptor to the observed object.
+    For arrays, this either swaps the prototype or mixes methods into
+    the array so that all methods dispatch change events.  
+    Caveats: you have to use a `set` method on Arrays to dispatch
+    property and content change events.  Does not work in older Internet
+    Explorers since they support neither prototype assignment or ES5
+    property setters.
 -   **observer** functions for watching an entire object graph for
     incremental changes, and gracefully rearranging and canceling those
     observers as the graph changes.  Observers can be constructed
     directly or with a very small query language that compiles to a tree
     of functions so no parsing occurs while the graph is being watched.
--   one- and two-way **bindings** for incrementally updating properties
-    with the results of observed queries.
+-   one- and two-way **bindings** using binder and obserer functions to
+    incrementally update objects.
 -   **declarative** interface for creating an object graph with
     bindings, properties, and computed properties with dependencies.
 
@@ -1205,46 +1285,60 @@ brute force.
 
 #### Grammar
 
--   **expression** = **logical or expression**
--   **logical or expression** = **logical and expression** ( `||`
+-   **expression** = **logical-or-expression**
+-   **logical-or-expression** = **logical-and-expression** ( `||`
     **relation expression** )?
--   **logical and expression** = **relation expression** ( `&&`
-    **relation expression** )?
--   **relation expression** = **arithmetic expression** ( **relation
-    operator** **arithmetic expression** )?
--   **relation operator** = `=` | `==` | ```<``` | ```<=``` | ```>``` |
-    ```>=```
--   **arithmetic expression** = **multiplicative expresion** *delimited
-    by* **arithmetic operator**
--   **arithmetic operator** = `+` | `-`
--   **multiplicative expression** = **exponential expression**
-    *delimited by* **multiplicative operator**
--   **multiplicative operator** = `*` | `/` | `%` | `rem`
--   **exponential expression** = **unary expression** *delimited by*
-    **exponential operator**
--   **exponential operator** = `**` | `//` | `%%`
--   **unary expression** = **unary operator** ? **chain expression**
--   **unary operator** = `+` | `-` | `!`
--   **chain expression** = **primary expression** *delimited by* `.`
-    ( `.*` )?
--   **primary expression** = **literal** *or* `(` **expression** `)`
-    *or* **array expression** *or* **object expression** *or* **property
-    name** *or* `#` **element id** *or* `@` **component label** *or*
-    **function call** *or* **block call**
--   **array expression** = `[` **expression** *delimited by* `,` `]`
--   **object expression** = `{` (**property name** `:` **expression**)
-    *delimited by* `,` `}`
--   **property name** = ( **non space character** )+
--   **block name** = **function name** *or* `map` *or* `filter`
--   **function call** = **function name** `(` **expression** *delimited
+-   **logical-and-expression** = **relation-expression** ( `&&`
+    **relation-expression** )?
+-   **relation-expression** = **arithmetic expression** (
+    **relation-operator** **arithmetic-expression** )?
+    -   **relation-operator** = `=` | `==` | ```<``` | ```<=``` |
+        ```>``` | ```>=```
+-   **arithmetic-expression** = **multiplicative-expresion** *delimited
+    by* **arithmetic-operator**
+    -   **arithmetic-operator** = `+` | `-`
+-   **multiplicative-expression** = **exponential-expression**
+    *delimited by* **multiplicative-operator**
+    -   **multiplicative-operator** = `*` | `/` | `%` | `rem`
+-   **exponential-expression** = **unary-expression** *delimited by*
+    **exponential-operator**
+    -   **exponential-operator** = `**` | `//` | `%%`
+-   **unary-expression** = **unary-operator** ? **path-expression**
+    -   **unary-operator** = `+` | `-` | `!`
+-   **path-expression** =
+    **literal** *or*
+    **array-expression** *or*
+    **object-expression** *or*
+    `(` **expression** `)` **tail-expression** *or*
+    **property-name** **tail-expression** **or**
+    **function-call** **tail-expression** **or**
+    **block-call** **tail-expression** **or**
+    `#` **element-id** **tail-expression** *or*
+    `@` **component-label** **tail-expression**
+    -   **tail-expression** =
+        **property-expression** *or*
+        **get-expression** *or*
+        **range-content-expression** *or*
+        **map-content-expression**
+    -   **property-expression** = `.` **property-name** **tail-expression**
+    -   **get-expression** = `[` **expression** `]` **tail-expression**
+    -   **range-content-expression** = `.*`
+    -   **map-content-expression** = `[*]`
+    -   **array-expression** = `[` **expression** *delimited by* `,` `]`
+    -   **object-expression** = `{` (**property-name** `:` **expression**)
+        *delimited-by* `,` `}`
+-   **property-name** = ( **non-space-character** )+
+-   **function-call** = **function-name** `(` **expression** *delimited
     by* `,` `)`
--   **function name** = `flatten` *or* `reversed` *or* `sum` *or*
-    `average` *or* `has`
--   **block call** = **function name** `{` **expression** `}`
--   **literal** = **string literal** *or* **number literal**
--   **number literal** = **digits** ( `.` **digits** )?
--   **string literal** = `'` ( **non quote character** *or* `\`
-    **character** )* `'`
+    -   **function-name** = `flatten` *or* `reversed` *or* `sum` *or*
+        `average` *or* `has`
+-   **block-call** = **function-name** `{` **expression** `}`
+    -   **block-name** = `map` *or* `filter` *or* `sorted` *or*
+        **function-name**
+-   **literal** = **string-literal** *or* **number-literal**
+    -   **number-literal** = **digits** ( `.` **digits** )?
+    -   **string-literal** = `'` ( **non-quote-character** *or* `\`
+        **character** )* `'`
 
 #### Semantics
 
@@ -1374,10 +1468,27 @@ nodes.
 
 -   `property`: corresponds to observing a property named by the right
     argument of the left argument.
--   `map`: the left is the input, the right is an expression to observe
-    on each element of the input.
+-   `get`: corresponds to observing the value for a key in a collection.
+-   `mapBlock`: the left is the input, the right is an expression to
+    observe on each element of the input.
+-   `filterBlock`: the left is the input, the right is an expression to
+    determine whether the result is included in the output.
+-   `sortedBlock`: the left is the input, the right is a relation on
+    each value of the input on which to compare to determine the order.
+-   `map`: the left is the input, the right is a function that accepts
+    a value and returns the mapped result for each value of the input.
+-   `filter` (TODO): the left is the input, the right is a function that
+    accepts a value and returns whether to include that value in the
+    output.
+-   `sorted` (TODO): the left is the input, the right is a function that
+    accepts a value and returns a value to compare to determine the
+    order of the sorted output.
 -   `tuple`: has any number of arguments, each an expression to observe
     in terms of the source value.
+-   `view`: the arguments are the input, the start position, and the
+    length of the sliding window to view from the input.  The input may
+    correspond to any ranged content collection, like an array or sorted
+    set.
 
 For all operators, the "args" property are operands.  The node types for
 unary operators are:
@@ -1439,8 +1550,11 @@ All of these functions are or return an observer function of the form
 -   `makeConverterObserver(observeValue, convert, thisp)` calls the
     converter function to transform a value to a converted value.
 -   `makePropertyObserver(observeObject, observeKey)`
--   `makeMapObserver(observeArray, observeRelation)`
--   `makeFilterObserver(observeArray, observePredicate)`
+-   `makeGetObserver(observeCollection, observeKey)`
+-   `makeMapFunctionObserver(observeArray, observeFunction)`
+-   `makeMapBlockObserver(observeArray, observeRelation)`
+-   `makeFilterBlockObserver(observeArray, observePredicate)`
+-   `makeSortedBlockObserver(observeArray, observeRelation)`
 -   `makeEnumerationObserver(observeArray)`
 -   `makeFlattenObserver(observeOuterArray)`
 -   `makeTupleObserver(...observers)`
@@ -1481,87 +1595,18 @@ value to a bound value.  All binders are of the form `bind(observeValue,
 source, target, parameters)` and return a `cancel()` function.
 
 -   `makePropertyBinder(observeObject, observeKey)`
+-   `makeGetBinder(observeCollection, observeKey)`
 -   `makeHasBinder(observeCollection, observeValue)`
+-   `makeEqualityBinder(observeLeft, observeRight)`
+-   `makeRangeContentBinder(observeTarget)`
+-   `makeMapContentBinder(observeTarget)`
+-   `makeReversedBinder(observeTarget)`
 
 
-### Change Events
-
-#### Object Property Changes
-
-To use object observers, `require("frb/properties")`.  Observers depend
-on EcmaScript 5’s `Object.defineProperty` and `Object.defineProperties`
-or a suitable shim.  Observable collections benefit from the ability to
-swap `__proto__` in all engines except Internet Explorer, in which case
-they fall back to using `Object.defineProperties` to trap change
-functions.
-
-Listen for individual property changes on an object.  The listener may
-be a function or a delegate.
-
--   `addOwnPropertyChangeListener(object, key, listener, beforeChange)`
--   `removeOwnPropertyChangeListener(object, key, listener, beforeChange)`
--   `addBeforeOwnPropertyChangeListener(object, key, listener)`
--   `removeBeforeOwnPropertyChangeListener(object, key, listener)`
-
-The arguments to the listener are `(value, key, object)`, much like a
-`forEach` callback.  The `this` within the listener is the listener
-object itself.  The dispatch method must be one of these names, favoring
-the most specific provided.
-
--   `handle` + key (TwoHump) + (`Change` or `WillChange` before change),
-    for example, `handleFooWillChange` for `foo`.
--   `handleOwnPropertyChange` or `handleOwnPropertyWillChange` before
-    change
--   `handleEvent`
--   function
-
-#### Custom Property Change Observers
-
-The property change listener functions delegate to a
-`makePropertyObservable(key)` and `makePropertyUnobservable(key)` if
-they exist.  So, these can be used to augment host objects, like parts
-of the DOM, to accommodate property change listeners.  The `dom` module
-monkey-patches HTML element prototoypes to make some properties
-observable, like the "checked" property of radio and checkbox input
-elements using the `addEventListener("change")` interface.
-
-#### Array Content Changes
-
-To use array content observers,
-`require("frb/array")`.  This will install the
-necessary methods on the `Array` prototype.  The performance of arrays
-in general will not be affected&mdash;only observed arrays will require
-more time to execute changes.
-
-Listen for ranged content changes on arrays.  The location of the change
-is where the given arrays of content are removed and added.  For
-unordered collections like sets, the location would not be defined.
-Content changes are not yet implemented for other collections.
-
--   `array.addContentChangeListener(listener, beforeChange)`
--   `array.removeContentChangeListener(listener, beforeChange)`
--   `array.addBeforeContentChangeListener(listener)`
--   `array.removeBeforeContentChangeListener(listener)`
-
-The arguments to the listener are `(plus, minus, at)`, which are arrays
-of the added and removed values, and optionally the location of the
-change for ordered collections (lists, arrays).  For a list, the
-position is denoted by a node.  The dispatch method must be one of these
-names, favoring the most specific provided.
-
--   `handleContentChange` or `handleContentWillChange` if before change
--   `handleEvent`
--   function
-
-Listen for content changes from each position within an array, including
-changes to and from undefined.  Content changes must be emitted by
-method calls on an array, so use `array.set(index, value)` instead of
-`array[index] = value`.
-
--   `array.addEachContentChangeListener(listener, beforeChange)`
--   `array.removeEachContentChangeListener(listener, beforeChange)`
--   `array.addBeforeEachContentChangeListener(listener)`
--   `array.removeBeforeEachContentChangeListener(listener)`
-
-The listener is a listener as for property changes.
+[Collections]: https://github.com/kriskowal/collections
+[Define Property]: http://kangax.github.com/es5-compat-table/#define-property-webkit-note
+[Montage]: https://github.com/montagejs/montage
+[Mr]: https://github.com/kriskowal/mr
+[Mutation Observers]: https://developer.mozilla.org/en-US/docs/DOM/DOM_Mutation_Observers
+[Node.js]: http://nodejs.org/
 

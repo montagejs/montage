@@ -85,6 +85,30 @@ function makePropertyObserver(observeObject, observeKey) {
     };
 }
 
+exports.makeGetObserver = makeGetObserver;
+function makeGetObserver(observeCollection, observeKey) {
+    return function observeMap(emit, value, parameters, beforeChange) {
+        return observeCollection(autoCancelPrevious(function replaceCollection(collection) {
+            var equals = collection.contentEquals || Object.equals;
+            return observeKey(autoCancelPrevious(function replaceKey(key) {
+                var cancel = Function.noop;
+                function mapChange(value, mapKey, collection) {
+                    if (equals(key, mapKey)) {
+                        cancel();
+                        cancel = emit(value, key, collection);
+                    }
+                }
+                mapChange(collection.get(key), key, collection);
+                collection.addMapChangeListener(mapChange, beforeChange);
+                return once(function cancelMapObserver() {
+                    cancel();
+                    collection.removeMapChangeListener(mapChange, beforeChange);
+                });
+            }), value, parameters, beforeChange);
+        }), value, parameters, beforeChange);
+    }
+}
+
 exports.makeRecordObserver = makeRecordObserver;
 function makeRecordObserver(observers) {
     return function observeRecord(emit, value, parameters, beforeChange) {

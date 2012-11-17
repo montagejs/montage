@@ -1,15 +1,17 @@
 
 var Map = require("collections/map");
+var Set = require("collections/set");
+var Dict = require("collections/dict");
 
 var Parser = require("./lib/parser");
 var makeTrie = require("./lib/trie");
 var makeParserFromTrie = require("./lib/trie-parser");
 var makeLeftToRightParser = require("./lib/l2r-parser");
 
-function makeOperatorParser(operators, parseOperator) {
+function makeOperatorParser(operatorTokens, parseOperator) {
     return function (callback) {
         return parseOperator(function (operator, rewind) {
-            if (operator && operators.indexOf(operator) !== -1) {
+            if (operator && operatorTokens.indexOf(operator) !== -1) {
                 return callback(operator);
             } else {
                 return rewind(callback());
@@ -18,7 +20,7 @@ function makeOperatorParser(operators, parseOperator) {
     };
 }
 
-var operators = {
+var operatorTokens = {
     "**": "pow",
     "//": "root",
     "%%": "log",
@@ -39,8 +41,17 @@ var operators = {
     "||": "or"
 };
 
-var operatorTrie = makeTrie(operators);
+var operatorTrie = makeTrie(operatorTokens);
 var parseOperator = makeParserFromTrie(operatorTrie);
+
+var tailOpenerTokens = {
+    ".": ".",
+    "[": "[",
+    "[*]": "[*]"
+};
+
+var tailOpenerTrie = makeTrie(tailOpenerTokens);
+var parseTailOpener = makeParserFromTrie(tailOpenerTrie);
 
 module.exports = parse;
 function parse(text) {
@@ -56,18 +67,27 @@ function parse(text) {
 
 parse.semantics = {
 
+    operatorTokens: operatorTokens,
+
     grammar: function () {
         var self = this;
-        self.precedence(function () {
+        self.makePrecedenceLevel(Function.noop, [
+            'value', 'literal', 'parameters',
+            'tuple', 'record',
+            'element', 'component',
+            'mapBlock', 'filterBlock', 'sortedBlock',
+            'property'
+        ]);
+        self.makePrecedenceLevel(function () {
             return self.parseNegation.bind(self);
-        });
+        }, ['not', 'neg', 'number']);
         self.makeLeftToRightParser(["pow", "root", "log"]);
         self.makeLeftToRightParser(["mul", "div", "mod", "rem"]);
         self.makeLeftToRightParser(["add", "sub"]);
         self.makeComparisonParser(); // equals, notEquals, gt, lt, ge, le
         self.makeLeftToRightParser(["and"]);
         self.makeLeftToRightParser(["or"]);
-        self.parseExpression = self.precedence();
+        self.parseExpression = self.makePrecedenceLevel();
         self.parseMemoized = Parser.makeParser(self.parseExpression);
     },
 
@@ -89,16 +109,24 @@ parse.semantics = {
 
     makeLeftToRightParser: function (operators) {
         var self = this;
-        return self.precedence(function (parsePrevious) {
+        return self.makePrecedenceLevel(function (parsePrevious) {
             return makeLeftToRightParser(
                 parsePrevious,
                 makeOperatorParser(operators, self.parseOperator.bind(self)),
                 self.makeSyntax
             );
-        });
+        }, operators);
     },
 
-    precedence: function (callback) {
+    precedence: new Dict(),
+
+    makePrecedenceLevel: function (callback, operators) {
+        if (operators) {
+            var predecessors = this.precedence.keys();
+            operators.forEach(function (operator) {
+                this.precedence.set(operator, Set(predecessors));
+            }, this);
+        }
         callback = callback || identity;
         this.parsePrevious = callback(this.parsePrevious);
         return this.parsePrevious;
@@ -208,7 +236,7 @@ parse.semantics = {
                 })(character);
             } else if (character === "*") {
                 return callback({
-                    type: "content",
+                    type: "rangeContent",
                     args: [previous]
                 });
             } else if (character === "$") {
@@ -310,13 +338,39 @@ parse.semantics = {
         });
     },
 
+    parseTailOpener: parseTailOpener,
+
     parseTail: function (callback, previous) {
         var self = this;
-        return self.parseDot(function (dot) {
-            if (dot) {
+        return self.parseTailOpener(function (opener, rewind) {
+            if (opener === ".") {
                 return self.parsePrimary(callback, previous);
+            } else if (opener === "[") {
+                return self.parsePrimary(function (key) {
+                    return self.parseTupleEnd(function (end, loc) {
+                        if (end) {
+                            return self.parseTail(callback, {
+                                type: "get",
+                                args: [
+                                    previous,
+                                    key
+                                ]
+                            });
+                        } else {
+                            var error = new Error("Expected \"]\"");
+                            error.loc = loc;
+                            throw error;
+                        }
+                    });
+                });
+            } else if (opener === "[*]") {
+                return self.parseTail(callback, {
+                    type: "mapContent", args: [
+                        previous
+                    ]
+                });
             } else {
-                return callback(previous);
+                return rewind(callback(previous));
             }
         });
     },
@@ -347,7 +401,7 @@ parse.semantics = {
         return self.parseOpenParen(function () {
             return self.parseExpression(function (expression) {
                 return self.parseCloseParen(function () {
-                    return callback(expression);
+                    return self.parseTail(callback, expression);
                 });
             });
         });
@@ -526,7 +580,7 @@ parse.semantics = {
     makeComparisonParser: function () {
         var self = this;
         var comparisons = ["equals", "lt", "gt", "le", "ge"];
-        return self.precedence(function (parsePrevious) {
+        return self.makePrecedenceLevel(function (parsePrevious) {
             return function (callback) {
                 return parsePrevious(function (left) {
                     return self.parseOperator(function (operator, rewind) {
@@ -552,7 +606,7 @@ parse.semantics = {
                     });
                 });
             };
-        });
+        }, comparisons);
     },
 
     parseOperator: function (callback) {

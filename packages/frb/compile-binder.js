@@ -12,8 +12,10 @@ compile.semantics = {
 
     compilers: {
         property: Binders.makePropertyBinder,
+        get: Binders.makeGetBinder,
         has: Binders.makeHasBinder,
-        content: Binders.makeContentBinder,
+        rangeContent: Binders.makeRangeContentBinder,
+        mapContent: Binders.makeMapContentBinder,
         reversed: Binders.makeReversedBinder
     },
 

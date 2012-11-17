@@ -11,7 +11,9 @@ var semantics = compile.semantics = {
 
     compilers: {
         property: Observers.makePropertyObserver,
-        content: identity,
+        get: Observers.makeGetObserver,
+        rangeContent: identity,
+        mapContent: identity,
         map: Observers.makeMapFunctionObserver,
         mapBlock: Observers.makeMapBlockObserver,
         // TODO filter: Observers.makeFilterFunctionObserver,

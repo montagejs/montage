@@ -1,6 +1,7 @@
 
 var bind = require("../bind");
 var SortedSet = require("collections/sorted-set");
+var Map = require("collections/map");
 
 Error.stackTraceLimit = 100;
 
@@ -570,6 +571,62 @@ describe("bind", function () {
         // remove after
         set.delete(7);
         expect(array.slice()).toEqual([3, 4, 5, 6]);
+    });
+
+    it("should bind a mapped key", function () {
+        var array = [1, 2, 3];
+        var target = {};
+        var cancel = bind(target, "second", {"<-": "()[1]", source: array});
+        expect(target.second).toBe(2); // [1, 2, 3]
+        array.shift();
+        expect(target.second).toBe(3); // [2, 3]
+        array.splice(1, 0, 2.5);
+        expect(target.second).toBe(2.5); // [2, 2.5, 3]
+        cancel();
+        array.clear();
+        expect(target.second).toBe(2.5); // [2, 2.5, 3]
+    });
+
+    it("should bind map content to array content", function () {
+        var array = [];
+        var map = Map([[0, 1]]);
+        var cancel = bind(array, "()[*]", {"<-": "", source: map});
+        expect(array).toEqual([1]);
+        map.set(1, 2);
+        expect(array).toEqual([1, 2]);
+        map.delete(0);
+        expect(array).toEqual([2]);
+        cancel();
+        map.set(2, 3);
+        expect(array).toEqual([2]);
+    });
+
+    it("should bind map content to array content", function () {
+        var array = [];
+        var map = Map([[0, 1]]);
+        var cancel = bind(array, "()[*]", {"<-": "", source: map});
+        expect(array).toEqual([1]);
+        map.set(1, 2);
+        expect(array).toEqual([1, 2]);
+        map.delete(0);
+        expect(array).toEqual([2]);
+        cancel();
+        map.set(2, 3);
+        expect(array).toEqual([2]);
+    });
+
+    it("should bind array to map content", function () {
+        var map = Map();
+        var array = [1];
+        var cancel = bind(map, "()[*]", {"<-": "", source: array});
+        expect(map.toObject()).toEqual({0: 1});
+        array.push(2);
+        expect(map.toObject()).toEqual({0: 1, 1: 2});
+        array.splice(0, 1);
+        expect(map.toObject()).toEqual({0: 2});
+        cancel();
+        array.push(3);
+        expect(map.toObject()).toEqual({0: 2});
     });
 
 });
