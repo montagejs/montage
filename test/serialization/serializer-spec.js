@@ -286,6 +286,15 @@ describe("serialization/serializer-spec", function() {
             expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[CustomRef]","properties":{"object":{"@":"empty"}}},"empty":{}}');
         });
 
+        it("should serialize an external reference to an object that implements serializeSelf", function() {
+            var object = objects.CustomPropertiesRef.create();
+
+            object.object = objects.CustomRef.create();
+
+            var serialization = serializer.serializeObject(object);
+            expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[CustomPropertiesRef]","properties":{"object":{"@":"customref"}}},"customref":{}}');
+        });
+
         it("should serialize a function in an Object literal", function() {
             var object = {
                 method: function square(x) {

@@ -601,7 +601,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
                     //       sense to wait until it hits _serializeObject for that to happen
                     //       if we already have that information here, also, we need to
                     //       support references to values in the future, not just objects.
-                    if (typeof value.serializeSelf === "function" && !(value.uuid in this._serializedReferences)) {
+                    if (typeof value.serializeSelf === "function" && !(value.uuid in this._serializedReferences) && type !== "reference") {
                         return this._customSerialization(value, indent + 1);
                     } else {
                         return this._serializeObject(value, null, type);
