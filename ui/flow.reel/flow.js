@@ -46,12 +46,10 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _flowTranslateComposer: {
-        serializable: true,
         value: null
     },
 
     _scrollingMode: {
-        enumerable: false,
         value: "linear"
     },
 
@@ -74,7 +72,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _linearScrollingVector: {
-        enumerable: false,
         value: [-300, 0]
     },
 
@@ -92,7 +89,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _repetition: {
-        serializable: true,
         value: null
     },
 
@@ -105,7 +101,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _splinePaths: {
-        enumerable: false,
         value: null
     },
 
@@ -173,13 +168,62 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _paths: {
-        enumerable: false,
         value: null
     },
 
     paths: { // TODO: listen for changes?
         get: function () {
-            return this._paths;
+            var length = this.splinePaths.length,
+                paths = [],
+                path,
+                pathLength,
+                parametersLength,
+                knot,
+                i, j, k;
+
+            for (i = 0; i < length; i++) {
+                pathLength = this.splinePaths[i].knots.length;
+                path = {
+                    knots: [],
+                    units: {}
+                };
+                for (j = 0; j < pathLength; j++) {
+                    knot = {
+                        knotPosition: this.splinePaths[i].knots[j]
+                    };
+                    if (this.splinePaths[i].nextHandlers && this.splinePaths[i].nextHandlers[j]) {
+                        knot.nextHandlerPosition = this.splinePaths[i].nextHandlers[j];
+                    }
+                    if (this.splinePaths[i].previousHandlers && this.splinePaths[i].previousHandlers[j]) {
+                        knot.previousHandlerPosition = this.splinePaths[i].previousHandlers[j];
+                    }
+                    // TODO implememnt previous/next densities
+                    if (this.splinePaths[i].densities && this.splinePaths[i].densities[j]) {
+                        knot.previousDensity = this.splinePaths[i].densities[j];
+                        knot.nextDensity = this.splinePaths[i].densities[j];
+                    }
+                    path.knots.push(knot);
+                }
+                for (j in this.splinePaths[i].parameters) {
+                    path.units[j] = this.splinePaths[i].parameters[j].units;
+                    parametersLength = this.splinePaths[i].parameters[j].data.length;
+                    for (k = 0; k < parametersLength; k++) {
+                        path.knots[k][j] = this.splinePaths[i].parameters[j].data[k];
+                    }
+                }
+                if (this._paths[i].hasOwnProperty("headOffset")) {
+                    path.headOffset = this._paths[i].headOffset;
+                } else {
+                    path.headOffset = 0;
+                }
+                if (this._paths[i].hasOwnProperty("tailOffset")) {
+                    path.tailOffset = this._paths[i].tailOffset;
+                } else {
+                    path.tailOffset = 0;
+                }
+                paths.push(path);
+            }
+            return paths;
         },
         set: function (value) {
             var length = value.length,
@@ -200,24 +244,20 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _cameraPosition: {
-        enumerable: false,
         value: [0, 0, 800]
     },
 
     _cameraTargetPoint: {
-        enumerable: false,
         value: [0, 0, 0]
     },
 
     _cameraFov: {
-        enumerable: false,
         value: 50
     },
 
     // TODO: Implement camera roll
 
     _cameraRoll: {
-        enumerable: false,
         value: 0
     },
 
@@ -266,7 +306,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _stride: {
-        enumerable: false,
         value: 0
     },
 
@@ -280,12 +319,10 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _scrollingTransitionDurationMiliseconds: {
-        enumerable: false,
         value: 500
     },
 
     _scrollingTransitionDuration: {
-        enumerable: false,
         value: "500ms"
     },
 
@@ -316,12 +353,10 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _scrollingTransitionTimingFunctionBezier: {
-        enumerable: false,
         value: [.25, .1, .25, 1]
     },
 
     _scrollingTransitionTimingFunction: {
-        enumerable: false,
         value: "ease"
     },
 
@@ -334,7 +369,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _handleSelectedIndexesChange: {
-        enumerable: false,
         value: function (event) {
             if (this.hasSelectedIndexScrolling && event.plus) {
                 this.startScrollingIndexToOffset(event.plus[0], this.selectedIndexScrollingOffset);
@@ -343,7 +377,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _timingFunctions: {
-        enumerable: false,
         value: {
             "ease": [.25, .1, .25, 1],
             "linear": [0, 0, 1, 1],
@@ -399,7 +432,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _computeCssCubicBezierValue: {
-        enumerable: false,
         value: function (x, bezier) {
             var t = .5,
                 step = .25,
@@ -424,7 +456,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _isTransitioningScroll: {
-        enumerable: false,
         value: false
     },
 
@@ -454,28 +485,23 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _isCameraUpdated: {
-        enumerable: false,
         value: true
     },
 
     _width: {
-        enumerable: false,
         value: null
     },
 
     _height: {
-        enumerable: false,
         value: null
     },
 
     _repetitionComponents: {
-        enumerable: false,
         value: null
     },
 
     // TODO: bounding box is working as bounding rectangle only. Update it to work with boxes
     _boundingBoxSize: {
-        enumerable: false,
         value: [200, 200, 0]
     },
 
@@ -491,7 +517,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _elementsBoundingSphereRadius: {
-        enumerable: false,
         value: 283
     },
 
@@ -508,12 +533,10 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _halfPI: {
-        enumerable: false,
         value: Math.PI * .5
     },
 
     _doublePI: {
-        enumerable: false,
         value: Math.PI * 2
     },
 
@@ -553,7 +576,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _segmentsIntersection: {
-        enumerable: false,
         value: function (segment1, segment2) {
             var n = 0,
                 m = 0,
@@ -597,7 +619,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _computeVisibleRange: { // TODO: make it a loop, optimize
-        enumerable: false,
         value: function (spline) {
             var splineLength = spline._knots.length - 1,
                 planeOrigin0 = this._cameraPosition[0],
@@ -694,7 +715,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     prepareForDraw: {
-        enumerable: false,
         value: function () {
             var self = this,
                 i;
@@ -708,7 +728,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _updateIndexMap: {
-        enumerable: false,
         value: function (newIndexes, newIndexesHash) {
             var currentIndexMap = this._repetition.indexMap,
                 emptySpaces = [],
@@ -742,7 +761,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     willDraw: {
-        enumerable: false,
         value: function () {
             var intersections,
                 index,
@@ -807,7 +825,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     draw: {
-        enumerable: false,
         value: function () {
             var i,
                 length = this._repetitionComponents.length,
@@ -905,7 +922,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _updateLength: {
-        enumerable: false,
         value: function () {
             if (this._paths) {
                 var iPath,
@@ -935,12 +951,10 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _numberOfIterations: {
-        enumerable: false,
         value: 0
     },
 
     numberOfIterations: {
-        enumerable: false,
         get: function () {
             return this._numberOfIterations;
         },
@@ -953,7 +967,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _objects: {
-        enumerable: false,
         value: null
     },
 
@@ -968,22 +981,20 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     contentController: {
-        serializable: true,
         value: null
     },
 
     isSelectionEnabled: {
-        serializable: true,
         value: null
     },
 
     selectedIndexes: {
-        serializable: true,
+        serializable: false,
         value: null
     },
 
     activeIndexes: {
-        serializable: true,
+        serializable: false,
         value: null
     },
 
@@ -1003,7 +1014,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _orphanedChildren: {
-        enumerable: false,
         value: null
     },
 
@@ -1040,7 +1050,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _length: {
-        enumerable: false,
         value: 0
     },
 
@@ -1058,7 +1067,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _scroll: {
-        enumerable: false,
         value: 0
     },
 
@@ -1067,12 +1075,10 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _hasElasticScrolling: {
-        enumerable: false,
         value: false
     },
 
     hasElasticScrolling: {
-        serializable: true,
         get: function () {
             return this._hasElasticScrolling;
         },
@@ -1086,27 +1092,22 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _slideOffsets: {
-        enumerable: false,
         value: null
     },
 
     _slideOffsetsLength: {
-        enumerable: false,
         value: 0
     },
 
     _maxSlideOffsetIndex: {
-        enumerable: false,
         value: -1
     },
 
     _minSlideOffsetIndex: {
-        enumerable: false,
         value: 2e9
     },
 
     _updateSlideOffset: {
-        enumerable: false,
         value: function (index, value) {
             var epsilon = 1e-4;
 
@@ -1130,14 +1131,12 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _incrementSlideOffset: {
-        enumerable: false,
         value: function (index, value) {
             this._updateSlideOffset(index, this._getSlideOffset(index) + value);
         }
     },
 
     _removeSlideOffset: {
-        enumerable: false,
         value: function (index) {
             if (typeof this._slideOffsets[index] !== "undefined") {
                 var keys, i, integerKey;
@@ -1171,7 +1170,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _getSlideOffset: {
-        enumerable: false,
         value: function (index) {
             if (index < this._minSlideOffsetIndex) {
                 if (this._minSlideOffsetIndex > this._draggedSlideIndex) {
@@ -1243,7 +1241,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _isInputEnabled: { // TODO: Replace by pointerBehavior
-        enumerable: false,
         value: true
     },
 
@@ -1261,7 +1258,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _draggedSlideIndex: {
-        _enumerable: false,
         value: 0
     },
 
@@ -1312,6 +1308,12 @@ var Flow = exports.Flow = Montage.create(Component, {
                 pathIndex: pathIndex,
                 slideTime: slideTime + this._getSlideOffset(slideIndex)
             };
+        }
+    },
+
+    serializeSelf: {
+        value: function(serializer) {
+            serializer.setProperties();
         }
     }
 
