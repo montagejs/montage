@@ -501,7 +501,7 @@ describe("bind", function () {
     describe("content binding from sorted set", function () {
         var array = ['a', 'c', 'b'];
         var set = SortedSet([4, 5, 1, 3, 45, 1, 8]);
-        var cancel = bind(array, "*", {"<-": "", source: set});
+        var cancel = bind(array, ".*", {"<-": "", source: set});
         expect(array.slice()).toEqual([1, 3, 4, 5, 8, 45]);
         set.add(2);
         expect(array.slice()).toEqual([1, 2, 3, 4, 5, 8, 45]);
@@ -516,7 +516,7 @@ describe("bind", function () {
             length: 3
         };
         var target = [];
-        var cancel = bind(target, "*", {
+        var cancel = bind(target, ".*", {
             "<-": "content.view(index, length)",
             source: source
         });
@@ -539,7 +539,7 @@ describe("bind", function () {
             index: 2,
             length: 3
         };
-        var cancel = bind(array, "*", {
+        var cancel = bind(array, ".*", {
             "<-": "set.view(index, length)",
             source: source
         });

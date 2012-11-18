@@ -109,7 +109,7 @@ expect(object.bar).toBe(20);
 The right-to-left assignment of `bar` to `foo` happens first, so the
 initial value of `foo` gets lost.
 
-### Property chains
+### Properties
 
 Bindings can follow deeply nested chains, on both the left and the right
 side.
@@ -132,9 +132,6 @@ expect(foo.a.b).toBe(20);
 foo.a.b = 30;
 expect(bar.a.b).toBe(30);
 ```
-
-In this case, the source of the binding is a different object than the
-target, so the binding descriptor specifies the alternate source.
 
 ### Structure changes
 
@@ -312,13 +309,14 @@ expect(controller.view).toEqual([5, 6, 7]);
 
 ### Enumerate
 
-An enumeration observer produces `{index, value}` pairs.  You can bind
-to the index or the item in subsequent stages.
+An enumeration observer produces `[index, value]` pairs.  You can bind
+to the index or the item in subsequent stages.  The prefix dot
+distinguishes the zeroeth property from the literal zero.
 
 ```javascript
 var object = {letters: ['a', 'b', 'c', 'd']};
 bind(object, "lettersAtEvenIndicies", {
-    "<-": "letters.enumerate().filter{!(index % 2)}.map{value}"
+    "<-": "letters.enumerate().filter{!(.0 % 2)}.map{.1}"
 });
 expect(object.lettersAtEvenIndicies).toEqual(['a', 'c']);
 object.letters.shift();
@@ -537,6 +535,10 @@ expect(object.a.toObject()).toEqual({a: 10, b: 20});
 expect(object.b.toObject()).toEqual({a: 10, b: 20});
 ```
 
+In this case, the source of the binding is a different object than the
+target, so the binding descriptor specifies the alternate source.
+
+
 ### Equals
 
 You can bind to whether expressions are equal.
@@ -573,6 +575,161 @@ expect(component.fruit).toEqual("apple");
 Because equality and assignment are interchanged in this language, you
 can use either `=` or `==`.
 
+
+### Array and Map Content
+
+In JavaScript, arrays behave both like objects (in the sense that every
+index is a property, but also like a map collection of index-to-value
+pairs.  The [Collections][] package goes so far as to patch up the
+`Array` prototype so arrays can masquerade as maps, with the caveat that
+`delete(value)` behaves like a Set instead of a Map.
+
+This duplicity is reflected in FRB.  You can access the values in an
+array using the object property notation or the mapped key notation.
+
+```javascript
+var object = {
+    array: [1, 2, 3]
+};
+Bindings.defineBindings(object, {
+    first: {"<-": "array.0"},
+    second: {"<-": "array[1]"}
+});
+expect(object.first).toBe(1);
+expect(object.second).toBe(2);
+```
+
+To distinguish a numeric property of the source from a number literal,
+use a dot.  To distingish a mapped index from an array literal, use an
+empty expression.
+
+```javascript
+var array = [1, 2, 3];
+var object = {};
+Bindings.defineBindings(object, {
+    first: {
+        "<-": ".0",
+        source: array
+    },
+    second: {
+        "<-": "()[1]",
+        source: array
+    }
+});
+expect(object.first).toBe(1);
+expect(object.second).toBe(2);
+```
+
+Unlike property notation, map notation can observe a variable index.
+
+```javascript
+var object = {
+    array: [1, 2, 3],
+    index: 0
+};
+Bindings.defineBinding(object, "last", {
+    "<-": "array[array.length - 1]"
+});
+expect(object.last).toBe(3);
+
+object.array.pop();
+expect(object.last).toBe(2);
+```
+
+You can also bind *all* of the content of an array by range or by
+mapping.  The notation for binding ranged content is `.*`.  Every change
+to an Array or SortedSet dispatches range changes and any collection
+that implements `splice` and `swap` can be a target for such changes.
+
+```javascript
+var SortedSet = require("collections/sorted-set");
+var object = {
+    set: SortedSet(),
+    array: []
+};
+Bindings.defineBindings(object, {
+    "array.*": {"<-": "set"}
+});
+object.set.addEach([5, 2, 6, 1, 4, 3]);
+expect(object.array).toEqual([1, 2, 3, 4, 5, 6]);
+```
+
+The notation for binding the content of any mapping collection using map
+changes is `[*]`.  On the target of a binding, this will note when
+values are added or removed on each key of the source collection and
+apply the same change to the target.  The target and source can be
+arrays or map collections.
+
+```javascript
+var Map = require("collections/map");
+var object = {
+    map: Map(),
+    array: []
+};
+Bindings.defineBinding(object, "map[*]", {
+    "<-": "array"
+});
+object.array.push(1, 2, 3);
+expect(object.map.toObject()).toEqual({
+    0: 1,
+    1: 2,
+    2: 3
+});
+```
+
+### Value
+
+A note about the source value: an empty path implies the source value.
+Using empty paths and empty expressions is useful in some situations.
+
+If a value is ommitted on either side of an operator, it implies the
+source value.  The expression `sorted{}` indicates a sorted array, where
+each value is sorted by its own numeric value.  The expression
+`filter{!!}` would filter falsy values.  The operand is implied.
+Similarly, `filter{!(%2)}` produces only even values.
+
+This is why you can use `.0` to get the zeroth property of an array, to
+distingiush the form from `0` which would be a numeric literal, and why
+you can use `()[0]` to map the zeroeth key of a map or array, to
+distinguish the form from `[0]` which would be an array literal.
+
+### With Context Value
+
+Expressions can be evaluated in the context of another value using a
+variant of property notation.  A parenthesized expression can follow a
+path.
+
+```javascript
+var object = {
+    context: {a: 10, b: 20}
+};
+Bindings.defineBinding(object, "sum", {
+    "<-": "context.(a + b)"
+});
+expect(object.sum).toBe(30);
+
+Bindings.cancelBinding(object, "sum");
+object.context.a = 20;
+expect(object.sum).toBe(30); // unchanged
+```
+
+To observe a constructed array or object literal, the expression does
+not need parentheses.
+
+```javascript
+var object = {
+    context: {a: 10, b: 20}
+};
+Bindings.defineBindings(object, {
+    "duple": {"<-": "context.[a, b]"},
+    "pair": {"<-": "context.{key: a, value: b}"}
+});
+expect(object.duple).toEqual([10, 20]);
+expect(object.pair).toEqual({key: 10, value: 20});
+
+Bindings.cancelBindings(object);
+```
+
 ### Operators
 
 FRB can also recognize many operators.  These are in order of precedence
@@ -586,6 +743,22 @@ var object = {height: 10};
 bind(object, "heightPx", {"<-": "height + 'px'"});
 expect(object.heightPx).toEqual("10px");
 ```
+
+The unary `+` operator coerces a value to a number. It is handy for
+binding a string to a number.
+
+```javascript
+var object = {
+    number: null,
+    string: null,
+};
+Bindings.defineBinding(object, "+number", {
+    "<-": "string"
+});
+object.string = '10';
+expect(object.number).toBe(10);
+```
+
 
 ### Algebra
 
@@ -712,6 +885,73 @@ parameters object.
 var object = {};
 bind(object, "ten", {"<-": "$", parameters: 10});
 expect(object.ten).toEqual(10);
+```
+
+### Elements and Components
+
+FRB provides a `#` notation for reaching into the DOM for an element.
+This is handy for binding views and models on a controller object.
+
+The `defineBindings` method accepts an optional final argument,
+`parameters`, which is shared by all bindings (unless shadowed by a more
+specific parameters object on an individual descriptor).
+
+The `parameters` can include a `document`.  The `document` may be any
+object that implements `getElementById`.
+
+Additionally, the `frb/dom` is an experiment that monkey-patches the DOM
+to make some properties of DOM elements observable, like the `value` or
+`checked` attribute of an `input` or `textarea element`.
+
+```javascript
+var Bindings = require("frb");
+require("frb/dom");
+
+var controller = Bindings.defineBindings({}, {
+
+    "fahrenheit": {"<->": "celsius * 1.8 + 32"},
+    "celsius": {"<->": "kelvin - 272.15"},
+
+    "#fahrenheit.value": {"<->": "+fahrenheit"},
+    "#celsius.value": {"<->": "+celsius"},
+    "#kelvin.value": {"<->": "+kelvin"}
+
+}, {
+    document: document
+});
+
+controller.celsius = 0;
+```
+
+One caveat of this approach is that it can cause a lot of DOM repaint
+and reflow events.  The [Montage][] framework uses a synchronized draw
+cycle and a component object model to minimize the cost of computing CSS
+properties on the DOM and performing repaints and reflows, deferring
+such operations to individual animation frames.
+
+For a future release of Montage, FRB provides an alternate notation for
+reaching into the component object model, using its deserializer.  The
+`@` prefix refers to another component by its label.  Instead of
+providing a `document`, Montage provides a `serialization`, which in
+turn implements `getObjectForLabel`.
+
+```javascript
+var Bindings = require("frb");
+
+var controller = Bindings.defineBindings({}, {
+
+    "fahrenheit": {"<->": "celsius * 1.8 + 32"},
+    "celsius": {"<->": "kelvin - 272.15"},
+
+    "@fahrenheit.value": {"<->": "+fahrenheit"},
+    "@celsius.value": {"<->": "+celsius"},
+    "@kelvin.value": {"<->": "+kelvin"}
+
+}, {
+    serializer: serializer
+});
+
+controller.celsius = 0;
 ```
 
 ### Observers
@@ -1017,6 +1257,7 @@ Bindings.defineBindings({
 });
 ```
 
+
 ## Reference
 
 Functional Reactive Bindings is an implementation of synchronous,
@@ -1276,71 +1517,142 @@ object.array = []; // emits []
 object.array.push(10); // emits [10]
 ```
 
+### Evaluate
 
-### The Language
+The `compile-evaluator` module returns a function that accepts a syntax
+tree and returns an evaluator function.  The evaluator accepts a source
+value and parameters and returns the corresponding value without all the
+cost or benefit of setting up incremental observers.
 
-Bindings and observers used a small query language intended to resemble
-the same code that you would write in JavaScript to update a binding by
-brute force.
+```javascript
+var parse = require("./parse");
+var compile = require("./compile-evaluator");
 
-#### Grammar
+var syntax = parse("a.b");
+var evaluate = compile(syntax);
+var c = evaluate({a: {b: 10}})
+expect(c).toBe(10);
+```
+
+The `evaluate` module returns a function that accepts a path or syntax
+tree, a source value, and parameters and returns the corresponding
+value.
+
+```javascript
+var evaluate = require("./evaluate");
+var c = evaluate("a.b", {a: {b: 10}})
+expect(c).toBe(10);
+```
+
+
+### Stringify
+
+The `stringify` module returns a function that accepts a syntax tree and
+returns the corresponding path in normal form.
+
+```javascript
+var stringify = require("./stringify");
+
+var syntax = {type: "and", args: [
+    {type: "property", args: [
+        {type: "value"},
+        {type: "literal", value: "a"}
+    ]},
+    {type: "property", args: [
+        {type: "value"},
+        {type: "literal", value: "b"}
+    ]}
+]};
+
+var path = stringify(syntax);
+expect(path).toBe("a && b");
+```
+
+
+### Grammar
 
 -   **expression** = **logical-or-expression**
--   **logical-or-expression** = **logical-and-expression** ( `||`
+-   **logical-or-expression** = **logical-and-expression** ( `||` *(or)*
     **relation expression** )?
--   **logical-and-expression** = **relation-expression** ( `&&`
+-   **logical-and-expression** = **relation-expression** ( `&&` *(and)*
     **relation-expression** )?
 -   **relation-expression** = **arithmetic expression** (
     **relation-operator** **arithmetic-expression** )?
-    -   **relation-operator** = `=` | `==` | ```<``` | ```<=``` |
-        ```>``` | ```>=```
--   **arithmetic-expression** = **multiplicative-expresion** *delimited
-    by* **arithmetic-operator**
-    -   **arithmetic-operator** = `+` | `-`
+    -   **relation-operator** = `==` *(equals)* or ```<``` *(lt)* or
+        ```<=``` *(le)* or ```>``` *(gt)* or ```>=``` *(ge)*
+-   **arithmetic-expression** = **multiplicative-expresion** delimited by **arithmetic-operator**
+    -   **arithmetic-operator** = `+` *(add)* or `-` *(sub)*
 -   **multiplicative-expression** = **exponential-expression**
-    *delimited by* **multiplicative-operator**
-    -   **multiplicative-operator** = `*` | `/` | `%` | `rem`
--   **exponential-expression** = **unary-expression** *delimited by*
+    delimited by **multiplicative-operator**
+    -   **multiplicative-operator** = `*` *(mul)* or `/` *(div)* or
+        `%` *(mod)* or `rem` *(rem)*
+-   **exponential-expression** = **unary-expression** delimited by
     **exponential-operator**
-    -   **exponential-operator** = `**` | `//` | `%%`
+    -   **exponential-operator** = `**` *(pow)* or `//` *(root)* or
+        `%%` *(log)*
 -   **unary-expression** = **unary-operator** ? **path-expression**
-    -   **unary-operator** = `+` | `-` | `!`
+    -   **unary-operator** = `+` *(number)* or `-` *(neg)* or `!` *(not)*
 -   **path-expression** =
-    **literal** *or*
-    **array-expression** *or*
-    **object-expression** *or*
-    `(` **expression** `)` **tail-expression** *or*
-    **property-name** **tail-expression** **or**
-    **function-call** **tail-expression** **or**
-    **block-call** **tail-expression** **or**
-    `#` **element-id** **tail-expression** *or*
-    `@` **component-label** **tail-expression**
-    -   **tail-expression** =
-        **property-expression** *or*
-        **get-expression** *or*
-        **range-content-expression** *or*
-        **map-content-expression**
-    -   **property-expression** = `.` **property-name** **tail-expression**
-    -   **get-expression** = `[` **expression** `]` **tail-expression**
-    -   **range-content-expression** = `.*`
-    -   **map-content-expression** = `[*]`
-    -   **array-expression** = `[` **expression** *delimited by* `,` `]`
-    -   **object-expression** = `{` (**property-name** `:` **expression**)
-        *delimited-by* `,` `}`
+    -   **literal** *(literal with value)* or
+    -   **array-expression** *(tuple)* or
+    -   **object-expression** *(record)* or
+    -   `(` **expression** `)` **tail-expression** or
+    -   **property-name** **tail-expression** *(property)* or
+    -   **function-call** **tail-expression** or
+    -   **block-call** **tail-expression** or
+    -   `#` **element-id** **tail-expression** *(element by id)* or
+    -   `@` **component-label** **tail-expression** *(component by label)*
+-   **tail-expression** =
+    -   **property-expression** or
+    -   **with-expression** or
+    -   **get-expression** or
+    -   **range-content-expression** or
+    -   **map-content-expression**
+-   **property-expression** = `.` **property-name** **tail-expression**
+    *(property)*
+-   **with-expression** = `.`
+    -   `(` **expression** `)` **tail-expression** or
+    -   **array-expression** **tail-expression** or
+    -   **object-expression** **tail-expression**
+-   **get-expression** = `[` **expression** `]` **tail-expression**
+    *(get)*
+-   **range-content-expression** = `.*` *(rangeContent)*
+-   **map-content-expression** = `[*]` *(mapContent)*
+-   **array-expression** = `[` ( **expression** or `()` *(value)* )
+    delimited by `,` `]` *(tuple with each expression in args array)*
+-   **object-expression** = `{` (**property-name** `:` **expression**)
+    delimited by `,` `}` *(record, with each expression as a value in an
+    args object instead of array)*
 -   **property-name** = ( **non-space-character** )+
--   **function-call** = **function-name** `(` **expression** *delimited
-    by* `,` `)`
-    -   **function-name** = `flatten` *or* `reversed` *or* `sum` *or*
-        `average` *or* `has`
+-   **function-call** = **function-name** `(` **expression** delimited
+    by `,` `)`
+    -   **function-name** = `flatten` or `reversed` or `enumerate`
+        or `sum` or `average` or `has` or `view` *(eponymous syntax node
+        types)*
 -   **block-call** = **function-name** `{` **expression** `}`
-    -   **block-name** = `map` *or* `filter` *or* `sorted` *or*
-        **function-name**
--   **literal** = **string-literal** *or* **number-literal**
-    -   **number-literal** = **digits** ( `.` **digits** )?
-    -   **string-literal** = `'` ( **non-quote-character** *or* `\`
-        **character** )* `'`
+    -   **block-name** = `map` *(mapBlock)* or `filter`
+        *(filterBlock)* or `sorted` *(sortedBlock)* or
+        **function-name** *(map followed by function-call)*
+-   **literal** = **string-literal** or **number-literal**
+    -   **number-literal** = **digits** ( `.` **digits** )? *(literal
+        and value is a number)*
+    -   **string-literal** = `'` ( **non-quote-character** or `\`
+        **character** ) `'` *(literal and value is a string)*
 
-#### Semantics
+Legend:
+
+-   **terms-of-the-grammar**
+-   `tokens`
+-   *(corresponding syntax node type name)*
+-   (group)
+-   definition =
+-   or
+-   delimited by
+-   optional?
+-   any*
+-   some+
+
+### Semantics
 
 An expression is observed with a source value and emits a target
 one or more times.  All expressions emit an initial value.  Array
@@ -1352,11 +1664,17 @@ update.  Thus, if a binding’s source becomes invalid, it does not
 corrupt its target but waits until a valid replacement becomes
 available.
 
--   In a chained expression, the first term is evaluated with the source
-    value.
--   Each subsequent term uses the target of the previous as its source.
 -   Literals are interpreted as their corresponding value.
--   A property expression observes the named key of the source object.
+-   Value terms provide the source.
+-   Parameters terms provide the parameters.
+-   In a path-expression, the first term is evaluated with the source
+    value.
+-   Each subsequent term of a path expression uses the target of the
+    previous as its source.
+-   A property-expression observes the named key of the source object
+    using `Object.addPropertyChangeListener`.
+-   A get-expression observes the value for the given key in a
+    collection, using the `get` method and `addMapChangeListener`.
 -   An element identifier (with the `#` prefix) uses the `document`
     property of the `parameters` object and emits
     `document.getElementById(id)`, or dies trying.  Changes to the
@@ -1372,11 +1690,17 @@ available.
     `addContentChangeListener`.  Each element of the target array
     corresponds to the observed value of the block expression using the
     respective element in the source array as the source value.
+-   A "map" function call receives a function as its argument rather
+    than a block.
 -   A "filter" block observes the source array and emits a target array
     containing only those values from the source array that actively
     pass the predicate described in the block expression useing the
     respective element in the source array as the source value.  As with
     "map", filters update the target array incrementally.
+-   A "sorted" block observes the sorted version of an array, by a
+    property of each value described in the block, or itself if empty.
+    Sorted arrays are incrementally updating as values are added and
+    deleted from the source.
 -   Any function call with a "block" implies calling the function on the
     result of a "map" block.
 -   A "flatten" function call observes a source array and produces a
@@ -1390,6 +1714,13 @@ available.
 -   A "reversed" function call observes the source array and produces a
     target array that contains the elements of the source array in
     reverse order.  The target is incrementally updated.
+-   An "enumerate" expression observes [key, value] pairs from an array.
+    The output array of arrays is incrementally updated with range
+    changes from the source.
+-   A "view" function call observes a sliding window from the source,
+    from a start index (first argument) of a certain length (second
+    argument).  The source can be any collection that dispatches range
+    changes and the output will be an array of the given length.
 -   A "sum" function call observes the numeric sum of the source array.
     Each alteration to the source array causes a new sum to be emitted,
     but the sum is computed incrementally by observing the smaller sums
@@ -1402,7 +1733,47 @@ available.
     target array with elements corresponding to the respective
     expression in the tuple.  Each inner expression is evaluated with
     the same source value as the outer expression.
--   `.*` at the end of a chain has no effect on an observed value.
+-   `.*` at the end of a path has no effect on an observed value.
+-   `[*]` at the end of a path has no effect on an observed value.
+
+Unary operators:
+
+-   "number" coerces the value to a number.
+-   "neg" converts a number to its negative.
+-   "not" converts a boolean to its logical opposite.
+
+Binary operators:
+
+-   "add" adds the left to the right
+-   "sub" subtracts the right from the left
+-   "mul" multiples the left to the right
+-   "div" divides the left by the right
+-   "mod" produces the left modula the right.  This is proper modula,
+    meaning a negative number that does not divide evenly into a
+    positive number will produce the difference between that number and
+    the next evenly divisible number in direction of negative infinity.
+-   "rem" produces the remainder of dividing the left by the right.  If
+    the left does not divide evenly into the right it will produce the
+    difference between that number and the next evenly divisible number
+    in the direction of zero.  That is to say, `rem` can produce
+    negative numbers.
+-   "pow" raises the left to the power of the right.
+-   "root" produces the "righth" root of the left.
+-   "log" produces the logarithm of the left on the right base.
+-   "lt" less than, as determined with `Object.compare(left, right) <
+    0`.
+-   "le" less than or equal, as determined with `Object.compare(left,
+    right) <= 0`.
+-   "gt" greater than, as determined with `Object.compare(left, right) >
+    0`.
+-   "ge" greater than or equal, as determined with `Object.compare(left,
+    right) >= 0`.
+-   "equals" whether the left is equal to the right as determined by
+    `Object.equals(left, right)`.
+-   *Note: there is no "not equals" syntax node. The `!=` operator gets
+    converted into a "not" node around an "equals" node.
+-   "and" logical union
+-   "or" logical intersection
 
 On the left hand side of a binding, the last term has alternate
 semantics.  Binders receive a target as well as a source.
@@ -1410,6 +1781,11 @@ semantics.  Binders receive a target as well as a source.
 -   A "property" observes an object and a property name from the target,
     and a value from the source.  When any of these change, the binder
     upates the value for the property name of the object.
+-   A "get" observes a collection and a key from the target, and a value
+    from the source.  When any of these change, the binder updates the
+    value for the key on the collection using `collection.set(key,
+    value)`.  This is suitable for arrays and custom map
+    [Collections][].
 -   A "equals" expression observes a boolean value from the source.  If
     that boolean becomes true, the equality expression is made true by
     assigning the right expression to the left property of the equality,
@@ -1433,7 +1809,7 @@ The collection can be any collection that implements the "observable
 content" interface including `dispatchContentChange(plus, minus,
 index)`, `addContentChangeListener`, and `removeContentChangeListener`.
 
-#### Interface
+### Language Interface
 
 ```javascript
 var parse = require("frb/parse");
@@ -1454,7 +1830,7 @@ var compileBinder = require("frb/compile-binder");
     conceivably be any function with a clear inverse operation like
     `map` and `reversed`.
 
-#### Syntax Tree
+### Syntax Tree
 
 The syntax tree is JSON serializable and has a "type" property.  Nodes
 have the following types:
@@ -1462,13 +1838,23 @@ have the following types:
 -   `value` corresponds to observing the source value
 -   `parameters` corresponds to observing the parameters object
 -   `literal` has a `value` property and observes that value
+-   `element` has an `id` property and observes an element from the
+    `parameters.document`, by way of `getElementById`.
+-   `component` has a `label` property and observes a component from the
+    `parameters.serialization`, by way of `getObjectForLabel`.  This
+    feature support's [Montage][]’s serialization format.
 
 All other node types have an "args" property that is an array of syntax
-nodes.
+nodes (or an "args" object for `record`).
 
 -   `property`: corresponds to observing a property named by the right
     argument of the left argument.
--   `get`: corresponds to observing the value for a key in a collection.
+-   `get`: corresponds to observing the value for a key (second
+    argument) in a collection (first argument).
+-   `with`: corresponds to observing the right expression using the left
+    expression as the source.
+-   `has`: corresponds to whether the key (second argument) exists
+    within a collection (first argument)
 -   `mapBlock`: the left is the input, the right is an expression to
     observe on each element of the input.
 -   `filterBlock`: the left is the input, the right is an expression to
@@ -1477,18 +1863,35 @@ nodes.
     each value of the input on which to compare to determine the order.
 -   `map`: the left is the input, the right is a function that accepts
     a value and returns the mapped result for each value of the input.
--   `filter` (TODO): the left is the input, the right is a function that
-    accepts a value and returns whether to include that value in the
-    output.
--   `sorted` (TODO): the left is the input, the right is a function that
-    accepts a value and returns a value to compare to determine the
-    order of the sorted output.
+-   `filter` (not implemented): the left is the input, the right is a
+    function that accepts a value and returns whether to include that
+    value in the output.
+-   `sorted` (not implemented): the left is the input, the right is a
+    function that accepts a value and returns a value to compare to
+    determine the order of the sorted output.
 -   `tuple`: has any number of arguments, each an expression to observe
     in terms of the source value.
+-   `record`: as an args object. The keys are property names for the
+    resulting object, and the values are the corresponding syntax nodes
+    for the values.
 -   `view`: the arguments are the input, the start position, and the
     length of the sliding window to view from the input.  The input may
     correspond to any ranged content collection, like an array or sorted
     set.
+-   `rangeContent`: corresponds to the content of an ordered collection
+    that can dispatch indexed range changes like an array or sorted set.
+    This indicates to a binder that it should replace the content of the
+    target instead of replacing the target property with the observed
+    content of the source.  A range content node has no effect on the
+    source.
+-   `mapContent`: corresponds to the content of a map-like collection
+    including arrays and all map [Collections][].  These collections
+    dispatch map changes, which create, read, update, or delete
+    key-to-value pairs.  This indicates to a binder to replace the
+    content of the target map-like collection with the observed content
+    of the source, instead of replacing the target collection.  A map
+    change node on the source side just passes the collection forward
+    without alteration.
 
 For all operators, the "args" property are operands.  The node types for
 unary operators are:
@@ -1500,7 +1903,7 @@ unary operators are:
 For all binary operators, the node types are:
 
 -   ```**```: `pow`, exponential power
--   ```//```: `root`, binary
+-   ```//```: `root`, of 2 square root, of 3 cube root, etc
 -   ```%%```: `log`, logarithm with base
 -   ```*```: `mul`, multiplication
 -   ```/```: `div`, division
@@ -1512,7 +1915,7 @@ For all binary operators, the node types are:
 -   ```<=```: `le`, less than or equal
 -   ```>```: `gt`, greater than
 -   ```>=```: `ge`, greater than or equal
--   ```=``` and ```==```: ``equals``, equality comparison and assignment
+-   ```==```: ``equals``, equality comparison and assignment
 -   ```!=``` produces unary negation and equality comparison or
     assignment so does not have a corresponding node type.  The
     simplification makes it easier to rotate the syntax tree

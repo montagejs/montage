@@ -1,4 +1,4 @@
-
+// these cases are used to test both "parse" and "stringify"
 module.exports = [
 
     {
@@ -22,6 +22,81 @@ module.exports = [
                 {type: "literal", value: "a"}
             ]},
             {type: "literal", value: "b"}
+        ]}
+    },
+
+    {
+        path: ".0",
+        syntax: {type: "property", args: [
+            {type: "value"},
+            {type: "literal", value: 0}
+        ]}
+    },
+
+    {
+        path: "a.[b, c]",
+        syntax: {type: "with", args: [
+            {type: "property", args: [
+                {type: "value"},
+                {type: "literal", value: "a"},
+            ]},
+            {type: "tuple", args: [
+                {type: "property", args: [
+                    {type: "value"},
+                    {type: "literal", value: "b"},
+                ]},
+                {type: "property", args: [
+                    {type: "value"},
+                    {type: "literal", value: "c"},
+                ]}
+            ]}
+        ]}
+    },
+
+    {
+        path: "a.{foo: x}",
+        syntax: {type: "with", args: [
+            {type: "property", args: [
+                {type: "value"},
+                {type: "literal", value: "a"},
+            ]},
+            {type: "record", args: {
+                foo: {type: "property", args: [
+                    {type: "value"},
+                    {type: "literal", value: "x"}
+                ]}
+            }}
+        ]}
+    },
+
+    {
+        path: "a.(b + c)",
+        syntax: {type: "with", args: [
+            {type: "property", args: [
+                {type: "value"},
+                {type: "literal", value: "a"},
+            ]},
+            {type: "add", args: [
+                {type: "property", args: [
+                    {type: "value"},
+                    {type: "literal", value: "b"},
+                ]},
+                {type: "property", args: [
+                    {type: "value"},
+                    {type: "literal", value: "c"},
+                ]}
+            ]}
+        ]}
+    },
+
+    {
+        path: "a.('a')",
+        syntax: {type: "with", args: [
+            {type: "property", args: [
+                {type: "value"},
+                {type: "literal", value: "a"},
+            ]},
+            {type: "literal", value: "a"}
         ]}
     },
 
@@ -102,6 +177,20 @@ module.exports = [
             {type: "property", args: [
                 {type: "value"},
                 {type: "literal", value: "b"}
+            ]}
+        ]}
+    },
+
+    {
+        path: "map{* $factor}",
+        syntax: {type: "mapBlock", args: [
+            {type: "value"},
+            {type: "mul", args: [
+                {type: "value"},
+                {type: "property", args: [
+                    {type: "parameters"},
+                    {type: "literal", value: "factor"}
+                ]}
             ]}
         ]}
     },
@@ -286,6 +375,26 @@ module.exports = [
     },
 
     {
+        path: "a || b && c",
+        syntax: {type: "or", args: [
+            {type: "property", args: [
+                {type: "value"},
+                {type: "literal", value: "a"}
+            ]},
+            {type: "and", args: [
+                {type: "property", args: [
+                    {type: "value"},
+                    {type: "literal", value: "b"}
+                ]},
+                {type: "property", args: [
+                    {type: "value"},
+                    {type: "literal", value: "c"}
+                ]}
+            ]}
+        ]}
+    },
+
+    {
         path: "()['a']",
         syntax: {type: "get", args: [
             {type: "value"},
@@ -305,7 +414,87 @@ module.exports = [
     },
 
     {
+        path: "array[array.length - 1]",
+        syntax: {type: "get", args: [
+            {type: "property", args: [
+                {type: "value"},
+                {type: "literal", value: "array"}
+            ]},
+            {type: "sub", args: [
+                {type: "property", args: [
+                    {type: "property", args: [
+                        {type: "value"},
+                        {type: "literal", value: "array"}
+                    ]},
+                    {type: "literal", value: "length"}
+                ]},
+                {type: "literal", value: 1}
+            ]}
+        ]}
+    },
+
+    {
         path: "*",
+        syntax: {type: "mul", args: [
+            {type: "value"},
+            {type: "value"}
+        ]}
+    },
+
+    {
+        path: "**",
+        syntax: {type: "pow", args: [
+            {type: "value"},
+            {type: "value"}
+        ]}
+    },
+
+    {
+        path: "//",
+        syntax: {type: "root", args: [
+            {type: "value"},
+            {type: "value"}
+        ]}
+    },
+
+    {
+        path: "%%",
+        syntax: {type: "log", args: [
+            {type: "value"},
+            {type: "value"}
+        ]}
+    },
+
+    {
+        path: "n rem 2",
+        syntax: {type: "rem", args: [
+            {type: "property", args: [
+                {type: "value"},
+                {type: "literal", value: "n"}
+            ]},
+            {type: "literal", value: 2}
+        ]}
+    },
+
+    {
+        path: "min()",
+        syntax: {type: "min", args: [
+            {type: "value"}
+        ]}
+    },
+
+    {
+        path: "array.max()",
+        syntax: {type: "max", args: [
+            {type: "property", args: [
+                {type: "value"},
+                {type: "literal", value: "array"}
+            ]}
+        ]}
+    },
+
+    {
+        path: ".*",
         syntax: {type: "rangeContent", args: [
             {type: "value"}
         ]}

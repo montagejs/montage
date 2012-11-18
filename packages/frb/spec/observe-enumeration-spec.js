@@ -6,7 +6,7 @@ describe("observe enumeration", function () {
     it("simple pipeline", function () {
         var input = ['a', 'b', 'c'];
         var output = [];
-        var cancel = bind(output, "*", {
+        var cancel = bind(output, ".*", {
             "<-": "enumerate()",
             source: input
         });
@@ -14,25 +14,25 @@ describe("observe enumeration", function () {
         var b = output[1];
         var c = output[2];
         expect(output).toEqual([
-            {index: 0, value: 'a'},
-            {index: 1, value: 'b'},
-            {index: 2, value: 'c'}
+            [0, 'a'],
+            [1, 'b'],
+            [2, 'c']
         ]);
         input.unshift('z');
         expect(output).toEqual([
-            {index: 0, value: 'z'},
-            {index: 1, value: 'a'},
-            {index: 2, value: 'b'},
-            {index: 3, value: 'c'}
+            [0, 'z'],
+            [1, 'a'],
+            [2, 'b'],
+            [3, 'c']
         ]);
-        expect(a.index).toEqual(1);
+        expect(a[0]).toEqual(1);
     });
 
     it("complex pipeline", function () {
         var input = ['b', 'c', 'd', 'e'];
         var output = [];
-        var cancel = bind(output, "*", {
-            "<-": "enumerate().map{!(index % 2)}",
+        var cancel = bind(output, ".*", {
+            "<-": "enumerate().map{!(.0 % 2)}",
             source: input
         });
         expect(output).toEqual([true, false, true, false]);
@@ -43,8 +43,8 @@ describe("observe enumeration", function () {
     it("values at even indicies", function () {
         var input = ['b', 'c', 'd', 'e'];
         var output = [];
-        var cancel = bind(output, "*", {
-            "<-": "enumerate().filter{!(index % 2)}.map{value}",
+        var cancel = bind(output, ".*", {
+            "<-": "enumerate().filter{!(.0 % 2)}.map{.1}",
             source: input
         });
         expect(output).toEqual(['b', 'd']);

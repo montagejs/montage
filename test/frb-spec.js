@@ -4,6 +4,8 @@ describe("frb-spec", function () {
     require("montage/frb/spec/bindings-spec.js");
     require("montage/frb/spec/complex-spec.js");
     require("montage/frb/spec/compute-spec.js");
+    require("montage/frb/spec/evaluate-spec.js");
+    require("montage/frb/spec/evaluate-with-observe-spec.js");
     require("montage/frb/spec/observe-average-spec.js");
     require("montage/frb/spec/observe-enumeration-spec.js");
     require("montage/frb/spec/observe-filter-spec.js");
@@ -16,5 +18,6 @@ describe("frb-spec", function () {
     require("montage/frb/spec/observe-tuple-spec.js");
     require("montage/frb/spec/parse-spec.js");
     require("montage/frb/spec/readme-spec.js");
+    require("montage/frb/spec/stringify-spec.js");
 });
 

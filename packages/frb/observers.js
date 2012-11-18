@@ -95,7 +95,7 @@ function makeGetObserver(observeCollection, observeKey) {
                 function mapChange(value, mapKey, collection) {
                     if (equals(key, mapKey)) {
                         cancel();
-                        cancel = emit(value, key, collection);
+                        cancel = emit(value, key, collection) || Function.noop;
                     }
                 }
                 mapChange(collection.get(key), key, collection);
@@ -107,6 +107,17 @@ function makeGetObserver(observeCollection, observeKey) {
             }), value, parameters, beforeChange);
         }), value, parameters, beforeChange);
     }
+}
+
+exports.makeWithObserver = makeWithObserver;
+function makeWithObserver(observeContext, observeExpression) {
+    return function observeWith(emit, value, parameters, beforeChange) {
+        return observeContext(autoCancelPrevious(function replaceContext(context) {
+            return observeExpression(autoCancelPrevious(function replaceValue(value) {
+                return emit(value) || Function.noop;
+            }), context, parameters, beforeChange);
+        }), value, parameters, beforeChange);
+    };
 }
 
 exports.makeRecordObserver = makeRecordObserver;
@@ -493,15 +504,12 @@ function makeReplacingEnumerationObserver(observeArray) {
             var output = [];
             function update(index) {
                 for (; index < output.length; index++) {
-                    output[index].index = index;
+                    output[index].set(0, index);
                 }
             }
             function rangeChange(plus, minus, index) {
                 output.swap(index, minus.length, plus.map(function (value, offset) {
-                    return {
-                        index: index + offset,
-                        value: value
-                    };
+                    return [index + offset, value];
                 }));
                 update(index + plus.length);
             }

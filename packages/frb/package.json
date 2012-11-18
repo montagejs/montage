@@ -1,6 +1,6 @@
 {
     "name": "frb",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "Functional reactive bindings",
     "keywords": [
         "functional",

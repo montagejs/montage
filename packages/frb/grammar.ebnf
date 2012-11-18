@@ -1,0 +1,91 @@
+
+Pipeline ::=
+    (
+        PropertyName |
+        "#" ElementId |
+        "@" ComponentLabel |
+        ArrayExpression |
+        ObjectExpression
+    )
+    (
+        "." Transform |
+        "[" Expression "]"
+    )*
+    (
+        ".*" |
+        "[*]" |
+    )
+
+Transform ::=
+    (
+        PropertyName
+    ) |
+    (
+        "(" Expression ")" |
+        ArrayExpression |
+        ObjectExpression
+    ) |
+    (
+        (
+            "flatten" |
+            "reversed" |
+            "enumerate" |
+            "sum" |
+            "average"
+        )
+        (
+            "()" |
+            "{" Expression "}"
+        )
+    ) |
+    (
+        (
+            "map" |
+            "filter" |
+            "sorted"
+        )
+        (
+            "(" Expression ")" |
+            "{" Expression ")"
+        )
+    ) |
+    "has(" Expression ")" |
+    "view(" Expression ", " Expression ")"
+
+ArrayExpression ::=
+    "[" ( Expression (", " Expression )* )? "]"
+
+ObjectExpression ::=
+    "{"
+        (
+            ( PropertyName ": " Expression )
+            ( ", " PropertyName ": " Expression )*
+        )?
+    "}"
+
+UnaryExpression ::=
+    ( "+" | "-" | "!" )? Pipeline
+ExponentialExpression ::=
+    UnaryExpression ( ( "**" | "//" | "%%" ) UnaryExpression )*
+MultiplicativeExpression ::=
+    ExponentialExpression
+    ( ( "*" | "/" | "%" | "rem" ) ExponentialExpression )*
+ArithmeticExpression ::=
+    MultiplicativeExpression
+    ( ( "+" | "-" ) MultiplicativeExpression )*
+RelationalExpression ::=
+    ArithmeticExpression
+    ( ( "==" | "<" | "<=" | ">" | ">=" ) ArithmeticExpression )?
+LogicalUnionExpression ::=
+    RelationalExpression ( "||" RelationalExpression )*
+LogicalIntersectionExpression ::=
+    LogicalUnionExpression ( "&&" LogicalUnionExpression )*
+Expression ::= LogicalIntersectionExpression
+
+Literal ::= NumberLiteral | StringLiteral
+NumberLiteral ::= [0-9][1-9]* ( '.' [0-9]+ )?
+StringLiteral ::= "'" ( NonQuoteChar | "\" QuoteChar )* "'"
+PropertyName ::= [a-zA-Z0-9]+
+ElementId ::= [a-zA-Z0-9]+
+ComponentLabel ::= [a-zA-Z0-9]+
+

@@ -46,6 +46,7 @@ var parseOperator = makeParserFromTrie(operatorTrie);
 
 var tailOpenerTokens = {
     ".": ".",
+    ".*": ".*",
     "[": "[",
     "[*]": "[*]"
 };
@@ -72,15 +73,18 @@ parse.semantics = {
     grammar: function () {
         var self = this;
         self.makePrecedenceLevel(Function.noop, [
-            'value', 'literal', 'parameters',
-            'tuple', 'record',
-            'element', 'component',
-            'mapBlock', 'filterBlock', 'sortedBlock',
-            'property'
+            "tuple", "record",
+        ]);
+        self.makePrecedenceLevel(Function.noop, [
+            "literal", "value", "parameters",
+            "property",
+            "element", "component",
+            "mapBlock", "filterBlock", "sortedBlock",
+            "with"
         ]);
         self.makePrecedenceLevel(function () {
             return self.parseNegation.bind(self);
-        }, ['not', 'neg', 'number']);
+        }, ["not", "neg", "number"]);
         self.makeLeftToRightParser(["pow", "root", "log"]);
         self.makeLeftToRightParser(["mul", "div", "mod", "rem"]);
         self.makeLeftToRightParser(["add", "sub"]);
@@ -234,11 +238,6 @@ parse.semantics = {
                         });
                     }
                 })(character);
-            } else if (character === "*") {
-                return callback({
-                    type: "rangeContent",
-                    args: [previous]
-                });
             } else if (character === "$") {
                 return self.parsePrimary(callback, {
                     type: "parameters"
@@ -260,15 +259,32 @@ parse.semantics = {
             } else if (character === "'") {
                 return self.parseStringTail(callback, "");
             } else if (character === "(") {
-                return self.parseParenthetical(callback)(character, loc);
+                return self.chain(callback, self.parseParenthetical, previous)(character, loc);;
             } else if (character === "[") {
-                return self.parseTuple(callback)(character, loc);
+                return self.chain(callback, self.parseTuple, previous)(character, loc);
             } else if (character === "{") {
-                return self.parseRecord(callback)(character);
+                return self.chain(callback,self.parseRecord, previous)(character, loc);
             } else {
                 return self.parseValue(callback, previous)(character);
             }
         };
+    },
+
+    chain: function chain(callback, parseNext, previous) {
+        var self = this;
+        return parseNext.call(self, function (next) {
+            if (previous.type === "value") {
+                return self.parseTail(callback, next);
+            } else {
+                return self.parseTail(callback, {
+                    type: "with",
+                    args: [
+                        previous,
+                        next
+                    ]
+                });
+            }
+        });
     },
 
     parseValue: function parseValue(callback, previous) {
@@ -333,7 +349,7 @@ parse.semantics = {
                     }
                 };
             } else {
-                return callback(previous);
+                return self.parseTail(callback, previous);
             }
         });
     },
@@ -346,7 +362,7 @@ parse.semantics = {
             if (opener === ".") {
                 return self.parsePrimary(callback, previous);
             } else if (opener === "[") {
-                return self.parsePrimary(function (key) {
+                return self.parseExpression(function (key) {
                     return self.parseTupleEnd(function (end, loc) {
                         if (end) {
                             return self.parseTail(callback, {
@@ -362,6 +378,12 @@ parse.semantics = {
                             throw error;
                         }
                     });
+                });
+            } else if (opener === ".*") {
+                return callback({
+                    type: "rangeContent", args: [
+                        previous
+                    ]
                 });
             } else if (opener === "[*]") {
                 return self.parseTail(callback, {
