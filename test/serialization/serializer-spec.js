@@ -182,13 +182,13 @@ describe("serialization/serializer-spec", function() {
     describe("Serialization Structure", function() {
         it("should serialize a number", function() {
             var object = Montage.create();
-            serialization = serializer.serializeObject(3.14);
+            var serialization = serializer.serializeObject(3.14);
             expect(stripPP(serialization)).toBe('{"root":{"value":3.14}}');
         });
 
         it("should serialize a literal object", function() {
             var object = Montage.create();
-            serialization = serializer.serializeObject({number: 3.14});
+            var serialization = serializer.serializeObject({number: 3.14});
             expect(stripPP(serialization)).toBe('{"root":{"value":{"number":3.14}}}');
         });
     });
@@ -196,13 +196,13 @@ describe("serialization/serializer-spec", function() {
     describe("Objects serialization", function(){
         it("should serialize a class object with no properties", function() {
             var object = objects.Empty;
-            serialization = stripPP(serializer.serializeObject(object));
+            var serialization = stripPP(serializer.serializeObject(object));
             expect(stripPP(serialization)).toBe('{"root":{"object":"serialization/testobjects-v2[Empty]","properties":{}}}');
         });
 
         it("should serialize an instance object with no properties", function() {
             var object = objects.Empty.create();
-            serialization = serializer.serializeObject(object);
+            var serialization = serializer.serializeObject(object);
 
             expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[Empty]","properties":{}}}');
         });
@@ -210,25 +210,25 @@ describe("serialization/serializer-spec", function() {
         it("should serialize an instance object with an array property", function() {
             var object = objects.OneProp.create();
             object.prop = [1, 2, 3, 4, 5];
-            serialization = serializer.serializeObject(object);
+            var serialization = serializer.serializeObject(object);
             expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":[1,2,3,4,5]}}}');
         });
 
         it("should serialize an instance object with a distinct array property", function() {
             var object = objects.DistinctArrayProp.create();
-            serialization = serializer.serializeObject(object);
+            var serialization = serializer.serializeObject(object);
              expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[DistinctArrayProp]","properties":{"prop":[]}}}');
         });
 
         it("should serialize an instance object with a distinct literal property", function() {
             var object = objects.DistinctLiteralProp.create();
-            serialization = serializer.serializeObject(object);
+            var serialization = serializer.serializeObject(object);
             expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[DistinctLiteralProp]","properties":{"prop":{}}}}');
         });
 
         it("should serialize an instance object with no references to other objects", function() {
             var object = objects.Simple.create();
-            serialization = serializer.serializeObject(object);
+            var serialization = serializer.serializeObject(object);
             expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[Simple]","properties":{"number":42,"string":"string"}}}');
         });
 
@@ -239,7 +239,7 @@ describe("serialization/serializer-spec", function() {
             object.prop1 = ["with", "a", "reference"];
             object.prop2 = simple;
 
-            serialization = serializer.serializeObject(object);
+            var serialization = serializer.serializeObject(object);
              expect(stripPP(serialization)).toBe('{"simple":{"prototype":"serialization/testobjects-v2[Simple]","properties":{"number":42,"string":"string"}},"root":{"prototype":"serialization/testobjects-v2[TwoProps]","properties":{"prop1":["with","a","reference"],"prop2":{"@":"simple"}}}}');
         });
 
@@ -248,7 +248,7 @@ describe("serialization/serializer-spec", function() {
 
             object.prop = object;
 
-            serialization = serializer.serializeObject(object);
+            var serialization = serializer.serializeObject(object);
             expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"root"}}}}');
         });
 
@@ -259,7 +259,7 @@ describe("serialization/serializer-spec", function() {
             object1.prop = object2;
             object2.prop = object1;
 
-            serialization = serializer.serializeObject(object1);
+            var serialization = serializer.serializeObject(object1);
             expect(stripPP(serialization)).toBe('{"oneprop":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"root"}}},"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"oneprop"}}}}');
         });
 
@@ -268,17 +268,31 @@ describe("serialization/serializer-spec", function() {
 
             object.prop = object;
 
-            serialization = serializer.serializeObject(object);
+            var serialization = serializer.serializeObject(object);
             expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[CustomProperties]","properties":{"manchete":226}}}');
+        });
+
+        it("should serialize a reference to an instance object with a custom property serialization", function() {
+            var object = objects.CustomPropertiesRef.create();
+
+            var serialization = serializer.serializeObject(object);
+            expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[CustomPropertiesRef]","properties":{"object":{"@":"empty"}}},"empty":{}}');
         });
 
         it("should serialize a reference to an instance object with a custom serialization", function() {
             var object = objects.CustomRef.create();
 
-            object.prop = object;
-
-            serialization = serializer.serializeObject(object);
+            var serialization = serializer.serializeObject(object);
             expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[CustomRef]","properties":{"object":{"@":"empty"}}},"empty":{}}');
+        });
+
+        it("should serialize an external reference to an object that implements serializeSelf", function() {
+            var object = objects.CustomPropertiesRef.create();
+
+            object.object = objects.CustomRef.create();
+
+            var serialization = serializer.serializeObject(object);
+            expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[CustomPropertiesRef]","properties":{"object":{"@":"customref"}}},"customref":{}}');
         });
 
         it("should serialize a function in an Object literal", function() {
@@ -287,7 +301,7 @@ describe("serialization/serializer-spec", function() {
                     return x*x;
                 }
             };
-            serialization = serializer.serializeObject(object);
+            var serialization = serializer.serializeObject(object);
             var functionJSON = JSON.parse(serialization).root.value.method["->"];
             expect((new Function(functionJSON.arguments, functionJSON.body))(2)).toBe(4);
         });
@@ -298,7 +312,7 @@ describe("serialization/serializer-spec", function() {
 
             object.prop = simple;
 
-            serialization = serializer.serialize({root: object, SimpleA: simple});
+            var serialization = serializer.serialize({root: object, SimpleA: simple});
             expect(stripPP(serialization)).toBe('{"SimpleA":{"prototype":"serialization/testobjects-v2[Simple]","properties":{"number":42,"string":"string"}},"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"SimpleA"}}}}');
         });
 
@@ -316,7 +330,7 @@ describe("serialization/serializer-spec", function() {
                 graphB: objectB
             };
 
-            serialization = serializer.serialize(labels);
+            var serialization = serializer.serialize(labels);
             expect(stripPP(serialization)).toBe('{"simple":{"prototype":"serialization/testobjects-v2[Simple]","properties":{"number":42,"string":"string"}},"graphA":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"simple"}}},"graphB":{"prototype":"serialization/testobjects-v2[TwoProps]","properties":{"prop1":"string","prop2":42}}}');
         });
 
@@ -327,7 +341,7 @@ describe("serialization/serializer-spec", function() {
             element.setAttribute("data-montage-id", "id");
             object.prop = element;
 
-            serialization = serializer.serializeObject(object);
+            var serialization = serializer.serializeObject(object);
             expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"#":"id"}}}}');
         });
 
@@ -378,7 +392,7 @@ describe("serialization/serializer-spec", function() {
                 object.prop = simple;
                 simple.identifier = "myprop";
 
-                serialization = serializer.serializeObject(object);
+                var serialization = serializer.serializeObject(object);
                 expect(stripPP(serialization)).toBe('{"myprop":{"prototype":"serialization/testobjects-v2[Simple]","properties":{"number":42,"string":"string","identifier":"myprop"}},"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"myprop"}}}}');
             });
 
@@ -389,13 +403,13 @@ describe("serialization/serializer-spec", function() {
                 object.prop = simple;
                 simple.identifier = "my-prop";
 
-                serialization = JSON.parse(serializer.serializeObject(object));
+                var serialization = JSON.parse(serializer.serializeObject(object));
                 expect("my-prop" in serialization).toBeFalsy();
             });
         });
 
         it("should return all external objects", function() {
-            var object = objects.CustomRef.create(),
+            var object = objects.CustomPropertiesRef.create(),
                 serialization = serializer.serializeObject(object),
                 externalObjects = serializer.getExternalObjects(),
                 length = 0;

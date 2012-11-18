@@ -88,7 +88,7 @@ var Montage = require("montage").Montage,
         set: function (value) {
             this._densities = value;
             this._densitiesLength = this._densities.length;
-            this._densitySummation.clear();
+            this._densitySummation.wipe();
             this._maxTime = null;
         }
     },
@@ -192,7 +192,7 @@ var Montage = require("montage").Montage,
                 i,
                 densitySummation = this._densitySummation;
 
-            densitySummation.clear();
+            densitySummation.wipe();
             for (i = 0; i < length; i++) {
                 sum += (densities[i] + densities[i + 1]) / 2;
                 densitySummation[i] = sum;
@@ -215,7 +215,7 @@ var Montage = require("montage").Montage,
                 densitySummation = this._densitySummation;
 
             position.length = 0;
-            parameters.clear();
+            parameters.wipe();
 
             if ((time >= 0) && (time < this.maxTime)) {
                 if (this._previousIndex && (time >= densitySummation[this._previousIndex - 1])) {
@@ -458,7 +458,7 @@ var Montage = require("montage").Montage,
                 mid,
                 i = 0;
 
-            segments.clear();
+            segments.wipe();
 
             while ((i < r.length) && (r[i] <= 0)) {
                 i++;

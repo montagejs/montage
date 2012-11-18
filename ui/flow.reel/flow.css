@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
     overflow: hidden;
     -webkit-transform: translateZ(0);
 }
+.montage-Flow-camera,
 .montage-Flow-Repetition {
     position: absolute;
     top: 0;
@@ -42,6 +43,10 @@ POSSIBILITY OF SUCH DAMAGE.
     right: 0;
     -webkit-transform-style: preserve-3d;
     -webkit-transform: translateZ(0);
+}
+.montage-Flow-Repetition .no-transition,
+.montage-Flow-Repetition .no-transition * {
+    -webkit-transition: none !important;
 }
 .montage-Flow-Repetition > div {
     position: absolute;
@@ -52,6 +57,9 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: translateZ(0);
     -webkit-transform-style: preserve-3d;
 }
-.montage-Flow--pointerEventsNone {
-    pointer-events: none;
+.montage-Flow-Slot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate3d(-50%, -50%, 0);
 }

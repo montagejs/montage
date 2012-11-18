@@ -83,15 +83,27 @@ exports.CustomProperties = Montage.create(Montage, {
     }}
 });
 
-exports.CustomRef = Montage.create(Montage, {
+exports.CustomPropertiesRef = Montage.create(Montage, {
     object: {value: exports.Empty.create()},
 
     serializeProperties: {value: function(serializer) {
         serializer.set("object", this.object, "reference");
     }},
 
-    deserializeProperties: {value: function(serializer) {
-        this.object = serializer.get("object");
+    deserializeProperties: {value: function(deserializer) {
+        this.object = deserializer.get("object");
+    }}
+});
+
+exports.CustomRef = Montage.create(Montage, {
+    object: {value: exports.Empty.create()},
+
+    serializeSelf: {value: function(serializer) {
+        serializer.setProperty("object", this.object, "reference");
+    }},
+
+    deserializeSelf: {value: function(deserializer) {
+        this.object = deserializer.getProperty("object");
     }}
 });
 
@@ -136,6 +148,7 @@ exports.objects = {
     DistinctArrayProp: exports.DistinctArrayProp,
     DistinctLiteralProp: exports.DistinctLiteralProp,
     CustomProperties: exports.CustomProperties,
+    CustomPropertiesRef: exports.CustomPropertiesRef,
     CustomRef: exports.CustomRef,
     Singleton: exports.Singleton,
     Comp: exports.Comp,

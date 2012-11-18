@@ -3,49 +3,65 @@
     "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
     "properties":{
       "_componentDescription":{"@":"root"},
-      "_name":"bindableProperty1"}},
+      "_name":"bindableProperty1",
+      "_enumValues":[],
+      "helpString":""}},
 
   "component1_description_bindableProperty2":{
     "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
     "properties":{
       "_componentDescription":{"@":"root"},
-      "_name":"bindableProperty2"}},
+      "_name":"bindableProperty2",
+      "_enumValues":[],
+      "helpString":""}},
 
   "component1_description_bindableProperty3":{
     "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
     "properties":{
       "_componentDescription":{"@":"root"},
-      "_name":"bindableProperty3"}},
+      "_name":"bindableProperty3",
+      "_enumValues":[],
+      "helpString":""}},
 
   "component1_description_bindableProperty4":{
     "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
     "properties":{
       "_componentDescription":{"@":"root"},
-      "_name":"bindableProperty4"}},
+      "_name":"bindableProperty4",
+      "_enumValues":[],
+      "helpString":""}},
 
   "component1_description_bindableProperty5":{
     "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
     "properties":{
       "_componentDescription":{"@":"root"},
-      "_name":"bindableProperty5"}},
+      "_name":"bindableProperty5",
+      "_enumValues":[],
+      "helpString":""}},
 
   "component1_description_requiredBindableProperty1":{
     "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
     "properties":{
       "_componentDescription":{"@":"root"},
-      "_name":"requiredBindableProperty1"}},
+      "_name":"requiredBindableProperty1",
+      "_enumValues":[],
+      "helpString":""}},
 
   "component1_description_requiredBindableProperty2":{
     "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
     "properties":{
       "_componentDescription":{"@":"root"},
-      "_name":"requiredBindableProperty2"}},
+      "_name":"requiredBindableProperty2",
+      "_enumValues":[],
+      "helpString":""}},
 
   "component1_description_requiredBindableProperty3":{
     "prototype":"montage/ui/component-description[ComponentPropertyDescription]",
     "properties":{
       "_componentDescription":{"@":"root"},
-      "_name":"requiredBindableProperty3"}},
+      "_name":"requiredBindableProperty3",
+      "_enumValues":[],
+      "helpString":""}},
 
   "root":{
     "prototype":"montage/ui/component-description",
