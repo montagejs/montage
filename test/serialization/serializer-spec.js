@@ -275,8 +275,6 @@ describe("serialization/serializer-spec", function() {
         it("should serialize a reference to an instance object with a custom serialization", function() {
             var object = objects.CustomRef.create();
 
-            object.prop = object;
-
             var serialization = serializer.serializeObject(object);
             expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[CustomRef]","properties":{"object":{"@":"empty"}}},"empty":{}}');
         });
@@ -395,7 +393,7 @@ describe("serialization/serializer-spec", function() {
         });
 
         it("should return all external objects", function() {
-            var object = objects.CustomRef.create(),
+            var object = objects.CustomPropertiesRef.create(),
                 serialization = serializer.serializeObject(object),
                 externalObjects = serializer.getExternalObjects(),
                 length = 0;
