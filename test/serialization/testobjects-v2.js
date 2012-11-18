@@ -95,6 +95,18 @@ exports.CustomPropertiesRef = Montage.create(Montage, {
     }}
 });
 
+exports.CustomRef = Montage.create(Montage, {
+    object: {value: exports.Empty.create()},
+
+    serializeSelf: {value: function(serializer) {
+        serializer.setProperty("object", this.object, "reference");
+    }},
+
+    deserializeSelf: {value: function(deserializer) {
+        this.object = deserializer.getProperty("object");
+    }}
+});
+
 exports.Singleton = Montage.create(Montage, {
     instance: {value: {another: "object"}},
     deserializeProperties: {value: function(serializer) {

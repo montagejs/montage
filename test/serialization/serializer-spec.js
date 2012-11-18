@@ -272,6 +272,13 @@ describe("serialization/serializer-spec", function() {
             expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[CustomProperties]","properties":{"manchete":226}}}');
         });
 
+        it("should serialize a reference to an instance object with a custom property serialization", function() {
+            var object = objects.CustomPropertiesRef.create();
+
+            var serialization = serializer.serializeObject(object);
+            expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[CustomPropertiesRef]","properties":{"object":{"@":"empty"}}},"empty":{}}');
+        });
+
         it("should serialize a reference to an instance object with a custom serialization", function() {
             var object = objects.CustomRef.create();
 
