@@ -142,6 +142,21 @@ describe("serialization/serializer-spec", function() {
 
         });
 
+        it("should serialize a RegExp created in a different document", function() {
+            var iframe = document.createElement("iframe");
+            iframe.style.display = "none";
+            window.document.body.appendChild(iframe);
+
+            var regexp = new iframe.contentWindow.RegExp("regexp");
+            var serialization = serializer.serializeObject({
+                regexp: regexp
+            });
+
+            expect(stripPP(serialization)).toBe('{"root":{"value":{"regexp":{"/":{"source":"regexp","flags":""}}}}}');
+            iframe.parentNode.removeChild(iframe);
+
+        });
+
         it("should serialize an Element created in a different document", function() {
             var iframe = document.createElement("iframe");
             iframe.style.display = "none";

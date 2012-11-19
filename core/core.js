@@ -40,6 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
  @requires core/extras/function
  @requires core/extras/date
  @requires core/extras/element
+ @requires core/extras/regexp
 */
 require("core/shim/object");
 require("core/shim/array");
@@ -49,6 +50,7 @@ require("core/extras/array");
 require("core/extras/date");
 require("core/extras/element");
 require("core/extras/function");
+require("core/extras/regexp");
 require("core/extras/string");
 
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
