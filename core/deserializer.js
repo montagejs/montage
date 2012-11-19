@@ -426,7 +426,7 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
                         if (++modulesLoaded === moduleIds.length) {
                             callback(modules);
                         }
-                    }, function(reason, error) {
+                    }, function(error) {
                         console.log(error.stack);
                     })
                     .done();
