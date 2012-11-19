@@ -435,9 +435,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
 
     _isValueType: {
         value: function(object) {
-            var typeOfObject = typeof object;
-
-            return object instanceof RegExp || object instanceof Element || Array.isArray(object) || Object.getPrototypeOf(object) === Object.prototype || object.constructor === Function || !(typeOfObject === "object" || typeOfObject === "function");
+            return !("getInfoForObject" in object);
         }
     },
 
@@ -585,10 +583,10 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
             // object.
             // http://www.mail-archive.com/es-discuss@mozilla.org/msg02824.html
             // https://bugs.webkit.org/show_bug.cgi?id=22082
-            if (value instanceof RegExp) {
+            if (RegExp.isRegExp(value)) {
                 return this._serializeRegExp(value);
             } else if (value != null && typeOfValue === "object" || typeOfValue === "function") {
-                if (Element && value instanceof Element) {
+                if (typeof Element !== "undefined" && Element.isElement(value)) {
                     return this._serializeElement(value);
                 } else if (Array.isArray(value)) {
                     return this._serializeArray(value, indent + 1);
