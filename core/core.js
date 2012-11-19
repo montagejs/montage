@@ -39,15 +39,17 @@ POSSIBILITY OF SUCH DAMAGE.
  @requires core/extras/string
  @requires core/extras/function
  @requires core/extras/date
+ @requires core/extras/element
 */
 require("core/shim/object");
 require("core/shim/array");
 require("core/shim/string");
 require("core/extras/object");
 require("core/extras/array");
-require("core/extras/string");
-require("core/extras/function");
 require("core/extras/date");
+require("core/extras/element");
+require("core/extras/function");
+require("core/extras/string");
 
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
