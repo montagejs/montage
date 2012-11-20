@@ -1,9 +1,0 @@
-{
-    "name": "mediadiscovery",
-    "version": "0.0.2",
-    "dependencies": {
-        "montage" : "0.10.x - 0.11.x"
-    },
-    "bundle": ["ui/main.reel"],
-    "shard": 4
-}
