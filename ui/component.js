@@ -449,7 +449,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         @type {Property}
         @default null
 */
-    templateModuleId: {
+    _templateModuleId: {
         serializable: false,
         value: null
     },
@@ -977,7 +977,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
         this._isTemplateLoading = true;
         var self = this;
-        var templateModuleId, info, moduleId;
+        var info, moduleId;
 
         var onTemplateLoad = function(template) {
             var callbacks = self._loadTemplateCallbacks;
@@ -993,27 +993,36 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
         };
 
-        templateModuleId = this.templateModuleId;
         info = Montage.getInfoForObject(this);
-        if (!templateModuleId) {
-            moduleId = info.moduleId;
-            // TODO: backwards compatibility for components with its controller outside the reel folder
-            //if (/([^\/]+)\.reel\/\1$/.exec(moduleId)) {
-            //    templateModuleId = moduleId + ".html";
-            //} else if (/([^\/]+)\.reel$/.exec(moduleId)) {
-            //    templateModuleId = moduleId + "/" + RegExp.$1 + ".html";
-            //} else {
-                var slashIndex = moduleId.lastIndexOf("/");
-                //templateModuleId = moduleId + ".reel/" + moduleId.split("/").pop() + ".html";
-                templateModuleId = moduleId + "/" + moduleId.slice(slashIndex === -1 ? 0 : slashIndex+1, -5) + ".html";
-            //}
-        }
+
         if (logger.isDebug) {
-            logger.debug(this, "Will load " + templateModuleId);
+            logger.debug(this, "Will load " + this.templateModuleId);
         }
         // this call will be synchronous if the template is cached.
-        Template.templateWithModuleId(info.require, templateModuleId, onTemplateLoad);
+        Template.templateWithModuleId(info.require, this.templateModuleId, onTemplateLoad);
     }},
+
+    templateModuleId: {
+        get: function() {
+            return this._templateModuleId || this._getDefaultTemplateModuleId();
+        }
+    },
+
+    _getDefaultTemplateModuleId: {
+        value: function() {
+            var templateModuleId,
+                slashIndex,
+                moduleId,
+                info;
+
+            info = Montage.getInfoForObject(this);
+            moduleId = info.moduleId;
+            slashIndex = moduleId.lastIndexOf("/");
+            templateModuleId = moduleId + "/" + moduleId.slice(slashIndex === -1 ? 0 : slashIndex+1, -5 /* ".reel".length */) + ".html";
+
+            return templateModuleId;
+        }
+    },
 
     _deserializedFromTemplate: {
         value: function(owner) {

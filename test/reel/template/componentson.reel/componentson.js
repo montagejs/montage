@@ -35,7 +35,7 @@ var Component = require("montage/ui/component").Component;
 var ComponentFather = require("reel/template/componentfather.reel").ComponentFather;
 
 var ComponentSon = exports.ComponentSon = Montage.create(ComponentFather, {
-    templateModuleId: {value: "../componentfather.reel/componentfather.html"},
+    _templateModuleId: {value: "../componentfather.reel/componentfather.html"},
 
     draw: {
         value: function() {
