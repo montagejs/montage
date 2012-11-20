@@ -95,7 +95,7 @@ Object.defineProperty(Montage, "create", {
     value: function(aPrototype, propertyDescriptor) {
         // Allow aPrototype to be undefined to create() this
         if (aPrototype !== undefined && typeof aPrototype !== "object") {
-            throw new TypeError("Object prototype may only be an Object or null, not " + aPrototype);
+            throw new TypeError("Object prototype may only be an Object or null, not '" + aPrototype + "'");
         }
         if (!propertyDescriptor) {
             var newObject = Object.create(typeof aPrototype === "undefined" ? this : aPrototype);
@@ -145,8 +145,8 @@ extendedPropertyAttributes.forEach(function(name) {
 Object.defineProperty(Montage, "defineProperty", {
 
     value: function(obj, prop, descriptor) {
-        if (typeof obj !== "object") {
-            throw new TypeError("Object must be an object, not " + obj);
+        if (typeof obj !== "object" || obj === null) {
+            throw new TypeError("Object must be an object, not '" + obj + "'");
         }
 
         var dependencies = descriptor.dependencies,
@@ -397,8 +397,8 @@ Object.defineProperty(Montage, "defineProperty", {
     @param {Object} properties An object that contains one or more property descriptor objects.
 */
 Object.defineProperty(Montage, "defineProperties", {value: function(obj, properties) {
-    if (typeof properties !== "object") {
-        throw new TypeError("Properties must be an object, not " + properties);
+    if (typeof properties !== "object" || properties === null) {
+        throw new TypeError("Properties must be an object, not '" + properties + "'");
     }
     for (var property in properties) {
         if ("_bindingDescriptors" !== property) {
