@@ -5,7 +5,7 @@
             "_componentDescription":{
                 "@":"root"
             },
-            "_name":"decoration",
+            "_name":"slotContent",
             "_valueType":"component",
             "helpString":""
         }
@@ -17,7 +17,7 @@
             "_componentDescription":{
                 "@":"root"
             },
-            "_name":"momentum ms",
+            "_name":"momentumDuration",
             "_valueType":"number",
             "helpString":""
         }
@@ -41,7 +41,7 @@
             "_componentDescription":{
                 "@":"root"
             },
-            "_name":"transition ms",
+            "_name":"scrollingTransitionDuration",
             "_valueType":"number",
             "helpString":""
         }
@@ -53,7 +53,7 @@
             "_componentDescription":{
                 "@":"root"
             },
-            "_name":"scroll selected",
+            "_name":"hasSelectedIndexScrolling",
             "_valueType":"boolean",
             "helpString":""
         }
@@ -77,7 +77,7 @@
             "_componentDescription":{
                 "@":"root"
             },
-            "_name":"controller",
+            "_name":"contentController",
             "_valueType":"object",
             "helpString":""
         }
@@ -89,7 +89,7 @@
             "_componentDescription":{
                 "@":"root"
             },
-            "_name":"enabled",
+            "_name":"isSelectionEnabled",
             "_valueType":"boolean",
             "helpString":""
         }
@@ -101,7 +101,7 @@
             "_componentDescription":{
                 "@":"root"
             },
-            "_name":"selected indexes",
+            "_name":"selectedIndexes",
             "_valueType":"array",
             "helpString":""
         }
@@ -125,7 +125,7 @@
             "_componentDescription":{
                 "@":"root"
             },
-            "_name":"elastic",
+            "_name":"hasElasticScrolling",
             "_valueType":"boolean",
             "helpString":""
         }
