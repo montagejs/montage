@@ -1315,6 +1315,20 @@ var Flow = exports.Flow = Montage.create(Component, {
     serializeSelf: {
         value: function(serializer) {
             serializer.setProperties();
+
+            // TODO: we need a way to add nodes to the serialization... we only
+            // have methods to serialize components.
+
+            // HACK: we're only going to serialize components if their DOM
+            // element is a direct child of the flow, since we don't have a way
+            // to add elements to the serialization there's really no point in
+            // doing anyelse reliably.
+            var originalContent = this.originalContent;
+            for (var i = 0, node; node = originalContent[i]; i++) {
+                if (node.controller) {
+                    serializer.addObject(node.controller);
+                }
+            }
         }
     }
 
