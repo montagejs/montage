@@ -42,6 +42,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     slotContent: {
+        serializable: true,
         value: null
     },
 
