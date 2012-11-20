@@ -73,7 +73,7 @@ var ComponentDescription = exports.ComponentDescription = Montage.create(Montage
                         deferredDescription.reject("No Component Description found " + descriptionModuleId);
                     }
                 }, require);
-            });
+            }, deferredDescription.reject);
 
             return deferredDescription.promise;
         }
