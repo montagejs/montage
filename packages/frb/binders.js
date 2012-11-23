@@ -7,6 +7,7 @@ exports.makePropertyBinder = makePropertyBinder;
 function makePropertyBinder(observeObject, observeKey) {
     return function (observeValue, source, target, parameters, descriptor, trace) {
         return observeObject(autoCancelPrevious(function (object) {
+            if (!object) return;
             return observeKey(autoCancelPrevious(function (key) {
                 return observeValue(autoCancelPrevious(function (value) {
                     if (descriptor.isActive) {
@@ -30,6 +31,7 @@ exports.makeGetBinder = makeGetBinder;
 function makeGetBinder(observeCollection, observeKey) {
     return function bindGet(observeValue, source, target, parameters, descriptor, trace) {
         return observeCollection(autoCancelPrevious(function replaceCollection(collection) {
+            if (!collection) return;
             return observeKey(autoCancelPrevious(function replaceKey(key) {
                 return observeValue(autoCancelPrevious(function replaceValue(value) {
                     if (descriptor.isActive) {
@@ -53,6 +55,7 @@ exports.makeHasBinder = makeHasBinder;
 function makeHasBinder(observeSet, observeValue) {
     return function (observeHas, source, target, parameters, descriptor, trace) {
         return observeSet(autoCancelPrevious(function (set) {
+            if (!set) return;
             return observeValue(autoCancelPrevious(function (value) {
                 return observeHas(autoCancelPrevious(function (has) {
                     // wait for the initial value to be updated by the
@@ -93,7 +96,13 @@ exports.makeRangeContentBinder = makeRangeContentBinder;
 function makeRangeContentBinder(observeTarget) {
     return function (observeSource, source, target, parameters, descriptor, trace) {
         return observeTarget(autoCancelPrevious(function (target) {
+            if (!target) return;
             return observeSource(autoCancelPrevious(function (source) {
+                if (!source) {
+                    target.clear();
+                    return;
+                }
+
                 function rangeChange(plus, minus, index) {
                     if (isActive(target))
                         return;
@@ -121,7 +130,13 @@ exports.makeMapContentBinder = makeMapContentBinder;
 function makeMapContentBinder(observeTarget) {
     return function (observeSource, source, target, parameters, descriptor, trace) {
         return observeTarget(autoCancelPrevious(function (target) {
+            if (!target) return;
             return observeSource(autoCancelPrevious(function (source) {
+                if (!source) {
+                    target.clear();
+                    return;
+                }
+
                 function mapChange(value, key) {
                     if (descriptor.isActive) {
                         if (trace) {
@@ -162,7 +177,13 @@ exports.makeReversedBinder = makeReversedBinder;
 function makeReversedBinder(observeTarget) {
     return function (observeSource, source, target, parameters, descriptor, trace) {
         return observeTarget(autoCancelPrevious(function (target) {
+            if (!target) return;
             return observeSource(autoCancelPrevious(function (source) {
+                if (!source) {
+                    target.clear();
+                    return;
+                }
+
                 function rangeChange(plus, minus, index) {
                     if (isActive(target))
                         return;

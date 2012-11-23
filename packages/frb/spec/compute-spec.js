@@ -54,18 +54,18 @@ describe("compute", function () {
     });
 
     it("content changes", function () {
-        var object = {a: [1, 2, 3], offset: 0};
+        var object = {values: [1, 2, 3], offset: 0};
         var cancel = compute(object, "sum", {
-            args: ["a", "offset"],
+            args: ["values.*", "offset"],
             compute: function (values, offset) {
-                return values.map(function (n) {
-                    return n + offset;
+                return values.map(function (value) {
+                    return value + offset;
                 }).sum();
             }
         });
 
         expect(object.sum).toEqual(6);
-        object.a.push(4);
+        object.values.push(4);
         expect(object.sum).toEqual(10);
 
         object.offset = 1;

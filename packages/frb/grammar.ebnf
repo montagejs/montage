@@ -1,20 +1,23 @@
 
 Pipeline ::=
     (
-        PropertyName |
-        "#" ElementId |
-        "@" ComponentLabel |
-        ArrayExpression |
-        ObjectExpression
-    )
-    (
-        "." Transform |
-        "[" Expression "]"
-    )*
-    (
-        ".*" |
-        "[*]" |
-    )
+        (
+            PropertyName |
+            "#" ElementId |
+            "@" ComponentLabel |
+            ArrayExpression |
+            ObjectExpression |
+            "(" Expression ")"
+        )
+        (
+            "." Transform |
+            "[" Expression "]"
+        )*
+        (
+            ".*" |
+            "[*]" |
+        )
+    )?
 
 Transform ::=
     (
@@ -42,6 +45,8 @@ Transform ::=
         (
             "map" |
             "filter" |
+            "some" |
+            "every" |
             "sorted"
         )
         (

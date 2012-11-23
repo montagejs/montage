@@ -26,8 +26,8 @@ sortedSet,N,N,N,N,X,N,N,N,X,N
 sortedSetBlock,N,N,N,N,X,N,N,N,X,N
 mapContent,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y
 rangeContent,Y,Y,Y,Y,Y,Y,Y,Y,Y,Y
-someBlock,N,N,N,N,X,N,N,N,X,N
-everyBlock,N,N,N,N,X,N,N,N,X,N
+someBlock,Y,Y,Y,Y,X,Y,Y,Y,X,Y
+everyBlock,Y,Y,Y,Y,X,Y,Y,Y,X,Y
 one,N,N,N,N,X,N,N,N,X,N
 only,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,

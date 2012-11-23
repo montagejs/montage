@@ -6,7 +6,7 @@ describe("observe filter", function () {
     it("should work", function () {
         var input = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         var output;
-        var cancel = O.makeContentObserver(O.makeFilterBlockObserver(
+        var cancel = O.makeRangeContentObserver(O.makeFilterBlockObserver(
             O.makeLiteralObserver(input),
             O.makeRelationObserver(function (value) {
                 return !(value & 1);

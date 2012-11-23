@@ -14,9 +14,18 @@ function compute(target, targetPath, descriptor) {
     var parameters = descriptor.parameters = descriptor.parameters || source;
     var trace = descriptor.trace;
 
-    var argSyntacies = args.map(parse);
-    var argObservers = argSyntacies.map(compileObserver).map(Observers.makeContentObserver);
-    var argsObserver = Observers.makeContentObserver(
+    var argObservers = args.map(parse).map(function (argSyntax) {
+        if (argSyntax.type === "rangeContent") {
+            var observeArg = compileObserver(argSyntax.args[0]);
+            return Observers.makeRangeContentObserver(observeArg);
+        } else if (argSyntax.type === "mapContent") {
+            var observeArg = compileObserver(argSyntax.args[0]);
+            return Observers.makeMapContentObserver(observeArg);
+        } else {
+            return compileObserver(argSyntax);
+        }
+    });
+    var argsObserver = Observers.makeRangeContentObserver(
         Observers.makeObserversObserver(argObservers)
     );
     var observeSource = Observers.makeComputerObserver(argsObserver, compute, target);

@@ -22,13 +22,11 @@ function defineBindings(object, descriptors, parameters) {
 
 exports.defineBinding = defineBinding;
 function defineBinding(object, name, descriptor, parameters) {
-    var cancel = noop;
-    if (descriptor[constructor]) {
-        object = object.constructor;
-    }
     var bindingsForName = getBindings(object);
+    if (owns.call(bindingsForName, name)) {
+        throw new Error("Can't bind to already bound target, " + JSON.stringify(name));
+    }
     if ("<-" in descriptor || "<->" in descriptor || "compute" in descriptor) {
-        cancelBinding(object, name);
         descriptor.target = object;
         descriptor.parameters = descriptor.parameters || parameters;
         if ("compute" in descriptor) {
@@ -76,8 +74,9 @@ function cancelBindings(object) {
 exports.cancelBinding = cancelBinding;
 function cancelBinding(object, name) {
     var bindings = getBindings(object);
-    if (!bindings[name])
-        return;
+    if (!bindings[name]) {
+        throw new Error("Can't cancel non-existent binding to " + JSON.stringify(name));
+    }
     var binding = bindings[name];
     if (binding && binding.cancel) {
         binding.cancel();

@@ -192,6 +192,30 @@ module.exports = [
     },
 
     {
+        path: "array.some{== 'a'}",
+        input: {array: ['a', 'b', 'c']},
+        output: true
+    },
+
+    {
+        path: "array.some{== 'a'}",
+        input: {array: ['b', 'c', 'd']},
+        output: false
+    },
+
+    {
+        path: "array.every{> 0}",
+        input: {array: [1, 2, 3]},
+        output: true
+    },
+
+    {
+        path: "array.every{> 0}",
+        input: {array: [0, 1, 2, 3]},
+        output: false
+    },
+
+    {
         path: "sorted{foo}.map{foo}.reversed()",
         input: [{foo: 3}, {foo: 1}, {foo: 2}],
         output: [3, 2, 1]

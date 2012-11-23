@@ -196,6 +196,38 @@ module.exports = [
     },
 
     {
+        path: "filter{}",
+        syntax: {type: "filterBlock", args: [
+            {type: "value"},
+            {type: "value"}
+        ]}
+    },
+
+    {
+        path: "some{}",
+        syntax: {type: "someBlock", args: [
+            {type: "value"},
+            {type: "value"}
+        ]}
+    },
+
+    {
+        path: "every{}",
+        syntax: {type: "everyBlock", args: [
+            {type: "value"},
+            {type: "value"}
+        ]}
+    },
+
+    {
+        path: "sorted{}",
+        syntax: {type: "sortedBlock", args: [
+            {type: "value"},
+            {type: "value"}
+        ]}
+    },
+
+    {
         path: "flatten()",
         syntax: {type: "flatten", args: [
             {type: "value"}

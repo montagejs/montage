@@ -27,6 +27,24 @@ var compilers = {
         };
     },
 
+    someBlock: function (evaluateCollection, evaluatePredicate) {
+        return function (value, parameters) {
+            return evaluateCollection(value, parameters)
+            .some(function (value) {
+                return evaluatePredicate(value, parameters);
+            });
+        };
+    },
+
+    everyBlock: function (evaluateCollection, evaluatePredicate) {
+        return function (value, parameters) {
+            return evaluateCollection(value, parameters)
+            .every(function (value) {
+                return evaluatePredicate(value, parameters);
+            });
+        };
+    },
+
     sortedBlock: function (evaluateCollection, evaluateRelation) {
         return function (value, parameters) {
             return evaluateCollection(value, parameters)
@@ -152,7 +170,7 @@ var semantics = compile.semantics = {
             throw new Error("Can't compile evaluator for " + JSON.stringify(syntax));
         }
 
-    },
+    }
 
 };
 

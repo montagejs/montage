@@ -73,7 +73,7 @@ parse.semantics = {
     grammar: function () {
         var self = this;
         self.makePrecedenceLevel(Function.noop, [
-            "tuple", "record",
+            "tuple", "record"
         ]);
         self.makePrecedenceLevel(Function.noop, [
             "literal", "value", "parameters",
@@ -297,7 +297,9 @@ parse.semantics = {
                             if (
                                 identifier === "map" ||
                                 identifier === "filter" ||
-                                identifier === "sorted"
+                                identifier === "sorted" ||
+                                identifier === "every" ||
+                                identifier === "some"
                             ) {
                                 return self.parseTail(callback, {
                                     type: identifier + "Block",

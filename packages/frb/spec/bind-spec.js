@@ -200,7 +200,7 @@ describe("bind", function () {
 
     describe("has <-", function () {
         var object = {set: [1, 2, 3], sought: 2};
-        var cancel = bind(object, "set.has(sought)", {"<->": "has"});
+        var cancel = bind(object, "has", {"<->": "set.has(sought)"});
 
         expect(object.set.slice()).toEqual([1, 2, 3]);
         object.has = false;

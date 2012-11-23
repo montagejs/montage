@@ -236,6 +236,7 @@ Object.addEach = function (target, source) {
             target[key] = source[key];
         });
     }
+    return target;
 };
 
 /**
@@ -285,6 +286,15 @@ Object.map = function (object, callback, thisp) {
 */
 Object.values = function (object) {
     return Object.map(object, Function.identity);
+};
+
+// TODO inline document concat
+Object.concat = function () {
+    var object = {};
+    for (var i = 0; i < arguments.length; i++) {
+        Object.addEach(object, arguments[i]);
+    }
+    return object;
 };
 
 /**

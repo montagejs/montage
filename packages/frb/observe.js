@@ -2,6 +2,7 @@
 var parse = require("./parse");
 var compile = require("./compile-observer");
 var Observers = require("./observers");
+var autoCancelPrevious = Observers.autoCancelPrevious;
 
 module.exports = observe;
 function observe(object, path, descriptorOrFunction) {
@@ -24,17 +25,18 @@ function observe(object, path, descriptorOrFunction) {
 
     // decorate for content change observations
     if (contentChange === true) {
-        observe = Observers.makeContentObserver(observe);
+        observe = Observers.makeRangeContentObserver(observe);
     }
 
-    return observe(Observers.autoCancelPrevious(function (value) {
-        if (typeof contentChange === "function") {
+    return observe(autoCancelPrevious(function (value) {
+        if (!value) {
+        } else if (typeof contentChange !== "function") {
+            return descriptor.change.apply(object, arguments);
+        } else if (typeof contentChange === "function") {
             value.addRangeChangeListener(contentChange);
             return Observers.once(function () {
                 value.removeRangeChangeListener(contentChange);
             });
-        } else {
-            return descriptor.change.apply(object, arguments);
         }
     }), object, parameters, beforeChange);
 }

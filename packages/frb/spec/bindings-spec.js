@@ -190,5 +190,55 @@ describe("bindings", function () {
         ]);
     });
 
+    it("should handle an every block", function () {
+        var object = Bindings.defineBindings({
+            array: [1, 2, 3, 4, 5]
+        }, {
+            everyGreaterThanZero: {
+                "<-": "array.every{>0}"
+            }
+        });
+        expect(object.everyGreaterThanZero).toBe(true);
+
+        object.array.unshift(0);
+        expect(object.everyGreaterThanZero).toBe(false);
+
+        Bindings.cancelBindings(object);
+        object.array.shift();
+        expect(object.everyGreaterThanZero).toBe(false);
+    });
+
+    it("should handle a some block", function () {
+        var object = Bindings.defineBindings({
+            array: [1, 2, 3, 4, 5]
+        }, {
+            someEqualZero: {
+                "<-": "array.some{==0}"
+            }
+        });
+        expect(object.someEqualZero).toBe(false);
+
+        object.array.unshift(0);
+        expect(object.someEqualZero).toBe(true);
+
+        object.array.shift();
+        expect(object.someEqualZero).toBe(false);
+
+        Bindings.cancelBindings(object);
+        object.array.unshift(0);
+        expect(object.someEqualZero).toBe(false);
+    });
+
+    it("should observe undefined when an array retreats behind an observed index", function () {
+        var object = Bindings.defineBindings({
+            bar: ["a", "b", "c"]
+        }, {
+            foo: {"<-": "bar.2"}
+        });
+        object.bar.pop();
+        expect(object.foo).toBe(undefined);
+        expect(object.bar.length).toBe(2);
+    });
+
 });
 

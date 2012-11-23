@@ -19,6 +19,8 @@ var semantics = compile.semantics = {
         mapBlock: Observers.makeMapBlockObserver,
         // TODO filter: Observers.makeFilterFunctionObserver,
         filterBlock: Observers.makeFilterBlockObserver,
+        everyBlock: Observers.makeEveryBlockObserver,
+        someBlock: Observers.makeSomeBlockObserver,
         sortedBlock: Observers.makeSortedBlockObserver,
         // TODO sorted: Observers.makeSortedFunctionObserver,
         // TODO sortedSetBlock: Observers.makeSortedSetBlockObserver,

@@ -14,7 +14,20 @@ function stringify(syntax) {
     return stringify.semantics.stringify(syntax);
 }
 
+function makeBlockStringifier(type) {
+    return function (syntax, stringify) {
+        var chain = type + '{' + stringify(syntax.args[1]) + '}';
+        if (syntax.args[0].type === "value") {
+            return chain;
+        } else {
+            return stringify(syntax.args[0]) + '.' + chain;
+        }
+    };
+}
+
 stringify.semantics = {
+
+    makeBlockStringifier: makeBlockStringifier,
 
     stringify: function (syntax, parent) {
         var stringify = this.stringify.bind(this);
@@ -102,32 +115,11 @@ stringify.semantics = {
             return '#' + syntax.id;
         },
 
-        mapBlock: function (syntax, stringify) {
-            var chain = 'map{' + stringify(syntax.args[1]) + '}';
-            if (syntax.args[0].type === "value") {
-                return chain;
-            } else {
-                return stringify(syntax.args[0]) + '.' + chain;
-            }
-        },
-
-        filterBlock: function (syntax, stringify) {
-            var chain = 'filter{' + stringify(syntax.args[1]) + '}';
-            if (syntax.args[0].type === "value") {
-                return chain;
-            } else {
-                return stringify(syntax.args[0]) + '.' + chain;
-            }
-        },
-
-        sortedBlock: function (syntax, stringify) {
-            var chain = 'sorted{' + stringify(syntax.args[1]) + '}';
-            if (syntax.args[0].type === "value") {
-                return chain;
-            } else {
-                return stringify(syntax.args[0]) + '.' + chain;
-            }
-        },
+        mapBlock: makeBlockStringifier("map"),
+        filterBlock: makeBlockStringifier("filter"),
+        someBlock: makeBlockStringifier("some"),
+        everyBlock: makeBlockStringifier("every"),
+        sortedBlock: makeBlockStringifier("sorted"),
 
         property: function (syntax, stringify) {
             if (syntax.args[0].type === "value") {

@@ -227,6 +227,46 @@ object.numbers.shift();
 expect(object.evens).toEqual([4, 6, 8]);
 ```
 
+### Some
+
+A `some` block incrementally tracks whether some of the values in a
+collection meet a criterion.
+
+```javascript
+var object = Bindings.defineBindings({
+    options: [
+        {checked: true},
+        {checked: false},
+        {checked: false}
+    ]
+}, {
+    anyChecked: {
+        "<-": "options.some{checked}"
+    }
+});
+expect(object.anyChecked).toBe(true);
+```
+
+### Every
+
+A `some` block incrementally tracks whether all of the values in a
+collection meet a criterion.
+
+```javascript
+var object = Bindings.defineBindings({
+    options: [
+        {checked: true},
+        {checked: false},
+        {checked: false}
+    ]
+}, {
+    allChecked: {
+        "<-": "options.every{checked}"
+    }
+});
+expect(object.allChecked).toBe(false);
+```
+
 ### Sorted
 
 A sorted block generates an incrementally updated sorted array.  The
@@ -489,7 +529,7 @@ var object = {
 var cancel = bind(object, "selected", {
     "<-": "source[key]"
 });
-expect(object.selected).toBe(null);
+expect(object.selected).toBe(undefined);
 
 object.key = a;
 expect(object.selected).toBe(10);
@@ -502,7 +542,7 @@ expect(object.selected).toBe(30);
 
 var SortedMap = require("collections/sorted-map");
 object.source = SortedMap();
-expect(object.selected).toBe(30); // no change
+expect(object.selected).toBe(undefined);
 
 object.source.set(b, 40);
 expect(object.selected).toBe(40);
@@ -1630,9 +1670,10 @@ expect(path).toBe("a && b");
         or `sum` or `average` or `has` or `view` *(eponymous syntax node
         types)*
 -   **block-call** = **function-name** `{` **expression** `}`
-    -   **block-name** = `map` *(mapBlock)* or `filter`
-        *(filterBlock)* or `sorted` *(sortedBlock)* or
-        **function-name** *(map followed by function-call)*
+    -   **block-name** = `map` *(mapBlock)* or `filter` *(filterBlock)*
+        or `some` *(someBlock)* or `every` *(everyBlock)* or `sorted`
+        *(sortedBlock)* or **function-name** *(map followed by
+        function-call)*
 -   **literal** = **string-literal** or **number-literal**
     -   **number-literal** = **digits** ( `.` **digits** )? *(literal
         and value is a number)*
@@ -1697,6 +1738,10 @@ available.
     pass the predicate described in the block expression useing the
     respective element in the source array as the source value.  As with
     "map", filters update the target array incrementally.
+-   A "some" block observes whether any of the values in the source
+    collection meet the given criterion.
+-   A "every" block observes whether all of the values in the source
+    collection meet the given criterion.
 -   A "sorted" block observes the sorted version of an array, by a
     property of each value described in the block, or itself if empty.
     Sorted arrays are incrementally updating as values are added and
@@ -1859,6 +1904,8 @@ nodes (or an "args" object for `record`).
     observe on each element of the input.
 -   `filterBlock`: the left is the input, the right is an expression to
     determine whether the result is included in the output.
+-   `someBlock`: the left is the input, the right is a criterion.
+-   `everyBlock`: the left is the input, the right is a criterion.
 -   `sortedBlock`: the left is the input, the right is a relation on
     each value of the input on which to compare to determine the order.
 -   `map`: the left is the input, the right is a function that accepts

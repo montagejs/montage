@@ -12,7 +12,11 @@ describe("observe", function () {
                 var observe = compile(syntax);
                 var output;
                 var cancel = observe(function (initial) {
-                    output = initial;
+                    if (Array.isArray(initial)) {
+                        output = initial.slice(); // to ditch observable prototype
+                    } else {
+                        output = initial;
+                    }
                 }, test.input, test.parameters);
                 cancel();
                 expect(output).toEqual(test.output);
