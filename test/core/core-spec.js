@@ -144,9 +144,39 @@ describe("core/core-spec", function() {
                 expect(Object.getPropertyDescriptor(Montage, "_bindingDescriptors")).toBeTruthy();
             });
 
+            describe("create", function() {
+                it("must be given an object, null or undefined as the first agument", function() {
+                    expect(function(){
+                        Montage.create("string", {});
+                    }).toThrow(new TypeError("Object prototype may only be an Object or null, not 'string'"));
+
+                    expect(Montage.create()).toEqual(Montage);
+
+                    expect(Montage.create(null)).toEqual(Object.create(null));
+
+                    expect(Montage.create({a: 1}, {b: { value: 2 }})).toEqual({a: 1, b: 2});
+                });
+            });
+
             describe("defineProperty", function() {
 
                 var foo;
+
+                it("must be given an object as the first argument", function() {
+                    expect(function(){
+                        Montage.defineProperty(null, "b", { value: null });
+                    }).toThrow(new TypeError("Object must be an object, not 'null'"));
+
+                    expect(function(){
+                        Montage.defineProperty(undefined, "b", { value: null });
+                    }).toThrow(new TypeError("Object must be an object, not 'undefined'"));
+
+                    expect(function(){
+                        Montage.defineProperty("string", "b", { value: null });
+                    }).toThrow(new TypeError("Object must be an object, not 'string'"));
+
+                    expect(Montage.defineProperty({a: 1}, "b", { value: 2 })).toEqual({a: 1, b: 2});
+                });
 
                 describe("object value", function () {
 
@@ -220,6 +250,24 @@ describe("core/core-spec", function() {
                 });
             });
 
+        });
+
+        describe("defineProperties", function() {
+            it("must be given an object as the second argument", function() {
+                expect(function(){
+                    Montage.defineProperties({}, null);
+                }).toThrow(new TypeError("Properties must be an object, not 'null'"));
+
+                expect(function(){
+                    Montage.defineProperties({}, undefined);
+                }).toThrow(new TypeError("Properties must be an object, not 'undefined'"));
+
+                expect(function(){
+                    Montage.defineProperties({}, "string");
+                }).toThrow(new TypeError("Properties must be an object, not 'string'"));
+
+                expect(Montage.defineProperties({a: 1}, { b: { value: 2 }})).toEqual({a: 1, b: 2});
+            });
         });
 
         describe("serializable property attribute", function() {

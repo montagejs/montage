@@ -39,7 +39,15 @@ var ComponentSlowLoad = exports.ComponentSlowLoad = Montage.create(Component, {
 
     // This code makes the first instantiated component to load after the second
     loadComponentTree: {value: function(callback) {
-        setTimeout(callback, ComponentSlowLoad.delay);
+        var self = this;
+
+        setTimeout(function() {
+            self.canDrawGate.setField("componentTreeLoaded", true);
+            if (callback) {
+                callback();
+            }
+        }, ComponentSlowLoad.delay);
+
         ComponentSlowLoad.delay -= 20;
     }}
 });

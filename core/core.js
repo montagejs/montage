@@ -39,6 +39,8 @@ POSSIBILITY OF SUCH DAMAGE.
  @requires core/extras/string
  @requires core/extras/function
  @requires core/extras/date
+ @requires core/extras/element
+ @requires core/extras/regexp
 */
 require("collections/shim");
 require("core/shim/object");
@@ -46,9 +48,11 @@ require("core/shim/array");
 require("core/shim/string");
 require("core/extras/object");
 require("core/extras/array");
-require("core/extras/string");
-require("core/extras/function");
 require("core/extras/date");
+require("core/extras/element");
+require("core/extras/function");
+require("core/extras/regexp");
+require("core/extras/string");
 
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
@@ -94,8 +98,11 @@ var Montage = exports.Montage = {};
 Object.defineProperty(Montage, "create", {
     configurable: true,
     value: function(aPrototype, propertyDescriptor) {
+        // Allow aPrototype to be undefined to create() this
+        if (aPrototype !== undefined && typeof aPrototype !== "object") {
+            throw new TypeError("Object prototype may only be an Object or null, not '" + aPrototype + "'");
+        }
         if (!propertyDescriptor) {
-
             var newObject = Object.create(typeof aPrototype === "undefined" ? this : aPrototype);
 
             if (typeof newObject.didCreate === "function") {
@@ -143,6 +150,9 @@ extendedPropertyAttributes.forEach(function(name) {
 Object.defineProperty(Montage, "defineProperty", {
 
     value: function(obj, prop, descriptor) {
+        if (typeof obj !== "object" || obj === null) {
+            throw new TypeError("Object must be an object, not '" + obj + "'");
+        }
 
         var dependencies = descriptor.dependencies,
             isValueDescriptor = (VALUE in descriptor);
@@ -392,6 +402,9 @@ Object.defineProperty(Montage, "defineProperty", {
     @param {Object} properties An object that contains one or more property descriptor objects.
 */
 Object.defineProperty(Montage, "defineProperties", {value: function(obj, properties) {
+    if (typeof properties !== "object" || properties === null) {
+        throw new TypeError("Properties must be an object, not '" + properties + "'");
+    }
     for (var property in properties) {
         if ("_bindingDescriptors" !== property) {
             this.defineProperty(obj, property, properties[property]);
