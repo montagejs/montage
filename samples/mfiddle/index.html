@@ -5,7 +5,12 @@
     <title>MFiddle</title>
     <script>
         var gistId = location.hash.slice(3);
-        location.href = "http://montagejs.github.com/mfiddle/#!/" + gistId;
+        if (gistId) {
+            location.href = "http://montagejs.github.com/mfiddle/#!/" + gistId;
+        } else {
+            location.href = "http://montagejs.github.com/mfiddle";
+        }
+
     </script>
 </head>
 <body></body>
