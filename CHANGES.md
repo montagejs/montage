@@ -1,3 +1,107 @@
+# v0.12.0
+
+-   **Core**
+
+    **require** The package/module loader was refactored into a separate package named [mr](https://github.com/montagejs/mr) (Montage Require). This
+    project can be now be used independently from Montage itself.
+
+    **promise** The promise module was refactored so that it uses [Q](https://github.com/kriskowal/q) instead of it's own copy.
+
+    Fixed issue in distinct property descriptor
+
+    Better support for WebWorkers.
+
+-   **Serialization**
+
+    Changed the serializable defaults of properties defined using `Montage.defineProperty|ies` to reduce the amount of times the developer needs to specify a different behavior from the default.
+    The default used to be false in all cases, now it is true unless the property is non enumerable or non writable (`writable: false` or has a `get` but no `set`.
+    Improved the handling of serialization across iframes by more accurately identifying object types.
+    Added more delegate methods.
+
+-   **Events**
+
+    Added a dispatchEventNamed convenience method and improved event wrapping in general.
+
+    All events can now be observed on the application.
+
+-   **Template**
+
+    Added `instantiateWithInstancesAndDocument` method.
+
+    Added templateObjects to expose the objects used in the template's serialization block.
+
+-   **Component**
+
+    Added querySelector[All]Component to query the component tree.
+
+    Added templateObjects so that the component can easily access the object references form it's template's serialization. It also allows the component to pass in instances so that these are used instead of being instantiated when the template is loaded.
+
+    Added component definition support to Component, this allows the component to programmatically expose it's API.
+
+-   **multi-window**
+
+    Added multi-window application support. When used extra windows can be opened within the same application.
+
+-   **Various**
+
+    ArrayController now returns the objects when removing form it's contents.
+
+    Added InvertConverter.
+
+    Some fixes in TranslateComposer to respect the return value when stealing the pointer;
+
+-   **CSS**
+
+    Changed all class names use by Montage to adhere to our new [Naming Convention](https://github.com/montagejs/montage/wiki/Naming-Conventions).
+
+    Added global disabled style
+
+
+-   **Components**
+
+    Some styling improvements
+
+    -   Flow now can do elastic scrolling which allows the spacing of the repeated items to be vary with speed. Recycling of dom nodes was also improved by adding a no-transition class so that css effects are reset as the tile is reused.
+        The flow now also exposes a slotContent property which allows another component to be placed inside the 3d scene.
+
+    -   DynamicElement doesn't always empty it's content.
+
+    -   Usability improvements to InputRange on mobile.
+
+    -   Rich Text Editor no longer prevents other input fields in the same page from getting the focus, other small bug
+        fixes
+
+-   **Extras**
+
+    **Object** Added `values` and `map` to Object.
+
+    **Element** Added `isElement` to Element.
+
+    **RegExp** Added `isRegExp` to RegExp.
+
+
+-   **Tools**
+    -   Optimizer
+        - Added Montage Optimizer
+
+    -   Mint
+        - Improved error reporting for globals.
+        - Added support for linting directories.
+        - Added ability to ignore filenames.
+        - Added correct copyright linter.
+        - Added JSDoc linter.
+        - Added command line option to select linters to run.
+        - Added --debug parameter.
+        - Improved documentation.
+    -   Minit
+        - Added Application template
+        - Better destination for component template.
+        - Small bug fixes
+
+-   **Sample Applications**
+
+    Sample application have been moved to individual repositories.
+
 # v0.11.0
 
 -   **New skeleton components**
