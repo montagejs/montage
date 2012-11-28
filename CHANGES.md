@@ -14,7 +14,7 @@
 -   **Serialization**
 
     Changed the serializable defaults of properties defined using `Montage.defineProperty|ies` to reduce the amount of times the developer needs to specify a different behavior from the default.
-    The default used to be false in all cases, now it is true unless the property is non enumerable or non writable (`writable: false` or has a `get` but no `set`.
+    The default used to be false in all cases, now it is true unless the property is non enumerable or non writable (`writable: false` or has a `get` but no `set`).
     Improved the handling of serialization across iframes by more accurately identifying object types.
     Added more delegate methods.
 
