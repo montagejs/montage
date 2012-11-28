@@ -1,7 +1,0 @@
-{
-    "name": "test",
-    "mappings": {
-        "montage": "../../../montage/",
-        "google": "../"
-    }
-}

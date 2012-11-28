@@ -1,9 +1,0 @@
-{
-    "name": "run-tests-remotely",
-    "version": "0.1.0",
-    "author": "Stuart Knightley <jqxc46@motorola.com>",
-    "description": "Runs the Montage tests on a remote server through webdriver",
-    "dependencies": {
-        "q": "0.8.2"
-    }
-}
