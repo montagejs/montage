@@ -288,20 +288,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
             this.currentStage = LOADING;
             document._montageTiming.loadingStartTime = Date.now();
 
-            this._frameworkModuleCount = window.require.progress.requiredModules.length;
-
-            Object.defineBinding(this, "initializedModules", {
-                boundObject: window.require,
-                boundObjectPropertyPath: "progress.initializedModules",
-                oneway: true
-            });
-
-            Object.defineBinding(this, "requiredModules", {
-                boundObject: window.require,
-                boundObjectPropertyPath: "progress.requiredModules",
-                oneway: true
-            });
-
             var i,
                 loaderElement = document.getElementById(MONTAGE_LOADER_ELEMENT_ID),
                 children,
