@@ -1,6 +1,12 @@
 {
-    "name": "specs",
+    "name": "montage-tests",
+    "version": "0.0.0",
     "mappings": {
         "montage": "../"
+    },
+    "dependencies": {
+        "connect": "2.7.x",
+        "commander": "1.1.x",
+        "wd": "0.0.x"
     }
 }

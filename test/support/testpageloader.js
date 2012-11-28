@@ -8,6 +8,7 @@ var Montage = require("montage").Montage,
     MutableEvent = require("montage/core/event/mutable-event").MutableEvent,
     defaultEventManager;
 
+var PAGE_LOAD_TIMEOUT = 10000;
 
 var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
     init: {
@@ -139,7 +140,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             };
 
             if (!timeoutLength) {
-                timeoutLength = 2000;
+                timeoutLength = PAGE_LOAD_TIMEOUT;
             }
             var pageLoadTimeout = setTimeout(pageLoadTimedOut, timeoutLength);
 
