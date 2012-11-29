@@ -15,6 +15,9 @@ These should be set in Jenkins, usually in a Configuration Matrix
 $browser
 $platform
 
+$browser can contain a version seperated by a equals sign,
+e.g. "internet explorer=10"
+
 Writes the reports to report/
 */
 
@@ -55,9 +58,15 @@ npmInstall.on('exit', function (code) {
 
     var testUrl = "http://localhost:" + httpServerPort + "/test/run-xml.html";
 
-    console.log("Hosting tests on " + testUrl);
+
+    var browserDetails = [];
+    if (process.env["browser"]) {
+        browserDetails = process.env["browser"].split("=");
+    }
+
     tests.run(testUrl, {
-        browser: process.env["browser"],
+        browser: browserDetails[0],
+        browserVersion: browserDetails[1],
         platform: process.env["platform"],
         host: process.env["SELENIUM_HOST"],
         port: process.env["SELENIUM_PORT"],
