@@ -1,0 +1,6 @@
+.idea
+node_modules
+.DS_Store
+atlassian-ide-plugin.xml
+etc
+test
