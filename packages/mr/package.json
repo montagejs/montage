@@ -1,6 +1,6 @@
 {
     "name": "mr",
-    "version": "0.0.2",
+    "version": "0.0.4",
     "main": "require",
     "bin": {
         "mr": "bin/mr"
@@ -10,6 +10,9 @@
             "name": "q",
             "location": "packages/q"
         }
+    },
+    "dependencies": {
+        "q": "0.8.x >=0.8.11"
     },
     "devDependencies": {
         "qs": "0.5.x"
