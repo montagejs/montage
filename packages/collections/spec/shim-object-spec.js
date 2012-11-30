@@ -1,51 +1,22 @@
-/* <copyright>
-Copyright (c) 2012, Motorola Mobility LLC.
-All Rights Reserved.
+"use strict";
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+/*
+    Based in part on extras from Motorola Mobility’s Montage
+    Copyright (c) 2012, Motorola Mobility LLC. All Rights Reserved.
+    3-Clause BSD License
+    https://github.com/motorola-mobility/montage/blob/master/LICENSE.md
+*/
 
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
+require("../shim");
+var Dict = require("../dict");
 
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
+describe("Object", function () {
 
-* Neither the name of Motorola Mobility LLC nor the names of its
-  contributors may be used to endorse or promote products derived from this
-  software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-</copyright> */
-
-require("montage");
-
-describe("core/extras/object", function () {
-
-    describe("Object", function () {
-
-        it("should have no enumerable properties", function () {
-            expect(Object.keys(Object.prototype)).toEqual([]);
-        });
-
-        it("should have no enumerable static properties", function () {
-            expect(Object.keys(Object)).toEqual([]);
-        });
-
+    it("should have no enumerable properties", function () {
+        expect(Object.keys(Object.prototype)).toEqual([]);
     });
 
-    describe("Object.empty", function () {
+    describe("empty", function () {
 
         it("should own no properties", function () {
             expect(Object.getOwnPropertyNames(Object.empty)).toEqual([]);
@@ -68,7 +39,7 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object.isObject", function () {
+    describe("isObject", function () {
 
         [
             ["null is not an object", null, false],
@@ -89,7 +60,7 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object.getValueOf", function () {
+    describe("getValueOf", function () {
         var fakeNumber = Object.create({
             valueOf: function () {
                 return 10;
@@ -112,7 +83,7 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object.owns", function () {
+    describe("owns", function () {
 
         it("should recognized an owned property", function () {
             expect(Object.owns({a: 0}, "a")).toEqual(true);
@@ -124,7 +95,7 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object.has", function () {
+    describe("has", function () {
 
         it("should recognized an owned property", function () {
             expect(Object.has({toString: true}, "toString")).toEqual(true);
@@ -176,7 +147,7 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object.get", function () {
+    describe("get", function () {
 
         it("should get an owned property from an object literal", function () {
             expect(Object.get({a: 10}, "a")).toEqual(10);
@@ -207,26 +178,9 @@ describe("core/extras/object", function () {
             expect(Object.get({}, "toString", 10)).toEqual(10);
         });
 
-        it("should fallback to using an 'undefinedGet' method if present", function () {
-            var Type = Object.create(Object.prototype, {
-                undefinedGet: {
-                    value: function (key) {
-                        return [];
-                    }
-                }
-            });
-            var instance = Object.create(Type);
-            expect(Object.get(instance, "a")).toEqual([]);
-        });
-
-        it("should fallback to undefined if no 'undefinedGet' method is present", function () {
-            var instance = Object.create(null);
-            expect(Object.get(instance, "a")).toEqual(undefined);
-        });
-
     });
 
-    describe("Object.set", function () {
+    describe("set", function () {
 
         it("should set a property", function () {
             var object = {};
@@ -258,7 +212,7 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object.forEach", function () {
+    describe("forEach", function () {
 
         it("should iterate the owned properties of an object", function () {
             var spy = jasmine.createSpy();
@@ -285,7 +239,7 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object.map", function () {
+    describe("map", function () {
 
         it("should iterate the owned properties of an object with a context thisp", function () {
             var object = {a: 10, b: 20}
@@ -298,7 +252,7 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object.values", function () {
+    describe("values", function () {
 
         it("should produce the values for owned properties", function () {
             expect(Object.values({b: 10, a: 20})).toEqual([10, 20]);
@@ -306,7 +260,27 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object.is", function () {
+    describe("concat", function () {
+
+        it("should merge objects into a new object", function () {
+            expect(Object.concat({a: 10}, {b: 20})).toEqual({a: 10, b: 20});
+        });
+
+        it("should prioritize latter objects", function () {
+            expect(Object.concat({a: 10}, {a: 20})).toEqual({a: 20});
+        });
+
+        it("should delegate to arrays", function () {
+            expect(Object.concat({a: 10, b: 20}, [['c', 30]])).toEqual({a: 10, b: 20, c: 30});
+        });
+
+        it("should delegate to maps", function () {
+            expect(Object.concat({a: 10, b: 20}, Dict({c: 30}))).toEqual({a: 10, b: 20, c: 30});
+        });
+
+    });
+
+    describe("is", function () {
 
         var distinctValues = {
             'positive zero': 0,
@@ -333,7 +307,7 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object.equals", function () {
+    describe("equals", function () {
         var fakeNumber = Object.create({
             valueOf: function () {
                 return 10;
@@ -341,13 +315,13 @@ describe("core/extras/object", function () {
         });
         var equatable = Object.create({
             value: 10,
+            clone: function () {
+                return this;
+            },
             equals: function (n) {
-                return n === 10 || n.value === 10;
+                return n === 10 || typeof n === "object" && n.value === 10;
             }
         });
-
-        var objectFromDifferentPrototype = Object.create({});
-        objectFromDifferentPrototype.a = 10;
 
         var fakeArrayType = Object.create(Object.prototype, {
         });
@@ -371,9 +345,6 @@ describe("core/extras/object", function () {
             {
                 'object': {a: 10},
                 'other object': {a: 10}
-            },
-            {
-                'object from different prototype': objectFromDifferentPrototype
             },
             {
                 'now': new Date()
@@ -423,7 +394,7 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object.compare", function () {
+    describe("compare", function () {
 
         var fakeOne = Object.create({
             valueOf: function () {
@@ -489,70 +460,7 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object.getPropertyDescriptor", function () {
-        var grandparent = Object.create(null);
-        var parent = Object.create(grandparent, {
-            a: {
-                value: 10
-            }
-        });
-        parent.b = 20;
-        var child = Object.create(parent, {
-            c: {
-                value: 30,
-                writable: true,
-                configurable: true,
-                enumerable: true
-            }
-        });
-
-        it("should get a named property descriptor at the beginning of the prototype chain", function () {
-            expect(Object.getPropertyDescriptor(child, "a")).toEqual({
-                value: 10,
-                writable: false,
-                enumerable: false,
-                configurable: false
-            });
-        });
-
-        it("should get a named property descriptor in the middle of the prototype chain", function () {
-            expect(Object.getPropertyDescriptor(child, "b")).toEqual({
-                value: 20,
-                writable: true,
-                enumerable: true,
-                configurable: true
-            });
-        });
-
-        it("should get a named property descriptor at the end of the prototype chain", function () {
-            expect(Object.getPropertyDescriptor(child, "c")).toEqual({
-                value: 30,
-                writable: true,
-                enumerable: true,
-                configurable: true
-            });
-        });
-
-    });
-
-    describe("Object.getPrototypeAndDescriptorDefiningProperty", function () {
-        var grandparent = Object.create(null);
-        grandparent.a = 10;
-        var parent = Object.create(grandparent);
-        var child = Object.create(parent);
-        it("should fetch a prototype and descriptor from the beginning of the prototype chain", function () {
-            var pair = Object.getPrototypeAndDescriptorDefiningProperty(child, "a");
-            expect(pair.prototype).toBe(grandparent);
-            expect(pair.propertyDescriptor).toEqual({
-                value: 10,
-                writable: true,
-                enumerable: true,
-                configurable: true
-            });
-        });
-    });
-
-    describe("Object.clone", function () {
+    describe("clone", function () {
 
         var graph = {
             object: {a: 10},
@@ -639,22 +547,22 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object#clone", function () {
+    describe("clone", function () {
         var object = {a: {a1: 10, a2: 20}, b: {b1: 10, b2: 20}};
 
         it("should clone zero levels", function () {
-            expect(object.clone(0)).toBe(object);
+            expect(Object.clone(object, 0)).toBe(object);
         });
 
         it("should clone one level", function () {
-            var clone = object.clone(1);
+            var clone = Object.clone(object, 1);
             expect(clone).toEqual(object);
             expect(clone).toNotBe(object);
             expect(clone.a).toBe(object.a);
         });
 
         it("should clone two levels", function () {
-            var clone = object.clone(2);
+            var clone = Object.clone(object, 2);
             expect(clone).toEqual(object);
             expect(clone).toNotBe(object);
             expect(clone.a).toNotBe(object.a);
@@ -663,7 +571,7 @@ describe("core/extras/object", function () {
         it("should clone with reference cycles", function () {
             var cycle = {};
             cycle.cycle = cycle;
-            var clone = cycle.clone();
+            var clone = Object.clone(cycle);
             expect(clone).toEqual(cycle);
             expect(clone).toNotBe(cycle);
             expect(clone.cycle).toBe(clone);
@@ -671,13 +579,12 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object#wipe", function () {
+    describe("clear", function () {
 
-        it("should wipe all owned properties of the object", function () {
-            expect(Object.keys({a: 10}.wipe())).toEqual([]);
+        it("should clear all owned properties of the object", function () {
+            expect(Object.keys(Object.clear({a: 10}))).toEqual([]);
         });
 
     });
 
 });
-
