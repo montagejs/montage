@@ -52,10 +52,15 @@ if (spec) {
         "gate-spec",
         "getset-spec",
         "logger-spec",
+        "path-changes-spec",
         "propertychange-spec",
         "require-spec",
         "state-chart-spec",
         "string-spec",
+
+        // packages
+        "collections-spec",
+        "frb-spec",
 
         "binding/binding-converter-spec",
         "binding/dependent-properties-spec",
@@ -67,9 +72,7 @@ if (spec) {
         "core/core-spec",
         "core/selector-spec",
 
-        "core/extras/array",
         "core/extras/function",
-        "core/extras/object",
         "core/extras/string",
 
         "data/blueprint-spec",

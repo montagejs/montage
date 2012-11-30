@@ -42,6 +42,7 @@ POSSIBILITY OF SUCH DAMAGE.
  @requires core/extras/element
  @requires core/extras/regexp
 */
+require("collections/shim");
 require("core/shim/object");
 require("core/shim/array");
 require("core/shim/string");
@@ -52,6 +53,7 @@ require("core/extras/element");
 require("core/extras/function");
 require("core/extras/regexp");
 require("core/extras/string");
+require("core/path-changes");
 
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
@@ -746,3 +748,4 @@ Object.defineProperty(Montage, "callDelegateMethod", {
         }
     }
 });
+

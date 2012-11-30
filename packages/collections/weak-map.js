@@ -1,37 +1,3 @@
-/* <copyright>
-Copyright (c) 2012, Motorola Mobility LLC.
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-
-* Neither the name of Motorola Mobility LLC nor the names of its
-  contributors may be used to endorse or promote products derived from this
-  software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-</copyright> */
-/* <notice>
- Derived from http://code.google.com/p/es-lab/source/browse/trunk/src/ses/WeakMap.js
- Added the export
- Removed the check for ses
 // Copyright (C) 2011 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,7 +11,6 @@ POSSIBILITY OF SUCH DAMAGE.
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-</notice> */
 
 /**
  * @fileoverview Install a leaky WeakMap emulation on platforms that
@@ -58,24 +23,20 @@ POSSIBILITY OF SUCH DAMAGE.
  * quite conform, run <code>repairES5.js</code> first.
  *
  * @author Mark S. Miller
- * @requires ses
- * @overrides WeakMap
+ * @requires ses, crypto, ArrayBuffer, Uint8Array
+ * @overrides WeakMap, WeakMapModule
  */
 
 /**
-  @module montage/core/shim/weak-map
-*/
-
- /**
-  * This <code>WeakMap</code> emulation is observably equivalent to the
+ * This {@code WeakMap} emulation is observably equivalent to the
  * ES-Harmony WeakMap, but with leakier garbage collection properties.
  *
- * As with true WeakMaps, in this emulation, a key does not
+ * <p>As with true WeakMaps, in this emulation, a key does not
  * retain maps indexed by that key and (crucially) a map does not
  * retain the keys it indexes. A map by itself also does not retain
  * the values associated with that map.
  *
-<p>However, the values associated with a key in some map are
+ * <p>However, the values associated with a key in some map are
  * retained so long as that key is retained and those associations are
  * not overridden. For example, when used to support membranes, all
  * values exported from a given membrane will live for the lifetime
@@ -91,7 +52,7 @@ POSSIBILITY OF SUCH DAMAGE.
  * upgrade the ecmascript WeakMap proposal page to explain this API
  * change and present to EcmaScript committee for their approval.
  *
-<p>The first difference between the emulation here and that in
+ * <p>The first difference between the emulation here and that in
  * FF6.0a1 is the presence of non enumerable {@code get___, has___,
  * set___, and delete___} methods on WeakMap instances to represent
  * what would be the hidden internal properties of a primitive
@@ -111,10 +72,7 @@ POSSIBILITY OF SUCH DAMAGE.
  * problem, repairES5.js wraps it in a safe wrappper in order to
  * prevent access to this channel. (See
  * PATCH_MUTABLE_FROZEN_WEAKMAP_PROTO in repairES5.js).
- @class module:montage/core/shim/weak-map.WeakMap
  */
-
-var WeakMap;
 
 /**
  * If this is a full <a href=
@@ -128,18 +86,9 @@ var WeakMap;
  * <p>See {@code WeakMap} for documentation of the garbage collection
  * properties of this WeakMap emulation.
  */
-(function() {
-  "use strict";
+"use strict";
 
-//  if (typeof ses !== 'undefined' && ses.ok && !ses.ok()) {
-//    // already too broken, so give up
-//    return;
-//  }
-
-  if (typeof WeakMap === 'function') {
-    // assumed fine, so we're done.
-    return;
-  }
+module.exports = typeof WeakMap !== "undefined" ? WeakMap : ((function () {
 
   var hop = Object.prototype.hasOwnProperty;
   var gopn = Object.getOwnPropertyNames;
@@ -162,8 +111,7 @@ var WeakMap;
    *
    * <p>Given the known weaknesses of Math.random() on existing
    * browsers, it does not generate unguessability we can be confident
-   * of. TODO(erights): Detect crypto.getRandomValues and if there,
-   * use it instead.
+   * of.
    *
    * <p>It is the monkey patching logic in this file that is intended
    * to ensure undiscoverability. The basic idea is that there are
@@ -176,8 +124,37 @@ var WeakMap;
    * proposed ES6 extensions that appear on our whitelist. We monkey
    * patch them to remove HIDDEN_NAME from the list of properties they
    * returns.
+   *
+   * <p>TODO(erights): On a platform with built-in Proxies, proxies
+   * could be used to trap and thereby discover the HIDDEN_NAME, so we
+   * need to monkey patch Proxy.create, Proxy.createFunction, etc, in
+   * order to wrap the provided handler with the real handler which
+   * filters out all traps using HIDDEN_NAME.
+   *
+   * <p>TODO(erights): Revisit Mike Stay's suggestion that we use an
+   * encapsulated function at a not-necessarily-secret name, which
+   * uses the Stiegler shared-state rights amplification pattern to
+   * reveal the associated value only to the WeakMap in which this key
+   * is associated with that value. Since only the key retains the
+   * function, the function can also remember the key without causing
+   * leakage of the key, so this doesn't violate our general gc
+   * goals. In addition, because the name need not be a guarded
+   * secret, we could efficiently handle cross-frame frozen keys.
    */
   var HIDDEN_NAME = 'ident:' + Math.random() + '___';
+
+  if (typeof crypto !== 'undefined' &&
+      typeof crypto.getRandomValues === 'function' &&
+      typeof ArrayBuffer === 'function' &&
+      typeof Uint8Array === 'function') {
+    var ab = new ArrayBuffer(25);
+    var u8s = new Uint8Array(ab);
+    crypto.getRandomValues(u8s);
+    HIDDEN_NAME = 'rand:' +
+      Array.prototype.map.call(u8s, function(u8) {
+        return (u8 % 36).toString(36);
+      }).join('') + '___';
+  }
 
   /**
    * Monkey patch getOwnPropertyNames to avoid revealing the
@@ -191,33 +168,24 @@ var WeakMap;
    * versions we support at that time have relaxed this constraint
    * without providing built-in ES6 WeakMaps.
    */
-
   defProp(Object, 'getOwnPropertyNames', {
     value: function fakeGetOwnPropertyNames(obj) {
-      var result = gopn(obj);
-      var i = 0;
-      while ((i = result.indexOf(HIDDEN_NAME, i)) >= 0) {
-        result.splice(i, 1);
-      }
-      return result;
+      return gopn(obj).filter(function(name) {
+        return name !== HIDDEN_NAME;
+      });
     }
   });
 
   /**
-   getPropertyNames is not in ES5 but it is proposed for ES6 and<br>
-   does appear in our whitelist, so we need to clean it too.
+   * getPropertyNames is not in ES5 but it is proposed for ES6 and
+   * does appear in our whitelist, so we need to clean it too.
    */
-
-
   if ('getPropertyNames' in Object) {
     defProp(Object, 'getPropertyNames', {
       value: function fakeGetPropertyNames(obj) {
-        var result = originalProps.getPropertyNames(obj);
-        var i = 0;
-        while ((i = result.indexOf(HIDDEN_NAME, i)) >= 0) {
-          result.splice(i, 1);
-        }
-        return result;
+        return originalProps.getPropertyNames(obj).filter(function(name) {
+          return name !== HIDDEN_NAME;
+        });
       }
     });
   }
@@ -261,7 +229,7 @@ var WeakMap;
    * force leaky map stored in the weak map, losing all the advantages
    * of weakness for these.
    */
-  function getHiddenRecord(key) {
+  var getHiddenRecord = function (key) {
     if (key !== Object(key)) {
       throw new TypeError('Not an object: ' + key);
     }
@@ -286,7 +254,7 @@ var WeakMap;
       configurable: false
     });
     return hiddenRecord;
-  }
+  };
 
 
   /**
@@ -298,7 +266,7 @@ var WeakMap;
    * that should throw a TypeError anyway if their argument is not an
    * object.
    */
-  (function(){
+  (function () {
     var oldFreeze = Object.freeze;
     defProp(Object, 'freeze', {
       value: function identifyingFreeze(obj) {
@@ -322,13 +290,19 @@ var WeakMap;
     });
   })();
 
-
   function constFunc(func) {
-    Object.freeze(func.prototype);
+    func.prototype = null;
     return Object.freeze(func);
   }
 
-  WeakMap = function() {
+  // Right now (12/25/2012) the histogram supports the current
+  // representation. We should check this occasionally, as a true
+  // constant time representation is easy.
+  // var histogram = [];
+
+  var WeakMap = function() {
+    // We are currently (12/25/2012) never encountering any prematurely
+    // non-extensible keys.
     var keys = []; // brute force for prematurely non-extensible keys.
     var vals = []; // brute force for corresponding values.
 
@@ -364,6 +338,8 @@ var WeakMap;
         if (i >= 0) {
           hr.vals[i] = value;
         } else {
+          // i = hr.gets.length;
+          // histogram[i] = (histogram[i] || 0) + 1;
           hr.gets.push(get___);
           hr.vals.push(value);
         }
@@ -404,18 +380,12 @@ var WeakMap;
       delete___: { value: constFunc(delete___) }
     });
   };
-
-  WeakMap.prototype = Object.create(Object.prototype, /** @lends module:montage/core/shim/weak-map.WeakMap# */ {
-
-
-/**
- * Returns the value most recently associated with key, or
- * opt_default if none.
- * @function
- * @param {object} key
- * @param {object} opt_default
- */
+  WeakMap.prototype = Object.create(Object.prototype, {
     get: {
+      /**
+       * Return the value most recently associated with key, or
+       * opt_default if none.
+       */
       value: function get(key, opt_default) {
         return this.get___(key, opt_default);
       },
@@ -423,12 +393,10 @@ var WeakMap;
       configurable: true
     },
 
-/**
- * Returns <code>true</code> if there is a value associated with the specified key in the WeakMap, otherwise returns <code>false</code>
- * @function
- * @param {object} key
- */
     has: {
+      /**
+       * Is there a value associated with key in this WeakMap?
+       */
       value: function has(key) {
         return this.has___(key);
       },
@@ -436,14 +404,11 @@ var WeakMap;
       configurable: true
     },
 
-/**
- * Associate value with key in this WeakMap, overwriting any
- * previous association if present.
- * @function
- * @param {object} key
- * @param {object} value
- */
     set: {
+      /**
+       * Associate value with key in this WeakMap, overwriting any
+       * previous association if present.
+       */
       value: function set(key, value) {
         this.set___(key, value);
       },
@@ -451,21 +416,19 @@ var WeakMap;
       configurable: true
     },
 
-/**
- * Remove any association for key in this WeakMap, returning
- * whether there was one.
- * @function
- * @param {object} key
- *
- * FIXME <p>Note that the boolean return here does not work like the
- * delete operator. The operator returns
- * whether the deletion succeeds at bringing about a state in
- * which the deleted property is absent. The delete
- * operator therefore returns true if the property was already
- * absent, whereas this {@link delete} method returns false if
- * the association was already absent.
- */
     'delete': {
+      /**
+       * Remove any association for key in this WeakMap, returning
+       * whether there was one.
+       *
+       * <p>Note that the boolean return here does not work like the
+       * {@code delete} operator. The {@code delete} operator returns
+       * whether the deletion succeeds at bringing about a state in
+       * which the deleted property is absent. The {@code delete}
+       * operator therefore returns true if the property was already
+       * absent, whereas this {@code delete} method returns false if
+       * the association was already absent.
+       */
       value: function remove(key) {
         return this.delete___(key);
       },
@@ -474,6 +437,5 @@ var WeakMap;
     }
   });
 
-})();
-
-exports.WeakMap = WeakMap;
+  return WeakMap;
+})());

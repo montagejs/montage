@@ -36,6 +36,14 @@
         "q": {
             "name": "q",
             "location": "packages/mr/packages/q"
+        },
+        "collections": {
+            "name": "collections",
+            "location": "packages/collections"
+        },
+        "frb": {
+            "name": "frb",
+            "location": "packages/frb"
         }
     },
     "engines": {

@@ -1,0 +1,4 @@
+node_modules
+.tmp
+.coverage_data
+cover_html
