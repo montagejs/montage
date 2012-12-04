@@ -88,10 +88,12 @@ if (spec) {
         "geometry/cubicbezier-spec",
         "geometry/point-spec",
 
-        "reel/template-spec",
+        "reel/new-template-spec",
+        "document-resources-spec",
 
-        "serialization/deserializer-spec",
-        "serialization/serializer-spec",
+        "serialization/montage-serializer-spec",
+        "serialization/montage-deserializer-spec",
+        "serialization/serialization-extractor-spec",
         "serialization/bindings-spec",
 
         "ui/application-spec",

@@ -29,7 +29,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader;
+    TestPageLoader = require("support/testpageloader").TestPageLoader,
+    EventInfo = require("support/testpageloader").EventInfo;
 
 var serializationTestPage = TestPageLoader.queueTest("composer-serialization", {src: "ui/composer/composer-serialization-test-page.html", firstDraw: false}, function() {
     describe("ui/composer-spec", function() {

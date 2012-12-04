@@ -42,8 +42,8 @@ POSSIBILITY OF SUCH DAMAGE.
 exports = typeof exports !== "undefined" ? exports : {};
 
 var Montage = require("montage").Montage;
-var Serializer = require("core/serializer").Serializer;
-var Deserializer = require("core/deserializer").Deserializer;
+var Serializer = require("core/serialization").Serializer;
+var Deserializer = require("core/serialization").Deserializer;
 var logger = require("core/logger").logger("template");
 var defaultEventManager = require("core/event/event-manager").defaultEventManager;
 var defaultApplication;

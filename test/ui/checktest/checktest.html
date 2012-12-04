@@ -148,35 +148,35 @@ POSSIBILITY OF SUCH DAMAGE.
 
     <h2>Basic</h2>
     <p>
-        <label id="label"><input type="checkbox" id="check1" /> should be unchecked</label>
-        <label><input type="checkbox" id="check2" checked /> should be checked</label>
+        <label data-montage-id="label" id="label"><input type="checkbox" data-montage-id="check1" /> should be unchecked</label>
+        <label><input type="checkbox" data-montage-id="check2" checked /> should be checked</label>
     </p>
 
     <h2>Serialization</h2>
 
-    <label><input type="checkbox" id="check_szn1" checked /> should be unchecked</label>
-    <label><input type="checkbox" id="check_szn2" /> should be checked</label>
+    <label><input type="checkbox" data-montage-id="check_szn1" checked /> should be unchecked</label>
+    <label><input type="checkbox" data-montage-id="check_szn2" /> should be checked</label>
 
     <h2>Bindings</h2>
     <p>
-        <label><input type="checkbox" id="check_bound1" /> should be checked</label>
-        <label><input type="checkbox" id="check_bound2" checked /> should be checked</label>
+        <label><input type="checkbox" data-montage-id="check_bound1" /> should be checked</label>
+        <label><input type="checkbox" data-montage-id="check_bound2" checked /> should be checked</label>
     </p>
 
     <h2>Scroll</h2>
     <form action="" method="get">
-    <div id="scroll" style="background:#CCC; height: 300px">
+    <div data-montage-id="scroll" style="background:#CCC; height: 300px">
         <div style="background:#A00; height:260px; width:10px">.</div>
-        <label id="scroll_label"><input type="checkbox" id="scroll_check"/>scroll check</label>
+        <label data-montage-id="scroll_label" id="scroll_label"><input type="checkbox" data-montage-id="scroll_check"/>scroll check</label>
         <div style="background:#A00; height:200px; width:10px">.</div>
     </div>
     </form>
 
     <h1>Radio button tests</h1>
     <h2>Basic</h2>
-    <label><input type="radio" id="radio1" name="basic"></label>
-    <label><input type="radio" id="radio2" name="basic"></label>
-    <label><input type="radio" id="radio3" name="basic"></label>
+    <label><input type="radio" data-montage-id="radio1" name="basic"></label>
+    <label><input type="radio" data-montage-id="radio2" name="basic"></label>
+    <label><input type="radio" data-montage-id="radio3" name="basic"></label>
 
 </body>
 </html>

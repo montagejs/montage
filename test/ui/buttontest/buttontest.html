@@ -228,7 +228,6 @@ POSSIBILITY OF SUCH DAMAGE.
             "textinput": {"@": "textinput"},
             "converterbutton": {"@": "converterbutton"},
             "uppercaseconverter": {"@": "uppercaseconverter"},
-            "activelabel": {"@": "activelabel"},
             "toggleinput": {"@": "toggleinput"},
             "toggleinput2": {"@": "toggleinput2"},
             "toggleinput3": {"@": "toggleinput3"},
@@ -252,37 +251,37 @@ POSSIBILITY OF SUCH DAMAGE.
     <h1>Button test</h1>
 
     <h2>Output</h2>
-    <span id="output" data-montage-id="output">output</span>
+    <span data-montage-id="output">output</span>
 
     <h2>Basic</h2>
-    <div id="divbutton">div button</div>
-    <input type="button" id="inputbutton" value="input button">
-    <button id="buttonbutton">button button</button>
+    <div data-montage-id="divbutton">div button</div>
+    <input type="button" data-montage-id="inputbutton" value="input button">
+    <button data-montage-id="buttonbutton">button button</button>
 
-    <div id="testButton">test Button</div>
-    <div id="preventFocus">prevent focus</div>
+    <div data-montage-id="testButton">test Button</div>
+    <div data-montage-id="preventFocus">prevent focus</div>
 
     <h2>Disabled</h2>
-    <button disabled id="disabledbutton" disabled>should be disabled</button>
-    <input type="button" id="disabledinput" value="should be disabled" disabled>
+    <button disabled data-montage-id="disabledbutton" disabled>should be disabled</button>
+    <input type="button" data-montage-id="disabledinput" value="should be disabled" disabled>
 
-    <input type="button" id="disabledinputszn" value="should be disabled">
+    <input type="button" data-montage-id="disabledinputszn" value="should be disabled">
 
-    <input type="button" id="enabledinputszn" value="should be enabled" disabled>
+    <input type="button" data-montage-id="enabledinputszn" value="should be enabled" disabled>
 
     <h2>Label from serialization</h2>
-    <button id="buttonlabelszn">fail</button>
-    <input type="button" id="inputlabelszn" value="fail">
+    <button data-montage-id="buttonlabelszn">fail</button>
+    <input type="button" data-montage-id="inputlabelszn" value="fail">
 
     <h2>Nested elements</h2>
-    <button id="buttonnested"><span id="nestedelement">element nested in button</span></button>
+    <button data-montage-id="buttonnested"><span data-montage-id="nestedelement">element nested in button</span></button>
 
     <h2>Action property</h2>
-    <input type="button" id="inputactionszn" value="input with the action property set">
+    <input type="button" data-montage-id="inputactionszn" value="input with the action property set">
 
     <h2>Converter</h2>
-    <input type="text" id="textinput" value="pass">
-    <input type="button" id="converterbutton" value="fail">
+    <input type="text" data-montage-id="textinput" value="pass">
+    <input type="button" data-montage-id="converterbutton" value="fail">
 
     <h2>Draggable</h2>
     <button data-montage-id="draggable" draggable="true">Draggable button</button>
@@ -290,22 +289,22 @@ POSSIBILITY OF SUCH DAMAGE.
 
     <h2>Scroll</h2>
     <form action="" method="get">
-    <div id="scroll" style="background:#CCC; height: 300px">
+    <div data-montage-id="scroll" style="background:#CCC; height: 300px">
         <div style="background:#A00; height:260px; width:10px">.</div>
-        <button type="button" id="scroll_button">scroll button</button>
+        <button type="button" data-montage-id="scroll_button">scroll button</button>
         <div style="background:#A00; height:200px; width:10px">.</div>
     </div>
     </form>
 
     <h1>Toggle button test</h1>
-    <input type="button" id="toggleinput" value="fail">
-    <input type="button" id="toggleinput2" value="off">
-    <input type="button" id="toggleinput3" value="on">
+    <input type="button" data-montage-id="toggleinput" value="fail">
+    <input type="button" data-montage-id="toggleinput2" value="off">
+    <input type="button" data-montage-id="toggleinput3" value="on">
 
     <input type="button" value="regular button" onclick="alert('hello');" />
 
-    <button id="loggingbutton">Logging button</button>
-    <button id="detailbutton">Detail button</button>
+    <button data-montage-id="loggingbutton">Logging button</button>
+    <button data-montage-id="detailbutton">Detail button</button>
 
 </body>
 </html>

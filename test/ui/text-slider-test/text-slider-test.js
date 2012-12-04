@@ -28,7 +28,8 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var Montage = require("montage").Montage;
+var Montage = require("montage").Montage,
+    Converter = require("montage/core/converter/converter").Converter;
 
 var TextSliderTest = exports.TextSliderTest = Montage.create(Montage, {
     number: {
@@ -42,5 +43,21 @@ var TextSliderTest = exports.TextSliderTest = Montage.create(Montage, {
     },
     hex: {
         value: null
+    },
+    hexConverter: {
+        value: null
+    },
+    didCreate: {
+        value: function() {
+            this.hexConverter = Converter.create();
+
+            this.hexConverter.convert = function(value) {
+                return value.toString(16).toUpperCase();
+            };
+
+            this.hexConverter.revert = function(value) {
+                return parseInt(value, 16)
+            };
+        }
     }
 });

@@ -525,7 +525,7 @@ if (typeof window !== "undefined") {
 
             var dependencies = [
                 "core/event/event-manager",
-                "core/deserializer"
+                "core/serialization/deserializer/montage-reviver"
             ];
 
             var Promise = montageRequire("core/promise").Promise;
@@ -536,7 +536,7 @@ if (typeof window !== "undefined") {
                 dependencies.forEach(montageRequire);
 
                 var EventManager = montageRequire("core/event/event-manager").EventManager;
-                var Deserializer = montageRequire("core/deserializer").Deserializer;
+                var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                 var defaultEventManager, application;
 
                 // Load the event-manager
@@ -550,16 +550,16 @@ if (typeof window !== "undefined") {
                 // Load the application
 
                 var appProto = applicationRequire.packageDescription.applicationPrototype,
-                    applicationDescription, appModulePromise;
+                    applicationLocation, appModulePromise;
                 if (appProto) {
-                    applicationDescription = Deserializer.parseForModuleAndName(appProto);
-                    appModulePromise = applicationRequire.async(applicationDescription.module);
+                    applicationLocation = MontageReviver.parseObjectLocationId(appProto);
+                    appModulePromise = applicationRequire.async(applicationLocation.moduleId);
                 } else {
                     appModulePromise = montageRequire.async("ui/application");
                 }
 
                 return appModulePromise.then(function(exports) {
-                    application = exports[(applicationDescription ? applicationDescription.name : "Application")].create();
+                    application = exports[(applicationLocation ? applicationLocation.objectName : "Application")].create();
                     window.document.application = application;
                     defaultEventManager.application = application;
                     application.eventManager = defaultEventManager;

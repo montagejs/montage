@@ -30,10 +30,11 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
     ActionEventListener = require("montage/core/event/action-event-listener").ActionEventListener,
-    Serializer = require("montage/core/serializer").Serializer,
-    Deserializer = require("montage/core/deserializer").Deserializer,
+    Serializer = require("montage/core/serialization").Serializer,
+    Deserializer = require("montage/core/serialization").Deserializer,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
     EventInfo = require("support/testpageloader").EventInfo,
+    MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver,
     UUID = require("montage/core/uuid");
 
 var global = typeof global !== "undefined" ? global : window;
@@ -1002,19 +1003,17 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                 var serialization = serializer.serializeObject(sourceObject);
                 var labels = {};
-                labels[handlerObject.uuid] = handlerObject;
-                deserializer.initWithStringAndRequire(serialization, require);
-                var object = null;
-                spyOn(deserializer._indexedDeserializationUnits, "listeners").andCallThrough();
-                deserializer.deserializeWithInstances(labels, function(objects) {
+                labels.actioneventlistener = handlerObject;
+
+                deserializer.initWithSerializationStringAndRequire(
+                    serialization, require);
+                spyOn(MontageReviver._unitRevivers, "listeners").andCallThrough();
+
+                return deserializer.deserialize(labels)
+                .then(function(objects) {
                     object = objects.root;
+                    expect(MontageReviver._unitRevivers.listeners).toHaveBeenCalled();
                 });
-                waitsFor(function() {
-                    return object;
-                });
-                runs(function() {
-                    expect(deserializer._indexedDeserializationUnits.listeners).toHaveBeenCalled();
-                })
              });
         });
     });

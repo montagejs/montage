@@ -40,7 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 var Montage = require("montage").Montage,
     Bindings = require("core/bindings").Bindings,
-    Template = require("ui/template").Template,
+    Template = require("ui/new-template").Template,
     Gate = require("core/gate").Gate,
     Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("component"),
@@ -86,6 +86,14 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     parentProperty: {
         value: "parentComponent"
+    },
+
+    _ownerDocumentPart: {
+        value: null
+    },
+
+    _templateDocumentPart: {
+        value: null
     },
 
     /**
@@ -702,6 +710,48 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: false
     },
 
+    _innerTemplate: {value: null},
+    innerTemplate: {
+        serializable: false,
+        get: function() {
+            var innerTemplate = this._innerTemplate,
+                ownerDocumentPart,
+                ownerTemplate,
+                elementId,
+                deserializer,
+                externalObjectLabels,
+                externalObjects;
+
+            if (!innerTemplate) {
+                ownerDocumentPart = this._ownerDocumentPart;
+
+                if (ownerDocumentPart) {
+                    ownerTemplate = ownerDocumentPart.template;
+
+                    elementId = this.element.getAttribute("data-montage-id");
+                    innerTemplate = ownerTemplate.createTemplateFromElementContents(elementId);
+
+                    deserializer = innerTemplate.getDeserializer();
+                    externalObjectLabels = deserializer.getExternalObjectLabels();
+                    ownerTemplateObjects = ownerDocumentPart.objects;
+                    externalObjects = Object.create(null);
+
+                    for (var i = 0, label; (label = externalObjectLabels[i]); i++) {
+                        externalObjects[label] = ownerTemplateObjects[label];
+                    }
+                    innerTemplate.setInstances(externalObjects);
+
+                    this._innerTemplate = innerTemplate;
+                }
+            }
+
+            return innerTemplate;
+        },
+        set: function(value) {
+            this._innerTemplate = value;
+        }
+    },
+
 /**
     Description TODO
     @function
@@ -709,7 +759,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     // this is a handler that gets called by the deserializer, called on each
     // object created, after didCreate, then deserializedFromSerialization if it exists
     deserializedFromSerialization: {
-        value: function() {
+        value: function(label) {
+            Montage.getInfoForObject(this).label = label;
+
             this.attachToParentComponent();
             if (this._element) {
                 // the DOM content of the component was dynamically modified
@@ -724,7 +776,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 }
             }
             if (! this.hasOwnProperty("identifier")) {
-                this.identifier = Montage.getInfoForObject(this).label;
+                this.identifier = label;
             }
         }
     },
@@ -953,6 +1005,74 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: null
     },
 
+    _templateObjectDescriptor: {
+        value: {
+            enumerable: true,
+            configurable: true
+        }
+    },
+
+    _setupTemplateObjects: {
+        value: function(objects) {
+            var descriptor = this._templateObjectDescriptor,
+                templateObjects = Object.create(null);
+
+            for (var label in objects) {
+                object = objects[label];
+
+                if (typeof object === "object" && object != null) {
+                    if (object.parentComponent === this) {
+                        templateObjects[label] = object;
+                    } else {
+                        descriptor.get = this._makeTemplateObjectGetter(this, label);
+                        Object.defineProperty(templateObjects, label, descriptor);
+                    }
+                }
+            }
+
+            this.templateObjects = templateObjects;
+        }
+    },
+
+    _makeTemplateObjectGetter: {
+        value: function(label) {
+            var owner = this,
+                querySelectorLabel = "@"+label,
+                isRepeated,
+                components,
+                component;
+
+            return function templateObjectGetter() {
+                if (isRepeated) {
+                    return owner.querySelectorAllComponent(querySelectorLabel, owner);
+                } else {
+                    components = owner.querySelectorAllComponent(querySelectorLabel, owner);
+                    // if there's only one maybe it's not repeated, let's go up
+                    // the tree and found out.
+                    if (components.length === 1) {
+                        component = components[0];
+                        while (component = component.parentComponent) {
+                            if (component === owner) {
+                                // we got to the owner without ever hitting a component
+                                // that repeats its child components, we can
+                                // safely recreate this property with a static value
+                                Object.defineProperty(this, label, {
+                                    value: components[0]
+                                });
+                                return components[0];
+                            } else if (component.clonesChildComponents) {
+                                break;
+                            }
+                        }
+                    }
+
+                    isRepeated = true;
+                    return components;
+                };
+            };
+        }
+    },
+
 /**
     Description TODO
     @function
@@ -963,7 +1083,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
         if (!this._isTemplateInstantiated) {
             this._loadTemplate(function(template) {
-                var instances = self.templateObjects;
+                var instances = self.templateObjects,
+                    _document = self._element.ownerDocument;
 
                 if (instances) {
                     instances.owner = self;
@@ -973,9 +1094,21 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
                 // this actually also serves as isTemplateInstantiating
                 self._isTemplateInstantiated = true;
-                template.instantiateWithInstancesAndDocument(instances, self._element.ownerDocument, function() {
+
+//console.log("Will INSTANTIATE", self.templateModuleId, self.isDeserializing);
+                template.instantiateWithInstances(instances, _document)
+                .then(function(part) {
+                    self._setupTemplateObjects(part.objects);
+                    self._templateDocumentPart = part;
+//console.log("INSTANTIATED", self.templateModuleId, self.isDeserializing);
                     if (callback) {
                         callback();
+                    }
+                }).fail(function(reason) {
+                    if (reason.stack) {
+                        console.log(reason.stack);
+                    } else {
+                        console.log(reason);
                     }
                 });
             });
@@ -1023,8 +1156,12 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         if (logger.isDebug) {
             logger.debug(this, "Will load " + this.templateModuleId);
         }
-        // this call will be synchronous if the template is cached.
-        Template.templateWithModuleId(info.require, this.templateModuleId, onTemplateLoad);
+
+        Template.getTemplateWithModuleId(this.templateModuleId, info.require)
+        .then(function(template) {
+
+            onTemplateLoad(template);
+        });
     }},
 
     templateModuleId: {
@@ -1050,7 +1187,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     _deserializedFromTemplate: {
-        value: function(owner) {
+        value: function(owner, documentPart) {
+            this._ownerDocumentPart = documentPart;
+
             if (!this.ownerComponent) {
                 if (Component.isPrototypeOf(owner)) {
                     this.ownerComponent = owner;
@@ -1202,6 +1341,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 i,
                 attribute;
 
+            this._addTemplateStyles();
+
             // TODO: get a spec for this, what attributes should we merge?
             for (i = 0; (attribute = attributes[i]); i++) {
                 attributeName = attribute.nodeName;
@@ -1234,6 +1375,28 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (this._newDomContent) {
                 this._newDomContent = null;
                 this._shouldClearDomContentOnNextDraw = false;
+            }
+        }
+    },
+
+    _addTemplateStyles: {
+        value: function() {
+            var part = this._templateDocumentPart,
+                resources,
+                styles,
+                style,
+                _document,
+                documentHead;
+
+            if (part) {
+                resources = part.template.getResources();
+                _document = this.element.ownerDocument;
+                documentHead = _document.head;
+                styles = resources.createStylesForDocument(_document);
+
+                for (var i = 0, style; (style = styles[i]); i++) {
+                    documentHead.insertBefore(style, documentHead.firstChild);
+                }
             }
         }
     },

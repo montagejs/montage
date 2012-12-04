@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
     Component = require("montage/ui/component").Component,
-    Serializer = require("montage/core/serializer").Serializer;
+    Serializer = require("montage/core/serialization").Serializer;
 
 var stripPP = function stripPrettyPrintting(str) {
     return str.replace(/\n\s*/g, "");

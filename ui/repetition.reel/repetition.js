@@ -1283,4 +1283,3 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 // possible, that is, if the controller is a ContentController, just steal its
 // "content" property and all bindings to it and put them on the repetition.
 // Unpossible?  Probably.
-

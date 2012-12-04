@@ -56,8 +56,8 @@ var Restriction = require("data/restriction").Restriction;
 var TransactionId = require("data/transaction-id").TransactionId;
 var ObjectId = require("data/object-id").ObjectId;
 var TemporaryObjectId = require("data/object-id").TemporaryObjectId;
-var Serializer = require("core/serializer").Serializer;
-var Deserializer = require("core/deserializer").Deserializer;
+var Serializer = require("core/serialization").Serializer;
+var Deserializer = require("core/serialization").Deserializer;
 var Promise = require("core/promise").Promise;
 var Exception = require("core/exception").Exception;
 

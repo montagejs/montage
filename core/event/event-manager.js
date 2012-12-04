@@ -46,8 +46,8 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     UUID = require("core/uuid"),
     MutableEvent = require("core/event/mutable-event").MutableEvent,
-    Serializer = require("core/serializer").Serializer,
-    Deserializer = require("core/deserializer").Deserializer,
+    Serializer = require("core/serialization").Serializer,
+    Deserializer = require("core/serialization").Deserializer,
     defaultEventManager;
 
 // XXX Does not presently function server-side
@@ -172,7 +172,7 @@ var EventListenerDescriptor = Montage.create(Montage, {
     }
 });
 
-Serializer.defineSerializationUnit("listeners", function(object, serializer) {
+Serializer.defineSerializationUnit("listeners", function(serializer, object) {
     var eventManager = defaultEventManager,
         uuid = object.uuid,
         eventListenerDescriptors = [],
@@ -201,7 +201,7 @@ Serializer.defineSerializationUnit("listeners", function(object, serializer) {
     }
 });
 
-Deserializer.defineDeserializationUnit("listeners", function(object, listeners) {
+Deserializer.defineDeserializationUnit("listeners", function(deserializer, object, listeners) {
     for (var i = 0, listener; (listener = listeners[i]); i++) {
         object.addEventListener(listener.type, listener.listener, listener.capture);
     }

@@ -194,14 +194,14 @@ POSSIBILITY OF SUCH DAMAGE.
     <h2>Select Input Test</h2>
     <div class="row">
         <div class="span8">
-            <form id="input-form" class="form-stacked">
+            <form data-montage-id="input-form" class="form-stacked">
                 <label for="dept">Department</label>
-                 <select id="dept" required="true">
+                 <select id="dept" data-montage-id="dept" required="true">
                      <option>Please select a Department</option>
                  </select>
 
                 <label for="country">Country</label>
-                <select id="country" required>
+                <select id="country" data-montage-id="country" required>
                     <option value="">Please select a Country</option>
                     <option value="USA" selected="true">United States of America</option>
                     <option value="INR" >India</option>
@@ -210,9 +210,9 @@ POSSIBILITY OF SUCH DAMAGE.
                 </select>
 
                 <label for="state">State</label>
-                <select id="state" required="true"></select>
+                <select id="state" data-montage-id="state" required="true"></select>
 
-                <select id="noDefaultSelection">
+                <select data-montage-id="noDefaultSelection">
                     <option value="name">Name</option>
                     <option value="tags">Tags</option>
                 </select>
@@ -222,10 +222,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
             <h2>Scroll</h2>
             <form action="" method="get">
-            <div id="scroller" style="background:#CCC; height: 300px">
+            <div data-montage-id="scroller" style="background:#CCC; height: 300px">
                 <div style="background:#A00; height:260px; width:10px">.</div>
                 <label for="country1">Country</label>
-                <select id="country1" required>
+                <select id="country1" data-montage-id="country1" required>
                     <option value="">Please select a Country</option>
                     <option value="USA" selected="true">United States of America</option>
                     <option value="INR" >India</option>
@@ -241,13 +241,13 @@ POSSIBILITY OF SUCH DAMAGE.
             <h2>Test binding to SelectInput.value</h2>
             <div class="demo">
                 <div style="height: 40px;">
-                    <button id="justify-none" class="btn justify">-</button>
-                    <button id="justifyLeft" class="btn justify">L</button>
-                    <button id="justifyCenter" class="btn justify">C</button>
-                    <button id="justifyRight" class="btn justify">R</button>
+                    <button data-montage-id="justify-none" class="btn justify">-</button>
+                    <button data-montage-id="justifyLeft" class="btn justify">L</button>
+                    <button data-montage-id="justifyCenter" class="btn justify">C</button>
+                    <button data-montage-id="justifyRight" class="btn justify">R</button>
                 </div>
                 <div>
-                    <select id="justifySelect" class="justifySelect">
+                    <select data-montage-id="justifySelect" class="justifySelect">
                             <option value=""></option>
                             <option value="left">Left</option>
                             <option value="center">Center</option>
@@ -255,7 +255,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     </select>
 
                     <p>
-                        Justify selection: <span id="justifyResult"></span>
+                        Justify selection: <span data-montage-id="justifyResult"></span>
                     </p>
                 </div>
             </div>

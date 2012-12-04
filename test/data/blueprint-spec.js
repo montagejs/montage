@@ -35,8 +35,8 @@ var Blueprint = require("montage/data/blueprint").Blueprint;
 var BlueprintBinder = require("montage/data/blueprint").BlueprintBinder;
 var ChangeContext = require("montage/data/change-context").ChangeContext;
 
-var Serializer = require("montage/core/serializer").Serializer;
-var Deserializer = require("montage/core/deserializer").Deserializer;
+var Serializer = require("montage/core/serialization").Serializer;
+var Deserializer = require("montage/core/serialization").Deserializer;
 
 var BinderHelper = require("data/object/binderhelper").BinderHelper;
 var Person = require("data/object/person").Person;
@@ -234,9 +234,16 @@ describe("data/blueprint-spec", function () {
             it("can serialize", function () {
                 expect(Serializer.create().initWithRequire(require).serializeObject(companyBinder)).not.toBeNull();
             });
-            it("can deserialize", function () {
-                var serializedBinder = Serializer.create().initWithRequire(require).serializeObject(companyBinder);
-                Deserializer.create().initWithStringAndRequire(serializedBinder, require).deserializeObject(function (deserializedBinder) {
+            it("can deserialize", function() {
+                var serializedBinder,
+                    serializer = Serializer.create().initWithRequire(require);
+
+                serializedBinder = serializer.serializeObject(companyBinder);
+
+                return Deserializer.create()
+                .initWithSerializationStringAndRequire(serializedBinder, require)
+                .deserializeObject()
+                .then(function (deserializedBinder) {
                     var metadata = Montage.getInfoForObject(deserializedBinder);
                     expect(serializedBinder).not.toBeNull();
                     expect(metadata.objectName).toBe("BlueprintBinder");
@@ -244,7 +251,7 @@ describe("data/blueprint-spec", function () {
                     var personBlueprint = deserializedBinder.blueprintForPrototype("Person", "data/object/person");
                     expect(personBlueprint).not.toBeNull();
                     expect(personBlueprint.attributeForName("phoneNumbers")).not.toBeNull();
-                }, require);
+                });
             });
         });
 

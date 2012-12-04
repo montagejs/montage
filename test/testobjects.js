@@ -32,7 +32,6 @@ exports = typeof exports !== "undefined" ? exports : {};
 
 var Montage = require("montage").Montage,
     Uuid = require("montage/core/uuid").Uuid;
-//var Moose = require("moose").Moose;
 
 var TestObject = (function() {
     var instances = [];

@@ -32,7 +32,7 @@ var Montage = require("montage").Montage,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
     Template = require("montage/ui/template").Template,
     Component = require("montage/ui/component").Component,
-    Serializer = require("montage/core/serializer").Serializer,
+    Serializer = require("montage/core/serialization").Serializer,
     objects = require("serialization/testobjects-v2").objects,
     Repetition = require("montage/ui/repetition.reel").Repetition;
 
