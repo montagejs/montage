@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    NativeControl = require("ui/native-control").NativeControl,
+    Input = require("ui/native-control").Input,
     PressComposer = require("ui/composer/press-composer").PressComposer;
 
 /**
@@ -46,12 +46,8 @@ var Montage = require("montage").Montage,
     @class module:montage/ui/check-input.CheckInput
     @extends module:montage/ui/native-control.NativeControl
 */
-var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
+var CheckInput = exports.CheckInput =  Montage.create(Input, {
 
-    // HTMLInputElement methods
-
-    blur: { value: function() { this._element.blur(); } },
-    focus: { value: function() { this._element.focus(); } },
     // click() deliberately omitted, use checked = instead
 
     // Callbacks
@@ -149,4 +145,15 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
             }
         }
     }
+});
+CheckInput.addAttributes( /** @lends module:"montage/ui/check-input.js".CheckInput# */ {
+
+
+
+    /*
+    The value associated with the checkbox. Per the WC3 specification, if the element has a <code>value</code> attribute then the value of that attribute's value is returned; otherwise, it returns "on".
+    @type {string}
+    @default "on"
+    */
+    value: {value: 'on'}
 });

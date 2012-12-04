@@ -146,7 +146,8 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
             };
 
             // Define _ property
-            Montage.defineProperty(this, _name, {value: null});
+            //If a default value was used on the descriptor we use it, otherwise we default to null, which may not be in sync with the dataType and the logic in the setter
+            Montage.defineProperty(this, _name, {value: descriptor.value||null});
             // Define property getter and setter
             Montage.defineProperty(this, name, newDescriptor);
         }
