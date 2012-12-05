@@ -144,8 +144,18 @@ if (typeof window !== "undefined") {
                 hash: params.montageHash
             }, config)
             .then(function (montageRequire) {
+                return [
+                    montageRequire,
+                    montageRequire.loadPackage({
+                        location:  URL.resolve(montageLocation, "packages/mr/packages/q"),
+                        hash: params.promiseHash
+                    })
+                ];
+            })
+            .spread(function (montageRequire, promiseRequire) {
                 montageRequire.inject("core/mini-url", URL);
                 montageRequire.inject("core/promise", {Promise: Promise});
+                promiseRequire.inject("q", Promise);
 
                 // install the linter, which loads on the first error
                 config.lint = function (module) {
