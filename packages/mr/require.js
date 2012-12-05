@@ -554,11 +554,6 @@
                     name: name,
                     version: dependencies[name]
                 };
-            } else if (typeof console === "object") {
-                console.warn(
-                    "Dependency for " + JSON.stringify(name) + " " +
-                    "overriden by mapping in " + JSON.stringify(location)
-                );
             }
         });
         Object.keys(mappings).forEach(function (name) {
@@ -657,16 +652,15 @@
     };
 
     Require.LintCompiler = function(config, compile) {
-        if (!config.lint) {
-            return compile;
-        }
         return function(module) {
             try {
                 compile(module);
             } catch (error) {
-                Promise.nextTick(function () {
-                    config.lint(module);
-                });
+                if (config.lint) {
+                    Promise.nextTick(function () {
+                        config.lint(module);
+                    });
+                }
                 throw error;
             }
         };

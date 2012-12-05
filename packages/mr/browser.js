@@ -109,7 +109,8 @@ Require.Compiler = function (config) {
         try {
             module.factory = globalEval(globalEvalConstantA+displayName+globalEvalConstantB+module.text+globalEvalConstantC+module.location);
         } catch (exception) {
-            throw new SyntaxError("in " + module.location + ": " + exception.message);
+            exception.message = exception.message + " in " + module.location;
+            throw exception;
         }
 
         // This should work and would be simpler, but Firebug does not show scripts executed via "new Function()" constructor.
