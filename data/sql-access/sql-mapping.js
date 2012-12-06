@@ -60,6 +60,28 @@ var SqlBinderMapping = exports.SqlBinderMapping = Montage.create(BinderMapping, 
 var SqlBlueprintMapping = exports.SqlBlueprintMapping = Montage.create(BlueprintMapping, /** @lends module:montage/data/sql-access/sql-mapping.SqlBlueprintMapping# */ {
 
 
+    /**
+     * @private
+     */
+    _tableName:{
+        value:"",
+        serializable:true
+    },
+
+    /**
+     Table name for this blueprint
+     @type {Property}
+     @default {String} null
+     */
+    tableName:{
+        get:function () {
+            return this._tableName;
+        },
+        set:function (value) {
+            this._tableName = value;
+        }
+    }
+
 });
 
 
@@ -70,6 +92,115 @@ var SqlBlueprintMapping = exports.SqlBlueprintMapping = Montage.create(Blueprint
  */
 var SqlAttributeMapping = exports.SqlAttributeMapping = Montage.create(AttributeMapping, /** @lends module:montage/data/sql-access/sql-mapping.SqlAttributeMapping# */ {
 
+    /**
+     * @private
+     */
+    _columnName:{
+        value:"",
+        serializable:true
+    },
+
+    /**
+     Column name for this attribute
+     @type {Property}
+     @default {String} null
+     */
+    columnName:{
+        get:function () {
+            return this._columnName;
+        },
+        set:function (value) {
+            this._columnName = value;
+        }
+    },
+
+    /**
+     * @private
+     */
+    _columnType:{
+        value:"",
+        serializable:true
+    },
+
+    /**
+     Column type for this attribute
+     @type {Property}
+     @default {String} null
+     */
+    columnType:{
+        get:function () {
+            return this._columnType;
+        },
+        set:function (value) {
+            this._columnType = value;
+        }
+    },
+
+    /**
+     * @private
+     */
+    _columnWidth:{
+        value:0,
+        serializable:true
+    },
+
+    /**
+     Column width for this attribute
+     @type {Property}
+     @default {int} 0
+     */
+    columnWidth:{
+        get:function () {
+            return this._columnWidth;
+        },
+        set:function (value) {
+            this._columnWidth = value;
+        }
+    },
+
+    /**
+     * @private
+     */
+    _columnPrecision:{
+        value:0,
+        serializable:true
+    },
+
+    /**
+     Column precision for this attribute
+     @type {Property}
+     @default {int} 0
+     */
+    columnPrecision:{
+        get:function () {
+            return this._columnPrecision;
+        },
+        set:function (value) {
+            this._columnPrecision = value;
+        }
+    },
+
+    /**
+     * @private
+     */
+    _columnScale:{
+        value:0,
+        serializable:true
+    },
+
+    /**
+     Column scale for this attribute
+     @type {Property}
+     @default {int} 0
+     */
+    columnScale:{
+        get:function () {
+            return this._columnScale;
+        },
+        set:function (value) {
+            this._columnScale = value;
+        }
+    }
 
 });
 
