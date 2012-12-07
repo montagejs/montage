@@ -62,7 +62,8 @@ POSSIBILITY OF SUCH DAMAGE.
                     "template": {"@": "componenttemplate"},
                     "daughter": {"@": "componentdaughter"},
                     "granddaughter": {"@": "componentgranddaughter"},
-                    "granddaughtersister": {"@": "componentgranddaughtersister"}
+                    "granddaughtersister": {"@": "componentgranddaughtersister"},
+                    "mainA": {"@": "mainA"}
                 }
             },
             "actioneventlistener1": {
@@ -158,6 +159,13 @@ POSSIBILITY OF SUCH DAMAGE.
                 "properties": {
                     "delegate": {"@": "reeltest1"}
                 }
+            },
+
+            "mainA": {
+                "prototype": "package-a/ui/main.reel",
+                "properties": {
+                    "element": {"#": "mainA"}
+                }
             }
 
     }</script>
@@ -198,5 +206,7 @@ POSSIBILITY OF SUCH DAMAGE.
     <div data-montage-id="componentdaughter" class="componentdaughter"></div>
     <div data-montage-id="componentgranddaughter" class="componentgranddaughter"></div>
     <div data-montage-id="componentgranddaughtersister" class="componentgranddaughtersister"></div>
+
+    <div data-montage-id="mainA"></div>
 </body>
 </html>

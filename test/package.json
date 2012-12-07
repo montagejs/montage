@@ -2,7 +2,15 @@
     "name": "montage-tests",
     "version": "0.0.0",
     "mappings": {
-        "montage": "../"
+        "montage": "../",
+        "package-a": {
+            "name": "package-a",
+            "location": "package-a"
+        },
+        "package-b": {
+            "name": "package-b",
+            "location": "package-b"
+        }
     },
     "dependencies": {
         "connect": "2.7.x",

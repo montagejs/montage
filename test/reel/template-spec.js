@@ -66,6 +66,11 @@ var testPage = TestPageLoader.queueTest("template", function() {
             });
         });
 
+        it("should have unique templates for components with the same moduleId in different packages", function() {
+            expect(testPage.test.mainA.name).toBe("A")
+            expect(testPage.test.mainA.childMain.name).toBe("B")
+        });
+
         it("should export all template objects into templateObjects", function() {
             var component = objects.Comp.create(),
                 htmlDocument = document.implementation.createHTMLDocument(""),

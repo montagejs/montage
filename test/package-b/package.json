@@ -1,0 +1,6 @@
+{
+    "name": "package-b",
+    "mappings": {
+        "montage": "../.."
+    }
+}
