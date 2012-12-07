@@ -115,19 +115,21 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     @param {Function} callback The function to call when the template is ready, receives a Template object as a parameter.
     */
     templateWithModuleId: {value: function(requireFunction, moduleId, callback) {
-        var template = this.__templatesById[moduleId];
+        var templateKey = requireFunction.location + moduleId,
+            template = this.__templatesById[templateKey]
+
         var templateCallback = function(template) {
-            template.__templateCallbacksByModuleId[moduleId].forEach(function(value) {
+            template.__templateCallbacksByModuleId[templateKey].forEach(function(value) {
                 value.call(this,template);
             });
-            delete template.__templateCallbacksByModuleId[moduleId];
+            delete template.__templateCallbacksByModuleId[templateKey];
         };
 
         if(!template) {
-            this.__templateCallbacksByModuleId[moduleId] = [callback];
-            this.__templatesById[moduleId] = (template = this.create().initWithModuleId(requireFunction, moduleId, templateCallback));
+            this.__templateCallbacksByModuleId[templateKey] = [callback];
+            this.__templatesById[templateKey] = (template = this.create().initWithModuleId(requireFunction, moduleId, templateCallback));
         } else if(!template._isLoaded) {
-            this.__templateCallbacksByModuleId[moduleId].push(callback);
+            this.__templateCallbacksByModuleId[templateKey].push(callback);
         }
         else {
             callback(template);
@@ -953,7 +955,8 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
      */
     createHtmlDocumentFromModuleId: {value: function(requireFunction, moduleId, callback) {
         var self = this,
-            exports = this._documentCache[moduleId];
+            documentCacheKey = requireFunction.location + moduleId,
+            exports = this._documentCache[documentCacheKey];
 
         self._id = requireFunction.location + "/" + moduleId;
         if (exports) {
@@ -962,7 +965,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         } else {
             requireFunction.async(moduleId)
             .then(function(exports) {
-                self._rootUrl = (self._documentCache[moduleId] = exports).directory;
+                self._rootUrl = (self._documentCache[documentCacheKey] = exports).directory;
                 callback(self.createHtmlDocumentFromString(exports.content));
             })
             .done();
