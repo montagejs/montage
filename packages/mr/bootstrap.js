@@ -1,8 +1,5 @@
-(function () {
+(function (global) {
     "use strict";
-
-    // The global context object
-    var global = new Function("return this")();
 
     var bootstrap = function (callback) {
         var domLoaded, Require, Promise, URL;
@@ -31,17 +28,10 @@
             "promise": "packages/q/q.js"
         };
 
-        // TODO preloading of optimized bundles
-        for (var id in pending) {
-            (function (location) {
-                var script = document.createElement("script");
-                script.src = resolve(params.bootstrapLocation, location);
-                script.onload = function () {
-                    // remove clutter
-                    script.parentNode.removeChild(script);
-                };
-                document.querySelector("head").appendChild(script);
-            })(pending[id]);
+        if (!global.preload) {
+            for (var id in pending) {
+                load(pending[id]);
+            }
         }
 
         // register module definitions for deferred,
@@ -97,7 +87,7 @@
         var i, j,
             match,
             script,
-            bootstrapFound,
+            mrLocation,
             attr,
             name;
         if (!params) {
@@ -107,16 +97,13 @@
             var scripts = document.getElementsByTagName("script");
             for (i = 0; i < scripts.length; i++) {
                 script = scripts[i];
-                bootstrapFound = false;
                 if (script.src && (match = script.src.match(/^(.*)bootstrap.js(?:[\?\.]|$)/i))) {
-                    params.bootstrapLocation = match[1];
-                    bootstrapFound = true;
+                    mrLocation = match[1];
                 }
-                if (script.hasAttribute("data-bootstrap")) {
-                    params.bootstrapLocation = script.getAttribute("data-bootstrap");
-                    bootstrapFound = true;
+                if (script.hasAttribute("data-mr-location")) {
+                    mrLocation = resolve(window.location, script.getAttribute("data-mr-location"));
                 }
-                if (bootstrapFound) {
+                if (mrLocation) {
                     if (script.dataset) {
                         for (name in script.dataset) {
                             params[name] = script.dataset[name];
@@ -134,6 +121,7 @@
                     // removing as they are discovered, next one
                     // finds itself.
                     script.parentNode.removeChild(script);
+                    params.mrLocation = mrLocation;
                     break;
                 }
             }
@@ -157,7 +145,7 @@
             }
             base = String(base);
             if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
-                throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
+                throw new Error("Can't resolve " + JSON.stringify(relative) + " relative to " + JSON.stringify(base));
             }
             var restore = baseElement.href;
             baseElement.href = base;
@@ -173,24 +161,68 @@
 
     var resolve = makeResolve();
 
+    var load = function (location) {
+        var params = getParams();
+        var script = document.createElement("script");
+        script.src = resolve(params.mrLocation, location);
+        script.onload = function () {
+            // remove clutter
+            script.parentNode.removeChild(script);
+        };
+        document.querySelector("head").appendChild(script);
+    };
+
     bootstrap(function onbootstrap(Require, Promise, URL) {
         var params = getParams();
+        var config = {};
 
         var applicationLocation = URL.resolve(window.location, params.package || ".");
         var moduleId = params.module || "";
 
+        // execute the preloading plan and stall the fallback module loader
+        // until it has finished
+        if (global.preload) {
+            var bundleDefinitions = {};
+            var getDefinition = function (name) {
+                return bundleDefinitions[name] =
+                    bundleDefinitions[name] ||
+                        Promise.defer();
+            };
+            global.bundleLoaded = function (name) {
+                getDefinition(name).resolve();
+            };
+            var preloading = Promise.defer();
+            config.preloaded = preloading.promise;
+            // preload bundles sequentially
+            var preloaded = Promise.resolve();
+            global.preload.forEach(function (bundleLocations) {
+                preloaded = preloaded.then(function () {
+                    return Promise.all(bundleLocations.map(function (bundleLocation) {
+                        load(bundleLocation);
+                        return getDefinition(bundleLocation).promise;
+                    }));
+                });
+            });
+            // then release the module loader to run normally
+            preloading.resolve(preloaded.then(function () {
+                delete global.preload;
+                delete global.bundleLoaded;
+            }));
+        }
+
         Require.loadPackage({
-            location: params.bootstrapLocation,
-            hash: params.bootstrapHash
-        })
-        .then(function (bootstrapRequire) {
+            location: params.mrLocation,
+            hash: params.mrHash
+        }, config)
+        .then(function (mrRequire) {
 
-            bootstrapRequire.inject("mini-url", URL);
-            bootstrapRequire.inject("promise", Promise);
-            bootstrapRequire.inject("require", Require);
+            mrRequire.inject("mini-url", URL);
+            mrRequire.inject("promise", Promise);
+            mrRequire.inject("require", Require);
 
-            return bootstrapRequire.loadPackage({
+            return mrRequire.loadPackage({
                 name: "q",
+                location: params.qLocation,
                 hash: params.qHash
             })
             .then(function (qRequire) {
@@ -198,10 +230,10 @@
                 qRequire.inject("q", Promise);
 
                 if ("autoPackage" in params) {
-                    bootstrapRequire.injectPackageDescription(applicationLocation, {});
+                    mrRequire.injectPackageDescription(applicationLocation, {});
                 }
 
-                return bootstrapRequire.loadPackage({
+                return mrRequire.loadPackage({
                     location: applicationLocation,
                     hash: params.applicationHash
                 })
@@ -209,8 +241,8 @@
             });
 
         })
-        .end();
+        .done();
 
     });
 
-})();
+})(this);

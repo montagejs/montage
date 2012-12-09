@@ -29,50 +29,52 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-var FS = require("fs");
-var PATH = require("path");
+var FS = require("q-io/fs");
 
 var MontageBoot = require("./montage");
 
-var Require = require("./require/require");
-var Promise = require("./core/promise");
-var URL = require("./core/url");
+var Require = require("mr/require");
+require("mr/node");
+var Promise = require("q");
+var URL = require("url");
 
 var jsdom = require("jsdom").jsdom;
 var Node = require("jsdom").level(1).Node;
 var domToHtml = require("jsdom/lib/jsdom/browser/domtohtml").domToHtml;
 
-exports.bootstrap = function (callback) {
+exports.bootstrap = function () {
     var command = process.argv.slice(0, 3);
     var args = process.argv.slice(2);
     var program = args.shift();
-    FS.realpath(program, function (error, program) {
+    return FS.canonical(program).then(function (program) {
         if (error) {
             throw new Error(error);
         }
-        findPackage(program, function (error, directory) {
-            if (error === "Can't find package") {
+        return findPackage(program)
+        .fail(function (error) {
+            if (error.message === "Can't find package") {
                 loadFreeModule(program, command, args);
-            } else if (error) {
-                throw new Error(error);
             } else {
-                loadPackagedModule(directory, program, command, args);
+                throw new Error(error);
             }
+        })
+        .then(function (directory) {
+            return loadPackagedModule(directory, program, command, args);
         });
-    });
+    })
 };
 
-var findPackage = function (path, callback) {
-    var directory = PATH.dirname(path);
+var findPackage = function (path) {
+    var directory = FS.directory(path);
     if (directory === path)
-        return callback("Can't find package");
-    var packageJson = PATH.join(directory, "package.json");
-    FS.stat(path, function (error, stat) {
-        if (error) callback(error);
+        throw new Error("Can't find package");
+    var packageJson = FS.join(directory, "package.json");
+    return FS.stat(path)
+    .then(function (stat) {
         if (stat.isFile()) {
-            callback(null, directory);
+            return directory;
         } else {
-            findPackage(directory, callback);
+            return findPackage(directory);
         }
     });
 }
@@ -82,7 +84,7 @@ var loadFreeModule = function (program, command, args) {
 };
 
 var loadPackagedModule = function (directory, program, command, args) {
-    MontageBoot.loadPackage(directory)
+    return MontageBoot.loadPackage(directory)
     .then(function (require) {
         var id = program.slice(directory.length + 1);
         return require.async(id);
@@ -143,12 +145,14 @@ MontageBoot.TemplateLoader = function (config, load) {
             return load(id, module)
             .then(function () {
                 var reelHtml = URL.resolve(module.location, reelModule[2] + ".html");
-                return Require.isFile(reelHtml)
-                .then(function (isFile) {
-                    if (isFile) {
+                return FS.stat(URL.parse(reelHtml).pathname)
+                .then(function (stat) {
+                    if (stat.isFile()) {
                         module.extraDependencies = [id + ".html"];
                     }
-                })
+                }, function (error) {
+                    // not a problem
+                });
             });
         } else {
             return load(id, module);

@@ -79,7 +79,7 @@
             if (!has(modules, id)) {
                 modules[id] = {
                     id: id,
-                    display: config.location + "#" + id, // EXTENSION
+                    display: (config.name || config.location) + "#" + id, // EXTENSION
                     require: require
                 };
             }
@@ -282,11 +282,15 @@
             };
 
             require.hasPackage = function (dependency) {
-                return config.getPackage(dependency, config);
+                return config.hasPackage(dependency);
             };
 
             require.getPackage = function (dependency) {
-                return config.getPackage(dependency, config);
+                return config.getPackage(dependency);
+            };
+
+            require.isMainPackage = function () {
+                return require.location === config.mainPackageLocation;
             };
 
             require.injectPackageDescription = function (location, description) {
@@ -348,11 +352,9 @@
             .then(function (json) {
                 try {
                     return JSON.parse(json);
-                } catch (exception) {
-                    throw new SyntaxError(
-                        "in " + JSON.stringify(descriptionLocation) + ": " +
-                        exception.message
-                    );
+                } catch (error) {
+                    error.message = error.message + " in " + JSON.stringify(descriptionLocation)
+                    throw error;
                 }
             });
         }
@@ -361,31 +363,49 @@
 
     Require.loadPackage = function (dependency, config) {
         dependency = normalizeDependency(dependency, config);
+        if (!dependency.location) {
+            throw new Error("Can't find dependency: " + JSON.stringify(dependency));
+        }
         var location = dependency.location;
-        config = config || {};
+        config = Object.create(config || null);
         var loadingPackages = config.loadingPackages = config.loadingPackages || {};
         var loadedPackages = config.packages = {};
         var registry = config.registry = config.registry || Object.create(null);
+        config.mainPackageLocation = location;
 
         config.hasPackage = function (dependency) {
             dependency = normalizeDependency(dependency, config);
+            if (!dependency.location)
+                return false;
             var location = dependency.location;
             return !!loadedPackages[location];
         };
 
         config.getPackage = function (dependency) {
             dependency = normalizeDependency(dependency, config);
+            if (!dependency.location) {
+                throw new Error("Can't find dependency: " + JSON.stringify(dependency) + " from " + config.location);
+            }
             var location = dependency.location;
             if (!loadedPackages[location]) {
-                throw new Error(
-                    "Dependency is not loaded: " + JSON.stringify(location)
-                );
+                if (loadingPackages[location]) {
+                    throw new Error(
+                        "Dependency has not finished loading: " + JSON.stringify(dependency)
+                    );
+                } else {
+                    throw new Error(
+                        "Dependency was not loaded: " + JSON.stringify(dependency)
+                    );
+                }
             }
             return loadedPackages[location];
         };
 
         config.loadPackage = function (dependency, viaConfig) {
             dependency = normalizeDependency(dependency, viaConfig);
+            if (!dependency.location) {
+                throw new Error("Can't find dependency: " + JSON.stringify(dependency) + " from " + config.location);
+            }
             var location = dependency.location;
             if (!loadingPackages[location]) {
                 loadingPackages[location] = Require.loadPackageDescription(dependency, config)
@@ -421,32 +441,27 @@
                 location: dependency
             };
         }
+        if (dependency.main) {
+            dependency.location = config.mainPackageLocation;
+        }
         // if the named dependency has already been found at another
         // location, refer to the same eventual instance
         if (
-            dependency.name !== void 0 &&
-            config.registry !== void 0 &&
+            dependency.name &&
+            config.registry &&
             config.registry[dependency.name]
         ) {
             dependency.location = config.registry[dependency.name];
         }
         // default location
-        if (dependency.location === void 0) {
-            if (
-                config.packagesDirectory === void 0 ||
-                dependency.name === void 0
-            ) {
-                throw new Error(
-                    "name or location required for dependency: " +
-                    JSON.stringify(dependency) + " from " + config.location +
-                    " unless already found by name."
-                );
-            }
+        if (!dependency.location && config.packagesDirectory && dependency.name) {
             dependency.location = URL.resolve(
                 config.packagesDirectory,
                 dependency.name + "/"
             );
         }
+        if (!dependency.location)
+            return dependency; // partially completed
         // make sure the dependency location has a trailing slash so that
         // relative urls will resolve properly
         if (!/\/$/.test(dependency.location)) {
@@ -454,7 +469,7 @@
         }
         // resolve the location relative to the current package
         if (!Require.isAbsolute(dependency.location)) {
-            if (config.location === void 0) {
+            if (!config.location) {
                 throw new Error(
                     "Dependency locations must be fully qualified: " +
                     JSON.stringify(dependency)
@@ -466,7 +481,7 @@
             );
         }
         // register the package name so the location can be reused
-        if (dependency.name !== void 0) {
+        if (dependency.name) {
             config.registry[dependency.name] = dependency.location;
         }
         return dependency;
@@ -482,7 +497,7 @@
         config.name = description.name;
         config.location = location || Require.getLocation();
         config.packageDescription = description;
-        config.define = description.define;
+        config.useScriptInjection = description.useScriptInjection;
 
         // explicitly mask definitions and modules, which must
         // not apply to child packages
@@ -496,7 +511,7 @@
         // overlay
         var overlay = description.overlay || {};
         var layer;
-        Require.overlays.forEach(function (engine) {
+        (config.overlays || Require.overlays).forEach(function (engine) {
             if (overlay[engine]) {
                 var layer = overlay[engine];
                 for (var name in layer) {
@@ -708,7 +723,7 @@
     // Using mappings hash to load modules that match a mapping.
     Require.MappingsLoader = function(config, load) {
         config.mappings = config.mappings || {};
-        config.name = config.name || "";
+        config.name = config.name;
 
         var mappings = config.mappings;
         var prefixes = Object.keys(mappings);
@@ -720,7 +735,11 @@
                 return load(id, module);
             }
             // TODO: remove this when all code has been migrated off of the autonomous name-space problem
-            if (id.indexOf(config.name) === 0 && id.charAt(config.name.length) === "/") {
+            if (
+                config.name !== void 0 &&
+                id.indexOf(config.name) === 0 &&
+                id.charAt(config.name.length) === "/"
+            ) {
                 console.warn("Package reflexive module ignored:", id);
             }
             var i, prefix;
