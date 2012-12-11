@@ -42,6 +42,7 @@ POSSIBILITY OF SUCH DAMAGE.
  @requires core/extras/element
  @requires core/extras/regexp
 */
+require("collections/shim");
 require("core/shim/object");
 require("core/shim/array");
 require("core/shim/string");
