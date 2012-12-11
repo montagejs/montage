@@ -57,14 +57,15 @@ var loadPackagedModule = function (directory, program, command, args) {
     .end();
 };
 
-var loadPackage = function (location, config) {
+exports.loadPackage = loadPackage;
+function loadPackage(location, config) {
     if (location.slice(location.length - 1, location.length) !== "/") {
         location += "/";
     }
     config = config || {};
     config.location = URL.resolve(Require.getLocation(), location);
     return Require.loadPackage(config.location, config);
-};
+}
 
 var loadFreeModule = function (program, command, args) {
     program = URL.resolve("file:" + program, "");
@@ -81,5 +82,7 @@ var loadFreeModule = function (program, command, args) {
     .end();
 };
 
-bootstrap();
+if (require.main == module) {
+    bootstrap();
+}
 
