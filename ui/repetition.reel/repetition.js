@@ -505,7 +505,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
     clearIndexMap: {
         value: function() {
-            this._indexMap.wipe();
+            this._indexMap.clear();
         }
     },
 
@@ -912,11 +912,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
     reset: {
         value: function() {
-            this._items.wipe();
-            this._itemsToAppend.wipe();
+            this._items.clear();
+            this._itemsToAppend.clear();
             this._nextDeserializedItemIx = 0;
-            this._itemsToRemove.wipe();
-            this._deletedItems.wipe();
+            this._itemsToRemove.clear();
+            this._deletedItems.clear();
         }
     },
 
@@ -1339,7 +1339,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         // We've accounted for drawing given an indexMap change, schedule the next draw to clean up from that
         // by re-enabling transitions
         if (indexMapChanged) {
-            this._indexMapAffectedIndexes.wipe();
+            this._indexMapAffectedIndexes.clear();
             this._indexMapChanged = false;
             this.needsDraw = true;
         }
@@ -1355,7 +1355,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
                 rangeToRemove.extractContents();
             }
-            this._itemsToRemove.wipe();
+            this._itemsToRemove.clear();
         }
 
         var insertionIndex;
@@ -1401,7 +1401,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             itemCount = this._items.length;
 
-            this._itemsToAppend.wipe();
+            this._itemsToAppend.clear();
             this._nextDeserializedItemIx = 0;
         }
 
