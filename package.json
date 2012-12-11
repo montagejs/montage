@@ -17,7 +17,8 @@
         }
     },
     "dependencies": {
-        "collections": "0.1.3 - 0.2"
+        "collections": "0.1.3 - 0.2",
+        "frb": "0.1.5 - 0.2"
     },
     "mappings": {
         "mr": {

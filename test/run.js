@@ -59,6 +59,7 @@ if (spec) {
 
         // packages
         "collections-spec",
+        "frb-spec",
 
         "binding/binding-converter-spec",
         "binding/dependent-properties-spec",
