@@ -30,8 +30,8 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 // TODO [June 20 2011 PJYF] This s temporary implementation of WeakMap to let the browser catch up.
-var WeakMap = require("montage/core/shim/weak-map").WeakMap;
-var Map = require("montage/core/shim/structures").Map;
+var WeakMap = require("montage/collections/weak-map");
+var Map = require("montage/collections/map");
 
 describe("core/core-spec", function() {
 
