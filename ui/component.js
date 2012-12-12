@@ -1036,6 +1036,28 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
+    blueprintModuleId: {
+        serializable:false,
+        get:function () {
+            var info = Montage.getInfoForObject(this);
+            var self = (info && !info.isInstance) ? this : Object.getPrototypeOf(this);
+            if ((!Object.getOwnPropertyDescriptor(self, "_blueprintModuleId")) || (!self._blueprintModuleId)) {
+                info = Montage.getInfoForObject(self);
+                var moduleId = info.moduleId,
+                    slashIndex = moduleId.lastIndexOf("/"),
+                    dotIndex = moduleId.lastIndexOf(".");
+                slashIndex = ( slashIndex === -1 ? 0 : slashIndex + 1 );
+                dotIndex = ( dotIndex === -1 ? moduleId.length : dotIndex );
+                dotIndex = ( dotIndex < slashIndex ? moduleId.length : dotIndex );
+
+                self._blueprintModuleId = moduleId + "/" + moduleId.slice(slashIndex, dotIndex) + "-blueprint.json";
+            }
+            return self._blueprintModuleId;
+        }
+    },
+
+    blueprint: require("montage")._blueprintDescriptor,
+
     _description:{
         serializable:false,
         enumerable:false,
