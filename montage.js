@@ -564,7 +564,12 @@ if (typeof window !== "undefined") {
 
                 return appModulePromise.then(function(exports) {
                     application = exports[(applicationDescription ? applicationDescription.name : "Application")].create();
-                    window.document.application = application;
+                    Object.defineProperty(window.document, "application", {
+                        get: function() {
+                            console.warn("document.application is deprecated, use require(\"montage/ui/application\").application instead.", new Error("").stack);
+                            return application;
+                        }
+                    });
                     defaultEventManager.application = application;
                     application.eventManager = defaultEventManager;
                     application._load(applicationRequire, function() {
