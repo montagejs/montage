@@ -288,3 +288,33 @@ var TextInput = exports.TextInput =  Montage.create(Input, /** @lends module:mon
     }
 
 });
+
+//The following content attributes must not be specified and do not apply to the input type=text element:
+// accept, alt, checked, formaction, formenctype, formmethod, formnovalidate, formtarget, height, max, min, multiple, src, step, and width.
+
+TextInput.addAttributes({
+    autocomplete: null,
+    dirname: null,
+    height: null,
+    list: null,
+    maxlength: null,
+    multiple: {dataType: 'boolean'},
+    /**
+        The name part of the name/value pair associated with this element for the purposes of form submission.
+        @type {string}
+        @default null
+    */
+    pattern: null,
+    placeholder: null,
+    /**
+        Specifies if this control is readonly.
+        @type {boolean}
+        @default false
+    */
+    readonly: {value: false, dataType: 'boolean'},
+    size: null,
+    width: null,
+    // "type" is not bindable and "value" is handled as a special attribute
+    required: {dataType: 'boolean'}
+
+});

@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    Input = require("ui/native-control").Input,
+    Input = require("ui/input").Input,
     PressComposer = require("ui/composer/press-composer").PressComposer;
 
 /**
@@ -54,7 +54,7 @@ var CheckInput = exports.CheckInput =  Montage.create(Input, {
     draw: {
         value: function() {
             // Call super
-            NativeControl.draw.call(this);
+            Input.draw.call(this);
             this._element.setAttribute("aria-checked", this._checked);
         }
     },
@@ -148,12 +148,21 @@ var CheckInput = exports.CheckInput =  Montage.create(Input, {
 });
 CheckInput.addAttributes( /** @lends module:"montage/ui/check-input.js".CheckInput# */ {
 
+    /**
+        Specifies if the checkbox is in it checked state or not.
+        @type {boolean}
+        @default false
+    */
+    checked: {value: false, dataType: 'boolean'},
+    required: {dataType: 'boolean'},
+    value: {value: "on"}
 
+});
 
     /*
     The value associated with the checkbox. Per the WC3 specification, if the element has a <code>value</code> attribute then the value of that attribute's value is returned; otherwise, it returns "on".
     @type {string}
     @default "on"
     */
-    value: {value: 'on'}
-});
+//debugger;
+//CheckInput.value = "on";

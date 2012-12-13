@@ -1,32 +1,6 @@
 /* <copyright>
-Copyright (c) 2012, Motorola Mobility LLC.
+Copyright (c) 2012, Benoit Marchant.
 All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-
-* Neither the name of Motorola Mobility LLC nor the names of its
-  contributors may be used to endorse or promote products derived from this
-  software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 /**
@@ -65,23 +39,24 @@ var Input = exports.Input =  Montage.create(NativeControl, /** @lends module:mon
 
 // Standard <input> tag attributes - http://www.w3.org/TR/html5/the-input-element.html#the-input-element
 
+//http://www.whatwg.org/specs/web-apps/current-work/multipage/states-of-the-type-attribute.html#checkbox-state-(type=checkbox)
+
+//The following content attributes must not be specified and do not apply to the input type=text element:
+// accept, alt, checked, formaction, formenctype, formmethod, formnovalidate, formtarget, height, max, min, multiple, src, step, and width.
+
+
+//The following content attributes must not be specified and do not apply to the input type=checkbox element:
+// accept, alt, autocomplete, dirname, formaction, formenctype, formmethod, formnovalidate, formtarget, height, inputmode, list, max, maxlength, min,
+// multiple, pattern, placeholder, readonly, size, src, step, and width.
+
+
 Input.addAttributes({
-    accept: null,
-    alt: null,
-    autocomplete: null,
     /**
         Specifies if the checkbox control should receive focus when the document loads. Because Montage components are loaded asynchronously after the document has loaded, setting this property has no effect on the element's focus state.
         @type {boolean}
         @default false
     */
     autofocus: {value: false, dataType: 'boolean'},
-    /**
-        Specifies if the checkbox is in it checked state or not.
-        @type {boolean}
-        @default false
-    */
-    checked: {value: false, dataType: 'boolean'},
-    dirname: null,
     /**
         Specifies if the checkbox control is disabled.
         @type {boolean}
@@ -94,32 +69,12 @@ Input.addAttributes({
         @default null
     */
     form: null,
-    formaction: null,//Should be formAction per IDL
-    formenctype: null,
-    formmethod: null,
-    formnovalidate: {dataType: 'boolean'},
-    formtarget: null,
-    height: null,
-    list: null,
-    maxlength: null,
-    multiple: {dataType: 'boolean'},
     /**
         The name part of the name/value pair associated with this element for the purposes of form submission.
         @type {string}
         @default null
     */
     name: null,
-    pattern: null,
-    placeholder: null,
-    /**
-        Specifies if this control is readonly.
-        @type {boolean}
-        @default false
-    */
-    readonly: {value: false, dataType: 'boolean'},
-    required: {dataType: 'boolean'},
-    size: null,
-    src: null,
-    width: null
-    // "type" is not bindable and "value" is handled as a special attribute
+    value: null
+
 });

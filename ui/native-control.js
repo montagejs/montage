@@ -125,7 +125,7 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
                         // if requested dataType is boolean (eg: checked, readonly etc)
                         // coerce the value to boolean
                         if(desc && "boolean" === desc.dataType) {
-                            value = ( (value || value === "") ? true : false);
+                            value = Boolean(value);
                         }
 
                         // If the set value is different to the current one,
@@ -147,7 +147,8 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
 
             // Define _ property
             //If a default value was used on the descriptor we use it, otherwise we default to null, which may not be in sync with the dataType and the logic in the setter
-            Montage.defineProperty(this, _name, {value: descriptor.value||null});
+            Montage.defineProperty(this, _name, {value: (descriptor.hasOwnProperty("value") ? descriptor.value : null)});
+            //Montage.defineProperty(this, _name, {value: null});
             // Define property getter and setter
             Montage.defineProperty(this, name, newDescriptor);
         }
@@ -202,10 +203,11 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
                 if(descriptor || (typeof this[name] !== 'undefined')) {
                     // only set the value if a value has not already been set by binding
                     if(typeof this._elementAttributeValues[name] == 'undefined') {
-                        this._elementAttributeValues[name] = value;
-                        if( (typeof this[name] == 'undefined') || this[name] == null) {
-                            this[name] = value;
+                        if(descriptor.dataType === 'boolean') {
+                            value = ( (value || value === "") ? true : false);
                         }
+                        this._elementAttributeValues[name] = value;
+                        this[name] = value;
                     }
                 }
             }
@@ -249,11 +251,13 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
 
                         if(descriptor.dataType === 'boolean') {
                             if(value === true) {
+                                //If we use the IDL, we don't need to duplicate that in the DOM, the browser has to do that
                                 element[attributeName] = true;
-                                element.setAttribute(attributeName, attributeName.toLowerCase());
+                                //element.setAttribute(attributeName, attributeName.toLowerCase());
                             } else {
                                 element[attributeName] = false;
-                                element.removeAttribute(attributeName);
+                                //If we use the IDL, we don't need to duplicate that in the DOM, the browser has to do that
+                                //element.removeAttribute(attributeName);
                             }
                         } else {
                             if(typeof value !== 'undefined') {

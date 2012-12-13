@@ -49,13 +49,13 @@ var testPage = TestPageLoader.queueTest("native-control-test", function() {
             });
             it("prototype has the properties for its attributes ", function(){
                 var txt1 = test.txt1;
-                expect(txt1.accept).not.toBeUndefined();
-                expect(txt1.checked).not.toBeUndefined();
+                expect(txt1.required).not.toBeUndefined();
+                expect(txt1.checked).toBeUndefined();
             });
 
             it("has property descriptors for its attributes ", function(){
                 var txt1 = test.txt1;
-                expect(txt1._getElementAttributeDescriptor('accept')).not.toBeFalsy();
+                expect(txt1._getElementAttributeDescriptor('required')).not.toBeFalsy();
                 expect(txt1._getElementAttributeDescriptor('readonly')).not.toBeFalsy();
             });
 

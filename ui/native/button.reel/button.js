@@ -39,7 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    NativeControl = require("ui/native-control").NativeControl,
+    Input = require("ui/input").Input,
     PressComposer = require("ui/composer/press-composer").PressComposer;
 
 /**
@@ -76,7 +76,7 @@ b1.addEventListener("action", function(event) {
 }
 &lt;button data-montage-id="btnElement"></button>
 */
-var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"montage/ui/native/button.reel".Button# */ {
+var Button = exports.Button = Montage.create(Input, /** @lends module:"montage/ui/native/button.reel".Button# */ {
 
     /**
         Dispatched when the button is activated through a mouse click, finger tap,
@@ -125,6 +125,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
     Enables or disables the Button from user input. When this property is set to <code>false</code>, the "disabled" CSS style is applied to the button's DOM element during the next draw cycle. When set to <code>true</code> the "disabled" CSS class is removed from the element's class list.
 */
     //TODO we should prefer positive properties like enabled vs disabled, get rid of disabled
+    //Benoit: Disagree here, the web has defined "disabled" we should use that. enabled here is just comfort...
     enabled: {
         dependencies: ["disabled"],
         get: function () {
@@ -250,7 +251,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
     // Optimisation
     addEventListener: {
         value: function(type, listener, useCapture) {
-            NativeControl.addEventListener.call(this, type, listener, useCapture);
+            Input.addEventListener.call(this, type, listener, useCapture);
             if (type === "hold") {
                 this._pressComposer.addEventListener("longPress", this, false);
             }
@@ -328,7 +329,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
 
     didSetElement: {
         value: function() {
-            NativeControl.didSetElement.call(this);
+            Input.didSetElement.call(this);
 
             //this._element.classList.add("montage-Button");
             this._element.setAttribute("role", "button");
@@ -441,77 +442,19 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
     }
 });
 
+//The following content attributes must not be specified and do not apply to the element:
+// accept, alt, autocomplete, checked, dirname, formaction, formenctype, formmethod, formnovalidate, formtarget, height, inputmode, list, max, maxlength, min,
+// multiple, pattern, placeholder, readonly, required, size, src, step, and width.
+
 Button.addAttributes( /** @lends module:"montage/ui/native/button.reel".Button# */{
-
-/**
-    Specifies whether the button should be focused as soon as the page is loaded.
-    @type {boolean}
-    @default false
-*/
-    autofocus: {value: false, dataType: 'boolean'},
-
-/**
-    When true, the button is disabled to user input and "disabled" is added to its CSS class list.
-    @type {boolean}
-    @default false
-*/
-    disabled: {value: false, dataType: 'boolean'},
-
-/**
-    The value of the id attribute of the form with which to associate the component's element.
-    @type {string}
-    @default null
-*/
-    form: null,
-
-/**
-    The URL to which the form data will be sumbitted.
-    @type {string}
-    @default null
-*/
-    formaction: null,
-
-/**
-    The content type used to submit the form to the server.
-    @type {string}
-    @default null
-*/
-    formenctype: null,
-
-/**
-    The HTTP method used to submit the form.
-    @type {string}
-    @default null
-*/
-    formmethod: null,
-
-/**
-    Indicates if the form should be validated upon submission.
-    @type {boolean}
-    @default null
-*/
-    formnovalidate: {dataType: 'boolean'},
-
-/**
-    The target frame or window in which the form output should be rendered.
-    @type string}
-    @default null
-*/
-    formtarget: null,
 
 /**
     A string indicating the input type of the component's element.
     @type {string}
     @default "button"
 */
-    type: {value: 'button'},
+    type: {value: 'button'}
 
-/**
-    The name associated with the component's DOM element.
-    @type {string}
-    @default null
-*/
-    name: null,
 
 /**
     <strong>Use <code>label</code> to set the displayed text on the button</strong>
@@ -521,7 +464,9 @@ Button.addAttributes( /** @lends module:"montage/ui/native/button.reel".Button# 
     @default null
     @see label
 */
+    /* Now in Input
     value: null
+    */
 
 });
 
