@@ -746,5 +746,10 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                 expect(list13._updateItems.callCount).toBe(1);
             });
         });
+
+        it("should draw inner repetitions with their original objects value", function() {
+            var lis = querySelectorAll(".list17 > li");
+            expect(lis.length).toBe(3*2);
+        })
     });
 });
