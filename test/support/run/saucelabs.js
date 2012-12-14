@@ -23,19 +23,33 @@ Writes the reports to report/
 
 var spawn = require('child_process').spawn;
 var path = require('path');
+var Q = require("../../../packages/mr/packages/q");
 
-// Install test npm dependencies
-var npmInstall = spawn("npm", ["install"], {
-    cwd: __dirname,
-    stdio: "inherit"
-});
+// Wrap shelling out to `npm install` in a promise
+function npmInstall(directory) {
+    var deferred = Q.defer();
+    var proc = spawn("npm", ["install"], {
+        cwd: directory,
+        stdio: "inherit"
+    });
+    proc.on('exit', function(code) {
+        if (code !== 0) {
+            deferred.reject(new Error("npm install in " + directory + " exited with code " + code));
+        } else {
+            deferred.resolve();
+        }
+    });
+    return deferred.promise;
+}
 
-npmInstall.on('exit', function (code) {
-    if (code !== 0) {
-        process.exit(code);
-    }
-    // On successful exit of NPM start running the tests
+Q.all([
+    // Install Montage npm dependencies
+    npmInstall(path.join(__dirname, "..", "..", "..")),
+    // Install test npm dependencies
+    npmInstall(__dirname)
+]).then(run).done();
 
+function run() {
     // Dependencies are only available after we've run npm install
     var connect = require("connect");
     var tests = require("./run-tests-remote");
@@ -64,7 +78,7 @@ npmInstall.on('exit', function (code) {
         browserDetails = process.env["browser"].split("=");
     }
 
-    tests.run(testUrl, {
+    return tests.run(testUrl, {
         browser: browserDetails[0],
         browserVersion: browserDetails[1],
         platform: process.env["platform"],
@@ -77,8 +91,5 @@ npmInstall.on('exit', function (code) {
         tests.writeReports(reports, "report", log);
     }).fin(function() {
         server.close();
-    }).fail(function(err) {
-        console.error(err);
-        process.exit(1);
     });
-});
+}
