@@ -498,7 +498,7 @@ var testPage = TestPageLoader.queueTest("rich-text-editor-test", function() {
                         test.editor1.value = "";
                         testPage.waitForDraw();
                         runs(function() {
-                            test.editor1.selectAll();
+                            test.editor1.focus();
                             test.editor1.addEventListener("editorSelect", method);
                             test.editor1.execCommand("inserthtml", false, sampleText);
                         });
