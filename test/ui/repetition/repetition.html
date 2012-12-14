@@ -407,6 +407,20 @@ POSSIBILITY OF SUCH DAMAGE.
                 "bindings": {
                     "text": {"<-": "@repetition17.objectAtCurrentIteration"}
                 }
+            },
+            "repetition18": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "list16"},
+                    "objects": [1, 2, 3]
+                }
+            },
+            "repetition19": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "list17"},
+                    "objects": [1, 2]
+                }
             }
     }</script>
 </head>
@@ -529,5 +543,15 @@ POSSIBILITY OF SUCH DAMAGE.
     <div class="list15" data-montage-id="list15">
         <span data-montage-id="textfield8"></span>
     </div>
+
+    <h2>Repetition with objects defined by value in the serialization</h2>
+    <ul class="list16" data-montage-id="list16">
+        <li>
+            <ul class="list17" data-montage-id="list17">
+                <li>
+                </li>
+            </ul>
+        </li>
+    </ul>
 </body>
 </html>
