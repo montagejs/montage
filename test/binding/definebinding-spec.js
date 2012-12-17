@@ -1211,7 +1211,7 @@ describe("binding/definebinding-spec", function() {
 
             describe("with a propertyPath provided to the 'any' function", function() {
 
-                it("should propagate a change from false to true when a false object is pushed to a path after establishing the binding, and then changed to true", function() {
+                it("TODO should propagate a change from false to true when a false object is pushed to a path after establishing the binding, and then changed to true", function() {
                     var sourceObject = Alpha.create(),
                     boundObject = Omega.create();
 
