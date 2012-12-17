@@ -1211,7 +1211,7 @@ describe("binding/definebinding-spec", function() {
 
             describe("with a propertyPath provided to the 'any' function", function() {
 
-                it("should propagate a change from false to true when a false object is pushed to a path after establishing the binding, and then changed to true", function() {
+                it("TODO should propagate a change from false to true when a false object is pushed to a path after establishing the binding, and then changed to true", function() {
                     var sourceObject = Alpha.create(),
                     boundObject = Omega.create();
 
@@ -1442,7 +1442,46 @@ expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0
         });
     });
 
-    describe("serialization", function() {
+    describe("serializer", function() {
+        var Alpha,
+            Omega,
+            sourceObject,
+            boundObject,
+            serializer;
+
+        beforeEach(function() {
+            Alpha = Montage.create(Montage, {foo: {value: null}}),
+            Omega = Montage.create(Montage, {bar: {value: null}}),
+            sourceObject = Alpha.create(),
+            boundObject = Omega.create(),
+            serializer = Serializer.create().initWithRequire(require);
+        });
+
+        it("should serialize a binding to a shorthand format", function() {
+            Object.defineBinding(sourceObject, "foo", {
+                boundObject: boundObject,
+                boundObjectPropertyPath: "bar",
+                oneway: true
+            });
+
+            var serialization = serializer.serializeObject(sourceObject);
+            expect(stripPP(serialization)).toBe('{"root":{"prototype":"montage/core/core[Montage]","properties":{},"bindings":{"foo":{"<-":"@montage.bar"}}},"montage":{}}');
+        });
+
+        it("should not serialize a binding with serializable: false", function() {
+            Object.defineBinding(sourceObject, "foo", {
+                boundObject: boundObject,
+                boundObjectPropertyPath: "bar",
+                oneway: true,
+                serializable: false
+            });
+
+            var serialization = serializer.serializeObject(sourceObject);
+            expect(stripPP(serialization)).toBe('{"root":{"prototype":"montage/core/core[Montage]","properties":{}}}');
+        });
+    });
+
+    describe("deserializer", function() {
         it("should call \"bindings\" deserialization unit", function() {
             var Alpha = Montage.create(Montage, {foo: {value: null}}),
                 Omega = Montage.create(Montage, {bar: {value: null}}),
@@ -1472,23 +1511,6 @@ expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0
             runs(function() {
                 expect(deserializer._indexedDeserializationUnits.bindings).toHaveBeenCalled();
             })
-        });
-
-        it("should serialize a binding to a shorthand format", function() {
-            var Alpha = Montage.create(Montage, {foo: {value: null}}),
-                Omega = Montage.create(Montage, {bar: {value: null}}),
-                sourceObject = Alpha.create(),
-                boundObject = Omega.create(),
-                serializer = Serializer.create().initWithRequire(require);
-
-            Object.defineBinding(sourceObject, "foo", {
-                boundObject: boundObject,
-                boundObjectPropertyPath: "bar",
-                oneway: true
-            });
-
-            var serialization = serializer.serializeObject(sourceObject);
-            expect(stripPP(serialization)).toBe('{"root":{"prototype":"montage/core/core[Montage]","properties":{},"bindings":{"foo":{"<-":"@montage.bar"}}},"montage":{}}')
         });
 
         it("should deserialize a oneway binding", function() {
