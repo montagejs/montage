@@ -281,39 +281,61 @@ Serializer.defineSerializationUnit("bindings", function(object) {
     var bindingDescriptors = object._bindingDescriptors;
 
     if (bindingDescriptors) {
-        return bindingDescriptors;
+        var bindings = false;
+        var serializableBindings = {};
+
+        for (var prop in bindingDescriptors) {
+            var desc = bindingDescriptors[prop];
+            // only serialize bindings that don't have a serializable
+            // property, or those where the property is truthy
+            if (!("serializable" in  desc) || desc.serializable) {
+                bindings = true;
+                serializableBindings[prop] = desc;
+            }
+        }
+
+        // Only return if there were some *serializable* bindings
+        if (bindings) {
+            return serializableBindings;
+        }
     }
 });
+
+var deserializeBindingToBindingDescriptor = exports.deserializeBindingToBindingDescriptor = function(binding, deserializer) {
+    var dotIndex;
+    if (!("boundObject" in binding)) {
+        var targetPath = binding["<-"] || binding["<->"] || binding["<<->"];
+
+        if ("<<->" in binding) {
+            console.warn("WARNING: <<-> in bindings is deprectated, use <-> only, please update now.");
+        }
+
+        if (targetPath) {
+            if (targetPath[0] !== "@") {
+                logger.error("Invalid binding syntax '" + targetPath + "', should be in the form of '@label.path'.");
+                throw "Invalid binding syntax '" + targetPath + "'";
+            }
+        } else {
+            logger.error("Invalid binding syntax '" + JSON.stringify(binding) + "'.");
+            throw "Invalid binding syntax '" + JSON.stringify(binding) + "'";
+        }
+
+        dotIndex = targetPath.indexOf(".");
+        binding.boundObject = deserializer.getObjectByLabel(targetPath.slice(1, dotIndex));
+        binding.boundObjectPropertyPath = targetPath.slice(dotIndex+1);
+        if ("<-" in binding) {
+            binding.oneway = true;
+        }
+    }
+};
 
 Deserializer.defineDeserializationUnit("bindings", function(object, bindings, deserializer) {
     for (var sourcePath in bindings) {
         var binding = bindings[sourcePath],
             dotIndex;
 
-        if (!("boundObject" in binding)) {
-            var targetPath = binding["<-"] || binding["<->"] || binding["<<->"];
+        deserializeBindingToBindingDescriptor(binding, deserializer);
 
-            if ("<<->" in binding) {
-                console.warn("WARNING: <<-> in bindings is deprectated, use <-> only, please update now.");
-            }
-
-            if (targetPath) {
-                if (targetPath[0] !== "@") {
-                    logger.error("Invalid binding syntax '" + targetPath + "', should be in the form of '@label.path'.");
-                    throw "Invalid binding syntax '" + targetPath + "'";
-                }
-            } else {
-                logger.error("Invalid binding syntax '" + JSON.stringify(binding) + "'.");
-                throw "Invalid binding syntax '" + JSON.stringify(binding) + "'";
-            }
-
-            dotIndex = targetPath.indexOf(".");
-            binding.boundObject = deserializer.getObjectByLabel(targetPath.slice(1, dotIndex));
-            binding.boundObjectPropertyPath = targetPath.slice(dotIndex+1);
-            if ("<-" in binding) {
-                binding.oneway = true;
-            }
-        }
         Object.defineBinding(object, sourcePath, binding);
     }
 });
