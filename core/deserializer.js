@@ -64,7 +64,7 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
   @private
 */
     _objectStack: {value: []},
-    _modules: {value: {}},
+    _modules: {value: Object.create(null)},
  /**
   @private
 */
@@ -97,7 +97,7 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
     // list of ids that were just created for optimization
     _optimizedIds: {value: Object.create(null)},
 
-    _indexedDeserializationUnits: {value: {}},
+    _indexedDeserializationUnits: {value: Object.create(null)},
 
     __sharedDocument: {
         value: null
@@ -214,7 +214,7 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
         var objectsArray = [];
 
         for (var key in objects) {
-            if (objects.hasOwnProperty(key)) {
+            if (Object.hasOwnProperty.call(objects, key)) {
                 objectsArray.push(objects[key]);
             }
         }
@@ -241,7 +241,7 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
             chainedOptimizedIds = deserializer._optimizedIds;
             if (chainedOptimizedIds) {
                 if (!optimizedIds) {
-                    this._optimizedIds = optimizedIds = {};
+                    this._optimizedIds = optimizedIds = Object.create(null);
                 }
                 for (var id in chainedOptimizedIds) {
                     optimizedIds[id] = chainedOptimizedIds[id];
@@ -305,7 +305,7 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
             if (desc._units) {
                 units = desc._units;
             } else {
-                desc._units = units = {};
+                desc._units = units = Object.create(null);
             }
 
             units[name] = this._indexedDeserializationUnits[name];
@@ -415,7 +415,7 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
             }
 
             var modulesLoaded = 0,
-                modules = {},
+                modules = Object.create(null),
                 _require = this._require;
 
             moduleIds.forEach(function(moduleId) {
@@ -479,10 +479,10 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
                     var modules = self._modules;
 
                     if (!modules) {
-                        modules = self._modules = {};
+                        modules = self._modules = Object.create(null);
                     }
                     for (var moduleId in newModules) {
-                        if (newModules.hasOwnProperty(moduleId)) {
+                        if (Object.hasOwnProperty.call(newModules, moduleId)) {
                             modules[moduleId] = newModules[moduleId];
                         }
                     }
@@ -588,7 +588,7 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
             var bracketIndex;
 
             if (typeof desc === "undefined") {
-                desc = {};
+                desc = Object.create(null);
             }
             bracketIndex = name.indexOf("[");
             if (bracketIndex > 0) {
@@ -647,13 +647,13 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
             objectsStrings = "",
             cleanupStrings = "",
             valueString,
-            deserialized = {},
+            deserialized = Object.create(null),
             modules = this._modules,
             idsToRemove = [],
             optimizedIds = this._optimizedIds,
             compiledDeserializationFunctionString,
             requireStrings = [],
-            objectNamesCounter = {},
+            objectNamesCounter = Object.create(null),
             label,
             labelRegexp = this._labelRegexp,
             object;
@@ -816,7 +816,7 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
             objectsStrings += label + '.isDeserializing = true;\n';
             cleanupStrings += 'delete ' + label + '.isDeserializing;\n';
             objectsStrings += 'if (typeof ' + label + '.deserializeSelf === "function") {\n';
-            objectsStrings += '  ' + label + 'Serialization._units = {};\n';
+            objectsStrings += '  ' + label + 'Serialization._units = Object.create(null);\n';
             objectsStrings += '  this._customDeserialization(' + label + ', ' + descString + ');\n';
             objectsStrings += '} else {\n';
             objectsStrings += '  this._deserializeProperties(' + label + ', ' + label + 'Serialization.properties);\n';
@@ -825,7 +825,7 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
             if (deserialize) {
                 object.isDeserializing = true;
                 if (typeof object.deserializeSelf === "function") {
-                    desc._units = {};
+                    desc._units = Object.create(null);
                     self._customDeserialization(object, desc);
                 } else {
                     self._deserializeProperties(object, desc.properties, false);
@@ -989,7 +989,7 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
      */
     _deserialize: {
         value: function(sourceDocument, targetDocument) {
-            var exports = this._objects = {},
+            var exports = this._objects = Object.create(null),
                 chainedSerializations = this._chainedSerializations;
 
             // third and next runs, execute the compiled deserialization function
@@ -1102,8 +1102,8 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
                     body = sharedDocument.body;
 
 
-                self._objects = {};
-                self._objectLabels = instances || {};
+                self._objects = Object.create(null);
+                self._objectLabels = instances || Object.create(null);
 
                 if (element) {
                     body.appendChild(sharedDocument.importNode(element, true));
@@ -1130,8 +1130,8 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
             var self = this;
 
             this._prepareForDeserialization(function() {
-                self._objects = {};
-                self._objectLabels = instances || {};
+                self._objects = Object.create(null);
+                self._objectLabels = instances || Object.create(null);
 
                 var exports = self._deserialize(sourceDocument);
 
