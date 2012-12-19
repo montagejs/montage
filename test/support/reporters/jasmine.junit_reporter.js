@@ -69,6 +69,9 @@
             var failure = "";
             var failures = 0;
             var resultItems = results.getItems();
+
+            var isTODO = spec.description.indexOf("TODO") === 0;
+
             for (var i = 0; i < resultItems.length; i++) {
                 var result = resultItems[i];
 
@@ -95,9 +98,14 @@
                     failure += (failures + ": " + escapeInvalidXmlChars(message) + "\n");
                 }
             }
-            if (failure) {
+
+            // if TODO, mark as skipped regardless of pass/fail state
+            if (isTODO) {
+                spec.output += "<skipped>" + trim(failure) + "</skipped>";
+            } else if (failure) {
                 spec.output += "<failure>" + trim(failure) + "</failure>";
             }
+
             spec.output += "</testcase>";
         },
 
