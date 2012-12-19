@@ -28,10 +28,11 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
+/*global require,exports,describe,it,expect,runs */
 var Montage = require("montage").Montage,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
     EventInfo = require("support/testpageloader").EventInfo,
-    Popup = Popup = require("montage/ui/popup/popup.reel").Popup,
+    Popup = require("montage/ui/popup/popup.reel").Popup,
     ActionEventListener = require("montage/core/event/action-event-listener").ActionEventListener;
 
 
@@ -66,7 +67,7 @@ var testPage = TestPageLoader.queueTest("popup-test", function() {
 
             describe("Popup", function() {
 
-                it("show/hide works", function() {
+                it("TODO show/hide works", function() {
 
                     var popup = test.popup;
                     expect(popup.displayed).toBe(false);
