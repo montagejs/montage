@@ -1,4 +1,5 @@
 
+var Montage = require("core/core").Montage;
 var WeakMap = require("collections/weak-map");
 var Map = require("collections/map");
 
@@ -8,7 +9,7 @@ var autoCancelPrevious = require("frb/observers").autoCancelPrevious;
 
 var pathChangeDescriptors = new WeakMap();
 
-Object.defineProperties(Object.prototype, {
+Montage.defineProperties(Object.prototype, {
 
     getPathChangeDescriptors: {
         value: function () {
@@ -16,10 +17,7 @@ Object.defineProperties(Object.prototype, {
                 pathChangeDescriptors.set(this, {});
             }
             return pathChangeDescriptors.get(this);
-        },
-        writable: true,
-        configurable: true,
-        enumerable: false
+        }
     },
 
     getPathChangeDescriptor: {
@@ -49,10 +47,7 @@ Object.defineProperties(Object.prototype, {
             }
 
             return descriptors.get(handler);
-        },
-        writable: true,
-        configurable: true,
-        enumerable: false
+        }
     },
 
     addPathChangeListener: {
@@ -104,10 +99,7 @@ Object.defineProperties(Object.prototype, {
             } else {
                 return cancel;
             }
-        },
-        writable: true,
-        configurable: true,
-        enumerable: false
+        }
     },
 
     removePathChangeListener: {
@@ -138,19 +130,13 @@ Object.defineProperties(Object.prototype, {
                 return;
             }
             pathChangeDescriptors["delete"](this);
-        },
-        writable: true,
-        configurable: true,
-        enumerable: false
+        }
     },
 
     addBeforePathChangeListener: {
         value: function (path, handler, methodName) {
             return this.addPathChangeListener(path, handler, methodName, true);
-        },
-        writable: true,
-        configurable: true,
-        enumerable: false
+        }
     },
 
     removeBeforePathChangeListener: {
