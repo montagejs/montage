@@ -23,11 +23,11 @@ Object.defineProperties(Object.prototype, {
     },
 
     getPathChangeDescriptor: {
-        value: function (path, listener, beforeChange) {
+        value: function (path, handler, beforeChange) {
             var descriptors = this.getPathChangeDescriptors();
             if (!Object.owns(descriptors, path)) {
                 descriptors[path] = {
-                    willChangeListeners: new Map(), // listener to descriptor
+                    willChangeListeners: new Map(), // handler to descriptor
                     changeListeners: new Map()
                 };
             }
@@ -39,16 +39,16 @@ Object.defineProperties(Object.prototype, {
                 descriptors = descriptors.changeListeners;
             }
 
-            if (!descriptors.has(listener)) {
-                descriptors.set(listener, {
+            if (!descriptors.has(handler)) {
+                descriptors.set(handler, {
                     path: path,
-                    listener: listener,
+                    handler: handler,
                     beforeChange: beforeChange,
                     cancel: Function.noop
                 })
             }
 
-            return descriptors.get(listener);
+            return descriptors.get(handler);
         },
         writable: true,
         configurable: true,
@@ -56,12 +56,12 @@ Object.defineProperties(Object.prototype, {
     },
 
     addPathChangeListener: {
-        value: function (path, listener, token, beforeChange) {
+        value: function (path, handler, methodName, beforeChange) {
             var self = this;
 
-            listener = listener || Function.noop;
+            handler = handler || Function.noop;
 
-            var descriptor = this.getPathChangeDescriptor(path, listener, beforeChange);
+            var descriptor = this.getPathChangeDescriptor(path, handler, beforeChange);
             descriptor.cancel();
 
             var syntax = parse(path);
@@ -69,30 +69,29 @@ Object.defineProperties(Object.prototype, {
             var initialValue;
             var initialized;
             var emit;
-            var handleTokenChange = token ? 'handle' + token.toCapitalized() + 'Change' : '';
-            if (listener === Function.noop) {
+            if (handler === Function.noop) {
                 emit = function (value) {
                     if (initialized) {
-                        throw new Error("Path change listener needs a handler because it emits new values when the source changes: " + JSON.stringify(path));
+                        throw new Error("Path change handler needs a handler because it emits new values when the source changes: " + JSON.stringify(path));
                     } else {
                         initialized = true;
                         initialValue = value;
                     }
                 };
-            } else if (token && listener[handleTokenChange]) {
+            } else if (methodName) {
                 emit = function (value) {
-                    return listener[handleTokenChange].apply(listener, arguments);
+                    return handler[methodName].apply(handler, arguments);
                 };
-            } else if (listener.handlePathChange) {
+            } else if (handler.handlePathChange) {
                 emit = function (value) {
-                    return listener.handlePathChange.apply(listener, arguments);
+                    return handler.handlePathChange.apply(handler, arguments);
                 };
-            } else if (typeof listener === "function") {
+            } else if (typeof handler === "function") {
                 emit = function (value) {
-                    return listener.apply(self, arguments);
+                    return handler.apply(self, arguments);
                 };
             } else {
-                throw new Error("Can't recognize listener type: " + listener + ". Must be function or delegate implementing handlePathChange or handle{Token}Change.");
+                throw new Error("Can't recognize handler type: " + handler + ". Must be function or delegate implementing handlePathChange.");
             }
 
             var observe = compileObserver(syntax);
@@ -112,8 +111,8 @@ Object.defineProperties(Object.prototype, {
     },
 
     removePathChangeListener: {
-        value: function (path, listener, beforeChange) {
-            listener = listener || Function.noop;
+        value: function (path, handler, beforeChange) {
+            handler = handler || Function.noop;
             var descriptorsForObject = this.getPathChangeDescriptors();
             var phase = beforeChange ? "willChangeListeners" : "changeListeners";
 
@@ -122,19 +121,19 @@ Object.defineProperties(Object.prototype, {
             }
             var descriptorsForPath = descriptorsForObject[path];
             var descriptorsForPhase = descriptorsForPath[phase];
-            if (!descriptorsForPhase.has(listener)) {
+            if (!descriptorsForPhase.has(handler)) {
                 throw new Error("Can't find " + phase + " for " + JSON.stringify(path));
             }
-            var descriptor = descriptorsForPhase.get(listener);
+            var descriptor = descriptorsForPhase.get(handler);
             descriptor.cancel();
-            descriptorsForPhase["delete"](listener);
+            descriptorsForPhase["delete"](handler);
             if (
                 descriptorsForPath.willChangeListeners.length === 0 &&
                 descriptorsForPath.changeListeners.length === 0
             ) {
                 delete descriptorsForObject[path];
             }
-            // if there are no other listeners
+            // if there are no other handlers
             for (var name in descriptorsForObject) {
                 return;
             }
@@ -146,8 +145,8 @@ Object.defineProperties(Object.prototype, {
     },
 
     addBeforePathChangeListener: {
-        value: function (path, listener, token) {
-            return this.addPathChangeListener(path, listener, token, true);
+        value: function (path, handler, methodName) {
+            return this.addPathChangeListener(path, handler, methodName, true);
         },
         writable: true,
         configurable: true,
@@ -155,8 +154,8 @@ Object.defineProperties(Object.prototype, {
     },
 
     removeBeforePathChangeListener: {
-        value: function (path, listener) {
-            return this.removePathChangeListener(path, listener, true);
+        value: function (path, handler, methodName) {
+            return this.removePathChangeListener(path, handler, true);
         }
     }
 

@@ -88,7 +88,7 @@ describe("path-changes-spec", function () {
 
     });
 
-    it("should watch value changes with token change handler", function () {
+    it("should watch value changes with change handler with a specific method", function () {
 
         var object = {};
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
@@ -100,7 +100,7 @@ describe("path-changes-spec", function () {
             }
         };
 
-        object.addPathChangeListener("array.map{foo}.sum()", handler, 'fooSum');
+        object.addPathChangeListener("array.map{foo}.sum()", handler, "handleFooSumChange");
         expect(spy).toHaveBeenCalledWith(6);
 
         object.array.push({foo: 4});
