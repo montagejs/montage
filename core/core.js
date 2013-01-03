@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
  @requires core/shim/array
  @requires core/shim/string
  @requires core/extras/object
- @requires core/extras/array
  @requires core/extras/string
  @requires core/extras/function
  @requires core/extras/date
@@ -47,7 +46,6 @@ require("core/shim/object");
 require("core/shim/array");
 require("core/shim/string");
 require("core/extras/object");
-require("core/extras/array");
 require("core/extras/date");
 require("core/extras/element");
 require("core/extras/function");
@@ -212,6 +210,7 @@ Object.defineProperty(Montage, "defineProperty", {
             getAttributeProperties(obj, SERIALIZABLE)[prop] = descriptor.serializable;
         }
 
+        // TODO replace this with Object.clone from collections
         //this is added to enable value properties with [] or Objects that are new for every instance
         if (descriptor.distinct === true && typeof descriptor.value === "object") {
             (function(prop,internalProperty, value, obj) {
@@ -748,6 +747,9 @@ Object.defineProperty(Montage, "callDelegateMethod", {
     }
 });
 
+// has to come last since serializer and deserializer depend on logger, which
+// in turn depends on montage running to completion
+require("core/serialization-bindings");
 // has to come last since it uses the Montage.defineProperties to augment Object.prototype
 require("core/path-changes");
 

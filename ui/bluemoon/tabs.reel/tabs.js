@@ -39,6 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
     @requires montage/core/uuid
 */
 var Montage = require("montage").Montage,
+    Bindings = require("core/bindings").Bindings,
     Component = require("ui/component").Component,
     Repetition = require("ui/repetition.reel").Repetition,
     Substitution = require("ui/substitution.reel").Substitution,
@@ -175,13 +176,10 @@ var Tabs = exports.Tabs = Montage.create(Component, /** @lends module:"montage/u
             this._repetition.childComponents = this._orphanedChildren;
             this._repetition.needsDraw = true;
 
-            if(this.content) {
-                // substitution
-                Object.defineBinding(this.content, "switchValue", {
-                    boundObject: this,
-                    boundObjectPropertyPath: 'selectedTab.value'
-                });
-            }
+            // substitution
+            Bindings.defineBinding(this, "content.switchValue", {
+                "<->": "selectedTab.value"
+            });
             var index = (this.selectedTabValue ? this._indexOf(this.selectedTabValue) : 0);
             this.navController.selectedIndexes = [index];
 

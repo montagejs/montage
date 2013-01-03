@@ -519,10 +519,6 @@ if (typeof window !== "undefined") {
                 "core/deserializer"
             ];
 
-            if (typeof window !== "undefined") {
-                dependencies.push("core/event/binding");
-            }
-
             var Promise = montageRequire("core/promise").Promise;
 
             return Promise.all(dependencies.map(montageRequire.deepLoad))

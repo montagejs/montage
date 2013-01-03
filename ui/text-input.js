@@ -68,14 +68,23 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
     },
 
     /**
-        The "typed" data value associated with the input element. When this property is set, if the component's <code>converter</code> property is non-null then its <code>revert()</code> method is invoked, passing it the newly assigned value. The <code>revert()</code> function is responsible for validating and converting the user-supplied value to its typed format. For example, in the case of a DateInput component (which extends TextInput) a user enters a string for the date (for example, "10-12-2005"). A <code>DateConverter</code> object is assigned to the component's <code>converter</code> property.
+        The "typed" data value associated with the input element. When this
+        property is set, if the component's <code>converter</code> property is
+        non-null then its <code>revert()</code> method is invoked, passing it
+        the newly assigned value. The <code>revert()</code> function is
+        responsible for validating and converting the user-supplied value to
+        its typed format. For example, in the case of a DateInput component
+        (which extends TextInput) a user enters a string for the date (for
+        example, "10-12-2005"). A <code>DateConverter</code> object is assigned
+        to the component's <code>converter</code> property.
 
-        If the comopnent doesn't specify a converter object then the raw value is assigned to <code>value</code>.
+        If the comopnent doesn't specify a converter object then the raw value
+        is assigned to <code>value</code>.
 
         @type {string}
         @default null
     */
-        value: {
+    value: {
         get: function() {
             return this._value;
         },
@@ -97,7 +106,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
                     this._value = value;
                 }
 
-                if(fromInput) {
+                if (fromInput) {
                     this._valueSyncedWithInputField = true;
                 } else {
                     this._valueSyncedWithInputField = false;

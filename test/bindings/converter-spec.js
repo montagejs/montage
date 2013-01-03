@@ -29,6 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
+    Bindings = require("montage/core/bindings").Bindings,
     Converter = require("montage/core/converter/converter").Converter;
 
 var TestConverter = Montage.create(Converter, {
@@ -47,17 +48,17 @@ var TestConverter = Montage.create(Converter, {
 
 });
 
-describe("binding/binding-converter-spec", function() {
+describe("bindings/binding-converter-spec", function() {
 
-    var sourceObject, boundObject, bindingDescriptor;
+    var target, source, bindingDescriptor;
 
     beforeEach(function() {
-        sourceObject = Montage.create();
-        boundObject = Montage.create();
+        target = Montage.create();
+        source = Montage.create();
 
         bindingDescriptor = {
-            boundObject: boundObject,
-            boundObjectPropertyPath: "bar",
+            "<->": "bar",
+            source: source,
             converter: TestConverter
         };
     })
@@ -65,32 +66,32 @@ describe("binding/binding-converter-spec", function() {
     describe("involved in a two way binding", function() {
 
         it("should convert the value passed to the source when the binding is established", function() {
-            boundObject.bar = "bar";
+            source.bar = "bar";
 
-            Object.defineBinding(sourceObject, "foo", bindingDescriptor);
+            Bindings.defineBinding(target, "foo", bindingDescriptor);
 
-            expect(sourceObject.foo).toBe("CONVERTbar")
+            expect(target.foo).toBe("CONVERTbar")
         });
 
         it("should convert the value passed to the source when the bound object's value changes", function() {
-            boundObject.bar = "bar";
+            source.bar = "bar";
 
-            Object.defineBinding(sourceObject, "foo", bindingDescriptor);
+            Bindings.defineBinding(target, "foo", bindingDescriptor);
 
-            boundObject.bar = "baz";
+            source.bar = "baz";
 
-            expect(sourceObject.foo).toBe("CONVERTbaz")
+            expect(target.foo).toBe("CONVERTbaz")
         });
 
 
         it("should revert the value passed to the bound object when the source object's value changes", function() {
-            boundObject.bar = "bar";
+            source.bar = "bar";
 
-            Object.defineBinding(sourceObject, "foo", bindingDescriptor);
+            Bindings.defineBinding(target, "foo", bindingDescriptor);
 
-            sourceObject.foo = "CONVERTbaz";
+            target.foo = "CONVERTbaz";
 
-            expect(boundObject.bar).toBe("baz")
+            expect(source.bar).toBe("baz")
         });
 
     });
@@ -98,35 +99,36 @@ describe("binding/binding-converter-spec", function() {
     describe("involved in a one way binding", function() {
 
         beforeEach(function() {
-            bindingDescriptor.oneway = true;
+            bindingDescriptor["<-"] = bindingDescriptor["<->"];
+            delete bindingDescriptor["<->"];
         });
 
         it("should convert the value passed to the source when the binding is established", function() {
-            boundObject.bar = "bar";
+            source.bar = "bar";
 
-            Object.defineBinding(sourceObject, "foo", bindingDescriptor);
+            Bindings.defineBinding(target, "foo", bindingDescriptor);
 
-            expect(sourceObject.foo).toBe("CONVERTbar")
+            expect(target.foo).toBe("CONVERTbar")
         });
 
         it("should convert the value passed to the source when the bound object's value changes", function() {
-            boundObject.bar = "bar";
+            source.bar = "bar";
 
-            Object.defineBinding(sourceObject, "foo", bindingDescriptor);
+            Bindings.defineBinding(target, "foo", bindingDescriptor);
 
-            boundObject.bar = "baz";
+            source.bar = "baz";
 
-            expect(sourceObject.foo).toBe("CONVERTbaz")
+            expect(target.foo).toBe("CONVERTbaz")
         });
 
         it("must not enable propagating a value from the source object to the bound object", function() {
-            boundObject.bar = "bar";
+            source.bar = "bar";
 
-            Object.defineBinding(sourceObject, "foo", bindingDescriptor);
+            Bindings.defineBinding(target, "foo", bindingDescriptor);
 
-            sourceObject.foo = "CONVERTbaz";
+            target.foo = "CONVERTbaz";
 
-            expect(boundObject.bar).toBe("bar")
+            expect(source.bar).toBe("bar")
         });
 
     });

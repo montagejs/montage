@@ -1043,9 +1043,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 self.needsDraw = true;
             }
             Object.defineBinding(this, "numberOfIterations", {
-                boundObject: this._repetition,
-                boundObjectPropertyPath: "_objects.count()",
-                oneway: "true"
+                "<-": "_repetition._objects.length"
             });
         }
     },

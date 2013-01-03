@@ -38,6 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 var Montage = require("montage").Montage,
+    Bindings = require("core/bindings").Bindings,
     Component = require("ui/component").Component,
     ArrayController = require("ui/controller/array-controller").ArrayController,
     NativeControl = require("ui/native-control").NativeControl,
@@ -133,31 +134,12 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
                 return;
             }
 
-            if (this._contentController) {
-                Object.deleteBinding(this, "_selectedIndexes");
-            }
-
             this._contentController = value;
 
-            if (this._contentController) {
-
-                // If we're already getting contentController related values from other bindings...stop that
-                if (this._bindingDescriptors) {
-                    Object.deleteBinding(this, "content");
-                }
-
-                Object.defineBinding(this, "content", {
-                    boundObject: this._contentController,
-                    boundObjectPropertyPath: "organizedObjects",
-                    oneway: true
-                });
-
-
-                Object.defineBinding(this, "_selectedIndexes", {
-                    boundObject: this._contentController,
-                    boundObjectPropertyPath: "selectedIndexes"
-                });
-            }
+            Bindings.defineBindings(this, {
+                "content", {"<-": "_contentController.organizedObjects"},
+                "_selectedIndexes": {"<->": "_contentController.selectedIndexes"}
+            });
 
         }
     },

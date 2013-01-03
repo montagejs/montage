@@ -31,6 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 var Promise = require("montage/core/promise").Promise;
 
+Error.stackTraceLimit = 100;
+
 var spec = queryString("spec");
 if (spec) {
     require.async(decodeURIComponent(spec))
@@ -44,16 +46,13 @@ if (spec) {
 } else {
     var modules = [
         // Please keep in alphabetical order
-        "array-spec",
         "bitfield-spec",
         "claimed-pointer-spec",
         "converter-spec",
         "enum-spec",
         "gate-spec",
-        "getset-spec",
         "logger-spec",
         "path-changes-spec",
-        "propertychange-spec",
         "require-spec",
         "state-chart-spec",
         "string-spec",
@@ -62,12 +61,11 @@ if (spec) {
         "collections-spec",
         "frb-spec",
 
-        "binding/binding-converter-spec",
-        "binding/dependent-properties-spec",
-        "binding/definebinding-spec",
-        "binding/self-binding-spec",
 
         "controllers/array-controller-spec",
+        "bindings/spec",
+        "bindings/converter-spec",
+        "bindings/self-spec",
 
         "core/core-spec",
         "core/selector-spec",
@@ -80,7 +78,6 @@ if (spec) {
         "data/context-spec",
         "data/transactionmanager-spec",
 
-        "events/change-notification-spec",
         "events/eventmanager-spec",
         "events/mutable-event-spec",
         "events/object-hierarchy-spec",
@@ -92,6 +89,7 @@ if (spec) {
 
         "serialization/deserializer-spec",
         "serialization/serializer-spec",
+        "serialization/bindings-spec",
 
         "ui/application-spec",
         "ui/anchor-spec",
