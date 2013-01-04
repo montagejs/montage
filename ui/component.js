@@ -39,6 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
     @requires montage/core/event/event-manager
  */
 var Montage = require("montage").Montage,
+    Bindings = require("core/bindings").Bindings,
     Template = require("ui/template").Template,
     Gate = require("core/gate").Gate,
     Promise = require("core/promise").Promise,
@@ -581,18 +582,18 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
      * @function
      */
     cleanupDeletedComponentTree: {
-        value: function(deleteBindings) {
+        value: function(cancelBindings) {
             // Deleting bindings in all cases was causing the symptoms expressed in gh-603
             // Until we have a more granular way we shouldn't do this,
-            // the deleteBindings parameter is a short term fix.
-            if (deleteBindings) {
-                Object.deleteBindings(this);
+            // the cancelBindings parameter is a short term fix.
+            if (cancelBindings) {
+                Bindings.cancelBindings(this);
             }
             this.needsDraw = false;
             this.traverseComponentTree(function(component) {
                 // See above comment
-                if (deleteBindings) {
-                    Object.deleteBindings(component);
+                if (cancelBindings) {
+                    Bindings.cancelBindings(component);
                 }
                 component.needsDraw = false;
             });
