@@ -54,8 +54,8 @@ if (typeof window !== "undefined") {
 var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializer.Serializer# */ {
     _INITIAL_LABEL_SEQUENCE_NUMBER: {value: 2}, // labels generation sequence is "label", "label2", "label3", ..., hence starting at 2
     _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
-    _serializedObjects: {value: {}}, // label -> string
-    _serializedReferences: {value: {}}, // uuid -> string
+    _serializedObjects: {value: Object.create(null)}, // label -> string
+    _serializedReferences: {value: Object.create(null)}, // uuid -> string
     _externalObjects: {value: null}, // label -> object
     _externalElements: {value: null},
     _objectStack: {value: null},
@@ -64,7 +64,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
     _objectNamesIndex: {value: null},
     _objectLabels: {value: null}, // uuid -> label
     _serializationUnits: {value: []},
-    _serializationUnitsIndex: {value: {}},
+    _serializationUnitsIndex: {value: Object.create(null)},
 
     serializeNullValues: {value: false},
 
@@ -120,13 +120,13 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
                 label,
                 serializeNullValues = this.serializeNullValues;
 
-            this._serializedObjects = {};
-            this._serializedReferences = {};
-            this._externalObjects = {};
+            this._serializedObjects = Object.create(null);
+            this._serializedReferences = Object.create(null);
+            this._externalObjects = Object.create(null);
             this._externalElements = [];
-            this._objectNamesIndex = {};
-            this._objectLabels = {};
-            this._objectReferences = {};
+            this._objectNamesIndex = Object.create(null);
+            this._objectLabels = Object.create(null);
+            this._objectReferences = Object.create(null);
 
             for (label in objects) {
                 if (objects[label] != null) {
@@ -174,7 +174,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
             uuid = stackElement.uuid;
             objectReferences = this._objectReferences;
             if (!(uuid in objectReferences)) {
-                objectReferences[uuid] = {};
+                objectReferences[uuid] = Object.create(null);
             }
             objectReferences[uuid][name] = true;
         }
@@ -211,7 +211,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
                 objectReferences = this._objectReferences,
                 uuid = stackElement.properties.uuid;
                 if (!(uuid in objectReferences)) {
-                    objectReferences[uuid] = {};
+                    objectReferences[uuid] = Object.create(null);
                 }
                 objectReferences[uuid][name] = true;
             }
@@ -505,7 +505,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
             delegate = this.delegate;
             this._serializedReferences[uuid] = serializedReference;
 
-            serializedUnits = {};
+            serializedUnits = Object.create(null);
             objectInfo = Montage.getInfoForObject(object);
 
             if (!this._require) {
@@ -535,7 +535,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
 
             if (typeof object.serializeProperties === "function") {
                 this._pushContextObject(object);
-                this._pushContextObject({});
+                this._pushContextObject(Object.create(null));
                 object.serializeProperties(this, Montage.getSerializablePropertyNames(object));
                 // handle delegate.serializeProperties for objects that
                 // implement their own serializeProperties
@@ -555,7 +555,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
                 // do NOT implement their own serializeProperties
                 if (delegate && typeof delegate.serializeObjectProperties === "function") {
                     this._pushContextObject(object);
-                    this._pushContextObject({});
+                    this._pushContextObject(Object.create(null));
                     this.setAll(propertyNames);
                     delegate.serializeObjectProperties(this, object, propertyNames);
                     serializedUnits.properties = this._serializeObjectLiteral(this._popContextObject(), null, 3);
@@ -613,7 +613,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
     _customSerialization: {
         value: function(object, indent) {
             this._pushContextObject(object);
-            this._pushContextObject({properties: {}, _units: []});
+            this._pushContextObject({properties: Object.create(null), _units: []});
             var newObject = object.serializeSelf(this);
             var objectDescriptor = this._popContextObject();
             this._popContextObject();
@@ -670,7 +670,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
             value = object[key];
 
             if (typeof value !== "undefined" && (this.serializeNullValues || value !== null)) {
-                serializationType = Montage.getPropertyAttribute(object, key, "serializable") || ((serializedReferenceProperties && serializedReferenceProperties.hasOwnProperty(key)) ? "reference" : "auto");
+                serializationType = Montage.getPropertyAttribute(object, key, "serializable") || ((serializedReferenceProperties && Object.hasOwnProperty.call(serializedReferenceProperties, key)) ? "reference" : "auto");
                 serializedProperties.push(JSON.stringify(key) + ":" + this._serializeValue(value, serializationType, indent));
             }
         }

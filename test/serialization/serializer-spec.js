@@ -208,6 +208,12 @@ describe("serialization/serializer-spec", function() {
             });
         });
 
+        it("should serialize an Array with the label clear", function() {
+            var array = [42, "string", null];
+            var serialization = serializer.serialize({clear: array});
+            expect(stripPP(serialization)).toBe('{"clear":{"value":[42,"string",null]}}');
+        });
+
         // TODO: object literal with functions
         // TODO: object literal with references to user objects
     });
@@ -409,7 +415,7 @@ describe("serialization/serializer-spec", function() {
                 serialization = serializer.serializeObject(object);
                 externalObjects = serializer.getExternalObjects();
                 for (var uuid in externalObjects) {
-                    if (externalObjects.hasOwnProperty(uuid)) {
+                    if (Object.hasOwnProperty.call(externalObjects, uuid)) {
                         length++;
                     }
                 }
@@ -448,7 +454,7 @@ describe("serialization/serializer-spec", function() {
                 length = 0;
 
             for (var uuid in externalObjects) {
-                if (externalObjects.hasOwnProperty(uuid)) {
+                if (Object.hasOwnProperty.call(externalObjects, uuid)) {
                     length++;
                 }
             }

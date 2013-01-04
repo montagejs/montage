@@ -130,6 +130,15 @@ describe("serialization/deserializer-spec", function() {
             });
         });
 
+        it("should deserialize an object labeled clear", function() {
+            deserializer.initWithObject({
+                clear: {
+                    value: "string"
+                }
+            }).deserialize(function(object) {
+                expect(object.clear).toBe("string");
+            });
+        });
     });
 
     describe("Native Objects Deserialization", function() {

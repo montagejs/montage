@@ -144,10 +144,20 @@ if (typeof window !== "undefined") {
                 hash: params.montageHash
             }, config)
             .then(function (montageRequire) {
+                // load the promise package so we can inject the bootstrapped
+                // promise library back into it
+
+                var promiseLocation;
+                if (params.promiseLocation) {
+                    promiseLocation = URL.resolve(Require.getLocation(), params.promiseLocation);
+                } else {
+                    promiseLocation = URL.resolve(montageLocation, "packages/mr/packages/q");
+                }
+
                 return [
                     montageRequire,
                     montageRequire.loadPackage({
-                        location:  URL.resolve(montageLocation, "packages/mr/packages/q"),
+                        location: promiseLocation,
                         hash: params.promiseHash
                     })
                 ];
@@ -328,39 +338,37 @@ if (typeof window !== "undefined") {
         }
     };
 
-    // mini-url library
-    var makeResolve = function () {
-        var baseElement = document.querySelector("base");
-        var existingBaseElement = baseElement;
-        if (!existingBaseElement) {
-            baseElement = document.createElement("base");
-            baseElement.href = "";
-        }
-        var head = document.querySelector("head");
-        var relativeElement = document.createElement("a");
-        return function (base, relative) {
-            if (!existingBaseElement) {
-                head.appendChild(baseElement);
-            }
-            base = String(base);
-            if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
-                throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
-            }
-            var restore = baseElement.href;
-            baseElement.href = base;
-            relativeElement.href = relative;
-            var resolved = relativeElement.href;
-            baseElement.href = restore;
-            if (!existingBaseElement) {
-                head.removeChild(baseElement);
-            }
-            return resolved;
-        };
-    };
-
-    var resolve = makeResolve();
-
     var browser = {
+
+        // mini-url library
+        makeResolve: function () {
+            var baseElement = document.querySelector("base");
+            var existingBaseElement = baseElement;
+            if (!existingBaseElement) {
+                baseElement = document.createElement("base");
+                baseElement.href = "";
+            }
+            var head = document.querySelector("head");
+            var relativeElement = document.createElement("a");
+            return function (base, relative) {
+                if (!existingBaseElement) {
+                    head.appendChild(baseElement);
+                }
+                base = String(base);
+                if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
+                    throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
+                }
+                var restore = baseElement.href;
+                baseElement.href = base;
+                relativeElement.href = relative;
+                var resolved = relativeElement.href;
+                baseElement.href = restore;
+                if (!existingBaseElement) {
+                    head.removeChild(baseElement);
+                }
+                return resolved;
+            };
+        },
 
         load: function (location) {
             var script = document.createElement("script");
@@ -397,8 +405,8 @@ if (typeof window !== "undefined") {
                         this._params.montageLocation = match[1];
                         montage = true;
                     }
-                    if (script.hasAttribute("data-montage")) {
-                        this._params.montageLocation = script.getAttribute("data-montage");
+                    if (script.hasAttribute("data-montage-location")) {
+                        this._params.montageLocation = script.getAttribute("data-montage-location");
                         montage = true;
                     }
                     if (montage) {
@@ -430,6 +438,7 @@ if (typeof window !== "undefined") {
             var base, Require, DOM, Promise, URL;
 
             var params = this.getParams();
+            var resolve = this.makeResolve();
 
             // observe dom loading and load scripts in parallel
 

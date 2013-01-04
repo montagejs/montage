@@ -347,6 +347,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     objects: {
         dependencies: ["indexMap", "indexMapEnabled"],
         enumerable: false,
+        serializable: true,
         get: function() {
             if (!this.indexMap || !this.indexMapEnabled) {
                 return this._objects;

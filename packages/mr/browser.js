@@ -92,7 +92,7 @@ Require.Compiler = function (config) {
     return function(module) {
         if (module.factory || module.text === void 0)
             return module;
-        if (config.define)
+        if (config.useScriptInjection)
             throw new Error("Can't use eval.");
 
         // Here we use a couple tricks to make debugging better in various browsers:
@@ -138,14 +138,28 @@ var getDefinition = function (hash, id) {
     definitions[hash][id] = definitions[hash][id] || Promise.defer();
     return definitions[hash][id];
 };
-define = function (hash, id, module) {
+// global
+montageDefine = function (hash, id, module) {
     getDefinition(hash, id).resolve(module);
+};
+
+Require.loadScript = function (location) {
+    var script = document.createElement("script");
+    script.onload = function() {
+        script.parentNode.removeChild(script);
+    };
+    script.onerror = function (error) {
+        script.parentNode.removeChild(script);
+    };
+    script.src = location;
+    script.defer = true;
+    document.getElementsByTagName("head")[0].appendChild(script);
 };
 
 Require.ScriptLoader = function (config) {
     var hash = config.packageDescription.hash;
     return function (location, module) {
-        return Promise.call(function () {
+        return Promise.fcall(function () {
 
             // short-cut by predefinition
             if (definitions[hash] && definitions[hash][module.id]) {
@@ -158,16 +172,7 @@ Require.ScriptLoader = function (config) {
                 location += ".load.js";
             }
 
-            var script = document.createElement("script");
-            script.onload = function() {
-                script.parentNode.removeChild(script);
-            };
-            script.onerror = function (error) {
-                script.parentNode.removeChild(script);
-            };
-            script.src = location;
-            script.defer = true;
-            document.getElementsByTagName("head")[0].appendChild(script);
+            loadScript(location);
 
             return getDefinition(hash, module.id).promise
         })
@@ -182,8 +187,35 @@ Require.ScriptLoader = function (config) {
     };
 };
 
+// old version
+var loadPackageDescription = Require.loadPackageDescription;
+Require.loadPackageDescription = function (dependency, config) {
+    if (dependency.hash) { // use script injection
+        // the package.json might come in a preloading bundle.  if so, we do not
+        // want to issue a script injection.  however, if by the time preloading
+        // has finished the package.json has not arrived, we will need to kick off
+        // a request for the package.json.load.js script.
+        if (!config.preloaded.isResolved()) {
+            config.preloaded.then(function () {
+                if (!result.isResolved()) {
+                    var location = URL.resolve(dependency.location, "package.json.load.js");
+                    loadScript(location);
+                }
+            });
+        }
+
+        return getDefinition(dependency.hash, 'package.json')
+        .promise.then(function (module) {
+            return module.exports;
+        })
+    } else {
+        // fall back to normal means
+        return loadPackageDescription(dependency, config);
+    }
+};
+
 Require.makeLoader = function (config) {
-    if (config.define) {
+    if (config.useScriptInjection) {
         Loader = Require.ScriptLoader;
     } else {
         Loader = Require.XhrLoader;
