@@ -308,6 +308,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
 
     didCreate: {
         value: function() {
+            Component.didCreate.call(this);
             this.handlePress = this.handleClick;
         }
     },

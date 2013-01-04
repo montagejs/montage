@@ -116,6 +116,12 @@ Object.defineProperty(Montage, "create", {
     }
 });
 
+Object.defineProperty(Montage, "didCreate", {
+    configurable: true,
+    writable: true,
+    value: Function.noop
+});
+
 var extendedPropertyAttributes = [SERIALIZABLE];
 
 // Extended property attributes, the property name format is "_" + attributeName + "AttributeProperties"

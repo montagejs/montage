@@ -49,6 +49,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
     didCreate: {
         value: function() {
             var self = this;
+            ObjectController.didCreate.call(this); // super
 
             // TODO optimize this, try to use dependentProperties perhaps
 

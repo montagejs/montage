@@ -75,6 +75,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, /** @lends m
 
     didCreate: {
         value: function() {
+            TextInput.didCreate.call(this); // super
             this.delay = 500;
             this.minLength = 2;
         }

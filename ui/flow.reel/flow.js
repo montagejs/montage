@@ -37,6 +37,7 @@ var Flow = exports.Flow = Montage.create(Component, {
 
     didCreate: {
         value: function () {
+            Component.didCreate.call(this); // super
             this._slideOffsets = {};
         }
     },

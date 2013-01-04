@@ -234,6 +234,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
 
     didCreate: {
         value: function() {
+            NativeControl.didCreate.call(this); // super
             this._pressComposer = PressComposer.create();
             this.addComposer(this._pressComposer);
         }

@@ -29,8 +29,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-var Montage = require("montage").Montage,
-    FlowBezierSpline = exports.FlowBezierSpline = Montage.create(Montage, {
+var Montage = require("montage").Montage;
+
+var FlowBezierSpline = exports.FlowBezierSpline = Montage.create(Montage, {
 
     didCreate: {
         value: function () {

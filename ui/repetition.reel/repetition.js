@@ -154,6 +154,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
     didCreate: {
         value: function() {
+            Component.didCreate.call(this);
             this.addPropertyChangeListener("objects", this);
             this._fakeObjects = Object.create(FakeObjects).initWithRepetition(this);
         }
