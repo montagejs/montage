@@ -450,7 +450,7 @@ if (typeof window !== "undefined") {
             }
 
             // this permits montage.js to be injected after domready
-            if (document.readyState === "complete") {
+            if (document.readyState === "interactive") {
                 domLoad();
             } else {
                 document.addEventListener("DOMContentLoaded", domLoad, true);
