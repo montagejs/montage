@@ -30,6 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 var test = require('test');
+test.print("Can't XHR a.js expected", "info");
 try {
     require("a");
 } catch (exception) {

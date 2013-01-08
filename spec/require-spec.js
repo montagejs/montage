@@ -51,7 +51,9 @@ describe("Require", function () {
         "load-package-name",
         "not-found",
         "comments",
-        "identify"
+        "identify",
+        "dev-dependencies",
+        "case-sensitive"
     ].forEach(function (test) {
         it(test, function () {
             var spec = this;
