@@ -172,7 +172,7 @@ Require.ScriptLoader = function (config) {
                 location += ".load.js";
             }
 
-            loadScript(location);
+            Require.loadScript(location);
 
             return getDefinition(hash, module.id).promise
         })
@@ -196,10 +196,10 @@ Require.loadPackageDescription = function (dependency, config) {
         // has finished the package.json has not arrived, we will need to kick off
         // a request for the package.json.load.js script.
         if (!config.preloaded.isResolved()) {
-            config.preloaded.then(function () {
+            config.preloaded.then(function (result) {
                 if (!result.isResolved()) {
                     var location = URL.resolve(dependency.location, "package.json.load.js");
-                    loadScript(location);
+                    Require.loadScript(location);
                 }
             });
         }
@@ -215,6 +215,7 @@ Require.loadPackageDescription = function (dependency, config) {
 };
 
 Require.makeLoader = function (config) {
+    var Loader;
     if (config.useScriptInjection) {
         Loader = Require.ScriptLoader;
     } else {
