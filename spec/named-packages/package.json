@@ -1,0 +1,9 @@
+{
+    "directories": {
+        "packages": "."
+    },
+    "dependencies": {
+        "foo": "*",
+        "bar": "*"
+    }
+}
