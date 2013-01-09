@@ -366,7 +366,10 @@ Object.defineProperty(Object, "defineBinding", {value: function(sourceObject, so
     if (!_bindingDescriptors) {
         // To ensure the binding descriptor collection is serializable, it needs all the expected properties
         //of an object in our framework; a UUID in particular
-        sourceObject._bindingDescriptors = _bindingDescriptors = Object.create(Object.prototype);
+        Montage.defineProperty(sourceObject, "_bindingDescriptors", {
+            enumerable: false,
+            value: _bindingDescriptors = Object.create(Object.prototype)
+        });
     }
 
     // We want binding descriptors to know how to serialize themselves, that functionality is located on
