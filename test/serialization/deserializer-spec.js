@@ -103,7 +103,7 @@ describe("serialization/deserializer-spec", function() {
         });
 
         it("should deserialize a null value", function() {
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     value: null
                 }
@@ -196,7 +196,7 @@ describe("serialization/deserializer-spec", function() {
         it("should deserialize a class instance object", function() {
             var latch, object;
 
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     module: "montage",
                     name: "Montage",
@@ -205,7 +205,7 @@ describe("serialization/deserializer-spec", function() {
                         string: "string"
                     }
                 }
-            }).deserializeObject(function(obj) {
+            }, require).deserializeObject(function(obj) {
                 latch = true;
                 object = obj;
             });
@@ -220,7 +220,7 @@ describe("serialization/deserializer-spec", function() {
         it("should deserialize two class instance objects", function() {
             var latch, object;
 
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     module: "montage",
                     name: "Montage",
@@ -235,7 +235,7 @@ describe("serialization/deserializer-spec", function() {
                         prop: 42
                     }
                 }
-            }).deserializeObject(function(obj) {
+            }, require).deserializeObject(function(obj) {
                 latch = true;
                 object = obj;
             });
@@ -253,7 +253,7 @@ describe("serialization/deserializer-spec", function() {
             var object;
             instances["simple"] = simple;
 
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     module: "montage",
                     name: "Montage",
@@ -262,7 +262,7 @@ describe("serialization/deserializer-spec", function() {
                     }
                 },
                 simple: {}
-            }).deserializeWithInstances(instances, function(obj) {
+            }, require).deserializeWithInstances(instances, function(obj) {
                 latch = true;
                 object = obj;
             });
@@ -280,7 +280,7 @@ describe("serialization/deserializer-spec", function() {
             var objects;
             instances["simple"] = simple;
 
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     module: "montage",
                     name: "Montage",
@@ -292,7 +292,7 @@ describe("serialization/deserializer-spec", function() {
                     module: "serialization/testobjects-v2",
                     name: "Simple"
                 }
-            }).deserializeWithInstances(instances, function(objs) {
+            }, require).deserializeWithInstances(instances, function(objs) {
                 latch = true;
                 objects = objs;
             });
@@ -328,7 +328,7 @@ describe("serialization/deserializer-spec", function() {
         it("should return all objects deserialized", function() {
             var latch, object, objects;
 
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     module: "serialization/testobjects-v2",
                     name: "TwoProps",
@@ -341,7 +341,7 @@ describe("serialization/deserializer-spec", function() {
                     module: "serialization/testobjects-v2",
                     name: "Simple"
                 }
-            }).deserializeObject(function(obj) {
+            }, require).deserializeObject(function(obj) {
                 latch = true;
                 object = obj;
             });
@@ -360,7 +360,7 @@ describe("serialization/deserializer-spec", function() {
             var instances = {root: objects.OneProp.create()};
             var exports;
 
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     module: "serialization/testobjects-v2",
                     name: "OneProp",
@@ -372,7 +372,7 @@ describe("serialization/deserializer-spec", function() {
                     module: "serialization/testobjects-v2",
                     name: "OneProp"
                 }
-            }).deserializeWithInstances(instances, function(objs) {
+            }, require).deserializeWithInstances(instances, function(objs) {
                 latch = true;
                 exports = objs;
             });
@@ -389,7 +389,7 @@ describe("serialization/deserializer-spec", function() {
                 var instances = {root: null};
                 var exports;
 
-                deserializer.initWithObject({
+                deserializer.initWithObjectAndRequire({
                     root: {
                         module: "serialization/testobjects-v2",
                         name: "OneProp",
@@ -401,7 +401,7 @@ describe("serialization/deserializer-spec", function() {
                         module: "serialization/testobjects-v2",
                         name: "OneProp"
                     }
-                }).deserializeWithInstances(instances, function(objs) {
+                }, require).deserializeWithInstances(instances, function(objs) {
                     latch = true;
                     exports = objs;
                 });
@@ -433,7 +433,7 @@ describe("serialization/deserializer-spec", function() {
         it("should deserialize a group of disconnected objects", function() {
             var latch, exports;
 
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 simple: {
                     module: "serialization/testobjects-v2",
                     name: "Simple",
@@ -457,7 +457,7 @@ describe("serialization/deserializer-spec", function() {
                         prop2: 42
                     }
                 }
-            }).deserialize(function(objs) {
+            }, require).deserialize(function(objs) {
                 latch = true;
                 exports = objs;
             });
@@ -470,13 +470,13 @@ describe("serialization/deserializer-spec", function() {
         });
 
         it("should have isDeserializing set to true during units deserialization", function() {
-            var object, isDeserializing;
+            var latch, object, isDeserializing;
 
             Deserializer.defineDeserializationUnit("spec", function(object) {
                 isDeserializing = object.isDeserializing;
             });
 
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     prototype: "serialization/testobjects-v2[OneProp]",
                     properties: {
@@ -484,7 +484,7 @@ describe("serialization/deserializer-spec", function() {
                     },
                     spec: {}
                 }
-            }).deserializeObject(function(obj) {
+            }, require).deserializeObject(function(obj) {
                 latch = true;
                 object = obj;
             });
@@ -500,7 +500,7 @@ describe("serialization/deserializer-spec", function() {
         it("should deserialize using prototype: module[name]", function() {
             var latch, objects;
 
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     prototype: "montage[Montage]",
                     properties: {
@@ -508,7 +508,7 @@ describe("serialization/deserializer-spec", function() {
                         string: "string"
                     }
                 }
-            }).deserialize(function(objs) {
+            }, require).deserialize(function(objs) {
                 latch = true;
                 objects = objs;
             });
@@ -526,7 +526,7 @@ describe("serialization/deserializer-spec", function() {
         it("should deserialize using prototype: module", function() {
             var latch, objects;
 
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     prototype: "montage",
                     properties: {
@@ -534,7 +534,7 @@ describe("serialization/deserializer-spec", function() {
                         string: "string"
                     }
                 }
-            }).deserialize(function(objs) {
+            }, require).deserialize(function(objs) {
                 latch = true;
                 objects = objs;
             });
@@ -555,7 +555,7 @@ describe("serialization/deserializer-spec", function() {
         it("should deserialize using prototype: module-name.reel", function() {
             var latch, objects;
 
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     prototype: "serialization/module-name.reel",
                     properties: {
@@ -563,7 +563,7 @@ describe("serialization/deserializer-spec", function() {
                         string: "string"
                     }
                 }
-            }).deserialize(function(objs) {
+            }, require).deserialize(function(objs) {
                 latch = true;
                 objects = objs;
             });
@@ -582,7 +582,7 @@ describe("serialization/deserializer-spec", function() {
         it("should deserialize using object: module[name]", function() {
             var latch, objects;
 
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     object: "montage[Montage]",
                     properties: {
@@ -590,7 +590,7 @@ describe("serialization/deserializer-spec", function() {
                         string: "string"
                     }
                 }
-            }).deserialize(function(objs) {
+            }, require).deserialize(function(objs) {
                 latch = true;
                 objects = objs;
             });
@@ -611,7 +611,7 @@ describe("serialization/deserializer-spec", function() {
         it("should deserialize using object: module", function() {
             var latch, objects;
 
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     object: "montage",
                     properties: {
@@ -619,7 +619,7 @@ describe("serialization/deserializer-spec", function() {
                         string: "string"
                     }
                 }
-            }).deserialize(function(objs) {
+            }, require).deserialize(function(objs) {
                 latch = true;
                 objects = objs;
             });
@@ -640,7 +640,7 @@ describe("serialization/deserializer-spec", function() {
         it("should deserialize using instance after compilation", function() {
             var latch, objects;
 
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     prototype: "montage",
                     properties: {
@@ -648,7 +648,7 @@ describe("serialization/deserializer-spec", function() {
                         string: "string"
                     }
                 }
-            }).deserialize(function() {
+            }, require).deserialize(function() {
                 deserializer.deserialize(function(objs) {
                     latch = true;
                     objects = objs;
@@ -670,7 +670,7 @@ describe("serialization/deserializer-spec", function() {
         it("should deserialize using type after compilation", function() {
             var latch, objects;
 
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     object: "montage",
                     properties: {
@@ -678,7 +678,7 @@ describe("serialization/deserializer-spec", function() {
                         string: "string"
                     }
                 }
-            }).deserialize(function() {
+            }, require).deserialize(function() {
                 deserializer.deserialize(function(objs) {
                     latch = true;
                     objects = objs;
@@ -930,7 +930,7 @@ describe("serialization/deserializer-spec", function() {
 
             };
 
-            deserializer.initWithObject(serialization)
+            deserializer.initWithObjectAndRequire(serialization, require)
                         .deserializeObject(function(obj) {
                 latch = true;
                 object = obj;
@@ -953,7 +953,7 @@ describe("serialization/deserializer-spec", function() {
                 type = deserializer.getType();
                 typeValue = deserializer.getTypeValue();
             }
-            deserializer.initWithObject(serialization)
+            deserializer.initWithObjectAndRequire(serialization, require)
                         .deserializeObject(function(obj) {
                 latch = true;
             });
@@ -972,11 +972,11 @@ describe("serialization/deserializer-spec", function() {
                 type = deserializer.getType();
                 typeValue = deserializer.getTypeValue();
             }
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     "object": "serialization/testobjects-v2[CustomDeserialization]"
                 }
-            }).deserializeObject(function(obj) {
+            }, require).deserializeObject(function(obj) {
                 latch = true;
             });
 
@@ -993,7 +993,7 @@ describe("serialization/deserializer-spec", function() {
             customDeserialization.deserializeSelf = function(deserializer) {
                 prop1 = deserializer.getProperty("prop1");
             }
-            deserializer.initWithObject(serialization)
+            deserializer.initWithObjectAndRequire(serialization, require)
                         .deserializeObject(function(obj) {
                 latch = true;
             });
@@ -1010,7 +1010,7 @@ describe("serialization/deserializer-spec", function() {
             customDeserialization.deserializeSelf = function(deserializer) {
                 deserializer.deserializeProperties();
             }
-            deserializer.initWithObject(serialization)
+            deserializer.initWithObjectAndRequire(serialization, require)
                         .deserializeObject(function(obj) {
                 latch = true;
                 object = obj;
@@ -1033,7 +1033,7 @@ describe("serialization/deserializer-spec", function() {
                 deserializer.deserializeProperties();
                 deserializer.deserializeUnit("listeners");
             }
-            deserializer.initWithObject(serialization)
+            deserializer.initWithObjectAndRequire(serialization, require)
                         .deserializeObject(function(obj) {
                 latch = true;
                 object = obj;
@@ -1055,7 +1055,7 @@ describe("serialization/deserializer-spec", function() {
                 deserializer.deserializeProperties();
                 deserializer.deserializeUnit("bindings");
             }
-            deserializer.initWithObject(serialization)
+            deserializer.initWithObjectAndRequire(serialization, require)
                         .deserializeObject(function(obj) {
                 latch = true;
                 object = obj;
@@ -1078,7 +1078,7 @@ describe("serialization/deserializer-spec", function() {
                 deserializer.deserializeProperties();
                 deserializer.deserializeUnits();
             }
-            deserializer.initWithObject(serialization)
+            deserializer.initWithObjectAndRequire(serialization, require)
                         .deserializeObject(function(obj) {
                 latch = true;
                 object = obj;
@@ -1091,6 +1091,38 @@ describe("serialization/deserializer-spec", function() {
                 expect(object.uuid in defaultEventManager.registeredEventListeners.action).toBeTruthy();
                 expect(object._bindingDescriptors).toBeTruthy();
             });
+        });
+    });
+
+    it("should load the correct module even if it's from a diferent package but with the same name", function() {
+        var deserializer1 = Deserializer.create(),
+            deserializer2 = Deserializer.create(),
+            serialization = {
+                root: {
+                    prototype: "ui/main.reel"
+                }
+            },
+            main1, main2, latch;
+
+        require.loadPackage("package-a").then(function(pkg1) {
+            require.loadPackage("package-b").then(function(pkg2) {
+                deserializer1.initWithObjectAndRequire(serialization, pkg1)
+                .deserialize(function(object1) {
+                    deserializer2.initWithObjectAndRequire(serialization, pkg2)
+                    .deserialize(function(object2) {
+                        main1 = object1.root;
+                        main2 = object2.root;
+
+                        latch = true;
+                    });
+                });
+            });
+        });
+
+        waitsFor(function() { return latch; });
+        runs(function() {
+            expect(main1.name).toBe("A");
+            expect(main2.name).toBe("B");
         });
     });
 });

@@ -1517,8 +1517,7 @@ expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0
             var latch, objects,
                 deserializer = Deserializer.create();
 
-            deserializer._require = require;
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     prototype: "montage",
                     properties: {
@@ -1535,7 +1534,7 @@ expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0
                         value: null
                     }
                 }
-            }).deserialize(function(objs) {
+            }, require).deserialize(function(objs) {
                 latch = true;
                 objects = objs;
             });
@@ -1556,8 +1555,7 @@ expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0
             var latch, objects,
                 deserializer = Deserializer.create();
 
-            deserializer._require = require;
-            deserializer.initWithObject({
+            deserializer.initWithObjectAndRequire({
                 root: {
                     prototype: "montage",
                     properties: {
@@ -1574,7 +1572,7 @@ expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0
                         value: null
                     }
                 }
-            }).deserialize(function(objs) {
+            }, require).deserialize(function(objs) {
                 latch = true;
                 objects = objs;
             });
