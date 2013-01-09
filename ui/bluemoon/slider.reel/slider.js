@@ -369,7 +369,6 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
                 var zero = Point.create().init(0, 0),
                     scale = (dom.convertPointFromNodeToPage(this._scale, zero).x - dom.convertPointFromNodeToPage(this._scale.parentNode, zero).x) / 10000,
                     elemPos = dom.convertPointFromNodeToPage(this.element, zero);
-
                 var x = event.pageX - Math.ceil(elemPos.x / scale),
                     y = event.pageY - Math.ceil(elemPos.y / scale);
 
@@ -467,6 +466,34 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         }
     },
 
+    // used in draw() to do the slider animation in diff. browsers
+    _transform: { value: null },
+    _transition: { value: null },
+    prepareForDraw: {
+        value: function() {
+            // check for transform support
+            if("webkitTransform" in this.element.style) {
+                this._transform = "webkitTransform";
+            } else if("MozTransform" in this.element.style) {
+                this._transform = "MozTransform";
+            } else if("oTransform" in this.element.style) {
+                this._transform = "oTransform";
+            } else {
+                this._transform = "transform";
+            }
+            // check for transition support
+            if("webkitTransition" in this.element.style) {
+                this._transition = "webkitTransition";
+            } else if("MozTransition" in this.element.style ) {
+                this._transition = "MozTransition";
+            } else if("oTransition" in this.element.style ) {
+                this._transition = "oTransition";
+            } else {
+                this._transition = "transition";
+            }
+        }
+    },
+
     willDraw: {
         value: function () {
             this._width = this.element.offsetWidth - 55;
@@ -485,22 +512,23 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
 
              http://jsperf.com/math-floor-vs-math-round-vs-parseint/8
              */
-            this._handlerbg.style.webkitTransform =
-                this._handler.style.webkitTransform =
-                    this._handler2.style.webkitTransform =
-                        this._handler3.style.webkitTransform =
-                            this._handler4.style.webkitTransform =
-                                this._line.style.webkitTransform =
-                                    this._line2.style.webkitTransform =
-                                        this._handlerDragArea.style.webkitTransform = "translate3d(" + (~~(((this.value - this._minValue) * this._width) / this.valueRange) * 100 / this._width) + "%, 0, 0)";
+            var transform = this._transform, transition = this._transition;
+            this._handlerbg.style[transform] =
+                this._handler.style[transform] =
+                    this._handler2.style[transform] =
+                        this._handler3.style[transform] =
+                            this._handler4.style[transform] =
+                                this._line.style[transform] =
+                                    this._line2.style[transform] =
+                                        this._handlerDragArea.style[transform] = "translate3d(" + (~~(((this.value - this._minValue) * this._width) / this.valueRange) * 100 / this._width) + "%, 0, 0)";
 
             if (this._pressedStart) {
                 this.element.classList.add("pressed");
-                this._handlerbg.firstChild.style.webkitTransition =
-                    this._handler.firstChild.style.webkitTransition =
-                        this._handler2.firstChild.style.webkitTransition =
-                            this._handler3.firstChild.style.webkitTransition =
-                                this._handler4.firstChild.style.webkitTransition = "150ms all";
+                this._handlerbg.firstChild.style[transition] =
+                    this._handler.firstChild.style[transition] =
+                        this._handler2.firstChild.style[transition] =
+                            this._handler3.firstChild.style[transition] =
+                                this._handler4.firstChild.style[transition] = "150ms all";
             } else if (this._pressedEnd) {
                 this.element.classList.remove("pressed");
             }
