@@ -76,6 +76,11 @@ var PopupTest = exports.PopupTest = Montage.create(Montage, {
         value: null
     },
 
+    handlePopupButtonAction: {
+        value: function() {
+            this.showPopup();
+        }
+    },
 
     /**
 

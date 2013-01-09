@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 {
     "test": {
         "prototype": "ui/popup-test/popup-test",
-        "properties": {            
+        "properties": {
             "popupContent": {"@": "popupContent"},
             "popupButton": {"@": "popupButton"},
             "popup": {"@": "popup"}
@@ -64,7 +64,10 @@ POSSIBILITY OF SUCH DAMAGE.
         "properties": {
             "element": {"#": "popupButton"},
             "identifier": "popupButton"
-        }
+        },
+        "listeners": [
+            {"type": "action", "listener": {"@": "test"}}
+        ]
     },
     "application": {
         "prototype": "montage/ui/application",
