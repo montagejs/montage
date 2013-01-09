@@ -64,7 +64,8 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
   @private
 */
     _objectStack: {value: []},
-    _modules: {value: Object.create(null)},
+    _modulesByRequire: {value: Object.create(null)},
+    _modules: {value: null},
  /**
   @private
 */
@@ -122,6 +123,20 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
         this._origin = null;
     }},
 
+    _setupModulesForRequire: {
+        value: function(require) {
+            if (require) {
+                var modules = this._modulesByRequire[require.uuid];
+
+                if (modules) {
+                    this._modules = modules;
+                } else {
+                    this._modules = this._modulesByRequire[require.uuid] = Object.create(null);
+                }
+            }
+        }
+    },
+
     /**
      Initializes the deserializer with a string
      @param {String|Object} serialization A string or JSON-style object
@@ -138,6 +153,9 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
             this._serializationString = serialization;
             this._require = require;
             this._origin = origin;
+
+            this._setupModulesForRequire(require);
+
             return this;
         }
     },
@@ -172,6 +190,9 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
         this._serializationString = JSON.stringify(object);
         this._require = require;
         this._origin = origin;
+
+        this._setupModulesForRequire(require);
+
         return this;
     }},
 
@@ -188,6 +209,9 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
         this._serializationString = string;
         this._require = require;
         this._origin = origin;
+
+        this._setupModulesForRequire(require);
+
         return this;
     }},
 
@@ -478,9 +502,6 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
                 function addModules(newModules) {
                     var modules = self._modules;
 
-                    if (!modules) {
-                        modules = self._modules = Object.create(null);
-                    }
                     for (var moduleId in newModules) {
                         if (Object.hasOwnProperty.call(newModules, moduleId)) {
                             modules[moduleId] = newModules[moduleId];
