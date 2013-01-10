@@ -11,19 +11,21 @@ Serializer.defineSerializationUnit("bindings", function (object, serializer) {
     var outputs = {};
     var hasBindings;
 
+    var parameters = {
+        serialization: serializer
+    };
+
     for (targetPath in inputs) {
         var input = inputs[targetPath];
         var output = {};
 
+        if (("serializable" in input) && !input.serializable)
+            continue;
+
         var sourcePath = input.sourcePath;
-        if (input.source !== object) {
-            var reference = serializer.addObjectReference(input.source);
-            var syntax = expand(parse(sourcePath), {
-                type: "component",
-                label: reference["@"]
-            });
-            sourcePath = stringify(syntax);
-        }
+
+        var syntax = expand(parse(sourcePath), null, parameters);
+        sourcePath = stringify(syntax);
 
         if (input.twoWay) {
             output["<->"] = sourcePath;
@@ -37,6 +39,11 @@ Serializer.defineSerializationUnit("bindings", function (object, serializer) {
             output.convert = input.convert;
             output.revert = input.revert;
         }
+
+        if (input.trace) {
+            output.trace = true;
+        }
+
         outputs[targetPath] = output;
         hasBindings = true;
     }

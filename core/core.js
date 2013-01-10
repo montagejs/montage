@@ -52,6 +52,8 @@ require("core/extras/function");
 require("core/extras/regexp");
 require("core/extras/string");
 
+var Bindings = require("core/bindings").Bindings;
+
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
     PROTO = "__proto__",
@@ -722,6 +724,7 @@ Montage.defineProperty(Montage, "identifier", {
 */
 Object.defineProperty(Montage, "equals", {
     value: function(anObject) {
+        if (!anObject) return false;
         return this === anObject || this.uuid === anObject.uuid;
     }
 });
@@ -751,6 +754,50 @@ Object.defineProperty(Montage, "callDelegateMethod", {
             return delegateFunction.apply(delegate, arguments);
         }
     }
+});
+
+var PropertyChanges = require("collections/listen/property-changes");
+
+Object.addEach(Montage, PropertyChanges.prototype);
+
+Montage.defineProperties(Montage, {
+
+    defineBinding: {
+        value: function (targetPath, descriptor, parameters) {
+            return Bindings.defineBinding(this, targetPath, descriptor, parameters);
+        }
+    },
+
+    defineBindings: {
+        value: function (descriptors, parameters) {
+            return Bindings.defineBindings(this, descriptors, parameters);
+        }
+    },
+
+    cancelBinding: {
+        value: function (targetPath) {
+            return Bindings.cancelBinding(this, targetPath);
+        }
+    },
+
+    cancelBindings: {
+        value: function () {
+            return Bindings.cancelBindings(this);
+        }
+    },
+
+    getBinding: {
+        value: function (targetPath) {
+            return Bindings.getBinding(this, targetPath);
+        }
+    },
+
+    getBindings: {
+        value: function () {
+            return Bindings.getBindings(this);
+        }
+    }
+
 });
 
 // has to come last since serializer and deserializer depend on logger, which

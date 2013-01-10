@@ -246,7 +246,11 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
                 var length = this._value.toString().length;
                 this.element.setSelectionRange(length, length);
             }
-            this._valueSyncedWithInputField = true;
+            // The value might have been changed during the draw if bindings
+            // were reified, and another draw will be needed.
+            if (!this.needsDraw) {
+                this._valueSyncedWithInputField = true;
+            }
         }
     },
 

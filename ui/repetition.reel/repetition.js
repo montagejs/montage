@@ -1,1579 +1,712 @@
-/* <copyright>
-Copyright (c) 2012, Motorola Mobility LLC.
-All Rights Reserved.
+"use strict";
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+var Montage = require("montage").Montage;
+var Component = require("ui/component").Component;
+var Template = require("ui/template").Template;
+var Map = require("collections/map");
+var Observers = require("frb/observers");
+var observeProperty = Observers.observeProperty;
+var observeKey = Observers.observeKey;
+var Promise = require("q");
 
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
+var Repetition = exports.Repetition = Montage.create(Component, {
 
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
+    // For the creator:
+    // ----
 
-* Neither the name of Motorola Mobility LLC nor the names of its
-  contributors may be used to endorse or promote products derived from this
-  software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-</copyright> */
-/**
-	@module "montage/ui/repetition.reel"
-    @requires montage/core/core
-    @requires montage/ui/component
-    @requires montage/ui/template
-    @requires montage/core/logger
-    @requires montage/core/gate
-    @requires montage/core/change-notification
-*/
-var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
-    Template = require("ui/template").Template,
-    logger = require("core/logger").logger("repetition"),
-    Gate = require("core/gate").Gate,
-    ChangeNotification = require("core/change-notification").ChangeNotification,
-    PropertyChangeNotification = require("core/change-notification").PropertyChangeNotification;
-
-var FakeObjects = Montage.create(Object.prototype, {
-    _repetition: {value: null},
-    _fakeIndex: {value: null},
-    _unusedIndexes: {value: null},
-
-    initWithRepetition: {
-        value: function(repetition) {
-            this._repetition = repetition;
-            this._fakeIndex = [];
-            this._unusedIndexes = [];
+    initWithObjects: {
+        value: function (objects) {
+            this.objects = objects;
             return this;
         }
     },
 
-    automaticallyDispatchPropertyChangeListener: {
-        value: function() {
-            return false;
+    initWithController: {
+        value: function (controller) {
+            this.controller = controller;
+            return this;
         }
     },
 
-    undefinedGet: {
-        value: function(propertyName) {
-            if (this._repetition.objects) {
-                return this._repetition.objects[this._fakeIndex.indexOf(propertyName)];
+    objects: {
+        get: function () {
+            if (!this.controller) {
+                throw new Error(
+                    "Can't get objects: No objects or controller have been " +
+                    "assigned to this Repetition"
+                );
             }
-        }
-    },
-
-    // This is to catch a two-way binding on
-    "0": {
-        // This is to catch two way bindings
-        set: function() {
-            throw("You cannot use a two-way binding on the \"objectAtCurrentIteration\" or \"current\" property.");
+            return this.controller.objects;
         },
-        get: function() {
-            if (this._repetition.objects) {
-                return this._repetition.objects[this._fakeIndex.indexOf("0")];
-            }
+        set: function (objects) {
+            // TODO better than DumbController
+            this.controller = DumbController.create().initWithObjects(objects);
         }
     },
 
-    addFakeObjectAtPosition: {
-        value: function(position) {
-            var index;
+    // For the template:
+    // ----
 
-            if (this._unusedIndexes.length > 0) {
-                index = this._unusedIndexes.pop();
-            } else {
-                index = String(this._fakeIndex.length);
-            }
-
-            this._fakeIndex.splice(position, 0, index);
-            return index;
-        }
-    },
-    resetFakeObjects: {
-        value: function() {
-            var objects = this._repetition.objects;
-
-            this._fakeIndex.length = 0;
-            if (objects) {
-                for (var i = 0, l = objects.length; i < l; i++) {
-                    this._fakeIndex[i] = String(i);
-                }
-            }
-        }
-    },
-    removeFakeObjectAtPosition: {
-        value: function(position) {
-            var index;
-
-            this._unusedIndexes.unshift(this._fakeIndex.splice(position, 1)[0]);
-
-            return this._unusedIndexes[0];
-        }
-    },
-    _dispatchFakePropertyChange: {
-        value: function(propertyName, minus) {
-            var descriptor,
-                notification;
-
-            descriptor = ChangeNotification.getPropertyChangeDescriptor(this, propertyName);
-            if (descriptor) {
-                notification = Object.create(PropertyChangeNotification);
-
-                notification.target = this;
-                notification.propertyPath = propertyName;
-                notification.minus = minus;
-                notification.plus = this.undefinedGet(propertyName);
-                if (minus !== notification.plus) {
-                    descriptor.handleChange(notification);
-                }
-            }
-        }
-    }
-});
-
-/**
- @class module:"montage/ui/repetition.reel".Repetition
- @extends module:montage/ui/component.Component
- */
-var Repetition = exports.Repetition = Montage.create(Component, /** @lends module:"montage/ui/repetition.reel".Repetition# */{
-    /**
-     Description TODO
-     */
+    // Informs the super-type, Component, that there is no repetition.html
     hasTemplate: {value: false},
 
+    // informs Template that it is not safe to clone the DOM of the
+    // corresponding element. TODO @aadsm, please explain this better, here and
+    // in Component.  - @kriskowal.
+    clonesChildComponents: {value: true},
+
+    // Implementation:
+    // ----
+
     didCreate: {
-        value: function() {
+        value: function () {
+            window.repetition = this; // TODO redact
             Component.didCreate.call(this);
-            this.addPropertyChangeListener("objects", this);
-            this._fakeObjects = Object.create(FakeObjects).initWithRepetition(this);
-        }
-    },
 
-    clonesChildComponents: {
-        value: true
-    },
+            this.controller = null;
+            this.selector = null;
 
-    _emptyFunction: {value: function(){}},
+            // The state of the DOM:
+            // ---
 
-    _updateItems: {
-        value: function(minus, plus, index) {
-            var fakeObjects = this._fakeObjects,
-                fakeIndex,
-                minusCount = minus ? minus.length : 0,
-                plusCount = plus ? plus.length : 0,
-                max, min, delta;
+            // The template that gets repeated in the DOM
+            this.iterationTemplate = null;
+            // The "iterations" array tracks "visibleObjects".  Each iteration
+            // corresponds to a visible object, by its visible position.  An
+            // iteration has a template instance
+            this.iterations = [];
+            // Iteration objects can be reused.  When an iteration is collected,
+            // it gets put in the freeIterations list.
+            this.freeIterations = []; // push/pop LIFO
+            // Iterations that need a template instance:
+            this.iterationsNeedingTemplates = [];
+            // Whenever an iteration template is instantiated, it may have
+            // bindings to the repetition's "objectAtCurrentIteration".  The
+            // repetition delegates "objectAtCurrentIteration" to a mapping
+            // from iterations to objects, which it can dynamically update as
+            // the iterations are reused, thereby updating the bindings.
+            this.objectForIteration = Map();
+            // This variable is updated in the context of deserializing the
+            // iteration template so bindings to "objectAtCurrentIteration" are
+            // attached to the proper "iteration".  The "objectForIteration"
+            // provides the level of indirection that allows iterations to be
+            // paired with different objects during their lifetime, but the
+            // template and components for each iteration will always be tied
+            // to the same Iteration instance.
+            this.currentIteration = null;
+            // A memo key used by Template.createWithComponent to uniquely
+            // identify this repetition (and equivalent instances if this is
+            // nested in another repetition) so that it can memoize the
+            // template instance:
+            this._templateId = null;
 
-            max = Math.max(minusCount, plusCount);
-            min = Math.min(minusCount, plusCount);
-            delta = plusCount - minusCount;
+            // Where we want to be after the next draw:
+            // ---
 
-//console.log("Going to change " + min + " iterations", fakeObjects._fakeIndex);
+            this.visibleObjects = [];
+            // dispatches to this.handleVisibleObjectsRangeChange:
+            this.visibleObjects.addRangeChangeListener(this, "visibleObjects");
+            // Ascertains that visibleObjects does not get changed by the
+            // controller, but the changes are projected on our array.
+            console.log('repetition', this);
+            this.defineBinding("visibleObjects.*", {"<-": "controller.visibleObjects"});
+            // The boundaries array contains comment nodes that serve as the
+            // top and bottom boundary of each iteration.  There will always be
+            // one more boundary than iteration.
+            this.boundaries = [];
+            // The child components of each iteration will be shared in the
+            // repetitions own childComponents.  Since each repetition
+            // consistently has the same number of childComponents, we can
+            // project changes to the components array based on the
+            // visibleIndex of the iteration and this figure:
+            this.iterationChildComponentsLength = 0;
 
-            // send updates for the elements that were just replaced by new ones
-            for (var i = 0; i < min; i++) {
-//console.log("Going to change " + (index+i), minus[index+i]);
-                fakeObjects._dispatchFakePropertyChange(fakeObjects._fakeIndex[index+i], minus[index+i]);
-            }
+            // The plan for the next draw to synchronize visibleObjects and
+            // iterations on the DOM:
+            // ---
 
-            // add new objects, no need to send updates on this one, they're new!
-            if (delta > 0) {
-//console.log("Going to add " + (max-i) + " iterations");
-                this._expectedChildComponentsCount += (this._iterationChildComponentsCount||1) * delta;
-                this.canDrawGate.setField("iterationLoaded", false);
-                for (; i < max; i++) {
-//console.log("New item " + (index+i) + " " + plus[index+i].uuid);
-                    fakeObjects.addFakeObjectAtPosition(index + i);
-                    this._addItem({index: index + i, insertionIndex: index + i});
-                }
-            } else if (delta < 0) { // remove elements and send updates
-//console.log("Going to remove " + (max-i) + " iterations");
-                // this index is fixed because we're changing the array at each iteration of the for loop
-                var removeIndex = index + min;
-                for (; i < max; i++) {
-//console.log("Going to remove " + (index+i), minus[i], min);
-                    fakeIndex = fakeObjects.removeFakeObjectAtPosition(removeIndex);
-                    fakeObjects._dispatchFakePropertyChange(fakeIndex, minus[i]);
-                    this._deleteItem(removeIndex);
-                }
-            }
-        }
-    },
-
-    handleChange: {
-        enumerable: false,
-        value: function(notification) {
-            if ("objects" === notification.currentPropertyPath && this._isComponentExpanded) {
-                this._updateItems(notification.minus, notification.plus, notification.index || 0);
-            }
-        }
-    },
-
-    _fakeObjects: {
-        value: null
-    },
-
-/**
-    @private
-*/
-    _hasBeenDeserialized: {
-        value: false,
-        enumerable: false
-    },
-
-/**
-  Description TODO
-  @private
-*/
-    _nextDeserializedItemIx: {
-        enumerable: false,
-        value: 0,
-        distinct: true
-    },
-/**
-    Description TODO
-    @function
-    @returns itself
-    */
-    init: {
-        enumerable: false,
-        value: function() {
-            this._items = [];
-            this._itemsToAppend = [];
-            this._nextDeserializedItemIx = 0;
-            this._itemsToRemove = [];
-            this._deletedItems = [];
-            return this;
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _contentController: {
-        value: null
-    },
-/**
-        The collection of items managed the Repetition.
-        @type {Function}
-        @default null
-    */
-    contentController: {
-        get: function() {
-            return this._contentController;
-        },
-        set: function(value) {
-            if (this._contentController === value) {
-                return;
-            }
-
-            if (this._contentController) {
-                Object.deleteBinding(this, "objects");
-                Object.deleteBinding(this, "selectedIndexes");
-            }
-
-            this._contentController = value;
-
-            if (this._contentController) {
-
-                // If we're already getting contentController related values from other bindings...stop that
-                if (this._bindingDescriptors) {
-                    Object.deleteBinding(this, "objects");
-                }
-
-                // And bind what we need from the new contentController
-                var objectsBindingDescriptor,
-                    selectedIndexesBindingDescriptor;
-
-                objectsBindingDescriptor = {
-                    boundObject: this._contentController,
-                    boundObjectPropertyPath: "organizedObjects",
-                    oneway: true
-                };
-
-                selectedIndexesBindingDescriptor = {
-                    boundObject: this._contentController,
-                    boundObjectPropertyPath: "selectedIndexes"
-                };
-
-                // If we're ready for bindings...go ahead an install
-                // TODO: Look at changing this once the new serialization has been implemented
-                if (this._hasBeenDeserialized) {
-                    Object.defineBinding(this, "objects", objectsBindingDescriptor);
-                    Object.defineBinding(this, "selectedIndexes", selectedIndexesBindingDescriptor);
-
-                } else {
-                    // otherwise we need to defer it until later; we haven't been deserialized yet
-                    if (!this._controllerBindingsToInstall) {
-                        this._controllerBindingsToInstall = {};
-                    }
-
-                    this._controllerBindingsToInstall.objects = objectsBindingDescriptor;
-                    this._controllerBindingsToInstall.selectedIndexes = selectedIndexesBindingDescriptor;
-                }
-            }
-
-            //TODO otherwise if no contentController should we disable selections?
+            // All of the "add" and "delete" operations planned for the next
+            // draw.
+            this.pendingOperations = [];
+            // The number of iterations, plus the number of planned
+            // additions minus the number of planned deletions on the next
+            // draw.
+            this.neededIterations = 0;
+            this.requestedIterations = 0;
+            this.createdIterations = 0;
+            // We have to keep the HTML content of the repetition in tact until
+            // it has been captured by setupIterationTemplate.  Unfortunately,
+            // we can't set up the iteration template in this turn of the event
+            // loop because it would interfere with deserialization, so this is
+            // usually deferred to the first draw.
+            this.canDrawInitialContent = false;
+            this.initialContentDrawn = false;
 
         }
     },
-/**
-  Description TODO
-  @private
-*/
-    _objects: {
-        enumerable: false,
-        value: null
-    },
 
-    _mappedObjects: {
-        enumerable: false,
-        value: null
-    },
-/**
-        Description TODO
-        @type {Function}
-        @default null
-    */
-    objects: {
-        dependencies: ["indexMap", "indexMapEnabled"],
-        enumerable: false,
-        serializable: true,
-        get: function() {
-            if (!this.indexMap || !this.indexMapEnabled) {
-                return this._objects;
-            } else {
-                if (this._objects && !this._mappedObjects) {
-                    this._mappedObjects = this.indexMap.map(function(value) {
-                        return !isNaN(value) ? this._objects.getProperty(value) : undefined;
-                    }, this);
-                }
-                return this._mappedObjects;
-            }
-        },
-        set: function(value) {
-            if (logger.isDebug) {
-                logger.debug(this, " set objects:", (value ? value.length : null), value, "same objects?", value === this._objects);
-            }
+    // Creating an iteration template:
+    // ----
 
-            this._mappedObjects = null;
-            this._objects = value;
-
-            // Objects have changed, clear the selectedIndexes, if we're managing our own selection
-            if (!this.contentController) {
-                this.selectedIndexes = null;
-            }
-
-            //if (this._isComponentExpanded) {
-            //    this._refreshItems();
-            //}
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _isSelectionEnabled: {
-        enumerable: false,
-        value: false
-    },
-/**
-        Description TODO
-        @type {Function}
-        @default {Boolean} false
-    */
-    isSelectionEnabled: {
-        get: function() {
-            return this._isSelectionEnabled;
-        },
-        set: function(value) {
-            if (value === this._isSelectionEnabled) {
-                return;
-            }
-
-            this._isSelectionEnabled = value;
-
-            if (this._isComponentExpanded) {
-                this._refreshSelectionTracking();
-            }
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _childLoadedCount: {
-        enumerable: false,
-        value: 0
-    },
-/**
-  Description TODO
-  @private
-*/
-    _iterationChildComponentsCount: {
-        enumerable: false,
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
-    _expectedChildComponentsCount: {
-        enumerable: false,
-        value: null
-    },
-
-    _indexMap: {
-        enumerable: false,
-        value: null
-    },
-
-    indexMap: {
-        get: function() {
-            return this._indexMap;
+    deserializedFromTemplate: {
+        value: function () {
+            // We can't set up the iteration template during didCreate because
+            // it would interfere with the active deserialization process.  We
+            // wait until the deserialization is complete and the template is
+            // fully instantiated so we can capture all the child components
+            // and DOM elements.
+            this.setupIterationTemplate();
+            // TODO @kriskowal figure out whether someone actually needs
+            // _hasBeenDeserialized, like the canDraw flag or something.
         }
     },
 
-    _indexMapEnabled: {
-        enumerable: false,
-        value: false
-    },
-
-    indexMapEnabled: {
-        get: function() {
-            return this._indexMapEnabled;
-        },
-        set: function(value) {
-            if (value === this._indexMapEnabled) {
-                return;
-            }
-
-            if (!this._indexMap && value) {
-                this._indexMap = [];
-            }
-
-            this._indexMapEnabled = value;
-
-            this.refreshIndexMap();
-        }
-    },
-
-    _drawnIndexMap: {
-        enumerable: false,
-        value: null
-    },
-
-    drawnIndexMap: {
-        get: function() {
-            return this._drawnIndexMap;
-        }
-    },
-
-    mapIndexToIndex: {
-        value: function(actual, apparent, update) {
-
-            if (!this._indexMap) {
-                this._indexMap = [];
-            }
-
-            if (apparent === this._indexMap[actual] || (!isNaN(apparent) && this._indexMap.indexOf(apparent) > -1)) {
-                return;
-            }
-
-            this._indexMap[actual] = apparent;
-
-            // Track that the indexMap changed what is appearing at the given index
-            // so that we can force it to not transition
-            this._indexMapAffectedIndexes[actual] = true;
-            this._indexMapChanged = true;
-
-            // Don't update if the end-user forced no update, they might be doing a bunch of modifications
-            // and want to manually refresh the indexMap when they're done.
-            if (update || typeof update === "undefined") {
-                this.refreshIndexMap();
-            }
-        }
-    },
-
-    clearIndexMap: {
-        value: function() {
-            this._indexMap.clear();
-        }
-    },
-
-    refreshIndexMap: {
-        value: function() {
-            var oldMappedObjects = this._mappedObjects;
-            this._mappedObjects = null;
-
-            if (this._isComponentExpanded) {
-                this._updateItems(oldMappedObjects, this.objects, 0);
-                this.needsDraw = true;
-            }
-        }
-    },
-
-    _indexMapChanged: {
-        enumerable: false,
-        value: false
-    },
-
-    _indexMapAffectedIndexes: {
-        enumerable: false,
-        distinct: true,
-        value: {}
-    },
-
-    _dirtyIndexes: {
-        enumerable: false,
-        distinct: true,
-        value: {}
-    },
-
- /**
-  Description TODO
-  @private
-*/
-    _items: {
-        enumerable: false,
-        value: [],
-        distinct: true
-    },
-/**
-  Description TODO
-  @private
-*/
-    _itemsToAppend: {
-        enumerable: false,
-        value: [],
-        distinct: true
-    },
-/**
-  Description TODO
-  @private
-*/
-    _itemsToRemove: {
-        enumerable: false,
-        value: [],
-        distinct: true
-    },
-/**
-  Description TODO
-  @private
-*/
-    _deletedItems: {
-        enumerable: false,
-        value: [],
-        distinct: true
-    },
-/**
-  Description TODO
-  @private
-*/
-    _updatingItems: {
-        value: false
-    },
-/**
-  Description TODO
-  @private
-*/
-    _refreshItems: {
-        value: function() {
-            if (this._updatingItems) {
-                return;
-            }
-            this._updatingItems = true;
-
-            var objectCount = this._objects ? this._objects.length : 0,
-                itemCount = this._items.length + this._itemsToAppend.length,
-                neededItemCount,
-                i,
-                addItem = this._addItem,
-                deleteItem = this._deleteItem;
-
-            if (this._objects && this.indexMap && this._indexMapEnabled) {
-                objectCount = this.indexMap.length;
-            }
-
-            neededItemCount = objectCount - itemCount;
-
-            // TODO: this needs to be here because the repetition might be ready to draw during a call to _addItem (if all modules are already loaded).
-            // The problem is that when the gate is open, and the repetition hasn't ask to be drawn, the _canDraw = true will never happen and it will not happen when needsDraw = true afterwards. This kind of sucks because it means the needsDraw=true and the opening of the Gate needs to be in the correct order.
-            // needsDraw should do _canDraw = true if the gate was opened, but we need to be careful since _canDraw=true only works if there was a previous _canDraw=false.
-            if (0 !== neededItemCount) {
-                this.needsDraw = true;
-            }
-
-            // TODO what if instead of actually adding/removing (effectively loading and unloading child components) at this
-            // point, we instead only changed the count or something about how many items are needed...
-            // only after that count is changed such that we know how many items we will need to load
-            // do we then try to add them
-            // each one of these addItem calls triggers a refreshItems
-            // or well I'm trying a flag right
-            // http://jsperf.com/direct-vs-dynamic-call
-            if (neededItemCount > 0) {
-                // _addItem might be completly synchrounous since we cache both template and deserializer so we need to set this before adding any item otherwise it will trigger a draw after every iteration template instantiation.
-                this._expectedChildComponentsCount += (this._iterationChildComponentsCount||1) * neededItemCount;
-                this.canDrawGate.setField("iterationLoaded", false);
-                // Need to add more items
-                for (i = 0; i < neededItemCount; i++) {
-                    addItem.call(this);
-                }
-            } else if (neededItemCount < 0) {
-                // Need to remove extra items
-                for (i = neededItemCount; i < 0; i++) {
-                    deleteItem.call(this);
-                }
-            }
-
-            this._updatingItems = false;
-            // Otherwise, no change in length; don't add or remove items
-            // bindings should already be in place
-        }
-    },
-
-    _addItems: {
-        value: function(plus, index) {
-            var length = plus.length;
-
-            if (this._updatingItems) {
-                return;
-            }
-            this._updatingItems = true;
-
-            this._expectedChildComponentsCount += (this._iterationChildComponentsCount||1) * length;
-            this.canDrawGate.setField("iterationLoaded", false);
-
-            for (var i = 0; i < length; i++) {
-                this._addItem({index: index + i, insertionIndex: index + i});
-            }
-
-            this._updatingItems = false;
-        }
-    },
-
-/**
-  Description TODO
-  @private
-*/
-    _addItem: {value: function(item) {
-        var self = this,
-            items = this._items,
-            childComponents,
-            childComponent,
-            componentsCount,
-            index,
-            itemsToAppend = this._itemsToAppend,
-            itemsToAppendCount,
-            componentStartIndex,
-            componentEndIndex,
-            canDrawGate = self.canDrawGate,
-            i;
-
-        // TODO simply pop from deletedItems if we have any in that pool
-        if (!item) {
-            item = {};
-        }
-
-        // TODO when do we actually consider the item part of the "items" array? now or after drawing?
-        // right now I think we want to say if it's not in the DOM; it's not in the items list
-        // for clarity sake
-        itemsToAppendCount = itemsToAppend.push(item) - 1;
-        index = items.length + itemsToAppendCount;
-
-        if ("index" in item) {
-            for (i = 0; i < itemsToAppendCount; i++) {
-                var itemToAppend = itemsToAppend[i];
-                if (itemToAppend.index >= item.index) {
-                    itemToAppend.index++;
-                }
-            }
-        }
-
-        self._canDraw = false;
-        componentsCount = this._iterationChildComponentsCount;
-
-        this._iterationTemplate.instantiateWithComponent(this, function() {
-            if (componentsCount === 0) {
-                if (++self._childLoadedCount === self._expectedChildComponentsCount) {
-                    canDrawGate.setField("iterationLoaded", true);
-                    self.needsDraw = true;
-                }
-            } else {
-                childComponents = self.childComponents;
-                componentStartIndex = index * self._iterationChildComponentsCount;
-                componentEndIndex = componentStartIndex + componentsCount;
-                for (i = componentStartIndex; i < componentEndIndex; i++) {
-                    childComponent = childComponents[i];
-                    childComponent.needsDraw = true;
-                    childComponent.loadComponentTree(function() {
-                        if (++self._childLoadedCount === self._expectedChildComponentsCount) {
-                            canDrawGate.setField("iterationLoaded", true);
-                            self.needsDraw = true;
-                        }
-                    });
-                }
-            }
-        });
-    }},
-/**
-  Description TODO
-  @private
-*/
-    _deleteItem: {
-        value: function(index) {
-            var deletedItem,
-                itemIndex = index,
-                removedComponents,
-                childComponents = this.childComponents,
-                childComponentsCount = this._iterationChildComponentsCount,
-                itemsToAppend = this._itemsToAppend,
-                itemsToAppendCount = itemsToAppend.length,
-                itemWasToBeAppended = false,
-                removedItemsBeforeIndexCount = 0;
-
-
-            for (var i = 0; i < itemsToAppendCount; i++) {
-                var itemToAppend = itemsToAppend[i];
-                if (itemToAppend.index > index) {
-                    itemToAppend.index--;
-                } else if (itemToAppend.index < index) {
-                    removedItemsBeforeIndexCount++;
-                } else {
-                    itemWasToBeAppended = itemToAppend.removed = true;
-                }
-            }
-
-            if (!itemWasToBeAppended) {
-                if (this._items.length > 0) {
-                    itemIndex = index - removedItemsBeforeIndexCount;
-
-                    deletedItem = this._items.splice(itemIndex, 1)[0];
-                    deletedItem.removalIndex = itemIndex;
-                    this._itemsToRemove.push(deletedItem);
-                } else {
-                    throw "BUG: _deleteItem was called on the repetition but no elements exist to be removed";
-                }
-
-                this._removeIterationChildComponents(deletedItem.childComponentsIndex);
-            }
-
-            this.needsDraw = true;
-        }
-    },
-
-
-    _removeIterationChildComponents: {
-        value: function(index) {
-            var childComponents = this.childComponents,
-                childComponentsCount = this._iterationChildComponentsCount,
-                removedComponents,
-                items, item;
-
-            if (childComponentsCount > 0) {
-                removedComponents = childComponents.splice(index, childComponentsCount);
-                this._childLoadedCount -= childComponentsCount;
-                this._expectedChildComponentsCount -= childComponentsCount;
-                for (var i = 0, l = removedComponents.length; i < l; i++) {
-                    removedComponents[i].cleanupDeletedComponentTree(true);
-                }
-                items = this._items;
-                for (var i = 0; item = items[i]; i++) {
-                    if (item.childComponentsIndex > index) {
-                        item.childComponentsIndex -= childComponentsCount;
-                    }
-                }
-                items = this._itemsToAppend;
-                for (var i = 0; item = items[i]; i++) {
-                    if (item.childComponentsIndex > index) {
-                        item.childComponentsIndex -= childComponentsCount;
-                    }
-                }
-            } else {
-                this._childLoadedCount--;
-                this._expectedChildComponentsCount--;
-            }
-        }
-    },
-
-    _iterationTemplate: {
-        enumerable: false,
-        value: null
-    },
-/**
-    Description TODO
-    @function
-    @param {Function} callback The callback method.
-    */
-    expandComponent: {value: function expandComponent(callback) {
-        if (!this._updatingItems) {
-            this._setupIterationTemplate();
-        }
-        this._isComponentExpanded = true;
-        if (callback) {
-            callback();
-        }
-    }},
-
-    // we don't want to reinitialize the ownerComponent again
+    // This prevents the deserializer from reinstantiating the ownerComponent.
+    // TODO @aadsm please verify - @kriskowal
     templateDidDeserializeObject: {
         value: null
     },
 
-    _setupIterationTemplate: {
-        value: function() {
-            var element = this._element,
-                childComponents = this.childComponents,
-                childComponent;
+    /*
+    * When a template contains a repetition, the deserializer produces a
+    * repetition instance that initially contains a single iteration's worth of
+    * DOM nodes and components.  To create an iteration template, we must
+    * reserialize the repetition component in isolation, with just its element
+    * and child components.  To accomplish this, set up a temporary serializer
+    *
+    * Note that this function must be called on demand for the first iteration
+    * needed because it cannot be called in didCreate.  Setting up the
+    * iteration template would interfere with normal deserialization.
+    */
+    setupIterationTemplate: {
+        value: function () {
 
-            this.setupIterationSerialization();
-            this.setupIterationDeserialization();
-            this._iterationChildComponentsCount = childComponents.length;
-            this._iterationChildCount = element.childNodes.length;
-            this._iterationChildElementCount = element.children.length;
+            // override the prototype's serialization routine on just this
+            // instance temporarily:
+            this.serializeSelf = this.serializeIteration;
+            // permanently override deserializeProperties because it is used
+            // for instantiating the iterationTemplate.  TODO verify that this
+            // will never be a problem since we would never deserialize the
+            // repetition instance again
+            this.deserializeProperties = this.deserializeIteration;
 
-            if (this._iterationChildComponentsCount > 0) {
-                this._templateId = childComponents[0]._suuid || childComponents[0].uuid;
-                this._iterationTemplate = Template.templateWithComponent(this, this._templateDelegate);
+            this.iterationChildComponentsLength = this.childComponents.length;
+
+            // create an iteration template
+            if (this.childComponents.length > 0) {
+                // The common case (components and a document fragment).
+                // The templateId property is used by ui/template.js as a memo
+                // key.  Use the first contained component's UUID to uniquely
+                // identify this template.  Use the _suuid to ascertain that
+                // only one key exists, even if the repetition is nested.
+                this._templateId = this.childComponents[0]._suuid || this.childComponents[0].uuid;
+                // TODO maybe we don't need to fall back to childComponents[0].uuid, if
+                // every component is guaranteed to have _suuid.
+                // templateWithComponent is a memoization of the template for its id
+                this.iterationTemplate = Template.templateWithComponent(
+                    this,
+                    this.templateDelegate
+                );
             } else {
-                this._iterationTemplate = Template.create();
-                this._iterationTemplate.delegate = this._templateDelegate;
-                this._iterationTemplate.initWithComponent(this);
+                // The optimized case (just a document fragment, no components)
+                this.iterationTemplate = Template.create();
+                this.iterationTemplate.delegate = this.templateDelegate;
+                this.iterationTemplate.initWithComponent(this);
             }
-            this._iterationTemplate.optimize();
-            this._removeOriginalContent = true;
+            this.iterationTemplate.optimize();
 
-            if (logger.isDebug) {
-                logger.debug(this._iterationTemplate.exportToString());
-            }
+            // this restores serializeSelf to the one on the prototype chain:
+            delete this.serializeSelf;
 
-            // just needed to create the iteration Template, so we get rid of it.
-            this.removeIterationSerialization();
-
-            while ((childComponent = childComponents.shift())) {
+            // the components inside the repetition in the markup are going to
+            // be instantiated once when the component is initially
+            // deserialized, but only for the purpose of reserializing them for
+            // the iteration template, and then removed.  This removes the
+            // initial components and ascertains that we waste no time dawing
+            // them.
+            var childComponent;
+            while ((childComponent = this.childComponents.shift())) {
                 childComponent.needsDraw = false;
             }
 
-            if (this.objects && (this.objects.length !== this._items.length)) {
-                this._updateItems([], this.objects, 0);
-            }
+            // In case some iterations have been requested before the iteration
+            // template was ready to go.  Iterations are requested during
+            // handleVisibleObjectsRangeChange.
+            this.createNeededIterations();
         }
     },
 
-    _templateDelegate: {
+    // This method temporarily replaces "serializeSelf" for the purpose of
+    // creating an iteration template from the initial HTML content and
+    // childComponents of a fresh repetition instance.
+    serializeIteration: {
+        value: function (serializer) {
+            serializer.setProperty("element", this.element);
+            for (var i = 0; i < this.childComponents.length; i++) {
+                serializer.addObject(this.childComponents[i]);
+            }
+            serializer.setProperty("_isComponentExpanded", true);
+        }
+    },
+
+    // This template delegate object is shared by all repetitions and receives
+    // all meaningful state in arguments.
+    templateDelegate: {
         value: {
+            // This method gets called by the Template initializer on behalf of
+            // setupIterationTemplate
             serializeObjectProperties: function(serializable, object) {
                 serializable.set("ownerComponent", object.ownerComponent, "reference");
             }
         }
     },
 
-    // called on iteration instantiation
-    templateDidLoad: {value: function() {
-        var item = this._deserializedItem,
-            children;
+    // Instantiating an iteration template:
+    // ----
 
-        // if this iteration was removed in the meanwhile there's no
-        // _deserializedItem so we need to ignore this.
-        if (item) {
-            children = item.element.childNodes;
-            item.fragment = document.createDocumentFragment();
-            item.childComponentsIndex = this.childComponents.length - this._iterationChildComponentsCount;
-            while (children.length > 0) {
-                // As the nodes are appended to item.fragment they are removed
-                // from item.element, so always use index 0.
-                item.fragment.appendChild(children[0]);
+    createIteration: {
+        value: function () {
+            var self = this;
+            var iteration = Iteration.create();
+            this.iterationsNeedingTemplates.push(iteration);
+            this.iterationTemplate.instantiateWithComponent(this, function () {
+
+                // The iteration has been created.  We need to expand the child
+                // components and their transitive children.  For the special
+                // case of a repetition that only has HTML and no components,
+                // we skip that process.
+                if (self.iterationChildComponentsLength === 0) {
+                    iteration.childComponents = [];
+                    self.didCreateIteration();
+                } else {
+                    // All of the child components created by instantiating the
+                    // iteration template will be at the end of the repetition
+                    // childComponents.  We know how many child components
+                    // should be generated, so we count back from the end of
+                    // the array and add those childComponents to the
+                    // iteration.
+                    var start = self.childComponents.length - self.iterationChildComponentsLength;
+                    var end = self.childComponents.length;
+                    var childComponents = self.childComponents.slice(start, end);
+                    // Add the list of child components to the iteration
+                    // so that it can call needsDraw on them whenever it is
+                    // returned to the document.
+                    iteration.childComponents = childComponents;
+                    // Build out the child component hierarchy.
+
+                    for (var i = 0; i < childComponents.length; i++) {
+                        var childComponent = childComponents[i];
+                        childComponent.needsDraw = true;
+                        childComponent.loadComponentTree(function () {
+                            self.didCreateIteration();
+                        });
+                    }
+
+                }
+
+            });
+            this.requestedIterations++;
+            return iteration;
+        }
+    },
+
+    // This utility method is shared by two special cases for the completion of
+    // createIteration.
+    didCreateIteration: {
+        value: function () {
+            this.createdIterations++;
+            if (this.createdIterations >= this.neededIterations || this.pendingOperations.length) {
+                // TODO consider instead of waiting for being able to draw,
+                // express needsDraw as soon as the iterations are stale and
+                // allow canDraw() to allow drawing to proceed when there are
+                // enough created iterations.
+                this.needsDraw = true;
             }
-            delete item.element;
-        }
-    }},
-
-    contentWillChange: {
-        value: function(content) {
-            this._updatingItems = true;
-            this.reset();
         }
     },
 
-    contentDidChange: {
-        value: function() {
-            this._updatingItems = false;
-            this._setupIterationTemplate();
+    // After the repetition itself has been deserialized, setupIterationTemplate
+    // overwrites deserializeProperties with deserializeIteration so that
+    // deserializing the repetition produces iteration template instances
+    // instead of repetitions.
+    //
+    // When this is used to instantiate a template, it finds an iteration that
+    // needs a template in iterationsNeedingTemplates and sets that to the
+    // "currentIteration".  Since deserialization is entirely synchronous, we
+    // can count on "currentIteration" to be associated with any bindings to
+    // "objectAtCurrentIteration" while the iteration is being instantiated.
+    // We use "objectForIteration" to update the corresponding object when
+    // the iteration is added to (or reused on) the view.
+    //
+    // This also captures the document fragment of the instantiated template
+    // and adds the elements to the event manager.
+    deserializeIteration: {
+        value: function (deserializer) {
+            var iteration = this.iterationsNeedingTemplates.pop();
+            this.currentIteration = iteration;
+            iteration.element = deserializer.get("element");
+            this.eventManager.registerEventHandlerForElement(this, iteration.element);
         }
     },
 
-    reset: {
-        value: function() {
-            this._items.clear();
-            this._itemsToAppend.clear();
-            this._nextDeserializedItemIx = 0;
-            this._itemsToRemove.clear();
-            this._deletedItems.clear();
-        }
-    },
-
-    deserializedFromTemplate: {value: function deserializedFromTemplate() {
-        if (this._isComponentExpanded) {
-            // this is setup just for the flattening of the template iteration, the iteration needs to be serialized once it's completely flatten.
-            this.setupIterationSerialization();
-        }
-        var controllerBindingDescriptorsToInstall = this._controllerBindingsToInstall,
-            key;
-
-        if (controllerBindingDescriptorsToInstall) {
-            for (key in controllerBindingDescriptorsToInstall) {
-                Object.defineBinding(this, key, controllerBindingDescriptorsToInstall[key]);
+    // This is the last handler dispatched by iterationTemplate.initWithComponent,
+    // wherein we mark the currentIteration as fully loaded.  This all happens in
+    // the same event as deserialization so there is no chance of interleaving with
+    // other iterations.
+    templateDidLoad: {
+        value: function () {
+            var iteration = this.currentIteration;
+            if (!iteration) {
+                throw new Error("Assertion error: templateDidLoad should only be called after deserializeProperties so there should always be a currentIteration");
             }
-            delete this._controllerBindingsToInstall;
-        }
-        this._hasBeenDeserialized = true;
-    }},
 
+            // populate the document fragment for the iteration from the
+            // content of the element
+            var element = iteration.element;
+            var fragment = element.ownerDocument.createDocumentFragment();
+            iteration.fragment = fragment;
+            while (element.firstChild) {
+                var child = element.firstChild;
+                element.removeChild(child);
+                fragment.appendChild(child);
+            }
+            this.currentIteration = null;
+            // The element property is only necessary to communicate from
+            // deserializeIteration to templateDidLoad.
+            iteration.element = null;
+
+            // if this was the first time an iteration was created, it was
+            // necessary to preseve the original DOM content of the Repetition
+            // up to this point so that it could get cloned for the iteration
+            // template.  We now set a flag that on the next draw, we can clear
+            // the original content and set up the iteration boundaries.
+            this.canDrawInitialContent = true;
+            this.needsDraw = true;
+
+        }
+    },
+
+    // This ties "objectAtCurrentIteration" to an iteration.
+    // "currentIteration" is only current in the stack of instantiating a
+    // template, so this method is a hook that the redirects
+    // "objectAtCurrentIteration" property change listeners to a map change
+    // listener on the "objectForIteration" map instead.  The binding then
+    // reacts to changes to the map as iterations are reused with different
+    // objects at different positions in the DOM.
+    observeProperty: {
+        value: function (key, emit, source, parameters, beforeChange) {
+            if (key === "objectAtCurrentIteration") {
+                // delegate to the mapping from iterations to objects for the
+                // current iteration
+                return observeKey(
+                    this.objectForIteration,
+                    this.currentIteration,
+                    emit,
+                    source,
+                    parameters,
+                    beforeChange
+                );
+            } else {
+                // fall back to normal property observation
+                return observeProperty(
+                    this,
+                    key,
+                    emit,
+                    source,
+                    parameters,
+                    beforeChange
+                );
+            }
+        }
+    },
+
+    // Reacting to changes in the controlled visible objects:
+    // ----
+
+    // In responses to changes in the controlled visibleObjects array, this
+    // method creates a plan to add and delete iterations with their
+    // corresponding DOM elements on the next "draw" event.  This may require
+    // more iterations to be constructed before the next draw event.
+    handleVisibleObjectsRangeChange: {
+        value: function (plus, minus, visibleIndex) {
+
+            // add pending operations to run in draw
+            for (var offset = 0; offset < minus.length; offset++) {
+                var operation = DeleteOperation.create().initWithObjectAndVisibleIndex(
+                    minus[offset],
+                    visibleIndex
+                );
+                this.pendingOperations.push(operation);
+            }
+            for (var offset = 0; offset < plus.length; offset++) {
+                var operation = AddOperation.create().initWithObjectAndVisibleIndex(
+                    plus[offset],
+                    visibleIndex + offset
+                );
+                this.pendingOperations.push(operation);
+            }
+
+            // produce more iterations if necessary
+            this.neededIterations += plus.length - minus.length;
+            this.createNeededIterations();
+            this.needsDraw = true;
+
+        }
+    },
+
+    createNeededIterations: {
+        value: function () {
+            // If the iteration template is not yet ready, we postpone until
+            // after that has been set up.  setupIterationTemplate calls this
+            // method to make sure they're not forgotten.
+            if (!this.iterationTemplate) {
+                return;
+            }
+            while (this.neededIterations > this.requestedIterations) {
+                this.freeIterations.push(this.createIteration());
+            }
+        }
+    },
+
+
+    // Drawing
+    // ----
+
+    expandComponent: {
+        value: function expandComponent(callback) {
+            // TODO figure out whether this is necessary: it should be taken
+            // care of by the deserializedFromTemplate method.
+            if (!this.iterationTemplate) {
+                throw new Error("ASSERTION");
+            }
+            // Used by Component to determine whether the node of the component
+            // object hierarchy is traversable:
+            this._isComponentExpanded = true;
+            callback();
+        }
+    },
+
+    // TODO @kriskowal figure out what needs hookup with the canDrawGate and
+    // what the heck childComponents is supposed to be at this point.
     canDraw: {
-        value: function() {
-            var canDraw = this.canDrawGate.value, component, i, length = this.childComponents.length;
+        value: function () {
+            // block for the usual component-related issues
+            var canDraw = this.canDrawGate.value;
+            // block until we have created enough iterations to draw
+            canDraw = canDraw && this.neededIterations <= this.createdIterations;
+            // block until we can draw initial content if we have not already
+            canDraw = canDraw && (this.initialContentDrawn || this.canDrawInitialContent);
+            // block until all child components can draw
             if (canDraw) {
-                for (i = 0; i < length; i++) {
-                    if (!this.childComponents[i].canDraw()) {
+                for (var i = 0; i < this.childComponents.length; i++) {
+                    var childComponent = this.childComponents[i];
+                    if (!childComponent.canDraw()) {
                         canDraw = false;
-                        break;
                     }
                 }
+            }
+            if (!canDraw) {
+                console.log("CAN'T DRAW");
             }
             return canDraw;
         }
     },
-/**
-    Description TODO
-    @function
-    */
-    prepareForDraw: {
-        value: function() {
-            this._refreshSelectionTracking();
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _selectedIndexesToDeselectOnDraw: {
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
-    _selectedIndexes: {
-        value: null
-    },
-/**
-        Description TODO
-        @type {Function}
-        @default null
-    */
-    selectedIndexes: {
-        get: function() {
-            return this._selectedIndexes;
-        },
-        set: function(value) {
-            this._selectedIndexes = value;
 
-            this._markIndexesDirty(value);
+    // prepareForDraw: not implemented
 
-            if (this._isComponentExpanded) {
-                this.needsDraw = true;
+    draw: {
+        value: function () {
+
+            if (!this.initialContentDrawn) {
+                this.element.innerHTML = "";
+                this.initialContentDrawn = true;
             }
-        }
-    },
 
-/**
-  Description TODO
-  @private
-*/
-    _activeIndexes: {
-        value: null
-    },
-/**
-        Description TODO
-        @type {Function}
-        @default null
-    */
-    activeIndexes: {
-        get: function() {
-            return this._activeIndexes;
-        },
-        set: function(value) {
+            // grow the list of boundaries if necessary
+            this.drawBoundaries();
 
-            this._activeIndexes = value;
-
-            this._markIndexesDirty(value);
-
-            if (this._isComponentExpanded) {
-                this.needsDraw = true;
-            }
-        }
-    },
-
-    _markIndexesDirty: {
-        value: function(indexes) {
-
-            if (indexes) {
-                for (var i = 0, indexCount = indexes.length; i < indexCount; i++) {
-                    this._dirtyIndexes[this._indexMap ? this._indexMap.indexOf(indexes[i]) : indexes[i]] = true;
-                }
-            }
+            // execute the pending add and delete operations
+            var pendingOperations = this.pendingOperations;
+            pendingOperations.forEach(function (operation) {
+                operation.execute(this);
+            }, this);
+            pendingOperations.clear();
 
         }
     },
 
-/**
-  Description TODO
-  @private
-*/
-    _refreshSelectionTracking: {
-        value: function() {
-
-            if (this.isSelectionEnabled) {
-                if (window.Touch) {
-                    this.element.addEventListener("touchstart", this, true);
-                } else {
-                    this.element.addEventListener("mousedown", this, true);
-                }
-            } else {
-                if (window.Touch) {
-                    this.element.removeEventListener("touchstart", this, true);
-                } else {
-                    this.element.removeEventListener("mousedown", this, true);
-                }
-            }
-
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _itemIndexOfElement: {
-        value: function (element) {
-
-            var repetitionChild = element,
-                itemIndex = null,
-                endOffsetAdjustment,
-                range;
-
-            // from the given element go up until we hit the repetitionElement;
-            // meaning the last element we hit is an immediate child of the repetition
-            if (repetitionChild === this.element) {
-                return itemIndex;
-            }
-            while (repetitionChild && repetitionChild.parentNode !== this.element) {
-                repetitionChild = repetitionChild.parentNode;
-            }
-
-            if (!repetitionChild) {
-                return null;
-            }
-
-            // figure out what index that node is inside the repetitionElement's.childNodes collection
-            // knowing how many nodes we have per iteration and which index was clicked we can figure out the selectedIndex
-            range = this.element.ownerDocument.createRange();
-            range.setStart(this.element, 0);
-            range.setEndAfter(repetitionChild);
-            endOffsetAdjustment = this._iterationChildCount > 1 ? 1 : 0;
-
-            itemIndex = ((range.endOffset + endOffsetAdjustment) / this._iterationChildCount) - 1;
-
-            // TODO#3493  francois shift the index by the amount defined by the large array controller?
-
-            if (this.indexMap) {
-                 return this.indexMap[itemIndex];
-            } else {
-                return itemIndex;
+    drawBoundaries: {
+        value: function () {
+            for (
+                var visibleIndex = this.boundaries.length;
+                visibleIndex <= this.neededIterations;
+                visibleIndex++
+            ) {
+                var boundary = document.createComment("");
+                this.boundaries.push(boundary);
+                this.element.appendChild(boundary);
             }
         }
     },
-    // TODO by the time we have batches/subsets of the entire content/repetition visible at a time
-    // we'll need to really translate selected indexes within a repetition viewing a subset to the
-    // selected indexes within the actual content collection
-/**
-    Description TODO
-    @function
-    @param {Event} event TODO
-    */
-    captureTouchstart: {
-        value: function(event) {
 
-            if (this._selectionPointer || 0 === this._selectionPointer) {
-                // If we already have one touch making a selection, ignore any others
-                return;
+    cleanupDeletedComponentTree: {
+        value: function (pleaseCancelBindings) {
+            if (pleaseCancelBindings) {
+                this.cancelBindings();
             }
-
-            this._observeSelectionPointer(event.changedTouches[0].identifier);
-
-            var activeIndex = this._itemIndexOfElement(event.target);
-            if (null !== activeIndex) {
-                this.activeIndexes = [activeIndex];
-            } else {
-                this._ignoreSelectionPointer();
-            }
+            this.visibleObjects.removeMapChangeListener(this);
+            this.visibleObjects.removeBeforeMapChangeListener(this);
+            // TODO for each iteration, call cleanupDeletedComponentTree on
+            // every component in every iteration.
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Event} event TODO
-    */
-    handleTouchend: {
-        value: function(event) {
-            // TODO only grab new touches that are in target touches as well maybe?
 
-            var i = 0,
-                selectedIndex;
+    // XXX
+    //
+    // TODO expandComponent isComponentExpanded
 
-            while (i < event.changedTouches.length && event.changedTouches[i].identifier !== this._selectionPointer) {
-                i++;
-            }
-
-            if (i < event.changedTouches.length) {
-                if (this.eventManager.isPointerClaimedByComponent(this._selectionPointer, this)) {
-                    selectedIndex = this._itemIndexOfElement(event.target);
-
-                    if (null !== selectedIndex) {
-                        this.selectedIndexes = [selectedIndex];
-                    }
-                }
-
-                this._ignoreSelectionPointer();
-            }
-
-        }
-    },
-/**
-    Description TODO
-    @function
-    */
-    handleTouchcancel: {
-        value: function() {
-            this._ignoreSelectionPointer();
-        }
-    },
-/**
-    Description TODO
-    @function
-    @param {Event} event TODO
-    */
-    captureMousedown: {
-        value: function(event) {
-            this._observeSelectionPointer("mouse");
-
-            var activeIndex = this._itemIndexOfElement(event.target);
-            if (null !== activeIndex) {
-                this.activeIndexes = [activeIndex];
-            } else {
-                this._ignoreSelectionPointer();
-            }
-        }
-    },
-/**
-    Description TODO
-    @function
-    */
-    handleMouseup: {
-        value: function(event) {
-            var selectedIndex = this._itemIndexOfElement(event.target);
-
-            if (null !== selectedIndex) {
-                // TODO expand the selection if shift/cmd etc (it's not necessarily a single selection being added
-                this.selectedIndexes = [selectedIndex];
-            }
-
-            this._ignoreSelectionPointer();
-        }
-    },
-/**
-    Description TODO
-    @function
-    @param {String} pointer TODO
-    @param {Component} demandingComponent TODO
-    @returns {Boolean} true
-    */
-    surrenderPointer: {
-        value: function(pointer, demandingComponent) {
-            this._ignoreSelectionPointer();
-            return true;
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _selectionPointer: {
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
-    _observeSelectionPointer: {
-        value: function(pointer) {
-            this._selectionPointer = pointer;
-            this.eventManager.claimPointer(pointer, this);
-
-            if (window.Touch) {
-                document.addEventListener("touchend", this, false);
-                document.addEventListener("touchcancel", this, false);
-            } else {
-                document.addEventListener("mouseup", this, false);
-                // TODO on significant mousemovement/mouseout of the "selected" element, should we forget the selectionPointer
-            }
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _ignoreSelectionPointer: {
-        value: function() {
-            this.eventManager.forfeitPointer(this._selectionPointer, this);
-            this._selectionPointer = null;
-
-            this.activeIndexes = [];
-
-            if (window.Touch) {
-                document.removeEventListener("touchend", this, false);
-                document.removeEventListener("touchcancel", this, false);
-            } else {
-                document.removeEventListener("mouseup", this, false);
-            }
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _iterationChildCount: {
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
-    _iterationChildElementCount: {
-        value: null
-    },
-/**
-    Description TODO
-    @function
-    */
-    draw: {value: function() {
-        var i,
-            iItem,
-            fragment,
-            j,
-            itemCount = this._items.length,
-            addFragment,
-            repetitionElement = this.element,
-            doc = repetitionElement.ownerDocument,
-            selectionCount,
-            rangeToRemove,
-            iterationElements,
-            selectableElementCount,
-            activatedCount,
-            activatableElementCount,
-            iterationElement,
-            iterationElementClassList,
-            indexMapChanged = this._indexMapChanged,
-            activeIndex,
-            selectedIndex,
-            childCount = this._iterationChildCount,
-            childComponentsCount;
-
-        // this is needed to make sure that a new iteration wasn't created after the repetition has been added to the draw list of the draw cycle
-        if (!this.canDrawGate.value) {
-            return;
-        }
-
-        if (this._removeOriginalContent) {
-            this._removeOriginalContent = false;
-            repetitionElement.innerHTML = "";
-        }
-
-        // Before we remove any nodes, make sure we "deselect" them
-        //but only for single element iterations
-        if (1 === this._iterationChildElementCount) {
-
-            iterationElements = repetitionElement.children;
-
-            // NOTE Might be a bit excessive, but with the idea that the repetition will have a reasonable amount
-            // of elements given the indexMap support I'll start with this
-            // Wipe-out selection related classnames throughout the repetition to ensure a clean slate
-            for (i = 0; i < iterationElements.length; i++) {
-                iterationElement = iterationElements.item(i);
-                if (iterationElement) {
-
-                    if (this._dirtyIndexes[i]) {
-                        iterationElementClassList = iterationElement.classList;
-
-                        iterationElementClassList.remove("active");
-                        iterationElementClassList.remove("selected");
-                        iterationElementClassList.remove("no-transition");
-
-                        if (indexMapChanged && this._indexMapAffectedIndexes[i]) {
-                            iterationElementClassList.add("no-transition");
-                            this._dirtyIndexes[i] = false;
-                        }
-
-                    }
-                }
-            }
-        }
-
-        // We've accounted for drawing given an indexMap change, schedule the next draw to clean up from that
-        // by re-enabling transitions
-        if (indexMapChanged) {
-            this._indexMapAffectedIndexes.clear();
-            this._indexMapChanged = false;
-            this.needsDraw = true;
-        }
-
-        // Remove items pending removal
-        var removalIndex;
-        if (this._itemsToRemove.length > 0) {
-            rangeToRemove = document.createRange();
-            for (i = 0; (iItem = this._itemsToRemove[i]); i++) {
-                removalIndex = iItem.removalIndex;
-                rangeToRemove.setStart(repetitionElement, removalIndex * childCount);
-                rangeToRemove.setEnd(repetitionElement, removalIndex * childCount + childCount);
-
-                rangeToRemove.extractContents();
-            }
-            this._itemsToRemove.clear();
-        }
-
-        var insertionIndex;
-        if (this._itemsToAppend.length > 0) {
-            //addFragment = doc.createDocumentFragment();
-            //firstAddedIndex = itemCount;
-            // Append items pending addition
-            for (i = 0; (iItem = this._itemsToAppend[i]); i++) {
-                // this item could have been removed from the objects array after it's adition.
-                if (iItem.removed) {
-                    this._removeIterationChildComponents(iItem.childComponentsIndex);
-
-                    continue;
-                }
-
-                fragment = iItem.fragment;
-                insertionIndex = iItem.insertionIndex;
-                delete iItem.fragment;
-                delete iItem.insertionIndex;
-                delete iItem.index;
-                //isFirstItem = (repetitionElement.childNodes.length === 0);
-
-                //iItem.start = (itemCount + i) * this._iterationChildCount;
-                //iItem.end = iItem.start + this._iterationChildCount;
-                //nextItem = this._items[insertionIndex];
-
-                if (isNaN(insertionIndex)) {
-                    repetitionElement.appendChild(fragment);
-                } else {
-                    repetitionElement.insertBefore(fragment, repetitionElement.childNodes[insertionIndex * this._iterationChildCount]);
-                }
-                //addFragment.appendChild(fragment);
-
-                //now that the item has been appended, we add it to our items array
-                //this._items.push(iItem);
-                this._items.splice(insertionIndex, 0, iItem);
-                // Tell childComponents that are associated with this new item
-                //componentStartIndex = (itemCount + i) * this._iterationChildComponentsCount;
-                //componentEndIndex = componentStartIndex + this._iterationChildComponentsCount;
-            }
-
-            //repetitionElement.appendChild(addFragment);
-
-            itemCount = this._items.length;
-
-            this._itemsToAppend.clear();
-            this._nextDeserializedItemIx = 0;
-        }
-
-        // TODO Add selection class to selected items; may be easier to have this bound to an item or something directly
-        // basically we have a couple of ways to attack this; leaving it like this for now prior to optimization
-        if (null !== this.selectedIndexes && this.selectedIndexes.length > 0 && 1 === this._iterationChildElementCount) {
-
-            iterationElements = repetitionElement.children;
-            selectionCount = this.selectedIndexes.length;
-            selectableElementCount = Math.min(selectionCount, iterationElements.length);
-
-            for (i = 0; i < selectableElementCount; i++) {
-                selectedIndex = this.indexMap ? this.indexMap.indexOf(this.selectedIndexes[i]): this.selectedIndexes[i];
-                iterationElement = iterationElements.item(selectedIndex);
-                if (iterationElement) {
-                    iterationElement.classList.add("selected");
-                    //Mark the rediscovered selected index as dirty
-                    this._dirtyIndexes[selectedIndex] = true;
-                }
-            }
-        }
-
-        // TODO Add active class to active items; may be easier to have this bound to an item or something directly
-        // basically we have a couple of ways to attack this; leaving it like this for now prior to optimization
-        if (null !== this._activeIndexes && this._activeIndexes.length > 0 && 1 === this._iterationChildElementCount) {
-
-            iterationElements = this.element.children;
-            activatedCount = this._activeIndexes.length;
-            activatableElementCount = Math.min(activatedCount, iterationElements.length);
-
-            for (i = 0; i < activatableElementCount; i++) {
-                activeIndex = this.indexMap ? this.indexMap.indexOf(this._activeIndexes[i]): this._activeIndexes[i];
-                iterationElement = iterationElements.item(activeIndex);
-                if (iterationElement) {
-                    iterationElement.classList.add("active");
-                    //Mark the rediscovered active index as dirty
-                    this._dirtyIndexes[activeIndex] = true;
-                }
-            }
-        }
-
-        this._drawnIndexMap = this._indexMap ? this.indexMap.slice(0) : null;
-
-    }},
-/**
-    Description TODO
-    @function
-    */
-    setupIterationSerialization: {value: function() {
-        Montage.defineProperty(this, "serializeSelf", {value: this.serializeIteration});
-    }},
-/**
-    Description TODO
-    @function
-    */
-    setupIterationDeserialization: {value: function() {
-        //        Montage.defineProperty(this, "deserializeProperties", {value: this.deserializeIteration});
-        this.deserializeProperties = this.deserializeIteration;
-    }},
-/**
-    Description TODO
-    @function
-    */
-    removeIterationSerialization: {value: function() {
-        delete this.serializeSelf;
-    }},
-/**
-    Description TODO
-    @function
-    @param {Property} type TODO
-    @param {Property} listener TODO
-    @param {Property} useCapture TODO
-    @param {Property} atSignIndex TODO
-    @param {Property} bindingOrigin TODO
-    @param {Property} bindingPropertyPath TODO
-    @param {Property} bindingDescriptor TODO
-    @returns null or Object.prototype.propertyChangeBindingListener.call
-    */
-    propertyChangeBindingListener: {value: function(type, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, bindingDescriptor) {
-
-        var usefulBindingDescriptor = bindingDescriptor,
-            usefulType = type,
-            currentIndex, currentFakeIndex, descriptorKeys, descriptorKeyCount,
-            iDescriptorKey, modifiedBoundObjectPropertyPath;
-
-        if (bindingDescriptor && bindingDescriptor.boundObjectPropertyPath.match(/objectAtCurrentIteration/)) {
-            if (this._deserializedItem) {
-                currentFakeIndex = this._fakeObjects._fakeIndex[this._deserializedItem.index];
-                usefulBindingDescriptor = {};
-                descriptorKeys = Object.keys(bindingDescriptor);
-                descriptorKeyCount = descriptorKeys.length;
-                for (var i = 0; i < descriptorKeyCount; i++) {
-                    iDescriptorKey = descriptorKeys[i];
-                    usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
-                }
-
-                //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
-                modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/objectAtCurrentIteration/, '_fakeObjects.' + currentFakeIndex);
-
-                usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
-
-                usefulType = type.replace(/objectAtCurrentIteration/, '_fakeObjects.' + currentFakeIndex);
-            } else {
-                return null;
-            }
-        } else if(bindingDescriptor && bindingDescriptor.boundObjectPropertyPath.match(/selectionAtCurrentIteration/)) {
-            if (this._deserializedItem) {
-                currentFakeIndex = this._fakeObjects._fakeIndex[this._deserializedItem.index];
-                usefulBindingDescriptor = {};
-                descriptorKeys = Object.keys(bindingDescriptor);
-                descriptorKeyCount = descriptorKeys.length;
-                for (var i = 0; i < descriptorKeyCount; i++) {
-                    iDescriptorKey = descriptorKeys[i];
-                    usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
-                }
-
-                //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
-
-                modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/selectionAtCurrentIteration/, 'contentController.selections.' + currentFakeIndex);
-                usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
-
-                usefulType = type.replace(/selectionAtCurrentIteration/, 'contentController.selections.' + currentFakeIndex);
-
-            }   else {
-                return null;
-            }
-        }
-
-        if (usefulBindingDescriptor.boundObject === this) {
-            return Object.prototype.propertyChangeBindingListener.call(this, usefulType, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, usefulBindingDescriptor);
-        } else {
-            return usefulBindingDescriptor.boundObject.propertyChangeBindingListener(usefulType, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, usefulBindingDescriptor);
-        }
-    }},
-/**
-    Description TODO
-    @function
-    @param {Property} serializer TODO
-    */
-    serializeIteration: {value: function(serializer) {
-        serializer.setProperty("element", this.element);
-        var childComponents = this.childComponents,
-            addObject = serializer.addObject,
-            i,
-            childComponentCount = childComponents.length;
-
-        for (i = 0; i < childComponentCount; i++) {
-            addObject.call(serializer, childComponents[i]);
-        }
-        // iterations are already expanded
-        serializer.setProperty("_isComponentExpanded", true);
-    }},
-/**
-    Description TODO
-    @function
-    @param {Property} deserializer TODO
-    */
-    deserializeIteration: {value: function(deserializer) {
-        var item = this._itemsToAppend[this._nextDeserializedItemIx++];
-
-        if (item) {
-            this._deserializedItem = item;
-            item.element = deserializer.get("element");
-
-            this.eventManager.registerEventHandlerForElement(this, item.element);
-            if (logger.debug) {
-                logger.debug(this._montage_metadata.objectName + ":deserializeIteration", "childNodes: " , item.element);
-            }
-        } else {
-            this._deserializedItem = null;
-        }
-    }}
 });
+
+var Iteration = exports.Iteration = Montage.create(Montage, {
+
+    didCreate: {
+        value: function () {
+            // A temporary place-holder for the element in the iteration
+            // template instantiation process
+            this.element = null;
+            // An iteration can be "on" or "off" the document.  When the
+            // iteration is added to a document, the "fragment" is depopulated
+            // and placed between "topBoundary" and "bottomBoundary" on the
+            // DOM.  The repetition manages the boundary markers around each
+            // visible index.   When all of these are null, the iteration does
+            // not yet have a template and has never been placed on the DOM.
+            this.fragment = null;
+            // The corresponding "object" is tracked in
+            // repetition.objectForIteration instead of on the iteration
+            // itself.  The bindings in the iteration template react to changes
+            // in that map.
+            this.childComponents = null;
+        }
+    },
+
+    injectIntoDocument: {
+        value: function (repetition, visibleIndex) {
+            var element = repetition.element;
+            var bottomBoundary = repetition.boundaries[visibleIndex + 1];
+            element.insertBefore(this.fragment, bottomBoundary);
+            // notify the components to wake up and smell the document
+            for (var i = 0; i < this.childComponents.length; i++) {
+                this.childComponents[i].needsDraw = true;
+            }
+        }
+    },
+
+    retractFromDocument: {
+        value: function (repetition, visibleIndex) {
+            var element = repetition.element;
+            var topBoundary = repetition.boundaries[visibleIndex];
+            var bottomBoundary = repetition.boundaries[visibleIndex + 1];
+            repetition.boundaries.splice(visibleIndex, 1);
+            var fragment = this.fragment;
+            var child = topBoundary.nextSibling;
+            while (child != bottomBoundary) {
+                var next = child.nextSibling;
+                element.removeChild(child);
+                fragment.appendChild(child);
+                child = next;
+            }
+            element.removeChild(topBoundary);
+        }
+    }
+
+});
+
+// Operations are tracked in a List of Operations on a Repetition and then
+// executed in the "draw" imperative to add and remove Iterations at particular
+// positions.
+var Operation = exports.Operation = Montage.create(Montage, {
+
+    didCreate: {
+        value: function () {
+            this.object = null;
+            this.visibleIndex = null;
+        }
+    },
+
+    initWithObjectAndVisibleIndex: {
+        value: function (object, visibleIndex) {
+            this.object = object;
+            this.visibleIndex = visibleIndex;
+            return this;
+        }
+    }
+
+});
+
+var DeleteOperation = exports.AddOperation = Montage.create(Operation, {
+    execute: {
+        value: function (repetition) {
+            // update the model:
+            var iteration = repetition.iterations.splice(this.visibleIndex, 1)[0];
+            // update the bindings:
+            repetition.objectForIteration.set(iteration, null);
+            // update the document:
+            iteration.retractFromDocument(repetition, this.visibleIndex);
+            // recycle the iteration:
+            repetition.freeIterations.push(iteration);
+        }
+    }
+});
+
+var AddOperation = exports.AddOperation = Montage.create(Operation, {
+    execute: {
+        value: function (repetition) {
+            // recycle the iteration:
+            var iteration = repetition.freeIterations.pop();
+            // update the model:
+            repetition.iterations.splice(this.visibleIndex, 0, iteration);
+            // update the document:
+            iteration.injectIntoDocument(repetition, this.visibleIndex);
+            // update the bindings:
+            repetition.objectForIteration.set(iteration, this.object);
+        }
+    }
+});
+
+var DumbController = exports.DumbController = Montage.create(Montage, {
+
+    selector: {value: null}, // TODO
+
+    start: {value: null}, // TODO
+
+    length: {value: null}, // TODO
+
+    objects: {value: null},
+
+    didCreate: {
+        value: function () {
+            this.objects = null;
+            this.selector = null;
+            this.visibleObjects = null;
+            this.selection = new Set();
+            this.selectedIndexes = new Set();
+        }
+    },
+
+    initWithObjects: {
+        value: function (objects) {
+            this.visibleObjects = objects;
+            return this;
+        }
+    }
+
+    // TODO selectAddedObjects
+    // TODO deselectDeletedObjects (always true)
+    // TODO deselectInvisibleObjects
+    // TODO automaticallyDispatchChangeListener?
+    // TODO should a repetition serve as a proxy for the visible objects?
+    // TODO canDrawGate.setField("iterationLoaded")
+    // TODO account for selection and deselection
+
+});
+

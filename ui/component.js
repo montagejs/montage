@@ -59,6 +59,17 @@ var ComponentDescriptionPromise;
    @extends module:montage/core/core.Montage
  */
 var Component = exports.Component = Montage.create(Montage,/** @lends module:montage/ui/component.Component# */ {
+
+    didCreate: {
+        value: function () {
+            Montage.didCreate.call(this);
+            this._isComponentExpanded = false;
+            this._isTemplateLoaded = false;
+            this._isTemplateLoading = false;
+            this._isTemplateInstantiated = false;
+        }
+    },
+
 /**
         Description TODO
         @type {Property}
@@ -684,6 +695,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     Description TODO
     @function
     */
+    // this is a handler that gets called by the deserializer, called on each
+    // object created, after didCreate, then deserializedFromSerialization if it exists
     deserializedFromSerialization: {
         value: function() {
             this.attachToParentComponent();
