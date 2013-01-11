@@ -17,6 +17,7 @@ Serializer.defineSerializationUnit("bindings", function (object, serializer) {
 
     for (targetPath in inputs) {
         var input = inputs[targetPath];
+
         var output = {};
 
         if (("serializable" in input) && !input.serializable)
@@ -56,6 +57,12 @@ Deserializer.defineDeserializationUnit("bindings", function (object, bindings, d
     // normalize old and busted bindings
     for (var targetPath in bindings) {
         var descriptor = bindings[targetPath];
+
+        if (typeof descriptor !== "object") {
+            throw new Error("Binding descriptor must be an object, not " + typeof descriptor);
+            // TODO isolate the source document and produce a more useful error
+        }
+
         if ("boundObject" in descriptor) {
             descriptor.source = deserializer.getObjectByLabel(descriptor.boundObject);
             if (descriptor.oneway) {

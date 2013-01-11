@@ -7,7 +7,6 @@ var Map = require("collections/map");
 var Observers = require("frb/observers");
 var observeProperty = Observers.observeProperty;
 var observeKey = Observers.observeKey;
-var Promise = require("q");
 
 var Repetition = exports.Repetition = Montage.create(Component, {
 
@@ -108,8 +107,10 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             this.visibleObjects.addRangeChangeListener(this, "visibleObjects");
             // Ascertains that visibleObjects does not get changed by the
             // controller, but the changes are projected on our array.
-            console.log('repetition', this);
-            this.defineBinding("visibleObjects.*", {"<-": "controller.visibleObjects"});
+            this.defineBinding("visibleObjects.*", {
+                "<-": "controller.visibleObjects",
+                "serializable": false
+            });
             // The boundaries array contains comment nodes that serve as the
             // top and bottom boundary of each iteration.  There will always be
             // one more boundary than iteration.
@@ -139,8 +140,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // we can't set up the iteration template in this turn of the event
             // loop because it would interfere with deserialization, so this is
             // usually deferred to the first draw.
-            this.canDrawInitialContent = false;
-            this.initialContentDrawn = false;
+            this.canEraseTemplate = false;
+            this.templateErased = false;
 
         }
     },
@@ -156,8 +157,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // fully instantiated so we can capture all the child components
             // and DOM elements.
             this.setupIterationTemplate();
-            // TODO @kriskowal figure out whether someone actually needs
-            // _hasBeenDeserialized, like the canDraw flag or something.
         }
     },
 
@@ -233,6 +232,9 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // template was ready to go.  Iterations are requested during
             // handleVisibleObjectsRangeChange.
             this.createNeededIterations();
+
+            this.canEraseTemplate = true;
+            this.needsDraw = true;
         }
     },
 
@@ -255,8 +257,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         value: {
             // This method gets called by the Template initializer on behalf of
             // setupIterationTemplate
-            serializeObjectProperties: function(serializable, object) {
-                serializable.set("ownerComponent", object.ownerComponent, "reference");
+            serializeObjectProperties: function(serialization, object) {
+                serialization.set("ownerComponent", object.ownerComponent, "reference");
             }
         }
     },
@@ -285,7 +287,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                     // should be generated, so we count back from the end of
                     // the array and add those childComponents to the
                     // iteration.
-                    var start = self.childComponents.length - self.iterationChildComponentsLength;
+                    var start = self.childComponents.length -
+                        self.iterationChildComponentsLength;
                     var end = self.childComponents.length;
                     var childComponents = self.childComponents.slice(start, end);
                     // Add the list of child components to the iteration
@@ -315,7 +318,10 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     didCreateIteration: {
         value: function () {
             this.createdIterations++;
-            if (this.createdIterations >= this.neededIterations || this.pendingOperations.length) {
+            if (
+                this.createdIterations >= this.neededIterations ||
+                this.pendingOperations.length
+            ) {
                 // TODO consider instead of waiting for being able to draw,
                 // express needsDraw as soon as the iterations are stale and
                 // allow canDraw() to allow drawing to proceed when there are
@@ -374,14 +380,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // The element property is only necessary to communicate from
             // deserializeIteration to templateDidLoad.
             iteration.element = null;
-
-            // if this was the first time an iteration was created, it was
-            // necessary to preseve the original DOM content of the Repetition
-            // up to this point so that it could get cloned for the iteration
-            // template.  We now set a flag that on the next draw, we can clear
-            // the original content and set up the iteration boundaries.
-            this.canDrawInitialContent = true;
-            this.needsDraw = true;
 
         }
     },
@@ -495,7 +493,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // block until we have created enough iterations to draw
             canDraw = canDraw && this.neededIterations <= this.createdIterations;
             // block until we can draw initial content if we have not already
-            canDraw = canDraw && (this.initialContentDrawn || this.canDrawInitialContent);
+            canDraw = canDraw && (this.templateErased || this.canEraseTemplate);
             // block until all child components can draw
             if (canDraw) {
                 for (var i = 0; i < this.childComponents.length; i++) {
@@ -504,9 +502,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                         canDraw = false;
                     }
                 }
-            }
-            if (!canDraw) {
-                console.log("CAN'T DRAW");
             }
             return canDraw;
         }
@@ -517,9 +512,9 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     draw: {
         value: function () {
 
-            if (!this.initialContentDrawn) {
-                this.element.innerHTML = "";
-                this.initialContentDrawn = true;
+            if (!this.templateErased) {
+                this.eraseTemplate();
+                this.templateErased = true;
             }
 
             // grow the list of boundaries if necessary
@@ -532,6 +527,12 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             }, this);
             pendingOperations.clear();
 
+        }
+    },
+
+    eraseTemplate: {
+        value: function () {
+            this.element.innerHTML = "";
         }
     },
 
@@ -695,6 +696,7 @@ var DumbController = exports.DumbController = Montage.create(Montage, {
 
     initWithObjects: {
         value: function (objects) {
+            this.objects = objects;
             this.visibleObjects = objects;
             return this;
         }
