@@ -34,7 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
     @module montage/core/undo-manager
 */
 
-var Montage = require("montage").Montage;
+var Montage = require("montage").Montage,
+    Promise = require("core/promise").Promise,
+    WeakMap = require("collections/weak-map");
+
+var UNDO_OPERATION = 0,
+    REDO_OPERATION = 1;
 
 /**
     @class module:montage/core/undo-manager.UndoManager
@@ -42,8 +47,21 @@ var Montage = require("montage").Montage;
 */
 var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends module:montage/core/undo-manager.UndoManager# */ {
 
-    enabled: {
-        value: true
+    _operationQueue: {
+        value: null
+    },
+
+    _promiseOperationMap: {
+        value: null
+    },
+
+    didCreate: {
+        value: function () {
+            this._operationQueue = [];
+            this._promiseOperationMap = new WeakMap();
+            this._undoStack = [];
+            this._redoStack = [];
+        }
     },
 
     _maxUndoCount: {
@@ -51,9 +69,11 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
         value: null
     },
 
-/**
-    Maximum number of undos.
-*/
+    /**
+        Maximum number of operations allowed in each undo and redo stack
+        Setting this lower than the current count of undo/redo operations will remove
+        the oldest undos/redos as necessary to meet the new limit.
+    */
     maxUndoCount: {
         get: function() {
             return this._maxUndoCount;
@@ -72,121 +92,191 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
 
     },
 
+    _undoStack: {
+        value: null
+    },
+
+    /**
+        The current number of stored undoable operations
+     */
+    undoCount: {
+        get: function () {
+            return this._undoStack.length;
+        }
+    },
+
+    _redoStack: {
+        value: null
+    },
+
+    /**
+        The current number of stored redoable operations
+     */
+    redoCount: {
+        get: function () {
+            return this._redoStack.length;
+        }
+    },
+
     _trimStacks: {
         enumerable: false,
         value: function() {
 
-            var undoRemoveCount = this._maxUndoCount - this.undoStack.length,
-                redoRemoveCount = this._maxUndoCount - this.redoStack.length;
+            var undoRemoveCount = this._undoStack.length - this._maxUndoCount,
+                redoRemoveCount = this._redoStack.length - this._maxUndoCount;
 
             if (undoRemoveCount > 0) {
-                this.undoStack.splice(0, undoRemoveCount);
+                this._undoStack.splice(0, undoRemoveCount);
             }
 
             if (redoRemoveCount > 0) {
-                this.redoStack.splice(0, redoRemoveCount);
+                this._redoStack.splice(0, redoRemoveCount);
             }
         }
     },
 
-    _undoStack: {
-        enumerable: false,
-        value: null
-    },
-
 /**
-    The undo stack.
-*/
-    undoStack: {
-        get: function() {
-            if (!this._undoStack) {
-                this._undoStack = [];
-            }
-            return this._undoStack
-        }
-    },
-
-/**
-    The redo stack.
-*/
-    redoStack: {
-        value: [],
-        distinct: true
-    },
-
-/**
-    Adds a new item to the undo stack.
-    @param {string} label A label to associate with the undo item.
-    @param {function} undoFunction The function to invoke when the item is popped from the undo stack.
-    @param {object} context The context in which the undo function should be invoked.
+    Adds a new operation to the either the undo or redo stack as appropriate.
+    @param {string} label A label to associate with this undo entry.
+    @param {promise} operationPromise A promise for an undoable operation
+    @returns a promise for the resolution of the operationPromise
     @function
 */
     add: {
-        value: function(label, undoFunction, context) {
+        value: function (label, operationPromise) {
 
             if (0 === this._maxUndoCount) {
-                return;
+                return Promise.resolve(null);
             }
 
-            var undoEntry = {
-                label: label,
-                undoFunction: undoFunction,
-                context: context,
-                args: Array.prototype.slice.call(arguments, 3)
-            };
+            var undoEntry = {label: label};
 
-            // seeing as you can only ever add one entry at a time to either stack, we should never need to make room
-            // for more than a single entry at this point; there's no need for an expensive trim
             if (this.isUndoing) {
 
                 // preserve the label of the current action being undone to be the name of the redo
                 undoEntry.label = this.undoEntry.label;
 
-                if (this.redoStack.length === this._maxUndoCount) {
-                    this.redoStack.shift();
+                if (this._redoStack.length === this._maxUndoCount) {
+                    this._redoStack.shift();
                 }
 
-                this.redoStack.push(undoEntry);
+                this._redoStack.push(operationPromise);
             } else {
 
-                if (this.undoStack.length === this._maxUndoCount) {
-                    this.undoStack.shift();
+                if (this._undoStack.length === this._maxUndoCount) {
+                    this._undoStack.shift();
                 }
 
-                this.undoStack.push(undoEntry);
+                this._undoStack.push(operationPromise);
 
-                if (!this.isRedoing && this.redoStack.length > 0) {
+                if (!this.isRedoing && this._redoStack.length > 0) {
                     this.clearRedo();
                 }
             }
+
+            this._promiseOperationMap.set(operationPromise, undoEntry);
+            return operationPromise.spread(this._resolveUndoEntry(this, undoEntry));
         }
     },
 
-/**
-    Removes all items from the undo stack.
-    @function
-*/
+    _resolveUndoEntry: {
+        value: function(undoManager, entry) {
 
+            return function (label, undoFunction, context) {
+
+                entry.label = label;
+                entry.undoFunction = undoFunction;
+                entry.context = context;
+                entry.args = Array.prototype.slice.call(arguments, 3);
+
+                undoManager._flushOperationQueue();
+            };
+        }
+    },
+
+    _flushOperationQueue: {
+        value: function () {
+
+            var opQueue = this._operationQueue,
+                opCount = opQueue.length,
+                i,
+                completedPromises = [],
+                completedCount,
+                promise,
+                entry,
+                opMap = this._promiseOperationMap;
+
+            if (0 === opCount) {
+                return;
+            }
+
+            for (i = opCount - 1; i >= 0; i--) {
+                promise = opQueue[i];
+                entry = this._promiseOperationMap.get(promise);
+
+                if (typeof entry.undoFunction === "function") {
+                    this._performOperation(entry);
+                    completedPromises.push(promise);
+                } else {
+                    break;
+                }
+            }
+
+            completedCount = completedPromises.length;
+
+            if (completedCount > 0) {
+                // remove the performed operations
+                opQueue.splice(opCount - completedCount, completedCount);
+
+                completedPromises.forEach(function (opPromise) {
+                    opMap.delete(opPromise);
+                });
+            }
+
+        }
+    },
+
+    _performOperation: {
+        value: function (entry) {
+
+            if (entry.operationType === UNDO_OPERATION) {
+                this.undoEntry = entry;
+            } else {
+                this.redoEntry = entry;
+            }
+
+            entry.undoFunction.apply(entry.context, entry.args);
+
+            this.undoEntry = null;
+            this.redoEntry = null;
+
+            entry.deferredOperation.resolve(true);
+        }
+    },
+
+    /**
+        Removes all items from the undo stack.
+        @function
+    */
     clearUndo: {
         value: function() {
-            this.undoStack.splice(0, this.undoStack.length);
+            this._undoStack.splice(0, this._undoStack.length);
         }
     },
 
-/**
-    Removes all items from the redo stack.
-    @function
-*/
-
+    /**
+        Removes all items from the redo stack.
+        @function
+    */
     clearRedo: {
         value: function() {
-            this.redoStack.splice(0, this.redoStack.length);
+            this._redoStack.splice(0, this._redoStack.length);
         }
     },
 
-/**
-    Returns `true` if the UndoManager is in the middle of an undo operation, otherwise returns `false`.
-*/
+    /**
+        Returns `true` if the UndoManager is in the middle of an undo operation, otherwise returns `false`.
+    */
     isUndoing: {
         dependencies: ["undoEntry"],
         get: function() {
@@ -194,9 +284,9 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
         }
     },
 
-/**
-    Returns `true` if the UndoManager is in the middle of an redo operation, otherwise returns `false`.
-*/
+    /**
+        Returns `true` if the UndoManager is in the middle of an redo operation, otherwise returns `false`.
+    */
     isRedoing: {
         dependencies: ["redoEntry"],
         get: function() {
@@ -204,127 +294,116 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
         }
     },
 
-/**
-    The current undo item being operated on.
-*/
+
     undoEntry: {
         enumerable: false,
         value: null
     },
 
-/**
-    The current redo item being operated on.
-*/
     redoEntry: {
         enumerable: false,
         value: null
     },
 
-/**
-    Removes the last item in the undo stack and invokes its undo function.
-    @function
-*/
+    /**
+        Schedules the next undo operation for invocation as soon as possible
+        @function
+     */
     undo: {
         value: function() {
 
-            if (this.isUndoing || this.isRedoing) {
-                throw "UndoManager cannot initiate an undo or redo while undoing.";
+            if (0 === this.undoCount) {
+               return Promise.resolve(null);
             }
 
-            if (this.undoStack.length === 0) {
-                return;
-            }
-
-            var entry = this.undoEntry = this.undoStack.pop();
-            entry.undoFunction.apply(entry.context, entry.args);
-            this.undoEntry = null;
+            return this._scheduleOperation(this._undoStack.pop(), UNDO_OPERATION);
         }
     },
 
-/**
-    Removes the last item in the undo stack and invokes its undo function.
-    @function
-*/
+    /**
+        Schedules the next redo operation for invocation as soon as possible
+        @function
+    */
     redo: {
         value: function() {
-            if (this.isUndoing || this.isRedoing) {
-                throw "UndoManager cannot initiate an undo or redo while redoing.";
+
+            if (0 === this.redoCount) {
+                return Promise.resolve(null);
             }
 
-            if (this.redoStack.length === 0) {
-                return;
-            }
-
-            var entry = this.redoEntry = this.redoStack.pop();
-            entry.undoFunction.apply(entry.context, entry.args);
-            this.redoEntry = null;
+            return this._scheduleOperation(this._redoStack.pop(), REDO_OPERATION);
         }
     },
 
-/**
-    Returns true if the undo stack contains any items, otherwise returns false.
-*/
+    _scheduleOperation: {
+        value: function (operationPromise, operationType) {
+
+            var deferredOperation = Promise.defer(),
+                entry = this._promiseOperationMap.get(operationPromise);
+
+            entry.deferredOperation = deferredOperation;
+            entry.operationType = operationType;
+
+            this._operationQueue.push(operationPromise);
+            this._flushOperationQueue();
+
+            return deferredOperation.promise;
+        }
+    },
+
+    /**
+        Returns true if the undo stack contains any items, otherwise returns false.
+    */
     canUndo: {
         dependencies: ["undoStack.count()"],
         get: function() {
-            return !!this.undoStack.length;
+            return !!this._undoStack.length;
         }
     },
 
-/**
-    Returns true if the redo stack contains any items, otherwise returns false.
-*/
+    /**
+        Returns true if the redo stack contains any items, otherwise returns false.
+    */
     canRedo: {
         dependencies: ["redoStack.count()"],
         get: function() {
-            return !!this.redoStack.length;
+            return !!this._redoStack.length;
         }
     },
 
-/**
-    Contains the label of the last item added to the undo stack, preceded by "Undo" (for example, "Undo Item Removal"). If the item does not have a label, then the string "Undo" is returned.
-*/
-
+    /**
+        Contains the label of the last item added to the undo stack, preceded by "Undo" (for example, "Undo Item Removal"). If the item does not have a label, then the string "Undo" is returned.
+    */
     undoLabel: {
+        // TODO also depend on the actual label property of that object
         dependencies: ["undoStack.count()"],
         get: function() {
-            var undoCount = this.undoStack.length,
+            var undoCount = this._undoStack.length,
                 label;
 
             if (undoCount) {
-                label = this.undoStack[undoCount - 1].label;
+                label = this._promiseOperationMap.get(this._undoStack[undoCount - 1]).label;
             }
 
             return label ? "Undo " + label : "Undo";
-        },
-        set: function(value) {
-            var undoCount = this.redoStack.length;
-            if (undoCount) {
-                this.undoStack[undoCount - 1].label = value;
-            }
         }
     },
 
-/**
-    Contains the label of the last item added to the redo stack, preceded by "Redo" (for example, "Redo Item Removal"). If the item does not have a label, then the string "Redo" is returned.
-*/
+    /**
+        Contains the label of the last item added to the redo stack, preceded by "Redo" (for example, "Redo Item Removal"). If the item does not have a label, then the string "Redo" is returned.
+    */
     redoLabel: {
+        // TODO also depend on the actual label property of that object
         dependencies: ["redoStack.count()"],
         get: function() {
-            var redoCount = this.redoStack.length,
+            var redoCount = this._redoStack.length,
                 label;
 
             if (redoCount) {
-                label = this.redoStack[redoCount - 1].label
+                label = this._promiseOperationMap.get(this._redoStack[redoCount - 1]).label
             }
 
             return label ? "Redo " + label : "Redo";
-        },
-        set: function(value) {
-            var redoCount = this.redoStack.length;
-            if (redoCount) {
-                this.redoStack[redoCount - 1].label = value;
-            }
         }
     }
 
