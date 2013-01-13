@@ -153,9 +153,6 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
 
             if (this.isUndoing) {
 
-                // preserve the label of the current action being undone to be the name of the redo
-                undoEntry.label = this.undoEntry.label;
-
                 if (this._redoStack.length === this._maxUndoCount) {
                     this._redoStack.shift();
                 }
