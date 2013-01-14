@@ -58,7 +58,8 @@ POSSIBILITY OF SUCH DAMAGE.
             "componentDrawsParent": {"@": "componentDrawsParent"},
             "componentParent": {"@": "componentParent"},
             "componentWithDelegate": {"@": "componentWithDelegate"},
-            "componentList": {"@": "componentList"}
+            "componentList": {"@": "componentList"},
+            "descriptors": {"@": "descriptors"}
         }
     },
     "repetition": {
@@ -220,6 +221,12 @@ POSSIBILITY OF SUCH DAMAGE.
             "value": "Text 2"
         }
     },
+    "descriptors": {
+        "prototype": "ui/draw/component-descriptors.reel",
+        "properties": {
+            "element": {"#": "descriptors"}
+        }
+    },
     "owner": {
         "prototype": "montage/ui/application",
         "properties": {
@@ -272,6 +279,8 @@ POSSIBILITY OF SUCH DAMAGE.
 <div data-montage-id="componentList" id="componentList">
     <span data-montage-id="text2"></span>
 </div>
+
+<div data-montage-id="descriptors"></div>
 
 </body>
 </html>
