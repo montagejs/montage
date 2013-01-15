@@ -67,7 +67,7 @@ var Roster = Montage.create(Montage, {
     }
 });
 
-describe('core/undo-manager', function () {
+describe('core/undo-manager-spec', function () {
 
     var undoManager, roster;
 
