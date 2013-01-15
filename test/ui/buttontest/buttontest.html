@@ -132,6 +132,13 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
 
+    "draggable": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "draggable"}
+        }
+    },
+
     "toggleinput": {
         "prototype": "montage/ui/toggle-button.reel",
         "properties": {
@@ -276,6 +283,10 @@ POSSIBILITY OF SUCH DAMAGE.
     <h2>Converter</h2>
     <input type="text" id="textinput" value="pass">
     <input type="button" id="converterbutton" value="fail">
+
+    <h2>Draggable</h2>
+    <button data-montage-id="draggable" draggable="true">Draggable button</button>
+    If you drag this button you should see a ghost. Not used in automated testing.
 
     <h2>Scroll</h2>
     <form action="" method="get">

@@ -237,13 +237,17 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
                 document.addEventListener("touchcancel", this, false);
             } else if (event.type === "mousedown") {
                 this._observedPointer = "mouse";
-                // Needed to cancel action event dispatch is mouseup'd when
-                // not on the component
+                // Needed to cancel the press if mouseup'd when not on the component
                 document.addEventListener("mouseup", this, false);
                 // Needed to preventDefault if another component has claimed
                 // the pointer
                 document.addEventListener("click", this, false);
             }
+
+            // Needed to cancel the press because once a drag is started
+            // no mouse events are fired
+            // http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#initiate-the-drag-and-drop-operation
+            this._element.addEventListener("dragstart", this, false);
 
             this.component.eventManager.claimPointer(this._observedPointer, this);
 
@@ -408,6 +412,12 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     handleMouseup: {
         value: function(event) {
             this._interpretInteraction(event);
+        }
+    },
+    handleDragstart: {
+        value: function(event) {
+            this._dispatchPressCancel(event);
+            this._endInteraction();
         }
     },
 
