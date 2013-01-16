@@ -177,6 +177,18 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
             this._promiseOperationMap = new WeakMap();
             this._undoStack = [];
             this._redoStack = [];
+
+            Object.defineBinding(this, "undoCount", {
+                boundObject: this._undoStack,
+                boundObjectPropertyPath: "count()",
+                oneway: true
+            });
+
+            Object.defineBinding(this, "redoCount", {
+                boundObject: this._redoStack,
+                boundObjectPropertyPath: "count()",
+                oneway: true
+            });
         }
     },
 
@@ -216,9 +228,7 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
         The current number of stored undoable operations
      */
     undoCount: {
-        get: function () {
-            return this._undoStack.length;
-        }
+        value: 0
     },
 
     _redoStack: {
@@ -229,9 +239,7 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
         The current number of stored redoable operations
      */
     redoCount: {
-        get: function () {
-            return this._redoStack.length;
-        }
+       value: 0
     },
 
     _trimStacks: {
