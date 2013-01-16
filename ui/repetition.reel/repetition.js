@@ -3,10 +3,299 @@
 var Montage = require("montage").Montage;
 var Component = require("ui/component").Component;
 var Template = require("ui/template").Template;
+var ContentController = require("ui/controller/content-controller").ContentController;
+
 var Map = require("collections/map");
+
 var Observers = require("frb/observers");
 var observeProperty = Observers.observeProperty;
 var observeKey = Observers.observeKey;
+
+/**
+ * A reusable view-model for each iteration of a repetition.  Each iteration
+ * corresponds to a visible object.  When an iteration is visible, it is
+ * tied to the corresponding controller-model which carries which object
+ * the iteration is coupled to, and whether it is selected.
+ */
+var Iteration = exports.Iteration = Montage.create(Montage, {
+
+    didCreate: {
+        value: function () {
+            Object.getPrototypeOf(Iteration).didCreate.call(this);
+            this.repetition = null;
+            // A temporary place-holder for the element in the iteration
+            // template instantiation process
+            this.element = null;
+            // An iteration can be "on" or "off" the document.  When the
+            // iteration is added to a document, the "fragment" is depopulated
+            // and placed between "topBoundary" and "bottomBoundary" on the
+            // DOM.  The repetition manages the boundary markers around each
+            // visible index.
+            this.fragment = null;
+            // The corresponding "object" is tracked in
+            // repetition.objectForIteration instead of on the iteration
+            // itself.  The bindings in the iteration template react to changes
+            // in that map.
+            this.childComponents = null;
+            // TODO doc
+            this.visibleIndex = null;
+            // The controller has its own model of iterations that includes
+            this.controller = null;
+            // Adding an iteration to the document stops any animations that
+            // may have been active when it was last on the document by adding
+            // a no-transition CSS class.  This class must be removed on
+            // the next draw cycle.
+            this.needsEnableTransitions = false;
+            this.active = false;
+            this.addOwnPropertyChangeListener("active", this);
+            this.selected = false;
+            this.addOwnPropertyChangeListener("selected", this);
+            this.defineBinding("selected", {"<->": "controller.selected"});
+            this.defineBinding("object", {"<->": "controller.object"});
+        }
+    },
+
+    initWithRepetition: {
+        value: function (repetition) {
+            // The repetition property is necessary to communicate changes to
+            // the selected property into pending operations queue.
+            this.repetition = repetition;
+
+            // The element property is only necessary to communicate from
+            // deserializeIteration to templateDidLoad.
+            var element = this.element;
+            this.element = null;
+            var fragment = element.ownerDocument.createDocumentFragment();
+            this.fragment = fragment;
+            while (element.firstChild) {
+                var child = element.firstChild;
+                element.removeChild(child);
+                fragment.appendChild(child);
+            }
+
+        }
+    },
+
+    injectIntoDocument: {
+        value: function (repetition, visibleIndex) {
+            var element = repetition.element;
+
+            // add a new top boundary before the next iteration
+            var topBoundary = element.ownerDocument.createComment("");
+            var bottomBoundary = repetition.boundaries[visibleIndex]; // previous
+            repetition.boundaries.splice(visibleIndex, 0, topBoundary);
+            element.insertBefore(topBoundary, bottomBoundary);
+
+            // inject the elements into the document
+            element.insertBefore(this.fragment, bottomBoundary);
+
+            // disable transitions for the injected elements
+            for (
+                var child = topBoundary.nextSibling;
+                child !== bottomBoundary;
+                child = child.nextSibling
+            ) {
+                if (child.nodeType === 1) { // tags
+                    child.classList.add("no-transition");
+                }
+            }
+            this.needsEnableTransitions = true;
+            repetition.iterationsNeedReenableTransitions = true;
+            repetition.needsDraw = true;
+
+            // notify the components to wake up and smell the document
+            for (var i = 0; i < this.childComponents.length; i++) {
+                var childComponent = this.childComponents[i];
+                childComponent.needsDraw = true;
+            }
+
+            this.visibleIndex = visibleIndex;
+        }
+    },
+
+    retractFromDocument: {
+        value: function (repetition, visibleIndex) {
+            var element = repetition.element;
+            var topBoundary = repetition.boundaries[visibleIndex];
+            var bottomBoundary = repetition.boundaries[visibleIndex + 1];
+            // remove the top boundary
+            repetition.boundaries.splice(visibleIndex, 1);
+            var fragment = this.fragment;
+            var child = topBoundary.nextSibling;
+            while (child != bottomBoundary) {
+                var next = child.nextSibling;
+                element.removeChild(child);
+                fragment.appendChild(child);
+                child = next;
+            }
+            element.removeChild(topBoundary);
+            this.visibleIndex = null;
+        }
+    },
+
+    // Re-enables CSS transitions on all the elements in a repetition in the
+    // draw-cycle after they have been added to the DOM.
+    // This must only be called when the iteration is on the document.
+    enableTransitions: {
+        value: function (repetition, visibleIndex) {
+            for (
+                var child = repetition.boundaries[visibleIndex];
+                child !== repetition.boundaries[visibleIndex + 1];
+                child = child.nextSibling
+            ) {
+                if (child.nodeType === 1) { // tags
+                    child.classList.remove("no-transition");
+                }
+            }
+        }
+    },
+
+    handleSelectedChange: {
+        value: function (selected) {
+            // This event is only relevant after initialization
+            if (!this.repetition)
+                return;
+            var repetition = this.repetition;
+            var operation;
+            if (selected) {
+                operation = repetition.SelectOperation.create().initWithIteration(this);
+            } else {
+                operation = repetition.DeselectOperation.create().initWithIteration(this);
+            }
+            repetition.pendingOperations.push(operation);
+            repetition.needsDraw = true;
+        }
+    },
+
+    handleActiveChange: {
+        value: function (active) {
+            // TODO visualize
+        }
+    }
+
+});
+
+// Operations are tracked in a List of Operations on a Repetition and then
+// executed in the "draw" imperative to add and remove Iterations at particular
+// positions.
+
+var ContentChangeOperation = exports.ContentChangeOperation = Montage.create(Montage, {
+
+    didCreate: {
+        value: function () {
+            Object.getPrototypeOf(ContentChangeOperation).didCreate.call(this);
+            this.controller = null;
+            this.visibleIndex = null;
+        }
+    },
+
+    initWithControllerAndVisibleIndex: {
+        value: function (controller, visibleIndex) {
+            this.controller = controller;
+            this.visibleIndex = visibleIndex;
+            return this;
+        }
+    }
+
+});
+
+var DeleteOperation = exports.AddOperation = Montage.create(ContentChangeOperation, {
+    draw: {
+        value: function (repetition) {
+            // update the model:
+            // This dispatches during the draw cycle and gives those listeners
+            // an opportunity to work while the elements and components are
+            // still on the DOM and bound properly.
+            var iteration = repetition.iterations.splice(this.visibleIndex, 1)[0];
+            repetition.updateVisibleIndexes(this.visibleIndex);
+            // update the bindings:
+            iteration.controller = null;
+            repetition.objectForIteration.set(iteration, null);
+            // update the document:
+            iteration.retractFromDocument(repetition, this.visibleIndex);
+            // recycle the iteration:
+            repetition.freeIterations.push(iteration);
+        }
+    }
+});
+
+var AddOperation = exports.AddOperation = Montage.create(ContentChangeOperation, {
+    draw: {
+        value: function (repetition) {
+            // recycle the iteration:
+            var iteration = repetition.freeIterations.pop();
+            // update the document:
+            iteration.injectIntoDocument(repetition, this.visibleIndex);
+            // update the bindings:
+            repetition.objectForIteration.set(iteration, this.controller.object);
+            iteration.controller = this.controller;
+            // update the model:
+            // This dispatches events in the draw cycle.  Others may depend on
+            // those events to occur after the element has been placed on the
+            // DOM and bindings reified.
+            repetition.iterations.splice(this.visibleIndex, 0, iteration);
+            repetition.updateVisibleIndexes(this.visibleIndex);
+        }
+    }
+});
+
+var SelectionChangeOperation = exports.SelectionChangeOperation = Montage.create(Montage, {
+    didCreate: {
+        value: function () {
+            Object.getPrototypeOf(SelectionChangeOperation).didCreate.call(this);
+            this.iteration = null;
+        }
+    },
+    initWithIteration: {
+        value: function (iteration) {
+            this.iteration = iteration;
+            return this;
+        }
+    }
+});
+
+var DeselectOperation = exports.DeselectOperation = Montage.create(SelectionChangeOperation, {
+    draw: {
+        value: function () {
+            var iteration = this.iteration;
+            if (iteration.visibleIndex === null)
+                return;
+            var repetition = iteration.repetition;
+            var visibleIndex = iteration.visibleIndex;
+            for (
+                var child = repetition.boundaries[visibleIndex];
+                child !== repetition.boundaries[visibleIndex + 1];
+                child = child.nextSibling
+            ) {
+                if (child.nodeType === 1) { // tags
+                    child.classList.remove("selected");
+                }
+            }
+        }
+    }
+});
+
+var SelectOperation = exports.SelectOperation = Montage.create(SelectionChangeOperation, {
+    draw: {
+        value: function () {
+            var iteration = this.iteration;
+            if (iteration.visibleIndex === null)
+                return;
+            var repetition = iteration.repetition;
+            var visibleIndex = iteration.visibleIndex;
+            for (
+                var child = repetition.boundaries[visibleIndex];
+                child !== repetition.boundaries[visibleIndex + 1];
+                child = child.nextSibling
+            ) {
+                if (child.nodeType === 1) { // tags
+                    child.classList.add("selected");
+                }
+            }
+
+        }
+    }
+});
 
 var Repetition = exports.Repetition = Montage.create(Component, {
 
@@ -38,8 +327,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             return this.controller.objects;
         },
         set: function (objects) {
-            // TODO better than DumbController
-            this.controller = DumbController.create().initWithObjects(objects);
+            this.controller = ContentController.create().initWithObjects(objects);
         }
     },
 
@@ -59,25 +347,30 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 
     didCreate: {
         value: function () {
-            window.repetition = this; // TODO redact
-            Component.didCreate.call(this);
+            Object.getPrototypeOf(Repetition).didCreate.call(this);
+            global.repetition = this; // TODO redact
 
+            // Knobs:
             this.controller = null;
             this.selector = null;
+            this.noElement = false;
 
             // The state of the DOM:
             // ---
 
             // The template that gets repeated in the DOM
             this.iterationTemplate = null;
-            // The "iterations" array tracks "visibleObjects".  Each iteration
+            // The "iterations" array tracks "controllerIterations".  Each iteration
             // corresponds to a visible object, by its visible position.  An
             // iteration has a template instance
             this.iterations = [];
-            // Iteration objects can be reused.  When an iteration is collected,
-            // it gets put in the freeIterations list.
+            // Iteration objects can be reused.  When an iteration is collected
+            // (and when it is initially created), it gets put in the
+            // freeIterations list.
             this.freeIterations = []; // push/pop LIFO
-            // Iterations that need a template instance:
+            // Iterations that need a template instance: We cannot draw until
+            // all of the iterations (free or otherwise, for simplicity's sake)
+            // have templates.
             this.iterationsNeedingTemplates = [];
             // Whenever an iteration template is instantiated, it may have
             // bindings to the repetition's "objectAtCurrentIteration".  The
@@ -102,13 +395,16 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // Where we want to be after the next draw:
             // ---
 
-            this.visibleObjects = [];
-            // dispatches to this.handleVisibleObjectsRangeChange:
-            this.visibleObjects.addRangeChangeListener(this, "visibleObjects");
-            // Ascertains that visibleObjects does not get changed by the
+            this.controllerIterations = [];
+            // dispatches to this.handleControllerIterationsRangeChange:
+            this.controllerIterations.addRangeChangeListener(
+                this,
+                "controllerIterations"
+            );
+            // Ascertains that controllerIterations does not get changed by the
             // controller, but the changes are projected on our array.
-            this.defineBinding("visibleObjects.*", {
-                "<-": "controller.visibleObjects",
+            this.defineBinding("controllerIterations.*", {
+                "<-": "controller.iterations",
                 "serializable": false
             });
             // The boundaries array contains comment nodes that serve as the
@@ -122,7 +418,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // visibleIndex of the iteration and this figure:
             this.iterationChildComponentsLength = 0;
 
-            // The plan for the next draw to synchronize visibleObjects and
+            // The plan for the next draw to synchronize controllerIterations and
             // iterations on the DOM:
             // ---
 
@@ -140,8 +436,16 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // we can't set up the iteration template in this turn of the event
             // loop because it would interfere with deserialization, so this is
             // usually deferred to the first draw.
-            this.canEraseTemplate = false;
-            this.templateErased = false;
+            this.canDrawInitialContent = false;
+            // Indicates that the elements from the template have been erased.
+            // Setting this to true allows those elements to be erased in the
+            // next draw.
+            this.initialContentDrawn = false;
+            // This flag indicates that iterations have been added to the
+            // document in the current or previous draw cycle.  This indicates
+            // that another draw is needed to reenable CSS transitions on the
+            // injected iterations.
+            this.iterationsNeedReenableTransitions = false;
 
         }
     },
@@ -198,7 +502,10 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 // key.  Use the first contained component's UUID to uniquely
                 // identify this template.  Use the _suuid to ascertain that
                 // only one key exists, even if the repetition is nested.
-                this._templateId = this.childComponents[0]._suuid || this.childComponents[0].uuid;
+                this._templateId = (
+                    this.childComponents[0]._suuid || // Assigned by Serialization
+                    this.childComponents[0].uuid // Assigned by Montage
+                );
                 // TODO maybe we don't need to fall back to childComponents[0].uuid, if
                 // every component is guaranteed to have _suuid.
                 // templateWithComponent is a memoization of the template for its id
@@ -230,10 +537,10 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 
             // In case some iterations have been requested before the iteration
             // template was ready to go.  Iterations are requested during
-            // handleVisibleObjectsRangeChange.
+            // handleControllerIterationsRangeChange.
             this.createNeededIterations();
 
-            this.canEraseTemplate = true;
+            this.canDrawInitialContent = true;
             this.needsDraw = true;
         }
     },
@@ -258,7 +565,11 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // This method gets called by the Template initializer on behalf of
             // setupIterationTemplate
             serializeObjectProperties: function(serialization, object) {
-                serialization.set("ownerComponent", object.ownerComponent, "reference");
+                serialization.set(
+                    "ownerComponent",
+                    object.ownerComponent,
+                    "reference"
+                );
             }
         }
     },
@@ -351,7 +662,10 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             var iteration = this.iterationsNeedingTemplates.pop();
             this.currentIteration = iteration;
             iteration.element = deserializer.get("element");
-            this.eventManager.registerEventHandlerForElement(this, iteration.element);
+            this.eventManager.registerEventHandlerForElement(
+                this,
+                iteration.element
+            );
         }
     },
 
@@ -363,24 +677,18 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         value: function () {
             var iteration = this.currentIteration;
             if (!iteration) {
-                throw new Error("Assertion error: templateDidLoad should only be called after deserializeProperties so there should always be a currentIteration");
+                throw new Error(
+                    "Assertion error: templateDidLoad should only be called " +
+                    "after deserializeProperties so there should always be " +
+                    "a currentIteration"
+                );
             }
 
             // populate the document fragment for the iteration from the
             // content of the element
-            var element = iteration.element;
-            var fragment = element.ownerDocument.createDocumentFragment();
-            iteration.fragment = fragment;
-            while (element.firstChild) {
-                var child = element.firstChild;
-                element.removeChild(child);
-                fragment.appendChild(child);
-            }
-            this.currentIteration = null;
-            // The element property is only necessary to communicate from
-            // deserializeIteration to templateDidLoad.
-            iteration.element = null;
+            iteration.initWithRepetition(this);
 
+            this.currentIteration = null;
         }
     },
 
@@ -404,6 +712,9 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                     parameters,
                     beforeChange
                 );
+            } else if (key === "currentIteration") {
+                // Shortcut since this property is sticky.
+                return emit(this.currentIteration);
             } else {
                 // fall back to normal property observation
                 return observeProperty(
@@ -418,29 +729,42 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         }
     },
 
+    // This makes bindings to "currentIteration" stick regardless of how the
+    // repetition manipulates the property, and prevents a getter/setter pair
+    // from being attached to the property.
+    makePropertyObservable: {
+        value: function (key) {
+            if (key !== "currentIteration") {
+                return Montage.makePropertyObservable.call(this, key);
+            }
+        }
+    },
+
     // Reacting to changes in the controlled visible objects:
     // ----
 
-    // In responses to changes in the controlled visibleObjects array, this
+    // In responses to changes in the controlled controllerIterations array, this
     // method creates a plan to add and delete iterations with their
     // corresponding DOM elements on the next "draw" event.  This may require
     // more iterations to be constructed before the next draw event.
-    handleVisibleObjectsRangeChange: {
+    handleControllerIterationsRangeChange: {
         value: function (plus, minus, visibleIndex) {
 
             // add pending operations to run in draw
             for (var offset = 0; offset < minus.length; offset++) {
-                var operation = DeleteOperation.create().initWithObjectAndVisibleIndex(
-                    minus[offset],
-                    visibleIndex
-                );
+                var operation = this.DeleteOperation.create()
+                    .initWithControllerAndVisibleIndex(
+                        minus[offset],
+                        visibleIndex
+                    );
                 this.pendingOperations.push(operation);
             }
             for (var offset = 0; offset < plus.length; offset++) {
-                var operation = AddOperation.create().initWithObjectAndVisibleIndex(
-                    plus[offset],
-                    visibleIndex + offset
-                );
+                var operation = this.AddOperation.create()
+                    .initWithControllerAndVisibleIndex(
+                        plus[offset],
+                        visibleIndex + offset
+                    );
                 this.pendingOperations.push(operation);
             }
 
@@ -472,20 +796,15 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 
     expandComponent: {
         value: function expandComponent(callback) {
-            // TODO figure out whether this is necessary: it should be taken
-            // care of by the deserializedFromTemplate method.
-            if (!this.iterationTemplate) {
-                throw new Error("ASSERTION");
-            }
-            // Used by Component to determine whether the node of the component
-            // object hierarchy is traversable:
+            // _isComponentExpanded is Used by Component to determine whether
+            // the node of the component object hierarchy is traversable:
             this._isComponentExpanded = true;
-            callback();
+            if (callback) {
+                callback();
+            }
         }
     },
 
-    // TODO @kriskowal figure out what needs hookup with the canDrawGate and
-    // what the heck childComponents is supposed to be at this point.
     canDraw: {
         value: function () {
             // block for the usual component-related issues
@@ -493,7 +812,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // block until we have created enough iterations to draw
             canDraw = canDraw && this.neededIterations <= this.createdIterations;
             // block until we can draw initial content if we have not already
-            canDraw = canDraw && (this.templateErased || this.canEraseTemplate);
+            canDraw = canDraw && (this.initialContentDrawn || this.canDrawInitialContent);
             // block until all child components can draw
             if (canDraw) {
                 for (var i = 0; i < this.childComponents.length; i++) {
@@ -512,40 +831,57 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     draw: {
         value: function () {
 
-            if (!this.templateErased) {
-                this.eraseTemplate();
-                this.templateErased = true;
+            if (!this.initialContentDrawn) {
+                this.drawInitialContent();
+                this.initialContentDrawn = true;
             }
 
-            // grow the list of boundaries if necessary
-            this.drawBoundaries();
+            // reenable CSS transitions on the elements of any iterations that
+            // were injected in the previous draw cycle.  Rather than attempt
+            // to compute which iterations were added but not removed in the
+            // last draw cycle, each iteration is rather marked with the
+            // "needsEnableTransitions" flag.
+            if (this.iterationsNeedReenableTransitions) {
+                for (
+                    var visibleIndex = 0;
+                    visibleIndex < this.iterations.length;
+                    visibleIndex++
+                ) {
+                    var iteration = this.iterations[visibleIndex];
+                    if (iteration.needsEnableTransitions) {
+                        iteration.enableTransitions(this, visibleIndex);
+                        iteration.needsEnableTransitions = false;
+                    }
+                }
+            }
 
             // execute the pending add and delete operations
             var pendingOperations = this.pendingOperations;
             pendingOperations.forEach(function (operation) {
-                operation.execute(this);
+                operation.draw(this);
             }, this);
             pendingOperations.clear();
 
         }
     },
 
-    eraseTemplate: {
+    drawInitialContent: {
         value: function () {
-            this.element.innerHTML = "";
+            var element = this.element;
+            element.innerHTML = "";
+            var bottomBoundary = element.ownerDocument.createComment("");
+            element.appendChild(bottomBoundary);
+            this.boundaries.push(bottomBoundary);
         }
     },
 
-    drawBoundaries: {
-        value: function () {
-            for (
-                var visibleIndex = this.boundaries.length;
-                visibleIndex <= this.neededIterations;
-                visibleIndex++
-            ) {
-                var boundary = document.createComment("");
-                this.boundaries.push(boundary);
-                this.element.appendChild(boundary);
+    // Used by the Add and Delete operations to update the visible indexes
+    // of every iteration following a change.
+    updateVisibleIndexes: {
+        value: function (visibleIndex) {
+            var iterations = this.iterations;
+            for (; visibleIndex < iterations.length; visibleIndex++) {
+                iterations[visibleIndex].visibleIndex = visibleIndex;
             }
         }
     },
@@ -555,160 +891,52 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             if (pleaseCancelBindings) {
                 this.cancelBindings();
             }
-            this.visibleObjects.removeMapChangeListener(this);
-            this.visibleObjects.removeBeforeMapChangeListener(this);
+            this.controllerIterations.removeMapChangeListener(this);
             // TODO for each iteration, call cleanupDeletedComponentTree on
             // every component in every iteration.
         }
     },
 
-    // XXX
-    //
-    // TODO expandComponent isComponentExpanded
-
-});
-
-var Iteration = exports.Iteration = Montage.create(Montage, {
-
-    didCreate: {
-        value: function () {
-            // A temporary place-holder for the element in the iteration
-            // template instantiation process
-            this.element = null;
-            // An iteration can be "on" or "off" the document.  When the
-            // iteration is added to a document, the "fragment" is depopulated
-            // and placed between "topBoundary" and "bottomBoundary" on the
-            // DOM.  The repetition manages the boundary markers around each
-            // visible index.   When all of these are null, the iteration does
-            // not yet have a template and has never been placed on the DOM.
-            this.fragment = null;
-            // The corresponding "object" is tracked in
-            // repetition.objectForIteration instead of on the iteration
-            // itself.  The bindings in the iteration template react to changes
-            // in that map.
-            this.childComponents = null;
-        }
+    Iteration: {
+        value: Iteration
     },
 
-    injectIntoDocument: {
-        value: function (repetition, visibleIndex) {
-            var element = repetition.element;
-            var bottomBoundary = repetition.boundaries[visibleIndex + 1];
-            element.insertBefore(this.fragment, bottomBoundary);
-            // notify the components to wake up and smell the document
-            for (var i = 0; i < this.childComponents.length; i++) {
-                this.childComponents[i].needsDraw = true;
-            }
-        }
+    ContentChangeOperation: {
+        value: ContentChangeOperation
     },
 
-    retractFromDocument: {
-        value: function (repetition, visibleIndex) {
-            var element = repetition.element;
-            var topBoundary = repetition.boundaries[visibleIndex];
-            var bottomBoundary = repetition.boundaries[visibleIndex + 1];
-            repetition.boundaries.splice(visibleIndex, 1);
-            var fragment = this.fragment;
-            var child = topBoundary.nextSibling;
-            while (child != bottomBoundary) {
-                var next = child.nextSibling;
-                element.removeChild(child);
-                fragment.appendChild(child);
-                child = next;
-            }
-            element.removeChild(topBoundary);
-        }
-    }
-
-});
-
-// Operations are tracked in a List of Operations on a Repetition and then
-// executed in the "draw" imperative to add and remove Iterations at particular
-// positions.
-var Operation = exports.Operation = Montage.create(Montage, {
-
-    didCreate: {
-        value: function () {
-            this.object = null;
-            this.visibleIndex = null;
-        }
+    AddOperation: {
+        value: AddOperation
     },
 
-    initWithObjectAndVisibleIndex: {
-        value: function (object, visibleIndex) {
-            this.object = object;
-            this.visibleIndex = visibleIndex;
-            return this;
-        }
-    }
-
-});
-
-var DeleteOperation = exports.AddOperation = Montage.create(Operation, {
-    execute: {
-        value: function (repetition) {
-            // update the model:
-            var iteration = repetition.iterations.splice(this.visibleIndex, 1)[0];
-            // update the bindings:
-            repetition.objectForIteration.set(iteration, null);
-            // update the document:
-            iteration.retractFromDocument(repetition, this.visibleIndex);
-            // recycle the iteration:
-            repetition.freeIterations.push(iteration);
-        }
-    }
-});
-
-var AddOperation = exports.AddOperation = Montage.create(Operation, {
-    execute: {
-        value: function (repetition) {
-            // recycle the iteration:
-            var iteration = repetition.freeIterations.pop();
-            // update the model:
-            repetition.iterations.splice(this.visibleIndex, 0, iteration);
-            // update the document:
-            iteration.injectIntoDocument(repetition, this.visibleIndex);
-            // update the bindings:
-            repetition.objectForIteration.set(iteration, this.object);
-        }
-    }
-});
-
-var DumbController = exports.DumbController = Montage.create(Montage, {
-
-    selector: {value: null}, // TODO
-
-    start: {value: null}, // TODO
-
-    length: {value: null}, // TODO
-
-    objects: {value: null},
-
-    didCreate: {
-        value: function () {
-            this.objects = null;
-            this.selector = null;
-            this.visibleObjects = null;
-            this.selection = new Set();
-            this.selectedIndexes = new Set();
-        }
+    DeleteOperation: {
+        value: DeleteOperation
     },
 
-    initWithObjects: {
-        value: function (objects) {
-            this.objects = objects;
-            this.visibleObjects = objects;
-            return this;
-        }
+    SelectionChangeOperation: {
+        value: SelectionChangeOperation
+    },
+
+    SelectOperation: {
+        value: SelectOperation
+    },
+
+    DeselectOperation: {
+        value: DeselectOperation
     }
 
-    // TODO selectAddedObjects
-    // TODO deselectDeletedObjects (always true)
-    // TODO deselectInvisibleObjects
-    // TODO automaticallyDispatchChangeListener?
-    // TODO should a repetition serve as a proxy for the visible objects?
-    // TODO canDrawGate.setField("iterationLoaded")
-    // TODO account for selection and deselection
-
 });
+
+// TODO refreshSelectionTracking
+// TODO captureTouchstart
+// TODO handleTouchend
+// TODO handleTouchcancel
+// TODO captureMousedown
+// TODO handleMouseup
+// TODO surrenderPointer
+// TODO selectionPointer
+// TODO ignoreSelectionPointer
+// TODO observeSelectionPointer
+
+// TODO deserializeSelf / serializeSelf that simplifies the "controller" out if possible
 
