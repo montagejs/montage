@@ -1156,6 +1156,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     this.parentComponent.childComponentWillPrepareForDraw(this);
                 }
 
+                if (typeof this.willPrepareForDraw === "function") {
+                    this.willPrepareForDraw();
+                }
+
                 this._prepareForDraw();
 
                 if (this.prepareForDraw) {
