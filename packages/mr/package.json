@@ -1,6 +1,6 @@
 {
   "name": "mr",
-  "version": "0.12.2",
+  "version": "0.12.4",
   "main": "require",
   "bin": {
     "mr": "bin/mr"
@@ -12,10 +12,10 @@
     }
   },
   "dependencies": {
-    "q": "0.8.11 - 0.9"
+    "q": "~0.8.11"
   },
   "devDependencies": {
-    "qs": "0.5 - 0.6"
+    "qs": "~0.5.3"
   },
   "exclude": [
     "README.md",

@@ -565,6 +565,19 @@
 
         }
 
+        //Deal with redirects
+        var redirects = description.redirects;
+        if (redirects !== void 0) {
+            Object.keys(redirects).forEach(function (name) {
+                modules[name] = {
+                    id: name,
+                    redirect: redirects[name],
+                    location: URL.resolve(location, name)
+                };
+            });
+        }
+
+
         // mappings, link this package to other packages.
         var mappings = description.mappings || {};
         // dependencies, devDependencies

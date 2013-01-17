@@ -17,7 +17,7 @@
 
         // this permits bootstrap.js to be injected after domready
         document.addEventListener("DOMContentLoaded", domLoad, true);
-        if (document.readyState === "complete") {
+        if (document.readyState === "interactive") {
             domLoad();
         }
 
