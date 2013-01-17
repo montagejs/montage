@@ -50,6 +50,8 @@ describe("Require", function () {
         "load-package",
         "load-package-name",
         "not-found",
+        "redirects",
+        "redirects-package",
         "comments",
         "identify",
         "dev-dependencies",

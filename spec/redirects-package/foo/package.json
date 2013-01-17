@@ -1,0 +1,6 @@
+{
+    "name": "foo",
+    "redirects": {
+        "bar": "barz"
+    }
+}
