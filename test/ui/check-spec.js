@@ -99,12 +99,12 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
 
                 describe("one-way binding", function() {
                     it("starts checked", function() {
-                        runs(function() {
+//                        runs(function() {
                             expect(test.check_bound1.element.checked).toBe(true);
                             expect(test.check_bound2.element.checked).toBe(true);
 
                             click(test.check_bound2);
-                     });
+//                     });
                     });
                     it("unchecks both one way", function() {
                         testPage.waitForDraw();

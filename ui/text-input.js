@@ -37,7 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    NativeControl = require("ui/native-control").NativeControl;
+    Input = require("ui/input").Input;
 
 /**
     The base class for all text-based input components. You typically won't create instances of this prototype.
@@ -50,7 +50,7 @@ var Montage = require("montage").Montage,
     @see module:"montage/ui/textarea.reel".TextArea
 
 */
-var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends module:montage/ui/text-input.TextInput# */ {
+var TextInput = exports.TextInput =  Montage.create(Input, /** @lends module:montage/ui/text-input.TextInput# */ {
 
     _hasFocus: {
         enumerable: false,
@@ -183,10 +183,6 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
         }
     },
 
-    // HTMLInputElement methods
-
-    blur: { value: function() { this._element.blur(); } },
-    focus: { value: function() { this._element.focus(); } },
     // select() defined where it's allowed
     // click() deliberately omitted, use focus() instead
 
@@ -293,33 +289,32 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
 
 });
 
-// Standard <input> tag attributes - http://www.w3.org/TR/html5/the-input-element.html#the-input-element
+//The following content attributes must not be specified and do not apply to the input type=text element:
+// accept, alt, checked, formaction, formenctype, formmethod, formnovalidate, formtarget, height, max, min, multiple, src, step, and width.
 
 TextInput.addAttributes({
-    accept: null,
-    alt: null,
     autocomplete: null,
-    autofocus: {dataType: "boolean"},
-    checked: {dataType: "boolean"},
     dirname: null,
-    disabled: {dataType: 'boolean'},
-    form: null,
-    formaction: null,
-    formenctype: null,
-    formmethod: null,
-    formnovalidate: {dataType: 'boolean'},
-    formtarget: null,
     height: null,
     list: null,
     maxlength: null,
     multiple: {dataType: 'boolean'},
-    name: null,
+    /**
+        The name part of the name/value pair associated with this element for the purposes of form submission.
+        @type {string}
+        @default null
+    */
     pattern: null,
     placeholder: null,
-    readonly: {dataType: 'boolean'},
-    required: {dataType: 'boolean'},
+    /**
+        Specifies if this control is readonly.
+        @type {boolean}
+        @default false
+    */
+    readonly: {value: false, dataType: 'boolean'},
     size: null,
-    src: null,
-    width: null
+    width: null,
     // "type" is not bindable and "value" is handled as a special attribute
+    required: {dataType: 'boolean'}
+
 });
