@@ -2,6 +2,10 @@
 
 var Montage = require("montage").Montage;
 
+// The content controller is responsible for determining which objects from a
+// source collection are visible, their order of appearance, and whether they
+// are selected.  Multiple repetitions may share a single content controller
+// and thus their selection state.
 var ContentControllerIteration = exports.ContentControllerIteration = Montage.create(Montage, {
 
     didCreate: {
@@ -48,7 +52,6 @@ var ContentController = exports.ContentController = Montage.create(Montage, {
             this.addPathChangeListener("visibleIndexes", this, "handleVisibleIndexesChange");
             // output
             this.iterations = [];
-            global.controller = this; // TODO redact
         }
     },
 

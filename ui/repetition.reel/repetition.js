@@ -13,18 +13,36 @@ var observeKey = Observers.observeKey;
 
 /**
  * A reusable view-model for each iteration of a repetition.  Each iteration
- * corresponds to a visible object.  When an iteration is visible, it is
- * tied to the corresponding controller-model which carries which object
- * the iteration is coupled to, and whether it is selected.
+ * corresponds to a visible object.  When an iteration is visible, it is tied
+ * to the corresponding controller-model that carries which object the
+ * iteration is coupled to, and whether it is selected.
  */
 var Iteration = exports.Iteration = Montage.create(Montage, {
 
     didCreate: {
         value: function () {
             Object.getPrototypeOf(Iteration).didCreate.call(this);
+            // The parent repetition component
             this.repetition = null;
-            // A temporary place-holder for the element in the iteration
-            // template instantiation process
+            // The repetition gets iterations from its content controller.  The
+            // controller is responsible for tracking which iterations are
+            // visible and which are selected.  The iteration view-model is
+            // attached to the controller view-model by this property, which
+            // two-way binds the "selected" and "object" properties.
+            this.controller = null;
+            this.object = null;
+            this.selected = false;
+            // The iteration watches whether it is selected.  If the iteration
+            // is visible, it enqueue's selection change draw operations and
+            // notifies the repetition it needs to be redrawn.
+            // Dispatches handlePropertyChange with the "selected" key:
+            this.addOwnPropertyChangeListener("selected", this);
+            this.defineBinding("selected", {"<->": "controller.selected"});
+            this.defineBinding("object", {"<->": "controller.object"});
+            // A temporary place-holder for the element in the iteration-
+            // template instantiation process.  As soon as possible, the
+            // iteration extracts all of its child elements and puts them in
+            // the fragment.
             this.element = null;
             // An iteration can be "on" or "off" the document.  When the
             // iteration is added to a document, the "fragment" is depopulated
@@ -37,21 +55,29 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             // itself.  The bindings in the iteration template react to changes
             // in that map.
             this.childComponents = null;
-            // TODO doc
+            // The position that this iteration occupies in the repetition.
+            // This is updated whenever views are added or removed before it in
+            // the sequence, an operation of linear complexity but which is not
+            // onerous since there should be a managable, fixed-maximum number
+            // of visible iterations.
             this.visibleIndex = null;
-            // The controller has its own model of iterations that includes
-            this.controller = null;
             // Adding an iteration to the document stops any animations that
             // may have been active when it was last on the document by adding
             // a no-transition CSS class.  This class must be removed on
             // the next draw cycle.
             this.needsEnableTransitions = false;
+
+            // Describes whether a user gesture is touching this iteration.
             this.active = false;
+            // Changes to whether a user is touching the iteration are
+            // reflected by the "active" CSS class on each element in the
+            // iteration.  This gets updated in the draw cycle, in response to
+            // operations that handleActiveChange adds to the repetition draw
+            // cycle.
+            // Dispatches handlePropertyChange with the "active" key:
             this.addOwnPropertyChangeListener("active", this);
-            this.selected = false;
-            this.addOwnPropertyChangeListener("selected", this);
-            this.defineBinding("selected", {"<->": "controller.selected"});
-            this.defineBinding("object", {"<->": "controller.object"});
+            this.defineBinding("active", {"<->": "repetition.activeIterations.has(())"});
+
         }
     },
 
@@ -80,16 +106,18 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
         value: function (repetition, visibleIndex) {
             var element = repetition.element;
 
-            // add a new top boundary before the next iteration
+            // Add a new top boundary before the next iteration
             var topBoundary = element.ownerDocument.createComment("");
             var bottomBoundary = repetition.boundaries[visibleIndex]; // previous
             repetition.boundaries.splice(visibleIndex, 0, topBoundary);
             element.insertBefore(topBoundary, bottomBoundary);
 
-            // inject the elements into the document
+            // Inject the elements into the document
             element.insertBefore(this.fragment, bottomBoundary);
 
-            // disable transitions for the injected elements
+            // Disable transitions for the injected elements.
+            // Also, since we're iterating the elements already,
+            // maintain the "elementForIteration" map.
             for (
                 var child = topBoundary.nextSibling;
                 child !== bottomBoundary;
@@ -97,6 +125,7 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             ) {
                 if (child.nodeType === 1) { // tags
                     child.classList.add("no-transition");
+                    repetition.iterationForElement.set(child, this);
                 }
             }
             this.needsEnableTransitions = true;
@@ -150,26 +179,26 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
         }
     },
 
-    handleSelectedChange: {
-        value: function (selected) {
+    // Schedules draw operations each time the "selected" or "active" property
+    // changes on this iteration.
+    handlePropertyChange: {
+        value: function (value, key) {
             // This event is only relevant after initialization
             if (!this.repetition)
                 return;
             var repetition = this.repetition;
             var operation;
-            if (selected) {
-                operation = repetition.SelectOperation.create().initWithIteration(this);
+            if (value) {
+                operation = repetition.ClassChangeOperation.create().init(
+                    this, "add", key
+                );
             } else {
-                operation = repetition.DeselectOperation.create().initWithIteration(this);
+                operation = repetition.ClassChangeOperation.create().init(
+                    this, "remove", key
+                );
             }
             repetition.pendingOperations.push(operation);
             repetition.needsDraw = true;
-        }
-    },
-
-    handleActiveChange: {
-        value: function (active) {
-            // TODO visualize
         }
     }
 
@@ -239,22 +268,15 @@ var AddOperation = exports.AddOperation = Montage.create(ContentChangeOperation,
     }
 });
 
-var SelectionChangeOperation = exports.SelectionChangeOperation = Montage.create(Montage, {
-    didCreate: {
-        value: function () {
-            Object.getPrototypeOf(SelectionChangeOperation).didCreate.call(this);
-            this.iteration = null;
-        }
-    },
-    initWithIteration: {
-        value: function (iteration) {
+var ClassChangeOperation = exports.ClassChangeOperation = Montage.create(Montage, {
+    init: {
+        value: function (iteration, action, className) {
             this.iteration = iteration;
+            this.action = action;
+            this.className = className;
             return this;
         }
-    }
-});
-
-var DeselectOperation = exports.DeselectOperation = Montage.create(SelectionChangeOperation, {
+    },
     draw: {
         value: function () {
             var iteration = this.iteration;
@@ -268,31 +290,9 @@ var DeselectOperation = exports.DeselectOperation = Montage.create(SelectionChan
                 child = child.nextSibling
             ) {
                 if (child.nodeType === 1) { // tags
-                    child.classList.remove("selected");
+                    child.classList[this.action](this.className);
                 }
             }
-        }
-    }
-});
-
-var SelectOperation = exports.SelectOperation = Montage.create(SelectionChangeOperation, {
-    draw: {
-        value: function () {
-            var iteration = this.iteration;
-            if (iteration.visibleIndex === null)
-                return;
-            var repetition = iteration.repetition;
-            var visibleIndex = iteration.visibleIndex;
-            for (
-                var child = repetition.boundaries[visibleIndex];
-                child !== repetition.boundaries[visibleIndex + 1];
-                child = child.nextSibling
-            ) {
-                if (child.nodeType === 1) { // tags
-                    child.classList.add("selected");
-                }
-            }
-
         }
     }
 });
@@ -327,7 +327,11 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             return this.controller.objects;
         },
         set: function (objects) {
-            this.controller = ContentController.create().initWithObjects(objects);
+            if (this.controller) {
+                this.controller.objects = objects;
+            } else {
+                this.controller = ContentController.create().initWithObjects(objects);
+            }
         }
     },
 
@@ -348,12 +352,13 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     didCreate: {
         value: function () {
             Object.getPrototypeOf(Repetition).didCreate.call(this);
-            global.repetition = this; // TODO redact
 
             // Knobs:
             this.controller = null;
-            this.selector = null;
-            this.noElement = false;
+            // Determines whether the repetition listens for mouse and touch
+            // events to select iterations, which involves "activating" the
+            // iteration when the user touches.
+            this.isSelectionEnabled = false;
 
             // The state of the DOM:
             // ---
@@ -378,6 +383,10 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // from iterations to objects, which it can dynamically update as
             // the iterations are reused, thereby updating the bindings.
             this.objectForIteration = Map();
+            // We track the direct child nodes of every iteration so we can
+            // look up which iteration a mouse or touch event occurs on, for
+            // the purpose of selection tracking.
+            this.iterationForElement = Map();
             // This variable is updated in the context of deserializing the
             // iteration template so bindings to "objectAtCurrentIteration" are
             // attached to the proper "iteration".  The "objectForIteration"
@@ -418,8 +427,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // visibleIndex of the iteration and this figure:
             this.iterationChildComponentsLength = 0;
 
-            // The plan for the next draw to synchronize controllerIterations and
-            // iterations on the DOM:
+            // The plan for the next draw to synchronize controllerIterations
+            // and iterations on the DOM:
             // ---
 
             // All of the "add" and "delete" operations planned for the next
@@ -446,6 +455,20 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // that another draw is needed to reenable CSS transitions on the
             // injected iterations.
             this.iterationsNeedReenableTransitions = false;
+
+            // Selection gestures
+            // ------------------
+
+            this.addOwnPropertyChangeListener("isSelectionEnabled", this);
+            // Used by selection tracking (last part of Repetition
+            // implementation) to track which selection pointer the repetition
+            // is monitoring
+            this.selectionPointer = null;
+            // This is a list of iterations that are active.  It is maintained
+            // entirely by a bidirectional binding to each iteration's "active"
+            // property, which in turn manages the "active" class on each
+            // element in the iteration in the draw cycle.
+            this.activeIterations = [];
 
         }
     },
@@ -488,9 +511,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // instance temporarily:
             this.serializeSelf = this.serializeIteration;
             // permanently override deserializeProperties because it is used
-            // for instantiating the iterationTemplate.  TODO verify that this
-            // will never be a problem since we would never deserialize the
-            // repetition instance again
+            // for instantiating the iterationTemplate.
             this.deserializeProperties = this.deserializeIteration;
 
             this.iterationChildComponentsLength = this.childComponents.length;
@@ -506,9 +527,10 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                     this.childComponents[0]._suuid || // Assigned by Serialization
                     this.childComponents[0].uuid // Assigned by Montage
                 );
-                // TODO maybe we don't need to fall back to childComponents[0].uuid, if
-                // every component is guaranteed to have _suuid.
-                // templateWithComponent is a memoization of the template for its id
+                // TODO @aadsm, maybe we don't need to fall back to
+                // childComponents[0].uuid, if every component is guaranteed to
+                // have _suuid.  templateWithComponent is a memoization of the
+                // template for its id - @kriskowal
                 this.iterationTemplate = Template.templateWithComponent(
                     this,
                     this.templateDelegate
@@ -633,10 +655,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 this.createdIterations >= this.neededIterations ||
                 this.pendingOperations.length
             ) {
-                // TODO consider instead of waiting for being able to draw,
-                // express needsDraw as soon as the iterations are stale and
-                // allow canDraw() to allow drawing to proceed when there are
-                // enough created iterations.
                 this.needsDraw = true;
             }
         }
@@ -826,8 +844,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         }
     },
 
-    // prepareForDraw: not implemented
-
     draw: {
         value: function () {
 
@@ -855,7 +871,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 }
             }
 
-            // execute the pending add and delete operations
+            // execute the pending draw operations (add, delete, select,
+            // deselect, activate, deactivate)
             var pendingOperations = this.pendingOperations;
             pendingOperations.forEach(function (operation) {
                 operation.draw(this);
@@ -892,51 +909,204 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 this.cancelBindings();
             }
             this.controllerIterations.removeMapChangeListener(this);
-            // TODO for each iteration, call cleanupDeletedComponentTree on
-            // every component in every iteration.
+            for (var i = 0; i < this.iterations.length; i++) {
+                var iteration = this.iterations[i];
+                for (var j = 0; j < iteration.childComponents.length; j++) {
+                    var childComponent = iteration.childComponents[j];
+                    childComponent.cleanupDeletedComponentTree(pleaseCancelBindings);
+                }
+            }
         }
     },
 
-    Iteration: {
-        value: Iteration
+    // Selection Tracking
+    // ------------------
+
+    // Called by didCreate to monitor changes to isSelectionEnabled and arrange
+    // the appropriate event listeners.
+    handleIsSelectionEnabledChange: {
+        value: function (selectionTracking) {
+            if (selectionTracking) {
+                this.enableSelectionTracking();
+            } else {
+                this.disableSelectionTracking();
+            }
+        }
     },
 
-    ContentChangeOperation: {
-        value: ContentChangeOperation
+    // Called by handleIsSelectionEnabledChange in response to
+    // isSelectionEnabled becoming true.
+    enableSelectionTracking: {
+        value: function () {
+            this.element.addEventListener("touchstart", this, true);
+            this.element.addEventListener("mousedown", this, true);
+        }
     },
 
-    AddOperation: {
-        value: AddOperation
+    // Called by handleIsSelectionEnabledChange in response to
+    // isSelectionEnabled becoming false.
+    disableSelectionTracking: {
+        value: function () {
+            this.element.removeEventListener("touchstart", this, true);
+            this.element.removeEventListener("mousedown", this, true);
+        }
     },
 
-    DeleteOperation: {
-        value: DeleteOperation
+    // ---
+
+    // Called by captureMousedown and captureTouchstart when a gesture begins:
+    /**
+     * @param pointerIdentifier an identifier that can be "mouse" or the
+     * "identifier" property of a "Touch" in a touch change event.
+     */
+    observeSelectionPointer: {
+        value: function (pointerIdentifier) {
+            this.selectionPointer = pointerIdentifier;
+            this.eventManager.claimPointer(pointerIdentifier, this);
+
+            var document = this.element.ownerDocument;
+            // dispatches handleTouchend
+            document.addEventListener("touchend", this, false);
+            // dispatches handleTouchcancel
+            document.addEventListener("touchcacnel", this, false);
+            // dispatches handleMouseup
+            document.addEventListener("mouseup", this, false);
+            // TODO after significant mouse movement or touch movement
+            // on the "active" element, forget the selection pointer,
+            // deactivate, and do not select.
+        }
     },
 
-    SelectionChangeOperation: {
-        value: SelectionChangeOperation
+    ignoreSelectionPointer: {
+        value: function () {
+            // The pointer may have been already taken
+            if (this.eventManager.isPointerClaimedByComponent(this.selectionPointer, this)) {
+                this.eventManager.forfeitPointer(this.selectionPointer, this);
+            }
+            this.selectionPointer = null;
+
+            this.activeIterations.clear();
+
+            var document = this.element.ownerDocument;
+            document.removeEventListener("touchend", this, false);
+            document.removeEventListener("touchcancel", this, false);
+            document.removeEventListener("mouseup", this, false);
+        }
     },
 
-    SelectOperation: {
-        value: SelectOperation
+    // ---
+
+    // Dispatched by "mousedown" event listener if isSelectionEnabled
+    captureMousedown: {
+        value: function (event) {
+            this.observeSelectionPointer("mouse");
+            var iteration = this.findIterationContainingElement(event.target);
+            if (iteration) {
+                iteration.active = true;
+            } else {
+                this.ignoreSelectionPointer();
+            }
+        }
     },
 
-    DeselectOperation: {
-        value: DeselectOperation
-    }
+    // Dispatched by "touchstart" event listener if isSelectionEnabled
+    captureTouchstart: {
+        value: function (event) {
+            if (this.selectionPointer != null) {
+                // If we already have one touch making a selection, ignore any
+                // others.
+                return;
+            }
+
+            this.observeSelectionPointer(event.changedTouches[0].identifier);
+            var iteration = this.findIterationContainingElement(event.target);
+            if (iteration) {
+                iteration.active = true;
+            } else {
+                this.ignoreSelectionPointer();
+            }
+        }
+    },
+
+    // ---
+
+    handleTouchend: {
+        value: function (event) {
+            // TODO consider only grabbing touches that are in target touches
+            // Find the changed touch that refers to our selection pointer.
+            // Find the touch corresponding to the handleTouchstart
+            for (var i = 0; i < event.changedTouches.length; i++) {
+                if (event.changedTouches[i].identifier === this.selectionPointer) {
+                    // Only if we retained our claim on that pointer
+                    if (this.eventManager.isPointerClaimedByComponent(this.selectionPointer, this)) {
+                        // Find the corresponing iteration
+                        var iteration = this.findIterationForElement(event.target);
+                        // And select it, if there is one
+                        if (iteration) {
+                            iteration.selected = !iteration.selected;
+                        }
+                    }
+                    this.ignoreSelectionPointer();
+                    return;
+                }
+            }
+
+        }
+    },
+
+    handleTouchcancel: {
+        value: function () {
+            this.ignoreSelectionPointer();
+        }
+    },
+
+    handleMouseup: {
+        value: function (event) {
+            var iteration = this.findIterationContainingElement(event.target);
+            if (iteration) {
+                iteration.active = false;
+                iteration.selected = !iteration.selected;
+            }
+            this.ignoreSelectionPointer();
+        }
+    },
+
+    // ---
+
+    // Finds the iteration that contains an element within the repetition.
+    // This requires the repetition to maintain an index of all of the
+    // *shallow* child elements of an iteration, iterationForElement.  It does
+    // so in the Iteration.injectIntoDocument, but is only approximately
+    // accurate since technically the child components of an iteration may add
+    // and remove siblings after injection.  For the sake of simplicity, we
+    // ignore these dynamic elements for the purpose of selection.  Also, as
+    // such, this method may return undefined.
+    findIterationContainingElement: {
+        value: function (element) {
+            // Walk the document upward until we find the repetition and
+            // a direct child of the repetition element.  The direct
+            // child must be tracked by the repetition.
+            var child;
+            while (element) {
+                if (element === this.element) {
+                    return this.iterationForElement.get(child);
+                }
+                child = element;
+                element = element.parentNode;
+            }
+        }
+    },
+
+    // Polymorphic helper types
+    // ------------------------
+
+    Iteration: { value: Iteration },
+    ContentChangeOperation: { value: ContentChangeOperation },
+    AddOperation: { value: AddOperation },
+    DeleteOperation: { value: DeleteOperation },
+    ClassChangeOperation: { value: ClassChangeOperation }
 
 });
-
-// TODO refreshSelectionTracking
-// TODO captureTouchstart
-// TODO handleTouchend
-// TODO handleTouchcancel
-// TODO captureMousedown
-// TODO handleMouseup
-// TODO surrenderPointer
-// TODO selectionPointer
-// TODO ignoreSelectionPointer
-// TODO observeSelectionPointer
 
 // TODO deserializeSelf / serializeSelf that simplifies the "controller" out if possible
 
