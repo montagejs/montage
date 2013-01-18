@@ -91,6 +91,8 @@ if (spec) {
         "serialization/serializer-spec",
         "serialization/bindings-spec",
 
+        "controllers/tree-controller-spec",
+
         "ui/application-spec",
         "ui/anchor-spec",
         "ui/autocomplete-spec",
