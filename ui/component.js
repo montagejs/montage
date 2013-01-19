@@ -2105,12 +2105,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         set:function(value) {
             defaultEventManager.registerEventHandlerForElement(this, value);
             this._element = value;
-
-            if (typeof this.didSetElement === "function") {
-                this.didSetElement();
-            }
-        },
-        enumerable: false
+        }
     }
 });
 
