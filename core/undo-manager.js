@@ -261,10 +261,20 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
 
 /**
     Adds a new operation to the either the undo or redo stack as appropriate.
+
+    The operationPromise should be resolved with an array containing:
+        - A label for the operation
+        - The function to execute when performing this operation
+        - The object to use as the context when performing the function
+        - Any number of arguments to apply when performing the function
+
     @param {string} label A label to associate with this undo entry.
     @param {promise} operationPromise A promise for an undoable operation
     @returns a promise for the resolution of the operationPromise
     @function
+    @example
+<caption>Adding a simple undo operation</caption>
+undoManager.add("Add", Promise.resolve(["Add", calculator.subtract, calculator, number]));
 */
     add: {
         value: function (label, operationPromise) {
