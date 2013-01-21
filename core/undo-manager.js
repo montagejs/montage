@@ -36,7 +36,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 var Montage = require("montage").Montage,
     Promise = require("core/promise").Promise,
-    WeakMap = require("collections/weak-map");
+    WeakMap = require("collections/weak-map"),
+    List = require("collections/list");
 
 var UNDO_OPERATION = 0,
     REDO_OPERATION = 1;
@@ -175,18 +176,18 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
         value: function () {
             this._operationQueue = [];
             this._promiseOperationMap = new WeakMap();
-            this._undoStack = [];
-            this._redoStack = [];
+            this._undoStack = new List();
+            this._redoStack = new List();
 
             Object.defineBinding(this, "undoCount", {
                 boundObject: this._undoStack,
-                boundObjectPropertyPath: "count()",
+                boundObjectPropertyPath: "length",
                 oneway: true
             });
 
             Object.defineBinding(this, "redoCount", {
                 boundObject: this._redoStack,
-                boundObjectPropertyPath: "count()",
+                boundObjectPropertyPath: "length",
                 oneway: true
             });
         }
@@ -504,7 +505,7 @@ undoManager.add("Add", Promise.resolve([calculator.subtract, calculator, number]
         Returns true if the undo stack contains any items, otherwise returns false.
     */
     canUndo: {
-        dependencies: ["undoStack.count()"],
+        dependencies: ["undoStack.length"],
         get: function() {
             return !!this._undoStack.length;
         }
@@ -514,7 +515,7 @@ undoManager.add("Add", Promise.resolve([calculator.subtract, calculator, number]
         Returns true if the redo stack contains any items, otherwise returns false.
     */
     canRedo: {
-        dependencies: ["redoStack.count()"],
+        dependencies: ["redoStack.length"],
         get: function() {
             return !!this._redoStack.length;
         }
@@ -525,13 +526,12 @@ undoManager.add("Add", Promise.resolve([calculator.subtract, calculator, number]
     */
     undoLabel: {
         // TODO also depend on the actual label property of that object
-        dependencies: ["undoStack.count()"],
+        dependencies: ["undoStack.length"],
         get: function() {
-            var undoCount = this._undoStack.length,
-                label;
+            var label;
 
-            if (undoCount) {
-                label = this._promiseOperationMap.get(this._undoStack[undoCount - 1]).label;
+            if (this.canUndo) {
+                label = this._promiseOperationMap.get(this._undoStack.one()).label;
             }
 
             return label ? "Undo " + label : "Undo";
@@ -543,13 +543,12 @@ undoManager.add("Add", Promise.resolve([calculator.subtract, calculator, number]
     */
     redoLabel: {
         // TODO also depend on the actual label property of that object
-        dependencies: ["redoStack.count()"],
+        dependencies: ["redoStack.length"],
         get: function() {
-            var redoCount = this._redoStack.length,
-                label;
+            var label;
 
-            if (redoCount) {
-                label = this._promiseOperationMap.get(this._redoStack[redoCount - 1]).label
+            if (this.canRedo) {
+                label = this._promiseOperationMap.get(this._redoStack.one()).label
             }
 
             return label ? "Redo " + label : "Redo";
