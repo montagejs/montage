@@ -131,8 +131,7 @@ describe('core/undo-manager-spec', function () {
 
     });
 
-
-    describe("undoing operations", function () {
+    describe("registering operations", function () {
 
         it("should add to the undo stack when not undoing or redoing", function () {
             roster.addMember("Alice");
@@ -162,6 +161,22 @@ describe('core/undo-manager-spec', function () {
                 expect(undoManager.redoCount).toBe(0);
             });
         });
+    });
+
+    describe("performing an undo", function () {
+
+        it("should not alter the initial label if no label is provided when resolving the operationPromise", function () {
+            var deferredAdditionUndo = roster.testableAddMember("Alice"),
+                entry = undoManager._promiseOperationMap.get(deferredAdditionUndo.promise);
+
+            expect(entry.label).toBe("Add Member");
+
+            deferredAdditionUndo.resolve([Function.noop, window, "Alice"]);
+
+            deferredAdditionUndo.promise.then(function () {
+                expect(entry.label).toBe("Add Member");
+            });
+        });
 
         it("should invoke the undo function with the expected parameters", function () {
             var deferredAdditionUndo = roster.testableAddMember("Alice"),
@@ -174,6 +189,24 @@ describe('core/undo-manager-spec', function () {
 
             spyOn(spyObject, "removeMember").andCallThrough();
             deferredAdditionUndo.resolve(["Test Label", spyObject.removeMember, spyObject, "Alice"]);
+
+
+            return undoManager.undo().then(function () {
+                expect(spyObject.removeMember).toHaveBeenCalled();
+            });
+        });
+
+        it("should properly invoke the undo function even if no label was provided when resolving the operationPromise", function () {
+            var deferredAdditionUndo = roster.testableAddMember("Alice"),
+                spyObject = {
+                    removeMember: function (member) {
+                        expect(this).toBe(spyObject);
+                        expect(member).toBe("Alice");
+                    }
+                };
+
+            spyOn(spyObject, "removeMember").andCallThrough();
+            deferredAdditionUndo.resolve([spyObject.removeMember, spyObject, "Alice"]);
 
 
             return undoManager.undo().then(function () {

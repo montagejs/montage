@@ -61,7 +61,7 @@ var UNDO_OPERATION = 0,
      ```
      add: {
             value: function (number) {
-                this.undoManager.add("Add", Promise.resolve(["Add", this.subtract, this, number]));
+                this.undoManager.add("Add", Promise.resolve([this.subtract, this, number]));
                 var result = this.total += number;
                 return result;
             }
@@ -69,7 +69,7 @@ var UNDO_OPERATION = 0,
 
      subtract: {
             value: function (number) {
-                this.undoManager.add("Subtract", Promise.resolve(["Subtract", this.add, this, number]));
+                this.undoManager.add("Subtract", Promise.resolve([this.add, this, number]));
                 var result = this.total -= number;
                 return result;
             }
@@ -79,7 +79,7 @@ var UNDO_OPERATION = 0,
      Of immediate interest is the actual promise added to the undoManager.
      ```Promise.resolve(["Add", this.subtract, this, number])```
 
-     The promise provides the final label, a reference to the function to call,
+     The promise provides the final label (optionally), a reference to the function to call,
      the context for the function to be executed in, and any number of arguments
      to be passed along when calling the function.
 
@@ -263,7 +263,7 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
     Adds a new operation to the either the undo or redo stack as appropriate.
 
     The operationPromise should be resolved with an array containing:
-        - A label for the operation
+        - A label string for the operation (optional)
         - The function to execute when performing this operation
         - The object to use as the context when performing the function
         - Any number of arguments to apply when performing the function
@@ -274,7 +274,7 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
     @function
     @example
 <caption>Adding a simple undo operation</caption>
-undoManager.add("Add", Promise.resolve(["Add", calculator.subtract, calculator, number]));
+undoManager.add("Add", Promise.resolve([calculator.subtract, calculator, number]));
 */
     add: {
         value: function (label, operationPromise) {
@@ -313,12 +313,30 @@ undoManager.add("Add", Promise.resolve(["Add", calculator.subtract, calculator, 
     _resolveUndoEntry: {
         value: function(undoManager, entry) {
 
-            return function (label, undoFunction, context) {
+            return function () {
 
-                entry.label = label;
+                var label,
+                    undoFunction,
+                    context,
+                    firstArgIndex;
+
+                if (typeof arguments[0] === "string") {
+                    label = arguments[0];
+                    undoFunction = arguments[1];
+                    context = arguments[2];
+                    firstArgIndex = 3;
+                } else {
+                    undoFunction = arguments[0];
+                    context = arguments[1];
+                    firstArgIndex = 2;
+                }
+
+                if (label) {
+                    entry.label = label;
+                }
                 entry.undoFunction = undoFunction;
                 entry.context = context;
-                entry.args = Array.prototype.slice.call(arguments, 3);
+                entry.args = Array.prototype.slice.call(arguments, firstArgIndex);
 
                 undoManager._flushOperationQueue();
             };
