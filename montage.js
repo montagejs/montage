@@ -151,7 +151,7 @@ if (typeof window !== "undefined") {
                 if (params.promiseLocation) {
                     promiseLocation = URL.resolve(Require.getLocation(), params.promiseLocation);
                 } else {
-                    promiseLocation = URL.resolve(montageLocation, "packages/mr/packages/q");
+                    promiseLocation = URL.resolve(montageLocation, "node_modules/q");
                 }
 
                 return [
@@ -458,9 +458,9 @@ if (typeof window !== "undefined") {
 
             // determine which scripts to load
             var pending = {
-                "require": "packages/mr/require.js",
-                "require/browser": "packages/mr/browser.js",
-                "promise": "packages/mr/packages/q/q.js"
+                "require": "node_modules/mr/require.js",
+                "require/browser": "node_modules/mr/browser.js",
+                "promise": "node_modules/q/q.js"
             };
 
             // load in parallel, but only if we’re not using a preloaded cache.
