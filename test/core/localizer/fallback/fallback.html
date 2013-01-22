@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Localization test</title>
+    <script type="text/javascript" src="../../../../montage.js"></script>
+    <script type="text/montage-serialization">
+    {
+        "localizer": {
+            "object": "montage/core/localizer[defaultLocalizer]"
+        },
+
+        "missingKey": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "missingKey"},
+                "value": "Pass"
+            },
+            "localizations": {
+                "value": {
+                    "default": "fail"
+                }
+            }
+        },
+
+        "basic": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "basic"}
+            },
+            "localizations": {
+                "value": {
+                    "key": "pass",
+                    "default": "Pass."
+                }
+            }
+        },
+
+        "resources": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "resources"}
+            },
+            "localizations": {
+                "value": {
+                    "key": "hello",
+                    "default": "fail"
+                }
+            }
+        },
+
+        "bindingInput": {
+            "prototype": "montage/ui/input-text.reel",
+            "properties": {
+                "element": {"#": "bindingInput"},
+                "value": "World"
+            }
+        },
+        "binding": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "binding"},
+                "defaultValue": "fail"
+            },
+            "localizations": {
+                "value": {
+                    "key": "hello_thing",
+                    "default": "Hello {thing}",
+                    "data": {
+                        "thing": {"<-": "@bindingInput.value"}
+                    }
+                }
+            }
+        },
+
+        "twoProperties": {
+            "prototype": "montage/ui/toggle-button.reel",
+            "properties": {
+                "element": {"#": "twoProperties"}
+            },
+            "localizations": {
+                "pressedLabel": {"key": "on", "default": "On"},
+                "unpressedLabel": {"key": "off", "default": "Off"}
+            }
+        },
+
+        "message": {
+            "prototype": "montage/core/localizer[Message]",
+            "properties": {
+                "key": "welcome"
+            },
+            "bindings": {
+                "data.name": {"<-": "@bindingInput.value"}
+            }
+        },
+
+        "messageRepetition": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "messageRepetition"},
+                "objects": [
+                    {"animal": "cow", "number": 4},
+                    {"animal": "horse", "number": 1},
+                    {"animal": "sheep", "number": 2}
+                ]
+            }
+        },
+
+        "repeatedMessageText": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "repeatedMessageText"}
+            },
+            "localizations": {
+                "value": {
+                    "key": {"<-": "@messageRepetition.objectAtCurrentIteration.animal"},
+                    "data": {
+                        "num": {"<-": "@messageRepetition.objectAtCurrentIteration.number"}
+                    }
+                }
+            }
+        },
+
+        "test": {
+            "prototype": "montage",
+            "properties": {
+                "missingKey": {"@": "missingKey"},
+                "basic": {"@": "basic"},
+                "resources": {"@": "resources"},
+                "bindingInput": {"@": "bindingInput"},
+                "binding": {"@": "binding"},
+                "twoProperties": {"@": "twoProperties"},
+                "message": {"@": "message"}
+            }
+        },
+        "application": {
+            "prototype": "montage/ui/application",
+            "properties": {
+                "delegate": {"@": "test"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="missingKey">fail</div>
+    <div data-montage-id="basic">fail</div>
+    <div data-montage-id="resources">fail</div>
+
+    <input type="text" data-montage-id="bindingInput" value="World" />
+    <div data-montage-id="binding">fail</div>
+    <button data-montage-id="twoProperties">fail</button>
+
+    <h2>Numbers:</h2>
+    <div data-montage-id="messageRepetition">
+        <div data-montage-id="repeatedMessageText"></div>
+    </div>
+
+</body>
+</html>

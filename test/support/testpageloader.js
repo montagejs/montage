@@ -63,7 +63,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             }
             options.testName = testName;
             // FIXME Hack to get current directory
-            options.directory = this.queueTest.caller.caller.arguments[2].directory;
+            options.directory = options.directory || this.queueTest.caller.caller.arguments[2].directory;
             testPage.testQueue.push(options);
             return testPage;
         }
