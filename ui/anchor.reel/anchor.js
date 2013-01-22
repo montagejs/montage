@@ -50,9 +50,9 @@ exports.Anchor = Montage.create(NativeAnchor, /** @lends module:"montage/ui/anch
 
     hasTemplate: {value: false},
 
-    didSetElement: {
+    willPrepareForDraw: {
         value: function() {
-            NativeAnchor.didSetElement.call(this);
+            NativeAnchor.willPrepareForDraw.call(this);
             this['class'] = (this['class'] || '') + ' montage-anchor';
         }
     }

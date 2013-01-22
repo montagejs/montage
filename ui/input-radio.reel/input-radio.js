@@ -45,9 +45,9 @@ exports.InputRadio = Montage.create(NativeInputRadio, /** @lends module:"montage
 
     hasTemplate: {value: true},
 
-    didSetElement: {
+    willPrepareForDraw: {
         value: function() {
-            NativeInputRadio.didSetElement.call(this);
+            NativeInputRadio.willPrepareForDraw.call(this);
             this['class'] = (this['class'] || '') + ' montage-InputRadio';
         }
     }

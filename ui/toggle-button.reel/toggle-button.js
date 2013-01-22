@@ -152,9 +152,9 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends modu
         }
     },
 
-    didSetElement: {
+    willPrepareForDraw: {
         value: function() {
-            Object.getPrototypeOf(ToggleButton).didSetElement.call(this);
+            Object.getPrototypeOf(ToggleButton).willPrepareForDraw.call(this);
 
             // If we haven't set the (un)pressedLabel of the initial state,
             // then take it from the label

@@ -337,9 +337,9 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
         enumerable: false
     },
 
-    didSetElement: {
+    willPrepareForDraw: {
         value: function() {
-            NativeControl.didSetElement.call(this);
+            NativeControl.willPrepareForDraw.call(this);
 
             //this._element.classList.add("montage-Button");
             this._element.setAttribute("role", "button");

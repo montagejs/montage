@@ -45,9 +45,9 @@ exports.Textarea = Montage.create(NativeTextarea, /** @lends module:"montage/ui/
 
     hasTemplate: {value: true},
 
-    didSetElement: {
+    willPrepareForDraw: {
         value: function() {
-            NativeTextarea.didSetElement.call(this);
+            NativeTextarea.willPrepareForDraw.call(this);
             this['class'] = (this['class'] || '') + ' montage-Textarea';
         }
     }

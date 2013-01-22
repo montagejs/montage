@@ -45,9 +45,9 @@ exports.InputCheckbox = Montage.create(NativeInputCheckbox, /** module:"montage/
 
     hasTemplate: {value: true},
 
-    didSetElement: {
+    willPrepareForDraw: {
         value: function() {
-            NativeInputCheckbox.didSetElement.call(this);
+            NativeInputCheckbox.willPrepareForDraw.call(this);
             this['class'] = (this['class'] || '') + ' montage-InputCheckbox';
         }
     }
