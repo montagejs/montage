@@ -11,6 +11,8 @@ var Observers = require("frb/observers");
 var observeProperty = Observers.observeProperty;
 var observeKey = Observers.observeKey;
 
+// TODO optimization where plus.length === minus.length
+
 /**
  * A reusable view-model for each iteration of a repetition.  Each iteration
  * corresponds to a visible object.  When an iteration is visible, it is tied
@@ -204,32 +206,22 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
 
 });
 
-// Operations are tracked in a List of Operations on a Repetition and then
-// executed in the "draw" imperative to add and remove Iterations at particular
-// positions.
+// Operations are tracked in a list of Operations on a Repetition, managed by
+// "handleControllerIterationsRangeChange", and then executed in the "draw"
+// imperative to add and remove Iterations at particular positions.
 
-var ContentChangeOperation = exports.ContentChangeOperation = Montage.create(Montage, {
+// Deletes the iteration at a given visible index
+var DeleteOperation = exports.DeleteOperation = Montage.create(Montage, {
 
-    didCreate: {
-        value: function () {
-            Object.getPrototypeOf(ContentChangeOperation).didCreate.call(this);
-            this.controller = null;
-            this.visibleIndex = null;
-        }
-    },
-
-    initWithControllerAndVisibleIndex: {
-        value: function (controller, visibleIndex) {
-            this.controller = controller;
+    initWithLengthAndVisibleIndex: {
+        value: function (length, visibleIndex) {
+            this.length = length;
             this.visibleIndex = visibleIndex;
             return this;
         }
-    }
+    },
 
-});
-
-var DeleteOperation = exports.AddOperation = Montage.create(ContentChangeOperation, {
-    draw: {
+    deleteOneIteration: {
         value: function (repetition) {
             // update the model:
             // This dispatches during the draw cycle and gives those listeners
@@ -245,10 +237,27 @@ var DeleteOperation = exports.AddOperation = Montage.create(ContentChangeOperati
             // recycle the iteration:
             repetition.freeIterations.push(iteration);
         }
+    },
+
+    draw: {
+        value: function (repetition) {
+            for (var index = 0; index < this.length; index++) {
+                this.deleteOneIteration(repetition);
+            }
+        }
     }
+
 });
 
-var AddOperation = exports.AddOperation = Montage.create(ContentChangeOperation, {
+// Interpolates an iteration at a given visible index
+var AddOperation = exports.AddOperation = Montage.create(Montage, {
+    initWithControllerAndVisibleIndex: {
+        value: function (controller, visibleIndex) {
+            this.controller = controller;
+            this.visibleIndex = visibleIndex;
+            return this;
+        }
+    },
     draw: {
         value: function (repetition) {
             // recycle the iteration:
@@ -268,7 +277,39 @@ var AddOperation = exports.AddOperation = Montage.create(ContentChangeOperation,
     }
 });
 
+// A change operation is an optimization for the case where a block of
+// iterations is being replaced with another block of iterations of the same
+// length.  It bypasses DOM manipulation and performs all changes entirely by
+// rebinding the existing iterations.
+var ReplaceOperation = exports.ReplaceOperation = Montage.create(Montage, {
+
+    initWithControllersAndVisibleIndex: {
+        value: function (controllers, visibleIndex) {
+            this.controllers = controllers;
+            this.visibleIndex = visibleIndex;
+            return this;
+        }
+    },
+
+    draw: {
+        value: function (repetition) {
+            var visibleIndex = this.visibleIndex;
+            var controllers = this.controllers;
+            for (var index = 0; index < controllers.length; index++) {
+                var controller = this.controllers[index];
+                var iteration = repetition.iterations[visibleIndex + index];
+                iteration.controller = controller;
+                repetition.objectForIteration.set(iteration, controller.object);
+            }
+        }
+    }
+
+});
+
+// Adds, removes, or toggles a class on every child element of the iteration at
+// a visible index.
 var ClassChangeOperation = exports.ClassChangeOperation = Montage.create(Montage, {
+
     init: {
         value: function (iteration, action, className) {
             this.iteration = iteration;
@@ -277,6 +318,7 @@ var ClassChangeOperation = exports.ClassChangeOperation = Montage.create(Montage
             return this;
         }
     },
+
     draw: {
         value: function () {
             var iteration = this.iteration;
@@ -297,6 +339,7 @@ var ClassChangeOperation = exports.ClassChangeOperation = Montage.create(Montage
     }
 });
 
+// Here it is, what we have all been waiting for, the prototype of the hour...
 var Repetition = exports.Repetition = Montage.create(Component, {
 
     // For the creator:
@@ -768,27 +811,50 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     handleControllerIterationsRangeChange: {
         value: function (plus, minus, visibleIndex) {
 
-            // add pending operations to run in draw
-            for (var offset = 0; offset < minus.length; offset++) {
+            var diff = plus.length - minus.length;
+
+            // produce more iterations if necessary
+            this.neededIterations += diff;
+
+            if (diff < 0) {
+
+                // delete the difference
                 var operation = this.DeleteOperation.create()
-                    .initWithControllerAndVisibleIndex(
-                        minus[offset],
+                    .initWithLengthAndVisibleIndex(
+                        -diff,
                         visibleIndex
                     );
                 this.pendingOperations.push(operation);
-            }
-            for (var offset = 0; offset < plus.length; offset++) {
-                var operation = this.AddOperation.create()
-                    .initWithControllerAndVisibleIndex(
-                        plus[offset],
-                        visibleIndex + offset
+                if (plus.length) {
+                    // then change the remaining
+                    var operation = this.ReplaceOperation.create()
+                        .initWithControllersAndVisibleIndex(plus, visibleIndex);
+                    this.pendingOperations.push(operation);
+                }
+
+            } else { // diff >= 0
+                this.createNeededIterations();
+
+                // reuse all of the iterations presently in the region being
+                // deleted
+                var operation = this.ReplaceOperation.create()
+                    .initWithControllersAndVisibleIndex(
+                        plus.splice(0, minus.length),
+                        visibleIndex
                     );
                 this.pendingOperations.push(operation);
+                // then add iterations for the remaining
+                for (var offset = 0; offset < plus.length; offset++) {
+                    var operation = this.AddOperation.create()
+                        .initWithControllerAndVisibleIndex(
+                            plus[offset],
+                            visibleIndex + minus.length + offset
+                        );
+                    this.pendingOperations.push(operation);
+                }
+
             }
 
-            // produce more iterations if necessary
-            this.neededIterations += plus.length - minus.length;
-            this.createNeededIterations();
             this.needsDraw = true;
 
         }
@@ -1101,9 +1167,9 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     // ------------------------
 
     Iteration: { value: Iteration },
-    ContentChangeOperation: { value: ContentChangeOperation },
     AddOperation: { value: AddOperation },
     DeleteOperation: { value: DeleteOperation },
+    ReplaceOperation: { value: ReplaceOperation },
     ClassChangeOperation: { value: ClassChangeOperation }
 
 });
