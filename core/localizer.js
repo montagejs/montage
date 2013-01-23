@@ -1,33 +1,3 @@
-/* <copyright>
-Copyright (c) 2012, Motorola Mobility LLC.
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-
-* Neither the name of Motorola Mobility LLC nor the names of its
-  contributors may be used to endorse or promote products derived from this
-  software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-</copyright> */
 /*global require,exports */
 /**
     @module montage/core/localizer
@@ -117,9 +87,9 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
     },
 
     _messages: {
-        enumerable: false,
         value: null
     },
+
     /**
         A map from keys to messages.
         @type Object
@@ -151,7 +121,6 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
     },
 
     _locale: {
-        enumerable: false,
         value: null
     },
     /**
@@ -571,9 +540,9 @@ var DefaultLocalizer = Montage.create(Localizer, /** @lends module:montage/core/
     },
 
     _delegate: {
-        enumerable: false,
         value: null
     },
+
     /**
         Delegate to get the default locale.
 
@@ -678,7 +647,6 @@ var MessageData = Montage.create(Montage, /** @lends module:montage/core/localiz
         @param {Object} data Object with own properties to set on this object.
     */
     init: {
-        enumerable: false,
         value: function(data) {
             for (var p in data) {
                 // adding this binding will call setProperty below which will
@@ -701,7 +669,6 @@ var MessageData = Montage.create(Montage, /** @lends module:montage/core/localiz
         @private
     */
     setProperty: {
-        enumerable: false,
         value: function(path, value) {
             // The same listener will only be registered once. It's faster to
             // just register again than it would be to check for the existance
@@ -713,7 +680,6 @@ var MessageData = Montage.create(Montage, /** @lends module:montage/core/localiz
     },
 
     handleChange: {
-        enumerable: false,
         value: function(event) {
             this.dispatchEventNamed("change", true, false);
         }
@@ -758,6 +724,7 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
     _localizer: {
         value: defaultLocalizer
     },
+
     localizer: {
         get: function() {
             return this._localizer;
@@ -774,6 +741,7 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
     _key: {
         value: null
     },
+
     /**
      * A key for the default localizer to get the message function from.
      * @type {string}
@@ -796,6 +764,7 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
     _defaultMessage: {
         value: null
     },
+
     defaultMessage: {
         get: function() {
             return this._defaultMessage;
@@ -812,6 +781,7 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
     _isLocalizeQueued: {
         value: false
     },
+
     _localize: {
         value: function() {
             // Optimization: only run this function in the next tick. So that
@@ -876,6 +846,7 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
     _data: {
         value: null
     },
+
     data: {
         get: function() {
             return this._data;
@@ -933,7 +904,6 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
     },
 
     setProperty: {
-        enumerable: false,
         value: function(path, value) {
             // If a binding to a data property has been set directly on this
             // object, instead of on the data object, install a listener for
