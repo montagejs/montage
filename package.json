@@ -1,6 +1,6 @@
 {
   "name": "mr",
-  "version": "0.12.4",
+  "version": "0.12.5",
   "main": "require",
   "bin": {
     "mr": "bin/mr"
@@ -12,13 +12,14 @@
     }
   },
   "dependencies": {
-    "q": "~0.8.11"
+    "q": "~0.8.12"
   },
   "devDependencies": {
     "qs": "~0.5.3"
   },
   "exclude": [
     "README.md",
+    "CHANGES.md",
     "LICENSE.md",
     "bootstrap-node.js",
     "node.js",
