@@ -161,6 +161,13 @@ describe('core/undo-manager-spec', function () {
                 expect(undoManager.redoCount).toBe(0);
             });
         });
+
+        it("must reject adding non-promises", function () {
+            expect(function () {
+                expectundoManager.add("Something", function () {});
+            }).toThrow();
+        });
+
     });
 
     describe("performing an undo", function () {

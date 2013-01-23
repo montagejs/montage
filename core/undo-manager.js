@@ -280,6 +280,10 @@ undoManager.add("Add", Promise.resolve([calculator.subtract, calculator, number]
     add: {
         value: function (label, operationPromise) {
 
+            if (!Promise.isPromiseAlike(operationPromise)) {
+                throw new Error("UndoManager expected a promise");
+            }
+
             if (0 === this._maxUndoCount) {
                 return Promise.resolve(null);
             }
