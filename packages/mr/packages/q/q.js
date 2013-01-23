@@ -577,6 +577,15 @@ function isPromise(object) {
 }
 
 /**
+ * @returns whether the given object can be coerced to a promise.
+ * Otherwise it is a fulfilled value.
+ */
+exports.isPromiseAlike = isPromiseAlike;
+function isPromiseAlike(object) {
+    return object && typeof object.then === "function";
+}
+
+/**
  * @returns whether the given object is a resolved promise.
  */
 exports.isResolved = isResolved;
@@ -590,7 +599,7 @@ function isResolved(object) {
  */
 exports.isFulfilled = isFulfilled;
 function isFulfilled(object) {
-    return !isPromise(valueOf(object));
+    return !isPromiseAlike(valueOf(object));
 }
 
 /**
@@ -627,7 +636,6 @@ function displayErrors() {
  */
 exports.reject = reject;
 function reject(exception) {
-    exception = exception || new Error();
     var rejection = makePromise({
         "when": function (rejected) {
             // note that the error has been handled
@@ -676,7 +684,7 @@ function resolve(object) {
     // implementations on primordial prototypes are harmless.
     object = valueOf(object);
     // assimilate thenables, CommonJS/Promises/A
-    if (object && typeof object.then === "function") {
+    if (isPromiseAlike(object)) {
         var deferred = defer();
         object.then(deferred.resolve, deferred.reject, deferred.notify);
         return deferred.promise;
@@ -819,14 +827,14 @@ function when(value, fulfilled, rejected, progressed) {
 
     function _fulfilled(value) {
         try {
-            return fulfilled ? fulfilled(value) : value;
+            return typeof fulfilled === "function" ? fulfilled(value) : value;
         } catch (exception) {
             return reject(exception);
         }
     }
 
     function _rejected(exception) {
-        if (rejected) {
+        if (typeof rejected === "function") {
             makeStackTraceLong(exception, resolvedValue);
             try {
                 return rejected(exception);
@@ -838,7 +846,7 @@ function when(value, fulfilled, rejected, progressed) {
     }
 
     function _progressed(value) {
-        return progressed ? progressed(value) : value;
+        return typeof progressed === "function" ? progressed(value) : value;
     }
 
     var resolvedValue = resolve(value);
