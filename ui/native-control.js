@@ -49,21 +49,8 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
         value: false
     },
 
-// callbacks
-
     willPrepareForDraw: {
         value: function() {
-            // check if this element has textContent
-            var textContent = this.element.textContent;
-            // set textContent only if it is defined as part of element properties
-            if(('textContent' in this) && textContent && ("" !== textContent)) {
-                if(this._elementAttributeValues.textContent == null) {
-                    this._elementAttributeValues.textContent = textContent;
-                    if( this.textContent == null) {
-                        this.textContent = textContent;
-                    }
-                }
-            }
         }
     }
 });

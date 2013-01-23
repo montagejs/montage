@@ -1729,13 +1729,30 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     descriptor = this._getElementAttributeDescriptor(name, this);
                     // check if this attribute from the markup is a well-defined attribute of the component
                     if(descriptor || (typeof this[name] !== 'undefined')) {
+                        // at this point we know that we will need it so create it.
+                        if(this._elementAttributeValues === null) {
+                            this._elementAttributeValues = {};
+                        }
                         // only set the value if a value has not already been set by binding
-                        if(typeof this._elementAttributeValues[name] == 'undefined') {
+                        if(typeof this._elementAttributeValues[name] === 'undefined') {
                             this._elementAttributeValues[name] = value;
                             if( (typeof this[name] == 'undefined') || this[name] == null) {
                                 this[name] = value;
                             }
                         }
+                    }
+                }
+            }
+
+            // textContent is a special case since it isn't an attribute
+            descriptor = this._getElementAttributeDescriptor('textContent', this);
+            if(descriptor) {
+                // check if this element has textContent
+                var textContent = this.element.textContent;
+                if(typeof this._elementAttributeValues.textContent === 'undefined') {
+                    this._elementAttributeValues.textContent = textContent;
+                    if( this.textContent == null) {
+                        this.textContent = textContent;
                     }
                 }
             }
