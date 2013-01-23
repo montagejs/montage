@@ -97,14 +97,6 @@ NativeControl.addAttributes( /** @lends module:montage/ui/native-control.NativeC
     contextmenu: null,
 
 /**
-    A space separated list of CSS classes to apply to the element.
-    @see {@link http://www.w3.org/TR/html5/elements.html#classes}
-    @type {string}
-    @default null
-*/
-    'class': null,
-
-/**
     Specifies the elements element's text directionality. Valid values are "ltr", "rtl", and "auto".
     @see {@link http://www.w3.org/TR/html5/elements.html#the-dir-attribute}
     @type {string}

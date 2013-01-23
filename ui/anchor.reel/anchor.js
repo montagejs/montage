@@ -53,7 +53,7 @@ exports.Anchor = Montage.create(NativeAnchor, /** @lends module:"montage/ui/anch
     willPrepareForDraw: {
         value: function() {
             NativeAnchor.willPrepareForDraw.call(this);
-            this['class'] = (this['class'] || '') + ' montage-anchor';
+            this.element.classList.add("montage-anchor");
         }
     }
 });

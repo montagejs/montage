@@ -49,7 +49,7 @@ exports.Image = Montage.create(NativeImage, /** @lends module:"montage/ui/image.
         value: function() {
             // Call super method
             NativeImage.willPrepareForDraw.call(this);
-            this['class'] = (this['class'] || '') + ' montage-image';
+            this.element.classList.add("montage-image");
         }
     }
 

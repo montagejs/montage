@@ -53,7 +53,8 @@ exports.InputNumber = Montage.create(NativeInputNumber, /** @lends module:"monta
     willPrepareForDraw: {
         value: function() {
             NativeInputNumber.willPrepareForDraw.call(this);
-            this['class'] = (this['class'] || '') + ' montage-InputNumber montage-InputText';
+            this.element.classList.add("montage-InputNumber");
+            this.element.classList.add("montage-InputText");
         }
     }
 

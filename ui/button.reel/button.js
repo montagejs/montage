@@ -51,9 +51,7 @@ exports.Button = Montage.create(NativeButton, /** @lends module:"montage/ui/butt
     willPrepareForDraw: {
         value: function() {
             NativeButton.willPrepareForDraw.call(this);
-            if(! this.element.classList.contains("montage-Button")) {
-                this.element.classList.add("montage-Button");
-            }
+            this.element.classList.add("montage-Button");
         }
     }
 });
