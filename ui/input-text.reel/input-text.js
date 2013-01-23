@@ -45,10 +45,10 @@ exports.InputText = Montage.create(NativeInputText, /** @lends module:"montage/u
 
     hasTemplate: {value: true},
 
-    didSetElement: {
+    willPrepareForDraw: {
         value: function() {
-            NativeInputText.didSetElement.call(this);
-            this['class'] = (this['class'] || '') + ' montage-InputText';
+            NativeInputText.willPrepareForDraw.call(this);
+            this.element.classList.add("montage-InputText");
         }
     }
 });

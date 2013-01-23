@@ -36,7 +36,7 @@ TestPageLoader = require("support/testpageloader").TestPageLoader;
 var testPage = TestPageLoader.queueTest("native-control-test", function() {
     var test = testPage.test;
 
-    describe("native-control-spec", function() {
+    describe("ui/native-control-spec", function() {
 
         it("should load", function() {
             expect(testPage.loaded).toBe(true);

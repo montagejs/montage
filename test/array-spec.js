@@ -79,7 +79,7 @@ describe("array-spec", function() {
                 it("should notify listeners observing the affected index of the array for 'change' events, detailing the diff at that index", function() {
                     var indexChangeListener = {
                         changeHandlerFunction: function(event) {
-                            expect(event.minus).toBe(undefined);
+                            expect(event.minus).not.toBeDefined();
                             expect(event.plus).toBe(newValue);
                         }
                     };
@@ -158,14 +158,14 @@ describe("array-spec", function() {
                 it("should notify listeners observing the affected index of the array for 'change' events, detailing the diff at those respective indexes", function() {
                     var index3ChangeListener = {
                         index3ChangeHandlerFunction: function(event) {
-                            expect(event.minus).toBe(undefined);
+                            expect(event.minus).not.toBeDefined();
                             expect(event.plus).toBe(newValues[0]);
                         }
                     };
 
                     var index4ChangeListener = {
                         index4ChangeHandlerFunction: function(event) {
-                            expect(event.minus).toBe(undefined);
+                            expect(event.minus).not.toBeDefined();
                             expect(event.plus).toBe(newValues[1]);
                         }
                     };
@@ -220,7 +220,7 @@ describe("array-spec", function() {
             // I don't want to be the focus of these tests necessarily
             afterEach(function() {
                 expect(array.length).toBe(2);
-                expect(array[2]).toBe(undefined);
+                expect(array[2]).not.toBeDefined();
             });
 
             it("should return the last value removed from the end of the array", function() {
@@ -248,7 +248,7 @@ describe("array-spec", function() {
                 var indexChangeListener = {
                     changeHandlerFunction: function(event) {
                         expect(event.minus).toBe(poppedValue);
-                        expect(event.plus).toBe(undefined);
+                        expect(event.plus).not.toBeDefined();
                     }
                 };
 
@@ -301,7 +301,7 @@ describe("array-spec", function() {
                 expect(array.length).toBe(2);
                 expect(array[0]).toBe(1);
                 expect(array[1]).toBe(2);
-                expect(array[2]).toBe(undefined);
+                expect(array[2]).not.toBeDefined();
             });
 
             it("should return the first value removed from the front of the array", function() {

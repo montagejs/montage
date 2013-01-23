@@ -856,7 +856,7 @@ describe('core/selector-spec', function () {
 
         describe('properties of undefined objects', function () {
             it('should pass through without errors', function () {
-                expect(Selector.property("a.b.c").evaluate(undefined)).toBe(undefined);
+                expect(Selector.property("a.b.c").evaluate(undefined)).not.toBeDefined();
             });
         });
 

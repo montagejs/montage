@@ -45,11 +45,11 @@ var Montage = require("montage").Montage,
  */
 exports.Image = Montage.create(NativeImage, /** @lends module:"montage/ui/image.reel".Image */ {
 
-    didSetElement: {
+    willPrepareForDraw: {
         value: function() {
             // Call super method
-            NativeImage.didSetElement.call(this);
-            this['class'] = (this['class'] || '') + ' montage-image';
+            NativeImage.willPrepareForDraw.call(this);
+            this.element.classList.add("montage-image");
         }
     }
 

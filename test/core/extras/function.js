@@ -46,7 +46,7 @@ describe("core/extras/function", function () {
         // should do nothing (not verifiable)
 
         it("should return nothing", function () {
-            expect(Function.noop(1, 2, 3)).toBe(undefined);
+            expect(Function.noop(1, 2, 3)).not.toBeDefined();
         });
 
     });

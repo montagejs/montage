@@ -80,9 +80,9 @@ var testPage = TestPageLoader.queueTest("textfieldtest", function() {
                     // these attributes are defined at the InputNumber/RangeInput
                     var instance = testPage.test.txt2;
 
-                    expect(instance._getElementAttributeDescriptor('min')).toBe(undefined);
-                    expect(instance._getElementAttributeDescriptor('max')).toBe(undefined);
-                    expect(instance._getElementAttributeDescriptor('step')).toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('min')).not.toBeDefined();
+                    expect(instance._getElementAttributeDescriptor('max')).not.toBeDefined();
+                    expect(instance._getElementAttributeDescriptor('step')).not.toBeDefined();
 
 
                 });
@@ -99,14 +99,13 @@ var testPage = TestPageLoader.queueTest("textfieldtest", function() {
                     // these attributes are defined at the InputNumber/RangeInput
                     var instance = testPage.test.txt2;
 
-                    expect(instance._getElementAttributeDescriptor('name')).not.toBe(undefined);
-                    expect(instance._getElementAttributeDescriptor('placeholder')).not.toBe(undefined);
-                    expect(instance._getElementAttributeDescriptor('pattern')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('name')).toBeDefined();
+                    expect(instance._getElementAttributeDescriptor('placeholder')).toBeDefined();
+                    expect(instance._getElementAttributeDescriptor('pattern')).toBeDefined();
 
-                    expect(instance._getElementAttributeDescriptor('contenteditable')).not.toBe(undefined);
-                    expect(instance._getElementAttributeDescriptor('title')).not.toBe(undefined);
-                    expect(instance._getElementAttributeDescriptor('style')).not.toBe(undefined);
-                    expect(instance._getElementAttributeDescriptor('class')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('contenteditable')).toBeDefined();
+                    expect(instance._getElementAttributeDescriptor('title')).toBeDefined();
+                    expect(instance._getElementAttributeDescriptor('style')).toBeDefined();
 
 
                 });

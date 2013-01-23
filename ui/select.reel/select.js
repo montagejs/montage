@@ -45,10 +45,10 @@ exports.Select = Montage.create(NativeSelect, /** @lends module:"montage/ui/sele
 
     hasTemplate: {value: true},
 
-    didSetElement: {
+    willPrepareForDraw: {
         value: function() {
-            NativeSelect.didSetElement.call(this);
-            this['class'] = (this['class'] || '') + ' montage-Select';
+            NativeSelect.willPrepareForDraw.call(this);
+            this.element.classList.add("montage-Select");
         }
     }
 

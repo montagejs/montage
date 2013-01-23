@@ -50,10 +50,11 @@ exports.InputDate = Montage.create(NativeInputDate, {
         value: true
     },
 
-    didSetElement: {
+    willPrepareForDraw: {
         value: function() {
-            NativeInputDate.didSetElement.call(this);
-            this['class'] = (this['class'] || '') + ' ' + 'montage-InputDate montage-InputText';
+            NativeInputDate.willPrepareForDraw.call(this);
+            this.element.classList.add("montage-InputDate");
+            this.element.classList.add("montage-InputText");
         }
     }
 
