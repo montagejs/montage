@@ -1,0 +1,8 @@
+{
+    "name": "simple-localization-test",
+    "mappings": {
+        "montage": "../../../"
+    },
+    "manifest": true
+}
+

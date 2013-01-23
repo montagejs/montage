@@ -68,6 +68,8 @@ if (spec) {
         "controllers/array-controller-spec",
 
         "core/core-spec",
+        "core/localizer-spec",
+        "core/localizer/serialization-spec",
         "core/selector-spec",
 
         "core/extras/function",

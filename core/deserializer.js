@@ -171,6 +171,7 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
         this._reset();
         this._serializationString = string;
         this._origin = origin;
+        this._setupModulesForRequire(this._require);
         return this;
     }},
     /**
@@ -182,6 +183,7 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
     initWithObject: {value: function(object) {
         this._reset();
         this._serializationString = JSON.stringify(object);
+        this._setupModulesForRequire(this._require);
         return this;
     }},
 
