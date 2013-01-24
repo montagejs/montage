@@ -526,6 +526,7 @@ var DefaultLocalizer = Montage.create(Localizer, /** @lends module:montage/core/
             if (!defaultLocale && typeof window !== "undefined") {
                 if (window.localStorage) {
                     defaultLocale = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+                    window.addEventListener("storage", this, false);
                 }
                 defaultLocale = defaultLocale || window.navigator.userLanguage || window.navigator.language;
             }
@@ -575,6 +576,8 @@ var DefaultLocalizer = Montage.create(Localizer, /** @lends module:montage/core/
                 Object.getPropertyDescriptor(Localizer, "locale").set.call(this, value);
             }
 
+            this.loadMessages().done();
+
             // If possible, save locale
             if (typeof window !== "undefined" && window.localStorage) {
                 window.localStorage.setItem(LOCALE_STORAGE_KEY, value);
@@ -594,6 +597,14 @@ var DefaultLocalizer = Montage.create(Localizer, /** @lends module:montage/core/
             }
             this.init();
             return this._locale;
+        }
+    },
+
+    handleStorage: {
+        value: function(event) {
+            if (event.key === LOCALE_STORAGE_KEY) {
+                this.locale = event.newValue;
+            }
         }
     }
 });
@@ -698,6 +709,7 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
         value: function() {
             this._data = MessageData.create();
             this._data.addEventListener("change", this, false);
+            this._localizer.addPropertyChangeListener("locale", this);
         }
     },
 
@@ -733,7 +745,10 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
             if (this._localizer == value) {
                 return;
             }
+
+            this._localizer.removePropertyChangeListener("locale", this);
             this._localizer = value;
+            this._localizer.addPropertyChangeListener("locale", this);
             this._localize();
         }
     },
@@ -922,7 +937,11 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
      */
     handleChange: {
         value: function(event) {
-            this.localized = this._messageFunction.fcall(this._data);
+            if (event.target === this._localizer && event.propertyPath === "locale") {
+                this._localize();
+            } else {
+                this.localized = this._messageFunction.fcall(this._data);
+            }
         }
     },
 
