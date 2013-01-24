@@ -137,7 +137,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
             this._contentController = value;
 
             Bindings.defineBindings(this, {
-                "content", {"<-": "_contentController.organizedObjects"},
+                "content": {"<-": "_contentController.organizedObjects"},
                 "_selectedIndexes": {"<->": "_contentController.selectedIndexes"}
             });
 
