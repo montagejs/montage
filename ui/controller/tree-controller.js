@@ -19,6 +19,8 @@ var Iteration = Montage.create(Montage, {
             this.object = null;
             this.defineBinding("object", {"<->": "node.object"});
             this.defineBinding("expanded", {"<->": "node.expanded"});
+            this.defineBinding("parent", {"<-": "node.parent"});
+            this.defineBinding("children", {"<-": "node.children"});
         }
     },
 

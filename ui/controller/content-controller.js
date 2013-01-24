@@ -6,6 +6,13 @@ var Montage = require("montage").Montage;
 // source collection are visible, their order of appearance, and whether they
 // are selected.  Multiple repetitions may share a single content controller
 // and thus their selection state.
+
+// The controller manages a series of visible iterations.  Each iteration has a
+// corresponding "object" and whether that iteration is "selected".  The
+// controller uses a bidirectional binding to ensure that the controller's
+// "selections" collection and the "selected" property of each iteration are in
+// sync.
+
 var ContentControllerIteration = exports.ContentControllerIteration = Montage.create(Montage, {
 
     didCreate: {
@@ -25,6 +32,16 @@ var ContentControllerIteration = exports.ContentControllerIteration = Montage.cr
     }
 
 });
+
+// The controller can determine which objects to display and the order in which
+// to render them in a variety of ways.  You can either use a "selector" to
+// filter and sort the objects or use a "visibleIndexes" array.  The controller
+// binds the content of "visibleObjects" depending on which strategy you use.
+//
+// The content of "visibleObjects" is then reflected with corresponding
+// incremental changes to "iterations".  The "iterations" array will always
+// have an "iteration" corresponding to the "object" in "visibleObjects" at the
+// same position.
 
 var ContentController = exports.ContentController = Montage.create(Montage, {
 
@@ -82,7 +99,7 @@ var ContentController = exports.ContentController = Montage.create(Montage, {
         value: function (visibleIndexes) {
             this.cancelBinding("visibleObjects.*");
             if (visibleIndexes) {
-                this.defineBinding("visibleObjects.*", {"<-": "visibleIndexes.map{$visibleObjects[]}"}, this);
+                this.defineBinding("visibleObjects.*", {"<-": "visibleIndexes.map{$objects[]}"}, this);
             } else {
                 this.defineBinding("visibleObjects.*", {"<-": "objects"});
             }
