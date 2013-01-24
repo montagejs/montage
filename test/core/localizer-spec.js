@@ -164,6 +164,25 @@ describe("core/localizer-spec", function() {
                 expect(localized).toBe("Hello, after");
             });
         });
+
+        it("waits for the localizer to have messages", function() {
+            var localizeDeferred = Promise.defer();
+            var mockLocalizer = {
+                localize: function () {
+                    return localizeDeferred.promise;
+                }
+            };
+
+            message.localizer = mockLocalizer;
+            message.key = "test";
+
+            expect(message.localized.isFulfilled()).toBe(false);
+            localizeDeferred.resolve(function() { return "pass"; });
+
+            return message.localized.then(function (localized) {
+                expect(localized).toBe("pass");
+            });
+        });
     });
 
     describe("Localizer", function(){

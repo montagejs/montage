@@ -821,7 +821,7 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
                     return;
                 }
                 // Replace the _messageFunction promise with the real one.
-                temp.resolve(self._localizer.localizeSync(
+                temp.resolve(self._localizer.localize(
                     self._key,
                     self._defaultMessage
                 ));
