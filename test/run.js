@@ -66,6 +66,8 @@ if (spec) {
         "bindings/self-spec",
 
         "core/core-spec",
+        "core/localizer-spec",
+        "core/localizer/serialization-spec",
         "core/selector-spec",
 
         "core/extras/function",
@@ -100,6 +102,7 @@ if (spec) {
         "ui/component-spec",
         "ui/component-description-spec",
         "ui/composer-spec",
+        "ui/composer/press-composer-spec",
         "ui/composer/translate-composer-spec",
         "ui/dom-spec",
         "ui/dynamic-element-spec",

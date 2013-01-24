@@ -49,17 +49,26 @@ var Textarea = exports.Textarea = Montage.create(TextInput, /** @lends module:"m
 
     select: { value: function() { this._element.select(); } },
 
-/**
-    The text display by the Textarea component's element.
-    @type {string}
-    @default ""
-*/
+    /**
+        The text display by the Textarea component's element.
+        @type {string}
+        @default ""
+    */
     textContent: {
         get: function() {
             return this.value;
         },
         set: function(v) {
             this.value = v;
+        }
+    },
+
+    willPrepareForDraw: {
+        value: function() {
+            TextInput.willPrepareForDraw.call(this);
+            if(this.textContent === null) {
+                this.textContent = this.element.textContent;
+            }
         }
     }
 

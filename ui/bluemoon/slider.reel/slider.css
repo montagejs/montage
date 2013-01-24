@@ -59,6 +59,8 @@ POSSIBILITY OF SUCH DAMAGE.
     height: 9px;
     background: transparent;
     -webkit-box-shadow: 0 1px rgba(255,255,255,.4), 0 -1px rgba(0,0,0,.1);
+    -moz-box-shadow: 0 1px rgba(255,255,255,.4), 0 -1px rgba(0,0,0,.1);
+    box-shadow: 0 1px rgba(255,255,255,.4), 0 -1px rgba(0,0,0,.1);
 }
 
 .montage-Slider .bg {
@@ -69,6 +71,8 @@ POSSIBILITY OF SUCH DAMAGE.
     height: 9px;
     background: rgba(160,160,160,.4);
     -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,.3);
+    -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,.3);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.3);
 }
 
 .montage-Slider .handlerbg div {
@@ -81,6 +85,9 @@ POSSIBILITY OF SUCH DAMAGE.
     background: rgba(128,128,128,.4);
     -webkit-box-shadow: 0 1px rgba(255,255,255,.4), 0 -1px rgba(0,0,0,.1);
     -webkit-transform: scale3d(.433962263, .433962263, 1);
+    -moz-transform: scale3d(.433962263, .433962263, 1);
+    -o-transform: scale3d(.433962263, .433962263, 1);
+    transform: scale3d(.433962263, .433962263, 1);
 }
 
 .montage-Slider .handler div {
@@ -91,7 +98,12 @@ POSSIBILITY OF SUCH DAMAGE.
     width: 51px;
     height: 51px;
     background: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#E6E6E6));
+    background: -moz-linear-gradient(180deg, #FEFEFE, #E6E6E6);
+    background: linear-gradient(180deg, #FEFEFE, #E6E6E6);
     -webkit-transform: scale3d(.411764705, .411764705, 1);
+    -moz-transform: scale3d(.411764705, .411764705, 1);
+    -o-transform: scale3d(.411764705, .411764705, 1);
+    transform: scale3d(.411764705, .411764705, 1);
 }
 
 .montage-Slider .crop {
@@ -109,6 +121,8 @@ POSSIBILITY OF SUCH DAMAGE.
     width: 100%;
     height: 7px;
     background: -webkit-gradient(linear, left top, left bottom, from(#F8F8F8), to(#EFEFEF));
+    background: -moz-linear-gradient(180deg, #F8F8F8, #EFEFEF);
+    background: linear-gradient(180deg, #F8F8F8, #EFEFEF);
 }
 
 .montage-Slider .scale {
@@ -127,6 +141,8 @@ POSSIBILITY OF SUCH DAMAGE.
     width: 7px;
     height: 7px;
     background: -webkit-gradient(linear, left top, left bottom, from(#F8F8F8), to(#EFEFEF));
+    background: -moz-linear-gradient(180deg, #F8F8F8, #EFEFEF);
+    background: linear-gradient(180deg, #F8F8F8, #EFEFEF);
 }
 
 .montage-Slider .line2 {
@@ -136,6 +152,8 @@ POSSIBILITY OF SUCH DAMAGE.
     width: 100%;
     height: 3px;
     background: -webkit-gradient(linear, left top, left bottom, from(#35C9FF), to(#0A9BCF));
+    background: -moz-linear-gradient(180deg, #35C9FF, #0A9BCF);
+    background: linear-gradient(180deg, #35C9FF, #0A9BCF);
 }
 
 .montage-Slider .line4 {
@@ -146,6 +164,8 @@ POSSIBILITY OF SUCH DAMAGE.
     width: 3px;
     height: 3px;
     background: -webkit-gradient(linear, left top, left bottom, from(#35C9FF), to(#0A9BCF));
+    background: -moz-linear-gradient(180deg, #35C9FF, #0A9BCF);
+    background: linear-gradient(180deg, #35C9FF, #0A9BCF);
 }
 
 .montage-Slider .handler2 div {
@@ -156,6 +176,9 @@ POSSIBILITY OF SUCH DAMAGE.
     height: 23px;
     background: #878787;
     -webkit-transform: scale3d(.565217391, .565217391, 1);
+    -moz-transform: scale3d(.565217391, .565217391, 1);
+    -o-transform: scale3d(.565217391, .565217391, 1);
+    transform: scale3d(.565217391, .565217391, 1);
 }
 
 .montage-Slider .handler3 div {
@@ -166,7 +189,12 @@ POSSIBILITY OF SUCH DAMAGE.
     width: 21px;
     height: 21px;
     background: -webkit-gradient(linear, left top, left bottom, from(#14BCFA), to(#0AA4DC));
+    background: -moz-linear-gradient(180deg, #14BCFA, #0AA4DC);
+    background: linear-gradient(180deg, #14BCFA, #0AA4DC);
     -webkit-transform: scale3d(.523809523, .523809523, 1);
+    -moz-transform: scale3d(.523809523, .523809523, 1);
+    -o-transform: scale3d(.523809523, .523809523, 1);
+    transform: scale3d(.523809523, .523809523, 1);
 }
 
 .montage-Slider .handler4 div {
@@ -178,7 +206,12 @@ POSSIBILITY OF SUCH DAMAGE.
     height: 9px;
     background: #07739A;
     -webkit-box-shadow: inset 0 2px 1px #05506B;
+    -moz-box-shadow: inset 0 2px 1px #05506B;
+    box-shadow: inset 0 2px 1px #05506B;
     -webkit-transform: scale3d(.555555555, .555555555, 1);
+    -moz-transform: scale3d(.555555555, .555555555, 1);
+    -o-transform: scale3d(.555555555, .555555555, 1);
+    transform: scale3d(.555555555, .555555555, 1);
 }
 
 .montage-Slider .handlerDragArea div {
@@ -192,62 +225,101 @@ POSSIBILITY OF SUCH DAMAGE.
 
 .montage-Slider.pressed .handlerbg div {
     -webkit-transform: scale3d(1, 1, 1);
+    -moz-transform: scale3d(1, 1, 1);
+    -o-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
 }
 
 .montage-Slider.pressed .handler div {
     background: -webkit-gradient(linear, left top, left bottom, from(#e5e5e5), to(#ffffff));
+    background: -moz-linear-gradient(180deg, #e5e5e5, #ffffff);
+    background: linear-gradient(180deg, #e5e5e5, #ffffff);
     -webkit-transform: scale3d(1, 1, 1);
+    -moz-transform: scale3d(1, 1, 1);
+    -o-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
 }
 
 .montage-Slider.pressed .handler2 div {
     -webkit-transform: scale3d(1, 1, 1);
+    -moz-transform: scale3d(1, 1, 1);
+    -o-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
 }
 
 .montage-Slider.pressed .handler3 div {
     -webkit-transform: scale3d(1, 1, 1);
+    -moz-transform: scale3d(1, 1, 1);
+    -o-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
 }
 
 .montage-Slider.pressed .handler4 div {
     -webkit-transform: scale3d(1, 1, 1);
+    -moz-transform: scale3d(1, 1, 1);
+    -o-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
 }
 
 .montage-Slider.pressed .line {
     background: -webkit-gradient(linear, left top, left bottom, from(#efefef), to(#f3f3f3));
+    background: -moz-linear-gradient(180deg, #efefef, #f3f3f3);
+    background: linear-gradient(180deg, #efefef, #f3f3f3);
 }
 
 .montage-Slider.dark .bghl {
     background: transparent;
     -webkit-box-shadow: 0 1px rgba(255,255,255,.2), 0 -1px rgba(0,0,0,.1);
+    -moz-box-shadow: 0 1px rgba(255,255,255,.2), 0 -1px rgba(0,0,0,.1);
+    box-shadow: 0 1px rgba(255,255,255,.2), 0 -1px rgba(0,0,0,.1);
 }
 
 .montage-Slider.dark .bg {
     background: -webkit-gradient(linear, left top, left bottom, from(rgba(40,40,40,.6)), to(rgba(40,40,40,.5)));
+    background: -moz-linear-gradient(180deg, rgba(40,40,40,.6), rgba(40,40,40,.5));
+    background: linear-gradient(180deg, rgba(40,40,40,.6), rgba(40,40,40,.5));
     -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
 }
 
 .montage-Slider.dark .handlerbg div {
     background: -webkit-gradient(linear, left top, left bottom, from(rgba(40,40,40,.7)), to(rgba(40,40,40,.6)));
+    background: -moz-linear-gradient(180deg, rgba(40,40,40,.7), rgba(40,40,40,.6));
+    background: linear-gradient(180deg, rgba(40,40,40,.7), rgba(40,40,40,.6));
     -webkit-box-shadow: 0 1px rgba(255,255,255,.2), 0 -1px rgba(0,0,0,.1);
+    -moz-box-shadow: 0 1px rgba(255,255,255,.2), 0 -1px rgba(0,0,0,.1);
+    box-shadow: 0 1px rgba(255,255,255,.2), 0 -1px rgba(0,0,0,.1);
 }
 
 .montage-Slider.dark .handler div {
     background: -webkit-gradient(linear, left top, left bottom, from(#757575), to(#5c5c5c));
+    background: -moz-linear-gradient(180deg, #757575, #5c5c5c);
+    background: linear-gradient(180deg, #757575, #5c5c5c);
 }
 
 .montage-Slider.dark .line {
     background: -webkit-gradient(linear, left top, left bottom, from(#6f6f6f), to(#656565));
+    background: -moz-linear-gradient(180deg, #6f6f6f, #656565);
+    background: linear-gradient(180deg, #6f6f6f, #656565);
 }
 
 .montage-Slider.dark .line2 {
     background: -webkit-gradient(linear, left top, left bottom, from(#35C9FF), to(#0A9BCF));
+    background: -moz-linear-gradient(180deg, #35C9FF, #0A9BCF);
+    background: linear-gradient(180deg, #35C9FF, #0A9BCF);
 }
 
 .montage-Slider.dark .line3 {
     background: -webkit-gradient(linear, left top, left bottom, from(#6f6f6f), to(#656565));
+    background: -moz-linear-gradient(180deg, #6f6f6f, #656565);
+    background: linear-gradient(180deg, #6f6f6f, #656565);
 }
 
 .montage-Slider.dark .line4 {
     background: -webkit-gradient(linear, left top, left bottom, from(#35C9FF), to(#0A9BCF));
+    background: -moz-linear-gradient(180deg, #35C9FF, #0A9BCF);
+    background: linear-gradient(180deg, #35C9FF, #0A9BCF);
 }
 
 .montage-Slider.dark .handler2 div {
@@ -256,15 +328,21 @@ POSSIBILITY OF SUCH DAMAGE.
 
 .montage-Slider.dark .handler3 div {
     background: -webkit-gradient(linear, left top, left bottom, from(#12BBF8), to(#0AA4DC));
+    background: -moz-linear-gradient(180deg, #12BBF8, #0AA4DC);
+    background: linear-gradient(180deg, #12BBF8, #0AA4DC);
 }
 
 .montage-Slider.dark .handler4 div {
     background: #07739A;
     -webkit-box-shadow: inset 0 2px 1px #05506B;
+    -moz-box-shadow: inset 0 2px 1px #05506B;
+    box-shadow: inset 0 2px 1px #05506B;
 }
 
 .montage-Slider.dark.pressed .handler div {
     background: -webkit-gradient(linear, left top, left bottom, from(#5c5c5c), to(#757575));
+    background: -moz-linear-gradient(180deg, #5c5c5c, #757575);
+    background: linear-gradient(180deg, #5c5c5c, #757575);
 }
 
 .montage-Slider.dark.pressed .handler2 div {
@@ -273,8 +351,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 .montage-Slider.dark.pressed .handler3 div {
     background: -webkit-gradient(linear, left top, left bottom, from(#10bcfc), to(#0AA2DA));
+    background: -moz-linear-gradient(180deg, #10bcfc, #0AA2DA);
+    background: linear-gradient(180deg, #10bcfc, #0AA2DA);
 }
 
 .montage-Slider.dark.pressed .line {
     background: -webkit-gradient(linear, left top, left bottom, from(#666666), to(#6a6a6a));
+    background: -moz-linear-gradient(180deg, #666666, #6a6a6a);
+    background: linear-gradient(180deg, #666666, #6a6a6a);
 }

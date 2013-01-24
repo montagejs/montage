@@ -45,7 +45,7 @@ var testPage = TestPageLoader.queueTest("anchor-test", function() {
             describe("once loaded", function() {
 
                 it("link1 should have no value by default", function() {
-                    expect(test.link1.textContent).toBeNull();
+                    expect(test.link1.textContent).toBe('');
                 });
                 it("link2 should have textContent from the markup", function() {
                     expect(test.link2.textContent).toBe('Foo');

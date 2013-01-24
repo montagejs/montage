@@ -76,14 +76,15 @@
         // up through loading and execution, ultimately serving as the
         // ``module`` free variable inside the corresponding module.
         function getModuleDescriptor(id) {
-            if (!has(modules, id)) {
-                modules[id] = {
+            var lookupId = id.toLowerCase();
+            if (!has(modules, lookupId)) {
+                modules[lookupId] = {
                     id: id,
                     display: (config.name || config.location) + "#" + id, // EXTENSION
                     require: require
                 };
             }
-            return modules[id];
+            return modules[lookupId];
         }
 
         // for preloading modules by their id and exports, useful to
@@ -159,6 +160,14 @@
         // module "exports" object.
         function getExports(topId, viaId) {
             var module = getModuleDescriptor(topId);
+
+            // check for consistent case convention
+            if (module.id !== topId) {
+                throw new Error(
+                    "Can't require " + JSON.stringify(module.id) +
+                    " by alternate spelling " + JSON.stringify(topId)
+                );
+            }
 
             // handle redirects
             if (module.redirect !== void 0) {
@@ -556,21 +565,39 @@
 
         }
 
+        //Deal with redirects
+        var redirects = description.redirects;
+        if (redirects !== void 0) {
+            Object.keys(redirects).forEach(function (name) {
+                modules[name] = {
+                    id: name,
+                    redirect: redirects[name],
+                    location: URL.resolve(location, name)
+                };
+            });
+        }
+
+
         // mappings, link this package to other packages.
         var mappings = description.mappings || {};
-        // dependencies
-        var dependencies = description.dependencies || {};
-        Object.keys(dependencies).forEach(function (name) {
-            if (!mappings[name]) {
-                // dependencies are equivalent to name and version mappings,
-                // though the version predicate string is presently ignored
-                // (TODO)
-                mappings[name] = {
-                    name: name,
-                    version: dependencies[name]
-                };
-            }
+        // dependencies, devDependencies
+        [description.dependencies, description.devDependencies]
+        .forEach(function (dependencies) {
+            if (!dependencies)
+                return;
+            Object.keys(dependencies).forEach(function (name) {
+                if (!mappings[name]) {
+                    // dependencies are equivalent to name and version mappings,
+                    // though the version predicate string is presently ignored
+                    // (TODO)
+                    mappings[name] = {
+                        name: name,
+                        version: dependencies[name]
+                    };
+                }
+            });
         });
+        // mappings
         Object.keys(mappings).forEach(function (name) {
             var mapping = mappings[name] = normalizeDependency(
                 mappings[name],
@@ -578,7 +605,6 @@
                 name
             );
         });
-
         config.mappings = mappings;
 
         return config;
@@ -708,7 +734,7 @@
 
     Require.JsonCompiler = function (config, compile) {
         return function (module) {
-            var json = module.id.match(/\.json$/);
+            var json = (module.location || "").match(/\.json$/);
             if (json) {
                 module.exports = JSON.parse(module.text);
                 return module;

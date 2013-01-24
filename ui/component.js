@@ -1170,6 +1170,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     this.parentComponent.childComponentWillPrepareForDraw(this);
                 }
 
+                this._willPrepareForDraw();
+                if (typeof this.willPrepareForDraw === "function") {
+                    this.willPrepareForDraw();
+                }
+
                 this._prepareForDraw();
 
                 if (this.prepareForDraw) {
@@ -1597,8 +1602,307 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
             composerList.splice(0, length);
         }
-    }
+    },
 
+    /**
+        The localizer for this component
+        @type {module:montage/core/localizer.Localizer}
+        @default null
+    */
+    localizer: {
+        value: null
+    },
+
+    _waitForLocalizerMessages: {
+        value: false
+    },
+    /**
+        Whether to wait for the localizer to load messages before drawing.
+        Make sure to set the localizer before setting to <code>true</code>.
+        @type Boolean
+        @default false
+        @example
+    // require localizer
+    var defaultLocalizer = localizer.defaultLocalizer,
+        _ = defaultLocalizer.localizeSync.bind(defaultLocalizer);
+
+    exports.Main = Montage.create(Component, {
+
+        didCreate: {
+            value: function() {
+                this.localizer = defaultLocalizer;
+                this.waitForLocalizerMessages = true;
+            }
+        },
+
+        // ...
+
+        // no draw happens until the localizer's messages have been loaded
+        prepareForDraw: {
+            value: function() {
+                this._greeting = _("hello", "Hello {name}!");
+            }
+        },
+        draw: {
+            value: function() {
+                // this is for illustration only. This example is simple enough that
+                // you should use a localizations binding
+                this._element.textContent = this._greeting({name: this.name});
+            }
+        }
+    }
+    */
+    waitForLocalizerMessages: {
+        enumerable: false,
+        get: function() {
+            return this._waitForLocalizerMessages;
+        },
+        set: function(value) {
+            if (this._waitForLocalizerMessages !== value) {
+                if (value === true && !this.localizer.messages) {
+                    if (!this.localizer) {
+                        throw "Cannot wait for messages on localizer if it is not set";
+                    }
+
+                    this._waitForLocalizerMessages = true;
+
+                    var self = this;
+                    logger.debug(this, "waiting for messages from localizer");
+                    this.canDrawGate.setField("messages", false);
+
+                    this.localizer.messagesPromise.then(function(messages) {
+                        if (logger.isDebug) {
+                            logger.debug(self, "got messages from localizer");
+                        }
+                        self.canDrawGate.setField("messages", true);
+                    });
+                } else {
+                    this._waitForLocalizerMessages = false;
+                    this.canDrawGate.setField("messages", true);
+                }
+            }
+        }
+    },
+
+    //
+    // Attribute Handling
+    //
+
+    /**
+        Stores values that need to be set on the element. Cleared each draw cycle.
+        @private
+     */
+    _elementAttributeValues: {
+        value: null
+    },
+
+    /**
+        Stores the descriptors of the properties that can be set on this control
+        @private
+     */
+    _elementAttributeDescriptors: {
+       value: null
+    },
+
+
+    _getElementAttributeDescriptor: {
+        value: function(attributeName) {
+            var attributeDescriptor, instance = this;
+            // walk up the prototype chain from the instance to NativeControl's prototype
+            // if _elementAttributeDescriptors is falsy, stop.
+            while(instance && instance._elementAttributeDescriptors) {
+                attributeDescriptor = instance._elementAttributeDescriptors[attributeName];
+                if(attributeDescriptor) {
+                    break;
+                } else {
+                    instance = Object.getPrototypeOf(instance);
+                }
+            }
+            return attributeDescriptor;
+        }
+    },
+
+    /**
+    * Adds a property to the component with the specified name. This method is used internally by the framework convert a DOM element's standard attributes into bindable properties. It creates an accessor property (getter/setter) with the same name as the specified property, as well as a "backing" data property whose name is prepended with an underscore (_). The backing variable is assigned the value from the property descriptor. For example, if the name  "title" is passed as the first parameter, a "title" accessor property is created as well a data property named "_title".
+    * @function
+    * @param {String} name The property name to add.
+    * @param {Object} descriptor An object that specifies the new properties default attributes such as configurable and enumerable.
+    */
+    defineAttribute: {
+        value: function(name, descriptor) {
+            descriptor = descriptor || {};
+            var _name = '_' + name;
+
+
+            var newDescriptor = {
+                configurable: (typeof descriptor.configurable == 'undefined') ? true: descriptor.configurable,
+                enumerable: (typeof descriptor.enumerable == 'undefined') ?  true: descriptor.enumerable,
+                set: (function(name, attributeName) {
+                    return function(value) {
+                        var descriptor = this._getElementAttributeDescriptor(name, this);
+
+                        // if requested dataType is boolean (eg: checked, readonly etc)
+                        // coerce the value to boolean
+                        if(descriptor && "boolean" === descriptor.dataType) {
+                            value = ( (value || value === "") ? true : false);
+                        }
+
+                        // If the set value is different to the current one,
+                        // update it here, and set it to be updated on the
+                        // element in the next draw cycle.
+                        if((typeof value !== 'undefined') && this[attributeName] !== value) {
+                            this[attributeName] = value;
+                            // at this point we know that we will need it so create it once.
+                            if(this._elementAttributeValues === null) {
+                                this._elementAttributeValues = {};
+                            }
+                            this._elementAttributeValues[name] = value;
+                            this.needsDraw = true;
+                        }
+                    };
+                }(name, _name)),
+                get: (function(name, attributeName) {
+                    return function() {
+                        return this[attributeName];
+                    };
+                }(name, _name))
+            };
+
+            // Define _ property
+            Montage.defineProperty(this, _name, {value: null});
+            // Define property getter and setter
+            Montage.defineProperty(this, name, newDescriptor);
+        }
+    },
+
+    /**
+    * Add the specified properties as properties of this component.
+    * @function
+    * @param {object} properties An object that contains the properties you want to add.
+    */
+    addAttributes: {
+        value: function(properties) {
+            var i, descriptor, property, object;
+            this._elementAttributeDescriptors = properties;
+
+            for(property in properties) {
+                if(properties.hasOwnProperty(property)) {
+                    object = properties[property];
+                    // Make sure that the descriptor is of the correct form.
+                    if(object === null || String.isString(object)) {
+                        descriptor = {value: object, dataType: "string"};
+                        properties[property] = descriptor;
+                    } else {
+                        descriptor = object;
+                    }
+
+                    // Only add the internal property, and getter and setter if
+                    // they don't already exist.
+                    if(typeof this[property] === 'undefined') {
+                        this.defineAttribute(property, descriptor);
+                    }
+                }
+            }
+        }
+    },
+
+// callbacks
+
+    _willPrepareForDraw: {
+        value: function() {
+            // The element is now ready, so we can read the attributes that
+            // have been set on it.
+            var attributes, i, length, name, value, attributeName, descriptor;
+            attributes = this.element.attributes;
+            if (attributes) {
+                length = attributes.length
+                for(i=0; i < length; i++) {
+                    name = attributes[i].name;
+                    value = attributes[i].value;
+
+                    descriptor = this._getElementAttributeDescriptor(name, this);
+                    // check if this attribute from the markup is a well-defined attribute of the component
+                    if(descriptor || (typeof this[name] !== 'undefined')) {
+                        // at this point we know that we will need it so create it.
+                        if(this._elementAttributeValues === null) {
+                            this._elementAttributeValues = {};
+                        }
+                        // only set the value if a value has not already been set by binding
+                        if(typeof this._elementAttributeValues[name] === 'undefined') {
+                            this._elementAttributeValues[name] = value;
+                            if( (typeof this[name] == 'undefined') || this[name] == null) {
+                                this[name] = value;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // textContent is a special case since it isn't an attribute
+            descriptor = this._getElementAttributeDescriptor('textContent', this);
+            if(descriptor) {
+                // check if this element has textContent
+                var textContent = this.element.textContent;
+                if(typeof this._elementAttributeValues.textContent === 'undefined') {
+                    this._elementAttributeValues.textContent = textContent;
+                    if( this.textContent == null) {
+                        this.textContent = textContent;
+                    }
+                }
+            }
+
+            // Set defaults for any properties that weren't serialised or set
+            // as attributes on the element.
+            if (this._elementAttributeDescriptors) {
+                for (attributeName in this._elementAttributeDescriptors) {
+                    descriptor = this._elementAttributeDescriptors[attributeName];
+                    var _name = "_"+attributeName;
+                    if (this[_name] === null && descriptor !== null && "value" in descriptor) {
+                        this[_name] = this._elementAttributeDescriptors[attributeName].value;
+                    }
+                }
+            }
+
+        }
+    },
+
+    _draw: {
+        value: function() {
+            var element = this.element, descriptor;
+
+            for(var attributeName in this._elementAttributeValues) {
+                if(this._elementAttributeValues.hasOwnProperty(attributeName)) {
+                    var value = this[attributeName];
+                    descriptor = this._getElementAttributeDescriptor(attributeName, this);
+                    if(descriptor) {
+
+                        if(descriptor.dataType === 'boolean') {
+                            if(value === true) {
+                                element[attributeName] = true;
+                                element.setAttribute(attributeName, attributeName.toLowerCase());
+                            } else {
+                                element[attributeName] = false;
+                                element.removeAttribute(attributeName);
+                            }
+                        } else {
+                            if(typeof value !== 'undefined') {
+                                if(attributeName === 'textContent') {
+                                    element.textContent = value;
+                                } else {
+                                    //https://developer.mozilla.org/en/DOM/element.setAttribute
+                                    element.setAttribute(attributeName, value);
+                                }
+
+                            }
+                        }
+
+                    }
+
+                    delete this._elementAttributeValues[attributeName];
+                }
+            }
+        }
+    }
 });
 
 
@@ -2081,6 +2385,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
             // TODO: add the possibility to display = "none" the body during development (IKXARIA-3631).
             for (i = j-1; i >= 0; i--) {
                 component = needsDrawList[i];
+                component._draw(this._frameTime);
                 component.draw(this._frameTime);
                 if (drawLogger.isDebug) {
                     drawLogger.debug(component._montage_metadata.objectName, " draw treeLevel ",component._treeLevel);
@@ -2115,12 +2420,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         set:function(value) {
             defaultEventManager.registerEventHandlerForElement(this, value);
             this._element = value;
-
-            if (typeof this.didSetElement === "function") {
-                this.didSetElement();
-            }
-        },
-        enumerable: false
+        }
     }
 });
 

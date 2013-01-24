@@ -110,7 +110,6 @@ Montage.defineProperty(Element.prototype, "controller", {
 Montage.defineProperty(Object.prototype, "addEventListener", {
     value: function addEventListener(type, listener, useCapture) {
         if (listener) {
-            this.dispatchChangeEvent = true;
             defaultEventManager.registerEventListener(this, type, listener, useCapture);
         }
     }
@@ -126,7 +125,6 @@ Montage.defineProperty(Object.prototype, "addEventListener", {
 Montage.defineProperty(Object.prototype, "removeEventListener", {
     value: function removeEventListener(type, listener, useCapture) {
         if (listener) {
-            this.dispatchChangeEvent = true;
             defaultEventManager.unregisterEventListener(this, type, listener, useCapture);
         }
     }

@@ -1,0 +1,19 @@
+{
+    "hello": "Hello",
+    "num_albums": {
+        "message": "{albums, plural, one {1 album} other {# albums}}",
+        "description": "how many photo albums the user has"
+    },
+    "welcome": {
+        "message": "Welcome to the site, {name}",
+        "description": "Message when the user signs in",
+        "variable_examples": {
+            "name": "Joe Bloggs"
+        }
+    },
+    "photo_deleted": "{photo_name} was deleted",
+
+    "horse": "{num, plural, one {1 horse} other {# horses}}",
+    "cow": "{num, plural, one {1 cow} other {# cows}}",
+    "sheep": "{num} sheep"
+}

@@ -267,11 +267,14 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
         value: function(event) {
             this.active = true;
 
-            event.preventDefault();
+            if (event.touch) {
+                // Prevent default on touchmove so that if we are inside a scroller,
+                // it scrolls and not the webpage
+                document.addEventListener("touchmove", this, false);
+            }
 
             if (!this._preventFocus) {
                 this._element.focus();
-
             }
         }
     },
@@ -283,6 +286,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
         value: function(event) {
             this.active = false;
             this._dispatchActionEvent();
+            document.removeEventListener("touchmove", this, false);
         }
     },
 
@@ -315,6 +319,13 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
     handlePressCancel: {
         value: function(event) {
             this.active = false;
+            document.removeEventListener("touchmove", this, false);
+        }
+    },
+
+    handleTouchmove: {
+        value: function(event) {
+            event.preventDefault();
         }
     },
 
@@ -327,9 +338,9 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
         enumerable: false
     },
 
-    didSetElement: {
+    willPrepareForDraw: {
         value: function() {
-            NativeControl.didSetElement.call(this);
+            NativeControl.willPrepareForDraw.call(this);
 
             //this._element.classList.add("montage-Button");
             this._element.setAttribute("role", "button");

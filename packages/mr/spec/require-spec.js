@@ -50,8 +50,12 @@ describe("Require", function () {
         "load-package",
         "load-package-name",
         "not-found",
+        "redirects",
+        "redirects-package",
         "comments",
-        "identify"
+        "identify",
+        "dev-dependencies",
+        "case-sensitive"
     ].forEach(function (test) {
         it(test, function () {
             var spec = this;
