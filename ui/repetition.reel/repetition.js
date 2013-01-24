@@ -117,22 +117,16 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             // Inject the elements into the document
             element.insertBefore(this.fragment, bottomBoundary);
 
-            // Disable transitions for the injected elements.
-            // Also, since we're iterating the elements already,
-            // maintain the "elementForIteration" map.
+            // Maintain the "iterationForElement" map.
             for (
                 var child = topBoundary.nextSibling;
                 child !== bottomBoundary;
                 child = child.nextSibling
             ) {
                 if (child.nodeType === 1) { // tags
-                    child.classList.add("no-transition");
                     repetition.iterationForElement.set(child, this);
                 }
             }
-            this.needsEnableTransitions = true;
-            repetition.iterationsNeedReenableTransitions = true;
-            repetition.needsDraw = true;
 
             // notify the components to wake up and smell the document
             for (var i = 0; i < this.childComponents.length; i++) {
@@ -298,9 +292,28 @@ var ReplaceOperation = exports.ReplaceOperation = Montage.create(Montage, {
             for (var index = 0; index < controllers.length; index++) {
                 var controller = this.controllers[index];
                 var iteration = repetition.iterations[visibleIndex + index];
+
+                if (iteration.controller === controller)
+                    continue;
+
                 iteration.controller = controller;
                 repetition.objectForIteration.set(iteration, controller.object);
+
+                // Disable transitions for the reused elements.
+                for (
+                    var child = topBoundary.nextSibling;
+                    child !== bottomBoundary;
+                    child = child.nextSibling
+                ) {
+                    if (child.nodeType === 1) { // tags
+                        child.classList.add("no-transition");
+                    }
+                }
+
+                this.needsEnableTransitions = true;
             }
+            repetition.iterationsNeedReenableTransitions = true;
+            repetition.needsDraw = true;
         }
     }
 
@@ -353,27 +366,27 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     },
 
     initWithController: {
-        value: function (controller) {
-            this.controller = controller;
+        value: function (contentController) {
+            this.contentController = contentController;
             return this;
         }
     },
 
     objects: {
         get: function () {
-            if (!this.controller) {
+            if (!this.contentController) {
                 throw new Error(
-                    "Can't get objects: No objects or controller have been " +
+                    "Can't get objects: No objects or contentController have been " +
                     "assigned to this Repetition"
                 );
             }
-            return this.controller.objects;
+            return this.contentController.objects;
         },
         set: function (objects) {
-            if (this.controller) {
-                this.controller.objects = objects;
+            if (this.contentController) {
+                this.contentController.objects = objects;
             } else {
-                this.controller = ContentController.create().initWithObjects(objects);
+                this.contentController = ContentController.create().initWithObjects(objects);
             }
         }
     },
@@ -397,11 +410,17 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             Object.getPrototypeOf(Repetition).didCreate.call(this);
 
             // Knobs:
-            this.controller = null;
+            this.contentController = null;
             // Determines whether the repetition listens for mouse and touch
             // events to select iterations, which involves "activating" the
             // iteration when the user touches.
             this.isSelectionEnabled = false;
+            this.defineBinding("selectedIterations", {
+                "<-": "iterations.filter{selected}"
+            });
+            this.defineBinding("selection", {
+                "<->": "contentController.selection"
+            });
 
             // The state of the DOM:
             // ---
@@ -456,7 +475,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // Ascertains that controllerIterations does not get changed by the
             // controller, but the changes are projected on our array.
             this.defineBinding("controllerIterations.*", {
-                "<-": "controller.iterations",
+                "<-": "contentController.iterations",
                 "serializable": false
             });
             // The boundaries array contains comment nodes that serve as the
@@ -937,6 +956,10 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 }
             }
 
+            // TODO optimize pending operations, pairing add and delete
+            // operations and assembling them into replacement operations,
+            // to minimize the impact on the document.
+
             // execute the pending draw operations (add, delete, select,
             // deselect, activate, deactivate)
             var pendingOperations = this.pendingOperations;
@@ -1174,5 +1197,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 
 });
 
-// TODO deserializeSelf / serializeSelf that simplifies the "controller" out if possible
+// TODO deserializeSelf / serializeSelf that simplifies the "controller" out if
+// possible, that is, if the controller is a ContentController, just steal its
+// "objects" property and all bindings to it and put them on the repetition.
+// Unpossible?  Probably.
 
