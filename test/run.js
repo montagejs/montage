@@ -61,8 +61,6 @@ if (spec) {
         "collections-spec",
         "frb-spec",
 
-
-        "controllers/array-controller-spec",
         "bindings/spec",
         "bindings/converter-spec",
         "bindings/self-spec",
