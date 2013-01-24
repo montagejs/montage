@@ -463,11 +463,12 @@ if (typeof window !== "undefined") {
                 "promise": "packages/mr/packages/q/q.js"
             };
 
-            // load in parallel, but only if we’re not using a preloaded cache.
+            // load in parallel, but only if we're not using a preloaded cache.
             // otherwise, these scripts will be inlined after already
             if (typeof BUNDLE === "undefined") {
+                var montageLocation = resolve(window.location, params.montageLocation);
                 for (var id in pending) {
-                    browser.load(resolve(params.montageLocation, pending[id]));
+                    browser.load(resolve(montageLocation, pending[id]));
                 }
             }
 
