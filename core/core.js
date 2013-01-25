@@ -52,8 +52,6 @@ require("core/extras/function");
 require("core/extras/regexp");
 require("core/extras/string");
 
-var Bindings = require("core/bindings").Bindings;
-
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
     PROTO = "__proto__",
@@ -757,6 +755,7 @@ Object.defineProperty(Montage, "callDelegateMethod", {
 });
 
 var PropertyChanges = require("collections/listen/property-changes");
+var Bindings = require("core/bindings").Bindings;
 
 Object.addEach(Montage, PropertyChanges.prototype);
 
@@ -804,5 +803,5 @@ Montage.defineProperties(Montage, {
 // in turn depends on montage running to completion
 require("core/serialization-bindings");
 // has to come last since it uses the Montage.defineProperties to augment Object.prototype
-require("core/path-changes");
+require("core/paths");
 

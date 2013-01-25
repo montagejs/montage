@@ -4,12 +4,26 @@ var WeakMap = require("collections/weak-map");
 var Map = require("collections/map");
 
 var parse = require("frb/parse");
+var evaluate = require("frb/evaluate");
+var assign = require("frb/assign");
 var compileObserver = require("frb/compile-observer");
 var autoCancelPrevious = require("frb/observers").autoCancelPrevious;
 
 var pathChangeDescriptors = new WeakMap();
 
 Montage.defineProperties(Object.prototype, {
+
+    getPath: {
+        value: function (path, parameters) {
+            return evaluate(path, this, parameters);
+        }
+    },
+
+    setPath: {
+        value: function (path, value, parameters) {
+            return assign(this, path, value, parameters);
+        }
+    },
 
     getPathChangeDescriptors: {
         value: function () {
