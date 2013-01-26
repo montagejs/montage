@@ -25,7 +25,15 @@ Serializer.defineSerializationUnit("bindings", function (object, serializer) {
 
         var sourcePath = input.sourcePath;
 
-        var syntax = expand(parse(sourcePath), null, parameters);
+        if (input.source !== object) {
+            var reference = serializer.addObjectReference(input.source);
+            var syntax = expand(parse(sourcePath), {
+                type: "component",
+                label: reference["@"]
+            }, parameters);
+        } else {
+            var syntax = expand(parse(sourcePath), null, parameters);
+        }
         sourcePath = stringify(syntax);
 
         if (input.twoWay) {

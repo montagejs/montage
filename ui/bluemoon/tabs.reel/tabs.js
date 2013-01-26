@@ -45,7 +45,8 @@ var Montage = require("montage").Montage,
     Substitution = require("ui/substitution.reel").Substitution,
     DynamicText = require("ui/dynamic-text.reel").DynamicText,
     Image = require("ui/image.reel").Image,
-    Uuid = require("core/uuid").Uuid;
+    Uuid = require("core/uuid").Uuid,
+    observeProperty = require("frb/observers").observeProperty;
 
 /**
     @class module:"montage/ui/bluemoon/tabs.reel".Tabs
@@ -142,18 +143,12 @@ var Tabs = exports.Tabs = Montage.create(Component, /** @lends module:"montage/u
         }
     },
 
-    propertyChangeBindingListener: {
-        value: function(type, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, bindingDescriptor) {
-            // kishore: same as in list.js
-            if (bindingDescriptor.boundObjectPropertyPath.match(/objectAtCurrentIteration/)) {
-                if (this._repetition) {
-                    bindingDescriptor.boundObject = this._repetition;
-                    return this._repetition.propertyChangeBindingListener.apply(this._repetition, arguments);
-                } else {
-                    return null;
-                }
+    observeProperty: {
+        value: function (key, emit, source, parameters, beforeChange) {
+            if (key === "objectAtCurrentIteration" || key === "currentIteration") {
+                return observeProperty(this._repetition, key, emit, source, parameters, beforeChange);
             } else {
-                return Object.prototype.propertyChangeBindingListener.apply(this, arguments);
+                return observeProperty(this, key, emit, source, parameters, beforeChange);
             }
         }
     },

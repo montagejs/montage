@@ -50,10 +50,9 @@ POSSIBILITY OF SUCH DAMAGE.
     },
 
     "tokensController": {
-        "prototype": "ui/controller/array-controller",
+        "prototype": "core/content-controller",
         "properties": {
-            "selectObjectsOnAddition": true,
-            "automaticallyOrganizeObjects": true
+            "selectAddedObjects": true
         },
         "bindings": {
             "content": {"<->": "@owner.values"}

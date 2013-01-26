@@ -36,6 +36,10 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 
+// TODO replace all usage of undefinedGet and undefinedSet with manipulation of
+// a classList Set() from Collections and handle rangeChange events to sync
+// the document in the next draw
+
 /**
     The DynamicElement is a general purpose component that aims to expose all the properties of the element as a component.
     @class module:"montage/ui/dynamic-element.reel".DynamicElement

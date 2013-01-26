@@ -31,7 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    FlowBezierSpline = require("ui/flow-bezier-spline").FlowBezierSpline;
+    FlowBezierSpline = require("ui/flow-bezier-spline").FlowBezierSpline,
+    observeProperty = require("frb/observers").observeProperty;
 
 var Flow = exports.Flow = Montage.create(Component, {
 
@@ -1000,17 +1001,12 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: null
     },
 
-    propertyChangeBindingListener: {
-        value: function(type, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, bindingDescriptor) {
-            if (bindingDescriptor.boundObjectPropertyPath.match(/objectAtCurrentIteration/)) {
-                if (this._repetition) {
-                    bindingDescriptor.boundObject = this._repetition;
-                    return this._repetition.propertyChangeBindingListener.apply(this._repetition, arguments);
-                } else {
-                    return null;
-                }
+    observeProperty: {
+        value: function (key, emit, source, parameters, beforeChange) {
+            if (key === "objectAtCurrentIteration" || key === "currentIteration") {
+                return observeProperty(this._repetition, key, emit, source, parameters, beforeChange);
             } else {
-                return Object.prototype.propertyChangeBindingListener.apply(this, arguments);
+                return observeProperty(this, key, emit, source, parameters, beforeChange);
             }
         }
     },

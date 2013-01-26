@@ -101,7 +101,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list1"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1.list1Objects"}
+                    "content": {"<-": "@repetitiontest1.list1Objects"}
                 }
             },
             "textfield1": {
@@ -119,7 +119,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list2"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1.list2Objects"}
+                    "content": {"<-": "@repetitiontest1.list2Objects"}
                 }
             },
             "textfield2": {
@@ -137,7 +137,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list3a"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetition4.objectAtCurrentIteration"}
+                    "content": {"<-": "@repetition4.objectAtCurrentIteration"}
                 }
             },
             "repetition4": {
@@ -146,7 +146,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list3"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1.list3Objects"}
+                    "content": {"<-": "@repetitiontest1.list3Objects"}
                 }
             },
             "componenty1": {
@@ -161,7 +161,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list4a"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetition5.objectAtCurrentIteration"}
+                    "content": {"<-": "@repetition5.objectAtCurrentIteration"}
                 }
             },
             "repetition5": {
@@ -170,7 +170,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list4"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1.list4Objects"}
+                    "content": {"<-": "@repetitiontest1.list4Objects"}
                 }
             },
             "textfield3": {
@@ -193,7 +193,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list5a"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetition7.objectAtCurrentIteration"}
+                    "content": {"<-": "@repetition7.objectAtCurrentIteration"}
                 }
             },
             "repetition7": {
@@ -202,7 +202,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list5"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1.list5Objects"}
+                    "content": {"<-": "@repetitiontest1.list5Objects"}
                 }
             },
             "componentrep1": {
@@ -241,7 +241,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list6"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1.list6Objects"}
+                    "content": {"<-": "@repetitiontest1.list6Objects"}
                 }
             },
             "textfield4": {
@@ -266,7 +266,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list7"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1.list7Objects"}
+                    "content": {"<-": "@repetitiontest1.list7Objects"}
                 }
             },
             "actioneventlistener1": {
@@ -296,7 +296,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list8"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1.list8Objects"}
+                    "content": {"<-": "@repetitiontest1.list8Objects"}
                 }
             },
             "textfield6": {
@@ -311,7 +311,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list9"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1.list9Objects"}
+                    "content": {"<-": "@repetitiontest1.list9Objects"}
                 }
             },
             "componentz1": {
@@ -340,7 +340,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list10"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1.list10Objects"}
+                    "content": {"<-": "@repetitiontest1.list10Objects"}
                 }
             },
             "repetitionController": {
@@ -351,10 +351,7 @@ POSSIBILITY OF SUCH DAMAGE.
                 }
             },
             "simpleArrayController": {
-                "prototype": "montage/ui/controller/array-controller",
-                "properties": {
-                    "automaticallyOrganizeObjects": true
-                },
+                "prototype": "montage/core/content-controller",
                 "bindings": {
                     "content": {"<-": "@repetitiontest1.simpleArrayControllerContent"}
                 }
@@ -370,14 +367,14 @@ POSSIBILITY OF SUCH DAMAGE.
                 "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list11"},
-                    "objects": [1, 2, 3]
+                    "content": [1, 2, 3]
                 }
             },
             "repetition15": {
                 "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list13"},
-                    "objects": [1, 2, 3]
+                    "content": [1, 2, 3]
                 }
             },
             "repetition16": {
@@ -396,7 +393,7 @@ POSSIBILITY OF SUCH DAMAGE.
                 "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list15"},
-                    "objects": []
+                    "content": []
                 }
             },
             "textfield8": {
@@ -412,14 +409,14 @@ POSSIBILITY OF SUCH DAMAGE.
                 "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list16"},
-                    "objects": [1, 2, 3]
+                    "content": [1, 2, 3]
                 }
             },
             "repetition19": {
                 "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list17"},
-                    "objects": [1, 2]
+                    "content": [1, 2]
                 }
             }
     }</script>

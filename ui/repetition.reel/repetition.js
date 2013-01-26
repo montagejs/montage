@@ -3,7 +3,7 @@
 var Montage = require("montage").Montage;
 var Component = require("ui/component").Component;
 var Template = require("ui/template").Template;
-var ContentController = require("ui/controller/content-controller").ContentController;
+var ContentController = require("core/content-controller").ContentController;
 
 var Map = require("collections/map");
 
@@ -358,9 +358,9 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     // For the creator:
     // ----
 
-    initWithObjects: {
-        value: function (objects) {
-            this.objects = objects;
+    initWithContent: {
+        value: function (content) {
+            this.content = content;
             return this;
         }
     },
@@ -372,21 +372,18 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         }
     },
 
-    objects: {
+    content: {
         get: function () {
             if (!this.contentController) {
-                throw new Error(
-                    "Can't get objects: No objects or contentController have been " +
-                    "assigned to this Repetition"
-                );
+                return null;
             }
-            return this.contentController.objects;
+            return this.contentController.content;
         },
-        set: function (objects) {
+        set: function (content) {
             if (this.contentController) {
-                this.contentController.objects = objects;
+                this.contentController.content = content;
             } else {
-                this.contentController = ContentController.create().initWithObjects(objects);
+                this.contentController = ContentController.create().initWithContent(content);
             }
         }
     },
@@ -416,10 +413,12 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // iteration when the user touches.
             this.isSelectionEnabled = false;
             this.defineBinding("selectedIterations", {
-                "<-": "iterations.filter{selected}"
+                "<-": "iterations.filter{selected}",
+                "serializable": false
             });
             this.defineBinding("selection", {
-                "<->": "contentController.selection"
+                "<->": "contentController.selection",
+                "serializable": false
             });
 
             // The state of the DOM:
@@ -431,7 +430,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // corresponds to a visible object, by its visible position.  An
             // iteration has a template instance
             this.iterations = [];
-            // Iteration objects can be reused.  When an iteration is collected
+            // Iteration content can be reused.  When an iteration is collected
             // (and when it is initially created), it gets put in the
             // freeIterations list.
             this.freeIterations = []; // push/pop LIFO
@@ -442,7 +441,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // Whenever an iteration template is instantiated, it may have
             // bindings to the repetition's "objectAtCurrentIteration".  The
             // repetition delegates "objectAtCurrentIteration" to a mapping
-            // from iterations to objects, which it can dynamically update as
+            // from iterations to content, which it can dynamically update as
             // the iterations are reused, thereby updating the bindings.
             this.objectForIteration = Map();
             // We track the direct child nodes of every iteration so we can
@@ -453,7 +452,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // iteration template so bindings to "objectAtCurrentIteration" are
             // attached to the proper "iteration".  The "objectForIteration"
             // provides the level of indirection that allows iterations to be
-            // paired with different objects during their lifetime, but the
+            // paired with different content during their lifetime, but the
             // template and components for each iteration will always be tied
             // to the same Iteration instance.
             this.currentIteration = null;
@@ -778,11 +777,11 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     // "objectAtCurrentIteration" property change listeners to a map change
     // listener on the "objectForIteration" map instead.  The binding then
     // reacts to changes to the map as iterations are reused with different
-    // objects at different positions in the DOM.
+    // content at different positions in the DOM.
     observeProperty: {
         value: function (key, emit, source, parameters, beforeChange) {
             if (key === "objectAtCurrentIteration") {
-                // delegate to the mapping from iterations to objects for the
+                // delegate to the mapping from iterations to content for the
                 // current iteration
                 return observeKey(
                     this.objectForIteration,
@@ -820,7 +819,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         }
     },
 
-    // Reacting to changes in the controlled visible objects:
+    // Reacting to changes in the controlled visible content:
     // ----
 
     // In responses to changes in the controlled controllerIterations array, this
@@ -1189,16 +1188,16 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     // Polymorphic helper types
     // ------------------------
 
-    Iteration: { value: Iteration },
-    AddOperation: { value: AddOperation },
-    DeleteOperation: { value: DeleteOperation },
-    ReplaceOperation: { value: ReplaceOperation },
-    ClassChangeOperation: { value: ClassChangeOperation }
+    Iteration: { value: Iteration, serializable: false },
+    AddOperation: { value: AddOperation, serializable: false },
+    DeleteOperation: { value: DeleteOperation, serializable: false },
+    ReplaceOperation: { value: ReplaceOperation, serializable: false },
+    ClassChangeOperation: { value: ClassChangeOperation, serializable: false }
 
 });
 
 // TODO deserializeSelf / serializeSelf that simplifies the "controller" out if
 // possible, that is, if the controller is a ContentController, just steal its
-// "objects" property and all bindings to it and put them on the repetition.
+// "content" property and all bindings to it and put them on the repetition.
 // Unpossible?  Probably.
 

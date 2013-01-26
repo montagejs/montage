@@ -39,17 +39,24 @@ POSSIBILITY OF SUCH DAMAGE.
 
 var Montage = require("montage").Montage,
     Bindings = require("core/bindings").Bindings,
+    ContentController = require("core/content-controller").ContentController,
     Component = require("ui/component").Component,
-    ArrayController = require("ui/controller/array-controller").ArrayController,
     NativeControl = require("ui/native-control").NativeControl,
     PressComposer = require("ui/composer/press-composer").PressComposer;
 
 /**
- * Wraps the a &lt;select> element with binding support for the element's standard attributes. Uses an ArrayController instance to manage the element's contents and selection.
-   @class module:"montage/ui/native/select.reel".Select
-   @extends module:montage/ui/native-control.NativeControl
-   @summary
-   If the &lt;select> markup contains <option> is provided in the markup and <code>contentController</code> is not, the <code>contentController</code> collection is populated with the options from the markup. If <code>contentController</code> is present, any options in the markup are overwritten by the values from the <code>contentController</code> when they are available.
+    Wraps the a &lt;select&gt; element with binding support for the element's
+    standard attributes. Uses an ArrayController instance to manage the
+    element's contents and selection.
+    @class module:"montage/ui/native/select.reel".Select
+    @extends module:montage/ui/native-control.NativeControl
+    @summary
+    If the &lt;select&gt; markup contains <option> is provided in the markup
+    and <code>contentController</code> is not, the
+    <code>contentController</code> collection is populated with the options
+    from the markup. If <code>contentController</code> is present, any options
+    in the markup are overwritten by the values from the
+    <code>contentController</code> when they are available.
  */
 var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"montage/ui/native/select.reel".Select */ {
 
@@ -77,7 +84,8 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
 
     _content: {value: null, enumerable: false},
 /**
-    An array of items to to assign to the component's <code>contentController</code> property, which is an ArrayController.
+    An array of items to to assign to the component's
+    <code>contentController</code> property, which is an ContentController.
 */
     content: {
         set: function(value) {
@@ -87,7 +95,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
             this._content = value;
 
             if(!this.contentController) {
-                var contentController = ArrayController.create();
+                var contentController = ContentController.create();
                 contentController.content = value;
                 this.contentController = contentController;
             }
@@ -122,7 +130,6 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
 
 /**
     An ArrayController instance used to manage the content and selection of the select input control.
-    @type {module:montage/ui/controller/array-controller.ArrayController}
     @default null
 */
     contentController: {
@@ -244,30 +251,33 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
             // add options to contentController
             // look for selected options in the markup and mark these as selected
             if(!this.contentController) {
-                var contentController = ArrayController.create();
-                var selectedIndexes = [];
+                var contentController = ContentController.create();
+                var selection = [];
+                var content = [];
 
-                contentController.content = [];
                 if(options && options.length > 0) {
                     var i=0, len = options.length, selected;
                     for(; i< len; i++) {
                         selected = options[i].getAttribute('selected');
-                        if(selected) {
-                            selectedIndexes.push(i);
-                        }
-                        contentController.addObjects({
+                        var object = {
                             value: options[i].value,
                             text: options[i].textContent
-                        });
+                        };
+                        if (selected) {
+                            selection.push(object);
+                        }
+                        content.push(object);
                     }
 
-                    this.contentController = contentController;
-                    if(selectedIndexes.length === 0 && len > 0) {
-                        // nothing was marked as selected by default. Select the first one (gh-122)
-                        selectedIndexes = [0];
+                    if (selection.length === 0 && len > 0) {
+                        // nothing is marked as selected by default. Select the
+                        // first one (gh-122)
+                        selection.push(content[0]);
                     }
                     this._fromInput = true;
-                    this.contentController.selectedIndexes = selectedIndexes;
+                    this.contentController = contentController;
+                    contentController.content = content;
+                    contentController.selection = selection;
 
                 }
             }
@@ -407,11 +417,11 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
         }
     },
 
-    _getSelectedOptionsIndices: {
+    _getSelectedOptionsIndexes: {
         value: function(selectEl) {
             var options = selectEl.querySelectorAll('option');
-            // TODO: looks like querySelectorAll('option[selected]') only returns the default selected
-            // value
+            // TODO: looks like querySelectorAll('option[selected]') only
+            // returns the default selected value
             var i, len = options.length, arr = [];
             for(i=0; i< len; i++) {
                 if(options[i].selected) {
@@ -428,7 +438,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
             //var selectedOptions = this.element.selectedOptions || [];
             // select.selectedOptions does not work on Chrome !
 
-            var arr = this._getSelectedOptionsIndices(this.element);
+            var arr = this._getSelectedOptionsIndexes(this.element);
 
             if(arr.length > 0) {
                 this._fromInput = true;

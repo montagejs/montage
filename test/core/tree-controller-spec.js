@@ -1,7 +1,7 @@
 
-var TreeController = require("montage/ui/controller/tree-controller").TreeController;
+var TreeController = require("montage/core/tree-controller").TreeController;
 
-describe("controllers/tree-controller-spec", function () {
+describe("core/tree-controller-spec", function () {
 
     var tree = {
         name: "X",

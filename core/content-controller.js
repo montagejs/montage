@@ -2,7 +2,7 @@
 
 var Montage = require("montage").Montage;
 
-// The content controller is responsible for determining which objects from a
+// The content controller is responsible for determining which content from a
 // source collection are visible, their order of appearance, and whether they
 // are selected.  Multiple repetitions may share a single content controller
 // and thus their selection state.
@@ -33,14 +33,14 @@ var ContentControllerIteration = exports.ContentControllerIteration = Montage.cr
 
 });
 
-// The controller can determine which objects to display and the order in which
+// The controller can determine which content to display and the order in which
 // to render them in a variety of ways.  You can either use a "selector" to
-// filter and sort the objects or use a "visibleIndexes" array.  The controller
-// binds the content of "visibleObjects" depending on which strategy you use.
+// filter and sort the content or use a "visibleIndexes" array.  The controller
+// binds the content of "visibleContent" depending on which strategy you use.
 //
-// The content of "visibleObjects" is then reflected with corresponding
+// The content of "visibleContent" is then reflected with corresponding
 // incremental changes to "iterations".  The "iterations" array will always
-// have an "iteration" corresponding to the "object" in "visibleObjects" at the
+// have an "iteration" corresponding to the "object" in "visibleContent" at the
 // same position.
 
 var ContentController = exports.ContentController = Montage.create(Montage, {
@@ -48,23 +48,23 @@ var ContentController = exports.ContentController = Montage.create(Montage, {
     didCreate: {
         value: function () {
             // input
-            this.objects = null;
+            this.content = null;
             this.selector = null;
             this.selection = [];
             this.visibleIndexes = null;
-            this.selectAddedObjects = false;
-            this.deselectInvisibleObjects = false;
-            this.deselectDeletedObjects = true;
+            this.selectAddedContent = false;
+            this.deselectInvisibleContent = false;
+            this.deselectDeletedContent = true;
             // TODO this.start = null;
             // TODO this.length = null;
             // internal
-            this.visibleObjects = [];
-            this.visibleObjects.addRangeChangeListener(this, "visibleObjects");
-            this.defineBinding("visibleObjects.*", {"<-": "objects"});
+            this.visibleContent = [];
+            this.visibleContent.addRangeChangeListener(this, "visibleContent");
+            this.defineBinding("visibleContent.*", {"<-": "content"});
             // We do not need to directly observe changes to the selection
             // array since the controlled iterations bind directly to that
             // path.
-            this.addPathChangeListener("objects", this, "handleObjectsChange");
+            this.addPathChangeListener("content", this, "handleContentChange");
             this.addPathChangeListener("selector", this, "handleSelectorChange");
             this.addPathChangeListener("visibleIndexes", this, "handleVisibleIndexesChange");
             // output
@@ -72,64 +72,64 @@ var ContentController = exports.ContentController = Montage.create(Montage, {
         }
     },
 
-    initWithObjects: {
-        value: function (objects) {
-            this.objects = objects;
+    initWithContent: {
+        value: function (content) {
+            this.content = content;
             return this;
         }
     },
 
     handleSelectorChange: {
         value: function (selector) {
-            this.cancelBinding("visibleObjects.*");
+            this.cancelBinding("visibleContent.*");
             if (selector) {
                 try {
-                    this.defineBinding("visibleObjects.*", {"<-": selector, "source": this.objects});
+                    this.defineBinding("visibleContent.*", {"<-": selector, "source": this.content});
                 } catch (error) {
-                    this.defineBinding("visibleObjects.*", {"<-": "objects"});
+                    this.defineBinding("visibleContent.*", {"<-": "content"});
                     throw error;
                 }
             } else {
-                this.defineBinding("visibleObjects.*", {"<-": "objects"});
+                this.defineBinding("visibleContent.*", {"<-": "content"});
             }
         }
     },
 
     handleVisibleIndexesChange: {
         value: function (visibleIndexes) {
-            this.cancelBinding("visibleObjects.*");
+            this.cancelBinding("visibleContent.*");
             if (visibleIndexes) {
-                this.defineBinding("visibleObjects.*", {"<-": "visibleIndexes.map{$objects[]}"}, this);
+                this.defineBinding("visibleContent.*", {"<-": "visibleIndexes.map{$content[]}"}, this);
             } else {
-                this.defineBinding("visibleObjects.*", {"<-": "objects"});
+                this.defineBinding("visibleContent.*", {"<-": "content"});
             }
         }
     },
 
-    handleObjectsChange: {
-        value: function (objects) {
-            if (objects) {
-                return objects.addRangeChangeListener(this, "objects");
+    handleContentChange: {
+        value: function (content) {
+            if (content) {
+                return content.addRangeChangeListener(this, "content");
             }
         }
     },
 
-    handleObjectsRangeChange: {
+    handleContentRangeChange: {
         value: function (plus, minus, index) {
             if (this.selection) {
-                if (this.selectAddedObjects) {
+                if (this.selectAddedContent) {
                     this.selection.addEach(plus);
                 }
-                if (this.deselectDeletedObjects) {
+                if (this.deselectDeletedContent) {
                     this.selection.deleteEach(minus);
                 }
             }
         }
     },
 
-    handleVisibleObjectsRangeChange: {
+    handleVisibleContentRangeChange: {
         value: function (plus, minus, index) {
-            if (this.deselectInvisibleObjects && this.selection) {
+            if (this.deselectInvisibleContent && this.selection) {
                 this.selection.deleteEach(minus);
             }
             this.iterations.swap(index, minus.length, plus.map(function (object) {
