@@ -32,7 +32,9 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Localizer = require("montage/core/localizer"),
     Promise = require("montage/core/promise").Promise,
-    Deserializer = require("montage/core/deserializer").Deserializer;
+    Deserializer = require("montage/core/deserializer").Deserializer,
+    Bindings = require("montage/core/bindings").Bindings,
+    Map = require("montage/collections/map");
 
 describe("core/localizer-spec", function() {
 
@@ -76,9 +78,9 @@ describe("core/localizer-spec", function() {
                 name: "World"
             };
 
-            Object.defineBinding(message, "key", {
-                boundObject: def,
-                boundObjectPropertyPath: "key"
+            Bindings.defineBinding(message, "key", {
+                "<->": "key",
+                source: def
             });
 
             return message.localized.then(function (localized) {
@@ -98,9 +100,9 @@ describe("core/localizer-spec", function() {
                 name: "before"
             };
 
-            Object.defineBinding(message, "data.name", {
-                boundObject: object,
-                boundObjectPropertyPath: "name"
+            Bindings.defineBinding(message, "data.get('name')", {
+                "<->": "name",
+                source: object
             });
 
             return message.localized.then(function (localized) {
@@ -110,7 +112,7 @@ describe("core/localizer-spec", function() {
                 return message.localized;
             }).then(function (localized) {
                 expect(localized).toBe("Hello, after");
-                message.data.name = "later";
+                message.data.set("name", "later");
 
                 return message.localized;
             }).then(function (localized) {
@@ -128,14 +130,14 @@ describe("core/localizer-spec", function() {
 
             var object = {};
 
-            Object.defineBinding(object, "name", {
-                boundObject: otherObject,
-                boundObjectPropertyPath: "name"
+            Bindings.defineBinding(object, "name", {
+                "<->": "name",
+                source: otherObject,
             });
 
-            Object.defineBinding(message, "data.name", {
-                boundObject: object,
-                boundObjectPropertyPath: "name"
+            Bindings.defineBinding(message, "data.get('name')", {
+                "<->": "name",
+                source: object,
             });
 
             return message.localized.then(function (localized) {
@@ -157,7 +159,7 @@ describe("core/localizer-spec", function() {
 
             return message.localized.then(function (localized) {
                 expect(localized).toBe("Hello, before");
-                message.data.name = "after";
+                message.data.set("name", "after");
 
                 return message.localized;
             }).then(function (localized) {

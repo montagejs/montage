@@ -686,6 +686,17 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: false
     },
 
+    // Some components, like the repetition, might use their initial set of
+    // child components as a template to clone them and instantiate them as the
+    // real/effective child components.
+    //
+    // When this happens the original child components are in a way pointless
+    // to the application and should not be used.
+    //
+    // If other objects get a reference to these child components in the
+    // template serialization the way to know that they are going to be
+    // cloned is by checking if one of their parent components has
+    // its clonesChildComponents set to true.
     clonesChildComponents: {
         writable: false,
         value: false

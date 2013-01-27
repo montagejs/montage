@@ -34,7 +34,10 @@ var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
     Serializer = require("montage/core/serializer").Serializer,
     Deserializer = require("montage/core/deserializer").Deserializer,
-    TestPageLoader = require("support/testpageloader").TestPageLoader;
+    TestPageLoader = require("support/testpageloader").TestPageLoader,
+    Map = require("montage/collections/map"),
+    Bindings = require("montage/core/bindings").Bindings,
+    FrbBindings = require("montage/frb/bindings");
 
 var stripPP = function stripPrettyPrintting(str) {
     return str.replace(/\n\s*/g, "");
@@ -130,12 +133,23 @@ var testPage = TestPageLoader.queueTest("fallback", {directory: module.directory
             });
 
             it("creates a binding from the localizer to the object", function() {
-                expect(test.binding.value).toBe("Hello World");
-                expect(test.binding._bindingDescriptors.value).toBeDefined();
-                test.bindingInput.value = "Earth";
-                waitsFor(function() { return test.binding.value !== "Hello World"; });
-                runs(function() {
-                    expect(test.binding.value).toBe("Hello Earth");
+                var iframeRequire = testPage.iframe.contentWindow.require;
+
+                return iframeRequire.async("montage/core/bindings")
+                .then(function(exports) {
+                    var iframeBindings = exports.Bindings,
+                        bindings;
+
+                    bindings = iframeBindings.getBindings(test.binding);
+
+                    expect(test.binding.value).toBe("Hello World");
+                    expect(bindings.value).toBeDefined();
+
+                    test.bindingInput.value = "Earth";
+                    waitsFor(function() { return test.binding.value !== "Hello World"; });
+                    runs(function() {
+                        expect(test.binding.value).toBe("Hello Earth");
+                    });
                 });
             });
 
@@ -166,10 +180,11 @@ var testPage = TestPageLoader.queueTest("fallback", {directory: module.directory
                     runs(function() {
                         expect(objects.target.value).toBe("Hello, someone");
                         objects.source.value = "Goodbye, {name}";
-                    });
-                    waitsFor(function() { return objects.target.value !== "Hello, someone"; });
-                    runs(function() {
-                        expect(objects.target.value).toBe("Goodbye, someone");
+
+                        waitsFor(function() { return objects.target.value !== "Hello, someone"; });
+                        runs(function() {
+                            expect(objects.target.value).toBe("Goodbye, someone");
+                        });
                     });
                 });
             });
