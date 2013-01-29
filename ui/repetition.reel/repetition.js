@@ -292,6 +292,8 @@ var ReplaceOperation = exports.ReplaceOperation = Montage.create(Montage, {
             for (var index = 0; index < controllers.length; index++) {
                 var controller = this.controllers[index];
                 var iteration = repetition.iterations[visibleIndex + index];
+                var topBoundary = repetition.boundaries[visibleIndex + index];
+                var bottomBoundary = repetition.boundaries[visibleIndex + index + 1];
 
                 if (iteration.controller === controller)
                     continue;
