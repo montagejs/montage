@@ -632,15 +632,42 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
                                 }
                             }
                         } else {
-                            deferredBlueprint.reject("No Blueprint found " + blueprintModuleId);
+                            deferredBlueprint.reject(new Error("No Blueprint found " + blueprintModuleId));
                         }
                     }, targetRequire);
                 } catch (exception) {
-                    deferredBlueprint.reject("Error deserializing Blueprint " + blueprintModuleId + " " + JSON.stringfy(exception));
+                    deferredBlueprint.reject(new Error("Error deserializing Blueprint " + blueprintModuleId + " " + JSON.stringfy(exception)));
                 }
             }, deferredBlueprint.reject);
 
             return deferredBlueprint.promise;
+        }
+    },
+
+    /*
+     * Creates a default blueprint with all enumerable properties.
+     * <b>Note</b>Value type are set to the string default.
+     */
+    createDefaultBlueprintForObject:{
+        value:function (object) {
+            if (object) {
+                var newBlueprint = Blueprint.create().initWithName(object.identifier);
+                for (var name in object) {
+                    if (name.charAt(0) != "_") {
+                        // We don't want to list private properties
+                        var value = object.name;
+                        var propertyBlueprint;
+                        if (Array.isArray(value)) {
+                            propertyBlueprint = newBlueprint.addToManyPropertyBlueprintNamed(name);
+                        } else {
+                            propertyBlueprint = newBlueprint.addToOnePropertyBlueprintNamed(name);
+                        }
+                    }
+                }
+                return newBlueprint;
+            } else {
+                return UnknownBlueprint;
+            }
         }
     },
 

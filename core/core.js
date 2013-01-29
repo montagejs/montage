@@ -754,6 +754,7 @@ Object.defineProperty(Montage, "callDelegateMethod", {
  */
 exports._blueprintModuleIdDescriptor = {
     serializable:false,
+    enumerable: false,
     get:function () {
         var info = Montage.getInfoForObject(this);
         var self = (info && !info.isInstance) ? this : Object.getPrototypeOf(this);
@@ -774,6 +775,7 @@ exports._blueprintModuleIdDescriptor = {
 
 exports._blueprintDescriptor = {
     serializable:false,
+    enumerable: false,
     get:function () {
         var info = Montage.getInfoForObject(this);
         var self = (info && !info.isInstance) ? this : Object.getPrototypeOf(this);
@@ -789,7 +791,11 @@ exports._blueprintDescriptor = {
 
             self._blueprint = exports._blueprintDescriptor.BlueprintModulePromise.then(function (Blueprint) {
                 var info = Montage.getInfoForObject(self);
-                return Blueprint.getBlueprintWithModuleId(blueprintModuleId, info.require);
+                return Blueprint.getBlueprintWithModuleId(blueprintModuleId, info.require).then(null, function () {
+                    var blueprint = Blueprint.createDefaultBlueprintForObject(self);
+                    blueprint.blueprintModuleId = blueprintModuleId;
+                    return blueprint;
+                });
             });
         }
         return self._blueprint;

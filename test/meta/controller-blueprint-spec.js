@@ -22,7 +22,7 @@ var logger = require("montage/core/logger").logger("meta/blueprint-spec.js");
 describe("meta/controller-blueprint-spec", function () {
 
     describe("Controller Blueprint", function () {
-        describe("Adding blueprints to controller", function () {
+        it("Adding blueprints to controller", function () {
             var serializer = Serializer.create().initWithRequire(require);
 
             var testController = TestController.create().init();
@@ -44,7 +44,7 @@ describe("meta/controller-blueprint-spec", function () {
             });
         });
 
-        describe("Loading controller blueprint", function () {
+        it("Loading controller blueprint", function () {
             var parentController = ParentController.create().init();
 
             var blueprintPromise = parentController.blueprint;
@@ -55,7 +55,7 @@ describe("meta/controller-blueprint-spec", function () {
             });
         });
 
-        describe("Adding blueprints to controller parent", function () {
+        it("Adding blueprints to controller parent", function () {
             var serializer = Serializer.create().initWithRequire(require);
 
             var parentController = ParentController.create().init();
@@ -81,7 +81,7 @@ describe("meta/controller-blueprint-spec", function () {
             });
         });
 
-        describe("Loading child controller blueprint", function () {
+        it("Loading child controller blueprint", function () {
             var childController = ChildController.create().init();
 
             var blueprintPromise = childController.blueprint;
@@ -90,6 +90,23 @@ describe("meta/controller-blueprint-spec", function () {
                 expect(blueprint.propertyBlueprintForName("customerList")).toBeTruthy();
                 expect(blueprint.propertyBlueprintForName("customerSelectionList")).toBeTruthy();
                 expect(blueprint.propertyBlueprintForName("purchaseList")).toBeTruthy();
+            });
+        });
+
+        it("Create a default controller blueprint", function () {
+            var serializer = Serializer.create().initWithRequire(require);
+
+            var testController = TestController.create().init();
+            testController.blueprint = null;
+
+            var blueprintPromise = testController.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).toBeTruthy();
+                expect(blueprint.propertyBlueprintForName("customerList")).toBeTruthy();
+                expect(blueprint.propertyBlueprintForName("customerSelectionList")).toBeTruthy();
+                var serializedDescription = serializer.serializeObject(blueprint);
+                expect(serializedDescription).toBeTruthy();
+                console.log(serializedDescription);
             });
         });
 
