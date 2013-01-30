@@ -289,6 +289,7 @@ undoManager.add("Add", Promise.resolve([calculator.subtract, calculator, number]
             }
 
             var undoEntry = {label: label};
+            this._promiseOperationMap.set(operationPromise, undoEntry);
 
             if (this.isUndoing) {
 
@@ -310,7 +311,6 @@ undoManager.add("Add", Promise.resolve([calculator.subtract, calculator, number]
                 }
             }
 
-            this._promiseOperationMap.set(operationPromise, undoEntry);
             return operationPromise.spread(this._resolveUndoEntry(this, undoEntry));
         }
     },
