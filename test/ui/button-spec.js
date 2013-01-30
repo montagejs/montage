@@ -29,6 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
+    Bindings = require("montage/core/bindings").Bindings,
     TestPageLoader = require("support/testpageloader").TestPageLoader;
 
 var testPage = TestPageLoader.queueTest("buttontest", function() {
@@ -200,16 +201,16 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                 it("is is populated if used in a binding", function() {
                     spyOn(testHandler, 'handler').andCallThrough();
                     detailButton.addEventListener("action", testHandler.handler, false);
-                    Object.defineBinding(detailButton, "detail.prop", {
-                        boundObject: testHandler,
-                        boundObjectPropertyPath: "valueToBeBound"
+                    Bindings.defineBinding(detailButton, "detail.prop", {
+                        "<->": "valueToBeBound",
+                        "source": testHandler
                     });
 
                     testPage.clickOrTouch({target: detailButton.element});
                     expect(testHandler.handler).toHaveBeenCalled();
                     expect(testHandler.event.detail.prop).toEqual(testHandler.valueToBeBound);
                     //cleanup
-                    Object.deleteBindings(detailButton);
+                    Bindings.cancelBindings(detailButton);
                 });
                 it("is is populated if used programatically", function() {
                     spyOn(testHandler, 'handler').andCallThrough();

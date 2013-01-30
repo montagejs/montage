@@ -53,13 +53,14 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
             expect((Montage.create()).parentProperty).toBeDefined();
         });
 
-        it("should have a parentProperty on a object", function() {
-            expect((Object.create(Object.prototype)).parentProperty).toBeDefined();
-        });
-
-        it("should have a parentProperty on a object literal", function() {
-            expect({}.parentProperty).toBeDefined();
-        });
+        // TODO @mczepiel Are these cases this necessary? - @kriskowal
+        //it("should have a parentProperty on a object", function() {
+        //    expect((Object.create(Object.prototype)).parentProperty).toBeDefined();
+        //});
+        //
+        //it("should have a parentProperty on a object literal", function() {
+        //    expect({}.parentProperty).toBeDefined();
+        //});
 
         describe("handling events throughout the object hierarchy", function() {
 

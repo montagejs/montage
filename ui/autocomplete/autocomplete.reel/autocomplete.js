@@ -38,9 +38,9 @@ var Montage = require("montage").Montage,
     TextInput = require("ui/text-input").TextInput,
     logger = require("core/logger").logger("autocomplete"),
     ResultsList = require("ui/autocomplete/results-list.reel/results-list").ResultsList,
-    ArrayController = require("ui/controller/array-controller").ArrayController,
     Popup = require("ui/popup/popup.reel").Popup,
-    PressComposer = require("ui/composer/press-composer").PressComposer;
+    PressComposer = require("ui/composer/press-composer").PressComposer,
+    ContentController = require("core/content-controller").ContentController;
 
 var KEY_UP = 38,
     KEY_DOWN = 40,
@@ -75,6 +75,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, /** @lends m
 
     didCreate: {
         value: function() {
+            TextInput.didCreate.call(this); // super
             this.delay = 500;
             this.minLength = 2;
         }
@@ -348,7 +349,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, /** @lends m
     },
 
     // the delegate should set the suggestions.
-    // suggestions -> resultsController.objects
+    // suggestions -> resultsController.content
     _suggestions: {value: null},
     suggestions: {
         enumerable: false,
@@ -448,35 +449,24 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, /** @lends m
             this.element.classList.add('montage-Autocomplete');
 
             // create the Repetition for the suggestions
-            this.resultsController = ArrayController.create();
-            Object.defineBinding(this.resultsController, "content", {
-                boundObject: this,
-                boundObjectPropertyPath: "suggestions",
-                oneway: true
+            this.resultsController = ContentController.create();
+            this.defineBinding("resultsController.content", {
+                "<-": "suggestions"
             });
-
-            Object.defineBinding(this, "suggestedValue", {
-                boundObject: this.resultsController,
-                boundObjectPropertyPath: "selectedObjects.0",
-                oneway: true
+            this.defineBinding("suggestedValue", {
+                "<-": "resultsController.selection[0]"
             });
 
             this.resultsList = ResultsList.create();
-            Object.defineBinding(this.resultsList, "contentController", {
-                boundObject: this,
-                boundObjectPropertyPath: "resultsController",
-                oneway: true
+            this.defineBinding("resultsList.contentController", {
+                "<-": "resultsController"
             });
-
-            Object.defineBinding(this.resultsList, "activeIndexes", {
-                boundObject: this,
-                boundObjectPropertyPath: "_activeIndexes",
-                oneway: true
+            // TODO what is activeIndexes?
+            this.defineBinding("resultsList.activeIterations", {
+                "<-": "activeIterations"
             });
-            Object.defineBinding(this.resultsList, "textPropertyPath", {
-                boundObject: this,
-                boundObjectPropertyPath: "textPropertyPath",
-                oneway: true
+            this.defineBinding("resultsList.textPropertyPath", {
+                "<-": "textPropertyPath"
             });
 
             var popup = this._getPopup();

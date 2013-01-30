@@ -113,8 +113,7 @@ exports.Progress = Montage.create(NativeProgress,/** @lends module:"montage/ui/b
 
     didCreate: {
         value: function() {
-
-            if(NativeProgress.didCreate) {
+            if (NativeProgress.didCreate !== Function.noop) {
                 NativeProgress.didCreate.call(this);
             }
         }

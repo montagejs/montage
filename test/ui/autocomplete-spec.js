@@ -81,7 +81,7 @@ var testPage = TestPageLoader.queueTest("autocomplete-test", function() {
                             waits(1000);
                             runs(function() {
                                 //console.log('test.autocomplete1', test.autocomplete1);
-                                expect(test.autocomplete1.suggestions.count()).toBe(1);
+                                expect(test.autocomplete1.suggestions.length).toBe(1);
                                 expect(test.autocomplete1.showPopup).toBe(true);
                             });
 
@@ -97,7 +97,7 @@ var testPage = TestPageLoader.queueTest("autocomplete-test", function() {
                             waits(1000);
                             runs(function() {
                                 //console.log('test.autocomplete1', test.autocomplete1);
-                                expect(test.autocomplete1.suggestions.count()).toBe(0);
+                                expect(test.autocomplete1.suggestions.length).toBe(0);
                                 expect(test.autocomplete1.showPopup).toBe(false);
                             });
 
@@ -113,7 +113,7 @@ var testPage = TestPageLoader.queueTest("autocomplete-test", function() {
                             waits(1000);
 
                             runs(function() {
-                                expect(test.autocomplete1.suggestions.count()).toBe(1);
+                                expect(test.autocomplete1.suggestions.length).toBe(1);
                                 expect(test.autocomplete1.showPopup).toBe(true);
 
                                 var event = document.createEvent('CustomEvent');

@@ -1067,7 +1067,6 @@ describe("serialization/deserializer-spec", function() {
                 if (defaultEventManager.registeredEventListeners.action) {
                     expect(object.uuid in defaultEventManager.registeredEventListeners.action).toBeFalsy();
                 }
-                expect(object._bindingDescriptors).toBeTruthy();
             });
         });
 
@@ -1089,7 +1088,6 @@ describe("serialization/deserializer-spec", function() {
                 expect(object.prop1).toBe(15);
                 expect(defaultEventManager.registeredEventListeners.action).toBeDefined();
                 expect(object.uuid in defaultEventManager.registeredEventListeners.action).toBeTruthy();
-                expect(object._bindingDescriptors).toBeTruthy();
             });
         });
     });

@@ -28,11 +28,12 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
- var Montage = require("montage/core/core").Montage,
-     Component = require("montage/ui/component").Component,
-     Serializer = require("montage/core/serializer").Serializer,
-     serialize = require("montage/core/serializer").serialize,
-     objects = require("serialization/testobjects-v2").objects;
+var Montage = require("montage/core/core").Montage,
+    Bindings = require("montage/core/bindings").Bindings,
+    Component = require("montage/ui/component").Component,
+    Serializer = require("montage/core/serializer").Serializer,
+    serialize = require("montage/core/serializer").serialize,
+    objects = require("serialization/testobjects-v2").objects;
 
 var stripPP = function stripPrettyPrintting(str) {
     return str.replace(/\n\s*/g, "");
@@ -526,10 +527,9 @@ describe("serialization/serializer-spec", function() {
                 object.serializeSelf = function(serializer) {
                     serializer.setProperties();
                 };
-                Object.defineBinding(object, "number", {
-                    boundObject: objects.OneProp.create(),
-                    boundObjectPropertyPath: "prop",
-                    oneway: true
+                Bindings.defineBinding(object, "number", {
+                    "<-": "prop",
+                    "source": objects.OneProp.create()
                 });
 
                 var serialization = serializer.serializeObject(object);
@@ -540,10 +540,9 @@ describe("serialization/serializer-spec", function() {
                 object.serializeSelf = function(serializer) {
                     serializer.setProperties();
                 };
-                Object.defineBinding(object, "number", {
-                    boundObject: objects.OneProp.create(),
-                    boundObjectPropertyPath: "prop",
-                    oneway: true
+                Bindings.defineBinding(object, "number", {
+                    "<-": "prop",
+                    "source": objects.OneProp.create()
                 });
                 object.addEventListener("action", Montage.create(), false);
 
@@ -569,10 +568,9 @@ describe("serialization/serializer-spec", function() {
                     serializer.setProperties();
                     serializer.setUnit("listeners");
                 };
-                Object.defineBinding(object, "number", {
-                    boundObject: objects.OneProp.create(),
-                    boundObjectPropertyPath: "prop",
-                    oneway: true
+                Bindings.defineBinding(object, "number", {
+                    "source": objects.OneProp.create(),
+                    "<-": "prop"
                 });
 
                 var serialization = serializer.serializeObject(object);
@@ -584,10 +582,9 @@ describe("serialization/serializer-spec", function() {
                     serializer.setProperties();
                     serializer.setUnit("listeners");
                 };
-                Object.defineBinding(object, "number", {
-                    boundObject: objects.OneProp.create(),
-                    boundObjectPropertyPath: "prop",
-                    oneway: true
+                Bindings.defineBinding(object, "number", {
+                    "source": objects.OneProp.create(),
+                    "<-": "prop"
                 });
                 object.addEventListener("action", Montage.create(), false);
 
@@ -613,10 +610,9 @@ describe("serialization/serializer-spec", function() {
                     serializer.setProperties();
                     serializer.setUnit("bindings");
                 };
-                Object.defineBinding(object, "number", {
-                    boundObject: objects.OneProp.create(),
-                    boundObjectPropertyPath: "prop",
-                    oneway: true
+                Bindings.defineBinding(object, "number", {
+                    "source": objects.OneProp.create(),
+                    "<-": "prop"
                 });
 
                 var serialization = serializer.serializeObject(object);
@@ -628,10 +624,9 @@ describe("serialization/serializer-spec", function() {
                     serializer.setProperties();
                     serializer.setUnit("bindings");
                 };
-                Object.defineBinding(object, "number", {
-                    boundObject: objects.OneProp.create(),
-                    boundObjectPropertyPath: "prop",
-                    oneway: true
+                Bindings.defineBinding(object, "number", {
+                    "source": objects.OneProp.create(),
+                    "<-": "prop"
                 });
                 object.addEventListener("action", Montage.create(), false);
 
@@ -657,10 +652,9 @@ describe("serialization/serializer-spec", function() {
                     serializer.setProperties();
                     serializer.setAllUnits();
                 };
-                Object.defineBinding(object, "number", {
-                    boundObject: objects.OneProp.create(),
-                    boundObjectPropertyPath: "prop",
-                    oneway: true
+                Bindings.defineBinding(object, "number", {
+                    "source": objects.OneProp.create(),
+                    "<-": "prop"
                 });
 
                 var serialization = serializer.serializeObject(object);
@@ -672,15 +666,27 @@ describe("serialization/serializer-spec", function() {
                     serializer.setProperties();
                     serializer.setAllUnits();
                 };
-                Object.defineBinding(object, "number", {
-                    boundObject: objects.OneProp.create(),
-                    boundObjectPropertyPath: "prop",
-                    oneway: true
+                Bindings.defineBinding(object, "number", {
+                    "source": objects.OneProp.create(),
+                    "<-": "prop"
                 });
                 object.addEventListener("action", Montage.create(), false);
 
                 var serialization = serializer.serializeObject(object);
-                expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{},"listeners":[{"type":"action","listener":{"@":"montage"},"capture":false}],"bindings":{"number":{"<-":"@oneprop.prop"}}},"montage":{},"oneprop":{}}');
+                expect(JSON.parse(serialization)).toEqual({
+                    "root": {
+                        "prototype": "serialization/testobjects-v2[Custom]",
+                        "properties":{},
+                        "listeners":[
+                            {"type":"action","listener":{"@":"montage"},"capture":false}
+                        ],
+                        "bindings":{
+                            "number":{"<-":"@oneprop.prop"}
+                        }
+                    },
+                    "montage":{},
+                    "oneprop":{}
+                });
             });
         });
 

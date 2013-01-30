@@ -265,7 +265,7 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
     Returns true if the undo stack contains any items, otherwise returns false.
 */
     canUndo: {
-        dependencies: ["undoStack.count()"],
+        dependencies: ["undoStack.length"],
         get: function() {
             return !!this.undoStack.length;
         }
@@ -275,7 +275,7 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
     Returns true if the redo stack contains any items, otherwise returns false.
 */
     canRedo: {
-        dependencies: ["redoStack.count()"],
+        dependencies: ["redoStack.length"],
         get: function() {
             return !!this.redoStack.length;
         }
@@ -286,7 +286,7 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
 */
 
     undoLabel: {
-        dependencies: ["undoStack.count()"],
+        dependencies: ["undoStack.length"],
         get: function() {
             var undoCount = this.undoStack.length,
                 label;
@@ -309,7 +309,7 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
     Contains the label of the last item added to the redo stack, preceded by "Redo" (for example, "Redo Item Removal"). If the item does not have a label, then the string "Redo" is returned.
 */
     redoLabel: {
-        dependencies: ["redoStack.count()"],
+        dependencies: ["redoStack.length"],
         get: function() {
             var redoCount = this.redoStack.length,
                 label;

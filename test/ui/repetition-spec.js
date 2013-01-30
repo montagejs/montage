@@ -293,7 +293,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                 runs(function() {
                     // sonity check
                     expect(querySelectorAll(".list2 > li").length).toBe(3);
-                    delegate.list2Objects.setProperty("2", {text: "Motorola"});
+                    delegate.list2Objects.set(2, {text: "Motorola"});
                     testPage.waitForDraw();
 
                     runs(function() {
