@@ -111,7 +111,7 @@ var testPage = TestPageLoader.queueTest("dynamic-element-test", function() {
                             trace: true
                         });
                         test.class3 = true;
-                        console.log("getOwnPropertyDescriptor: ", Object.getOwnPropertyDescriptor(test, "class3"));
+                        expect(test.dynamicElementClassList.classList.contains("newClass")).toBeTruthy();
                         return testPage.nextDraw().then(function() {
                             expect(test.dynamicElementClassList.element.classList.contains("newClass")).toBeTruthy();
                         })

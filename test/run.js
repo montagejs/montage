@@ -114,8 +114,7 @@ if (spec) {
         // Not sure why this is broken: - @kriskowal
         // TODO "ui/composer/translate-composer-spec",
         "ui/dom-spec",
-        // Broken due to changes in bindings
-        // TODO "ui/dynamic-element-spec",
+        "ui/dynamic-element-spec",
         "ui/dynamic-text-spec",
         // Breaks a couple tests related to drawing a repetition
         // TODO "ui/firstdraw-spec",

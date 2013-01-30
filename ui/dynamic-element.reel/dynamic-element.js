@@ -182,7 +182,6 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
 
     handleClassListRangeChange: {
         value: function (name) {
-            console.log("handleClassListRangeChange" , name);
             this._classListDirty = true;
             this.needsDraw = true;
         }
