@@ -280,7 +280,6 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
 
             theTestPage._drawHappened = function() {
                 if(theTestPage.drawHappened == numDraws) {
-                    console.log("resolve nextDraw promise");
                     deferred.resolve(numDraws);
                     theTestPage._drawHappened = null;
                 }

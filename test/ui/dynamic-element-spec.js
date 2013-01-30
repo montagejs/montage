@@ -104,13 +104,11 @@ var testPage = TestPageLoader.queueTest("dynamic-element-test", function() {
                         })
                     });
                     it("should be possible to bind to a new class", function() {
-                        //test.class3 = true;
+                        test.class3 = true;
                         Bindings.defineBinding(test.dynamicElementClassList, "classList.has('newClass')", {
                             source: test,
-                            "<-": "class3",
-                            trace: true
+                            "<-": "class3"
                         });
-                        test.class3 = true;
                         expect(test.dynamicElementClassList.classList.contains("newClass")).toBeTruthy();
                         return testPage.nextDraw().then(function() {
                             expect(test.dynamicElementClassList.element.classList.contains("newClass")).toBeTruthy();
