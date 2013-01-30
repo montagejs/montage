@@ -295,6 +295,8 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
 
     getObjectLabel: {
         value: function(object) {
+            this.addObjectReference(object);
+
             return this._getObjectLabel(object);
         }
     },

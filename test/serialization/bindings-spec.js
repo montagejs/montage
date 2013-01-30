@@ -36,6 +36,42 @@ describe("serialization/bindings-spec", function () {
         });
     });
 
+    it("should serialize a binding that references external objects", function () {
+        var object = Type.create();
+        var externalObject = Montage.create();
+
+        externalObject.foo = 10;
+
+        Bindings.defineBindings(object, {
+            "bar": {
+                "<-": "@source.foo"
+            }
+        }, {
+           serialization: {
+               getObjectByLabel: function(label) {
+                   return externalObject;
+               }
+           }
+        });
+        var serialization = serialize(object, require);
+        var notation = JSON.parse(serialization);
+        expect(notation).toEqual({
+            root: {
+                prototype: "serialization/bindings-spec[Type]",
+                properties: {
+                    foo: 10
+                },
+                bindings: {
+                    bar: {
+                        "<-": "@montage.foo",
+                    }
+                }
+            },
+
+            montage: {}
+        });
+    });
+
     it("should deserialize a simple binding in normal form", function () {
         return deserialize({
             root: {
