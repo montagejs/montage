@@ -509,7 +509,7 @@ undoManager.add("Add", Promise.resolve([calculator.subtract, calculator, number]
         Returns true if the undo stack contains any items, otherwise returns false.
     */
     canUndo: {
-        dependencies: ["undoStack.length"],
+        dependencies: ["_undoStack.length"],
         get: function() {
             return !!this._undoStack.length;
         }
@@ -519,7 +519,7 @@ undoManager.add("Add", Promise.resolve([calculator.subtract, calculator, number]
         Returns true if the redo stack contains any items, otherwise returns false.
     */
     canRedo: {
-        dependencies: ["redoStack.length"],
+        dependencies: ["_redoStack.length"],
         get: function() {
             return !!this._redoStack.length;
         }
@@ -530,7 +530,7 @@ undoManager.add("Add", Promise.resolve([calculator.subtract, calculator, number]
     */
     undoLabel: {
         // TODO also depend on the actual label property of that object
-        dependencies: ["undoStack.length"],
+        dependencies: ["_undoStack.length"],
         get: function() {
             var label;
 
@@ -547,7 +547,7 @@ undoManager.add("Add", Promise.resolve([calculator.subtract, calculator, number]
     */
     redoLabel: {
         // TODO also depend on the actual label property of that object
-        dependencies: ["redoStack.length"],
+        dependencies: ["_redoStack.length"],
         get: function() {
             var label;
 
