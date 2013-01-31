@@ -370,6 +370,8 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
                 return;
             }
 
+            // Perform all promised operations, in order, that have been resolved
+            // with an undoFunction
             for (i = opCount - 1; i >= 0; i--) {
                 promise = opQueue[i];
                 entry = this._promiseOperationMap.get(promise);
