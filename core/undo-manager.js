@@ -536,7 +536,9 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
     },
 
     /**
-        Contains the label of the last item added to the undo stack, preceded by "Undo" (for example, "Undo Item Removal"). If the item does not have a label, then the string "Undo" is returned.
+        Contains the label describing the operation on top of the undo stack.
+        End-users are strongly advised to prefix this with a localized "Undo" when
+        presenting the label within an interface.
     */
     undoLabel: {
         // TODO also depend on the actual label property of that object
@@ -548,12 +550,14 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
                 label = this._promiseOperationMap.get(this._undoStack.one()).label;
             }
 
-            return label ? "Undo " + label : "Undo";
+            return label;
         }
     },
 
     /**
-        Contains the label of the last item added to the redo stack, preceded by "Redo" (for example, "Redo Item Removal"). If the item does not have a label, then the string "Redo" is returned.
+     Contains the label describing the operation on top of the redo stack.
+     End-users are strongly advised to prefix this with a localized "Redo" when
+     presenting the label within an interface.
     */
     redoLabel: {
         // TODO also depend on the actual label property of that object
@@ -565,7 +569,7 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
                 label = this._promiseOperationMap.get(this._redoStack.one()).label
             }
 
-            return label ? "Redo " + label : "Redo";
+            return label;
         }
     }
 

@@ -114,7 +114,7 @@ describe('core/undo-manager-spec', function () {
                 undoManager.maxUndoCount = 1;
                 expect(undoManager.canUndo).toBe(true);
                 expect(undoManager.undoCount).toBe(1);
-                expect(undoManager.undoLabel).toBe("Undo Add Bob");
+                expect(undoManager.undoLabel).toBe("Add Bob");
             });
         });
 
