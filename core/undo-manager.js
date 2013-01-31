@@ -274,8 +274,14 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
     @returns a promise for the resolution of the operationPromise
     @function
     @example
-<caption>Adding a simple undo operation</caption>
-undoManager.register("Add", Promise.resolve([calculator.subtract, calculator, number]));
+<caption>Registering an undo operation with no arguments</caption>
+undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
+
+ <caption>Registering an undo operation with arguments</caption>
+ undoManager.register("Add", Promise.resolve([calculator.subtract, calculator, number]));
+
+ <caption>Registering an undo operation with a label and arguments</caption>
+ undoManager.register("Add", Promise.resolve(["Add 5", calculator.subtract, calculator, 5]));
 */
     register: {
         value: function (label, operationPromise) {
