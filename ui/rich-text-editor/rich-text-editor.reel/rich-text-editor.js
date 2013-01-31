@@ -651,7 +651,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 if (["selectall"].indexOf(command) == -1) {
                     if (this.undoManager ) {
                         this._stopTyping();
-                        this.undoManager.add(label, Promise.resolve([this._undo, this, label, this._innerElement]));
+                        this.undoManager.register(label, Promise.resolve([this._undo, this, label, this._innerElement]));
                     }
                 } else {
                     this.markDirty();

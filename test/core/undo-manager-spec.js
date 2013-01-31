@@ -43,14 +43,14 @@ var Roster = Montage.create(Montage, {
     addMember: {
         value: function (member) {
             this.members.add(member);
-            return this.undoManager.add("Add Member", Promise.resolve(["Add " + member, this.removeMember, this, member]));
+            return this.undoManager.register("Add Member", Promise.resolve(["Add " + member, this.removeMember, this, member]));
         }
     },
 
     removeMember: {
         value: function (member) {
             this.members.delete(member);
-            return this.undoManager.add("Remove Member", Promise.resolve(["Remove " + member, this.addMember, this, member]));
+            return this.undoManager.register("Remove Member", Promise.resolve(["Remove " + member, this.addMember, this, member]));
         }
     },
 
@@ -60,7 +60,7 @@ var Roster = Montage.create(Montage, {
 
             this.members.add(member);
 
-            this.undoManager.add("Add Member", deferredAdd.promise);
+            this.undoManager.register("Add Member", deferredAdd.promise);
 
             return deferredAdd;
         }
@@ -164,7 +164,7 @@ describe('core/undo-manager-spec', function () {
 
         it("must reject adding non-promises", function () {
             expect(function () {
-                expectundoManager.add("Something", function () {});
+                expectundoManager.register("Something", function () {});
             }).toThrow();
         });
 
@@ -225,7 +225,7 @@ describe('core/undo-manager-spec', function () {
             var deferredAdditionUndo = roster.testableAddMember("Alice"),
                 spyObject = {
                     removeMember: function (member) {
-                        undoManager.add("Spy: Add Member", Promise.resolve(["Spy Resolved Add Member", this.addMember, this, member]));
+                        undoManager.register("Spy: Add Member", Promise.resolve(["Spy Resolved Add Member", this.addMember, this, member]));
                     },
                     addMember: function (member) {
                         expect(this).toBe(spyObject);

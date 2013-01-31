@@ -51,7 +51,7 @@ var UNDO_OPERATION = 0,
      To make an operation undoable an application simply adds the inverse of that
      operation to an UndoManager instance using the ```add``` method:
 
-     ```undoManager.add(label, operationPromise)```
+     ```undoManager.register(label, operationPromise)```
 
      This means that every undo-able user operation has to have an inverse
      operation available. For example a calculator might provide a ```subtract```
@@ -62,7 +62,7 @@ var UNDO_OPERATION = 0,
      ```
      add: {
             value: function (number) {
-                this.undoManager.add("Add", Promise.resolve([this.subtract, this, number]));
+                this.undoManager.register("Add", Promise.resolve([this.subtract, this, number]));
                 var result = this.total += number;
                 return result;
             }
@@ -70,7 +70,7 @@ var UNDO_OPERATION = 0,
 
      subtract: {
             value: function (number) {
-                this.undoManager.add("Subtract", Promise.resolve([this.add, this, number]));
+                this.undoManager.register("Subtract", Promise.resolve([this.add, this, number]));
                 var result = this.total -= number;
                 return result;
             }
@@ -120,7 +120,7 @@ var UNDO_OPERATION = 0,
             var deferredUndo,
                 self = this;
 
-            this.undoManager.add("Add Random", deferredUndo.promise);
+            this.undoManager.register("Add Random", deferredUndo.promise);
 
             return this.randomNumberGeneratorService.next().then(function(rand) {
                 deferredUndo.resolve(["Add " + rand, self.subtract, self, rand];
@@ -275,9 +275,9 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
     @function
     @example
 <caption>Adding a simple undo operation</caption>
-undoManager.add("Add", Promise.resolve([calculator.subtract, calculator, number]));
+undoManager.register("Add", Promise.resolve([calculator.subtract, calculator, number]));
 */
-    add: {
+    register: {
         value: function (label, operationPromise) {
 
             if (!Promise.isPromiseAlike(operationPromise)) {
