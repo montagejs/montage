@@ -34,16 +34,163 @@ POSSIBILITY OF SUCH DAMAGE.
     @module montage/core/undo-manager
 */
 
-var Montage = require("montage").Montage;
+var Montage = require("montage").Montage,
+    Promise = require("core/promise").Promise,
+    WeakMap = require("collections/weak-map"),
+    List = require("collections/list");
+
+var UNDO_OPERATION = 0,
+    REDO_OPERATION = 1;
 
 /**
+     Applications that allow end-user operations can use an UndoManager to record
+     information on how to undo those operations.
+
+     Undoable Operations
+     ===================
+     To make an operation undoable an application simply adds the inverse of that
+     operation to an UndoManager instance using the ```add``` method:
+
+     ```undoManager.register(label, operationPromise)```
+
+     This means that every undo-able user operation has to have an inverse
+     operation available. For example a calculator might provide a ```subtract```
+     method as the inverse of the ```add``` method.
+
+     An simple example would look something like this:
+
+     ```
+     add: {
+            value: function (number) {
+                this.undoManager.register("Add", Promise.resolve([this.subtract, this, number]));
+                var result = this.total += number;
+                return result;
+            }
+        },
+
+     subtract: {
+            value: function (number) {
+                this.undoManager.register("Subtract", Promise.resolve([this.add, this, number]));
+                var result = this.total -= number;
+                return result;
+            }
+        }
+     ```
+
+     Of immediate interest is the actual promise added to the undoManager.
+     ```Promise.resolve(["Add", this.subtract, this, number])```
+
+     The promise provides the final label (optionally), a reference to the function to call,
+     the context for the function to be executed in, and any number of arguments
+     to be passed along when calling the function.
+
+     In simple cases such as this the promise for the inverse operation
+     can be resolved immediately; this is not necessarily always possible in cases
+     where the operation itself is asynchronous.
+
+     Basic Undoing and Redoing
+     =========================
+     After performing ```calculator.add(42)``` the undoManager will have an entry
+     on how to undo that addition operation. Each operation added to the
+     undoManager is added on top of a stack. Calling the undoManager's ```undo```
+     method will perform the operation on the top of that stack if
+     original operationPromise has been resolved.
+
+     While performing an undo operation any additions to the undoManager will
+     instead be placed on the redo stack. Conversely, any additions made while
+     performing a redo operation will be placed on the undo stack.
+
+     When not actively undoing or redoing, the redo stack is cleared whenever a
+     new operation is added; the only way operations end up on the redo stack is
+     through undoing an operation.
+
+     Asynchronous Considerations
+     ===========================
+     It is possible for a user invoked operation to take some time to complete or
+     details of how to undo the operation may not be known until the operation
+     has completed.
+
+     In these cases it is important to remember that the undo stack captures user
+     intent, which is considered synchronous. This is why the undoManager accepts
+     promises for the operations but places them on the stack synchronously.
+
+     Consider the following example:
+     ```
+     addRandomNumber: {
+            var deferredUndo,
+                self = this;
+
+            this.undoManager.register("Add Random", deferredUndo.promise);
+
+            return this.randomNumberGeneratorService.next().then(function(rand) {
+                deferredUndo.resolve(["Add " + rand, self.subtract, self, rand];
+                var result = self.total = self.total + number;
+                return result
+            });
+        }
+     ```
+
+     Here we see that the undo operation for addRandomNumber is added to the
+     UndoManager before we even know how to undo the operation, indeed it's added
+     before the operation has even happened.
+
+     It is worth noting that the undoManager does not block anything. Users are
+     still free to call ```add```, ```subtract```, ```addRandomNumber``` or any
+     other APIs exposed by the calculator, whether the ```addRandomNumber``` has
+     resolved or not. It's the responsibility of an API provider to handle this
+     scenario as necessary.
+
+     At this point two things can happen:
+     1) A user could invoke ```undo``` after the operation promise's resolution.
+     2) A user could invoke ```undo``` prior to the operation promise's resolution.
+
+     In the first scenario, things move along much like they did in the first case
+     we described above.
+
+     In the second scenario, the undoManager puts the unresolved promise into a
+     queue of operations to be performed when possible. Subsequent undo and redo
+     requests are added to this queue.
+
+     Whenever a promise is resolved the undoManager runs through this queue in
+     order, oldest to newest, and attempts to perform the operation specified,
+     stopping when it encounters an unfulfilled operation promise.
+
+     This guarantees that promised operations are added in the order as they were
+     performed by the user and are executed, not in the order they are fulfilled,
+     but in the order they are undone or redone.
+
     @class module:montage/core/undo-manager.UndoManager
     @extends module:montage/core/core.Montage
 */
 var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends module:montage/core/undo-manager.UndoManager# */ {
 
-    enabled: {
-        value: true
+    _operationQueue: {
+        value: null
+    },
+
+    _promiseOperationMap: {
+        value: null
+    },
+
+    didCreate: {
+        value: function () {
+            this._operationQueue = [];
+            this._promiseOperationMap = new WeakMap();
+            this._undoStack = new List();
+            this._redoStack = new List();
+
+            Object.defineBinding(this, "undoCount", {
+                boundObject: this._undoStack,
+                boundObjectPropertyPath: "length",
+                oneway: true
+            });
+
+            Object.defineBinding(this, "redoCount", {
+                boundObject: this._redoStack,
+                boundObjectPropertyPath: "length",
+                oneway: true
+            });
+        }
     },
 
     _maxUndoCount: {
@@ -51,9 +198,11 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
         value: null
     },
 
-/**
-    Maximum number of undos.
-*/
+    /**
+        Maximum number of operations allowed in each undo and redo stack
+        Setting this lower than the current count of undo/redo operations will remove
+        the oldest undos/redos as necessary to meet the new limit.
+    */
     maxUndoCount: {
         get: function() {
             return this._maxUndoCount;
@@ -72,121 +221,224 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
 
     },
 
+    _undoStack: {
+        value: null
+    },
+
+    /**
+        The current number of stored undoable operations
+     */
+    undoCount: {
+        value: 0
+    },
+
+    _redoStack: {
+        value: null
+    },
+
+    /**
+        The current number of stored redoable operations
+     */
+    redoCount: {
+       value: 0
+    },
+
     _trimStacks: {
         enumerable: false,
         value: function() {
 
-            var undoRemoveCount = this._maxUndoCount - this.undoStack.length,
-                redoRemoveCount = this._maxUndoCount - this.redoStack.length;
+            var undoRemoveCount = this._undoStack.length - this._maxUndoCount,
+                redoRemoveCount = this._redoStack.length - this._maxUndoCount;
 
             if (undoRemoveCount > 0) {
-                this.undoStack.splice(0, undoRemoveCount);
+                this._undoStack.splice(0, undoRemoveCount);
             }
 
             if (redoRemoveCount > 0) {
-                this.redoStack.splice(0, redoRemoveCount);
+                this._redoStack.splice(0, redoRemoveCount);
             }
         }
     },
 
-    _undoStack: {
-        enumerable: false,
-        value: null
-    },
-
 /**
-    The undo stack.
-*/
-    undoStack: {
-        get: function() {
-            if (!this._undoStack) {
-                this._undoStack = [];
-            }
-            return this._undoStack
-        }
-    },
+    Adds a new operation to the either the undo or redo stack as appropriate.
 
-/**
-    The redo stack.
-*/
-    redoStack: {
-        value: [],
-        distinct: true
-    },
+    The operationPromise should be resolved with an array containing:
+        - A label string for the operation (optional)
+        - The function to execute when performing this operation
+        - The object to use as the context when performing the function
+        - Any number of arguments to apply when performing the function
 
-/**
-    Adds a new item to the undo stack.
-    @param {string} label A label to associate with the undo item.
-    @param {function} undoFunction The function to invoke when the item is popped from the undo stack.
-    @param {object} context The context in which the undo function should be invoked.
+    @param {string} label A label to associate with this undo entry.
+    @param {promise} operationPromise A promise for an undoable operation
+    @returns a promise for the resolution of the operationPromise
     @function
+    @example
+<caption>Registering an undo operation with no arguments</caption>
+undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
+
+ <caption>Registering an undo operation with arguments</caption>
+ undoManager.register("Add", Promise.resolve([calculator.subtract, calculator, number]));
+
+ <caption>Registering an undo operation with a label and arguments</caption>
+ undoManager.register("Add", Promise.resolve(["Add 5", calculator.subtract, calculator, 5]));
 */
-    add: {
-        value: function(label, undoFunction, context) {
+    register: {
+        value: function (label, operationPromise) {
+
+            if (!Promise.isPromiseAlike(operationPromise)) {
+                throw new Error("UndoManager expected a promise");
+            }
 
             if (0 === this._maxUndoCount) {
-                return;
+                return Promise.resolve(null);
             }
 
-            var undoEntry = {
-                label: label,
-                undoFunction: undoFunction,
-                context: context,
-                args: Array.prototype.slice.call(arguments, 3)
-            };
+            var undoEntry = {label: label};
+            this._promiseOperationMap.set(operationPromise, undoEntry);
 
-            // seeing as you can only ever add one entry at a time to either stack, we should never need to make room
-            // for more than a single entry at this point; there's no need for an expensive trim
             if (this.isUndoing) {
 
-                // preserve the label of the current action being undone to be the name of the redo
-                undoEntry.label = this.undoEntry.label;
-
-                if (this.redoStack.length === this._maxUndoCount) {
-                    this.redoStack.shift();
+                if (this._redoStack.length === this._maxUndoCount) {
+                    this._redoStack.shift();
                 }
 
-                this.redoStack.push(undoEntry);
+                this._redoStack.push(operationPromise);
             } else {
 
-                if (this.undoStack.length === this._maxUndoCount) {
-                    this.undoStack.shift();
+                if (this._undoStack.length === this._maxUndoCount) {
+                    this._undoStack.shift();
                 }
 
-                this.undoStack.push(undoEntry);
+                this._undoStack.push(operationPromise);
 
-                if (!this.isRedoing && this.redoStack.length > 0) {
+                if (!this.isRedoing && this._redoStack.length > 0) {
                     this.clearRedo();
                 }
             }
+
+            return operationPromise.spread(this._resolveUndoEntry(this, undoEntry));
         }
     },
 
-/**
-    Removes all items from the undo stack.
-    @function
-*/
+    _resolveUndoEntry: {
+        value: function(undoManager, entry) {
 
+            return function () {
+
+                var label,
+                    undoFunction,
+                    context,
+                    firstArgIndex;
+
+                if (typeof arguments[0] === "string") {
+                    label = arguments[0];
+                    undoFunction = arguments[1];
+                    context = arguments[2];
+                    firstArgIndex = 3;
+                } else {
+                    undoFunction = arguments[0];
+                    context = arguments[1];
+                    firstArgIndex = 2;
+                }
+
+                if (label) {
+                    entry.label = label;
+                }
+                entry.undoFunction = undoFunction;
+                entry.context = context;
+                entry.args = Array.prototype.slice.call(arguments, firstArgIndex);
+
+                undoManager._flushOperationQueue();
+            };
+        }
+    },
+
+    _flushOperationQueue: {
+        value: function () {
+
+            var opQueue = this._operationQueue,
+                opCount = opQueue.length,
+                i,
+                completedPromises = [],
+                completedCount,
+                promise,
+                entry,
+                opMap = this._promiseOperationMap;
+
+            if (0 === opCount) {
+                return;
+            }
+
+            // Perform all promised operations, in order, that have been resolved
+            // with an undoFunction
+            for (i = opCount - 1; i >= 0; i--) {
+                promise = opQueue[i];
+                entry = this._promiseOperationMap.get(promise);
+
+                if (typeof entry.undoFunction === "function") {
+                    this._performOperation(entry);
+                    completedPromises.push(promise);
+                } else {
+                    break;
+                }
+            }
+
+            completedCount = completedPromises.length;
+
+            if (completedCount > 0) {
+                // remove the performed operations
+                opQueue.splice(opCount - completedCount, completedCount);
+
+                completedPromises.forEach(function (opPromise) {
+                    opMap.delete(opPromise);
+                });
+            }
+
+        }
+    },
+
+    _performOperation: {
+        value: function (entry) {
+
+            if (entry.operationType === UNDO_OPERATION) {
+                this.undoEntry = entry;
+            } else {
+                this.redoEntry = entry;
+            }
+
+            entry.undoFunction.apply(entry.context, entry.args);
+
+            this.undoEntry = null;
+            this.redoEntry = null;
+
+            entry.deferredOperation.resolve(true);
+        }
+    },
+
+    /**
+        Removes all items from the undo stack.
+        @function
+    */
     clearUndo: {
         value: function() {
-            this.undoStack.splice(0, this.undoStack.length);
+            this._undoStack.splice(0, this._undoStack.length);
         }
     },
 
-/**
-    Removes all items from the redo stack.
-    @function
-*/
-
+    /**
+        Removes all items from the redo stack.
+        @function
+    */
     clearRedo: {
         value: function() {
-            this.redoStack.splice(0, this.redoStack.length);
+            this._redoStack.splice(0, this._redoStack.length);
         }
     },
 
-/**
-    Returns `true` if the UndoManager is in the middle of an undo operation, otherwise returns `false`.
-*/
+    /**
+        Returns `true` if the UndoManager is in the middle of an undo operation, otherwise returns `false`.
+    */
     isUndoing: {
         dependencies: ["undoEntry"],
         get: function() {
@@ -194,9 +446,9 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
         }
     },
 
-/**
-    Returns `true` if the UndoManager is in the middle of an redo operation, otherwise returns `false`.
-*/
+    /**
+        Returns `true` if the UndoManager is in the middle of an redo operation, otherwise returns `false`.
+    */
     isRedoing: {
         dependencies: ["redoEntry"],
         get: function() {
@@ -204,127 +456,120 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
         }
     },
 
-/**
-    The current undo item being operated on.
-*/
+
     undoEntry: {
         enumerable: false,
         value: null
     },
 
-/**
-    The current redo item being operated on.
-*/
     redoEntry: {
         enumerable: false,
         value: null
     },
 
-/**
-    Removes the last item in the undo stack and invokes its undo function.
-    @function
-*/
+    /**
+        Schedules the next undo operation for invocation as soon as possible
+        @function
+        @returns {Promise} A promise resolving to true when this undo request has been performed
+     */
     undo: {
         value: function() {
 
-            if (this.isUndoing || this.isRedoing) {
-                throw "UndoManager cannot initiate an undo or redo while undoing.";
+            if (0 === this.undoCount) {
+               return Promise.resolve(null);
             }
 
-            if (this.undoStack.length === 0) {
-                return;
-            }
-
-            var entry = this.undoEntry = this.undoStack.pop();
-            entry.undoFunction.apply(entry.context, entry.args);
-            this.undoEntry = null;
+            return this._scheduleOperation(this._undoStack.pop(), UNDO_OPERATION);
         }
     },
 
-/**
-    Removes the last item in the undo stack and invokes its undo function.
-    @function
-*/
+    /**
+        Schedules the next redo operation for invocation as soon as possible
+        @function
+        @returns {Promise} A promise resolving to true when this redo request has been performed
+    */
     redo: {
         value: function() {
-            if (this.isUndoing || this.isRedoing) {
-                throw "UndoManager cannot initiate an undo or redo while redoing.";
+
+            if (0 === this.redoCount) {
+                return Promise.resolve(null);
             }
 
-            if (this.redoStack.length === 0) {
-                return;
-            }
-
-            var entry = this.redoEntry = this.redoStack.pop();
-            entry.undoFunction.apply(entry.context, entry.args);
-            this.redoEntry = null;
+            return this._scheduleOperation(this._redoStack.pop(), REDO_OPERATION);
         }
     },
 
-/**
-    Returns true if the undo stack contains any items, otherwise returns false.
-*/
+    _scheduleOperation: {
+        value: function (operationPromise, operationType) {
+
+            var deferredOperation = Promise.defer(),
+                entry = this._promiseOperationMap.get(operationPromise);
+
+            entry.deferredOperation = deferredOperation;
+            entry.operationType = operationType;
+
+            this._operationQueue.push(operationPromise);
+            this._flushOperationQueue();
+
+            return deferredOperation.promise;
+        }
+    },
+
+    /**
+        Returns true if the undo stack contains any items, otherwise returns false.
+    */
     canUndo: {
-        dependencies: ["undoStack.count()"],
+        dependencies: ["_undoStack.length"],
         get: function() {
-            return !!this.undoStack.length;
+            return !!this._undoStack.length;
         }
     },
 
-/**
-    Returns true if the redo stack contains any items, otherwise returns false.
-*/
+    /**
+        Returns true if the redo stack contains any items, otherwise returns false.
+    */
     canRedo: {
-        dependencies: ["redoStack.count()"],
+        dependencies: ["_redoStack.length"],
         get: function() {
-            return !!this.redoStack.length;
+            return !!this._redoStack.length;
         }
     },
 
-/**
-    Contains the label of the last item added to the undo stack, preceded by "Undo" (for example, "Undo Item Removal"). If the item does not have a label, then the string "Undo" is returned.
-*/
-
+    /**
+        Contains the label describing the operation on top of the undo stack.
+        End-users are strongly advised to prefix this with a localized "Undo" when
+        presenting the label within an interface.
+    */
     undoLabel: {
-        dependencies: ["undoStack.count()"],
+        // TODO also depend on the actual label property of that object
+        dependencies: ["_undoStack.length"],
         get: function() {
-            var undoCount = this.undoStack.length,
-                label;
+            var label;
 
-            if (undoCount) {
-                label = this.undoStack[undoCount - 1].label;
+            if (this.canUndo) {
+                label = this._promiseOperationMap.get(this._undoStack.one()).label;
             }
 
-            return label ? "Undo " + label : "Undo";
-        },
-        set: function(value) {
-            var undoCount = this.redoStack.length;
-            if (undoCount) {
-                this.undoStack[undoCount - 1].label = value;
-            }
+            return label;
         }
     },
 
-/**
-    Contains the label of the last item added to the redo stack, preceded by "Redo" (for example, "Redo Item Removal"). If the item does not have a label, then the string "Redo" is returned.
-*/
+    /**
+     Contains the label describing the operation on top of the redo stack.
+     End-users are strongly advised to prefix this with a localized "Redo" when
+     presenting the label within an interface.
+    */
     redoLabel: {
-        dependencies: ["redoStack.count()"],
+        // TODO also depend on the actual label property of that object
+        dependencies: ["_redoStack.length"],
         get: function() {
-            var redoCount = this.redoStack.length,
-                label;
+            var label;
 
-            if (redoCount) {
-                label = this.redoStack[redoCount - 1].label
+            if (this.canRedo) {
+                label = this._promiseOperationMap.get(this._redoStack.one()).label
             }
 
-            return label ? "Redo " + label : "Redo";
-        },
-        set: function(value) {
-            var redoCount = this.redoStack.length;
-            if (redoCount) {
-                this.redoStack[redoCount - 1].label = value;
-            }
+            return label;
         }
     }
 

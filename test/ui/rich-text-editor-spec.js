@@ -367,8 +367,8 @@ var testPage = TestPageLoader.queueTest("rich-text-editor-test", function() {
 
                     it("reset the undoManager's stacks", function() {
                         test.resetUndoManager(test.editor1);
-                        expect(test.editor1.undoManager.undoStack.length).toBe(0);
-                        expect(test.editor1.undoManager.redoStack.length).toBe(0);
+                        expect(test.editor1.undoManager.undoCount).toBe(0);
+                        expect(test.editor1.undoManager.redoCount).toBe(0);
                     });
 
                     it("set content bold", function() {
@@ -401,8 +401,8 @@ var testPage = TestPageLoader.queueTest("rich-text-editor-test", function() {
 
                     it("test undo/redo stacks consistency", function() {
                         runs(function(){
-                            expect(test.editor1.undoManager.undoStack.length).toBe(1);
-                            expect(test.editor1.undoManager.redoStack.length).toBe(0);
+                            expect(test.editor1.undoManager.undoCount).toBe(1);
+                            expect(test.editor1.undoManager.redoCount).toBe(0);
                         });
                     });
                 });
