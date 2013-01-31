@@ -470,6 +470,7 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
     /**
         Schedules the next undo operation for invocation as soon as possible
         @function
+        @returns {Promise} A promise resolving to true when this undo request has been performed
      */
     undo: {
         value: function() {
@@ -485,6 +486,7 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
     /**
         Schedules the next redo operation for invocation as soon as possible
         @function
+        @returns {Promise} A promise resolving to true when this redo request has been performed
     */
     redo: {
         value: function() {
