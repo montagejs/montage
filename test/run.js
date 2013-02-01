@@ -101,8 +101,7 @@ if (spec) {
         "ui/anchor-spec",
         // Uses old controller: - @kriskowal
         // TODO "ui/autocomplete-spec",
-        // Uses old controller: - @kriskowal
-        // TODO "ui/button-spec",
+        "ui/button-spec",
         "ui/check-spec",
         "ui/condition-spec",
         // Don't know why this is broken: - @kriskowal

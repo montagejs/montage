@@ -196,19 +196,19 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
 
                     testPage.clickOrTouch({target: detailButton.element});
                     expect(testHandler.handler).toHaveBeenCalled();
-                    expect(testHandler.event.detail).not.toBeDefined();
+                    expect(testHandler.event.detail).toBeNull();
                 });
                 it("is is populated if used in a binding", function() {
                     spyOn(testHandler, 'handler').andCallThrough();
                     detailButton.addEventListener("action", testHandler.handler, false);
-                    Bindings.defineBinding(detailButton, "detail.prop", {
+                    Bindings.defineBinding(detailButton, "detail.get('prop')", {
                         "<->": "valueToBeBound",
                         "source": testHandler
                     });
 
                     testPage.clickOrTouch({target: detailButton.element});
                     expect(testHandler.handler).toHaveBeenCalled();
-                    expect(testHandler.event.detail.prop).toEqual(testHandler.valueToBeBound);
+                    expect(testHandler.event.detail.get("prop")).toEqual(testHandler.valueToBeBound);
                     //cleanup
                     Bindings.cancelBindings(detailButton);
                 });
@@ -219,7 +219,7 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
 
                     testPage.clickOrTouch({target: detailButton.element});
                     expect(testHandler.handler).toHaveBeenCalled();
-                    expect(testHandler.event.detail.prop2).toEqual("anotherValue");
+                    expect(testHandler.event.detail.get("prop2")).toEqual("anotherValue");
                 });
             });
 
