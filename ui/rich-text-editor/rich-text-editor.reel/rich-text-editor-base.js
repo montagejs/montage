@@ -577,15 +577,16 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                     continue;
                 }
 
-                descriptor = ChangeNotification.getPropertyChangeDescriptor(this, propertyName);
+                descriptor = this.getOwnPropertyChangeDescriptor(propertyName);
+
                 if (descriptor) {
                     prevState = this["_" + propertyName];
                     state = method.call(this, propertyName, commandName);
                     if (state !== prevState) {
                         this["_" + propertyName + "_locked"] = true;
-                        this.dispatchPropertyChange(propertyName, function() {
-                            thisRef["_" + propertyName] = state;
-                        });
+                        this.dispatchBeforeOwnPropertyChange(propertyName, prevState);
+                        this["_" + propertyName] = state;
+                        this.dispatchOwnPropertyChange(propertyName, state);
                         thisRef["_" + propertyName + "_locked"] = false;
                     }
                 }

@@ -127,8 +127,7 @@ if (spec) {
         "ui/popup-in-window-spec",
         // Broken due to changes to repetition
         // TODO "ui/repetition-spec",
-        // Broken because of coupling to change notifications
-        // TODO "ui/rich-text-editor-spec",
+        "ui/rich-text-editor-spec",
         "ui/select-input-spec",
         "ui/native-input-range-spec",
         "ui/input-range-spec",
