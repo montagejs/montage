@@ -122,9 +122,7 @@ if (spec) {
         // Broken due to changes to repetition
         // TODO "ui/repetition-spec",
         "ui/rich-text-editor-spec",
-        // Broken due to changes to repetition
-        // (it runs but doesn't report the errors that it should)
-        // TODO "ui/select-input-spec",
+        "ui/select-input-spec",
         "ui/native-input-range-spec",
         "ui/input-range-spec",
         "ui/slider-spec",

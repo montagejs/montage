@@ -42,7 +42,8 @@ var Montage = require("montage").Montage,
     ContentController = require("core/content-controller").ContentController,
     Component = require("ui/component").Component,
     NativeControl = require("ui/native-control").NativeControl,
-    PressComposer = require("ui/composer/press-composer").PressComposer;
+    PressComposer = require("ui/composer/press-composer").PressComposer,
+    Map = require("collections/map");
 
 /**
     Wraps the a &lt;select&gt; element with binding support for the element's
@@ -64,17 +65,65 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
     _synching: {value: null},
     //_internalSet: {value: null},
 
-    __selectedIndexes: {value: null, enumerable: false},
     _selectedIndexes: {
-        set: function(value) {
-            this.__selectedIndexes = value;
+        value: null
+    },
+
+    selectedIndexes: {
+        get: function() {
+            return this._selectedIndexes;
+        },
+        set: function(selectedIndexes) {
+            // _selectedIndexes is automatically filled from
+            // this.contentController.iterations{selected}
+            var iterations = this.contentController.iterations,
+                values = [];
+
+            for (var i = 0, ii = selectedIndexes.length; i < ii; i++) {
+                values.push(iterations[selectedIndexes[i]].object[this.valuePropertyPath || 'value']);
+            }
+
+            // values should be automatically created by a binding
+            if (selectedIndexes.length <= 1) {
+                this.value = values[0];
+            } else {
+                this.values = values;
+            }
+        }
+    },
+
+    didCreate: {
+        value: function() {
+            if (typeof NativeControl.didCreate === "function") {
+                NativeControl.didCreate.apply(this);
+            }
+
+            this._contentMap = new Map();
+            this._selectedIndexes = [];
+
+            this._selectedIndexes.addRangeChangeListener(this, "selectedIndexes");
+        }
+    },
+
+    handleSelectedIndexesRangeChange: {
+        value: function() {
             if(this.needsDraw === false) {
                 this.needsDraw = this._synching || !this._fromInput;
             }
+        }
+    },
 
-        },
-        get: function() {
-            return this.__selectedIndexes;
+    _setContentControllerSelectedIndexes: {
+        value: function(selectedIndexes) {
+            var iterations = this.contentController.iterations;
+
+            for (var i = 0, ii = iterations.length; i < ii; i++) {
+                if (selectedIndexes.indexOf(i) === -1) {
+                    iterations[i].selected = false;
+                } else {
+                    iterations[i].selected = true;
+                }
+            }
         }
     },
 
@@ -89,9 +138,9 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
 */
     content: {
         set: function(value) {
-            if(!Array.isArray(value)) {
-                value = [value];
-            }
+            //if(!Array.isArray(value)) {
+            //    value = [value];
+            //}
             this._content = value;
 
             if(!this.contentController) {
@@ -144,16 +193,35 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
             this._contentController = value;
 
             Bindings.defineBindings(this, {
-                "content": {"<-": "_contentController.organizedObjects"},
-                "_selectedIndexes": {"<->": "_contentController.selectedIndexes"}
-            });
+                "content": {"<-": "_contentController.visibleContent"},
+                "_selectedObjects": {
+                    "<-": "_contentController.iterations.filter{selected}.map{object}"
+                },
+                "_iterations": {"<-": "_contentController.iterations"},
 
+                // creates a Map with {index: object}
+                "_contentMap[*]": {"<-": "_contentController.visibleContent"},
+                // _contentMap.items() ->
+                //      transforms a Map into an array: {key1: value1, key2:
+                //      value2} -> [[key1, value1], [key2, value2]]
+                //
+                // .map{$_iterations[()[0]].selected ? ()[0] : -1} ->
+                //      maps the array into its index "()[0]" if it's selected
+                //      "$_iterations[()[0]].selected" or -1 if it's not.
+                //
+                // .filter{>=0} ->
+                //      removes all -1 items from the array, they indicate the
+                //      objects that were not selected.
+                "_selectedIndexes.*": {
+                    "<-": "_contentMap.items().map{$_iterations[()[0]].selected ? ()[0] : -1}.filter{>=0}"
+                }
+            });
         }
     },
 
     _getSelectedValuesFromIndexes: {
         value: function() {
-            var selectedObjects = this.contentController ? this.contentController.selectedObjects : null;
+            var selectedObjects = this._selectedObjects;//this.contentController ? this.contentController.selectedObjects : null;
             var arr = [];
             if(selectedObjects && selectedObjects.length > 0) {
                 var i=0, len = selectedObjects.length, valuePath;
@@ -181,6 +249,8 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
     },
 
 
+    // values should be automatically created by
+    // iterations.filter{selected}.map{object}.value
     _values: {value: null},
     values: {
         get: function() {
@@ -188,20 +258,24 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
         },
         set: function(valuesArray) {
             var content = this.contentController ? this.contentController.content : null;
+
             if(valuesArray && content) {
                 this._values = valuesArray;
 
                 if(!this._synching) {
                     var selectedIndexes = [];
                     var i=0, len = this._values.length, index;
+
                     for(; i<len; i++) {
                         index = this._indexOf(this._values[i]);
                         if(index >= 0) {
                             selectedIndexes.push(index);
                         }
                     }
+
                     this._synching = true;
-                    this.contentController.selectedIndexes = selectedIndexes;
+                    this._setContentControllerSelectedIndexes(selectedIndexes);
+                    //this.contentController.selectedIndexes = selectedIndexes;
                     this._synching = false;
                 }
             }
@@ -209,6 +283,8 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
         //dependencies: ["_selectedIndexes"]
     },
 
+    // values should be automatically created by
+    // iterations.map{selected}.0.object.value
     _value: {value: null},
     value: {
         get: function() {
@@ -277,8 +353,13 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
                     this._fromInput = true;
                     this.contentController = contentController;
                     contentController.content = content;
-                    contentController.selection = selection;
 
+                    var iterations = contentController.iterations;
+                    for (var i = 0, ii = iterations.length; i < ii; i++) {
+                        if (selection.indexOf(iterations[i].object)) {
+                            iterations[i].selected = true;
+                        }
+                    }
                 }
             }
 
@@ -443,7 +524,8 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
             if(arr.length > 0) {
                 this._fromInput = true;
                 this._synching = false;
-                this.contentController.selectedIndexes = arr;
+                //this.contentController.selectedIndexes = arr;
+                this._setContentControllerSelectedIndexes(arr);
                 this._synchValues();
             }
 

@@ -173,9 +173,9 @@ POSSIBILITY OF SUCH DAMAGE.
             "statesController": {"@": "statesController"}
         },
         "bindings": {
-            "selectedCountry": {"<->": "@country.contentController.selectedObjects.0"},
-            "selectedState": {"<->": "@state.contentController.selectedObjects.0"},
-            "selectedDept": {"<->": "@dept.contentController.selectedObjects.0"}
+            "selectedCountry": {"<->": "@country.contentController.iterations.filter{selected}.0.object"},
+            "selectedState": {"<->": "@state.contentController.iterations.filter{selected}.0.object"},
+            "selectedDept": {"<->": "@dept.contentController.iterations.filter{selected}.0.object"}
         }
     },
 

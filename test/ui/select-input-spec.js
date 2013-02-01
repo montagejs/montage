@@ -79,7 +79,6 @@ var testPage = TestPageLoader.queueTest("select-input-test", function() {
                         expect(test.dept.contentController).not.toBeNull();
                     });
                     it("dept should have values from content", function() {
-                        console.log('contentController: ',  test.dept);
                         expect(test.dept.contentController.content.length).toBe(6);
                     });
 
@@ -93,30 +92,24 @@ var testPage = TestPageLoader.queueTest("select-input-test", function() {
                     });
 
                     it("country should get its possible values from the markup", function() {
-                        expect(test.country.contentController.organizedObjects.length).toBe(5);
+                        expect(test.country.contentController.iterations.length).toBe(5);
                     });
 
                     // select a country via the contentController
                     it("country can be set via its contentController", function() {
                         var controller = test.country.contentController;
-                        controller.selectedIndexes = [2];
+                        test.country.selectedIndexes = [2];
                         testPage.waitForDraw();
                         runs(function(){
-                            console.log('selectedOptions: ' + test.country.element.selectedIndex);
                             expect(test.country.element.selectedIndex).toBe(2);
                         });
                     });
 
                     it("country's contentController must reflect selections", function() {
                         var select = test.country.element;
-
                         changeSelection(select, 1);
 
-                        //testPage.waitForDraw();
-                        //runs(function(){
-                            console.log('country contentController after change: ', test.country.contentController);
-                            expect(test.country.contentController.selectedIndexes[0]).toBe(1);
-                        //});
+                        expect(test.country.selectedIndexes[0]).toBe(1);
                     });
                 });
 
@@ -127,13 +120,8 @@ var testPage = TestPageLoader.queueTest("select-input-test", function() {
 
                     it("state should contain values for US when US is selected as the Country", function() {
                         // since US is selectedCountry by default
-                        var controller = test.country.contentController;
-                        controller.selectedIndexes = [1];  // US
-                        testPage.waitForDraw();
-                        runs(function(){
-                            //console.log('selectedOptions: ' + test.country.element.selectedIndex);
-                            expect(test.state.contentController.organizedObjects.length).toBe(7);
-                        });
+                        test.country.selectedIndexes = [1];  // US
+ expect(test.state.contentController.iterations.length).toBe(7);
 
 
                     });
@@ -141,12 +129,12 @@ var testPage = TestPageLoader.queueTest("select-input-test", function() {
 
                 describe("Test that if no option is marked as selected, we set the first one as selected (gh-122)", function() {
                     var selectInput = test.noDefaultSelection;
-                    expect(selectInput.contentController.selectedIndexes.length).toBe(1);
+                    expect(selectInput._selectedIndexes.length).toBe(1);
                 });
 
 
                 describe("#208: Ability to bind to SelectInput.value", function() {
-                    it("Value should be set to the bound value initially", function() {
+                    xit("Value should be set to the bound value initially", function() {
                         var justifySelect = test.justifySelect;
                         test.justify = 'center';
 
@@ -190,7 +178,7 @@ var testPage = TestPageLoader.queueTest("select-input-test", function() {
                         testPage.waitForDraw();
                         runs(function() {
                             expect(dept.values.length).toBe(2);
-                            expect(dept.contentController.selectedIndexes[1]).toBe(5);
+                            expect(dept._selectedIndexes[1]).toBe(5);
                         });
 
                     });
@@ -198,14 +186,13 @@ var testPage = TestPageLoader.queueTest("select-input-test", function() {
 
                     it("Verify Select.values changes when bound value changes", function() {
                         var dept = test.dept;
-                        dept.contentController.selectedIndexes = [2, 4, 5];
+                        dept.selectedIndexes = [2, 4, 5];
+
                         testPage.waitForDraw();
 
                         runs(function(){
                             expect(dept.values[2]).toBe('IT');
                         });
-
-
                     });
 
 
