@@ -107,8 +107,7 @@ if (spec) {
         // TODO "ui/component-description-spec",
         "ui/composer-spec",
         "ui/composer/press-composer-spec",
-        // Not sure why this is broken: - @kriskowal
-        // TODO "ui/composer/translate-composer-spec",
+        "ui/composer/translate-composer-spec",
         "ui/dom-spec",
         "ui/dynamic-element-spec",
         "ui/dynamic-text-spec",
@@ -125,7 +124,9 @@ if (spec) {
         // Broken due to changes to repetition
         // TODO "ui/repetition-spec",
         "ui/rich-text-editor-spec",
-        "ui/select-input-spec",
+        // Broken due to changes to repetition
+        // (it runs but doesn't report the errors that it should)
+        // TODO "ui/select-input-spec",
         "ui/native-input-range-spec",
         "ui/input-range-spec",
         "ui/slider-spec",
