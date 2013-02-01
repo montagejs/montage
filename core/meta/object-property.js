@@ -1,4 +1,3 @@
-/* <copyright></copyright> */
 /**
  @module montage/data/object-property
  @requires montage/data/pledge

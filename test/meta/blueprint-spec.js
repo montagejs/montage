@@ -1,5 +1,4 @@
-/* <copyright>
- </copyright> */
+"use strict";
 /**
  @module montage/data/blueprint-spec.js
  @requires montage/core/core
@@ -39,7 +38,7 @@ describe("meta/blueprint-spec", function () {
                 expect(companyBlueprint.binder).toBe(binder);
             });
 
-        })
+        });
     });
 
     describe("Blueprint", function () {
@@ -120,8 +119,8 @@ describe("meta/blueprint-spec", function () {
                 expect(louis.blueprint).toBe(personBlueprint);
             });
             it("should have a the correct properties defined", function () {
-                expect(louis.__proto__.hasOwnProperty("name")).toBeTruthy();
-                expect(louis.__proto__.hasOwnProperty("keywords")).toBeTruthy();
+                expect(Object.getPrototypeOf(louis).hasOwnProperty("name")).toBeTruthy();
+                expect(Object.getPrototypeOf(louis).hasOwnProperty("keywords")).toBeTruthy();
             });
         });
 
@@ -148,7 +147,7 @@ describe("meta/blueprint-spec", function () {
             });
             describe("normal propertyBlueprint's property", function () {
                 it("should be settable", function () {
-                    var descriptor = Object.getOwnPropertyDescriptor(circle.__proto__, "size");
+                    var descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(circle), "size");
                     expect(typeof descriptor.get).toEqual("function");
                     expect(typeof descriptor.set).toEqual("function");
                     expect(circle.size).toBeNull();
@@ -156,11 +155,11 @@ describe("meta/blueprint-spec", function () {
                     expect(circle.size).toEqual("big");
                 });
                 it("should be enumerable", function () {
-                    var descriptor = Object.getOwnPropertyDescriptor(circle.__proto__, "size");
+                    var descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(circle), "size");
                     expect(descriptor.enumerable).toBeTruthy();
                 });
                 it("should have a get and set", function () {
-                    var descriptor = Object.getOwnPropertyDescriptor(circle.__proto__, "size");
+                    var descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(circle), "size");
                     expect(typeof descriptor.get).toEqual("function");
                     expect(typeof descriptor.set).toEqual("function");
                 });
@@ -169,12 +168,11 @@ describe("meta/blueprint-spec", function () {
                 it("should not be settable", function () {
                     expect(
                         function () {
-                            "use strict"
-                            circle.readOnlyPropertyBlueprint = "big"
+                            circle.readOnlyPropertyBlueprint = "big";
                         }).toThrow();
                 });
                 it("should have a get and no set", function () {
-                    var descriptor = Object.getOwnPropertyDescriptor(circle.__proto__, "readOnlyPropertyBlueprint");
+                    var descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(circle), "readOnlyPropertyBlueprint");
                     expect(typeof descriptor.get).toEqual("function");
                     expect(typeof descriptor.set).toEqual("undefined");
                 });
@@ -183,11 +181,11 @@ describe("meta/blueprint-spec", function () {
                 it("should not be settable", function () {
                     expect(
                         function () {
-                            circle.readOnlyPropertyBlueprint = "big"
+                            circle.readOnlyPropertyBlueprint = "big";
                         }).toThrow();
                 });
                 it("should have a get and no set", function () {
-                    var descriptor = Object.getOwnPropertyDescriptor(circle.__proto__, "readOnlyPropertyBlueprint");
+                    var descriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(circle), "readOnlyPropertyBlueprint");
                     expect(typeof descriptor.get).toEqual("function");
                     expect(typeof descriptor.set).toEqual("undefined");
                 });
@@ -197,7 +195,7 @@ describe("meta/blueprint-spec", function () {
                     circle.denyDelete = "big";
                     expect(
                         function () {
-                            circle.denyDelete = null
+                            circle.denyDelete = null;
                         }).toThrow();
                 });
             });
