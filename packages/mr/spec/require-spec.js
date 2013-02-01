@@ -55,6 +55,7 @@ describe("Require", function () {
         "comments",
         "identify",
         "dev-dependencies",
+        "production",
         "case-sensitive"
     ].forEach(function (test) {
         it(test, function () {
