@@ -67,11 +67,8 @@ if (spec) {
         "bindings/self-spec",
 
         "core/core-spec",
-        // failing due to use of deserializeBindingToBindingDescriptor, which
-        // @aadsm has relieved as a dependency in an independent branch.
-        // - @kriskowal
-        // TODO "core/localizer-spec",
-        // TODO "core/localizer/serialization-spec",
+        "core/localizer-spec",
+        "core/localizer/serialization-spec",
         "core/selector-spec",
 
         "core/tree-controller-spec",
