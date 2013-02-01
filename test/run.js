@@ -103,8 +103,6 @@ if (spec) {
         "ui/condition-spec",
         // Don't know why this is broken: - @kriskowal
         // TODO "ui/component-spec",
-        // Uses old selector semantics. - @kriskowal
-        // TODO "ui/component-description-spec",
         "ui/composer-spec",
         "ui/composer/press-composer-spec",
         "ui/composer/translate-composer-spec",
