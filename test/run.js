@@ -71,6 +71,7 @@ if (spec) {
         "core/localizer-spec",
         "core/localizer/serialization-spec",
         "core/selector-spec",
+        "core/undo-manager-spec",
 
         "core/extras/function",
         "core/extras/string",

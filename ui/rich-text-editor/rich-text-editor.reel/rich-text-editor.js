@@ -38,7 +38,8 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     RichTextEditorBase = require("./rich-text-editor-base").RichTextEditorBase,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
-    ChangeNotification = require("core/change-notification").ChangeNotification;
+    ChangeNotification = require("core/change-notification").ChangeNotification,
+    Promise = require("core/promise").Promise;
 
 /**
     @classdesc The RichTextEditor component is a lightweight Montage component that provides basic HTML editing capability. It wraps the HTML5 <code>contentEditable</code> property and largely relies on the browser's support of <code><a href="http://www.quirksmode.org/dom/execCommand.html" target="_blank">execCommand</a></code>.
@@ -650,7 +651,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 if (["selectall"].indexOf(command) == -1) {
                     if (this.undoManager ) {
                         this._stopTyping();
-                        this.undoManager.add(label, this._undo, this, label, this._innerElement);
+                        this.undoManager.register(label, Promise.resolve([this._undo, this, label, this._innerElement]));
                     }
                 } else {
                     this.markDirty();
