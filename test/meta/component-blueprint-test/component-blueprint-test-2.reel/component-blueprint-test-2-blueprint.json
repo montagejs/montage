@@ -1,6 +1,6 @@
 {
   "component2_bindableProperty1":{
-    "prototype":"montage/core/meta/blueprint[PropertyBlueprint]",
+    "prototype":"montage/core/meta/property-blueprint",
     "properties":{
       "blueprint":{"@":"root"},
       "name":"bindableProperty1",
@@ -12,7 +12,7 @@
       "helpKey":""}},
 
   "component2_bindableProperty2":{
-    "prototype":"montage/core/meta/blueprint[PropertyBlueprint]",
+    "prototype":"montage/core/meta/property-blueprint",
     "properties":{
       "blueprint":{"@":"root"},
       "name":"bindableProperty2",
@@ -24,7 +24,7 @@
       "helpKey":""}},
 
   "component2_bindableProperty3":{
-    "prototype":"montage/core/meta/blueprint[PropertyBlueprint]",
+    "prototype":"montage/core/meta/property-blueprint",
     "properties":{
       "blueprint":{"@":"root"},
       "name":"bindableProperty3",
@@ -36,7 +36,7 @@
       "helpKey":""}},
 
   "component2_bindableProperty4":{
-    "prototype":"montage/core/meta/blueprint[PropertyBlueprint]",
+    "prototype":"montage/core/meta/property-blueprint",
     "properties":{
       "blueprint":{"@":"root"},
       "name":"bindableProperty4",
@@ -48,7 +48,7 @@
       "helpKey":""}},
 
   "component2_bindableProperty5":{
-    "prototype":"montage/core/meta/blueprint[PropertyBlueprint]",
+    "prototype":"montage/core/meta/property-blueprint",
     "properties":{
       "blueprint":{"@":"root"},
       "name":"bindableProperty5",
@@ -60,7 +60,7 @@
       "helpKey":""}},
 
   "component2_requiredBindableProperty1":{
-    "prototype":"montage/core/meta/blueprint[PropertyBlueprint]",
+    "prototype":"montage/core/meta/property-blueprint",
     "properties":{
       "blueprint":{"@":"root"},
       "name":"requiredBindableProperty1",
@@ -72,7 +72,7 @@
       "helpKey":""}},
 
   "component2_requiredBindableProperty2":{
-    "prototype":"montage/core/meta/blueprint[PropertyBlueprint]",
+    "prototype":"montage/core/meta/property-blueprint",
     "properties":{
       "blueprint":{"@":"root"},
       "name":"requiredBindableProperty2",
@@ -84,7 +84,7 @@
       "helpKey":""}},
 
   "component2_requiredBindableProperty3":{
-    "prototype":"montage/core/meta/blueprint[PropertyBlueprint]",
+    "prototype":"montage/core/meta/property-blueprint",
     "properties":{
       "blueprint":{"@":"root"},
       "name":"requiredBindableProperty3",

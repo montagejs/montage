@@ -6,9 +6,9 @@
  */
 var Montage = require("montage").Montage;
 var Blueprint = require("montage/core/meta/blueprint").Blueprint;
-var BlueprintBinder = require("montage/core/meta/blueprint").BlueprintBinder;
-var PropertyBlueprint = require("montage/core/meta/blueprint").PropertyBlueprint;
-var AssociationBlueprint = require("montage/core/meta/blueprint").AssociationBlueprint;
+var BlueprintBinder = require("montage/core/meta/binder").BlueprintBinder;
+var PropertyBlueprint = require("montage/core/meta/property-blueprint").PropertyBlueprint;
+var AssociationBlueprint = require("montage/core/meta/association-blueprint").AssociationBlueprint;
 
 var Serializer = require("montage/core/serializer").Serializer;
 var Deserializer = require("montage/core/deserializer").Deserializer;
@@ -215,7 +215,7 @@ describe("meta/blueprint-spec", function () {
                     var metadata = Montage.getInfoForObject(deserializedBinder);
                     expect(serializedBinder).not.toBeNull();
                     expect(metadata.objectName).toBe("BlueprintBinder");
-                    expect(metadata.moduleId).toBe("core/meta/blueprint");
+                    expect(metadata.moduleId).toBe("core/meta/binder");
                     var personBlueprint = deserializedBinder.blueprintForPrototype("Person", "meta/blueprint/person");
                     expect(personBlueprint).not.toBeNull();
                     expect(personBlueprint.propertyBlueprintForName("phoneNumbers")).not.toBeNull();

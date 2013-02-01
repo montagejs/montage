@@ -2,7 +2,7 @@
 </copyright> */
 var Montage = require("montage").Montage;
 var Blueprint = require("montage/core/meta/blueprint").Blueprint;
-var BlueprintBinder = require("montage/core/meta/blueprint").BlueprintBinder;
+var BlueprintBinder = require("montage/core/meta/binder").BlueprintBinder;
 
 exports.companyBinder = function () {
     return exports.BinderHelper.companyBinder();

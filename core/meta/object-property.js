@@ -1,3 +1,4 @@
+"use strict";
 /**
  @module montage/data/object-property
  @requires montage/data/pledge
@@ -9,7 +10,9 @@ var Montage = require("montage").Montage;
 var Exception = require("core/exception").Exception;
 var Blueprint = require("core/meta/blueprint").Blueprint;
 var BlueprintBinder = require("core/meta/blueprint").BlueprintBinder;
+
 var logger = require("core/logger").logger("object-property");
+
 /**
  @class module:montage/core/meta/object-property.ObjectProperty
  @extends module:montage/core/core.Montage
@@ -233,13 +236,13 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
                         enumerable:false,
                         serializable:false,
                         distinct:true
-                    }
+                    };
                 } else {
                     storedValueDefinition = {
                         value:null,
                         enumerable:false,
                         serializable:false
-                    }
+                    };
                 }
                 Montage.defineProperty(prototype, storedValueKey, storedValueDefinition);
             } else {

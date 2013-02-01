@@ -1,6 +1,6 @@
 {
     "blueprint_childcontroller_purchaseList":{
-        "prototype":"montage/core/meta/blueprint[PropertyBlueprint]",
+        "prototype":"montage/core/meta/property-blueprint",
         "properties":{
             "name":"purchaseList",
             "blueprint":{
@@ -18,7 +18,7 @@
     },
 
     "blueprint_parentcontroller_reference":{
-        "prototype":"montage/core/meta/blueprint[BlueprintReference]",
+        "prototype":"montage/core/meta/blueprint-reference",
         "properties":{
             "valueReference":{
                 "blueprintName":"ParentController",
