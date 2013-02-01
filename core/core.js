@@ -747,3 +747,69 @@ Object.defineProperty(Montage, "callDelegateMethod", {
         }
     }
 });
+
+/*
+ * Defines the module Id for blueprints. This is externalized so that it can be subclassed.
+ * <b>Note</b> This is a class method beware...
+ */
+exports._blueprintModuleIdDescriptor = {
+    serializable:false,
+    enumerable: false,
+    get:function () {
+        var info = Montage.getInfoForObject(this);
+        var self = (info && !info.isInstance) ? this : Object.getPrototypeOf(this);
+        if ((!Object.getOwnPropertyDescriptor(self, "_blueprintModuleId")) || (!self._blueprintModuleId)) {
+            info = Montage.getInfoForObject(self);
+            var moduleId = info.moduleId,
+                slashIndex = moduleId.lastIndexOf("/"),
+                dotIndex = moduleId.lastIndexOf(".");
+            slashIndex = ( slashIndex === -1 ? 0 : slashIndex + 1 );
+            dotIndex = ( dotIndex === -1 ? moduleId.length : dotIndex );
+            dotIndex = ( dotIndex < slashIndex ? moduleId.length : dotIndex );
+
+            self._blueprintModuleId = moduleId.slice(0, dotIndex) + "-blueprint.json";
+        }
+        return self._blueprintModuleId;
+    }
+}
+
+exports._blueprintDescriptor = {
+    serializable:false,
+    enumerable: false,
+    get:function () {
+        var info = Montage.getInfoForObject(this);
+        var self = (info && !info.isInstance) ? this : Object.getPrototypeOf(this);
+        if ((!Object.getOwnPropertyDescriptor(self, "_blueprint")) || (!self._blueprint)) {
+            var blueprintModuleId = self.blueprintModuleId;
+            if (blueprintModuleId === "") {
+                throw new TypeError("Blueprint moduleId undefined for the module '" + JSON.stringify(self) + "'");
+            }
+
+            if (!exports._blueprintDescriptor.BlueprintModulePromise) {
+                exports._blueprintDescriptor.BlueprintModulePromise = require.async("core/meta/blueprint").get("Blueprint");
+            }
+
+            self._blueprint = exports._blueprintDescriptor.BlueprintModulePromise.then(function (Blueprint) {
+                var info = Montage.getInfoForObject(self);
+                return Blueprint.getBlueprintWithModuleId(blueprintModuleId, info.require).then(null, function () {
+                    var blueprint = Blueprint.createDefaultBlueprintForObject(self);
+                    blueprint.blueprintModuleId = blueprintModuleId;
+                    return blueprint;
+                });
+            });
+        }
+        return self._blueprint;
+    },
+    set:function (value) {
+        var info = Montage.getInfoForObject(this);
+        var self = (info && !info.isInstance) ? this : Object.getPrototypeOf(this);
+        if (value === null) {
+            self._blueprint = null;
+        } else if (typeof value.then === "function") {
+            throw new TypeError("Object blueprint should not be a promise '" + JSON.stringify(value) + "'");
+        } else {
+            value.blueprintModuleId = self.blueprintModuleId;
+            self._blueprint = require("core/promise").Promise.resolve(value);
+        }
+    }
+}

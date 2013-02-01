@@ -38,6 +38,7 @@ var Montage = require("montage").Montage;
 var Promise = require("core/promise").Promise;
 var logger = require("core/logger").logger("pledge");
 /**
+ * A pledge is the promise result of a query. It will eventually resolve into an object or an array of objects from the backing store.
  @class module:montage/data/pledge.Pledge
  @extends module:montage/core/promise.Promise
  */

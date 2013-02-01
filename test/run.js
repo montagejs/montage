@@ -89,6 +89,10 @@ if (spec) {
         "geometry/cubicbezier-spec",
         "geometry/point-spec",
 
+        "meta/blueprint-spec",
+        "meta/component-blueprint-spec",
+        "meta/controller-blueprint-spec",
+
         "reel/template-spec",
 
         "serialization/deserializer-spec",

@@ -34,40 +34,84 @@ POSSIBILITY OF SUCH DAMAGE.
  @requires montage/core/logger
  */
 var Montage = require("montage").Montage;
+var Selector = require("core/selector").Selector;
 var logger = require("core/logger").logger("query");
 /**
+ * A query is the description of the fetch of bunch of object from the backing store. It is comprised of two elements a blueprint describing what to fetch and a selector restricting the objects to fetch.
  @class module:montage/data/query.Query
  */
 var Query = exports.Query = Montage.create(Montage, /** @lends module:montage/data/query.Query# */ {
+
     /**
-     Description TODO
-     @type {Property}
-     @default {Function} null
+     * @private
      */
-    blueprint: {
-        value: null,
-        serializable: true
+    _blueprint:{
+        value:null,
+        serializable:true
     },
 
     /**
-     Description TODO
+     Blueprint of the object to fetch with this query
+     @type {Property}
+     @default {Blueprint} null
+     */
+    blueprint:{
+        get:function () {
+            return this._blueprint;
+        }
+    },
+
+    /**
+     * @private
+     */
+    _selector:{
+        value:null,
+        serializable:true
+    },
+
+    /**
+     Selector to use to qualify this query
      @type {Property}
      @default {Selector} null
      */
-    selector: {
-        value: null,
-        serializable: true
+    selector:{
+        get:function () {
+            return this._selector;
+        }
     },
 
     /**
-     Description TODO
+     * Name of this query. The name is used when the query is stored in the binder for retrieval at run time.
      @type {Property}
      @default {String} ""
      */
-    name: {
-        serializable: true,
-        enumerable: true,
-        value: ""
+    name:{
+        serializable:true,
+        enumerable:true,
+        value:""
+    },
+
+    /**
+     * @private
+     */
+    _parameters:{
+        value:{},
+        serializable:true,
+        distinct:true,
+        enumerable:false,
+        writable:false
+    },
+
+
+    /**
+     * Parameters to use when evaluating the selectors for this query
+     @type {Property}
+     @default  {String}{}
+     */
+    parameters:{
+        get:function () {
+            return this._parameters;
+        }
     },
 
     /**
@@ -76,12 +120,13 @@ var Query = exports.Query = Montage.create(Montage, /** @lends module:montage/da
      @param {Function} blueprint TODO
      @returns this.initWithBlueprintAndSelector(blueprint, null)
      */
-    initWithBlueprint: {
-        enumerable: true,
-        value: function(blueprint) {
-            return this.initWithBlueprintAndSelector(blueprint, null);
+    initWithBlueprint:{
+        enumerable:true,
+        value:function (blueprint) {
+            return this.initWithBlueprintSelectorAndParameters(blueprint, null, null);
         }
     },
+
     /**
      Description TODO
      @function
@@ -89,39 +134,60 @@ var Query = exports.Query = Montage.create(Montage, /** @lends module:montage/da
      @param {Selector} selector TODO
      @returns itself
      */
-    initWithBlueprintAndSelector: {
-        enumerable: true,
-        value: function(blueprint, selector) {
-            this.blueprint = blueprint;
-            Object.defineProperty(this, "blueprint", {writable: false});
-            if ((selector != null) && (typeof selector === 'object')) {
-                this.selector = selector;
-            } else {
-                this.selector = this;
+    initWithBlueprintAndSelector:{
+        enumerable:true,
+        value:function (blueprint, selector) {
+            return this.initWithBlueprintSelectorAndParameters(blueprint, selector, null);
+        }
+    },
+
+    /**
+     Description TODO
+     @function
+     @param {Function} blueprint TODO
+     @param {Selector} selector TODO
+     @param {Dictionary} parameters TODO
+     @returns itself
+     */
+    initWithBlueprintSelectorAndParameters:{
+        enumerable:true,
+        value:function (blueprint, selector, parameters) {
+            this._blueprint = blueprint;
+            if (selector != null) {
+                if (Selector.isPrototypeOf(selector)) {
+                    this._selector = selector;
+                } else {
+                    throw new Error("Selector is not a selector: " + JSON.stringify(selector));
+                }
+            }
+            if (parameters != null) {
+                var parametersNames = Object.getOwnPropertyNames(parameters);
+                var parameter, parameterName, index;
+                for (index = 0; typeof (parameterName = parametersNames[index]) !== "undefined"; index++) {
+                    parameter = parameters[parameterName];
+                    this._parameters[parameterName] = parameter;
+                }
             }
             return this;
         }
     },
+
     /**
      Description TODO
      @function
      @param {Function} propertyPath TODO
      @returns this.selector
      */
-    where: {
-        value: function(propertyPath) {
-            return this.selector.and.property(propertyPath)
-        }
-    },
-    /**
-     Description TODO
-     @function
-     @param {Function} propertyPath TODO
-     @returns this.selector
-     */
-    property: {
-        value: function(propertyPath) {
-            return this.selector.and.property(propertyPath)
+    where:{
+        value:function (selector) {
+            if (selector != null) {
+                if (Selector.isPrototypeOf(selector)) {
+                    this._selector = selector;
+                } else {
+                    throw new Error("Selector is not a selector: " + JSON.stringify(selector));
+                }
+            }
+            return this;
         }
     }
 
