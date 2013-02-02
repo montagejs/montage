@@ -198,7 +198,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
             if (this.binder) {
                 return this.binder.ObjectProperty;
             }
-            return BinderModule.BlueprintBinder.manager.defaultBlueprintObjectProperty;
+            return BinderModule.Binder.manager.defaultBlueprintObjectProperty;
         }
     },
 
@@ -228,7 +228,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
                 try {
                     Deserializer.create().initWithObjectAndRequire(object, targetRequire, blueprintModuleId).deserializeObject(function(blueprint) {
                         if (blueprint) {
-                            var binder = (blueprint._binder ? blueprint._binder : BinderModule.BlueprintBinder.manager.defaultBinder); // We do not want to trigger the auto registration
+                            var binder = (blueprint._binder ? blueprint._binder : BinderModule.Binder.manager.defaultBinder); // We do not want to trigger the auto registration
                             var existingBlueprint = binder.blueprintForPrototype(blueprint.prototypeName, blueprint.moduleId);
                             if (existingBlueprint) {
                                 deferredBlueprint.resolve(existingBlueprint);
@@ -318,7 +318,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
         serializable: false,
         get: function() {
             if (! this._binder) {
-                this._binder = BinderModule.BlueprintBinder.manager.defaultBinder;
+                this._binder = BinderModule.Binder.manager.defaultBinder;
                 this._binder.addBlueprint(this);
             }
             return this._binder;

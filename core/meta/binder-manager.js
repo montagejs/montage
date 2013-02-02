@@ -14,24 +14,24 @@ var BinderModule = require("core/meta/binder");
 var logger = require("core/logger").logger("blueprint");
 
 /**
- @class module:montage/core/blueprint.BlueprintBinderManager
+ @class module:montage/core/blueprint.BinderManager
  @classdesc A blueprint binder manager is a singleton that is responsible for loading and dispaching binders and blueprints.
  @extends module:montage/core/core.Montage
  */
 
-var BlueprintBinderManager = exports.BlueprintBinderManager = Montage.create(Montage, /** @lends module:montage/core/blueprint.BlueprintBinderManager# */ {
+var BinderManager = exports.BinderManager = Montage.create(Montage, /** @lends module:montage/core/blueprint.BinderManager# */ {
 
     didCreate: {
         value: function() {
-            this._blueprintBinders = [];
-            this._blueprintBinderTable = {};
+            this._binders = [];
+            this._binderTable = {};
         }
     },
 
     /**
      @private
      */
-    _blueprintBinders: {
+    _binders: {
         value: null
     },
 
@@ -39,7 +39,7 @@ var BlueprintBinderManager = exports.BlueprintBinderManager = Montage.create(Mon
     /**
      @private
      */
-    _blueprintBinderTable: {
+    _binderTable: {
         value: null
     },
 
@@ -48,9 +48,9 @@ var BlueprintBinderManager = exports.BlueprintBinderManager = Montage.create(Mon
      @type {Property} Function
      @default {Array} new Array()
      */
-    blueprintBinders: {
+    binders: {
         get: function() {
-            return this._blueprintBinders;
+            return this._binders;
         }
     },
 
@@ -59,18 +59,18 @@ var BlueprintBinderManager = exports.BlueprintBinderManager = Montage.create(Mon
      @function
      @param {Property} binder TODO
      */
-    addBlueprintBinder: {
+    addBinder: {
         value: function(binder) {
             if (binder !== null) {
-                if (this._blueprintBinderTable[binder.name]) {
-                    this.removeBlueprintBinder(this._blueprintBinderTable[binder.name]);
+                if (this._binderTable[binder.name]) {
+                    this.removeBinder(this._binderTable[binder.name]);
                 }
-                var index = this._blueprintBinders.indexOf(binder);
+                var index = this._binders.indexOf(binder);
                 if (index >= 0) {
-                    this._blueprintBinders.splice(index, 1);
+                    this._binders.splice(index, 1);
                 }
-                this._blueprintBinders.push(binder);
-                this._blueprintBinderTable[binder.name] = binder;
+                this._binders.push(binder);
+                this._binderTable[binder.name] = binder;
             }
         }
     },
@@ -80,15 +80,15 @@ var BlueprintBinderManager = exports.BlueprintBinderManager = Montage.create(Mon
      @function
      @param {Property} binder TODO
      */
-    removeBlueprintBinder: {
+    removeBinder: {
         value: function(binder) {
             if (binder !== null) {
-                var index = this._blueprintBinders.indexOf(binder);
+                var index = this._binders.indexOf(binder);
                 if (index >= 0) {
-                    this._blueprintBinders.splice(index, 1);
+                    this._binders.splice(index, 1);
                 }
-                if (this._blueprintBinderTable[binder.name]) {
-                    delete this._blueprintBinderTable[binder.name];
+                if (this._binderTable[binder.name]) {
+                    delete this._binderTable[binder.name];
                 }
             }
         }
@@ -97,9 +97,9 @@ var BlueprintBinderManager = exports.BlueprintBinderManager = Montage.create(Mon
     /*
      * Returns the blueprint binder associated with the name
      */
-    blueprintBinderForName: {
+    binderForName: {
         value: function(name) {
-            return this._blueprintBinderTable[name];
+            return this._binderTable[name];
         }
     },
 
@@ -113,7 +113,7 @@ var BlueprintBinderManager = exports.BlueprintBinderManager = Montage.create(Mon
     blueprintForPrototype: {
         value: function(prototypeName, moduleId) {
             var binder, blueprint, index;
-            for (index = 0; typeof (binder = this.blueprintBinders[index]) !== "undefined"; index++) {
+            for (index = 0; typeof (binder = this.binders[index]) !== "undefined"; index++) {
                 blueprint = binder.blueprintForPrototype(prototypeName, moduleId);
                 if (blueprint !== null) {
                     return blueprint;
@@ -157,9 +157,9 @@ var BlueprintBinderManager = exports.BlueprintBinderManager = Montage.create(Mon
     defaultBinder: {
         get: function() {
             if (!this._defaultBinder) {
-                this._defaultBinder = BinderModule.BlueprintBinder.create().initWithName("default");
+                this._defaultBinder = BinderModule.Binder.create().initWithName("default");
                 this._defaultBinder.isDefault = true;
-                this.addBlueprintBinder(this._defaultBinder);
+                this.addBinder(this._defaultBinder);
             }
             return this._defaultBinder;
         }

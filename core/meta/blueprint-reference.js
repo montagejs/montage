@@ -44,7 +44,7 @@ exports.BlueprintReference = RemoteReference.create(RemoteReference, {
             var moduleId = references.moduleId;
 
             var binderReference = references.binderReference;
-            var binderPromise = Promise.resolve(BinderModule.BlueprintBinder.manager.defaultBinder);
+            var binderPromise = Promise.resolve(BinderModule.Binder.manager.defaultBinder);
             if (binderReference) {
                 binderPromise = BinderReference.valueFromReference(binderReference, require);
             }

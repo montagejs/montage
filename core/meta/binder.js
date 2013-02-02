@@ -10,7 +10,7 @@
 var Montage = require("montage").Montage;
 var Promise = require("core/promise").Promise;
 var Deserializer = require("core/deserializer").Deserializer;
-var BlueprintBinderManager = require("core/meta/binder-manager").BlueprintBinderManager;
+var BinderManager = require("core/meta/binder-manager").BinderManager;
 var BlueprintModule = require("core/meta/blueprint");
 var logger = require("core/logger").logger("blueprint");
 
@@ -20,11 +20,11 @@ var logger = require("core/logger").logger("blueprint");
 var _binderManager = null;
 
 /**
- @class module:montage/core/blueprint.BlueprintBinder
+ @class module:montage/core/blueprint.Binder
  @classdesc A blueprint binder is a collection of of blueprints for a specific access type. It also includes the connection information.
  @extends module:montage/core/core.Montage
  */
-var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage, /** @lends module:montage/core/blueprint.BlueprintBinder# */ {
+var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/core/blueprint.Binder# */ {
 
     /**
       didCreate method
@@ -66,7 +66,7 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage, /** @len
         value: function(name) {
             // match null or undefined
             this._name = (name != null ? name : "default");
-            BlueprintBinder.manager.addBlueprintBinder(this);
+            Binder.manager.addBinder(this);
             return this;
         }
     },
@@ -120,7 +120,7 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage, /** @len
     manager: {
         get: function() {
             if (_binderManager === null) {
-                _binderManager = BlueprintBinderManager.create();
+                _binderManager = BinderManager.create();
             }
             return _binderManager;
         }
@@ -183,7 +183,7 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage, /** @len
                     Deserializer.create().initWithObjectAndRequire(object, targetRequire, binderModuleId).deserializeObject(function(binder) {
                         if (binder) {
                             binder.binderModuleId = binderModuleId;
-                            BlueprintBinder.manager.addBlueprintBinder(this);
+                            Binder.manager.addBinder(this);
                             deferredBinder.resolve(binder);
                         } else {
                             deferredBinder.reject("No Binder found " + binderModuleId);
@@ -298,7 +298,7 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage, /** @len
     ObjectProperty: {
         get: function() {
             if (!this._blueprintObjectProperty) {
-                this._blueprintObjectProperty = BlueprintBinder.manager.defaultBlueprintObjectProperty;
+                this._blueprintObjectProperty = Binder.manager.defaultBlueprintObjectProperty;
             }
             return this._blueprintObjectProperty;
         }

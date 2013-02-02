@@ -2,7 +2,7 @@
 </copyright> */
 var Montage = require("montage").Montage;
 var Blueprint = require("montage/core/meta/blueprint").Blueprint;
-var BlueprintBinder = require("montage/core/meta/binder").BlueprintBinder;
+var Binder = require("montage/core/meta/binder").Binder;
 
 exports.companyBinder = function () {
     return exports.BinderHelper.companyBinder();
@@ -12,7 +12,7 @@ exports.BinderHelper = Montage.create(Montage, {
 
     companyBinder: {
         value: function() {
-            var companyBinder = BlueprintBinder.create().initWithName("CompanyBinder");
+            var companyBinder = Binder.create().initWithName("CompanyBinder");
 
             var personBlueprint = companyBinder.addBlueprintNamed("Person", "meta/blueprint/person");
             personBlueprint.addToOnePropertyBlueprintNamed("name");
@@ -32,7 +32,7 @@ exports.BinderHelper = Montage.create(Montage, {
 
             personBlueprint.addToManyAssociationBlueprintNamed("projects", projectBlueprint.addToManyAssociationBlueprintNamed("contributors"));
 
-            BlueprintBinder.manager.addBlueprintBinder(companyBinder);
+            Binder.manager.addBinder(companyBinder);
 
             return companyBinder;
         }

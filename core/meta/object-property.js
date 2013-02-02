@@ -9,7 +9,7 @@
 var Montage = require("montage").Montage;
 var Exception = require("core/exception").Exception;
 var Blueprint = require("core/meta/blueprint").Blueprint;
-var BlueprintBinder = require("core/meta/blueprint").BlueprintBinder;
+var Binder = require("core/meta/blueprint").Binder;
 
 var logger = require("core/logger").logger("object-property");
 
@@ -45,7 +45,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
                 info = Montage.getInfoForObject(prototype);
                 if (info != null && info.isInstance === false) {
                     if (typeof blueprint === "undefined") {
-                        blueprint = BlueprintBinder.manager.blueprintForPrototype(info.objectName, info.moduleId);
+                        blueprint = Binder.manager.blueprintForPrototype(info.objectName, info.moduleId);
                     } else if ((blueprint.prototypeName !== info.objectName) || (blueprint.moduleId !== info.moduleId)) {
                         // Something is wrong, the hierarchies are out of wack
                         blueprint = null;

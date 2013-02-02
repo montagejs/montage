@@ -6,7 +6,7 @@
  */
 var Montage = require("montage").Montage;
 var Blueprint = require("montage/core/meta/blueprint").Blueprint;
-var BlueprintBinder = require("montage/core/meta/binder").BlueprintBinder;
+var Binder = require("montage/core/meta/binder").Binder;
 var PropertyBlueprint = require("montage/core/meta/property-blueprint").PropertyBlueprint;
 var AssociationBlueprint = require("montage/core/meta/association-blueprint").AssociationBlueprint;
 
@@ -25,7 +25,7 @@ describe("meta/blueprint-spec", function () {
         describe("Creation", function () {
         });
         describe("Adding blueprints", function () {
-            var binder = BlueprintBinder.create().initWithName("CompanyBinder");
+            var binder = Binder.create().initWithName("CompanyBinder");
 
             var personBlueprint = Blueprint.create().initWithName("Person");
             binder.addBlueprint(personBlueprint);
@@ -88,7 +88,7 @@ describe("meta/blueprint-spec", function () {
             });
         });
         describe("blueprint to instance association", function () {
-            var binder = BlueprintBinder.create().initWithName("Binder");
+            var binder = Binder.create().initWithName("Binder");
             var personBlueprint = Blueprint.create().initWithName("Person");
             personBlueprint.moduleId = "mymodule";
             binder.addBlueprint(personBlueprint);
@@ -104,13 +104,13 @@ describe("meta/blueprint-spec", function () {
         describe("applying a basic blueprint to a prototype", function () {
             var louis, personBlueprint;
             beforeEach(function () {
-                var binder = BlueprintBinder.create().initWithName("Binder");
+                var binder = Binder.create().initWithName("Binder");
                 personBlueprint = Blueprint.create().initWithNameAndModuleId("Person", "mymodule");
                 personBlueprint.addPropertyBlueprint(personBlueprint.newPropertyBlueprint("name", 1));
                 personBlueprint.addPropertyBlueprint(personBlueprint.newPropertyBlueprint("keywords", Infinity));
 
                 binder.addBlueprint(personBlueprint);
-                BlueprintBinder.manager.addBlueprintBinder(binder);
+                Binder.manager.addBinder(binder);
 
                 louis = personBlueprint.newInstance().init();
             });
@@ -127,7 +127,7 @@ describe("meta/blueprint-spec", function () {
         describe("adding a PropertyBlueprint", function () {
             var circle, shapeBlueprint;
             beforeEach(function () {
-                var binder = BlueprintBinder.create().initWithName("Binder");
+                var binder = Binder.create().initWithName("Binder");
                 shapeBlueprint = Blueprint.create().initWithNameAndModuleId("Shape", "mymodule");
                 binder.addBlueprint(shapeBlueprint);
                 var propertyBlueprint = shapeBlueprint.newPropertyBlueprint("size", 1);
@@ -141,7 +141,7 @@ describe("meta/blueprint-spec", function () {
                 propertyBlueprint = shapeBlueprint.newPropertyBlueprint("denyDelete", 1);
                 propertyBlueprint.denyDelete = true;
                 shapeBlueprint.addPropertyBlueprint(propertyBlueprint);
-                BlueprintBinder.manager.addBlueprintBinder(binder);
+                Binder.manager.addBinder(binder);
 
                 circle = shapeBlueprint.newInstance().init();
             });
@@ -214,7 +214,7 @@ describe("meta/blueprint-spec", function () {
                 Deserializer.create().initWithStringAndRequire(serializedBinder, require).deserializeObject(function (deserializedBinder) {
                     var metadata = Montage.getInfoForObject(deserializedBinder);
                     expect(serializedBinder).not.toBeNull();
-                    expect(metadata.objectName).toBe("BlueprintBinder");
+                    expect(metadata.objectName).toBe("Binder");
                     expect(metadata.moduleId).toBe("core/meta/binder");
                     var personBlueprint = deserializedBinder.blueprintForPrototype("Person", "meta/blueprint/person");
                     expect(personBlueprint).not.toBeNull();

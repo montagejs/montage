@@ -40,12 +40,12 @@ exports.BinderReference = RemoteReference.create(RemoteReference, {
             var binderModuleId = references.binderModuleId;
 
             var deferredBinder = Promise.defer();
-            var binder = BinderModule.BlueprintBinder.manager.blueprintBinderForName(binderName);
+            var binder = BinderModule.Binder.manager.binderForName(binderName);
             if (binder) {
                 deferredBinder.resolve(binder);
             } else {
                 try {
-                    deferredBinder = BinderModule.BlueprintBinder.getBinderWithModuleId(binderModuleId, require);
+                    deferredBinder = BinderModule.Binder.getBinderWithModuleId(binderModuleId, require);
                 } catch (exception) {
                     deferredBinder.reject("Error cannot find Blueprint Binder " + binderModuleId);
                 }

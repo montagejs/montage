@@ -7,7 +7,7 @@
  */
 var Montage = require("montage").Montage;
 var Blueprint = require("montage/core/meta/blueprint").Blueprint;
-var BlueprintBinder = require("montage/core/meta/blueprint").BlueprintBinder;
+var Binder = require("montage/core/meta/blueprint").Binder;
 var PropertyBlueprint = require("montage/core/meta/blueprint").PropertyBlueprint;
 var AssociationBlueprint = require("montage/core/meta/blueprint").AssociationBlueprint;
 
