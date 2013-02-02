@@ -82,8 +82,8 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
     addProperties:{
         value:function (prototype, blueprint) {
             //for loop over attributes
-            var i, attribute;
-            for (i = 0; attribute = blueprint.propertyBlueprints[i]; i++) {
+            var i = 0, attribute;
+            while ((attribute = blueprint.propertyBlueprints[i++])) {
                 if (attribute.isDerived) {
                     this.addDerivedProperty(prototype, attribute);
                 } else if (attribute.isAssociation) {
