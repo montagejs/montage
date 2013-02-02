@@ -771,7 +771,7 @@ exports._blueprintModuleIdDescriptor = {
         }
         return self._blueprintModuleId;
     }
-}
+};
 
 exports._blueprintDescriptor = {
     serializable:false,
@@ -812,4 +812,4 @@ exports._blueprintDescriptor = {
             self._blueprint = require("core/promise").Promise.resolve(value);
         }
     }
-}
+};
