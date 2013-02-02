@@ -14,20 +14,18 @@ var logger = require("core/logger").logger("blueprint");
 /**
  @class module:montage/core/blueprint.AssociationBlueprint
  */
-var AssociationBlueprint = exports.AssociationBlueprint = Montage.create(PropertyBlueprint, /** @lends module:montage/core/blueprint.AssociationBlueprint# */ {
+exports.AssociationBlueprint = Montage.create(PropertyBlueprint, /** @lends module:montage/core/blueprint.AssociationBlueprint# */ {
 
     serializeSelf: {
         value: function(serializer) {
             serializer.setProperty("targetBlueprint", this._targetBlueprintReference);
-            var parentCall = Object.getPrototypeOf(AssociationBlueprint).serializeSelf;
-            parentCall.call(this, serializer);
+            PropertyBlueprint.serializeSelf.call(this, serializer);
         }
     },
 
     deserializeSelf: {
         value: function(deserializer) {
-            var parentCall = Object.getPrototypeOf(AssociationBlueprint).deserializeSelf;
-            parentCall.call(this, deserializer);
+            PropertyBlueprint.deserializeSelf.call(this, deserializer);
             this._targetBlueprintReference = deserializer.getProperty("targetBlueprint");
         }
     },
