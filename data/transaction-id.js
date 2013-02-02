@@ -99,11 +99,11 @@ var TransactionId = exports.TransactionId = Montage.create(Montage, /** @lends m
 
     /**
      Description TODO
-     @param {name} Mapping folder name used for this transaction
+     @param {name} Mapping set name used for this transaction
      @function
      @returns itself
      */
-    initWithMappingFolderName:{
+    initWithMappingSetName:{
         serializable:false,
         enumerable:false,
         value:function (name) {
@@ -229,7 +229,7 @@ var TransactionManager = exports.TransactionManager = Montage.create(Montage, /*
     /**
      Opens a new transaction ID for this thread.
      @function
-     @param {name} Mapping folder name used for this transaction
+     @param {name} Mapping set name used for this transaction
      @returns null or new transaction ID
      @throws IllegalStateException if a transaction is already open for this thread.
      */
@@ -237,7 +237,7 @@ var TransactionManager = exports.TransactionManager = Montage.create(Montage, /*
         if (this._currentTransaction) {
             throw new Error("Transaction Open: " + JSON.stringify(this._currentTransaction));
         }
-        this._currentTransaction = TransactionId.create().initWithMappingFolderName(name);
+        this._currentTransaction = TransactionId.create().initWithMappingSetName(name);
         return this._currentTransaction;
     }},
 

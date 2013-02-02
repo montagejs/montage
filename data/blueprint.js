@@ -40,7 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
  @requires core/logger
  */
 var Montage = require("montage").Montage;
-var MappingFolder = require("data/mapping").MappingFolder;
+var MappingSet = require("data/mapping").MappingSet;
 var TemporaryObjectId = require("data/object-id").TemporaryObjectId;
 var Query = require("data/query").Query;
 var ObjectProperty = require("data/object-property").ObjectProperty;
@@ -509,19 +509,19 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(BlueprintObject, 
      */
     createMappingForStore:{
         value:function (store, name, recursive) {
-            var folder = this.mappingForName(name);
-            if (!folder) {
-                folder = MappingFolder.create().initWithBinderAndName(this, name);
-                this.addMapping(folder);
-                if (this._defaultMappingFolderName.length == 0) {
-                    this._defaultMappingFolderName = folder.name;
+            var mappingSet = this.mappingForName(name);
+            if (!mappingSet) {
+                mappingSet = MappingSet.create().initWithBinderAndName(this, name);
+                this.addMapping(mappingSet);
+                if (this._defaultMappingSetName.length == 0) {
+                    this._defaultMappingSetName = mappingSet.name;
                 }
             }
             var metadata = Montage.getInfoForObject(store);
-            var aMapping = folder.mappingForStoreId(metadata.objectName, metadata.moduleId);
+            var aMapping = mappingSet.mappingForStoreId(metadata.objectName, metadata.moduleId);
             if (!aMapping) {
-                aMapping = store.createBinderMapping.initWithOwnerAndParent(this, folder);
-                folder.addMapping(aMapping);
+                aMapping = store.createBinderMapping.initWithOwnerAndParent(this, mappingSet);
+                mappingSet.addMapping(aMapping);
             }
             if (recursive || (typeof recursive === "undefined")) {
                 var aBlueprint, index;
@@ -542,22 +542,22 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(BlueprintObject, 
      */
     deleteMappingForStore:{
         value:function (store, name) {
-            var folder = this.mappingForName(name);
-            if (folder) {
+            var mappingSet = this.mappingForName(name);
+            if (mappingSet) {
                 var metadata = Montage.getInfoForObject(store);
-                var aMapping = folder.mappingForStoreId(metadata.objectName, metadata.moduleId);
-                folder.removeMapping(aMapping);
+                var aMapping = mappingSet.mappingForStoreId(metadata.objectName, metadata.moduleId);
+                mappingSet.removeMapping(aMapping);
                 var aBlueprint, index;
                 for (index = 0; typeof (aBlueprint = this.blueprints[index]) !== "undefined"; index++) {
                     aBlueprint.deleteMappingForStore(store, aMapping, name);
                 }
-                if (folder.mappings.length == 0) {
-                    this.removeMapping(folder);
-                    if ((this._defaultMappingFolderName.length > 0) && (this._defaultMappingFolderName === folder.name)) {
+                if (mappingSet.mappings.length == 0) {
+                    this.removeMapping(mappingSet);
+                    if ((this._defaultMappingSetName.length > 0) && (this._defaultMappingSetName === mappingSet.name)) {
                         if (this.mappings.length > 0) {
-                            this._defaultMappingFolderName = this.mappings[0].name;
+                            this._defaultMappingSetName = this.mappings[0].name;
                         } else {
-                            this._defaultMappingFolderName = "";
+                            this._defaultMappingSetName = "";
                         }
                     }
                 }
@@ -565,23 +565,23 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(BlueprintObject, 
         }
     },
 
-    _defaultMappingFolderName:{
+    _defaultMappingSetName:{
         serializable:true,
         enumerable:false,
         value:""
     },
 
-    defaultMappingFolderName:{
+    defaultMappingSetName:{
         get:function () {
-            if (this._defaultMappingFolderName.length == 0) {
+            if (this._defaultMappingSetName.length == 0) {
                 if (this.mappings.length > 0) {
-                    this._defaultMappingFolderName = this.mappings[0].name;
+                    this._defaultMappingSetName = this.mappings[0].name;
                 }
             }
-            return this._defaultMappingFolderName;
+            return this._defaultMappingSetName;
         },
         set:function (name) {
-            this._defaultMappingFolderName = name;
+            this._defaultMappingSetName = name;
         }
     }
 
@@ -637,11 +637,16 @@ var Blueprint = exports.Blueprint = Montage.create(BlueprintObject, /** @lends m
         value:function () {
             var self = this;
             if (this.customPrototype) {
-                return require.async(this.moduleId)
-                .then(function (exports) {
-                    var prototype = exports[self.prototypeName];
-                    return (prototype ? prototype : null)
-                });
+                var results = Promise.defer();
+                require.async(this.moduleId,
+                    function (exports) {
+                        results.resolve(exports);
+                    });
+                return results.promise.then(function (exports) {
+                        var prototype = exports[self.prototypeName];
+                        return (prototype ? prototype : null)
+                    }
+                )
             } else {
                 if (typeof exports[self.prototypeName] === "undefined") {
                     var parentInstancePrototype = (this.parent ? this.parent.newInstancePrototype() : Montage );
