@@ -230,11 +230,10 @@ var Flow = exports.Flow = Montage.create(Component, {
             var length = value.length,
                 i;
 
-            if (length) {
-                this._paths = [];
-                for (i = 0; i < length; i++) {
-                    this.appendPath(value[i]);
-                }
+            this._splinePaths = [];
+            this._paths = [];
+            for (i = 0; i < length; i++) {
+                this.appendPath(value[i]);
             }
             this.needsDraw = true;
         }
@@ -820,8 +819,8 @@ var Flow = exports.Flow = Montage.create(Component, {
                         }
                     }
                 }
-                this._updateIndexMap(newIndexMap, newIndexesHash);
             }
+            this._updateIndexMap(newIndexMap, newIndexesHash);
         }
     },
 
@@ -916,6 +915,11 @@ var Flow = exports.Flow = Montage.create(Component, {
                     } else {
                         iElement.setAttribute("style", "-webkit-transform:scale3d(0,0,0);opacity:0");
                     }
+                }
+            } else {
+                for (i = 0; i < length; i++) {
+                    iElement = this._repetitionComponents[i].element.parentNode;
+                    iElement.setAttribute("style", "-webkit-transform:scale3d(0,0,0);opacity:0");
                 }
             }
             this.needsDraw = true;
