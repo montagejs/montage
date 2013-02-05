@@ -547,7 +547,10 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // wait until the deserialization is complete and the template is
             // fully instantiated so we can capture all the child components
             // and DOM elements.
-            this.setupIterationTemplate();
+            if (!this._newDomContent) {
+                this.setupIterationTemplate();
+            }
+            this.needsDraw = true;
         }
     },
 
@@ -560,16 +563,15 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // which would be O(n**2).
             var iterations = this.iterations;
             var index = iterations.length;
-            do {
-                index--;
+            while (--index >= 0) {
                 var iteration = iterations[index];
                 iteration.retractFromDocument(this, index);
                 // this clears out the boundaries array
-            } while (index > 0);
+            }
             iterations.clear();
 
             // purge the existing iterations
-            this.freeList.clear();
+            this.freeIterations.clear();
             this.iterationsNeedingTemplates.clear();
             this.objectForIteration.clear();
             this.iterationForElement.clear();
@@ -577,7 +579,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             this._templateId = null;
             this.iterationChildComponentsLength = 0;
             this.pendingOperations.clear();
-            this.maxNeededIterations = 0;
             this.requestedIterations = 0;
             this.createdIterations = 0;
             this.canDrawInitialContent = false;
@@ -627,6 +628,18 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     */
     setupIterationTemplate: {
         value: function () {
+            // We shouldn't setup the iteration template if the repetition
+            // received new content, we'll wait until contentDidLoad is
+            // called.
+            // The problem is that the new components from the new DOM are
+            // already in the component tree but not in the DOM, and since this
+            // function removes the child components from the repetition we
+            // lose them forever.
+            // TODO: this is part of the chicken&egg problem the draw cycle
+            // current has, the DrawManager will solves this.
+            if (this._newDomContent || this._shouldClearDomContentOnNextDraw) {
+                return;
+            }
 
             // override the prototype's serialization routine on just this
             // instance temporarily:
@@ -662,8 +675,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 this.iterationTemplate.delegate = this.templateDelegate;
                 this.iterationTemplate.initWithComponent(this);
             }
-            this.iterationTemplate.optimize();
 
+            this.iterationTemplate.optimize();
             // this restores serializeSelf to the one on the prototype chain:
             delete this.serializeSelf;
 
@@ -975,10 +988,18 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         value: function () {
             // block for the usual component-related issues
             var canDraw = this.canDrawGate.value;
+
+            // TODO: this check will be in draw until we have the DrawManager.
+            //       we need to draw in order to replace the DOM if domContent
+            //       was assigned to.
             // block until we have created enough iterations to draw
-            canDraw = canDraw && this.maxNeededIterations <= this.createdIterations;
+            //canDraw = canDraw && this.maxNeededIterations <= this.createdIterations;
+
+            // TODO: we need to enable the draw to make domContent work before
+            //       we have the DrawManager.
             // block until we can draw initial content if we have not already
-            canDraw = canDraw && (this.initialContentDrawn || this.canDrawInitialContent);
+            //canDraw = canDraw && (this.initialContentDrawn || this.canDrawInitialContent);
+
             // block until all child components can draw
             if (canDraw) {
                 for (var i = 0; i < this.childComponents.length; i++) {
@@ -994,6 +1015,12 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 
     draw: {
         value: function () {
+            // TODO: this is supossed to be in canDraw() please refer to that
+            //       function for more information on this hack.
+            // block until we have created enough iterations to draw
+            if (this.maxNeededIterations != this.createdIterations) {
+                return;
+            }
 
             if (!this.initialContentDrawn) {
                 this.drawInitialContent();
