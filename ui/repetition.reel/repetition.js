@@ -551,6 +551,63 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         }
     },
 
+    // If the domContent property is going to change, it invalidates the
+    // current iterationTemplates, so we reset and start over.
+    contentWillChange: {
+        value: function () {
+            // Retract all iterations from the dom.  Walk backward from the end
+            // so that the boundary splices are O(1) (as opposed to forward
+            // which would be O(n**2).
+            var iterations = this.iterations;
+            var index = iterations.length;
+            do {
+                index--;
+                var iteration = iterations[index];
+                iteration.retractFromDocument(this, index);
+                // this clears out the boundaries array
+            } while (index > 0);
+            iterations.clear();
+
+            // purge the existing iterations
+            this.freeList.clear();
+            this.iterationsNeedingTemplates.clear();
+            this.objectForIteration.clear();
+            this.iterationForElement.clear();
+            this.currentIteration = null;
+            this._templateId = null;
+            this.iterationChildComponentsLength = 0;
+            this.pendingOperations.clear();
+            this.maxNeededIterations = 0;
+            this.requestedIterations = 0;
+            this.createdIterations = 0;
+            this.canDrawInitialContent = false;
+            this.initialContentDrawn = false;
+            this.iterationsNeedReenableTransitions = false;
+            this.selectionPointer = null;
+            this.activeIterations.clear();
+
+            // plan to add iterations for all of the existing content
+            var controllerIterations = this.controllerIterations;
+            for (var visibleIndex = 0; visibleIndex < controllerIterations.length; visibleIndex++) {
+                this.pendingOperations.push(
+                    this.AddOperation.create()
+                    .initWithControllerAndVisibleIndex(
+                        controllerIterations[visibleIndex],
+                        visibleIndex
+                    )
+                );
+            }
+        }
+    },
+
+    contentDidChange: {
+        value: function () {
+            // TODO: explain what the domContent is - @kriskowal
+            // domContent changed. Start over.
+            this.setupIterationTemplate();
+        }
+    },
+
     // This prevents the deserializer from reinstantiating the ownerComponent.
     // TODO @aadsm please verify - @kriskowal
     templateDidDeserializeObject: {
