@@ -101,16 +101,14 @@ if (spec) {
         "ui/button-spec",
         "ui/check-spec",
         "ui/condition-spec",
-        // Don't know why this is broken: - @kriskowal
-        // TODO "ui/component-spec",
+        "ui/component-spec",
         "ui/composer-spec",
         "ui/composer/press-composer-spec",
         "ui/composer/translate-composer-spec",
         "ui/dom-spec",
         "ui/dynamic-element-spec",
         "ui/dynamic-text-spec",
-        // Breaks a couple tests related to drawing a repetition
-        // TODO "ui/firstdraw-spec",
+        "ui/firstdraw-spec",
         "ui/text-slider-spec",
         "ui/scroller-spec",
         "ui/list-spec",

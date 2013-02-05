@@ -74,7 +74,8 @@ var testPage = TestPageLoader.queueTest("draw", function() {
             describe("domContent", function() {
                 it("should contain the current content of the component markup", function() {
                     var content = testPage.test.repetition.domContent;
-                    expect(content.length).toBe(6);
+
+                    expect(content.length).toBe(10);
                 });
 
                 it("should change the content of the component for markup", function() {
