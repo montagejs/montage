@@ -58,12 +58,30 @@ var List = exports.List = Montage.create(Component,/** @lends module:"montage/ui
         value: null
     },
 
-    objects: {
-        value: null
+    _content: {value: null},
+    content: {
+        set: function(value) {
+            this._content = value;
+            this.defineBinding("_repetition.content", {
+                "<-": "_content"
+            });
+        },
+        get: function() {
+            return this._content;
+        }
     },
 
+    _contentController: {value: null},
     contentController: {
-        value: null
+        set: function(value) {
+            this._contentController = value;
+            this.defineBinding("_repetition.contentController", {
+                "<-": "_contentController"
+            });
+        },
+        get: function() {
+            return this._contentController;
+        }
     },
 
     axis: {

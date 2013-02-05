@@ -113,8 +113,7 @@ if (spec) {
         // TODO "ui/firstdraw-spec",
         "ui/text-slider-spec",
         "ui/scroller-spec",
-        // Broken to changes in repetition or content controller
-        // TODO "ui/list-spec",
+        "ui/list-spec",
         "ui/native-control-spec",
         "ui/number-input-spec",
         "ui/popup-spec",
