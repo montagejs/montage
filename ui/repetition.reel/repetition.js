@@ -74,7 +74,7 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             // Changes to whether a user is touching the iteration are
             // reflected by the "active" CSS class on each element in the
             // iteration.  This gets updated in the draw cycle, in response to
-            // operations that handleActiveChange adds to the repetition draw
+            // operations that handlePropertyChange adds to the repetition draw
             // cycle.
             // Dispatches handlePropertyChange with the "active" key:
             this.addOwnPropertyChangeListener("active", this);
@@ -500,6 +500,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // The number of iterations, plus the number of planned
             // additions minus the number of planned deletions on the next
             // draw.
+            this.maxNeededIterations = 0;
             this.neededIterations = 0;
             this.requestedIterations = 0;
             this.createdIterations = 0;
@@ -715,7 +716,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         value: function () {
             this.createdIterations++;
             if (
-                this.createdIterations >= this.neededIterations ||
+                this.createdIterations >= this.maxNeededIterations ||
                 this.pendingOperations.length
             ) {
                 this.needsDraw = true;
@@ -835,6 +836,10 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 
             // produce more iterations if necessary
             this.neededIterations += diff;
+            this.maxNeededIterations = Math.max(
+                this.neededIterations,
+                this.maxNeededIterations
+            );
 
             if (diff < 0) {
 
@@ -888,7 +893,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             if (!this.iterationTemplate) {
                 return;
             }
-            while (this.neededIterations > this.requestedIterations) {
+            while (this.maxNeededIterations > this.requestedIterations) {
                 this.freeIterations.push(this.createIteration());
             }
         }
@@ -914,7 +919,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // block for the usual component-related issues
             var canDraw = this.canDrawGate.value;
             // block until we have created enough iterations to draw
-            canDraw = canDraw && this.neededIterations <= this.createdIterations;
+            canDraw = canDraw && this.maxNeededIterations <= this.createdIterations;
             // block until we can draw initial content if we have not already
             canDraw = canDraw && (this.initialContentDrawn || this.canDrawInitialContent);
             // block until all child components can draw
