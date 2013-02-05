@@ -508,6 +508,10 @@
         config.packageDescription = description;
         config.useScriptInjection = description.useScriptInjection;
 
+        if (description.production !== void 0) {
+            config.production = description.production;
+        }
+
         // explicitly mask definitions and modules, which must
         // not apply to child packages
         var modules = config.modules = config.modules || {};
@@ -577,11 +581,10 @@
             });
         }
 
-
         // mappings, link this package to other packages.
         var mappings = description.mappings || {};
-        // dependencies, devDependencies
-        [description.dependencies, description.devDependencies]
+        // dependencies, devDependencies if not in production
+        [description.dependencies, !config.production ? description.devDependencies : null]
         .forEach(function (dependencies) {
             if (!dependencies)
                 return;

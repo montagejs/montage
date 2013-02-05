@@ -69,6 +69,8 @@ some of the extensions from NodeJS and NPM.
     ``directories.packages`` property, or use mappings to find
     individual packages in alternate locations or give them different
     local names.
+-   **devDependencies**: Development dependencies are treated the same as
+    `dependencies`, except in production mode where they are ignored.
 -   **JSON**: Resources with the `.json` extension can be loaded as JSON
     formatted modules.
 
@@ -83,6 +85,9 @@ Extensions:
     dependencies with the URL ``location`` of the package, particularly
     a URL relative to the depending package.  Mappings override
     dependencies if there are conflicts.
+-   **production**: when set to `true` in the `package.json` it puts the
+    system into production mode. Currently this only ignores any
+    `devDependencies`.
 -   **require.packageDescription**: Packages expose the parsed
     contents of the ``package.json`` file.
 -   **module.location**: Packages expose the URL of the corresponding
@@ -308,7 +313,7 @@ module has not yet been loaded.
     package at the given location.  This may be a lie.  This prevents
     the module system from attempting to load the `package.json`.  The
     corresponding `package.json` need not actually exist.
--   **injectPackageDescriptionLocation(location, descriptionLocation)**: 
+-   **injectPackageDescriptionLocation(location, descriptionLocation)**:
     informs the module system of an alternate URL from which to download
     the `package.json` for this package.
 -   **read(location)**: an exposed internal utility for reading the
