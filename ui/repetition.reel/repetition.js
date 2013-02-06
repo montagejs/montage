@@ -540,8 +540,10 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     // Creating an iteration template:
     // ----
 
-    deserializedFromTemplate: {
-        value: function () {
+    expandComponent: {
+        value: function expandComponent(callback) {
+            // _isComponentExpanded is Used by Component to determine whether
+            // the node of the component object hierarchy is traversable:
             // We can't set up the iteration template during didCreate because
             // it would interfere with the active deserialization process.  We
             // wait until the deserialization is complete and the template is
@@ -550,7 +552,11 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             if (!this._newDomContent) {
                 this.setupIterationTemplate();
             }
-            this.needsDraw = true;
+
+            this._isComponentExpanded = true;
+            if (callback) {
+                callback();
+            }
         }
     },
 
@@ -667,12 +673,12 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 // template for its id - @kriskowal
                 this.iterationTemplate = Template.templateWithComponent(
                     this,
-                    this.templateDelegate
+                    this._templateDelegate
                 );
             } else {
                 // The optimized case (just a document fragment, no components)
                 this.iterationTemplate = Template.create();
-                this.iterationTemplate.delegate = this.templateDelegate;
+                this.iterationTemplate.delegate = this._templateDelegate;
                 this.iterationTemplate.initWithComponent(this);
             }
 
@@ -716,7 +722,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 
     // This template delegate object is shared by all repetitions and receives
     // all meaningful state in arguments.
-    templateDelegate: {
+    _templateDelegate: {
         value: {
             // This method gets called by the Template initializer on behalf of
             // setupIterationTemplate
@@ -965,21 +971,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             }
             while (this.maxNeededIterations > this.requestedIterations) {
                 this.freeIterations.push(this.createIteration());
-            }
-        }
-    },
-
-
-    // Drawing
-    // ----
-
-    expandComponent: {
-        value: function expandComponent(callback) {
-            // _isComponentExpanded is Used by Component to determine whether
-            // the node of the component object hierarchy is traversable:
-            this._isComponentExpanded = true;
-            if (callback) {
-                callback();
             }
         }
     },
