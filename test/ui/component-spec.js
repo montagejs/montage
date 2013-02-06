@@ -33,10 +33,6 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Serializer = require("montage/core/serialization").Serializer;
 
-var stripPP = function stripPrettyPrintting(str) {
-    return str.replace(/\n\s*/g, "");
-};
-
 var testPage = TestPageLoader.queueTest("draw", function() {
 
     var querySelector = function(s) {
@@ -520,9 +516,22 @@ var testPage = TestPageLoader.queueTest("draw", function() {
 
         it("should serialize delegate as a reference", function() {
             var serializer = Serializer.create().initWithRequire(require),
-                serialization = serializer.serializeObject(testPage.test.componentWithDelegate);
+                serialization = serializer.serializeObject(testPage.test.componentWithDelegate),
+                expectedSerialization = {
+                  "root": {
+                      "prototype": "montage/ui/component",
+                      "properties": {
+                          "delegate": {"@": "application"},
+                          "parentProperty": "parentComponent",
+                          "element": null,
+                          "localizer": null,
+                          "identifier": "componentWithDelegate"
+                      }
+                  },
+                  "application": {}
+                };
 
-            expect(stripPP(serialization)).toBe('{"root":{"prototype":"montage/ui/component","properties":{"delegate":{"@":"application"},"parentProperty":"parentComponent","identifier":"componentWithDelegate"}},"application":{}}');
+            expect(JSON.parse(serialization)).toEqual(expectedSerialization);
         });
 
         it("should have templateObjects object", function() {
