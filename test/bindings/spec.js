@@ -30,8 +30,9 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
     Bindings = require("montage/core/bindings").Bindings,
-    Serializer = require("montage/core/serializer").Serializer,
-    Deserializer = require("montage/core/deserializer").Deserializer;
+    Serializer = require("montage/core/serialization").Serializer,
+    Deserializer = require("montage/core/serialization").Deserializer,
+    MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver;
 
 var Alpha = Montage.create(Montage, {
 
@@ -1116,19 +1117,17 @@ describe("bindings/spec", function() {
 
             var serialization = serializer.serializeObject(target);
             var labels = {};
+
             labels["root"] = source;
-            deserializer.initWithStringAndRequire(serialization, require);
-            var object = null;
-            spyOn(deserializer._indexedDeserializationUnits, "bindings").andCallThrough();
-            deserializer.deserializeWithInstances(labels, function(objects) {
+            labels.montage = {};
+            deserializer.initWithSerializationStringAndRequire(serialization, require);
+            spyOn(MontageReviver._unitRevivers, "bindings").andCallThrough();
+
+            return deserializer.deserialize(labels)
+            .then(function(objects) {
                 object = objects.root;
+                expect(MontageReviver._unitRevivers.bindings).toHaveBeenCalled();
             });
-            waitsFor(function() {
-                return object;
-            });
-            runs(function() {
-                expect(deserializer._indexedDeserializationUnits.bindings).toHaveBeenCalled();
-            })
         });
 
         it("should serialize a binding to a shorthand format", function() {
@@ -1136,58 +1135,62 @@ describe("bindings/spec", function() {
                 Omega = Montage.create(Montage, {bar: {value: null}}),
                 target = Alpha.create(),
                 source = Omega.create(),
-                serializer = Serializer.create().initWithRequire(require);
+                serializer = Serializer.create().initWithRequire(require),
+                serialization,
+                expectedSerialization = {
+                    "root": {
+                        "prototype": "montage/core/core[Montage]",
+                        "properties": {
+                            "foo": null,
+                            "identifier": null,
+                            "parentProperty": null
+                        },
+                        "bindings": {
+                            "foo": {
+                                "<-": "@montage.bar"
+                            }
+                        }
+                    },
+                    "montage": {}
+                };
 
             Bindings.defineBinding(target, "foo", {
                 source: source,
                 "<-": "bar"
             });
 
-            var serialization = serializer.serializeObject(target);
-            expect(JSON.parse(serialization)).toEqual({
-                "montage":{
-                },
-                "root": {
-                    "prototype": "montage/core/core[Montage]",
-                    "properties": {},
-                    "bindings": {
-                        "foo": {
-                            "<-": "@montage.bar",
-                        }
-                    }
-                }
-            });
+            serialization = serializer.serializeObject(target);
+            expect(JSON.parse(serialization)).toEqual(expectedSerialization);
         });
 
         it("should deserialize a one way binding", function() {
-            var latch, objects,
-                deserializer = Deserializer.create();
-
-            deserializer._require = require;
-            deserializer.initWithObject({
-                root: {
-                    prototype: "montage",
-                    properties: {
-                        value: null
+            var deserializer = Deserializer.create(),
+                serialization = {
+                    "root": {
+                        "prototype": "montage",
+                        "properties": {
+                            "identifier": null,
+                            "value": null
+                        },
+                        "bindings": {
+                            "value": {"<-": "@source.value"}
+                        }
                     },
-                    bindings: {
-                        value: {"<-": "@source.value"}
+
+                    "source": {
+                        "prototype": "montage",
+                        "properties": {
+                            "identifier": null,
+                            "value": null
+                        }
                     }
                 },
+                serializationString = JSON.stringify(serialization);
 
-                source: {
-                    prototype: "montage",
-                    properties: {
-                        value: null
-                    }
-                }
-            }).deserialize(function(objs) {
-                latch = true;
-                objects = objs;
-            });
-
-            waitsFor(function() { return latch; });
-            runs(function() {
+            deserializer.initWithSerializationStringAndRequire(
+                serializationString, require);
+            return deserializer.deserialize()
+            .then(function(objects) {
                 var root = objects.root,
                     source = objects.source;
 
@@ -1199,34 +1202,33 @@ describe("bindings/spec", function() {
         });
 
         it("should deserialize a twoway binding", function() {
-            var latch, objects,
-                deserializer = Deserializer.create();
-
-            deserializer._require = require;
-            deserializer.initWithObject({
-                root: {
-                    prototype: "montage",
-                    properties: {
-                        value: null
+            var deserializer = Deserializer.create(),
+                serialization = {
+                    "root": {
+                        "prototype": "montage",
+                        "properties": {
+                            "identifier": null,
+                            "value": null
+                        },
+                        "bindings": {
+                            "value": {"<->": "@source.value"}
+                        }
                     },
-                    bindings: {
-                        value: {"<->": "@source.value"}
+
+                    "source": {
+                        "prototype": "montage",
+                        "properties": {
+                            "identifier": null,
+                            "value": null
+                        }
                     }
                 },
+                serializationString = JSON.stringify(serialization);
 
-                source: {
-                    prototype: "montage",
-                    properties: {
-                        value: null
-                    }
-                }
-            }).deserialize(function(objs) {
-                latch = true;
-                objects = objs;
-            });
-
-            waitsFor(function() { return latch; });
-            runs(function() {
+            deserializer.initWithSerializationStringAndRequire(
+                serializationString, require);
+            return deserializer.deserialize()
+            .then(function(objects) {
                 var root = objects.root,
                     source = objects.source;
 

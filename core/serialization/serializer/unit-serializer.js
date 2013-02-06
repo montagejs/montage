@@ -27,6 +27,14 @@ var UnitSerializer = Montage.create(Object.prototype, {
         }
     },
 
+    getObjectLabel: {
+        value: function(object) {
+            this.addObjectReference(object);
+
+            return this._visitor.labeler.getObjectLabel(object);
+        }
+    },
+
     addObject: {
         value: function(object) {
             if (typeof object === "object") {

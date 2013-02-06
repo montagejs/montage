@@ -3,10 +3,10 @@ var Bindings = require("frb"),
     parse = require("frb/parse"),
     stringify = require("frb/stringify"),
     expand = require("frb/expand"),
-    Serializer = require("core/serializer").Serializer,
-    Deserializer = require("core/deserializer").Deserializer;
+    Serializer = require("core/serialization").Serializer,
+    Deserializer = require("core/serialization").Deserializer;
 
-Serializer.defineSerializationUnit("bindings", function (object, serializer) {
+Serializer.defineSerializationUnit("bindings", function (serializer, object) {
     var inputs = Bindings.getBindings(object);
     var outputs = {};
     var hasBindings;
@@ -26,16 +26,15 @@ Serializer.defineSerializationUnit("bindings", function (object, serializer) {
         var sourcePath = input.sourcePath;
 
         if (input.source !== object) {
-            var reference = serializer.addObjectReference(input.source);
+            var label = serializer.getObjectLabel(input.source);
             var syntax = expand(parse(sourcePath), {
                 type: "component",
-                label: reference["@"]
+                label: label
             }, parameters);
         } else {
             var syntax = expand(parse(sourcePath), null, parameters);
         }
         sourcePath = stringify(syntax);
-
         if (input.twoWay) {
             output["<->"] = sourcePath;
         } else {
@@ -60,7 +59,7 @@ Serializer.defineSerializationUnit("bindings", function (object, serializer) {
     return hasBindings ? outputs : undefined;
 });
 
-Deserializer.defineDeserializationUnit("bindings", function (object, bindings, deserializer) {
+Deserializer.defineDeserializationUnit("bindings", function (deserializer, object, bindings) {
 
     // normalize old and busted bindings
     for (var targetPath in bindings) {
