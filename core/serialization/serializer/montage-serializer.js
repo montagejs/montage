@@ -69,7 +69,7 @@ var MontageSerializer = Montage.create(Serializer.prototype, {
 });
 
 exports.MontageSerializer = MontageSerializer;
-exports.deserialize = function(object, _require) {
+exports.serialize = function(object, _require) {
     return MontageSerializer.create().initWithRequire(_require)
         .serializeObject(object);
 };

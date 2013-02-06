@@ -1,7 +1,7 @@
 
 var Selector = require("montage/core/selector").Selector;
-var serialize = require("montage/core/serializer").serialize;
-var deserialize = require("montage/core/deserializer").deserialize;
+var serialize = require("montage/core/serialization").serialize;
+var deserialize = require("montage/core/serialization").deserialize;
 
 describe("core/selector-spec", function () {
 
@@ -36,14 +36,18 @@ describe("core/selector-spec", function () {
     })
 
     it("should deserialize", function () {
-        return deserialize({
-            root: {
-                prototype: "montage/core/selector",
-                properties: {
-                    path: "a.b"
+        var serialization = {
+                "root": {
+                    "prototype": "montage/core/selector",
+                    "properties": {
+                        "path": "a.b"
+                    }
                 }
-            }
-        }, require).then(function (selector) {
+            },
+            serializationString = JSON.stringify(serialization);
+
+        return deserialize(serializationString, require)
+        .then(function (selector) {
             expect(selector.evaluate({a: {b: 20}})).toEqual(20);
         });
     })
