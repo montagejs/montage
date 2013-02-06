@@ -187,6 +187,14 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
         }
     },
 
+    setLabelInitialValue: {
+        value: function(value) {
+            if (this._label === undefined) {
+                    this._label = value;
+                }
+        }
+    },
+
     /**
         The amount of time in milliseconds the user must press and hold the button a <code>hold</code> event is dispatched. The default is 1 second.
         @type {number}
@@ -367,6 +375,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
                     this._element.appendChild(document.createTextNode(""));
                 }
                 this._labelNode = this._element.firstChild;
+                this.setLabelInitialValue(this._labelNode.data)
                 if (this._label === undefined) {
                     this._label = this._labelNode.data;
                 }
