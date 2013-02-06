@@ -615,6 +615,9 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
             for (var name in this._propertyBlueprintGroups) {
                 groups.push(name);
             }
+            if (this.parent) {
+                groups = groups.concat(this.parent.propertyBlueprintGroups);
+            }
             return groups;
         }
     },
