@@ -1037,8 +1037,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     blueprintModuleId: {
-        serializable:false,
-        get:function () {
+        serializable: false,
+        get: function () {
             var info = Montage.getInfoForObject(this);
             var self = (info && !info.isInstance) ? this : Object.getPrototypeOf(this);
             if ((!Object.getOwnPropertyDescriptor(self, "_blueprintModuleId")) || (!self._blueprintModuleId)) {
@@ -1050,7 +1050,18 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 dotIndex = ( dotIndex === -1 ? moduleId.length : dotIndex );
                 dotIndex = ( dotIndex < slashIndex ? moduleId.length : dotIndex );
 
-                self._blueprintModuleId = moduleId + "/" + moduleId.slice(slashIndex, dotIndex) + "-blueprint.json";
+                var blueprintModuleId;
+                if ((dotIndex < moduleId.length) && ( moduleId.slice(dotIndex, moduleId.length) == ".reel")) {
+                    // We are in a reel
+                    blueprintModuleId = moduleId + "/" + moduleId.slice(slashIndex, dotIndex) + "-blueprint.json";
+                } else {
+                    // We look for the default
+                    blueprintModuleId = moduleId.slice(0, dotIndex) + "-blueprint.json";
+                }
+
+                Montage.defineProperty(self, "_blueprintModuleId", {
+                    value: blueprintModuleId
+                });
             }
             return self._blueprintModuleId;
         }
@@ -1060,7 +1071,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     _description:{
         serializable:false,
-        enumerable:false,
         value:null
     },
 
