@@ -1,41 +1,38 @@
 {
-    "name": "montage",
-    "version": "0.12.3",
-    "description": "A UI Framework",
-    "main": "montage",
-    "bin": {
-        "montage": "bin/montage"
-    },
-    "overlay": {
-        "browser": {
-            "main": "core/core",
-            "mappings": {
-                "mr": {
-                    "name": "mr",
-                    "location": "packages/mr"
-                },
-                "q": {
-                    "name": "q",
-                    "location": "packages/mr/packages/q"
-                }
-            },
-            "exclude": [
-                "lab",
-                "etc",
-                "node.js"
-            ]
+  "name": "montage",
+  "version": "0.12.4",
+  "description": "A UI Framework",
+  "main": "montage",
+  "bin": {
+    "montage": "bin/montage"
+  },
+  "overlay": {
+    "browser": {
+      "main": "core/core",
+      "mappings": {
+        "mr": {
+          "name": "mr",
+          "location": "packages/mr"
+        },
+        "q": {
+          "name": "q",
+          "location": "packages/mr/packages/q"
         }
-    },
-    "dependencies": {
-        "collections": "~0.1.14"
-    },
-    "devDependencies": {
-        "mr": "~0.12.6",
-        "q": "~0.8.12",
-        "q-io": "~1.3.2",
-        "jsdom": "~0.2.19"
-    },
-    "bin": {
-        "montage": "bin/montage"
+      },
+      "exclude": [
+        "lab",
+        "etc",
+        "node.js"
+      ]
     }
+  },
+  "dependencies": {
+    "collections": "~0.1.14"
+  },
+  "devDependencies": {
+    "mr": "~0.12.6",
+    "q": "~0.8.12",
+    "q-io": "~1.3.2",
+    "jsdom": "~0.2.19"
+  }
 }
