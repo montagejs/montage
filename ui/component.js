@@ -1037,8 +1037,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     blueprintModuleId: {
-        serializable:false,
-        get:function () {
+        serializable: false,
+        get: function () {
             var info = Montage.getInfoForObject(this);
             var self = (info && !info.isInstance) ? this : Object.getPrototypeOf(this);
             if ((!Object.getOwnPropertyDescriptor(self, "_blueprintModuleId")) || (!self._blueprintModuleId)) {
@@ -1060,7 +1060,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 }
 
                 Montage.defineProperty(self, "_blueprintModuleId", {
-                    enumerable: false,
                     value: blueprintModuleId
                 });
             }
@@ -1072,7 +1071,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     _description:{
         serializable:false,
-        enumerable:false,
         value:null
     },
 
