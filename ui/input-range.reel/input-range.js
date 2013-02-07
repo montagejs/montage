@@ -317,10 +317,8 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
 
     willDraw: {
         value: function() {
-            if(!this._handleWidth) {
-                this._handleWidth = this._handleEl.offsetWidth;
-            }
-            this._sliderWidth = this.element.offsetWidth - (1.5*(this._handleWidth/2));
+            this._handleWidth = this._handleEl.offsetWidth;
+            this._sliderWidth = this.element.offsetWidth - this._handleWidth;
             if(this._clickTarget) {
                 // the slider scale was clicked
                 var x = dom.convertPointFromNodeToPage(this.element).x;
