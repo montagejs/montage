@@ -38,7 +38,8 @@ POSSIBILITY OF SUCH DAMAGE.
     "test1": {
         "prototype": "ui/drawing/test",
         "properties": {
-
+            "repetition1": {"@": "repetition1"},
+            "repetition": {"@": "repetition2"}
         }
     },
     "dynamictext1": {
@@ -76,14 +77,10 @@ POSSIBILITY OF SUCH DAMAGE.
             ]
         }
     },
-    "owner": {
-        "prototype": "montage/ui/application",
+
+    "application": {
         "properties": {
-            "delegate": {"@": "test1"},
-            "components": [
-                {"@": "repetition1"},
-                {"@": "repetition2"}
-            ]
+            "delegate": {"@": "test1"}
         }
     }
 }

@@ -40,7 +40,6 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 var Montage = require("core/core").Montage,
-    Template = require("ui/template").Template,
     MontageWindow = require("ui/montage-window").MontageWindow,
     Slot;
 

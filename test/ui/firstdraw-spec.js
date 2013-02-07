@@ -63,9 +63,14 @@ var repetitionTestPage = TestPageLoader.queueTest("firstdraw-repetition", {src: 
         });
         describe("repeating component", function() {
             it("should draw within first draw", function() {
-                var text0 = repetitionTestPage.iframe.contentDocument.querySelectorAll(".list1 > div")[0];
-                expect(text0).not.toBeNull();
-                expect(text0.textContent).toEqual("Test Value");
+
+                repetitionTestPage.waitForComponentDraw(repetitionTestPage.test.repetition1);
+
+                runs(function() {
+                    var text0 = repetitionTestPage.iframe.contentDocument.querySelectorAll(".list1 > div")[0];
+                    expect(text0).not.toBeNull();
+                    expect(text0.textContent).toEqual("Test Value");
+                });
             });
         });
         describe("repeating component with template", function() {
