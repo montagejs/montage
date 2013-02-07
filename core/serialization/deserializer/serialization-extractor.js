@@ -1,6 +1,6 @@
 var Montage = require("core/core").Montage,
-    MontageReviver = require("./montage-reviver").MontageReviver;
-
+    MontageReviver = require("./montage-reviver").MontageReviver,
+    parse = require("frb/parse");
 
 var SerializationExtractor = Montage.create(Montage, {
     _serialization: {value: null},
@@ -14,19 +14,18 @@ var SerializationExtractor = Montage.create(Montage, {
     extractObjects: {
         value: function(labels, externalLabels) {
             var serialization = this._serialization,
-                label,
                 objects = {};
 
             externalLabels = externalLabels || [];
 
-            for (var i = 0, label; label = labels[i]; i++) {
+            for (var i = 0, label; (label = labels[i]); i++) {
                 if (label in serialization) {
                     objects[label] = serialization[label];
-                    this._findLabels(label, externalLabels)
+                    this._findLabels(label, externalLabels);
                 }
             }
 
-            for (var i = 0, label; label = externalLabels[i]; i++) {
+            for (var i = 0, label; (label = externalLabels[i]); i++) {
                 if (!(label in objects) && (label in serialization)) {
                     objects[label] = {};
                 }
@@ -81,25 +80,46 @@ var SerializationExtractor = Montage.create(Montage, {
         }
     },
 
-    // TODO: temporary until frb kicks in
+    //
+    // -- Bindings
+    //
+
     _collectLabelsInBindings: {
         value: function(unitSerialization, labels) {
             var binding,
-                path,
-                label;
+                sourcePath;
 
             for (var propertyName in unitSerialization) {
                 binding = unitSerialization[propertyName];
-                path = binding["<-"] || binding["<->"];
+                sourcePath = binding["<-"] || binding["<->"];
+                this._collectLabelsInBindingPath(sourcePath, labels);
+            }
+        }
+    },
 
-                dotIndex = path.indexOf(".");
-                if (dotIndex > 0) {
-                    label = path.slice(1, dotIndex);
-                } else {
-                    label = path;
+    _collectLabelsInBindingPath: {
+        value: function(path, labels) {
+            var self = this,
+                parseTree = parse(path);
+
+            this._traverseBindingParseTree(parseTree, function(syntax) {
+                self._findLabels(syntax.label, labels);
+            });
+        }
+    },
+
+    _traverseBindingParseTree: {
+        value: function(parseTree, visitor) {
+            var args = parseTree.args;
+
+            if (parseTree.type === "component") {
+                visitor(parseTree);
+            }
+
+            if (args) {
+                for (var i = 0, ii = args.length; i < ii; i++) {
+                    this._traverseBindingParseTree(args[i], visitor);
                 }
-
-                this._findLabels(label, labels);
             }
         }
     }

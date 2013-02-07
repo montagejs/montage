@@ -211,66 +211,104 @@ describe("reel/serialization/serialization-extractor-spec", function() {
         expect(extractedObjects).toEqual(expectedObjects);
     });
 
-    it("should extract an object and its one way bindings as external objects", function() {
-        var objects = {
-                "one": {
-                    "properties": {
-                        "element": {"#": "oneId"},
+    describe("bindings", function() {
+        it("should extract an object and its one way bindings as external objects", function() {
+            var objects = {
+                    "one": {
+                        "properties": {
+                            "element": {"#": "oneId"},
+                        },
+                        "bindings": {
+                            "name": {"<-": "@two.name"}
+                        }
                     },
-                    "bindings": {
-                        "name": {"<-": "@two.name"}
+
+                    "two": {
+                        "properties": {
+                            "element": {"#": "twoId"},
+                            "name": "two"
+                        }
                     }
                 },
+                expectedObjects = {},
+                extractedObjects,
+                labels = ["one"];
 
-                "two": {
-                    "properties": {
-                        "element": {"#": "twoId"},
-                        "name": "two"
-                    }
-                }
-            },
-            expectedObjects = {},
-            extractedObjects,
-            labels = ["one"];
+            expectedObjects.one = objects.one;
+            expectedObjects.two = {};
 
-        expectedObjects.one = objects.one;
-        expectedObjects.two = {};
+            serializationExtractor.initWithSerialization(objects);
+            extractedObjects = serializationExtractor.extractObjects(labels);
 
-        serializationExtractor.initWithSerialization(objects);
-        extractedObjects = serializationExtractor.extractObjects(labels);
+            expect(extractedObjects).toEqual(expectedObjects);
+        });
 
-        expect(extractedObjects).toEqual(expectedObjects);
-    });
-
-    it("should extract an object and its two way bindings as external objects", function() {
-        var objects = {
-                "one": {
-                    "properties": {
-                        "element": {"#": "oneId"},
+        it("should extract an object and its two way bindings as external objects", function() {
+            var objects = {
+                    "one": {
+                        "properties": {
+                            "element": {"#": "oneId"},
+                        },
+                        "bindings": {
+                            "name": {"<->": "@two.name"}
+                        }
                     },
-                    "bindings": {
-                        "name": {"<->": "@two.name"}
+
+                    "two": {
+                        "properties": {
+                            "element": {"#": "twoId"},
+                            "name": "two"
+                        }
                     }
                 },
+                expectedObjects = {},
+                extractedObjects,
+                labels = ["one"];
 
-                "two": {
-                    "properties": {
-                        "element": {"#": "twoId"},
-                        "name": "two"
+            expectedObjects.one = objects.one;
+            expectedObjects.two = {};
+
+            serializationExtractor.initWithSerialization(objects);
+            extractedObjects = serializationExtractor.extractObjects(labels);
+
+            expect(extractedObjects).toEqual(expectedObjects);
+        });
+
+        it("should extract an object with bindings that have multiple references", function() {
+            var objects = {
+                    "one": {
+                        "properties": {
+                            "element": {"#": "oneId"},
+                            "value": 1
+                        }
+                    },
+
+                    "two": {
+                        "properties": {
+                            "element": {"#": "twoId"},
+                            "value": 2
+                        }
+                    },
+
+                    "sum": {
+                        "bindings": {
+                            "value": {"<-": "@one.value + @two.value"}
+                        }
                     }
-                }
-            },
-            expectedObjects = {},
-            extractedObjects,
-            labels = ["one"];
+                },
+                expectedObjects = {},
+                extractedObjects,
+                labels = ["sum"];
 
-        expectedObjects.one = objects.one;
-        expectedObjects.two = {};
+            expectedObjects.one = {};
+            expectedObjects.two = {};
+            expectedObjects.sum = objects.sum;
 
-        serializationExtractor.initWithSerialization(objects);
-        extractedObjects = serializationExtractor.extractObjects(labels);
+            serializationExtractor.initWithSerialization(objects);
+            extractedObjects = serializationExtractor.extractObjects(labels);
 
-        expect(extractedObjects).toEqual(expectedObjects);
+            expect(extractedObjects).toEqual(expectedObjects);
+        });
     });
 
     it("should extract an object and its listeners as external objects", function() {
