@@ -76,6 +76,8 @@ var SerializationExtractor = Montage.create(Montage, {
         value: function(objectSerialization, objects) {
             if ("bindings" in objectSerialization) {
                 this._collectLabelsInBindings(objectSerialization.bindings, objects);
+            } else if ("localizations" in objectSerialization) {
+                this._collectLabelsInLocalizations(objectSerialization.localizations, objects);
             }
         }
     },
@@ -120,6 +122,57 @@ var SerializationExtractor = Montage.create(Montage, {
                 for (var i = 0, ii = args.length; i < ii; i++) {
                     this._traverseBindingParseTree(args[i], visitor);
                 }
+            }
+        }
+    },
+
+    //
+    // -- Localizations
+    //
+
+    _collectLabelsInLocalizations: {
+        value: function(unitSerialization, labels) {
+            var property,
+                data;
+
+            for (var propertyName in unitSerialization) {
+                this._collectLabelsInLocalizationProperty(
+                    unitSerialization[propertyName], labels);
+            }
+        }
+    },
+
+    _collectLabelsInLocalizationProperty: {
+        value: function(property, labels) {
+            var data;
+
+            if ("key" in property) {
+                this._collectLabelsInLocalizationBinding(
+                    property.key, labels);
+            }
+
+            if ("default" in property) {
+                this._collectLabelsInLocalizationBinding(
+                    property.default, labels);
+            }
+
+            if ("data" in property) {
+                data = property.data;
+
+                for (var key in data) {
+                    this._collectLabelsInLocalizationBinding(
+                        data[key], labels);
+                }
+            }
+        }
+    },
+
+    _collectLabelsInLocalizationBinding: {
+        value: function(binding, labels) {
+            sourcePath = binding["<-"] || binding["<->"];
+
+            if (sourcePath) {
+                this._collectLabelsInBindingPath(sourcePath, labels);
             }
         }
     }

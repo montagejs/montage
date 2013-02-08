@@ -32,7 +32,6 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Localizer = require("montage/core/localizer"),
     Promise = require("montage/core/promise").Promise,
-    Deserializer = require("montage/core/deserializer").Deserializer,
     Bindings = require("montage/core/bindings").Bindings,
     Map = require("montage/collections/map");
 

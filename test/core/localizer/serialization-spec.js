@@ -32,8 +32,8 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Localizer = require("montage/core/localizer"),
     Promise = require("montage/core/promise").Promise,
-    Serializer = require("montage/core/serializer").Serializer,
-    Deserializer = require("montage/core/deserializer").Deserializer,
+    Serializer = require("montage/core/serialization").Serializer,
+    Deserializer = require("montage/core/serialization").Deserializer,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
     Map = require("montage/collections/map"),
     Bindings = require("montage/core/bindings").Bindings,
@@ -48,10 +48,12 @@ var testPage = TestPageLoader.queueTest("fallback", {directory: module.directory
 
     function testDeserializer(object, callback) {
         var deserializer = Deserializer.create(),
-            objects, latch;
+            objects, latch,
+            serializationString = JSON.stringify(object);
 
-        deserializer._require = require;
-        deserializer.initWithObject(object).deserialize(function(objs) {
+        deserializer.initWithSerializationStringAndRequire(
+            serializationString, require);
+        deserializer.deserialize().then(function(objs) {
             latch = true;
             objects = objs;
         });
@@ -98,22 +100,44 @@ var testPage = TestPageLoader.queueTest("fallback", {directory: module.directory
             });
 
             it("serializes an non-default localizer", function() {
-                testSerializer({
-                    localizer: {
-                        prototype: "montage/core/localizer",
-                        properties: {
-                            locale: "en-x-test"
+                var serialization = {
+                        localizer: {
+                            prototype: "montage/core/localizer",
+                            properties: {
+                                locale: "en-x-test"
+                            }
+                        },
+                        target: {
+                            prototype: "montage/core/localizer[Message]",
+                            properties: {
+                                key: "hello",
+                                localizer: {"@": "localizer"}
+                            }
                         }
                     },
-                    target: {
-                        prototype: "montage/core/localizer[Message]",
-                        properties: {
-                            key: "hello",
-                            localizer: {"@": "localizer"}
+                    expectedSerialization = {
+                        "root": {
+                            "value": {
+                                "key": "hello",
+                                "defaultMessage": null,
+                                "localizer": {"@": "localizer"}
+                            }
+                        },
+
+                        "localizer": {
+                            "prototype": "montage/core/localizer",
+                            "properties": {
+                                "messages": null,
+                                "locale": "en-x-test",
+                                "identifier": null,
+                                "parentProperty": null
+                            }
                         }
-                    }
-                }, function(serialization) {
-                    expect(serialization).toBe('{"localizer":{"prototype":"montage/core/localizer","properties":{"locale":"en-x-test"}},"root":{"value":{"key":"hello","localizer":{"@":"localizer"}}}}');
+                    };
+
+                testSerializer(serialization, function(serializationString) {
+                    expect(JSON.parse(serializationString))
+                    .toEqual(expectedSerialization);
                 });
             });
         });
@@ -238,62 +262,134 @@ var testPage = TestPageLoader.queueTest("fallback", {directory: module.directory
                 });
 
                 it("serializes simple localization strings", function() {
-                    testSerializer({
-                        target: {
-                            prototype: "montage",
-                            localizations: {
-                                "message": {
-                                    "key": "hello", // key is required
-                                    "default": "Hello"
+                    var serialization = {
+                            target: {
+                                prototype: "montage",
+                                localizations: {
+                                    "message": {
+                                        "key": "hello", // key is required
+                                        "default": "Hello"
+                                    }
                                 }
                             }
-                        }
-                    }, function(serialization) {
-                        expect(serialization).toBe('{"root":{"prototype":"montage/core/core[Montage]","properties":{},"localizations":{"message":{"key":"hello","default":"Hello"}}}}');
+                        },
+                        expectedSerialization = {
+                            "root": {
+                                "prototype": "montage/core/core[Montage]",
+                                "properties": {
+                                    "identifier": null,
+                                    "parentProperty": null
+                                },
+                                "localizations": {
+                                    "message": {
+                                        "key": "hello", // key is required
+                                        "default": "Hello"
+                                    }
+                                }
+                            }
+                        };
+
+                    testSerializer(serialization, function(serializationString) {
+                        expect(JSON.parse(serializationString))
+                        .toEqual(expectedSerialization);
                     });
                 });
 
                 it("serializes default message binding", function() {
-                    testSerializer({
-                        source: {
-                            value: {value: "Hello, {name}", identifier: "source"}
-                        },
-                        target: {
-                            prototype: "montage",
-                            localizations: {
-                                "binding": {
-                                    "key": "", // key is required
-                                    "default": {"<-": "@source.value"},
-                                    "data": {
-                                        "name": "someone"
+                    var serialization = {
+                            source: {
+                                value: {
+                                    value: "Hello, {name}",
+                                    identifier: "source"
+                                }
+                            },
+                            target: {
+                                prototype: "montage",
+                                localizations: {
+                                    "binding": {
+                                        "key": "", // key is required
+                                        "default": {"<-": "@source.value"},
+                                        "data": {
+                                            "name": "someone"
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }, function(serialization) {
-                        expect(serialization).toBe('{"root":{"prototype":"montage/core/core[Montage]","properties":{},"localizations":{"binding":{"key":"","default":{"<-":"@source.value"},"data":{"name":"someone"}}}},"source":{}}');
+                        },
+                        expectedSerialization = {
+                            "root": {
+                                "prototype": "montage/core/core[Montage]",
+                                "properties": {
+                                    "identifier": null,
+                                    "parentProperty": null
+                                },
+                                "localizations": {
+                                    "binding": {
+                                        "key": "",
+                                        "default": {
+                                            "<-": "@source.value"
+                                        },
+                                        "data": {
+                                            "name": "someone"
+                                        }
+                                    }
+                                }
+                            },
+                            "source": {}
+                        };
+
+                    testSerializer(serialization, function(serializationString) {
+                        expect(JSON.parse(serializationString))
+                        .toEqual(expectedSerialization);
                     });
                 });
 
                 it("serializes data binding", function() {
-                    testSerializer({
-                        source: {
-                            value: {value: "World", identifier: "source"}
-                        },
-                        target: {
-                            prototype: "montage",
-                            localizations: {
-                                "binding": {
-                                    "key": "", // key is required
-                                    "default": "Hello, {name}",
-                                    "data": {
-                                        "name": {"<-": "@source.value"}
+                    var serialization = {
+                            source: {
+                                value: {
+                                    value: "World",
+                                    identifier: "source"
+                                }
+                            },
+                            target: {
+                                prototype: "montage",
+                                localizations: {
+                                    "binding": {
+                                        "key": "", // key is required
+                                        "default": "Hello, {name}",
+                                        "data": {
+                                            "name": {"<-": "@source.value"}
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }, function(serialization) {
-                        expect(serialization).toBe('{"root":{"prototype":"montage/core/core[Montage]","properties":{},"localizations":{"binding":{"key":"","default":"Hello, {name}","data":{"name":{"<-":"@source.value"}}}}},"source":{}}');
+                        },
+                        expectedSerialization = {
+                            "root": {
+                                "prototype": "montage/core/core[Montage]",
+                                "properties": {
+                                    "identifier": null,
+                                    "parentProperty": null
+                                },
+                                "localizations": {
+                                    "binding": {
+                                        "key": "",
+                                        "default": "Hello, {name}",
+                                        "data": {
+                                            "name": {
+                                                "<-": "@source.value"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "source": {}
+                        };
+
+                    testSerializer(serialization, function(serializationString) {
+                        expect(JSON.parse(serializationString))
+                        .toEqual(expectedSerialization);
                     });
                 });
             });

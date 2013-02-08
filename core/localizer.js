@@ -11,8 +11,8 @@
 var Montage = require("montage").Montage,
     MessageFormat = require("core/messageformat"),
     logger = require("core/logger").logger("localizer"),
-    Serializer = require("core/serializer").Serializer,
-    Deserializer = require("core/deserializer").Deserializer,
+    Serializer = require("core/serialization").Serializer,
+    Deserializer = require("core/serialization").Deserializer,
     Promise = require("core/promise").Promise,
     Bindings = require("core/bindings").Bindings,
     PropertyChanges = require("collections/listen/property-changes"),
@@ -1030,7 +1030,7 @@ var createMessageBinding = function(object, prop, key, defaultMessage, data, des
     });
 };
 
-Serializer.defineSerializationUnit("localizations", function(object, serializer) {
+Serializer.defineSerializationUnit("localizations", function(serializer, object) {
     var bindingDescriptors = FrbBindings.getBindings(object);
 
     if (bindingDescriptors) {
@@ -1049,7 +1049,7 @@ Serializer.defineSerializationUnit("localizations", function(object, serializer)
     }
 });
 
-Deserializer.defineDeserializationUnit("localizations", function(object, properties, deserializer) {
+Deserializer.defineDeserializationUnit("localizations", function(deserializer, object, properties) {
     for (var prop in properties) {
         var desc = properties[prop],
             key,
