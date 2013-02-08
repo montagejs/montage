@@ -1,6 +1,6 @@
 {
 
-    "blueprint_button_accesskey":{
+    "blueprint_native_control_accesskey":{
         "prototype":"core/meta/property-blueprint",
         "properties":{
             "name":"accesskey",
@@ -18,7 +18,7 @@
         }
     },
 
-    "blueprint_button_contenteditable":{
+    "blueprint_native_control_contenteditable":{
         "prototype":"core/meta/property-blueprint",
         "properties":{
             "name":"contenteditable",
@@ -37,7 +37,7 @@
         }
     },
 
-    "blueprint_button_contextmenu":{
+    "blueprint_native_control_contextmenu":{
         "prototype":"core/meta/property-blueprint",
         "properties":{
             "name":"contextmenu",
@@ -55,7 +55,7 @@
         }
     },
 
-    "blueprint_button_dir":{
+    "blueprint_native_control_dir":{
         "prototype":"core/meta/property-blueprint",
         "properties":{
             "name":"dir",
@@ -74,7 +74,7 @@
         }
     },
 
-    "blueprint_button_draggable":{
+    "blueprint_native_control_draggable":{
         "prototype":"core/meta/property-blueprint",
         "properties":{
             "name":"draggable",
@@ -93,7 +93,7 @@
         }
     },
 
-    "blueprint_button_dropzone":{
+    "blueprint_native_control_dropzone":{
         "prototype":"core/meta/property-blueprint",
         "properties":{
             "name":"dropzone",
@@ -111,7 +111,7 @@
         }
     },
 
-    "blueprint_button_hidden":{
+    "blueprint_native_control_hidden":{
         "prototype":"core/meta/property-blueprint",
         "properties":{
             "name":"hidden",
@@ -129,7 +129,7 @@
         }
     },
 
-    "blueprint_button_lang":{
+    "blueprint_native_control_lang":{
         "prototype":"core/meta/property-blueprint",
         "properties":{
             "name":"lang",
@@ -147,7 +147,7 @@
         }
     },
 
-    "blueprint_button_spellcheck":{
+    "blueprint_native_control_spellcheck":{
         "prototype":"core/meta/property-blueprint",
         "properties":{
             "name":"spellcheck",
@@ -165,7 +165,7 @@
         }
     },
 
-    "blueprint_button_style":{
+    "blueprint_native_control_style":{
         "prototype":"core/meta/property-blueprint",
         "properties":{
             "name":"style",
@@ -183,7 +183,7 @@
         }
     },
 
-    "blueprint_button_tabindex":{
+    "blueprint_native_control_tabindex":{
         "prototype":"core/meta/property-blueprint",
         "properties":{
             "name":"tabindex",
@@ -201,7 +201,7 @@
         }
     },
 
-    "blueprint_button_title":{
+    "blueprint_native_control_title":{
         "prototype":"core/meta/property-blueprint",
         "properties":{
             "name":"title",
@@ -242,79 +242,79 @@
             },
             "propertyBlueprints":[
                 {
-                    "@":"blueprint_button_accesskey"
+                    "@":"blueprint_native_control_accesskey"
                 },
                 {
-                    "@":"blueprint_button_contenteditable"
+                    "@":"blueprint_native_control_contenteditable"
                 },
                 {
-                    "@":"blueprint_button_contextmenu"
+                    "@":"blueprint_native_control_contextmenu"
                 },
                 {
-                    "@":"blueprint_button_dir"
+                    "@":"blueprint_native_control_dir"
                 },
                 {
-                    "@":"blueprint_button_draggable"
+                    "@":"blueprint_native_control_draggable"
                 },
                 {
-                    "@":"blueprint_button_dropzone"
+                    "@":"blueprint_native_control_dropzone"
                 },
                 {
-                    "@":"blueprint_button_hidden"
+                    "@":"blueprint_native_control_hidden"
                 },
                 {
-                    "@":"blueprint_button_lang"
+                    "@":"blueprint_native_control_lang"
                 },
                 {
-                    "@":"blueprint_button_spellcheck"
+                    "@":"blueprint_native_control_spellcheck"
                 },
                 {
-                    "@":"blueprint_button_style"
+                    "@":"blueprint_native_control_style"
                 },
                 {
-                    "@":"blueprint_button_tabindex"
+                    "@":"blueprint_native_control_tabindex"
                 },
                 {
-                    "@":"blueprint_button_title"
+                    "@":"blueprint_native_control_title"
                 }
             ],
             "propertyBlueprintGroups":{
-                "component":[
+                "native-control":[
                     {
-                        "@":"blueprint_button_accesskey"
+                        "@":"blueprint_native_control_accesskey"
                     },
                     {
-                        "@":"blueprint_button_contenteditable"
+                        "@":"blueprint_native_control_contenteditable"
                     },
                     {
-                        "@":"blueprint_button_contextmenu"
+                        "@":"blueprint_native_control_contextmenu"
                     },
                     {
-                        "@":"blueprint_button_dir"
+                        "@":"blueprint_native_control_dir"
                     },
                     {
-                        "@":"blueprint_button_draggable"
+                        "@":"blueprint_native_control_draggable"
                     },
                     {
-                        "@":"blueprint_button_dropzone"
+                        "@":"blueprint_native_control_dropzone"
                     },
                     {
-                        "@":"blueprint_button_hidden"
+                        "@":"blueprint_native_control_hidden"
                     },
                     {
-                        "@":"blueprint_button_lang"
+                        "@":"blueprint_native_control_lang"
                     },
                     {
-                        "@":"blueprint_button_spellcheck"
+                        "@":"blueprint_native_control_spellcheck"
                     },
                     {
-                        "@":"blueprint_button_style"
+                        "@":"blueprint_native_control_style"
                     },
                     {
-                        "@":"blueprint_button_tabindex"
+                        "@":"blueprint_native_control_tabindex"
                     },
                     {
-                        "@":"blueprint_button_title"
+                        "@":"blueprint_native_control_title"
                     }
                 ]
             },
