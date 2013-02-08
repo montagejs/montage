@@ -18,12 +18,7 @@
           "name": "q",
           "location": "packages/mr/packages/q"
         }
-      },
-      "exclude": [
-        "lab",
-        "etc",
-        "node.js"
-      ]
+      }
     }
   },
   "dependencies": {
@@ -34,5 +29,13 @@
     "q": "~0.8.12",
     "q-io": "~1.3.2",
     "jsdom": "~0.2.19"
-  }
+  },
+  "exclude": [
+    "bin",
+    "etc",
+    "lab",
+    "node.js",
+    "test",
+    "tools"
+  ]
 }
