@@ -32,12 +32,13 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     logger = require("montage/core/logger").logger("deserializer-spec"),
     Deserializer = require("montage/core/serialization").Deserializer,
+    Bindings = require("montage/frb"),
     defaultEventManager = require("montage/core/event/event-manager").defaultEventManager,
     objects = require("serialization/testobjects-v2").objects;
 
 logger.isError = true;
 
-describe("montage-deserialization/deserializer-spec", function() {
+describe("serialization/montage-deserializer-spec", function() {
     var deserializer;
 
     beforeEach(function() {
@@ -905,7 +906,8 @@ describe("montage-deserialization/deserializer-spec", function() {
                 if (defaultEventManager.registeredEventListeners.action) {
                     expect(root.uuid in defaultEventManager.registeredEventListeners.action).toBeFalsy();
                 }
-                expect(root._bindingDescriptors).toBeTruthy();
+
+                expect(Object.keys(Bindings.getBindings(root)).length).toBeGreaterThan(0);
             }).fail(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
@@ -928,7 +930,7 @@ describe("montage-deserialization/deserializer-spec", function() {
                 expect(root.prop1).toBe(3.14);
                 expect(defaultEventManager.registeredEventListeners.action).toBeDefined();
                 expect(root.uuid in defaultEventManager.registeredEventListeners.action).toBeTruthy();
-                expect(root._bindingDescriptors).toBeTruthy();
+                expect(Object.keys(Bindings.getBindings(root)).length).toBeGreaterThan(0);
             }).fail(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");

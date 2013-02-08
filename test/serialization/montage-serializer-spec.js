@@ -37,7 +37,7 @@ var Montage = require("montage/core/core").Montage,
         return element;
     }
 
-describe("new-serialization/montage-serializer-spec", function() {
+describe("serialization/montage-serializer-spec", function() {
     var serializer;
 
     beforeEach(function() {
@@ -108,7 +108,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     root: {
                         object: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
@@ -127,7 +128,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     root: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
@@ -146,7 +148,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     root: {
                         prototype: "serialization/testobjects-v2",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
@@ -185,6 +188,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[OneProp]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             prop: {"#": "id"}
                         }
                     }
@@ -209,6 +213,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[TwoProps]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             prop1: {"#": "id"},
                             prop2: {"#": "id"}
                         }
@@ -255,7 +260,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     root: {
                         prototype: "serialization/testobjects-v2[OneProp]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
@@ -277,6 +283,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[OneProp]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             prop: [1, 2, 3, 4, 5]
                         }
                     }
@@ -299,6 +306,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[DistinctArrayProp]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             prop: []
                         }
                     }
@@ -318,6 +326,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[DistinctLiteralProp]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             prop: {}
                         }
                     }
@@ -338,6 +347,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[Simple]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             number: 42,
                             string: "string"
                         }
@@ -364,7 +374,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                             prop1b: {"@": "oneprop"},
                             prop2a: {"@": "oneprop2"},
                             prop2b: {"@": "oneprop2"},
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     },
 
@@ -372,7 +383,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[OneProp]",
                         properties: {
                             prop: "prop1",
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     },
 
@@ -410,7 +422,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     empty: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
@@ -442,7 +455,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     empty: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
@@ -467,6 +481,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                     prototype: "serialization/testobjects-v2[OneProp]",
                     properties: {
                         identifier: null,
+                        parentProperty: null,
                         prop: {"@": "simple"}
                     }
                 },
@@ -475,6 +490,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                     prototype: "serialization/testobjects-v2[Simple]",
                     properties: {
                         identifier: null,
+                        parentProperty: null,
                         number: 42,
                         string: "string"
                     }
@@ -497,7 +513,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                 anObject: {
                     prototype: "serialization/testobjects-v2[Empty]",
                     properties: {
-                        identifier: null
+                        identifier: null,
+                        parentProperty: null
                     }
                 },
 
@@ -505,6 +522,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                     prototype: "serialization/testobjects-v2[Simple]",
                     properties: {
                         identifier: null,
+                        parentProperty: null,
                         number: 42,
                         string: "string"
                     }
@@ -528,6 +546,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[OneProp]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             prop: {"@": "root"}
                         }
                     }
@@ -551,6 +570,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[OneProp]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             prop: {"@": "oneprop"}
                         }
                     },
@@ -559,7 +579,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[OneProp]",
                         properties: {
                             prop: {"@": "root"},
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
@@ -614,7 +635,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     empty: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
@@ -692,6 +714,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[CustomAllProperties]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             manchete: 42,
                             rodriguez: {"@": "empty"},
                             luz: {"@": "empty2"}
@@ -701,7 +724,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     empty2: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
@@ -755,7 +779,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     empty: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
@@ -847,6 +872,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[TwoProps]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             prop1: "prop1",
                             prop2: "prop2"
                         }
@@ -978,7 +1004,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     empty: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
@@ -1027,7 +1054,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     root: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
@@ -1084,6 +1112,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[Simple]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             number: 42,
                             string: "string"
                         }
@@ -1124,6 +1153,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[Simple]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             number: 42,
                             string: "string"
                         }
@@ -1155,7 +1185,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     object: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
@@ -1180,6 +1211,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[OneProp]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             prop: {"@": "root"}
                         }
                     }
@@ -1207,6 +1239,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[OneProp]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             prop: {"@": "root"}
                         }
                     }
@@ -1242,6 +1275,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[Simple]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             number: 42,
                             string: "string"
                         }
@@ -1272,7 +1306,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     empty: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
@@ -1302,6 +1337,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[Simple]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             number: 42,
                             string: "string"
                         }
@@ -1337,6 +1373,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[Simple]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             number: 42,
                             string: "string"
                         }
@@ -1368,6 +1405,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[OneProp]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             prop: null
                         }
                     }
@@ -1400,7 +1438,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     empty: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
@@ -1456,6 +1495,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[Simple]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             number: 42,
                             string: "string"
                         }
@@ -1489,6 +1529,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[OneProp]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             prop: {"@": "anObject"}
                         }
                     },
@@ -1496,7 +1537,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     anObject: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: "anObject"
+                            identifier: "anObject",
+                            parentProperty: null
                         }
                     }
                 };
@@ -1520,6 +1562,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[OneProp]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             prop: {"@": "empty"}
                         }
                     },
@@ -1527,7 +1570,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     empty: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: "an-object"
+                            identifier: "an-object",
+                            parentProperty: null
                         }
                     }
                 };
@@ -1551,14 +1595,16 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[OneProp]",
                         properties: {
                             prop: {"@": "generated2"},
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     },
 
                     generated2: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: "generated"
+                            identifier: "generated",
+                            parentProperty: null
                         }
                     }
                 };
@@ -1584,6 +1630,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[OneReferenceProp]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             referenceProp: {"@": "empty"}
                         }
                     },
@@ -1643,7 +1690,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     root: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         },
                         testing: {
                             number: 42,
@@ -1676,7 +1724,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     root: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         },
                         testing: {
                             simpleRef1: {"@": "simple"},
@@ -1713,7 +1762,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     root: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         },
                         testing: {
                             simpleRef: {"@": "simple"},
@@ -1724,6 +1774,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[Simple]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             number: 42,
                             string: "string"
                         }
@@ -1761,7 +1812,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     root: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         },
                         testing: {
                             simpleRef: {"@": "simple"},
@@ -1772,6 +1824,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[Simple]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             number: 42,
                             string: "string"
                         }
@@ -1809,6 +1862,7 @@ describe("new-serialization/montage-serializer-spec", function() {
                         prototype: "serialization/testobjects-v2[Simple]",
                         properties: {
                             identifier: null,
+                            parentProperty: null,
                             number: 42,
                             string: "string"
                         }
@@ -1816,7 +1870,8 @@ describe("new-serialization/montage-serializer-spec", function() {
                     empty: {
                         prototype: "serialization/testobjects-v2[Empty]",
                         properties: {
-                            identifier: null
+                            identifier: null,
+                            parentProperty: null
                         }
                     }
                 };
