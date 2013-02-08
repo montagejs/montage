@@ -49,9 +49,6 @@ var Montage = require("montage").Montage,
 /**
     @requires montage/ui/component-description
  */
-// This is loaded asynchronously if needed
-var ComponentDescriptionPromise;
-
 /**
  * @class module:montage/ui/component.Component
  * @classdesc Base class for all Montage components.
@@ -1068,38 +1065,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     blueprint: require("montage")._blueprintDescriptor,
-
-    _description:{
-        serializable:false,
-        value:null
-    },
-
-    /*
-     * Return the component description
-     * @function
-     * @return promise for the component description
-     */
-    description:{
-        serializable:false,
-        get:function () {
-            if (this._description === null) {
-                var self = this;
-
-                if (!ComponentDescriptionPromise) {
-                    ComponentDescriptionPromise = require.async("ui/component-description").get("ComponentDescription");
-                }
-
-                this._description = ComponentDescriptionPromise.then(function(ComponentDescription) {
-                    return ComponentDescription.getComponentDescriptionFromComponentModule(self);
-                });
-            }
-            return this._description;
-        },
-        set:function (value) {
-            value._component = this;
-            this._description = Promise.resolve(value);
-        }
-    },
 
     /**
     Callback for the <code>_canDrawGate</code>.<br>
