@@ -1,11 +1,11 @@
 
-require("montage");
+var Montage = require("montage").Montage;
 
 describe("paths-spec", function () {
 
     it("should return snapshot of map-change array", function () {
 
-        var object = {};
+        var object = Montage.create();
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var foos = object.getPath("array.map{foo}");
@@ -18,7 +18,8 @@ describe("paths-spec", function () {
 
     it("should set a property", function () {
 
-        var object = {a: {b: {c: {}}}};
+        var object = Montage.create();
+        Object.addEach(object, {a: {b: {c: {}}}});
         object.setPath("a.b.c.d", 10);
         expect(object.a.b.c.d).toBe(10);
 

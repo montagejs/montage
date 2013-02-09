@@ -1,11 +1,11 @@
 
-require("montage");
+var Montage = require("montage").Montage;
 
 describe("path-changes-spec", function () {
 
     it("should return incremental map-change array", function () {
 
-        var object = {};
+        var object = Montage.create();
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var foos = object.addPathChangeListener("array.map{foo}");
@@ -22,7 +22,7 @@ describe("path-changes-spec", function () {
 
     it("should watch value changes", function () {
 
-        var object = {};
+        var object = Montage.create();
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var spy = jasmine.createSpy();
@@ -44,7 +44,7 @@ describe("path-changes-spec", function () {
 
     it("should watch before value changes", function () {
 
-        var object = {};
+        var object = Montage.create();
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var spy = jasmine.createSpy();
@@ -66,7 +66,7 @@ describe("path-changes-spec", function () {
 
     it("should watch value changes with path change handler", function () {
 
-        var object = {};
+        var object = Montage.create();
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var spy = jasmine.createSpy();
@@ -90,7 +90,7 @@ describe("path-changes-spec", function () {
 
     it("should watch value changes with change handler with a specific method", function () {
 
-        var object = {};
+        var object = Montage.create();
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var spy = jasmine.createSpy();
@@ -114,7 +114,7 @@ describe("path-changes-spec", function () {
 
     it("should produce an error", function () {
 
-        var object = {};
+        var object = Montage.create();
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var sum = object.addPathChangeListener("array.sum{foo}");
@@ -128,12 +128,12 @@ describe("path-changes-spec", function () {
 
     it("should nest listeners", function () {
 
-        var object = {};
+        var object = Montage.create();
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var spy = jasmine.createSpy();
         var cancel = object.addPathChangeListener("array.map{foo}", function (foos) {
-            return foos.addPathChangeListener("sum()", function (sum) {
+            return Montage.addPathChangeListener.call(foos, "sum()", function (sum) {
                 spy(sum);
             });
         });
@@ -151,7 +151,7 @@ describe("path-changes-spec", function () {
 
     it("should nest path change and range change listeners", function () {
 
-        var object = {};
+        var object = Montage.create();
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var spy = jasmine.createSpy();
@@ -179,7 +179,7 @@ describe("path-changes-spec", function () {
 
     it("should observe range change on mapped array", function () {
 
-        var object = {};
+        var object = Montage.create();
         object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
         var spy = jasmine.createSpy();

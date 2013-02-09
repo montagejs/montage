@@ -6,12 +6,17 @@ var Map = require("collections/map");
 var parse = require("frb/parse");
 var evaluate = require("frb/evaluate");
 var assign = require("frb/assign");
+var observe = require("frb/observe");
+var bind = require("frb/bind");
 var compileObserver = require("frb/compile-observer");
-var autoCancelPrevious = require("frb/observers").autoCancelPrevious;
+var Observers = require("frb/observers");
+var autoCancelPrevious = Observers.autoCancelPrevious;
+var observeProperty = Observers.observeProperty;
+var observeKey = Observers.observeKey;
 
 var pathChangeDescriptors = new WeakMap();
 
-Montage.defineProperties(Object.prototype, {
+Montage.defineProperties(Montage, {
 
     getPath: {
         value: function (path, parameters) {
@@ -22,6 +27,40 @@ Montage.defineProperties(Object.prototype, {
     setPath: {
         value: function (path, value, parameters) {
             return assign(this, path, value, parameters);
+        }
+    },
+
+    observePath: {
+        value: function (path, emit, parameters, beforeChange) {
+            var syntax = parse(path);
+            var observe = compileObserver(syntax);
+            return observe(emit, this, parameters, beforeChange);
+        }
+    },
+
+    observeProperty: {
+        value: function (key, emit, source, parameters, beforeChange) {
+            return observeProperty(
+                this,
+                key,
+                emit,
+                source || this,
+                parameters || source || this,
+                beforeChange
+            );
+        }
+    },
+
+    observeKey: {
+        value: function (key, emit, source, parameters, beforeChange) {
+            return observeKey(
+                this,
+                key,
+                emit,
+                source || this,
+                parameters || source || this,
+                beforeChange
+            );
         }
     },
 
@@ -36,7 +75,7 @@ Montage.defineProperties(Object.prototype, {
 
     getPathChangeDescriptor: {
         value: function (path, handler, beforeChange) {
-            var descriptors = this.getPathChangeDescriptors();
+            var descriptors = Montage.getPathChangeDescriptors.call(this);
             if (!Object.owns(descriptors, path)) {
                 descriptors[path] = {
                     willChangeListeners: new Map(), // handler to descriptor
@@ -70,7 +109,7 @@ Montage.defineProperties(Object.prototype, {
 
             handler = handler || Function.noop;
 
-            var descriptor = this.getPathChangeDescriptor(path, handler, beforeChange);
+            var descriptor = Montage.getPathChangeDescriptor.call(this, path, handler, beforeChange);
             descriptor.cancel();
 
             var syntax = parse(path);
@@ -119,7 +158,7 @@ Montage.defineProperties(Object.prototype, {
     removePathChangeListener: {
         value: function (path, handler, beforeChange) {
             handler = handler || Function.noop;
-            var descriptorsForObject = this.getPathChangeDescriptors();
+            var descriptorsForObject = Montage.getPathChangeDescriptors.call(this);
             var phase = beforeChange ? "willChangeListeners" : "changeListeners";
 
             if (!Object.owns(descriptorsForObject, path)) {
@@ -149,13 +188,13 @@ Montage.defineProperties(Object.prototype, {
 
     addBeforePathChangeListener: {
         value: function (path, handler, methodName) {
-            return this.addPathChangeListener(path, handler, methodName, true);
+            return Montage.addPathChangeListener.call(this, path, handler, methodName, true);
         }
     },
 
     removeBeforePathChangeListener: {
         value: function (path, handler, methodName) {
-            return this.removePathChangeListener(path, handler, true);
+            return Montage.removePathChangeListener.call(this, path, handler, true);
         }
     }
 
