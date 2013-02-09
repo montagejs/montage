@@ -100,26 +100,22 @@ Object.defineProperty(Montage, "create", {
         if (aPrototype !== undefined && typeof aPrototype !== "object") {
             throw new TypeError("Object prototype may only be an Object or null, not '" + aPrototype + "'");
         }
+        // Prototype.create() and Montage.create(Prototype)
+        // both create instances:
         if (!propertyDescriptor) {
             var newObject = Object.create(typeof aPrototype === "undefined" ? this : aPrototype);
-
             if (typeof newObject.didCreate === "function") {
                 newObject.didCreate();
             }
-
             return newObject;
+        // Montage.create(Prototype, properties)
+        // creates instances
         } else {
             var result = Object.create(aPrototype);
             Montage.defineProperties(result, propertyDescriptor);
             return result;
         }
     }
-});
-
-Object.defineProperty(Montage, "didCreate", {
-    configurable: true,
-    writable: true,
-    value: Function.noop
 });
 
 var extendedPropertyAttributes = [SERIALIZABLE];
@@ -437,6 +433,10 @@ function getAttributeProperties(proto, attributeName) {
         })[attributePropertyName];
     }
 }
+
+Montage.defineProperty(Montage, "didCreate", {
+    value: Function.noop
+});
 
 /**
     Returns the names of serializable properties belonging to Montage object.
