@@ -11,8 +11,6 @@ var Observers = require("frb/observers");
 var observeProperty = Observers.observeProperty;
 var observeKey = Observers.observeKey;
 
-// TODO optimization where plus.length === minus.length
-
 /**
  * A reusable view-model for each iteration of a repetition.  Each iteration
  * corresponds to a visible object.  When an iteration is visible, it is tied
@@ -79,6 +77,9 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             // Dispatches handlePropertyChange with the "active" key:
             this.addOwnPropertyChangeListener("active", this);
             this.defineBinding("active", {"<->": "repetition.activeIterations.has(())"});
+
+            this.defineBinding("isFirst", {"<-": "visibleIndex == 0"});
+            this.defineBinding("isLast", {"<-": "visibleIndex == repetition.iterations.length - 1"});
 
         }
     },
@@ -532,7 +533,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // entirely by a bidirectional binding to each iteration's "active"
             // property, which in turn manages the "active" class on each
             // element in the iteration in the draw cycle.
-            this.activeIterations = [];
+            this.activeIterations = []; // could be a Set()
 
         }
     },
