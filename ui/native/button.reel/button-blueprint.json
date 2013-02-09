@@ -83,6 +83,11 @@
             "denyDelete":false,
             "readOnly":false,
             "valueType":"enum",
+            "enumValues":[
+                "application/x-www-form-urlencoded",
+                "multipart/form-data",
+                "text/plain"
+            ],
             "helpKey":""
         }
     },
@@ -99,6 +104,10 @@
             "denyDelete":false,
             "readOnly":false,
             "valueType":"enum",
+            "enumValues":[
+                "get",
+                "post"
+            ],
             "helpKey":""
         }
     },
@@ -187,6 +196,11 @@
             "denyDelete":false,
             "readOnly":false,
             "valueType":"enum",
+            "enumValues":[
+                "button",
+                "reset",
+                "submit"
+            ],
             "helpKey":""
         }
     },

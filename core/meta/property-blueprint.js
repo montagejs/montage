@@ -238,7 +238,7 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
             if (!this._enumValues) {
                 return [];
             }
-            return this._enumValues_enumValues;
+            return this._enumValues;
         },
         set: function(value) {
             if (Array.isArray(value)) {
