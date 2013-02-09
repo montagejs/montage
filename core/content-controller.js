@@ -55,6 +55,7 @@ var ContentController = exports.ContentController = Montage.create(Montage, {
             this.selectAddedContent = false;
             this.deselectInvisibleContent = false;
             this.deselectDeletedContent = true;
+            this.avoidsEmptySelection = false;
             // TODO this.start = null;
             // TODO this.length = null;
             // internal
@@ -109,6 +110,8 @@ var ContentController = exports.ContentController = Montage.create(Montage, {
     handleContentChange: {
         value: function (content) {
             if (content) {
+                // returns a canceler so addPathChangeListener canceles it
+                // automatically before the next handleContentChange.
                 return content.addRangeChangeListener(this, "content");
             }
         }
@@ -122,6 +125,9 @@ var ContentController = exports.ContentController = Montage.create(Montage, {
                 }
                 if (this.deselectDeletedContent) {
                     this.selection.deleteEach(minus);
+                    if (this.avoidsEmptySelection && minus.length) {
+                        this.selection.add(minus.one());
+                    }
                 }
             }
         }
