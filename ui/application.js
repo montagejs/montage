@@ -457,7 +457,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                 rootComponent = exports.__root__;
                 rootComponent.element = document;
 
-                return require("ui/new-template").instantiateDocument(window.document, applicationRequire)
+                return require("ui/template").instantiateDocument(window.document, applicationRequire)
                 .then(function(part) {
                     self.callDelegateMethod("willFinishLoading", self);
                     rootComponent.needsDraw = true;

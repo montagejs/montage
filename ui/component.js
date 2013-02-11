@@ -40,7 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 var Montage = require("montage").Montage,
     Bindings = require("core/bindings").Bindings,
-    Template = require("ui/new-template").Template,
+    Template = require("ui/template").Template,
     Gate = require("core/gate").Gate,
     Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("component"),

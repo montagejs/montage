@@ -88,7 +88,7 @@ if (spec) {
         "geometry/cubicbezier-spec",
         "geometry/point-spec",
 
-        "reel/new-template-spec",
+        "reel/template-spec",
         "document-resources-spec",
 
         "serialization/montage-serializer-spec",
