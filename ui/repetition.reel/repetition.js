@@ -4,6 +4,7 @@ var Montage = require("montage").Montage;
 var Component = require("ui/component").Component;
 var Template = require("ui/template").Template;
 var ContentController = require("core/content-controller").ContentController;
+var Promise = require("q");
 
 var Map = require("collections/map");
 
@@ -39,11 +40,6 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             this.addOwnPropertyChangeListener("selected", this);
             this.defineBinding("selected", {"<->": "controller.selected"});
             this.defineBinding("object", {"<->": "controller.object"});
-            // A temporary place-holder for the element in the iteration-
-            // template instantiation process.  As soon as possible, the
-            // iteration extracts all of its child elements and puts them in
-            // the fragment.
-            this.element = null;
             // An iteration can be "on" or "off" the document.  When the
             // iteration is added to a document, the "fragment" is depopulated
             // and placed between "topBoundary" and "bottomBoundary" on the
@@ -89,19 +85,6 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             // The repetition property is necessary to communicate changes to
             // the selected property into pending operations queue.
             this.repetition = repetition;
-
-            // The element property is only necessary to communicate from
-            // deserializeIteration to templateDidLoad.
-            var element = this.element;
-            this.element = null;
-            var fragment = element.ownerDocument.createDocumentFragment();
-            this.fragment = fragment;
-            while (element.firstChild) {
-                var child = element.firstChild;
-                element.removeChild(child);
-                fragment.appendChild(child);
-            }
-
         }
     },
 
@@ -397,9 +380,9 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     // Informs the super-type, Component, that there is no repetition.html
     hasTemplate: {value: false},
 
-    // informs Template that it is not safe to clone the DOM of the
-    // corresponding element. TODO @aadsm, please explain this better, here and
-    // in Component.  - @kriskowal.
+    // Informs Template that it is not safe to reference the initial DOM
+    // contents of the repetition.
+    // Refer to Component.clonesChildComponents for more documentation.
     clonesChildComponents: {value: true},
 
     // Implementation:
@@ -437,10 +420,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // (and when it is initially created), it gets put in the
             // freeIterations list.
             this.freeIterations = []; // push/pop LIFO
-            // Iterations that need a template instance: We cannot draw until
-            // all of the iterations (free or otherwise, for simplicity's sake)
-            // have templates.
-            this.iterationsNeedingTemplates = [];
             // Whenever an iteration template is instantiated, it may have
             // bindings to the repetition's "objectAtCurrentIteration".  The
             // repetition delegates "objectAtCurrentIteration" to a mapping
@@ -465,6 +444,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // template instance:
             this._templateId = null;
 
+            this._iterationInstantiationPromise = Promise.resolve();
+
             // Where we want to be after the next draw:
             // ---
 
@@ -484,12 +465,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // top and bottom boundary of each iteration.  There will always be
             // one more boundary than iteration.
             this.boundaries = [];
-            // The child components of each iteration will be shared in the
-            // repetitions own childComponents.  Since each repetition
-            // consistently has the same number of childComponents, we can
-            // project changes to the components array based on the
-            // visibleIndex of the iteration and this figure:
-            this.iterationChildComponentsLength = 0;
 
             // The plan for the next draw to synchronize controllerIterations
             // and iterations on the DOM:
@@ -550,9 +525,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // wait until the deserialization is complete and the template is
             // fully instantiated so we can capture all the child components
             // and DOM elements.
-            if (!this._newDomContent) {
-                this.setupIterationTemplate();
-            }
+            this.setupIterationTemplate();
 
             this._isComponentExpanded = true;
             if (callback) {
@@ -584,7 +557,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             this.iterationForElement.clear();
             this.currentIteration = null;
             this._templateId = null;
-            this.iterationChildComponentsLength = 0;
             this.pendingOperations.clear();
             this.requestedIterations = 0;
             this.createdIterations = 0;
@@ -616,12 +588,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         }
     },
 
-    // This prevents the deserializer from reinstantiating the ownerComponent.
-    // TODO @aadsm please verify - @kriskowal
-    templateDidDeserializeObject: {
-        value: null
-    },
-
     /*
     * When a template contains a repetition, the deserializer produces a
     * repetition instance that initially contains a single iteration's worth of
@@ -648,44 +614,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 return;
             }
 
-            // override the prototype's serialization routine on just this
-            // instance temporarily:
-            this.serializeSelf = this.serializeIteration;
-            // permanently override deserializeProperties because it is used
-            // for instantiating the iterationTemplate.
-            this.deserializeProperties = this.deserializeIteration;
-
-            this.iterationChildComponentsLength = this.childComponents.length;
-
-            // create an iteration template
-            if (this.childComponents.length > 0) {
-                // The common case (components and a document fragment).
-                // The templateId property is used by ui/template.js as a memo
-                // key.  Use the first contained component's UUID to uniquely
-                // identify this template.  Use the _suuid to ascertain that
-                // only one key exists, even if the repetition is nested.
-                this._templateId = (
-                    this.childComponents[0]._suuid || // Assigned by Serialization
-                    this.childComponents[0].uuid // Assigned by Montage
-                );
-                // TODO @aadsm, maybe we don't need to fall back to
-                // childComponents[0].uuid, if every component is guaranteed to
-                // have _suuid.  templateWithComponent is a memoization of the
-                // template for its id - @kriskowal
-                this.iterationTemplate = Template.templateWithComponent(
-                    this,
-                    this._templateDelegate
-                );
-            } else {
-                // The optimized case (just a document fragment, no components)
-                this.iterationTemplate = Template.create();
-                this.iterationTemplate.delegate = this._templateDelegate;
-                this.iterationTemplate.initWithComponent(this);
-            }
-
-            this.iterationTemplate.optimize();
-            // this restores serializeSelf to the one on the prototype chain:
-            delete this.serializeSelf;
+            this.iterationTemplate = this.innerTemplate;
 
             // the components inside the repetition in the markup are going to
             // be instantiated once when the component is initially
@@ -708,80 +637,53 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         }
     },
 
-    // This method temporarily replaces "serializeSelf" for the purpose of
-    // creating an iteration template from the initial HTML content and
-    // childComponents of a fresh repetition instance.
-    serializeIteration: {
-        value: function (serializer) {
-            serializer.setProperty("element", this.element);
-            for (var i = 0; i < this.childComponents.length; i++) {
-                serializer.addObject(this.childComponents[i]);
-            }
-            serializer.setProperty("_isComponentExpanded", true);
-        }
-    },
-
-    // This template delegate object is shared by all repetitions and receives
-    // all meaningful state in arguments.
-    _templateDelegate: {
-        value: {
-            // This method gets called by the Template initializer on behalf of
-            // setupIterationTemplate
-            serializeObjectProperties: function(serialization, object) {
-                serialization.set(
-                    "ownerComponent",
-                    object.ownerComponent,
-                    "reference"
-                );
-            }
-        }
-    },
-
     // Instantiating an iteration template:
     // ----
-
+    _iterationInstantiationPromise: {value: null},
     createIteration: {
         value: function () {
-            var self = this;
-            var iteration = Iteration.create();
-            this.iterationsNeedingTemplates.push(iteration);
-            this.iterationTemplate.instantiateWithComponent(this, function () {
+            var self = this,
+                iteration = Iteration.create();
 
-                // The iteration has been created.  We need to expand the child
-                // components and their transitive children.  For the special
-                // case of a repetition that only has HTML and no components,
-                // we skip that process.
-                if (self.iterationChildComponentsLength === 0) {
-                    iteration.childComponents = [];
-                    self.didCreateIteration();
-                } else {
-                    // All of the child components created by instantiating the
-                    // iteration template will be at the end of the repetition
-                    // childComponents.  We know how many child components
-                    // should be generated, so we count back from the end of
-                    // the array and add those childComponents to the
-                    // iteration.
-                    var start = self.childComponents.length -
-                        self.iterationChildComponentsLength;
-                    var end = self.childComponents.length;
-                    var childComponents = self.childComponents.slice(start, end);
-                    // Add the list of child components to the iteration
-                    // so that it can call needsDraw on them whenever it is
-                    // returned to the document.
-                    iteration.childComponents = childComponents;
-                    // Build out the child component hierarchy.
+            this._iterationInstantiationPromise = this._iterationInstantiationPromise
+            .then(function() {
+                var _document = self.element.ownerDocument;
 
-                    for (var i = 0; i < childComponents.length; i++) {
-                        var childComponent = childComponents[i];
-                        childComponent.needsDraw = true;
-                        childComponent.loadComponentTree(function () {
-                            self.didCreateIteration();
-                        });
+                self.currentIteration = iteration;
+
+                return self.iterationTemplate.instantiate(_document)
+                .then(function (part) {
+                    iteration.childComponents = part.childComponents;
+                    iteration.fragment = part.fragment;
+                    // The iteration has been created.  We need to expand the
+                    // child components and their transitive children.  For the
+                    // special case of a repetition that only has HTML and no
+                    // components, we skip that process.
+                    if (part.childComponents.length === 0) {
+                        self.didCreateIteration();
+                    } else {
+                        var childComponents = part.childComponents;
+
+                        iteration.childComponents = childComponents;
+
+                        // Build out the child component hierarchy.
+                        for (var i = 0; i < childComponents.length; i++) {
+                            var childComponent = childComponents[i];
+
+                            self._addChildComponent(childComponent);
+                            childComponent.loadComponentTree(function () {
+                                self.didCreateIteration();
+                            });
+                        }
                     }
 
-                }
-
+                    iteration.initWithRepetition(this);
+                    self.currentIteration = null;
+                });
+            }).fail(function(reason) {
+                console.log(reason.stack);
             });
+
             this.requestedIterations++;
             return iteration;
         }
@@ -792,62 +694,24 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     didCreateIteration: {
         value: function () {
             this.createdIterations++;
+
             if (
                 this.createdIterations >= this.maxNeededIterations ||
                 this.pendingOperations.length
             ) {
                 this.needsDraw = true;
+                // TODO: When we change the canDraw() function of a component
+                // we need to _canDraw = true whenever we request a draw.
+                // This is because if the component gets into a state where it
+                // is part of the draw cycle but not able to draw (canDraw()
+                // === false) its needsDraw property is not set to false and
+                // further needsDraw = true will result in a noop, the only way
+                // to make the component draw again is by informing the root
+                // component directly that it can draw now, and this is done by
+                // _canDraw = true. Another option is to make its parent draw,
+                // but we probably don't want that.
+                this._canDraw = true;
             }
-        }
-    },
-
-    // After the repetition itself has been deserialized, setupIterationTemplate
-    // overwrites deserializeProperties with deserializeIteration so that
-    // deserializing the repetition produces iteration template instances
-    // instead of repetitions.
-    //
-    // When this is used to instantiate a template, it finds an iteration that
-    // needs a template in iterationsNeedingTemplates and sets that to the
-    // "currentIteration".  Since deserialization is entirely synchronous, we
-    // can count on "currentIteration" to be associated with any bindings to
-    // "objectAtCurrentIteration" while the iteration is being instantiated.
-    // We use "objectForIteration" to update the corresponding object when
-    // the iteration is added to (or reused on) the view.
-    //
-    // This also captures the document fragment of the instantiated template
-    // and adds the elements to the event manager.
-    deserializeIteration: {
-        value: function (deserializer) {
-            var iteration = this.iterationsNeedingTemplates.pop();
-            this.currentIteration = iteration;
-            iteration.element = deserializer.get("element");
-            this.eventManager.registerEventHandlerForElement(
-                this,
-                iteration.element
-            );
-        }
-    },
-
-    // This is the last handler dispatched by iterationTemplate.initWithComponent,
-    // wherein we mark the currentIteration as fully loaded.  This all happens in
-    // the same event as deserialization so there is no chance of interleaving with
-    // other iterations.
-    templateDidLoad: {
-        value: function () {
-            var iteration = this.currentIteration;
-            if (!iteration) {
-                throw new Error(
-                    "Assertion error: templateDidLoad should only be called " +
-                    "after deserializeProperties so there should always be " +
-                    "a currentIteration"
-                );
-            }
-
-            // populate the document fragment for the iteration from the
-            // content of the element
-            iteration.initWithRepetition(this);
-
-            this.currentIteration = null;
         }
     },
 
@@ -981,39 +845,34 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // block for the usual component-related issues
             var canDraw = this.canDrawGate.value;
 
-            // TODO: this check will be in draw until we have the DrawManager.
-            //       we need to draw in order to replace the DOM if domContent
-            //       was assigned to.
             // block until we have created enough iterations to draw
-            //canDraw = canDraw && this.maxNeededIterations <= this.createdIterations;
-
-            // TODO: we need to enable the draw to make domContent work before
-            //       we have the DrawManager.
+            canDraw = canDraw && this.maxNeededIterations <= this.createdIterations;
             // block until we can draw initial content if we have not already
-            //canDraw = canDraw && (this.initialContentDrawn || this.canDrawInitialContent);
+            canDraw = canDraw && (this.initialContentDrawn || this.canDrawInitialContent);
 
+            // TODO: we're going to comment this out for now at least because
+            // the repetition can get into a dead lock in the case of a nested
+            // repetition (a repetition that has another repetition as direct
+            // child component). It's possible to get into a state where the
+            // inner repetition will never be able to draw unless the outer
+            // repetition draws first. Hopefully the DrawManager will be able
+            // to solve this.
             // block until all child components can draw
-            if (canDraw) {
-                for (var i = 0; i < this.childComponents.length; i++) {
-                    var childComponent = this.childComponents[i];
-                    if (!childComponent.canDraw()) {
-                        canDraw = false;
-                    }
-                }
-            }
+            //if (canDraw) {
+            //    for (var i = 0; i < this.childComponents.length; i++) {
+            //        var childComponent = this.childComponents[i];
+            //        if (!childComponent.canDraw()) {
+            //            canDraw = false;
+            //        }
+            //    }
+            //}
+
             return canDraw;
         }
     },
 
     draw: {
         value: function () {
-            // TODO: this is supossed to be in canDraw() please refer to that
-            //       function for more information on this hack.
-            // block until we have created enough iterations to draw
-            if (this.maxNeededIterations != this.createdIterations) {
-                return;
-            }
-
             if (!this.initialContentDrawn) {
                 this.drawInitialContent();
                 this.initialContentDrawn = true;
@@ -1278,8 +1137,3 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     ClassChangeOperation: { value: ClassChangeOperation, serializable: false }
 
 });
-
-// TODO deserializeSelf / serializeSelf that simplifies the "controller" out if
-// possible, that is, if the controller is a ContentController, just steal its
-// "content" property and all bindings to it and put them on the repetition.
-// Unpossible?  Probably.
