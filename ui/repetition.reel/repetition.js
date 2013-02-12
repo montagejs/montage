@@ -517,7 +517,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     // ----
 
     expandComponent: {
-        value: function expandComponent(callback) {
+        value: function expandComponent() {
             // _isComponentExpanded is Used by Component to determine whether
             // the node of the component object hierarchy is traversable:
             // We can't set up the iteration template during didCreate because
@@ -528,9 +528,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             this.setupIterationTemplate();
 
             this._isComponentExpanded = true;
-            if (callback) {
-                callback();
-            }
+
+            return Promise.resolve();
         }
     },
 

@@ -65,8 +65,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             Montage.didCreate.call(this);
             this._isComponentExpanded = false;
             this._isTemplateLoaded = false;
-            this._isTemplateLoading = false;
             this._isTemplateInstantiated = false;
+            this._isComponentTreeLoaded = false;
         }
     },
 
@@ -831,24 +831,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
   Description TODO
   @private
 */
-    _loadComponentTreeCallbacks: {
-        enumerable: false,
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
     _isComponentTreeLoaded: {
-        enumerable: false,
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
-    _isComponentTreeLoading: {
-        enumerable: false,
         value: null
     },
 /**
@@ -857,73 +840,47 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @param {Object} callback Callback object
     @returns itself
     */
-    loadComponentTree: {value: function loadComponentTree(callback) {
-        var self = this,
-            canDrawGate = this.canDrawGate;
+    _loadComponentTreeDeferred: {value: null},
+    loadComponentTree: {
+        value: function loadComponentTree() {
+            var self = this,
+                canDrawGate = this.canDrawGate,
+                deferred = this._loadComponentTreeDeferred;
 
-        if (this._isComponentTreeLoaded) {
-            if (callback) {
-                callback(this);
-            }
-            return;
-        }
+            if (!deferred) {
+                deferred = Promise.defer();
+                this._loadComponentTreeDeferred = deferred;
 
-        if (callback) {
-            if (this._loadComponentTreeCallbacks == null) {
-                this._loadComponentTreeCallbacks = [callback];
-            } else {
-                this._loadComponentTreeCallbacks.push(callback);
-            }
-        }
-        if (this._isComponentTreeLoading) {
-            return;
-        }
+                canDrawGate.setField("componentTreeLoaded", false);
 
-        canDrawGate.setField("componentTreeLoaded", false);
-        // only put it in the root component's draw list if the component has requested to be draw, it's possible to load the component tree without asking for a draw.
-        // What about the hasTemplate check?
-        if (this.needsDraw || this.hasTemplate) {
-            this._canDraw = false;
-        }
-
-        function callCallbacks() {
-            var callback, callbacks = self._loadComponentTreeCallbacks;
-
-            self._isComponentTreeLoading = false;
-            self._isComponentTreeLoaded = true;
-
-            canDrawGate.setField("componentTreeLoaded", true);
-
-            if (callbacks) {
-                for (var i = 0; (callback = callbacks[i]); i++) {
-                    callback(self);
+                // only put it in the root component's draw list if the
+                // component has requested to be draw, it's possible to load the
+                // component tree without asking for a draw.
+                // What about the hasTemplate check?
+                if (this.needsDraw || this.hasTemplate) {
+                    this._canDraw = false;
                 }
-                self._loadComponentTreeCallbacks = callbacks = null;
-            }
-        }
 
-        this._isComponentTreeLoading = true;
-        this.expandComponent(function() {
-            var childComponent,
-                childComponents = self.childComponents,
-                childComponentsCount = childComponents.length,
-                childrenLoadedCount = 0,
-                i;
+                this.expandComponent().then(function() {
+                    var promises = [],
+                        childComponents = self.childComponents,
+                        childComponent;
 
-            if (childComponentsCount === 0) {
-                callCallbacks();
-                return;
-            }
-
-            for (i = 0; (childComponent = childComponents[i]); i++) {
-                childComponent.loadComponentTree(function() {
-                    if (++childrenLoadedCount === childComponentsCount) {
-                        callCallbacks();
+                    for (var i = 0; (childComponent = childComponents[i]); i++) {
+                        promises.push(childComponent.loadComponentTree());
                     }
+
+                    Promise.all(promises).then(function() {
+                        self._isComponentTreeLoaded = true;
+                        canDrawGate.setField("componentTreeLoaded", true);
+                        deferred.resolve();
+                    });
                 });
             }
-        });
-    }},
+
+            return deferred.promise;
+        }
+    },
 /**
     Description TODO
     @function
@@ -967,10 +924,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
         if (this._isComponentExpanded) {
             traverse();
-        } else {
-            this.expandComponent(function() {
-                traverse();
-            });
+        } else if (callback) {
+            callback();
         }
     }},
 /**
@@ -978,31 +933,29 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @function
     @param {Object} callback  TODO
     */
-    expandComponent: {value: function expandComponent(callback) {
-        var self = this;
+    _expandComponentDeferred: {value: null},
+    expandComponent: {
+        value: function expandComponent() {
+            var self = this,
+                deferred = this._expandComponentDeferred;
 
-        if (this.hasTemplate && !this._isTemplateInstantiated) {
-            this.loadTemplate(function() {
-                self._isComponentExpanded = true;
-                if (callback) {
-                    callback();
+            if (!deferred) {
+                deferred = Promise.defer();
+                this._expandComponentDeferred = deferred;
+
+                if (this.hasTemplate) {
+                    this._instantiateTemplate().then(function() {
+                        self._isComponentExpanded = true;
+                        deferred.resolve();
+                    });
+                } else {
+                    this._isComponentExpanded = true;
+                    deferred.resolve();
                 }
-            });
-        } else {
-            self._isComponentExpanded = true;
-            if (callback) {
-                callback();
             }
-        }
-    }},
 
-/**
-  Description TODO
-  @private
-*/
-    _loadTemplateCallbacks: {
-        enumerable: false,
-        value: null
+            return deferred.promise;
+        }
     },
 
     _templateObjectDescriptor: {
@@ -1078,11 +1031,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @function
     @param {Object} callback  TODO
 */
-    loadTemplate: {value: function loadTemplate(callback) {
-        var self = this;
+    _instantiateTemplate: {
+        value: function() {
+            var self = this;
 
-        if (!this._isTemplateInstantiated) {
-            this._loadTemplate(function(template) {
+            return this._loadTemplate().then(function(template) {
                 var instances = self.templateObjects,
                     _document = self._element.ownerDocument;
 
@@ -1092,75 +1045,47 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     self.templateObjects = instances = {owner: self};
                 }
 
-                // this actually also serves as isTemplateInstantiating
                 self._isTemplateInstantiated = true;
 
-//console.log("Will INSTANTIATE", self.templateModuleId, self.isDeserializing);
-
-                template.instantiateWithInstances(instances, _document)
+                return template.instantiateWithInstances(
+                    instances, _document)
                 .then(function(part) {
                     self._setupTemplateObjects(part.objects);
                     self._templateDocumentPart = part;
-//console.log("INSTANTIATED", self.templateModuleId, self.isDeserializing);
-                    if (callback) {
-                        callback();
-                    }
                 }).fail(function(reason) {
                     var message = reason.stack || reason;
                     console.error("Error in", template.getBaseUrl() + ":", message);
                 });
             });
         }
-    }},
+    },
 
-    _loadTemplate: {value: function _loadTemplate(callback) {
-        if (this._isTemplateLoaded) {
-            if (callback) {
-                callback(this._template);
+    _loadTemplateDeferred: {value: null},
+    _loadTemplate: {
+        value: function _loadTemplate() {
+            var self = this,
+                deferred = this._loadTemplateDeferred,
+                info;
+
+            if (!deferred) {
+                deferred = Promise.defer();
+                this._loadTemplateDeferred = deferred;
+
+                info = Montage.getInfoForObject(this);
+
+                return Template.getTemplateWithModuleId(
+                    this.templateModuleId, info.require)
+                .then(function(template) {
+                    self._template = template;
+                    self._isTemplateLoaded = true;
+
+                    return template;
+                });
             }
-            return;
+
+            return deferred.promise;
         }
-        // TODO we can create _loadTemplateCallbacks with [] and use "distinct" after merging with master
-        if (callback) {
-            if (this._loadTemplateCallbacks === null) {
-                this._loadTemplateCallbacks = [callback];
-            } else {
-                this._loadTemplateCallbacks.push(callback);
-            }
-        }
-        if (this._isTemplateLoading) {
-            return;
-        }
-        this._isTemplateLoading = true;
-        var self = this;
-        var info, moduleId;
-
-        var onTemplateLoad = function(template) {
-            var callbacks = self._loadTemplateCallbacks;
-            self._template = template;
-            self._isTemplateLoaded = true;
-            self._isTemplateLoading = false;
-
-            if (callbacks) {
-                for (var i = 0; (callback = callbacks[i]); i++) {
-                    callback(template);
-                }
-                self._loadTemplateCallbacks = callbacks = null;
-            }
-        };
-
-        info = Montage.getInfoForObject(this);
-
-        if (logger.isDebug) {
-            logger.debug(this, "Will load " + this.templateModuleId);
-        }
-
-        Template.getTemplateWithModuleId(this.templateModuleId, info.require)
-        .then(function(template) {
-
-            onTemplateLoad(template);
-        });
-    }},
+    },
 
     templateModuleId: {
         get: function() {
