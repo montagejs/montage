@@ -73,11 +73,11 @@ exports.BlueprintReference = RemoteReference.create(RemoteReference, {
                                     binder.addBlueprint(blueprint);
                                     deferredBlueprint.resolve(blueprint);
                                 } else {
-                                    deferredBlueprint.reject("Error cannot find Blueprint " + blueprintModuleId);
+                                    deferredBlueprint.reject(new Error("Error cannot find Blueprint " + blueprintModuleId));
                                 }
                             }, deferredBlueprint.reject);
                         } catch (exception) {
-                            deferredBlueprint.reject("Error cannot find Blueprint " + blueprintModuleId);
+                            deferredBlueprint.reject(new Error("Error cannot find Blueprint " + blueprintModuleId));
                         }
                     }
 
@@ -85,7 +85,7 @@ exports.BlueprintReference = RemoteReference.create(RemoteReference, {
                     try {
                         deferredBlueprint = BlueprintModule.Blueprint.getBlueprintWithModuleId(blueprintModuleId, require);
                     } catch (exception) {
-                        deferredBlueprint.reject("Error cannot find Blueprint " + blueprintModuleId);
+                        deferredBlueprint.reject(new Error("Error cannot find Blueprint " + blueprintModuleId));
                     }
                 }
             });

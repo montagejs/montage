@@ -58,7 +58,7 @@ exports.BinderReference = RemoteReference.create(RemoteReference, {
                     }
                     deferredBinder = BinderModule.Binder.getBinderWithModuleId(binderModuleId, targetRequire);
                 } catch (exception) {
-                    deferredBinder.reject("Error cannot find Blueprint Binder " + binderModuleId);
+                    deferredBinder.reject(new Error("Error cannot find Blueprint Binder " + binderModuleId));
                 }
             }
             return deferredBinder.promise;

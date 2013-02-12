@@ -186,11 +186,11 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
                             Binder.manager.addBinder(this);
                             deferredBinder.resolve(binder);
                         } else {
-                            deferredBinder.reject("No Binder found " + binderModuleId);
+                            deferredBinder.reject(new Error("No Binder found " + binderModuleId));
                         }
                     }, targetRequire);
                 } catch (exception) {
-                    deferredBinder.reject("Error deserializing Binder " + binderModuleId + " " + JSON.stringfy(exception));
+                    deferredBinder.reject(new Error("Error deserializing Binder " + binderModuleId + " " + JSON.stringfy(exception)));
                 }
             }, deferredBinder.reject);
 
