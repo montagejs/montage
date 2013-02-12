@@ -1096,6 +1096,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 self._isTemplateInstantiated = true;
 
 //console.log("Will INSTANTIATE", self.templateModuleId, self.isDeserializing);
+
                 template.instantiateWithInstances(instances, _document)
                 .then(function(part) {
                     self._setupTemplateObjects(part.objects);
@@ -1105,11 +1106,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                         callback();
                     }
                 }).fail(function(reason) {
-                    if (reason.stack) {
-                        console.log(reason.stack);
-                    } else {
-                        console.log(reason);
-                    }
+                    var message = reason.stack || reason;
+                    console.error("Error in", template.getBaseUrl() + ":", message);
                 });
             });
         }
