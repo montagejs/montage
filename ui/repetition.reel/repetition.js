@@ -667,13 +667,12 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 
                         // Build out the child component hierarchy.
                         for (var i = 0; i < childComponents.length; i++) {
-                            var childComponent = childComponents[i];
-
-                            self._addChildComponent(childComponent);
-                            childComponent.loadComponentTree(function () {
-                                self.didCreateIteration();
-                            });
+                            self._addChildComponent(childComponents[i]);
                         }
+
+                        part.loadComponentTree().then(function() {
+                            self.didCreateIteration();
+                        });
                     }
 
                     iteration.initWithRepetition(this);

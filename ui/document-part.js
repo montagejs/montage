@@ -1,5 +1,6 @@
 var Montage = require("montage").Montage,
     logger = require("core/logger").logger("document-part"),
+    Promise = require("q"),
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
 var DocumentPart = Montage.create(Montage, {
@@ -24,6 +25,31 @@ var DocumentPart = Montage.create(Montage, {
     _addChildComponent: {
         value: function(childComponent) {
             this.childComponents.push(childComponent);
+        }
+    },
+
+    _componentTreeLoadedDeferred: {value: null},
+    loadComponentTree: {
+        value: function() {
+            var deferred = this._componentTreeLoadedDeferred,
+                promises;
+
+            if (!deferred) {
+                deferred = Promise.defer();;
+                this._componentTreeLoadedDeferred = deferred;
+
+                promises = [];
+
+                this.childComponents.forEach(function(childComponent) {
+                    promises.push(childComponent.loadComponentTree());
+                });
+
+                Promise.all(promises).then(function() {
+                    deferred.resolve();
+                });
+            }
+
+            return deferred.promise;
         }
     }
 });
