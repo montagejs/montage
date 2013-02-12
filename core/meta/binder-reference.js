@@ -45,9 +45,20 @@ exports.BinderReference = RemoteReference.create(RemoteReference, {
                 deferredBinder.resolve(binder);
             } else {
                 try {
-                    deferredBinder = BinderModule.Binder.getBinderWithModuleId(binderModuleId, require);
+                    // We need to be careful as the parent may be in another module
+                    var targetRequire = require;
+                    var slashIndex = binderModuleId.indexOf("/");
+                    if (slashIndex > 0) {
+                        var prefix = binderModuleId.substring(0, slashIndex);
+                        var mappings = require.mappings;
+                        if (prefix in mappings) {
+                            binderModuleId = binderModuleId.substring(slashIndex + 1);
+                            targetRequire = targetRequire.getPackage(mappings[prefix].location);
+                        }
+                    }
+                    deferredBinder = BinderModule.Binder.getBinderWithModuleId(binderModuleId, targetRequire);
                 } catch (exception) {
-                    deferredBinder.reject("Error cannot find Blueprint Binder " + binderModuleId);
+                    deferredBinder.reject(new Error("Error cannot find Blueprint Binder " + binderModuleId));
                 }
             }
             return deferredBinder.promise;
