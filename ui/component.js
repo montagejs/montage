@@ -781,16 +781,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
-    serializeProperties: {
-        value: function(serializer) {
-            serializer.setAll();
-            var childComponents = this.childComponents;
-            for (var i = 0, l = childComponents.length; i < l; i++) {
-                serializer.addObject(childComponents[i]);
-            }
-        }
-    },
-
     /**
     This method is called right before draw is called.<br>
     If <code>canDraw()</code> returns false, then the component is re-added to the parent's draw list and draw isn't called.
