@@ -106,7 +106,9 @@ var List = exports.List = Montage.create(Component,/** @lends module:"montage/ui
     observeProperty: {
         value: function (key, emit, source, parameters, beforeChange) {
             if (key === "objectAtCurrentIteration" || key === "currentIteration") {
-                return observeProperty(this._repetition, key, emit, source, parameters, beforeChange);
+                if (this._repetition) {
+                    return this._repetition.observeProperty(key, emit, source, parameters, beforeChange);
+                }
             } else {
                 return observeProperty(this, key, emit, source, parameters, beforeChange);
             }
