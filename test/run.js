@@ -53,7 +53,6 @@ if (spec) {
         "gate-spec",
         "logger-spec",
         "paths-spec",
-        "path-changes-spec",
         "require-spec",
         "state-chart-spec",
         "string-spec",

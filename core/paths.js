@@ -64,6 +64,30 @@ Montage.defineProperties(Montage, {
         }
     },
 
+    addRangeAtPathChangeListener: {
+        value: function (path, handler, methodName) {
+            function dispatch(plus, minus, index) {
+                if (handler[methodName]) {
+                    handler[methodName](plus, minus, index);
+                } else if (handler.call) {
+                    handler.call(null, plus, minus, index);
+                } else {
+                    throw new Error("Can't dispatch range change to " + handler);
+                }
+            }
+            var minus = [];
+            return this.addPathChangeListener(path, function (plus) {
+                plus = plus || [];
+                dispatch(plus, minus, 0);
+                minus = plus;
+                return plus.addRangeChangeListener(dispatch);
+            });
+        }
+    },
+
+    // TODO removeRangeAtPathChangeListener
+    // TODO add/removeMapAtPathChangeListener
+
     getPathChangeDescriptors: {
         value: function () {
             if (!pathChangeDescriptors.has(this)) {
