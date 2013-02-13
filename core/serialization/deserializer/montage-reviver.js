@@ -141,6 +141,10 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
             if (Promise.isPromise(module)) {
                 return module.then(function(exports) {
                     return self.instantiateMontageObject(value, exports, objectName, context, label);
+                }).fail(function() {
+                    throw new Error('Error deserializing "' + label +
+                        '": module named "' + locationDesc.moduleId +
+                        "' was not found given '" + value.prototype + "'");
                 });
             } else {
                 return this.instantiateMontageObject(value, module, objectName, context, label);
@@ -238,8 +242,16 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
             var object;
 
             if (context.hasUserObject(label)) {
+
                 return context.getUserObject(label);
+
             } else if ("prototype" in value) {
+
+                if (!(objectName in module)) {
+                    throw new Error('Error deserializing "' + label +
+                        '": object named "' + object +
+                        "' was not found given '" + value.prototype + "'");
+                }
                 // TODO: For now we need this because we need to set
                 // isDeserilizing before calling didCreate.
                 object = Object.create(module[objectName]);
@@ -249,8 +261,16 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
                 }
                 return object;
                 //return module[objectName].create();
-            } else if ("object" in value){
+
+            } else if ("object" in value) {
+
+                if (!(objectName in module)) {
+                    throw new Error('Error deserializing "' + label +
+                        '": object named "' + object +
+                        "' was not found given '" + value.object + "'");
+                }
                 return module[objectName];
+
             } else {
                 throw new Error("Error deserializing " , value);
             }
