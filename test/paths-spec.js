@@ -276,6 +276,27 @@ describe("paths-spec", function () {
 
     });
 
+    describe("addRangeAtPathChangeListener with handler", function () {
+
+        var object = Montage.create();
+
+        var handler = {
+            handleOffsetArrayRangeChange: function (plus, minus, index) {
+                // slice gets rid of the observability prototype
+                spy(plus.slice(), minus.slice(), index);
+            }
+        };
+
+        var spy = jasmine.createSpy();
+        object.addRangeAtPathChangeListener("array.map{*2}", handler, "offsetArray");
+        expect(spy).toHaveBeenCalledWith([], [], 0);
+
+        spy = jasmine.createSpy();
+        object.array = [1, 2];
+        expect(spy).toHaveBeenCalledWith([2, 4], [], 0);
+
+    });
+
 });
 
 

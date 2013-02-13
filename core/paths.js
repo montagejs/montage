@@ -65,7 +65,8 @@ Montage.defineProperties(Montage, {
     },
 
     addRangeAtPathChangeListener: {
-        value: function (path, handler, methodName) {
+        value: function (path, handler, token) {
+            var methodName = 'handle' + (token || "").toCapitalized() + 'RangeChange';
             function dispatch(plus, minus, index) {
                 if (handler[methodName]) {
                     handler[methodName](plus, minus, index);
