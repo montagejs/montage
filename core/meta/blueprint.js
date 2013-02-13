@@ -8,7 +8,7 @@
  */
 var Montage = require("montage").Montage;
 var Promise = require("core/promise").Promise;
-var Deserializer = require("core/deserializer").Deserializer;
+var Deserializer = require("core/serialization").Deserializer;
 var ObjectProperty = require("core/meta/object-property").ObjectProperty;
 var Enum = require("core/enum").Enum;
 var BinderModule = require("core/meta/binder");

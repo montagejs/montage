@@ -29,16 +29,16 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
- @module montage/ui/controller/object-controller
+ @module montage/core/object-controller
  @requires montage/core/core
  */
 var Montage = require("montage").Montage;
 /**
- @class module:montage/ui/controller/object-controller.ObjectController
+ @class module:montage/core/object-controller.ObjectController
  @classdesc Generic object controller.
  @extends module:montage/core/core.Montage
  */
-var ObjectController = exports.ObjectController = Montage.create(Montage, /** @lends module:montage/ui/controller/object-controller.ObjectController# */ {
+var ObjectController = exports.ObjectController = Montage.create(Montage, /** @lends module:montage/core/object-controller.ObjectController# */ {
 /**
         Description TODO
         @type {Property}
