@@ -80,8 +80,10 @@ var ObjectController = exports.ObjectController = Montage.create(Montage, /** @l
     content: {
         enumerable: false,
         value: null
-    }
+    },
 
+    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
 
+    blueprint:require("montage")._blueprintDescriptor
 
 });

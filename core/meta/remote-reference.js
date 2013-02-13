@@ -1,0 +1,109 @@
+"use strict";
+/**
+ @module montage/core/remote-reference
+ @requires montage/core/core
+ @requires core/promise
+ @requires core/logger
+ */
+var Montage = require("montage").Montage;
+var Promise = require("core/promise").Promise;
+
+var logger = require("core/logger").logger("blueprint");
+
+exports.RemoteReference = Montage.create(Montage, {
+
+    /**
+      didCreate method
+      @function
+      @private
+    */
+    didCreate: {
+        value: function() {
+            this._value = null;
+            this._reference = null;
+            this._promise = null;
+            return this;
+        }
+    },
+
+    initWithValue: {
+        value: function(value) {
+            this._value = value;
+            this._reference = null;
+            this._promise = null;
+            return this;
+        }
+    },
+
+    serializeSelf: {
+        value: function(serializer) {
+            if (!this._reference) {
+                this._reference = this.referenceFromValue(this._value);
+            }
+            serializer.setProperty("valueReference", this._reference);
+        }
+    },
+
+    deserializeSelf: {
+        value: function(deserializer) {
+            this._value = null;
+            this._reference = deserializer.getProperty("valueReference");
+            this._promise = null;
+        }
+    },
+
+    /*
+     * @private
+     */
+    _value: {
+        value: null
+    },
+
+    /*
+     * @private
+     */
+    _reference: {
+        value: null
+    },
+
+    /*
+     * @private
+     */
+    _promise: {
+        value: null
+    },
+
+    promise: {
+        value: function(iRequire) {
+            if (!this._promise) {
+                if (this._value) {
+                    this._promise = Promise.resolve(this._value);
+                } else {
+                    this._promise = this.valueFromReference(this._reference, iRequire);
+                }
+            }
+            return this._promise;
+        }
+    },
+
+    /*
+     * Takes the serialized reference and return a promise for the value.<br/>
+     * The default implementation does nothing and must be overwritten by subtypes
+     */
+    valueFromReference: {
+        value: function(reference, iRequire) {
+            return Promise.resolve(null);
+        }
+    },
+
+    /*
+     * Take the value and creates a reference string for serialization.<br/>
+     * The default implementation does nothing and must be overwritten by subtypes
+     */
+    referenceFromValue: {
+        value: function(value) {
+            return {};
+        }
+    }
+
+});

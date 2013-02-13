@@ -135,6 +135,11 @@ name.
 Verifies that modules linked in `devDependencies` of `package.json` can
 be loaded.
 
+## production
+
+Verifies that when `package.json` has `production` set, modules linked in
+`devDependencies` are not loaded.
+
 ## identify
 
 Verifies that `require.identify(id, require2)` can reverse-lookup the

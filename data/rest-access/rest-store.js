@@ -103,15 +103,15 @@ var RestStore = exports.RestStore = Montage.create(Store, /** @lends module:mont
      @param {Object} object TODO
      @param {Property} context TODO
      @param {Property} transactionId TODO
-     @returns {Function} Promise.ref(object.objectId) or Promise.ref(null)
+     @returns {Function} Promise.resolve(object.objectId) or Promise.resolve(null)
      */
     permanentIdForObjectId$Implementation:{
         value:function (object, context, transactionId) {
             // TODO [PJYF Apr 28 2011] We need to implement it.
             if (typeof object.objectId !== "undefined") {
-                return Promise.ref(object.objectId);
+                return Promise.resolve(object.objectId);
             }
-            return Promise.ref(null);
+            return Promise.resolve(null);
         }
     },
 
@@ -121,12 +121,12 @@ var RestStore = exports.RestStore = Montage.create(Store, /** @lends module:mont
      @param {Object} objectId TODO
      @param {Property} context TODO
      @param {Property} transactionId TODO
-     @returns {Function} Promise.ref(null)
+     @returns {Function} Promise.resolve(null)
      */
     pledgeForObjectId$Implementation:{
         value:function (objectId, context, transactionId) {
             // TODO [PJYF Apr 28 2011] We need to implement it.
-            return Promise.ref(null);
+            return Promise.resolve(null);
         }
     },
 
@@ -137,12 +137,12 @@ var RestStore = exports.RestStore = Montage.create(Store, /** @lends module:mont
      @param {Property} relationship TODO
      @param {Property} context TODO
      @param {Property} transactionId TODO
-     @returns {Function} Promise.ref(null)
+     @returns {Function} Promise.resolve(null)
      */
     pledgeForSourceObjectAssociation$Implementation:{
         value:function (sourceObject, relationship, context, transactionId) {
             // TODO [PJYF Apr 28 2011] We need to implement it.
-            return Promise.ref(null);
+            return Promise.resolve(null);
         }
     },
 
@@ -152,7 +152,7 @@ var RestStore = exports.RestStore = Montage.create(Store, /** @lends module:mont
      @param {Object} object TODO
      @param {Property} context TODO
      @param {Property} transactionId TODO
-     @returns {Function} Promise.ref(object)
+     @returns {Function} Promise.resolve(object)
      */
     initializeObject$Implementation:{
         value:function (object, context, transactionId) {
@@ -160,7 +160,7 @@ var RestStore = exports.RestStore = Montage.create(Store, /** @lends module:mont
                 // TODO [PJYF June 17 2011] This will need to be revisited.
                 object.objectId = TemporaryObjectId.create().initWithBlueprint(object.blueprint);
             }
-            return Promise.ref(object);
+            return Promise.resolve(object);
         }
     },
 
@@ -170,14 +170,14 @@ var RestStore = exports.RestStore = Montage.create(Store, /** @lends module:mont
      @param {Object} object TODO
      @param {Property} context TODO
      @param {Property} transactionId TODO
-     @returns {Function} this.pledgeForObjectId(object.objectId, context, transactionId) or Promise.ref(object)
+     @returns {Function} this.pledgeForObjectId(object.objectId, context, transactionId) or Promise.resolve(object)
      */
     repledgeObject$Implementation:{
         value:function (object, context, transactionId) {
             if (typeof object.objectId !== "undefined") {
                 return this.pledgeForObjectId(object.objectId, context, transactionId);
             }
-            return Promise.ref(object);
+            return Promise.resolve(object);
         }
 
     },
@@ -189,12 +189,12 @@ var RestStore = exports.RestStore = Montage.create(Store, /** @lends module:mont
      @function
      @param {Property} context TODO
      @param {Property} transactionId TODO
-     @returns {Function} Promise.ref(true)
+     @returns {Function} Promise.resolve(true)
      */
     prepareToSaveChangesInContext$Implementation:{
         value:function (context, transactionId) {
             // TODO [PJYF Sep 27 2011] This needs to be reimplemented
-            return Promise.ref(true);
+            return Promise.resolve(true);
         }
     },
 
@@ -204,12 +204,12 @@ var RestStore = exports.RestStore = Montage.create(Store, /** @lends module:mont
      @function
      @param {Property} context TODO
      @param {Property} transactionId TODO
-     @returns {Function} Promise.ref(true)
+     @returns {Function} Promise.resolve(true)
      */
     cancelSaveChangesInContext$Implementation:{
         value:function (context, transactionId) {
             // TODO [PJYF Sep 27 2011] This needs to be reimplemented
-            return Promise.ref(true);
+            return Promise.resolve(true);
         }
     },
 
@@ -219,12 +219,12 @@ var RestStore = exports.RestStore = Montage.create(Store, /** @lends module:mont
      @function
      @param {Property} context TODO
      @param {Property} transactionId TODO
-     @returns {Function} Promise.ref(true)
+     @returns {Function} Promise.resolve(true)
      */
     commitChangesInContext$Implementation:{
         value:function (context, transactionId) {
             // TODO [PJYF Sep 27 2011] This needs to be reimplemented
-            return Promise.ref(true);
+            return Promise.resolve(true);
         }
     },
 
@@ -234,12 +234,12 @@ var RestStore = exports.RestStore = Montage.create(Store, /** @lends module:mont
      @param {Property} query TODO
      @param {Property} context TODO
      @param {Property} transactionId TODO
-     @returns {Function} Promise.ref([])
+     @returns {Function} Promise.resolve([])
      */
     queryInContext$Implementation:{
         value:function (query, context, transactionID) {
             // TODO [PJYF Sept 4 2011] This needs to be implemented
-            return Promise.ref([]);
+            return Promise.resolve([]);
         }
     }
 

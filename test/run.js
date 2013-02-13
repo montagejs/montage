@@ -69,6 +69,7 @@ if (spec) {
         "core/localizer-spec",
         "core/localizer/serialization-spec",
         "core/selector-spec",
+        "core/undo-manager-spec",
 
         "core/tree-controller-spec",
 
@@ -86,6 +87,11 @@ if (spec) {
 
         "geometry/cubicbezier-spec",
         "geometry/point-spec",
+
+        "meta/blueprint-spec",
+        "meta/button-blueprint-spec",
+        "meta/component-blueprint-spec",
+        "meta/controller-blueprint-spec",
 
         "reel/template-spec",
         "document-resources-spec",

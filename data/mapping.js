@@ -139,13 +139,13 @@ var Mapping = exports.Mapping = Montage.create(Montage, /** @lends module:montag
 });
 
 /**
- * A mapping folder is a group of binder mappings that all relate to the same binder.<br/>
+ * A mapping set is a group of binder mappings that all relate to the same binder.<br/>
  * Together they provide exactly one mapping for each blueprint, attribute and association described in the binder.<br/>
  *
- * @class module:montage/data/mapping.MappingFolder
+ * @class module:montage/data/mapping.MappingSet
  * @extends module:montage/data/mapping.Mapping
  */
-var MappingFolder = exports.MappingFolder = Montage.create(Mapping, /** @lends module:montage/data/mapping.MappingFolder# */ {
+var MappingSet = exports.MappingSet = Montage.create(Mapping, /** @lends module:montage/data/mapping.MappingSet# */ {
 
     /**
      @private

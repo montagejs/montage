@@ -38,6 +38,8 @@ var Montage = require("montage").Montage,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
     RichTextLinkPopup = require("../overlays/rich-text-linkpopup.reel").RichTextLinkPopup,
     RichTextResizer = require("../overlays/rich-text-resizer.reel").RichTextResizer,
+    ChangeNotification = require("core/change-notification").ChangeNotification,
+    Promise = require("core/promise").Promise,
     defaultUndoManager = require("core/undo-manager").defaultUndoManager;
 
 /**
@@ -151,7 +153,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             } else if (!this._isTyping) {
                 this._isTyping = true;
                 if (this.undoManager) {
-                    this.undoManager.add("Typing", this._undo, this, "Typing", this._innerElement);
+                    this.undoManager.register("Typing", Promise.resolve([this._undo, this, "Typing", this._innerElement]));
                 }
             }
         }
@@ -1235,7 +1237,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
                 this._stopTyping();
                 if (this.undoManager) {
-                    this.undoManager.add("Move", this._undo, this, "Move", this._innerElement);
+                    this.undoManager.register("Move", Promise.resolve([this._undo, this, "Move", this._innerElement]));
                 }
                 this._ignoreNextInputEvent = true;
 
@@ -1339,7 +1341,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         value: function(event) {
             this._stopTyping()
             if (this.undoManager) {
-                this.undoManager.add("Cut", this._undo, this, "Cut", this._innerElement);
+                this.undoManager.register("Cut", Promise.resolve([this._undo, this, "Cut", this._innerElement]));
             }
             this._ignoreNextInputEvent = true;
         }
@@ -1495,7 +1497,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 document.execCommand("undo", false, null);
                 this.markDirty();
                 if (this.undoManager) {
-                    this.undoManager.add(label, this._redo, this, label, editorElement);
+                    this.undoManager.register(label, Promise.resolve([this._redo, this, label, editorElement]));
                 }
                 this._doingUndoRedo = false;
             }
@@ -1516,7 +1518,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 document.execCommand("redo", false, null);
                 this.markDirty();
                 if (this.undoManager) {
-                    this.undoManager.add(label, this._undo, this, label, editorElement);
+                    this.undoManager.register(label, Promise.resolve([this._undo, this, label, editorElement]));
                 }
                 this._doingUndoRedo = false;
             }
