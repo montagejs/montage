@@ -1,6 +1,6 @@
 "use strict";
 /**
- @module montage/core/blueprint
+ @module montage/core/meta/validation-rule
  @requires montage/core/core
  @requires core/exception
  @requires core/promise
@@ -13,10 +13,10 @@ var PropertyValidationSemantics = require("core/meta/validation-semantics").Prop
 var logger = require("core/logger").logger("blueprint");
 
 /**
- @class module:montage/core/blueprint.PropertyValidationRule
+ @class module:montage/core/meta/validation-rule.PropertyValidationRule
  @extends module:montage/core/core.Montage
  */
-var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Montage, /** @lends module:montage/core/blueprint.PropertyValidationRule# */ {
+var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Montage, /** @lends module:montage/core/meta/validation-rule.PropertyValidationRule# */ {
 
     /**
      Initialize a newly allocated blueprint validation rule.
@@ -28,7 +28,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Mon
     initWithNameAndBlueprint: {
         value: function(name, blueprint) {
             this._name = name;
-            this._blueprint = blueprint;
+            this._owner = blueprint;
             return this;
         }
     },
@@ -36,7 +36,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Mon
     serializeSelf: {
         value: function(serializer) {
             serializer.setProperty("name", this.name);
-            serializer.setProperty("blueprint", this.blueprint, "reference");
+            serializer.setProperty("blueprint", this.owner, "reference");
             //            serializer.setProperty("validationSelector", this._validationSelector, "reference");
             serializer.setProperty("messageKey", this.messageKey);
             serializer.setProperties();
@@ -46,7 +46,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Mon
     deserializeSelf: {
         value: function(deserializer) {
             this._name = deserializer.getProperty("name");
-            this._blueprint = deserializer.getProperty("blueprint");
+            this._owner = deserializer.getProperty("blueprint");
             //            this._validationSelector = deserializer.getProperty("validationSelector");
             this._messageKey = deserializer.getProperty("messageKey");
             // FIXME [PJYF Jan 8 2013] There is an API issue in the deserialization
@@ -62,16 +62,16 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Mon
     /*
      * @private
      */
-    _blueprint: {
+    _owner: {
         value: null
     },
 
     /*
      * Component description attached to this validation rule.
      */
-    blueprint: {
+    owner: {
         get: function() {
-            return this._blueprint;
+            return this._owner;
         }
     },
 
@@ -167,6 +167,10 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Mon
             }
             return this._propertyValidationEvaluator(objectInstance);
         }
-    }
+    },
+
+        blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+
+        blueprint:require("montage")._blueprintDescriptor
 
 });

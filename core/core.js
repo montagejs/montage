@@ -796,7 +796,7 @@ exports._blueprintDescriptor = {
                     var info = Montage.getInfoForObject(self);
                     return Blueprint.getBlueprintWithModuleId(blueprintModuleId, info.require).then(null, function () {
                         var blueprint = Blueprint.createDefaultBlueprintForObject(self);
-                        blueprint.blueprintModuleId = blueprintModuleId;
+                        blueprint.blueprintInstanceModuleId = blueprintModuleId;
                         return blueprint;
                     });
                 })
@@ -813,7 +813,7 @@ exports._blueprintDescriptor = {
         } else if (typeof value.then === "function") {
             throw new TypeError("Object blueprint should not be a promise '" + JSON.stringify(value) + "'");
         } else {
-            value.blueprintModuleId = self.blueprintModuleId;
+            value.blueprintInstanceModuleId = self.blueprintModuleId;
             _blueprintValue = require("core/promise").Promise.resolve(value);
         }
         Montage.defineProperty(self, "_blueprint", {
