@@ -567,7 +567,8 @@ var Template = Montage.create(Montage, {
                 fragment,
                 objectsString,
                 template,
-                externalObjects;
+                externalObjects,
+                range;
 
             element = this.getElementById(elementId);
             elementIds = this._findElementIdsInDomTree(element);
@@ -701,7 +702,8 @@ var TemplateResources = Montage.create(Montage, {
     loadScript: {
         value: function(script, targetDocument) {
             var url,
-                documentResources;
+                documentResources,
+                newScript;
 
             documentResources = DocumentResources.getInstanceForDocument(targetDocument);
             // Firefox isn't able to load a script that we reuse, we need to
