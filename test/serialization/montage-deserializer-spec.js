@@ -1011,6 +1011,26 @@ describe("serialization/montage-deserializer-spec", function() {
         expect(valid).toBe(true);
     });
 
+    it("should deserialize null", function() {
+        var serialization = {
+                "a": {
+                    "value": null
+                }
+            },
+            serializationString = JSON.stringify(serialization);
+
+        deserializer.initWithSerializationStringAndRequire(
+            serializationString, require);
+
+        return deserializer.deserialize(serializationString)
+        .then(function(objects) {
+            expect(objects.a).toBe(null);
+        }).fail(function(reason) {
+            console.log(reason.stack);
+            expect("test").toBe("executed");
+        });
+    });
+
     describe("external object labels", function() {
         it("should find no external object labels", function() {
             var serialization = {
