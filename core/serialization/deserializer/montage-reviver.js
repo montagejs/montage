@@ -282,7 +282,9 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
             for (var label in objects) {
                 object = objects[label];
 
-                delete object.isDeserializing;
+                if (object != null) {
+                    delete object.isDeserializing;
+                }
 
                 if (!context.hasUserObject(label)) {
                     if (object && typeof object.deserializedFromSerialization === "function") {
