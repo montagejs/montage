@@ -1050,20 +1050,17 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
-    _loadTemplateDeferred: {value: null},
+    _loadTemplatePromise: {value: null},
     _loadTemplate: {
         value: function _loadTemplate() {
             var self = this,
-                deferred = this._loadTemplateDeferred,
+                promise = this._loadTemplatePromise,
                 info;
 
-            if (!deferred) {
-                deferred = Promise.defer();
-                this._loadTemplateDeferred = deferred;
-
+            if (!promise) {
                 info = Montage.getInfoForObject(this);
 
-                return Template.getTemplateWithModuleId(
+                promise = this._loadTemplatePromise = Template.getTemplateWithModuleId(
                     this.templateModuleId, info.require)
                 .then(function(template) {
                     self._template = template;
@@ -1073,7 +1070,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 });
             }
 
-            return deferred.promise;
+            return promise;
         }
     },
 
