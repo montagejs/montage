@@ -116,6 +116,10 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         value: null
     },
 
+    _originalDomContent: {
+        value: null
+    },
+
     /**
       Description TODO
       @private
@@ -677,7 +681,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         }
                     }
                 } else if (this._needsAssignOriginalContent) {
-                    contents = this.originalContent;
+                    contents = this._originalDomContent;
                     contentChanged = false;
                     if (contents instanceof Element) {
                         editorInnerElement.appendChild(contents);
@@ -1763,6 +1767,12 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             }
 
             return result;
+        }
+    },
+
+    deserializedFromTemplate: {
+        value: function() {
+            this._originalDomContent = this.domContent;
         }
     }
 });
