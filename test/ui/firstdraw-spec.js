@@ -53,6 +53,11 @@ var simpleTestPage = TestPageLoader.queueTest("firstdraw-simple", {src: "ui/draw
                 expect(text.textContent).toEqual("Custom Test Value");
             });
         });
+        it("should insert styles from component template with no templateElement", function() {
+            var onlyStyle = simpleTestPage.iframe.contentDocument.getElementsByClassName("onlyStyle")[0];
+
+            expect(getComputedStyle(onlyStyle).paddingTop).toBe("42px");
+        });
     });
 });
 

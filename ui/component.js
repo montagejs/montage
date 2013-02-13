@@ -1234,8 +1234,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 i,
                 attribute;
 
-            this._addTemplateStyles();
-
             // TODO: get a spec for this, what attributes should we merge?
             for (i = 0; (attribute = attributes[i]); i++) {
                 attributeName = attribute.nodeName;
@@ -1302,6 +1300,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: function _prepareForDraw() {
             if (logger.isDebug) {
                 logger.debug(this, "_templateElement: " + this._templateElement);
+            }
+
+            if (this._template) {
+                this._addTemplateStyles();
             }
             if (this._templateElement) {
                 this._replaceElementWithTemplate();
