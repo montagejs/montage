@@ -141,7 +141,7 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
             if (Promise.isPromise(module)) {
                 return module.then(function(exports) {
                     return self.instantiateMontageObject(value, exports, objectName, context, label);
-                }).fail(function() {
+                }, function (error) {
                     throw new Error('Error deserializing "' + label +
                         '": module named "' + locationDesc.moduleId +
                         "' was not found given '" + value.prototype + "'");
