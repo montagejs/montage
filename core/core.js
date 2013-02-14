@@ -406,7 +406,7 @@ Object.defineProperty(Montage, "defineProperties", {value: function(obj, propert
 var _defaultAccessorProperty = {
     enumerable: true,
     configurable: true,
-    serializable: "reference"
+    serializable: true
 };
 var _defaultObjectValueProperty = {
     writable: true,
