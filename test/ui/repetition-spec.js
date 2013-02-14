@@ -730,10 +730,9 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should call update items once if a binding to objects is in place", function() {
                 spyOn(list13, "_updateItems").andCallThrough();
-                testPage.window.Object.defineBinding(list13, "objects", {
-                    boundObject: object,
-                    boundObjectPropertyPath: "array",
-                    oneway: true
+                testPage.window.list13.defineBinding("objects", {
+                    "<-": "array",
+                    source: object
                 });
 
                 expect(list13._updateItems.callCount).toBe(1);

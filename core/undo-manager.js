@@ -179,16 +179,14 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
             this._undoStack = new List();
             this._redoStack = new List();
 
-            Object.defineBinding(this, "undoCount", {
-                boundObject: this._undoStack,
-                boundObjectPropertyPath: "length",
-                oneway: true
+            this.defineBinding("undoCount", {
+                "<-": "length",
+                source: this._undoStack
             });
 
-            Object.defineBinding(this, "redoCount", {
-                boundObject: this._redoStack,
-                boundObjectPropertyPath: "length",
-                oneway: true
+            this.defineBinding("redoCount", {
+                "<-": "length",
+                source: this._redoStack
             });
         }
     },
