@@ -111,7 +111,7 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
                 }
                 return element;
             } else {
-                return Promise.reject("Element with id '" + elementId + "' was not found.");
+                return Promise.reject(new Error("Element with id '" + elementId + "' was not found."));
             }
         }
     },
