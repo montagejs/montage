@@ -1313,7 +1313,7 @@ var Flow = exports.Flow = Montage.create(Component, {
 
     serializeSelf: {
         value: function(serializer) {
-            serializer.setProperties();
+            serializer.setAllProperties();
 
             // TODO: we need a way to add nodes to the serialization... we only
             // have methods to serialize components.

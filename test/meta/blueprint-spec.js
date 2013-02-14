@@ -211,7 +211,7 @@ describe("meta/blueprint-spec", function () {
             });
             it("can deserialize", function () {
                 var serializedBinder = Serializer.create().initWithRequire(require).serializeObject(companyBinder);
-                Deserializer.create().initWithStringAndRequire(serializedBinder, require).deserializeObject(function (deserializedBinder) {
+                return Deserializer.create().initWithSerializationStringAndRequire(serializedBinder, require).deserializeObject().then(function (deserializedBinder) {
                     var metadata = Montage.getInfoForObject(deserializedBinder);
                     expect(serializedBinder).not.toBeNull();
                     expect(metadata.objectName).toBe("Binder");
@@ -219,7 +219,7 @@ describe("meta/blueprint-spec", function () {
                     var personBlueprint = deserializedBinder.blueprintForPrototype("Person", "meta/blueprint/person");
                     expect(personBlueprint).not.toBeNull();
                     expect(personBlueprint.propertyBlueprintForName("phoneNumbers")).not.toBeNull();
-                }, require);
+                });
             });
         });
 

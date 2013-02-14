@@ -41,7 +41,7 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
             } else {
                 serializer.setProperty("cardinality", this.cardinality);
             }
-            serializer.setProperties();
+            serializer.setAllProperties();
         }
     },
 

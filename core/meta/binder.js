@@ -75,7 +75,7 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
         value: function(serializer) {
             serializer.setProperty("name", this.name);
             serializer.setProperty("blueprints", this.blueprints);
-            serializer.setProperties();
+            serializer.setAllProperties();
         }
     },
 
