@@ -38,7 +38,6 @@ var Montage = require("montage").Montage,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
     RichTextLinkPopup = require("../overlays/rich-text-linkpopup.reel").RichTextLinkPopup,
     RichTextResizer = require("../overlays/rich-text-resizer.reel").RichTextResizer,
-    ChangeNotification = require("core/change-notification").ChangeNotification,
     Promise = require("core/promise").Promise,
     defaultUndoManager = require("core/undo-manager").defaultUndoManager;
 

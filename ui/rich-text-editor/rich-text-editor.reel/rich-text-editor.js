@@ -38,7 +38,6 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     RichTextEditorBase = require("./rich-text-editor-base").RichTextEditorBase,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
-    ChangeNotification = require("core/change-notification").ChangeNotification,
     Promise = require("core/promise").Promise;
 
 /**
