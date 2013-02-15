@@ -114,6 +114,12 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
         value: null
     },
 
+    /**
+     Specifies the property belonging to the component's <code>contentController</code> that dictates what <optgroup> (if any) option belongs to.
+     */
+    groupPropertyPath: {
+        value: null
+    },
 
     _contentController: {
         value: null
@@ -254,7 +260,9 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
     _addOptionsFromMarkup: {
         value: function() {
 
-            var el = this.element, options = el.querySelectorAll('option');
+            var el = this.element, children = el.querySelectorAll(['option','optgroup']);
+
+            var hasGroups = Boolean(el.querySelectorAll('optgroup').length)
             // @todo: if contentController is provided, should we just ignore the <option>
             // from the markup ?
 
@@ -266,17 +274,37 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
                 var selectedIndexes = [];
 
                 contentController.content = [];
-                if(options && options.length > 0) {
-                    var i=0, len = options.length, selected;
+                var groupLabelValue = '';
+                if(children && children.length > 0) {
+                    var i=0, len = children.length, optGroupOffset = 0, selected, optionToAdd;
                     for(; i< len; i++) {
-                        selected = options[i].getAttribute('selected');
-                        if(selected) {
-                            selectedIndexes.push(i);
+
+                        // grab the optgroup label value to store in a property to resurface later
+                        // and create an offset, since we don't create an object for the optgroup node
+                        if (children[i].nodeName == 'OPTGROUP') {
+                            groupLabelValue = children[i].label;
+                            optGroupOffset++
+                            continue;
                         }
-                        contentController.addObjects({
-                            value: options[i].value,
-                            text: options[i].textContent
-                        });
+
+                        // reset the label when we drop out of the optroup
+                        if (groupLabelValue != '' && children[i].parentNode.nodeName != 'OPTGROUP') {
+                            groupLabelValue = '';
+                        }
+
+                        optionToAdd = {};
+                        optionToAdd['value'] = children[i].value;
+                        optionToAdd['text'] = children[i].textContent;
+                        if (hasGroups) {
+                            optionToAdd['groupLabel'] = groupLabelValue;
+                        }
+                        contentController.addObjects(optionToAdd);
+
+                        selected = children[i].getAttribute('selected');
+                        if(selected) {
+                            selectedIndexes.push(i-optGroupOffset);
+                        }
+
                     }
 
                     this.contentController = contentController;
@@ -292,7 +320,6 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
 
         }
     },
-
 
     deserializedFromTemplate: {
         value: function() {
@@ -319,17 +346,43 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
 
     _refreshOptions: {
         value: function() {
-            var arr = this.content||[], len = arr.length, i, option;
-            var text, value;
+            var arr = this.content||[], len = arr.length, lastGroupLabel = '', currentGroupLabel, i, option, optionGroup, text, value;
             for(i=0; i< len; i++) {
-                option = document.createElement('option');
+
                 if(String.isString(arr[i])) {
                     text = value = arr[i];
                 } else {
+                    if (arr[i].hasOwnProperty(this.groupPropertyPath || 'groupLabel'))
+                    {
+                        currentGroupLabel = arr[i][this.groupPropertyPath || 'groupLabel'];
+
+                        // when a groupLabel changes from one iteration to the next,
+                        // we're either creating a new group or dropping out of one
+                        if (currentGroupLabel != lastGroupLabel) {
+
+                            // commit any open group since we're done with it
+                            if (optionGroup) {
+                                this.element.appendChild(optionGroup);
+                            }
+
+                            // create a new group base on groupLabel value
+                            if (currentGroupLabel != '') {
+                                optionGroup = document.createElement('optgroup');
+                                optionGroup.label = currentGroupLabel;
+                                lastGroupLabel = currentGroupLabel;
+
+                                // otherwise, reset group related vars since we're no longer in an group
+                            } else {
+                                lastGroupLabel = '';
+                                optionGroup = null;
+                            }
+                        }
+                    }
                     text = arr[i][this.textPropertyPath || 'text'];
                     value = arr[i][this.valuePropertyPath  || 'value'];
                 }
 
+                option = document.createElement('option');
                 option.value = value;
                 option.textContent = text || value;
 
@@ -338,7 +391,17 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
                         option.setAttribute("selected", "true");
                     }
                 }
-                this.element.appendChild(option);
+
+                if (optionGroup) {
+                    optionGroup.appendChild(option);
+
+                    // commit the group, before we drop out of the loop
+                    if (i == len-1) {
+                        this.element.appendChild(optionGroup);
+                    }
+                } else {
+                    this.element.appendChild(option);
+                }
             }
         }
     },
