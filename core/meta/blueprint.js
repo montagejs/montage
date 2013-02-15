@@ -1,6 +1,6 @@
 "use strict";
 /**
- @module montage/core/blueprint
+ @module montage/core/meta/blueprint
  @requires montage/core/core
  @requires core/exception
  @requires core/promise
@@ -21,9 +21,9 @@ var PropertyValidationRule = require("core/meta/validation-rule").PropertyValida
 var logger = require("core/logger").logger("blueprint");
 
 /**
- @class module:montage/core/bluprint.Blueprint
+ @class module:montage/core/meta/blueprint.Blueprint
  */
-var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:montage/core/bluprint.Blueprint# */ {
+var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:montage/core/meta/blueprint.Blueprint# */ {
 
     /**
      Description TODO
@@ -61,6 +61,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
             if ((this._binder) && (! this.binder.isDefault)) {
                 serializer.setProperty("binder", this._binder, "reference");
             }
+            serializer.setProperty("blueprintModuleId", this.blueprintInstanceModuleId);
             serializer.setProperties();
             if (this._parentReference) {
                 serializer.setProperty("parent", this._parentReference);
@@ -78,6 +79,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
             if (binder) {
                 this._binder = binder;
             }
+            this.blueprintInstanceModuleId = deserializer.getProperty("blueprintModuleId");
             this._parentReference = deserializer.getProperty("parent");
             this._propertyBlueprints = deserializer.getProperty("propertyBlueprints");
             this._propertyBlueprintGroups = deserializer.getProperty("propertyBlueprintGroups");
@@ -205,7 +207,8 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
     /*
      * This is used for references only so that we can reload referenced blueprints
      */
-    blueprintModuleId: {
+    blueprintInstanceModuleId: {
+        serializable: false,
         value: null
     },
 
@@ -234,7 +237,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
                                 deferredBlueprint.resolve(existingBlueprint);
                             } else {
                                 binder.addBlueprint(blueprint);
-                                blueprint.blueprintModuleId = blueprintModuleId;
+                                blueprint.blueprintInstanceModuleId = blueprintModuleId;
                                 if (blueprint._parentReference) {
                                     // We need to grab the parent before we return or most operation will fail
                                     blueprint._parentReference.promise(targetRequire).then(function(parentBlueprint) {
@@ -439,12 +442,12 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
             if (propertyBlueprint !== null && propertyBlueprint.name !== null) {
                 var index = this._propertyBlueprints.indexOf(propertyBlueprint);
                 if (index < 0) {
-                    if ((propertyBlueprint.blueprint !== null) && (propertyBlueprint.blueprint !== this)) {
-                        propertyBlueprint.blueprint.removePropertyBlueprint(propertyBlueprint);
+                    if ((propertyBlueprint.owner !== null) && (propertyBlueprint.owner !== this)) {
+                        propertyBlueprint.owner.removePropertyBlueprint(propertyBlueprint);
                     }
                     this._propertyBlueprints.push(propertyBlueprint);
                     this._propertyBlueprintsTable[propertyBlueprint.name] = propertyBlueprint;
-                    propertyBlueprint._blueprint = this;
+                    propertyBlueprint._owner = this;
                 }
             }
             return propertyBlueprint;
@@ -464,7 +467,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
                 if (index >= 0) {
                     this._propertyBlueprints.splice(index, 1);
                     delete this._propertyBlueprintsTable[propertyBlueprint.name];
-                    propertyBlueprint._blueprint = null;
+                    propertyBlueprint._owner = null;
                 }
             }
             return propertyBlueprint;
@@ -542,7 +545,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
         value: function(name, inverse) {
             var relationship = this.addPropertyBlueprint(this.newAssociationBlueprint(name, 1));
             if (inverse) {
-                relationship.targetBlueprint = inverse.blueprint;
+                relationship.targetBlueprint = inverse.owner;
                 inverse.targetBlueprint = this;
             }
             return relationship;
@@ -560,7 +563,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
         value: function(name, inverse) {
             var relationship = this.addPropertyBlueprint(this.newAssociationBlueprint(name, Infinity));
             if (inverse) {
-                relationship.targetBlueprint = inverse.blueprint;
+                relationship.targetBlueprint = inverse.owner;
                 inverse.targetBlueprint = this;
             }
             return relationship;
@@ -729,6 +732,9 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
             for (var name in this._propertyValidationRules) {
                 propertyValidationRules.push(this._propertyValidationRules[name]);
             }
+            if (this.parent) {
+                propertyValidationRules = propertyValidationRules.concat(this.parent.propertyValidationRules);
+            }
             return propertyValidationRules;
         }
     },
@@ -740,7 +746,11 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
      */
     propertyValidationRuleForName: {
         value: function(name) {
-            return this._propertyValidationRules[name];
+            var propertyValidationRule = his._propertyValidationRules[name];
+            if ((! propertyValidationRule) && (this.parent)) {
+                propertyValidationRule = this.parent.propertyValidationRuleForName(name);
+            }
+            return propertyValidationRule;
         }
     },
 
@@ -793,12 +803,15 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
             }
             return messages;
         }
-    }
+    },
+
+    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+
+    blueprint:require("montage")._blueprintDescriptor
+
 
 });
 var UnknownBlueprint = Object.freeze(Blueprint.create().initWithName("Unknown"));
-
-var ValueType = Enum.create().initWithMembers("string", "number", "boolean", "date", "enum", "set", "list", "map", "url", "object");
 
 var UnknownPropertyBlueprint = Object.freeze(PropertyBlueprint.create().initWithNameBlueprintAndCardinality("Unknown", null, 1));
 
