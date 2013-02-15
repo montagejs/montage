@@ -457,7 +457,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             );
             // Ascertains that controllerIterations does not get changed by the
             // controller, but the changes are projected on our array.
-            this.defineBinding("controllerIterations.*", {
+            this.defineBinding("controllerIterations.rangeContent()", {
                 "<-": "contentController.iterations",
                 "serializable": false
             });
@@ -481,7 +481,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             this.requestedIterations = 0;
             this.createdIterations = 0;
             // We have to keep the HTML content of the repetition in tact until
-            // it has been captured by setupIterationTemplate.  Unfortunately,
+            // it has been captured by _setupIterationTemplate.  Unfortunately,
             // we can't set up the iteration template in this turn of the event
             // loop because it would interfere with deserialization, so this is
             // usually deferred to the first draw.
@@ -525,7 +525,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // wait until the deserialization is complete and the template is
             // fully instantiated so we can capture all the child components
             // and DOM elements.
-            this.setupIterationTemplate();
+            this._setupIterationTemplate();
 
             this._isComponentExpanded = true;
 
@@ -583,7 +583,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         value: function () {
             // TODO: explain what the domContent is - @kriskowal
             // domContent changed. Start over.
-            this.setupIterationTemplate();
+            this._setupIterationTemplate();
         }
     },
 
@@ -598,7 +598,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     * needed because it cannot be called in didCreate.  Setting up the
     * iteration template would interfere with normal deserialization.
     */
-    setupIterationTemplate: {
+    _setupIterationTemplate: {
         value: function () {
             // We shouldn't setup the iteration template if the repetition
             // received new content, we'll wait until contentDidLoad is
@@ -639,7 +639,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     // Instantiating an iteration template:
     // ----
     _iterationInstantiationPromise: {value: null},
-    createIteration: {
+    _createIteration: {
         value: function () {
             var self = this,
                 iteration = Iteration.create();
@@ -678,9 +678,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                     iteration.initWithRepetition(this);
                     self.currentIteration = null;
                 });
-            }).fail(function(reason) {
-                console.log(reason.stack);
-            });
+            })
+            .done()
 
             this.requestedIterations++;
             return iteration;
@@ -688,7 +687,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     },
 
     // This utility method is shared by two special cases for the completion of
-    // createIteration.
+    // _createIteration.
     didCreateIteration: {
         value: function () {
             this.createdIterations++;
@@ -827,13 +826,13 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     createNeededIterations: {
         value: function () {
             // If the iteration template is not yet ready, we postpone until
-            // after that has been set up.  setupIterationTemplate calls this
+            // after that has been set up.  _setupIterationTemplate calls this
             // method to make sure they're not forgotten.
             if (!this.iterationTemplate) {
                 return;
             }
             while (this.maxNeededIterations > this.requestedIterations) {
-                this.freeIterations.push(this.createIteration());
+                this.freeIterations.push(this._createIteration());
             }
         }
     },

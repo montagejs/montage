@@ -61,7 +61,7 @@ var ContentController = exports.ContentController = Montage.create(Montage, {
             // internal
             this.visibleContent = [];
             this.visibleContent.addRangeChangeListener(this, "visibleContent");
-            this.defineBinding("visibleContent.*", {"<-": "content"});
+            this.defineBinding("visibleContent.rangeContent()", {"<-": "content"});
             // We do not need to directly observe changes to the selection
             // array since the controlled iterations bind directly to that
             // path.
@@ -82,27 +82,27 @@ var ContentController = exports.ContentController = Montage.create(Montage, {
 
     handleSelectorChange: {
         value: function (selector) {
-            this.cancelBinding("visibleContent.*");
+            this.cancelBinding("visibleContent.rangeContent()");
             if (selector) {
                 try {
-                    this.defineBinding("visibleContent.*", {"<-": selector, "source": this.content});
+                    this.defineBinding("visibleContent.rangeContent()", {"<-": selector, "source": this.content});
                 } catch (error) {
-                    this.defineBinding("visibleContent.*", {"<-": "content"});
+                    this.defineBinding("visibleContent.rangeContent()", {"<-": "content"});
                     throw error;
                 }
             } else {
-                this.defineBinding("visibleContent.*", {"<-": "content"});
+                this.defineBinding("visibleContent.rangeContent()", {"<-": "content"});
             }
         }
     },
 
     handleVisibleIndexesChange: {
         value: function (visibleIndexes) {
-            this.cancelBinding("visibleContent.*");
+            this.cancelBinding("visibleContent.rangeContent()");
             if (visibleIndexes) {
-                this.defineBinding("visibleContent.*", {"<-": "visibleIndexes.map{$content[]}"}, this);
+                this.defineBinding("visibleContent.rangeContent()", {"<-": "visibleIndexes.map{$content[]}"}, this);
             } else {
-                this.defineBinding("visibleContent.*", {"<-": "content"});
+                this.defineBinding("visibleContent.rangeContent()", {"<-": "content"});
             }
         }
     },

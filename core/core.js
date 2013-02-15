@@ -685,5 +685,5 @@ require("core/bindings");
 require("core/paths");
 // has to come last since serializer and deserializer depend on logger, which
 // in turn depends on montage running to completion
-require("core/serialization-bindings");
+require("core/serialization/bindings");
 

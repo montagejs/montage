@@ -252,7 +252,7 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
             } else if ("object" in value){
                 return module[objectName];
             } else {
-                throw new Error("Error deserializing " , value);
+                throw new Error("Error deserializing " + JSON.stringify(value) + ", might need \"prototype\" or \"object\" on label " + JSON.stringify(label));
             }
         }
     },
