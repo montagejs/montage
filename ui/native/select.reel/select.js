@@ -267,16 +267,18 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
 
                 contentController.content = [];
                 if(options && options.length > 0) {
-                    var i=0, len = options.length, selected;
+                    var i=0, len = options.length, selected, optionToAdd;
                     for(; i< len; i++) {
                         selected = options[i].getAttribute('selected');
                         if(selected) {
                             selectedIndexes.push(i);
                         }
-                        contentController.addObjects({
-                            value: options[i].value,
-                            text: options[i].textContent
-                        });
+
+                        //create objects to match provided propertyPaths, if present, otherwise default
+                        optionToAdd = {};
+                        optionToAdd[this.valuePropertyPath || 'value'] = options[i].value;
+                        optionToAdd[this.textPropertyPath || 'text'] = options[i].textContent;
+                        contentController.addObjects(optionToAdd);
                     }
 
                     this.contentController = contentController;
