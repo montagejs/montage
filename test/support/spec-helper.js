@@ -112,7 +112,7 @@ jasmine.Block.prototype.execute = function (onComplete) {
                 spec.fail('Promise fulfilled with unexpected value: ' + value);
             }
             onComplete();
-        }, function (error) {
+        }).timeout(15000).fail(function (error) {
             spec.fail(error);
             onComplete();
         });

@@ -152,6 +152,14 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends modu
         }
     },
 
+    setLabelInitialValue: {
+        value: function(value) {
+            if (this._label === null) {
+                this._label = value;
+            }
+        }
+    },
+
     willPrepareForDraw: {
         value: function() {
             Object.getPrototypeOf(ToggleButton).willPrepareForDraw.call(this);

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>Slot Test</title>
+        <script src="../../../montage.js" data-package="../../"></script>
+        <script type="text/montage-serialization">
+            {
+                "test": {
+                    "prototype": "meta/component-blueprint-test/component-blueprint-test",
+                    "properties": {
+                        "component1": {"@": "component1"},
+                        "component2": {"@": "component2"},
+                        "component3": {"@": "component3"},
+                        "button": {"@": "button"},
+                        "inputrange": {"@": "inputrange"},
+                        "toggle": {"@": "toggle"},
+                        "checkbox": {"@": "checkbox"},
+                        "inputtext": {"@": "inputtext"},
+                        "dynamictext": {"@": "dynamictext"}
+                    }
+                },
+                "component1": {
+                    "prototype": "meta/component-blueprint-test/component-blueprint-test-1.reel",
+                    "properties": {
+                         "element": {"#": "component1"}
+                    }
+                },
+                "component2": {
+                    "prototype": "meta/component-blueprint-test/component-blueprint-test-2.reel",
+                    "properties": {
+                        "element": {"#": "component2"}
+                    }
+                },
+                "component3": {
+                    "prototype": "meta/component-blueprint-test/component-blueprint-test-3.reel",
+                    "properties": {
+                         "element": {"#": "component3"}
+                    }
+                },
+                "button": {
+                    "prototype": "montage/ui/button.reel",
+                    "properties": {
+                        "element": {"#": "button"}
+                    }
+                },
+                "inputrange": {
+                    "prototype": "montage/ui/input-range.reel",
+                    "properties": {
+                        "element": {"#": "inputrange"}
+                    }
+                },
+                "toggle": {
+                    "prototype": "montage/ui/toggle-button.reel",
+                    "properties": {
+                        "element": {"#": "toggle"}
+                    }
+                },
+                "checkbox": {
+                    "prototype": "montage/ui/input-checkbox.reel",
+                    "properties": {
+                        "element": {"#": "checkbox"}
+                    }
+                },
+                "inputtext": {
+                    "prototype": "montage/ui/input-text.reel",
+                    "properties": {
+                        "element": {"#": "inputtext"}
+                    }
+                },
+                "dynamictext": {
+                    "prototype": "montage/ui/dynamic-text.reel",
+                    "properties": {
+                        "element": {"#": "dynamictext"}
+                    }
+                },
+                "application": {
+                    "prototype": "montage/ui/application",
+                    "properties": {
+                        "delegate" : {"@": "test"}
+                    }
+                }
+             }
+        </script>
+    </head>
+    <body>
+
+        <div data-montage-id="component1"></div>
+        <div data-montage-id="component2"></div>
+        <div data-montage-id="component3"></div>
+
+        <div data-montage-id="button"></div>
+        <div data-montage-id="inputrange"></div>
+        <div data-montage-id="toggle"></div>
+        <div data-montage-id="checkbox"></div>
+        <div data-montage-id="inputtext"></div>
+        <div data-montage-id="dynamictext"></div>
+    </body>
+</html>

@@ -50,9 +50,6 @@ var Montage = require("montage").Montage,
 /**
     @requires montage/ui/component-description
  */
-// This is loaded asynchronously if needed
-var ComponentDescriptionPromise;
-
 /**
  * @class module:montage/ui/component.Component
  * @classdesc Base class for all Montage components.
@@ -1093,11 +1090,38 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
-    _description:{
-        serializable:false,
-        enumerable:false,
-        value:null
+    blueprintModuleId: {
+        serializable: false,
+        get: function () {
+            var info = Montage.getInfoForObject(this);
+            var self = (info && !info.isInstance) ? this : Object.getPrototypeOf(this);
+            if ((!Object.getOwnPropertyDescriptor(self, "_blueprintModuleId")) || (!self._blueprintModuleId)) {
+                info = Montage.getInfoForObject(self);
+                var moduleId = info.moduleId,
+                    slashIndex = moduleId.lastIndexOf("/"),
+                    dotIndex = moduleId.lastIndexOf(".");
+                slashIndex = ( slashIndex === -1 ? 0 : slashIndex + 1 );
+                dotIndex = ( dotIndex === -1 ? moduleId.length : dotIndex );
+                dotIndex = ( dotIndex < slashIndex ? moduleId.length : dotIndex );
+
+                var blueprintModuleId;
+                if ((dotIndex < moduleId.length) && ( moduleId.slice(dotIndex, moduleId.length) == ".reel")) {
+                    // We are in a reel
+                    blueprintModuleId = moduleId + "/" + moduleId.slice(slashIndex, dotIndex) + "-blueprint.json";
+                } else {
+                    // We look for the default
+                    blueprintModuleId = moduleId.slice(0, dotIndex) + "-blueprint.json";
+                }
+
+                Montage.defineProperty(self, "_blueprintModuleId", {
+                    value: blueprintModuleId
+                });
+            }
+            return self._blueprintModuleId;
+        }
     },
+
+    blueprint: require("montage")._blueprintDescriptor,
 
     /**
     Callback for the <code>_canDrawGate</code>.<br>
