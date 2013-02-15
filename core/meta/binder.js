@@ -1,6 +1,6 @@
 "use strict";
 /**
- @module montage/core/blueprint
+ @module montage/core/meta/binder
  @requires montage/core/core
  @requires core/promise
  @requires core/meta/binder-manager
@@ -20,11 +20,11 @@ var logger = require("core/logger").logger("blueprint");
 var _binderManager = null;
 
 /**
- @class module:montage/core/blueprint.Binder
+ @class module:montage/core/meta/binder.Binder
  @classdesc A blueprint binder is a collection of of blueprints for a specific access type. It also includes the connection information.
  @extends module:montage/core/core.Montage
  */
-var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/core/blueprint.Binder# */ {
+var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/core/meta/binder.Binder# */ {
 
     /**
       didCreate method
@@ -75,6 +75,7 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
         value: function(serializer) {
             serializer.setProperty("name", this.name);
             serializer.setProperty("blueprints", this.blueprints);
+            serializer.setProperty("binderModuleId", this.binderInstanceModuleId);
             serializer.setProperties();
         }
     },
@@ -84,6 +85,7 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
             this._name = deserializer.getProperty("name");
             //copy contents into the blueprints array
             this.blueprints.push.apply(this.blueprints, deserializer.getProperty("blueprints"));
+            this.binderInstanceModuleId = deserializer.getProperty("binderModuleId");
             // FIXME [PJYF Jan 8 2013] There is an API issue in the deserialization
             // We should be able to write deserializer.getProperties sight!!!
             var propertyNames = Montage.getSerializablePropertyNames(this);
@@ -152,7 +154,8 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
     /*
      * This is used for references only so that we can reload referenced binders
      */
-    binderModuleId: {
+    binderInstanceModuleId: {
+        serializable:false,
         value: null
     },
 
@@ -182,7 +185,7 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
                 try {
                     Deserializer.create().initWithObjectAndRequire(object, targetRequire, binderModuleId).deserializeObject(function(binder) {
                         if (binder) {
-                            binder.binderModuleId = binderModuleId;
+                            binder.binderInstanceModuleId = binderModuleId;
                             Binder.manager.addBinder(this);
                             deferredBinder.resolve(binder);
                         } else {
@@ -302,6 +305,10 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
             }
             return this._blueprintObjectProperty;
         }
-    }
+    },
+
+    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+
+    blueprint:require("montage")._blueprintDescriptor
 
 });
