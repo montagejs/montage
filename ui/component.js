@@ -1035,6 +1035,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     blueprintModuleId: {
         serializable: false,
+        enumerable: false,
         get: function () {
             var info = Montage.getInfoForObject(this);
             var self = (info && !info.isInstance) ? this : Object.getPrototypeOf(this);

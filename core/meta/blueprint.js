@@ -266,21 +266,30 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
      * Creates a default blueprint with all enumerable properties.
      * <b>Note</b>Value type are set to the string default.
      */
-    createDefaultBlueprintForObject: {
-        value: function(object) {
+    createDefaultBlueprintForObject:{
+        value:function (object) {
             if (object) {
-                var newBlueprint = Blueprint.create().initWithName(object.identifier);
-                for (var name in object) {
-                    if (name.charAt(0) !== "_") {
+                var target = Montage.getInfoForObject(object).isInstance ? Object.getPrototypeOf(object) : object;
+                var info = Montage.getInfoForObject(target);
+                var newBlueprint = Blueprint.create().initWithNameAndModuleId(info.objectName, info.moduleId);
+                for (var name in target) {
+                    if ((name.charAt(0) !== "_") && (target.hasOwnProperty(name))) {
                         // We don't want to list private properties
-                        var value = object.name;
+                        var value = target[name];
                         var propertyBlueprint;
                         if (Array.isArray(value)) {
                             propertyBlueprint = newBlueprint.addToManyPropertyBlueprintNamed(name);
                         } else {
                             propertyBlueprint = newBlueprint.addToOnePropertyBlueprintNamed(name);
                         }
+                        newBlueprint.addPropertyBlueprintToGroupNamed(propertyBlueprint, info.objectName);
                     }
+                }
+                var parentObject = Object.getPrototypeOf(target);
+                if ("blueprint" in parentObject) {
+                    parentObject.blueprint.then(function (blueprint) {
+                        newBlueprint.parent = blueprint;
+                    })
                 }
                 return newBlueprint;
             } else {
