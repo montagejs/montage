@@ -443,8 +443,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // nested in another repetition) so that it can memoize the
             // template instance:
             this._templateId = null;
-
-            this._iterationInstantiationPromise = Promise.resolve();
+            // This promise synchronizes the creation of new iterations.
+            this._iterationCreationPromise = Promise.resolve();
 
             // Where we want to be after the next draw:
             // ---
@@ -638,19 +638,19 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 
     // Instantiating an iteration template:
     // ----
-    _iterationInstantiationPromise: {value: null},
+    _iterationCreationPromise: {value: null},
     _createIteration: {
         value: function () {
             var self = this,
                 iteration = Iteration.create();
 
-            this._iterationInstantiationPromise = this._iterationInstantiationPromise
+            this._iterationCreationPromise = this._iterationCreationPromise
             .then(function() {
                 var _document = self.element.ownerDocument;
 
                 self.currentIteration = iteration;
 
-                return self.iterationTemplate.instantiate(_document)
+                var promise = self.iterationTemplate.instantiate(_document)
                 .then(function (part) {
                     iteration.childComponents = part.childComponents;
                     iteration.fragment = part.fragment;
@@ -676,10 +676,16 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                     }
 
                     iteration.initWithRepetition(this);
+
                     self.currentIteration = null;
+                })
+
+                promise.done(); // radiate an error if necessary
+                return promise.then(null, function () {
+                    // but regardless of whether this iteration failed, allow
+                    // another iteration to be created
                 });
             })
-            .done()
 
             this.requestedIterations++;
             return iteration;
