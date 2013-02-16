@@ -20,6 +20,14 @@ var PropertyValidationRule = require("core/meta/validation-rule").PropertyValida
 
 var logger = require("core/logger").logger("blueprint");
 
+
+var Defaults = {
+    name:"default",
+    moduleId:"",
+    prototypeName:"",
+    customPrototype:false
+};
+
 /**
  @class module:montage/core/meta/blueprint.Blueprint
  */
@@ -55,25 +63,37 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
         }
     },
 
-    serializeSelf: {
-        value: function(serializer) {
+    serializeSelf:{
+        value:function (serializer) {
             serializer.setProperty("name", this.name);
-            if ((this._binder) && (! this.binder.isDefault)) {
+            if ((this._binder) && (!this.binder.isDefault)) {
                 serializer.setProperty("binder", this._binder, "reference");
             }
             serializer.setProperty("blueprintModuleId", this.blueprintInstanceModuleId);
-            serializer.setProperties();
             if (this._parentReference) {
                 serializer.setProperty("parent", this._parentReference);
             }
-            serializer.setProperty("propertyBlueprints", this._propertyBlueprints);
-            serializer.setProperty("propertyBlueprintGroups", this._propertyBlueprintGroups);
-            serializer.setProperty("propertyValidationRules", this._propertyValidationRules);
+            //  moduleId,prototypeName,customPrototype
+            this._setPropertyWithDefaults(serializer, "moduleId", this.moduleId);
+            if (this.prototypeName === this.name) {
+                this._setPropertyWithDefaults(serializer, "prototypeName", this.prototypeName);
+            }
+            this._setPropertyWithDefaults(serializer, "customPrototype", this.customPrototype);
+            //
+            if (this._propertyBlueprints.length > 0) {
+                serializer.setProperty("propertyBlueprints", this._propertyBlueprints);
+            }
+            if (Object.getOwnPropertyNames(this._propertyBlueprintGroups).length > 0) {
+                serializer.setProperty("propertyBlueprintGroups", this._propertyBlueprintGroups);
+            }
+            if (this._propertyValidationRules.length > 0) {
+                serializer.setProperty("propertyValidationRules", this._propertyValidationRules);
+            }
         }
     },
 
-    deserializeSelf: {
-        value: function(deserializer) {
+    deserializeSelf:{
+        value:function (deserializer) {
             this._name = deserializer.getProperty("name");
             var binder = deserializer.getProperty("binder");
             if (binder) {
@@ -81,16 +101,42 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
             }
             this.blueprintInstanceModuleId = deserializer.getProperty("blueprintModuleId");
             this._parentReference = deserializer.getProperty("parent");
-            this._propertyBlueprints = deserializer.getProperty("propertyBlueprints");
-            this._propertyBlueprintGroups = deserializer.getProperty("propertyBlueprintGroups");
-            this._propertyValidationRules = deserializer.getProperty("propertyValidationRules");
-            // FIXME [PJYF Jan 8 2013] There is an API issue in the deserialization
-            // We should be able to write deserializer.getProperties sight!!!
-            var propertyNames = Montage.getSerializablePropertyNames(this);
-            for (var i = 0, l = propertyNames.length; i < l; i++) {
-                var propertyName = propertyNames[i];
-                this[propertyName] = deserializer.getProperty(propertyName);
+            //  moduleId,prototypeName,customPrototype
+            this.moduleId = this._getPropertyWithDefaults(deserializer, "moduleId");
+            this.prototypeName = this._getPropertyWithDefaults(deserializer, "prototypeName");
+            if (this.prototypeName === "") {
+                this.prototypeName = this.name;
             }
+            this.customPrototype = this._getPropertyWithDefaults(deserializer, "customPrototype");
+            //
+            var value;
+            value = deserializer.getProperty("propertyBlueprints");
+            if (value) {
+                this._propertyBlueprints = value;
+            }
+            value = deserializer.getProperty("propertyBlueprintGroups");
+            if (value) {
+                this._propertyBlueprintGroups = value;
+            }
+            value = deserializer.getProperty("propertyValidationRules");
+            if (value) {
+                this._propertyValidationRules = value;
+            }
+        }
+    },
+
+    _setPropertyWithDefaults:{
+        value:function (serializer, propertyName, value) {
+            if (value != Defaults[propertyName]) {
+                serializer.setProperty(propertyName, value);
+            }
+        }
+    },
+
+    _getPropertyWithDefaults:{
+        value:function (deserializer, propertyName) {
+            var value = deserializer.getProperty(propertyName);
+            return value ? value : Defaults[propertyName];
         }
     },
 
