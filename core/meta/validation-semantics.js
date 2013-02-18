@@ -1,6 +1,6 @@
 "use strict";
 /**
- @module montage/core/blueprint
+ @module montage/core/meta/validation-semantics
  @requires montage/core/core
  @requires core/exception
  @requires core/promise
@@ -14,10 +14,10 @@ var Semantics = Montage;
 var logger = require("core/logger").logger("blueprint");
 
 /**
- @class module:montage/core/blueprint.PropertyValidationSemantics
+ @class module:montage/core/meta/validation-semantics.PropertyValidationSemantics
  @extends module:montage/core/selector/semantics.Semantics
  */
-var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantics.create(Semantics, /** @lends module:montage/core/blueprint.PropertyValidationSemantics# */ {
+var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantics.create(Semantics, /** @lends module:montage/core/meta/validation-semantics.PropertyValidationSemantics# */ {
 
     /**
      Create a new semantic evaluator with the blueprint.

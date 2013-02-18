@@ -1,6 +1,6 @@
 "use strict";
 /**
- @module montage/core/blueprint
+ @module montage/core/meta/binder
  @requires montage/core/core
  @requires core/promise
  @requires core/meta/binder-manager
@@ -20,11 +20,11 @@ var logger = require("core/logger").logger("blueprint");
 var _binderManager = null;
 
 /**
- @class module:montage/core/blueprint.Binder
+ @class module:montage/core/meta/binder.Binder
  @classdesc A blueprint binder is a collection of of blueprints for a specific access type. It also includes the connection information.
  @extends module:montage/core/core.Montage
  */
-var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/core/blueprint.Binder# */ {
+var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/core/meta/binder.Binder# */ {
 
     /**
       didCreate method
@@ -36,22 +36,7 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
             this._name = null;
             this.binderModuleId = null;
             this.isDefault = false;
-            /**
-             Description TODO
-             @type {Property}
-             @default {Array} new Array(30)
-             */
-            Montage.defineProperty(this, "_blueprintForPrototypeTable", {
-                writable: false,
-                value: {}
-            });
-
-            Montage.defineProperty(this, "blueprints", {
-                /*We deal with serialization manually since the property is not writable*/
-                serializable:false,
-                writable: false,
-                value: []
-            });
+            this._blueprintForPrototypeTable = {};
             return this;
         }
     },
@@ -74,8 +59,10 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
     serializeSelf: {
         value: function(serializer) {
             serializer.setProperty("name", this.name);
-            serializer.setProperty("blueprints", this.blueprints);
-            serializer.setAllProperties();
+            if (this.blueprints.length > 0) {
+                serializer.setProperty("blueprints", this.blueprints);
+            }
+            serializer.setProperty("binderModuleId", this.binderInstanceModuleId);
         }
     },
 
@@ -83,14 +70,11 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
         value: function(deserializer) {
             this._name = deserializer.getProperty("name");
             //copy contents into the blueprints array
-            this.blueprints.push.apply(this.blueprints, deserializer.getProperty("blueprints"));
-            // FIXME [PJYF Jan 8 2013] There is an API issue in the deserialization
-            // We should be able to write deserializer.getProperties sight!!!
-            var propertyNames = Montage.getSerializablePropertyNames(this);
-            for (var i = 0, l = propertyNames.length; i < l; i++) {
-                var propertyName = propertyNames[i];
-                this[propertyName] = deserializer.getProperty(propertyName);
+            var value = deserializer.getProperty("blueprints");
+            if (value) {
+                this._blueprints = value;
             }
+            this.binderInstanceModuleId = deserializer.getProperty("binderModuleId");
         }
     },
 
@@ -131,7 +115,8 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
      @private
      */
     _blueprintForPrototypeTable: {
-        value: null
+        distinct:true,
+        value: {}
     },
 
     /**
@@ -152,7 +137,8 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
     /*
      * This is used for references only so that we can reload referenced binders
      */
-    binderModuleId: {
+    binderInstanceModuleId: {
+        serializable:false,
         value: null
     },
 
@@ -182,7 +168,7 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
                 try {
                     Deserializer.create().initWithObjectAndRequire(object, targetRequire, binderModuleId).deserializeObject(function(binder) {
                         if (binder) {
-                            binder.binderModuleId = binderModuleId;
+                            binder.binderInstanceModuleId = binderModuleId;
                             Binder.manager.addBinder(this);
                             deferredBinder.resolve(binder);
                         } else {
@@ -198,6 +184,21 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
         }
     },
 
+    _blueprints: {
+        distinct: true,
+        value: []
+    },
+
+    /**
+     Returns the list of blueprints in this binder
+     @function
+     @default {Array}
+     */
+    blueprints: {
+        get: function() {
+            return this._blueprints;
+        }
+    },
 
     /**
      Description TODO
@@ -302,6 +303,10 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
             }
             return this._blueprintObjectProperty;
         }
-    }
+    },
+
+    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+
+    blueprint:require("montage")._blueprintDescriptor
 
 });

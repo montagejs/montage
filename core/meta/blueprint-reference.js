@@ -1,6 +1,6 @@
 "use strict";
 /**
- @module montage/core/blueprint
+ @module montage/core/meta/blueprint-reference
  @requires montage/core/core
  @requires core/exception
  @requires core/promise

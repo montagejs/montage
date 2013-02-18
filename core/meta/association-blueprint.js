@@ -1,6 +1,6 @@
 "use strict";
 /**
- @module montage/core/remote-reference
+ @module montage/core/meta/association-reference
  @requires montage/core/core
  @requires core/promise
  @requires core/logger
@@ -12,9 +12,9 @@ var PropertyBlueprint = require("core/meta/property-blueprint").PropertyBlueprin
 var logger = require("core/logger").logger("blueprint");
 
 /**
- @class module:montage/core/blueprint.AssociationBlueprint
+ @class module:montage/core/meta/association-reference.AssociationBlueprint
  */
-exports.AssociationBlueprint = Montage.create(PropertyBlueprint, /** @lends module:montage/core/blueprint.AssociationBlueprint# */ {
+exports.AssociationBlueprint = Montage.create(PropertyBlueprint, /** @lends module:montage/core/meta/association-reference.AssociationBlueprint# */ {
 
     serializeSelf: {
         value: function(serializer) {

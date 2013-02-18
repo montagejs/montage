@@ -1,19 +1,37 @@
 "use strict";
 /**
- @module montage/core/blueprint
+ @module montage/core/meta/property-blueprint
  @requires montage/core/core
  @requires core/exception
  @requires core/promise
  @requires core/logger
  */
 var Montage = require("montage").Montage;
+var Enum = require("core/enum").Enum;
 
 var logger = require("core/logger").logger("blueprint");
 
+var ValueType = Enum.create().initWithMembers("string", "number", "boolean", "date", "enum", "url", "object");
+var CollectionValueType = Enum.create().initWithMembers("list", "set", "map");
+
+var Defaults = {
+    name:"default",
+    cardinality:1,
+    mandatory:false,
+    readOnly:false,
+    denyDelete:false,
+    valueType:"string",
+    colectionValueType:"list",
+    valueObjectPrototypeName:"",
+    valueObjectModuleId:"",
+    enumValues:[],
+    helpKey:""
+};
+
 /**
- @class module:montage/core/blueprint.PropertyBlueprint
+ @class module:montage/core/meta/property-blueprint.PropertyBlueprint
  */
-exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/core/blueprint.PropertyBlueprint# */ {
+exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/core/meta/property-blueprint.PropertyBlueprint# */ {
 
     /**
      Initialize a newly allocated property blueprint.
@@ -23,69 +41,94 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      @param {Number} cardinality name of the property blueprint to create
      @returns itself
      */
-    initWithNameBlueprintAndCardinality: {
-        value: function(name, blueprint, cardinality) {
-            this._name = (name !== null ? name : "default");
-            this._blueprint = blueprint;
-            this._cardinality = (cardinality > 0 ? cardinality : 1);
+    initWithNameBlueprintAndCardinality:{
+        value:function (name, blueprint, cardinality) {
+            this._name = (name !== null ? name : Defaults["name"]);
+            this._owner = blueprint;
+            this._cardinality = (cardinality > 0 ? cardinality : Defaults["cardinality"]);
             return this;
         }
     },
 
-    serializeSelf: {
-        value: function(serializer) {
+    serializeSelf:{
+        value:function (serializer) {
             serializer.setProperty("name", this.name);
-            serializer.setProperty("blueprint", this.blueprint, "reference");
+            serializer.setProperty("blueprint", this._owner, "reference");
             if (this.cardinality === Infinity) {
                 serializer.setProperty("cardinality", -1);
             } else {
-                serializer.setProperty("cardinality", this.cardinality);
+                this._setPropertyWithDefaults(serializer, "cardinality", this.cardinality);
             }
-            serializer.setAllProperties();
+            this._setPropertyWithDefaults(serializer, "mandatory", this.mandatory);
+            this._setPropertyWithDefaults(serializer, "readOnly", this.readOnly);
+            this._setPropertyWithDefaults(serializer, "denyDelete", this.denyDelete);
+            this._setPropertyWithDefaults(serializer, "valueType", this.valueType);
+            this._setPropertyWithDefaults(serializer, "colectionValueType", this.colectionValueType);
+            this._setPropertyWithDefaults(serializer, "valueObjectPrototypeName", this.valueObjectPrototypeName);
+            this._setPropertyWithDefaults(serializer, "valueObjectModuleId", this.valueObjectModuleId);
+            if (this.enumValues.length > 0) {
+                this._setPropertyWithDefaults(serializer, "enumValues", this.enumValues);
+            }
+            this._setPropertyWithDefaults(serializer, "helpKey", this.helpKey);
         }
     },
 
-    deserializeSelf: {
-        value: function(deserializer) {
+    deserializeSelf:{
+        value:function (deserializer) {
             this._name = deserializer.getProperty("name");
-            this._blueprint = deserializer.getProperty("blueprint");
-            var cardinality = deserializer.getProperty("cardinality");
-            if (cardinality === -1) {
+            this._owner = deserializer.getProperty("blueprint");
+            this._cardinality = this._getPropertyWithDefaults(deserializer, "cardinality");
+            if (this._cardinality === -1) {
                 this._cardinality = Infinity;
-            } else {
-                this._cardinality = cardinality;
             }
-            // FIXME [PJYF Jan 8 2013] There is an API issue in the deserialization
-            // We should be able to write deserializer.getProperties sight!!!
-            var propertyNames = Montage.getSerializablePropertyNames(this);
-            for (var i = 0, l = propertyNames.length; i < l; i++) {
-                var propertyName = propertyNames[i];
-                this[propertyName] = deserializer.getProperty(propertyName);
+            this.mandatory = this._getPropertyWithDefaults(deserializer, "mandatory");
+            this.readOnly = this._getPropertyWithDefaults(deserializer, "readOnly");
+            this.denyDelete = this._getPropertyWithDefaults(deserializer, "denyDelete");
+            this.valueType = this._getPropertyWithDefaults(deserializer, "valueType");
+            this.colectionValueType = this._getPropertyWithDefaults(deserializer, "colectionValueType");
+            this.valueObjectPrototypeName = this._getPropertyWithDefaults(deserializer, "valueObjectPrototypeName");
+            this.valueObjectModuleId = this._getPropertyWithDefaults(deserializer, "valueObjectModuleId");
+            this.enumValues = this._getPropertyWithDefaults(deserializer, "enumValues");
+            this.helpKey = this._getPropertyWithDefaults(deserializer, "helpKey");
+        }
+    },
+
+    _setPropertyWithDefaults:{
+        value:function (serializer, propertyName, value) {
+            if (value != Defaults[propertyName]) {
+                serializer.setProperty(propertyName, value);
             }
+        }
+    },
+
+    _getPropertyWithDefaults:{
+        value:function (deserializer, propertyName) {
+            var value = deserializer.getProperty(propertyName);
+            return value ? value : Defaults[propertyName];
         }
     },
 
     /*
      * @private
      */
-    _blueprint: {
-        value: null
+    _owner:{
+        value:null
     },
 
     /*
      * Component description attached to this property blueprint.
      */
-    blueprint: {
-        get: function() {
-            return this._blueprint;
+    owner:{
+        get:function () {
+            return this._owner;
         }
     },
 
     /**
      @private
      */
-    _name: {
-        value: null
+    _name:{
+        value:null
     },
 
     /**
@@ -93,9 +136,9 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      @function
      @returns {String} this._name
      */
-    name: {
-        serializable: false,
-        get: function() {
+    name:{
+        serializable:false,
+        get:function () {
             return this._name;
         }
     },
@@ -107,10 +150,10 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      @type {Property}
      @default {String} this.name
      */
-    identifier: {
-        get: function() {
+    identifier:{
+        get:function () {
             return [
-                this.blueprint.identifier,
+                this.owner.identifier,
                 this.name
             ].join("_");
         }
@@ -120,8 +163,8 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      Description TODO
      @private
      */
-    _cardinality: {
-        value: 1
+    _cardinality:{
+        value:Defaults["cardinality"]
     },
 
     /**
@@ -131,8 +174,8 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      @type {Property}
      @default {Number} 1
      */
-    cardinality: {
-        get: function() {
+    cardinality:{
+        get:function () {
             return this._cardinality;
         }
     },
@@ -142,8 +185,8 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      @type {Property}
      @default {Boolean} false
      */
-    mandatory: {
-        value: false
+    mandatory:{
+        value:Defaults["mandatory"]
     },
 
     /**
@@ -151,8 +194,8 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      @type {Property}
      @default {Boolean} false
      */
-    denyDelete: {
-        value: false
+    denyDelete:{
+        value:Defaults["denyDelete"]
     },
 
     /**
@@ -160,8 +203,8 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      @type {Property}
      @default {Boolean} false
      */
-    readOnly: {
-        value: false
+    readOnly:{
+        value:Defaults["readOnly"]
     },
 
     /**
@@ -169,8 +212,8 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      @type {Property}
      @default {Boolean} false
      */
-    isAssociationBlueprint: {
-        get: function() {
+    isAssociationBlueprint:{
+        get:function () {
             return false;
         }
     },
@@ -180,8 +223,8 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      @type {Property}
      @default {Boolean} false
      */
-    isToMany: {
-        get: function() {
+    isToMany:{
+        get:function () {
             return this.cardinality > 1;
         }
     },
@@ -191,8 +234,8 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      @type {Property}
      @default {Boolean} false
      */
-    isDerived: {
-        get: function() {
+    isDerived:{
+        get:function () {
             return false;
         }
     },
@@ -202,8 +245,17 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      @type {Property}
      @default {String} "string"
      */
-    valueType: {
-        value: "string"
+    valueType:{
+        value:Defaults["valueType"]
+    },
+
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "string"
+     */
+    colectionValueType:{
+        value:Defaults["colectionValueType"]
     },
 
     /**
@@ -211,8 +263,8 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      @type {Property}
      @default {Object} null
      */
-    valueObjectPrototypeName: {
-        value: null
+    valueObjectPrototypeName:{
+        value:Defaults["valueObjectPrototypeName"]
     },
 
     /**
@@ -220,12 +272,12 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      @type {Property}
      @default {Object} null
      */
-    valueObjectModuleId: {
-        value: null
+    valueObjectModuleId:{
+        value:Defaults["valueObjectModuleId"]
     },
 
-    _enumValues: {
-        value: null
+    _enumValues:{
+        value:null
     },
 
     /**
@@ -233,22 +285,26 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      * @type {Property}
      * @default {Object} null
      */
-    enumValues: {
-        get: function() {
+    enumValues:{
+        get:function () {
             if (!this._enumValues) {
                 return [];
             }
             return this._enumValues;
         },
-        set: function(value) {
+        set:function (value) {
             if (Array.isArray(value)) {
                 this._enumValues = value;
             }
         }
     },
 
-    helpKey: {
-        value: ""
-    }
+    helpKey:{
+        value:Defaults["helpKey"]
+    },
+
+    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+
+    blueprint:require("montage")._blueprintDescriptor
 
 });

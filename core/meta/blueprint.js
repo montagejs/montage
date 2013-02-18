@@ -1,6 +1,6 @@
 "use strict";
 /**
- @module montage/core/blueprint
+ @module montage/core/meta/blueprint
  @requires montage/core/core
  @requires core/exception
  @requires core/promise
@@ -20,10 +20,22 @@ var PropertyValidationRule = require("core/meta/validation-rule").PropertyValida
 
 var logger = require("core/logger").logger("blueprint");
 
+
+var Defaults = {
+    name:"default",
+    moduleId:"",
+    prototypeName:"",
+    customPrototype:false
+};
+
 /**
- @class module:montage/core/bluprint.Blueprint
+ @class module:montage/core/meta/blueprint.Blueprint
  */
-var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:montage/core/bluprint.Blueprint# */ {
+var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:montage/core/meta/blueprint.Blueprint# */ {
+
+    FileExtension: {
+        value: "-blueprint.json"
+    },
 
     /**
      Description TODO
@@ -55,40 +67,80 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
         }
     },
 
-    serializeSelf: {
-        value: function(serializer) {
+    serializeSelf:{
+        value:function (serializer) {
             serializer.setProperty("name", this.name);
-            if ((this._binder) && (! this.binder.isDefault)) {
+            if ((this._binder) && (!this.binder.isDefault)) {
                 serializer.setProperty("binder", this._binder, "reference");
             }
-            serializer.setAllProperties();
+            serializer.setProperty("blueprintModuleId", this.blueprintInstanceModuleId);
             if (this._parentReference) {
                 serializer.setProperty("parent", this._parentReference);
             }
-            serializer.setProperty("propertyBlueprints", this._propertyBlueprints);
-            serializer.setProperty("propertyBlueprintGroups", this._propertyBlueprintGroups);
-            serializer.setProperty("propertyValidationRules", this._propertyValidationRules);
+            //  moduleId,prototypeName,customPrototype
+            this._setPropertyWithDefaults(serializer, "moduleId", this.moduleId);
+            if (this.prototypeName === this.name) {
+                this._setPropertyWithDefaults(serializer, "prototypeName", this.prototypeName);
+            }
+            this._setPropertyWithDefaults(serializer, "customPrototype", this.customPrototype);
+            //
+            if (this._propertyBlueprints.length > 0) {
+                serializer.setProperty("propertyBlueprints", this._propertyBlueprints);
+            }
+            if (Object.getOwnPropertyNames(this._propertyBlueprintGroups).length > 0) {
+                serializer.setProperty("propertyBlueprintGroups", this._propertyBlueprintGroups);
+            }
+            if (this._propertyValidationRules.length > 0) {
+                serializer.setProperty("propertyValidationRules", this._propertyValidationRules);
+            }
         }
     },
 
-    deserializeSelf: {
-        value: function(deserializer) {
+    deserializeSelf:{
+        value:function (deserializer) {
             this._name = deserializer.getProperty("name");
             var binder = deserializer.getProperty("binder");
             if (binder) {
                 this._binder = binder;
             }
+            this.blueprintInstanceModuleId = deserializer.getProperty("blueprintModuleId");
             this._parentReference = deserializer.getProperty("parent");
-            this._propertyBlueprints = deserializer.getProperty("propertyBlueprints");
-            this._propertyBlueprintGroups = deserializer.getProperty("propertyBlueprintGroups");
-            this._propertyValidationRules = deserializer.getProperty("propertyValidationRules");
-            // FIXME [PJYF Jan 8 2013] There is an API issue in the deserialization
-            // We should be able to write deserializer.getProperties sight!!!
-            var propertyNames = Montage.getSerializablePropertyNames(this);
-            for (var i = 0, l = propertyNames.length; i < l; i++) {
-                var propertyName = propertyNames[i];
-                this[propertyName] = deserializer.getProperty(propertyName);
+            //  moduleId,prototypeName,customPrototype
+            this.moduleId = this._getPropertyWithDefaults(deserializer, "moduleId");
+            this.prototypeName = this._getPropertyWithDefaults(deserializer, "prototypeName");
+            if (this.prototypeName === "") {
+                this.prototypeName = this.name;
             }
+            this.customPrototype = this._getPropertyWithDefaults(deserializer, "customPrototype");
+            //
+            var value;
+            value = deserializer.getProperty("propertyBlueprints");
+            if (value) {
+                this._propertyBlueprints = value;
+            }
+            value = deserializer.getProperty("propertyBlueprintGroups");
+            if (value) {
+                this._propertyBlueprintGroups = value;
+            }
+            value = deserializer.getProperty("propertyValidationRules");
+            if (value) {
+                this._propertyValidationRules = value;
+            }
+        }
+    },
+
+    _setPropertyWithDefaults:{
+        value:function (serializer, propertyName, value) {
+            if (value != Defaults[propertyName]) {
+                serializer.setProperty(propertyName, value);
+            }
+        }
+    },
+
+    _getPropertyWithDefaults:{
+        value:function (deserializer, propertyName) {
+            var value = deserializer.getProperty(propertyName);
+            return value ? value : Defaults[propertyName];
         }
     },
 
@@ -205,7 +257,8 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
     /*
      * This is used for references only so that we can reload referenced blueprints
      */
-    blueprintModuleId: {
+    blueprintInstanceModuleId: {
+        serializable: false,
         value: null
     },
 
@@ -262,21 +315,30 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
      * Creates a default blueprint with all enumerable properties.
      * <b>Note</b>Value type are set to the string default.
      */
-    createDefaultBlueprintForObject: {
-        value: function(object) {
+    createDefaultBlueprintForObject:{
+        value:function (object) {
             if (object) {
-                var newBlueprint = Blueprint.create().initWithName(object.identifier);
-                for (var name in object) {
-                    if (name.charAt(0) !== "_") {
+                var target = Montage.getInfoForObject(object).isInstance ? Object.getPrototypeOf(object) : object;
+                var info = Montage.getInfoForObject(target);
+                var newBlueprint = Blueprint.create().initWithNameAndModuleId(info.objectName, info.moduleId);
+                for (var name in target) {
+                    if ((name.charAt(0) !== "_") && (target.hasOwnProperty(name))) {
                         // We don't want to list private properties
-                        var value = object.name;
+                        var value = target[name];
                         var propertyBlueprint;
                         if (Array.isArray(value)) {
                             propertyBlueprint = newBlueprint.addToManyPropertyBlueprintNamed(name);
                         } else {
                             propertyBlueprint = newBlueprint.addToOnePropertyBlueprintNamed(name);
                         }
+                        newBlueprint.addPropertyBlueprintToGroupNamed(propertyBlueprint, info.objectName);
                     }
+                }
+                var parentObject = Object.getPrototypeOf(target);
+                if ("blueprint" in parentObject) {
+                    parentObject.blueprint.then(function (blueprint) {
+                        newBlueprint.parent = blueprint;
+                    })
                 }
                 return newBlueprint;
             } else {
@@ -438,12 +500,12 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
             if (propertyBlueprint !== null && propertyBlueprint.name !== null) {
                 var index = this._propertyBlueprints.indexOf(propertyBlueprint);
                 if (index < 0) {
-                    if ((propertyBlueprint.blueprint !== null) && (propertyBlueprint.blueprint !== this)) {
-                        propertyBlueprint.blueprint.removePropertyBlueprint(propertyBlueprint);
+                    if ((propertyBlueprint.owner !== null) && (propertyBlueprint.owner !== this)) {
+                        propertyBlueprint.owner.removePropertyBlueprint(propertyBlueprint);
                     }
                     this._propertyBlueprints.push(propertyBlueprint);
                     this._propertyBlueprintsTable[propertyBlueprint.name] = propertyBlueprint;
-                    propertyBlueprint._blueprint = this;
+                    propertyBlueprint._owner = this;
                 }
             }
             return propertyBlueprint;
@@ -463,7 +525,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
                 if (index >= 0) {
                     this._propertyBlueprints.splice(index, 1);
                     delete this._propertyBlueprintsTable[propertyBlueprint.name];
-                    propertyBlueprint._blueprint = null;
+                    propertyBlueprint._owner = null;
                 }
             }
             return propertyBlueprint;
@@ -541,7 +603,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
         value: function(name, inverse) {
             var relationship = this.addPropertyBlueprint(this.newAssociationBlueprint(name, 1));
             if (inverse) {
-                relationship.targetBlueprint = inverse.blueprint;
+                relationship.targetBlueprint = inverse.owner;
                 inverse.targetBlueprint = this;
             }
             return relationship;
@@ -559,7 +621,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
         value: function(name, inverse) {
             var relationship = this.addPropertyBlueprint(this.newAssociationBlueprint(name, Infinity));
             if (inverse) {
-                relationship.targetBlueprint = inverse.blueprint;
+                relationship.targetBlueprint = inverse.owner;
                 inverse.targetBlueprint = this;
             }
             return relationship;
@@ -728,6 +790,9 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
             for (var name in this._propertyValidationRules) {
                 propertyValidationRules.push(this._propertyValidationRules[name]);
             }
+            if (this.parent) {
+                propertyValidationRules = propertyValidationRules.concat(this.parent.propertyValidationRules);
+            }
             return propertyValidationRules;
         }
     },
@@ -739,7 +804,11 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
      */
     propertyValidationRuleForName: {
         value: function(name) {
-            return this._propertyValidationRules[name];
+            var propertyValidationRule = his._propertyValidationRules[name];
+            if ((! propertyValidationRule) && (this.parent)) {
+                propertyValidationRule = this.parent.propertyValidationRuleForName(name);
+            }
+            return propertyValidationRule;
         }
     },
 
@@ -792,12 +861,15 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
             }
             return messages;
         }
-    }
+    },
+
+    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+
+    blueprint:require("montage")._blueprintDescriptor
+
 
 });
 var UnknownBlueprint = Object.freeze(Blueprint.create().initWithName("Unknown"));
-
-var ValueType = Enum.create().initWithMembers("string", "number", "boolean", "date", "enum", "set", "list", "map", "url", "object");
 
 var UnknownPropertyBlueprint = Object.freeze(PropertyBlueprint.create().initWithNameBlueprintAndCardinality("Unknown", null, 1));
 

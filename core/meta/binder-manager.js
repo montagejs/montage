@@ -1,6 +1,6 @@
 "use strict";
 /**
- @module montage/core/blueprint
+ @module montage/core/meta/binder-manager
  @requires montage/core/core
  @requires core/exception
  @requires core/promise
@@ -14,12 +14,12 @@ var BinderModule = require("core/meta/binder");
 var logger = require("core/logger").logger("blueprint");
 
 /**
- @class module:montage/core/blueprint.BinderManager
+ @class module:montage/core/meta/binder-manager.BinderManager
  @classdesc A blueprint binder manager is a singleton that is responsible for loading and dispaching binders and blueprints.
  @extends module:montage/core/core.Montage
  */
 
-var BinderManager = exports.BinderManager = Montage.create(Montage, /** @lends module:montage/core/blueprint.BinderManager# */ {
+var BinderManager = exports.BinderManager = Montage.create(Montage, /** @lends module:montage/core/meta/binder-manager.BinderManager# */ {
 
     didCreate: {
         value: function() {

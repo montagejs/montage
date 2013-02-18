@@ -47,13 +47,13 @@ describe("meta/blueprint-spec", function () {
             var propertyBlueprint = blueprint.newPropertyBlueprint("foo", 1);
             it("should be able to add", function () {
                 blueprint.addPropertyBlueprint(propertyBlueprint);
-                expect(propertyBlueprint.blueprint).toBe(blueprint);
+                expect(propertyBlueprint.owner).toBe(blueprint);
                 expect(blueprint.propertyBlueprintForName("foo")).toBe(propertyBlueprint);
             });
 
             it("should be able to remove", function () {
                 blueprint.removePropertyBlueprint(propertyBlueprint);
-                expect(propertyBlueprint.blueprint).toBe(null);
+                expect(propertyBlueprint.owner).toBe(null);
                 expect(blueprint.propertyBlueprintForName("foo")).toBeNull();
             });
         });

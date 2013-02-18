@@ -11,12 +11,51 @@ var PropertyBlueprint = require("core/meta/property-blueprint").PropertyBlueprin
 
 var logger = require("core/logger").logger("blueprint");
 
+var Defaults = {
+    dependencies:[],
+    getterDefinition:"",
+    setterDefinition:""
+};
 /**
  A derived is property blueprint is calculated using other property blueprints of the object.<br/>
 
- @class module:montage/core/blueprint.DerivedPropertyBlueprint
+ @class module:montage/core/meta/blueprint.DerivedPropertyBlueprint
  */
-exports.DerivedPropertyBlueprint = Montage.create(PropertyBlueprint, /** @lends module:montage/core/blueprint.DerivedPropertyBlueprint# */ {
+exports.DerivedPropertyBlueprint = Montage.create(PropertyBlueprint, /** @lends module:montage/core/meta/blueprint.DerivedPropertyBlueprint# */ {
+
+    serializeSelf: {
+        value: function(serializer) {
+            if (this.dependencies.length > 0) {
+                this._setPropertyWithDefaults(serializer, "dependencies", this.dependencies);
+            }
+            this._setPropertyWithDefaults(serializer, "getterDefinition", this.getterDefinition);
+            this._setPropertyWithDefaults(serializer, "setterDefinition", this.setterDefinition);
+         }
+    },
+
+    deserializeSelf: {
+        value: function(deserializer) {
+            this.dependencies = this._getPropertyWithDefaults(deserializer, "dependencies");
+            this.getterDefinition = this._getPropertyWithDefaults(deserializer, "getterDefinition");
+            this.setterDefinition = this._getPropertyWithDefaults(deserializer, "setterDefinition");
+        }
+    },
+
+    _setPropertyWithDefaults:{
+        value:function (serializer, propertyName, value) {
+            if (value != Defaults[propertyName]) {
+                serializer.setProperty(propertyName, value);
+            }
+        }
+    },
+
+    _getPropertyWithDefaults:{
+        value:function (deserializer, propertyName) {
+            var value = deserializer.getProperty(propertyName);
+            return value ? value : Defaults[propertyName];
+        }
+    },
+
     /**
      Description TODO
      @type {Property}
@@ -36,7 +75,7 @@ exports.DerivedPropertyBlueprint = Montage.create(PropertyBlueprint, /** @lends 
      */
     dependencies: {
         value: [],
-        serializable: true
+        distinct:true
     },
     /**
      Description TODO
@@ -44,8 +83,7 @@ exports.DerivedPropertyBlueprint = Montage.create(PropertyBlueprint, /** @lends 
      @default null
      */
     getterDefinition: {
-        value: null,
-        serializable: true
+        value: Defaults["getterDefinition"]
     },
 
     /**
@@ -54,8 +92,7 @@ exports.DerivedPropertyBlueprint = Montage.create(PropertyBlueprint, /** @lends 
      @default null
      */
     setterDefinition: {
-        value: null,
-        serializable: true
+        value: Defaults["setterDefinition"]
     }
 
 });
