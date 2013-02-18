@@ -33,6 +33,10 @@ var Defaults = {
  */
 var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:montage/core/meta/blueprint.Blueprint# */ {
 
+    FileExtension: {
+        value: "-blueprint.json"
+    },
+
     /**
      Description TODO
      @function
