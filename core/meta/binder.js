@@ -36,22 +36,7 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
             this._name = null;
             this.binderModuleId = null;
             this.isDefault = false;
-            /**
-             Description TODO
-             @type {Property}
-             @default {Array} new Array(30)
-             */
-            Montage.defineProperty(this, "_blueprintForPrototypeTable", {
-                writable: false,
-                value: {}
-            });
-
-            Montage.defineProperty(this, "blueprints", {
-                /*We deal with serialization manually since the property is not writable*/
-                serializable:false,
-                writable: false,
-                value: []
-            });
+            this._blueprintForPrototypeTable = {};
             return this;
         }
     },
@@ -74,9 +59,10 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
     serializeSelf: {
         value: function(serializer) {
             serializer.setProperty("name", this.name);
-            serializer.setProperty("blueprints", this.blueprints);
+            if (this.blueprints.length > 0) {
+                serializer.setProperty("blueprints", this.blueprints);
+            }
             serializer.setProperty("binderModuleId", this.binderInstanceModuleId);
-            serializer.setProperties();
         }
     },
 
@@ -84,15 +70,11 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
         value: function(deserializer) {
             this._name = deserializer.getProperty("name");
             //copy contents into the blueprints array
-            this.blueprints.push.apply(this.blueprints, deserializer.getProperty("blueprints"));
-            this.binderInstanceModuleId = deserializer.getProperty("binderModuleId");
-            // FIXME [PJYF Jan 8 2013] There is an API issue in the deserialization
-            // We should be able to write deserializer.getProperties sight!!!
-            var propertyNames = Montage.getSerializablePropertyNames(this);
-            for (var i = 0, l = propertyNames.length; i < l; i++) {
-                var propertyName = propertyNames[i];
-                this[propertyName] = deserializer.getProperty(propertyName);
+            var value = deserializer.getProperty("blueprints");
+            if (value) {
+                this._blueprints = value;
             }
+            this.binderInstanceModuleId = deserializer.getProperty("binderModuleId");
         }
     },
 
@@ -133,7 +115,8 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
      @private
      */
     _blueprintForPrototypeTable: {
-        value: null
+        distinct:true,
+        value: {}
     },
 
     /**
@@ -201,6 +184,21 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
         }
     },
 
+    _blueprints: {
+        distinct: true,
+        value: []
+    },
+
+    /**
+     Returns the list of blueprints in this binder
+     @function
+     @default {Array}
+     */
+    blueprints: {
+        get: function() {
+            return this._blueprints;
+        }
+    },
 
     /**
      Description TODO
