@@ -353,7 +353,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
                 if(String.isString(arr[i])) {
                     text = value = arr[i];
                 } else {
-                    if (arr[i].hasOwnProperty(this.groupPropertyPath || 'groupLabel'))
+                    if (arr[i].hasOwnProperty(this.groupPropertyPath || 'groupLabel') || lastGroupLabel)
                     {
                         currentGroupLabel = arr[i][this.groupPropertyPath || 'groupLabel'];
 
@@ -367,7 +367,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
                             }
 
                             // create a new group base on groupLabel value
-                            if (currentGroupLabel != '') {
+                            if (currentGroupLabel) {
                                 optionGroup = document.createElement('optgroup');
                                 optionGroup.label = currentGroupLabel;
                                 lastGroupLabel = currentGroupLabel;
