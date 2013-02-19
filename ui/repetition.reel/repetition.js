@@ -90,6 +90,7 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
 
     injectIntoDocument: {
         value: function (repetition, visibleIndex) {
+            var self = this;
             var element = repetition.element;
 
             // Add a new top boundary before the next iteration
@@ -101,20 +102,36 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             // Inject the elements into the document
             element.insertBefore(this.fragment, bottomBoundary);
 
-            // Maintain the "iterationForElement" map.
-            for (
-                var child = topBoundary.nextSibling;
-                child !== bottomBoundary;
-                child = child.nextSibling
-            ) {
-                if (child.nodeType === 1) { // tags
-                    repetition.iterationForElement.set(child, this);
+            // Once the child components have drawn once, and so created all
+            // their elements, we can add them to the iterationForElement map
+            var childComponentsLeftToDraw = this.childComponents.length;
+
+            var firstDraw = function (event) {
+                event.target.removeEventListener("firstDraw", firstDraw, false);
+
+                childComponentsLeftToDraw--;
+                if (!childComponentsLeftToDraw) {
+                    // new iterations could have been inserted since this one
+                    // so get the new bottomBoundary
+                    var boundaries = repetition.boundaries;
+                    var bottomBoundary = boundaries[boundaries.indexOf(topBoundary) + 1];
+
+                    for (
+                        var child = topBoundary.nextSibling;
+                        child !== bottomBoundary;
+                        child = child.nextSibling
+                    ) {
+                        if (child.nodeType === 1) { // tags
+                            repetition.iterationForElement.set(child, self);
+                        }
+                    }
                 }
-            }
+            };
 
             // notify the components to wake up and smell the document
             for (var i = 0; i < this.childComponents.length; i++) {
                 var childComponent = this.childComponents[i];
+                childComponent.addEventListener("firstDraw", firstDraw, false);
                 childComponent.needsDraw = true;
             }
 
