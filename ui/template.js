@@ -117,6 +117,7 @@ var Template = Montage.create(Montage, {
             return this.getObjectsString(_document)
             .then(function(objectsString) {
                 self.objectsString = objectsString;
+                return self;
             });
         }
     },
@@ -141,6 +142,7 @@ var Template = Montage.create(Montage, {
             return this.getObjectsString(this.document)
             .then(function(objectsString) {
                 self.objectsString = objectsString;
+                return self;
             });
         }
     },
@@ -168,6 +170,8 @@ var Template = Montage.create(Montage, {
                 this.document.importNode(documentFragment)
             );
             this.setObjects(objects);
+
+            return this;
         }
     },
 
