@@ -1025,6 +1025,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 }).fail(function(reason) {
                     var message = reason.stack || reason;
                     console.error("Error in", template.getBaseUrl() + ":", message);
+                    throw reason;
                 });
             });
         }
