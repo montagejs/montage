@@ -168,6 +168,7 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
                 return;
             var repetition = this.repetition;
             var operation;
+
             if (value) {
                 operation = repetition.ClassChangeOperation.create().init(
                     this, "add", key
@@ -675,7 +676,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                         });
                     }
 
-                    iteration.initWithRepetition(this);
+                    iteration.initWithRepetition(self);
 
                     self.currentIteration = null;
                 })
