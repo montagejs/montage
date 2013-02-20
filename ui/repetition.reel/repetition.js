@@ -923,11 +923,13 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // to minimize the impact on the document.
 
             // execute the pending draw operations (add, delete, select,
-            // deselect, activate, deactivate)
+            // deselect, activate, deactivate).
+            // Note: An operation can add more operations to the queue, so
+            // cannot use .forEach or cache length.
             var pendingOperations = this.pendingOperations;
-            pendingOperations.forEach(function (operation) {
-                operation.draw(this);
-            }, this);
+            for (var i = 0; i < pendingOperations.length; i++) {
+                pendingOperations[i].draw(this);
+            }
             pendingOperations.clear();
 
         }
