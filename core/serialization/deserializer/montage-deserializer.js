@@ -3,8 +3,7 @@ var Interpreter = require("mousse/deserialization/interpreter").Interpreter;
 var Deserializer = require("mousse/deserialization/deserializer").Deserializer;
 var MontageInterpreter = require("./montage-interpreter").MontageInterpreter;
 var MontageReviver = require("./montage-reviver").MontageReviver;
-var SerializationExtractor = require("./serialization-extractor").SerializationExtractor;
-var Promise = require("q");
+var Promise = require("core/promise").Promise;
 
 var logger = require("core/logger").logger("montage-deserializer");
 
@@ -79,54 +78,6 @@ var MontageDeserializer = Montage.create(Deserializer.prototype, {
             }
 
             return labels;
-        }
-    },
-
-    findMontageObjectLabelsWithElements: {
-        value: function(elementIds) {
-            var serialization = this.serialization,
-                type,
-                object,
-                labels = [],
-                expectedCount = elementIds.length,
-                count,
-                elementId,
-                element;
-
-            for (var label in serialization) {
-                object = serialization[label];
-
-                if (object.properties) {
-                    element = object.properties.element;
-                    type = MontageReviver.getTypeOf(element);
-
-                    if (type === "Element") {
-                        elementId = element["#"];
-
-                        if (elementIds.indexOf(elementId) >= 0) {
-                            count = labels.push(label);
-                            if (count === expectedCount) {
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return labels;
-        }
-    },
-
-    extractSerialization: {
-        value: function(objectLabels, externalLabels) {
-            var serialization = this.serialization,
-                extractor = SerializationExtractor.create(),
-                newSerialization;
-
-            extractor.initWithSerialization(serialization);
-            newSerialization = extractor.extractObjects(objectLabels, externalLabels);
-
-            return JSON.stringify(newSerialization);
         }
     },
 

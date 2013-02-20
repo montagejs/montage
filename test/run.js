@@ -96,10 +96,13 @@ if (spec) {
         "reel/template-spec",
         "document-resources-spec",
 
+        "serialization/serialization-spec",
         "serialization/montage-serializer-spec",
         "serialization/montage-deserializer-spec",
         "serialization/serialization-extractor-spec",
         "serialization/bindings-spec",
+        "serialization/serialization-inspector-spec",
+        "serialization/serialization-merger-spec",
 
         "ui/application-spec",
         "ui/anchor-spec",

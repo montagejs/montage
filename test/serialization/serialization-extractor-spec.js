@@ -3,8 +3,9 @@ Copyright (c) 2013, António Afonso
 All Rights Reserved.
 </copyright> */
 var Montage = require("montage").Montage,
-    SerializationExtractor = require("montage/core/serialization/deserializer/serialization-extractor").SerializationExtractor,
-    Promise = require("montage/q");
+    SerializationExtractor = require("montage/core/serialization/serialization").SerializationExtractor,
+    Serialization = require("montage/core/serialization/serialization").Serialization,
+    Promise = require("montage/core/promise").Promise;
 
 describe("reel/serialization/serialization-extractor-spec", function() {
     var serializationExtractor;
@@ -33,16 +34,19 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                     }
                 }
             },
+            serialization = Serialization.create().initWithObject(objects),
             expectedObjects = {},
-            extractedObjects,
+            extractedSerialization,
             labels = ["one"];
 
         expectedObjects.one = objects.one;
 
-        serializationExtractor.initWithSerialization(objects);
-        extractedObjects = serializationExtractor.extractObjects(labels);
+        serializationExtractor.initWithSerialization(serialization);
+        extractedSerialization = serializationExtractor
+            .extractSerialization(labels);
 
-        expect(extractedObjects).toEqual(expectedObjects);
+        expect(extractedSerialization.getSerializationObject())
+            .toEqual(expectedObjects);
     });
 
     it("should extract an object and add a defined external", function() {
@@ -55,18 +59,21 @@ describe("reel/serialization/serialization-extractor-spec", function() {
 
                 "owner": {}
             },
+            serialization = Serialization.create().initWithObject(objects),
             expectedObjects = {},
-            extractedObjects,
+            extractedSerialization,
             labels = ["one"],
             externalLabels = ["owner"];
 
         expectedObjects.one = objects.one;
         expectedObjects.owner = {};
 
-        serializationExtractor.initWithSerialization(objects);
-        extractedObjects = serializationExtractor.extractObjects(labels, externalLabels);
+        serializationExtractor.initWithSerialization(serialization);
+        extractedSerialization = serializationExtractor
+            .extractSerialization(labels, externalLabels);
 
-        expect(extractedObjects).toEqual(expectedObjects);
+        expect(extractedSerialization.getSerializationObject())
+            .toEqual(expectedObjects);
     });
 
     it("should extract an object with its object dependencies as external objects", function() {
@@ -90,17 +97,20 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                     }
                 }
             },
+            serialization = Serialization.create().initWithObject(objects),
             expectedObjects = {},
-            extractedObjects,
+            extractedSerialization,
             labels = ["one"];
 
         expectedObjects.one = objects.one;
         expectedObjects.three = {};
 
-        serializationExtractor.initWithSerialization(objects);
-        extractedObjects = serializationExtractor.extractObjects(labels);
+        serializationExtractor.initWithSerialization(serialization);
+        extractedSerialization = serializationExtractor
+            .extractSerialization(labels);
 
-        expect(extractedObjects).toEqual(expectedObjects);
+        expect(extractedSerialization.getSerializationObject())
+            .toEqual(expectedObjects);
     });
 
     it("should extract objects with dependencies between them", function() {
@@ -124,17 +134,20 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                     }
                 }
             },
+            serialization = Serialization.create().initWithObject(objects),
             expectedObjects = {},
-            extractedObjects,
+            extractedSerialization,
             labels = ["one", "three"];
 
         expectedObjects.one = objects.one;
         expectedObjects.three = objects.three;
 
-        serializationExtractor.initWithSerialization(objects);
-        extractedObjects = serializationExtractor.extractObjects(labels);
+        serializationExtractor.initWithSerialization(serialization);
+        extractedSerialization = serializationExtractor
+            .extractSerialization(labels);
 
-        expect(extractedObjects).toEqual(expectedObjects);
+        expect(extractedSerialization.getSerializationObject())
+            .toEqual(expectedObjects);
     });
 
     it("should extract two objects even when one of them is a defined external", function() {
@@ -152,18 +165,21 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                     }
                 },
             },
+            serialization = Serialization.create().initWithObject(objects),
             expectedObjects = {},
-            extractedObjects,
+            extractedSerialization,
             labels = ["one", "two"],
             externalLabels = ["two"];
 
         expectedObjects.one = objects.one;
         expectedObjects.two = objects.two;
 
-        serializationExtractor.initWithSerialization(objects);
-        extractedObjects = serializationExtractor.extractObjects(labels, externalLabels);
+        serializationExtractor.initWithSerialization(serialization);
+        extractedSerialization = serializationExtractor
+            .extractSerialization(labels, externalLabels);
 
-        expect(extractedObjects).toEqual(expectedObjects);
+        expect(extractedSerialization.getSerializationObject())
+            .toEqual(expectedObjects);
     });
 
     it("should extract two objects even if one of them is an external reference", function() {
@@ -177,17 +193,20 @@ describe("reel/serialization/serialization-extractor-spec", function() {
 
                 "two": {},
             },
+            serialization = Serialization.create().initWithObject(objects),
             expectedObjects = {},
-            extractedObjects,
+            extractedSerialization,
             labels = ["one", "two"];
 
         expectedObjects.one = objects.one;
         expectedObjects.two = objects.two;
 
-        serializationExtractor.initWithSerialization(objects);
-        extractedObjects = serializationExtractor.extractObjects(labels);
+        serializationExtractor.initWithSerialization(serialization);
+        extractedSerialization = serializationExtractor
+            .extractSerialization(labels);
 
-        expect(extractedObjects).toEqual(expectedObjects);
+        expect(extractedSerialization.getSerializationObject())
+            .toEqual(expectedObjects);
     });
 
     it("should ignore passed external objects that do not exist", function() {
@@ -198,17 +217,20 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                     }
                 }
             },
+            serialization = Serialization.create().initWithObject(objects),
             expectedObjects = {},
-            extractedObjects,
+            extractedSerialization,
             labels = ["one"],
             externalLabels = ["two"];
 
         expectedObjects.one = objects.one;
 
-        serializationExtractor.initWithSerialization(objects);
-        extractedObjects = serializationExtractor.extractObjects(labels, externalLabels);
+        serializationExtractor.initWithSerialization(serialization);
+        extractedSerialization = serializationExtractor
+            .extractSerialization(labels, externalLabels);
 
-        expect(extractedObjects).toEqual(expectedObjects);
+        expect(extractedSerialization.getSerializationObject())
+            .toEqual(expectedObjects);
     });
 
     describe("bindings", function() {
@@ -230,17 +252,20 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                         }
                     }
                 },
+                serialization = Serialization.create().initWithObject(objects),
                 expectedObjects = {},
-                extractedObjects,
+                extractedSerialization,
                 labels = ["one"];
 
             expectedObjects.one = objects.one;
             expectedObjects.two = {};
 
-            serializationExtractor.initWithSerialization(objects);
-            extractedObjects = serializationExtractor.extractObjects(labels);
+            serializationExtractor.initWithSerialization(serialization);
+            extractedSerialization = serializationExtractor
+                .extractSerialization(labels);
 
-            expect(extractedObjects).toEqual(expectedObjects);
+            expect(extractedSerialization.getSerializationObject())
+                .toEqual(expectedObjects);
         });
 
         it("should extract an object and its two way bindings as external objects", function() {
@@ -261,17 +286,20 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                         }
                     }
                 },
+                serialization = Serialization.create().initWithObject(objects),
                 expectedObjects = {},
-                extractedObjects,
+                extractedSerialization,
                 labels = ["one"];
 
             expectedObjects.one = objects.one;
             expectedObjects.two = {};
 
-            serializationExtractor.initWithSerialization(objects);
-            extractedObjects = serializationExtractor.extractObjects(labels);
+            serializationExtractor.initWithSerialization(serialization);
+            extractedSerialization = serializationExtractor
+                .extractSerialization(labels);
 
-            expect(extractedObjects).toEqual(expectedObjects);
+            expect(extractedSerialization.getSerializationObject())
+                .toEqual(expectedObjects);
         });
 
         it("should extract an object with bindings that have multiple references", function() {
@@ -296,18 +324,21 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                         }
                     }
                 },
+                serialization = Serialization.create().initWithObject(objects),
                 expectedObjects = {},
-                extractedObjects,
+                extractedSerialization,
                 labels = ["sum"];
 
             expectedObjects.one = {};
             expectedObjects.two = {};
             expectedObjects.sum = objects.sum;
 
-            serializationExtractor.initWithSerialization(objects);
-            extractedObjects = serializationExtractor.extractObjects(labels);
+            serializationExtractor.initWithSerialization(serialization);
+            extractedSerialization = serializationExtractor
+                .extractSerialization(labels);
 
-            expect(extractedObjects).toEqual(expectedObjects);
+            expect(extractedSerialization.getSerializationObject())
+                .toEqual(expectedObjects);
         });
     });
 
@@ -329,16 +360,19 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                     }
                 }
             },
+            serialization = Serialization.create().initWithObject(objects),
             expectedObjects = {},
-            extractedObjects,
+            extractedSerialization,
             labels = ["one"];
 
         expectedObjects.one = objects.one;
         expectedObjects.two = {};
 
-        serializationExtractor.initWithSerialization(objects);
-        extractedObjects = serializationExtractor.extractObjects(labels);
+        serializationExtractor.initWithSerialization(serialization);
+        extractedSerialization = serializationExtractor
+            .extractSerialization(labels);
 
-        expect(extractedObjects).toEqual(expectedObjects);
+        expect(extractedSerialization.getSerializationObject())
+            .toEqual(expectedObjects);
     });
 });

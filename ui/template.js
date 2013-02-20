@@ -2,7 +2,8 @@ var Montage = require("montage").Montage,
     Deserializer = require("core/serialization").Deserializer,
     DocumentPart = require("ui/document-part").DocumentPart,
     DocumentResources = require("ui/document-resources").DocumentResources,
-    Promise = require("q"),
+    Serialization = require("core/serialization/serialization").Serialization,
+    Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("template"),
     defaultEventManager = require("core/event/event-manager").defaultEventManager,
     defaultApplication;
@@ -566,28 +567,37 @@ var Template = Montage.create(Montage, {
         value: function(elementId) {
             var element,
                 elementIds,
-                deserializer = this._deserializer,
                 labels,
                 fragment,
                 objectsString,
                 template,
-                externalObjects,
-                range;
+                range,
+                serialization = Serialization.create();
 
+            // Find all elements of interest to the serialization.
             element = this.getElementById(elementId);
             elementIds = this._findElementIdsInDomTree(element);
 
-            labels = deserializer.findMontageObjectLabelsWithElements(elementIds);
+            // Create a new serialization with the components found in the
+            // element.
+            serialization.initWithString(this.objectsString);
+            labels = serialization.getSerializationLabelsWithElements(
+                elementIds);
+            extractedSerialization = serialization.extractSerialization(
+                labels, ["owner"]);
 
-            objectsString = deserializer.extractSerialization(labels, ["owner"]);
-
+            // Clone the element contents
             range = this.document.createRange();
             range.selectNodeContents(element);
             fragment = range.cloneContents();
 
+            // Create the new template with the extracted serialization and
+            // markup.
             template = Template.create();
-            template.initWithObjectsAndDocumentFragment(null, fragment, this._require);
-            template.objectsString = objectsString;
+            template.initWithObjectsAndDocumentFragment(
+                null, fragment, this._require);
+            template.objectsString = extractedSerialization
+                .getSerializationString();
             template._resources = this.getResources();
 
             return template;

@@ -962,39 +962,6 @@ describe("serialization/montage-deserializer-spec", function() {
         });
     });
 
-    it("should find the labels of montage objects with a specific element id", function() {
-        var serialization = {
-                "one": {
-                    "properties": {
-                        "element": {"#": "oneId"}
-                    }
-                },
-
-                "two": {
-                    "properties": {
-                        "element": {"#": "twoId"}
-                    }
-                },
-
-                "three": {
-                    "properties": {
-                        "element": {"#": "threeId"}
-                    }
-                }
-            },
-            serializationString = JSON.stringify(serialization),
-            labels,
-            elementIds = ["oneId", "threeId"];
-
-        deserializer.initWithSerializationStringAndRequire(
-            serializationString, require);
-        labels = deserializer.findMontageObjectLabelsWithElements(elementIds);
-
-        expect(labels.length).toBe(2);
-        expect(labels).toContain("one");
-        expect(labels).toContain("three");
-    });
-
     it("should detect a malformed serialization string", function() {
         var serializationString = "{root:}",
             valid;
