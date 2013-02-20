@@ -279,7 +279,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
 
             targetRequire.async(blueprintModuleId).then(function(object) {
                 try {
-                    Deserializer.create().initWithSerializationStringAndRequire(JSON.stringify(object), targetRequire, blueprintModuleId).deserializeObject(function(blueprint) {
+                    Deserializer.create().initWithSerializationStringAndRequire(JSON.stringify(object), targetRequire, blueprintModuleId).deserializeObject().then(function(blueprint) {
                         if (blueprint) {
                             var binder = (blueprint._binder ? blueprint._binder : BinderModule.Binder.manager.defaultBinder); // We do not want to trigger the auto registration
                             var existingBlueprint = binder.blueprintForPrototype(blueprint.prototypeName, blueprint.moduleId);
