@@ -270,44 +270,45 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
      */
     getBlueprintWithModuleId: {
         value: function(blueprintModuleId, require) {
+            var deferredBlueprint = Promise.defer();
             var targetRequire = require;
             if (!targetRequire) {
                 // This is probably wrong but at least we will try
                 targetRequire = this.require;
             }
 
-            return targetRequire.async(blueprintModuleId).then(function(object) {
-                return Deserializer.create().initWithSerializationStringAndRequire(
-                    JSON.stringify(object),
-                    targetRequire,
-                    blueprintModuleId
-                ).deserializeObject().then(function (blueprint) {
-                    if (blueprint) {
-                        var binder = (blueprint._binder ? blueprint._binder : BinderModule.Binder.manager.defaultBinder); // We do not want to trigger the auto registration
-                        var existingBlueprint = binder.blueprintForPrototype(blueprint.prototypeName, blueprint.moduleId);
-                        if (existingBlueprint) {
-                            return existingBlueprint;
-                        } else {
-                            binder.addBlueprint(blueprint);
-                            blueprint.blueprintModuleId = blueprintModuleId;
-                            if (blueprint._parentReference) {
-                                // We need to grab the parent before we return or most operation will fail
-                                return blueprint._parentReference.promise(targetRequire).then(function(parentBlueprint) {
-                                        blueprint._parent = parentBlueprint;
-                                        return blueprint;
-                                    }
-                                );
+            targetRequire.async(blueprintModuleId).then(function(object) {
+                try {
+                    Deserializer.create().initWithSerializationStringAndRequire(JSON.stringify(object), targetRequire, blueprintModuleId).deserializeObject(function(blueprint) {
+                        if (blueprint) {
+                            var binder = (blueprint._binder ? blueprint._binder : BinderModule.Binder.manager.defaultBinder); // We do not want to trigger the auto registration
+                            var existingBlueprint = binder.blueprintForPrototype(blueprint.prototypeName, blueprint.moduleId);
+                            if (existingBlueprint) {
+                                deferredBlueprint.resolve(existingBlueprint);
                             } else {
-                                return blueprint;
+                                binder.addBlueprint(blueprint);
+                                blueprint.blueprintInstanceModuleId = blueprintModuleId;
+                                if (blueprint._parentReference) {
+                                    // We need to grab the parent before we return or most operation will fail
+                                    blueprint._parentReference.promise(targetRequire).then(function(parentBlueprint) {
+                                            blueprint._parent = parentBlueprint;
+                                            deferredBlueprint.resolve(blueprint);
+                                        }
+                                    );
+                                } else {
+                                    deferredBlueprint.resolve(blueprint);
+                                }
                             }
+                        } else {
+                            deferredBlueprint.reject(new Error("No Blueprint found " + blueprintModuleId));
                         }
-                    } else {
-                        throw new Error("No Blueprint found " + blueprintModuleId);
-                    }
-                });
-            }, function (exception) {
-                throw new Error("Error deserializing Blueprint " + blueprintModuleId + " " + JSON.stringfy(exception));
-            });
+                    }, targetRequire);
+                } catch (exception) {
+                    deferredBlueprint.reject(new Error("Error deserializing Blueprint " + blueprintModuleId + " " + JSON.stringfy(exception)));
+                }
+            }, deferredBlueprint.reject);
+
+            return deferredBlueprint.promise;
         }
     },
 
