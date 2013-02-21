@@ -11,7 +11,7 @@ var Montage = require("montage").Montage,
 var Template = Montage.create(Montage, {
     _SERIALIZATON_SCRIPT_TYPE: {value: "text/montage-serialization"},
     _ELEMENT_ID_ATTRIBUTE: {value: "data-montage-id"},
-    _PARAM_ATTRIBUTE: {value: "data-param"},
+    PARAM_ATTRIBUTE: {value: "data-param"},
 
     _require: {value: null},
     _resources: {value: null},
@@ -216,19 +216,30 @@ var Template = Montage.create(Montage, {
         }
     },
 
+    /**
+     * @param instances {Object} The instances to use in the serialization
+     *        section of the template, when given they will be used instead of
+     *        creating a new object. It's dictionary where the keys are the
+     *        labels and the values the instances.
+     * @param targetDocument {Document} The document used to create the markup
+     *        resultant of the instantiation.
+     */
     instantiateWithInstances: {
         value: function(instances, targetDocument) {
             var self = this,
                 fragment,
                 part = DocumentPart.create(),
-                templateObjects;
+                templateObjects,
+                templateParameters;
 
             instances = instances || this._instances;
-
             fragment = this._createMarkupDocumentFragment(targetDocument);
-            templateObjects = this._createTemplateObjects(instances);
+            templateParameters = this._getParameters(fragment);
 
             part.initWithTemplateAndFragment(this, fragment);
+            part.parameters = templateParameters;
+
+            templateObjects = this._createTemplateObjects(instances);
 
             return this._instantiateObjects(templateObjects, fragment)
             .then(function(objects) {
@@ -339,7 +350,13 @@ var Template = Montage.create(Montage, {
         }
     },
 
-    getTemplateParameters: {
+    getParameterName: {
+        value: function(element) {
+            return element.getAttribute(this.PARAM_ATTRIBUTE);
+        }
+    },
+
+    getParameters: {
         value: function() {
             return this._getParameters(this.document.body);
         }
@@ -347,14 +364,14 @@ var Template = Montage.create(Montage, {
 
     _getParameters: {
         value: function(rootElement) {
-            var elements = rootElement.querySelectorAll("*[" + this._PARAM_ATTRIBUTE + "]"),
+            var elements = rootElement.querySelectorAll("*[" + this.PARAM_ATTRIBUTE + "]"),
                 elementsCount = elements.length,
                 element,
                 parameters = {};
 
             for (var i = 0; i < elementsCount; i++) {
                 element = elements[i];
-                parameterName = element.getAttribute(this._PARAM_ATTRIBUTE);
+                parameterName = this.getParameterName(element);
 
                 parameters[parameterName] = element;
             }
@@ -366,6 +383,12 @@ var Template = Montage.create(Montage, {
             }
 
             return parameters;
+        }
+    },
+
+    hasParameters: {
+        value: function() {
+            return !!this.document.querySelector("*[" + this.PARAM_ATTRIBUTE + "]");
         }
     },
 

@@ -275,6 +275,7 @@ describe("reel/template-spec", function() {
                 expect("test").toBe("executed");
             });
         });
+
     });
 
     describe("instantiation", function() {
@@ -772,7 +773,7 @@ describe("reel/template-spec", function() {
 
             return template.initWithHtml(html)
             .then(function() {
-                var templateParameters = template.getTemplateParameters(),
+                var templateParameters = template.getParameters(),
                     templateParameterKeys = Object.keys(templateParameters);
 
                 expect(templateParameterKeys.length).toBe(1);
@@ -785,7 +786,7 @@ describe("reel/template-spec", function() {
 
             return template.initWithHtml(html)
             .then(function() {
-                var templateParameters = template.getTemplateParameters(),
+                var templateParameters = template.getParameters(),
                     templateParameterKeys = Object.keys(templateParameters);
 
                 expect(templateParameterKeys.length).toBe(2);
@@ -800,7 +801,7 @@ describe("reel/template-spec", function() {
             return template.initWithHtml(html)
             .then(function() {
                 try {
-                    template.getTemplateParameters(),
+                    template.getParameters(),
                     expect("call").toBe("fail");
                 } catch (ex) {
                     expect(true).toBe(true);

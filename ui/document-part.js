@@ -8,6 +8,7 @@ var DocumentPart = Montage.create(Montage, {
     fragment: {value: null},
     objects: {value: null},
     childComponents: {value: null},
+    parameters: {value: null},
 
     initWithTemplateAndFragment: {
         value: function(template, fragment) {
@@ -15,6 +16,7 @@ var DocumentPart = Montage.create(Montage, {
             this.fragment = fragment;
             this.objects = null;
             this.childComponents = [];
+            this.parameters = null;
 
             if (fragment) {
                 defaultEventManager.registerEventHandlerForElement(this, fragment);
@@ -35,7 +37,7 @@ var DocumentPart = Montage.create(Montage, {
                 promises;
 
             if (!deferred) {
-                deferred = Promise.defer();;
+                deferred = Promise.defer();
                 this._componentTreeLoadedDeferred = deferred;
 
                 promises = [];
