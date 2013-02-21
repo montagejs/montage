@@ -118,6 +118,14 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
     classList: {value: null},
 
     /**
+     * A flag that indicates that the "no-transition" CSS class should be added
+     * to every element in the iteration in the next draw, and promptly removed
+     * the draw thereafter.
+     * @private
+     */
+    _noTransition: {value: null},
+
+    /**
      * Creates the initial values of all instance state.
      * @private
      */
@@ -168,18 +176,18 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             // cycle.
             // Dispatches handlePropertyChange with the "active" key:
             this.defineBinding("active", {"<->": "repetition.activeIterations.has(())"});
-            this.defineBinding("classList.has('active')", {"<->": "active"});
 
             this.defineBinding("isFirst", {"<-": "index == 0"});
             this.defineBinding("isLast", {"<-": "index == repetition.iterations.length - 1"});
             this.defineBinding("isEven", {"<-": "index % 2 == 0"});
             this.defineBinding("isOdd", {"<-": "index % 2 != 0"});
 
-            this.classList = Set();
-            this.classList.addRangeChangeListener(this, "classList");
-            // It is not necessary to remove the range change listener at a
-            // later time because it will be automatically collected if the
-            // Repetition drops its reference to the iteration.
+            this._noTransition = false;
+
+            // dispatch handlePropertyChange:
+            this.addOwnPropertyChangeListener("active", this);
+            this.addOwnPropertyChangeListener("selected", this);
+            this.addOwnPropertyChangeListener("_noTransition", this);
 
         }
     },
@@ -196,19 +204,18 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
     /**
      * Disassociates an iteration with its content and prepares it to be
      * recycled on the repetition's list of free iterations.
+     * This function is called by handleControllerIterationsRangeChange when it
+     * recycles an iteration.
      */
     free: {
         value: function () {
             this.controller = null;
-            // This function is called by handleControllerIterationsRangeChange
-            // when it recycles an iteration.
-            this.classList.clear();
             // Adding the "no-transition" class ensures that the iteration will
             // stop any transitions applied when the iteration was bound to
             // other content.  It has the side-effect of scheduling a draw, and
             // in that draw scheduling another draw to remove the
             // "no-transition" class.
-            this.classList.add("no-transition");
+            this._noTransition = true;
         }
     },
 
@@ -295,13 +302,15 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
     },
 
     /**
-     * Dispatched by a <code>classList</code> range-change listener set up by
-     * <code>didCreate</code> to inform the repetition that it needs to update
-     * the class lists of each element in this iteration.
+     * Dispatched by the "active" and "selected" property change listeners to
+     * notify the repetition that these iterations need to have their CSS class
+     * lists updated.
      * @private
      */
-    handleClassListRangeChange: {
+    handlePropertyChange: {
         value: function () {
+            if (!this.repetition)
+                return;
             this.repetition._dirtyClassListIterations.add(this);
             this.repetition.needsDraw = true;
         }
@@ -488,10 +497,15 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     hasTemplate: {value: false},
 
     /**
+     * A copy of <code>innerTemplate</code>, provided by the
+     * <code>Component</code> layer, that produces the HTML and components for
+     * each iteration.  If this property is <code>null</code>, it signifies
+     * that the template is in transition, either during initialization or due
+     * to resetting <code>innerTemplate</code>.  In either case, it is a
+     * reliable indicator that the repetition is responding to controller
+     * iteration range changes, since that requires a functioning template.
      * @private
      */
-    // TODO @aadsm, may we get rid of this property and just use
-    // <code>innerTemplate</code>?
     _iterationTemplate: {value: null},
 
     /**
@@ -533,10 +547,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 
             // The template that gets repeated in the DOM
             this._iterationTemplate = null;
-
-            // TODO @kriskowal use innerTemplate observer instead of
-            // "contentWillChange" and "contentDidChange".
-            //this.addOwnPropertyChangeListener("innerTemplate", this);
 
             // The "iterations" array tracks "_controllerIterations"
             // synchronously.  Each iteration corresponds to controlled content
@@ -598,23 +608,30 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // one more boundary than iteration.
             this._boundaries = [];
 
-            // TODO fix these comments
             // The plan for the next draw to synchronize _controllerIterations
             // and iterations on the DOM:
             // ---
 
-            // TODO doc
+            // Iterations that may have changed their "active", "selected", and
+            // "no-transition" CSS classes, to be updated in the next draw.
             this._dirtyClassListIterations = Set();
-            // The number of iterations, plus the number of planned
-            // additions minus the number of planned deletions on the next
-            // draw.
+
+            // The cumulative number of iterations that _createIteration has
+            // started making.
             this._requestedIterations = 0;
+            // The cumulative number of iterations that _createIteration has
+            // finished making.
             this._createdIterations = 0;
+            // We can draw when we have created all requested iterations.
+
             // We have to keep the HTML content of the repetition in tact until
             // it has been captured by _setupIterationTemplate.  Unfortunately,
             // we can't set up the iteration template in this turn of the event
             // loop because it would interfere with deserialization, so this is
             // usually deferred to the first draw.
+            // TODO @aadsm, please verify and delete this comment if it is
+            // still true that we cannot setup the iteration template with the
+            // new template that does not use the serializer.
             this._canDrawInitialContent = false;
             // Indicates that the elements from the template have been erased.
             // Setting this to true allows those elements to be erased in the
@@ -633,7 +650,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // entirely by a bidirectional binding to each iteration's "active"
             // property, which in turn manages the "active" class on each
             // element in the iteration in the draw cycle.
-            // TODO provide some assurance that the activeIterations will
+            // TODO Provide some assurance that the activeIterations will
             // always appear in the same order as they appear in the iterations
             // list.
             this.activeIterations = [];
@@ -659,11 +676,12 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 }
             }
 
-            // TODO only do this if we are in fact watching for
-            // controllerIterations range changes, which is to say, when we
-            // have a servicable _iterationTemplate, which is to say, not when
-            // _setupIterationTemplate is in flux.
-            this._controllerIterations.removeRangeChangeListener(this);
+            // Remove the range change listener, but only if we are presently
+            // watching it.  We start watching when the iteration template is
+            // ready, and stop if it is in flux.
+            if (this._iterationTemplate) {
+                this._controllerIterations.removeRangeChangeListener(this);
+            }
         }
     },
 
@@ -696,14 +714,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         }
     },
 
-    ///**
-    // * @private
-    // */
-    //handleInnerTemplateChange: {
-    //    value: function (innerTemplate) {
-    //        // TODO instead of contentWillChange and contentDidChange
-    //    }
-    //},
+    // TODO consider using handleInnerTemplateChange instead of
+    // contentWillChange and contentDidChange.
 
     /**
      * This handler is dispatched if the <code>innerTemplate</code> gets
@@ -720,14 +732,14 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // stop listenting to controller iteration changes until the new
             // iteration template is ready.  (at which point we will manually
             // dispatch handleControllerIterationsRangeChange with the entire
-            // content of the array at that time.  TODO mention what method
-            // contains that logic.
+            // content of the array when _setupIterationTemplate has finished)
             this._controllerIterations.removeRangeChangeListener(this, "controllerIterations");
             // simulate removal of all iterations from the controller to purge
             // the iterations and _drawnIterations.
             this.handleControllerIterationsRangeChange(0, [], this._controllerIterations);
 
             // purge the existing iterations
+            this._iterationTemplate = null;
             this._freeIterations.clear();
             this._objectForIteration.clear();
             this._iterationForElement.clear();
@@ -1121,6 +1133,35 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 this._initialContentDrawn = true;
             }
 
+            // Update class lists
+            var iterations = this._dirtyClassListIterations.toArray();
+            // Note that the iterations list must be cleared first because we
+            // remove the "no-transition" class during the update if we find
+            // it, which in turn schedules another draw and adds the iteration
+            // back to the schedule.
+            this._dirtyClassListIterations.clear();
+            iterations.forEach(function (iteration) {
+                iteration.forEachElement(function (element) {
+
+                    if (iteration.selected) {
+                        element.classList.add("selected");
+                    } else {
+                        element.classList.remove("selected");
+                    }
+
+                    if (iteration.active) {
+                        element.classList.add("active");
+                    } else {
+                        element.classList.remove("active");
+                    }
+
+                    // While we're at it, if the "no-transition" class has been
+                    // added to this iteration, we will need to remove it in
+                    // the next draw to allow the iteration to animate.
+                    element.classList.remove("no-transition");
+                }, this);
+            }, this);
+
             // Synchronize iterations and _drawnIterations
             for (
                 var index = 0;
@@ -1139,43 +1180,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             while (this._drawnIterations.length > this.iterations.length) {
                 this._drawnIterations[index].retractFromDocument();
             }
-
-            // Update class lists
-            var iterations = this._dirtyClassListIterations.toArray();
-            // Note that the iterations list must be cleared first because we
-            // remove the "no-transition" class during the update if we find
-            // it, which in turn schedules another draw and adds the iteration
-            // back to the schedule.
-            this._dirtyClassListIterations.clear();
-            iterations.forEach(function (iteration) {
-                iteration.forEachElement(function (element) {
-                    // Because TC39 and W3C are seldom on the same page, Set
-                    // and DOMTokenList have overlapping but inconsistent
-                    // interfaces.
-                    var actual = element.classList;
-                    var expected = iteration.classList;
-                    // Remove classes that should not exist
-                    for (var index = 0; index < actual.length; index++) {
-                        var className = actual.item(index);
-                        if (!expected.has(className)) {
-                            actual.remove(className);
-                        }
-                    }
-                    // Add classes that should exist
-                    expected.forEach(function (className) {
-                        if (!actual.contains(className)) {
-                            actual.add(className);
-                        }
-                    });
-
-                    // While we're at it, if the "no-transition" class has been
-                    // added to this iteration, we will need to remove it in
-                    // the next draw to allow the iteration to animate.
-                    if (expected.has("no-transition")) {
-                        expected.remove("no-transition");
-                    }
-                }, this);
-            }, this);
 
         }
     },
