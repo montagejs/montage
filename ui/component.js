@@ -56,6 +56,7 @@ var Montage = require("montage").Montage,
    @extends module:montage/core/core.Montage
  */
 var Component = exports.Component = Montage.create(Montage,/** @lends module:montage/ui/component.Component# */ {
+    DOM_ARG_ATTRIBUTE: {value: "data-arg"},
 
     didCreate: {
         value: function () {
@@ -90,6 +91,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     _templateDocumentPart: {
+        value: null
+    },
+
+    _domArguments: {
         value: null
     },
 
@@ -221,6 +226,28 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     this.blockDrawGate.setField("element", true);
                 }
             }
+        }
+    },
+
+    _initDomArguments: {
+        value: function() {
+            var elements = this._element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "]"),
+                domArguments = {},
+                name;
+
+            domArguments["*"] = this.domContent;
+            for (var i = 0, element; (element = elements[i]); i++) {
+                name = element.getAttribute(this.DOM_ARG_ATTRIBUTE);
+                domArguments[name] = element;
+            }
+
+            this._domArguments = domArguments;
+        }
+    },
+
+    _getDomArgument: {
+        value: function(element, name) {
+            return element.querySelector("*[" + this.DOM_ARG_ATTRIBUTE + "='" + name + "']");
         }
     },
 
@@ -1331,6 +1358,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 logger.debug(this, "_templateElement: " + this._templateElement);
             }
 
+            this._initDomArguments();
             if (this._template) {
                 this._addTemplateStyles();
             }
@@ -1347,6 +1375,45 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
         },
         enumerable: false
+    },
+    _validateTemplateArguments: {
+        value: function(templateArguments, templateParameters) {
+            var parameterNames = Object.keys(templateParameters);
+
+            if (templateArguments == null) {
+                if (parameterNames.length > 0) {
+                    return new Error('No arguments provided for ' +
+                    this.templateModuleId + '. Arguments needed: ' +
+                    parameterNames + '.');
+                }
+            } else {
+                if ("*" in templateParameters) {
+                    // When the template has a star parameter it needs to
+                    // receive it as an argument and all aditional arguments are
+                    // allowed.
+                    if (!("*" in templateArguments)) {
+                        return new Error('Star argument was not given in ' +
+                        this.templateModuleId);
+                    }
+                } else {
+                    // All template parameters need to be satisfied.
+                    for (var param in templateParameters) {
+                        if (!(param in templateArguments)) {
+                            return new Error('"' + param + '" argument not ' +
+                            'given in ' + this.templateModuleId);
+                        }
+                    }
+                    // Arguments for non-existant parameters are not allowed.
+                    // Only the star argument is allowed.
+                    for (var param in templateArguments) {
+                        if (param !== "*" && !(param in templateParameters)) {
+                            return new Error('"' + param + '" parameter does ' +
+                            'not exist in ' + this.templateModuleId);
+                        }
+                    }
+                }
+            }
+        }
     },
 /**
         Description TODO

@@ -58,7 +58,9 @@ POSSIBILITY OF SUCH DAMAGE.
             "componentDrawsParent": {"@": "componentDrawsParent"},
             "componentParent": {"@": "componentParent"},
             "componentWithDelegate": {"@": "componentWithDelegate"},
-            "componentList": {"@": "componentList"}
+            "componentList": {"@": "componentList"},
+            "arguments": {"@": "arguments"},
+            "noArguments": {"@": "noArguments"}
         }
     },
     "repetition": {
@@ -220,6 +222,18 @@ POSSIBILITY OF SUCH DAMAGE.
             "value": "Text 2"
         }
     },
+    "arguments": {
+        "prototype": "montage/ui/dynamic-element.reel",
+        "properties": {
+            "element": {"#": "arguments"}
+        }
+    },
+    "noArguments": {
+        "prototype": "montage/ui/dynamic-element.reel",
+        "properties": {
+            "element": {"#": "noArguments"}
+        }
+    },
     "owner": {
         "prototype": "montage/ui/application",
         "properties": {
@@ -271,6 +285,16 @@ POSSIBILITY OF SUCH DAMAGE.
 
 <div data-montage-id="componentList" id="componentList">
     <span data-montage-id="text2"></span>
+</div>
+
+<div data-montage-id="arguments">
+    <span data-arg="one"></span>
+    <span data-arg="two"></span>
+</div>
+
+<div data-montage-id="noArguments">
+    <span class="content1"></span>
+    <span class="content2"></span>
 </div>
 
 </body>
