@@ -11,6 +11,7 @@ var Montage = require("montage").Montage,
 var Template = Montage.create(Montage, {
     _SERIALIZATON_SCRIPT_TYPE: {value: "text/montage-serialization"},
     _ELEMENT_ID_ATTRIBUTE: {value: "data-montage-id"},
+    _PARAM_ATTRIBUTE: {value: "data-param"},
 
     _require: {value: null},
     _resources: {value: null},
@@ -335,6 +336,36 @@ var Template = Montage.create(Montage, {
             }
 
             return fragment;
+        }
+    },
+
+    getTemplateParameters: {
+        value: function() {
+            return this._getParameters(this.document.body);
+        }
+    },
+
+    _getParameters: {
+        value: function(rootElement) {
+            var elements = rootElement.querySelectorAll("*[" + this._PARAM_ATTRIBUTE + "]"),
+                elementsCount = elements.length,
+                element,
+                parameters = {};
+
+            for (var i = 0; i < elementsCount; i++) {
+                element = elements[i];
+                parameterName = element.getAttribute(this._PARAM_ATTRIBUTE);
+
+                parameters[parameterName] = element;
+            }
+
+            if ("*" in parameters && elementsCount > 1) {
+                throw new Error('The star "*" template parameter was declared' +
+                    ' when other parameters were also present in ' +
+                    this.getBaseUrl() + ': ' + Object.keys(parameters) + '.');
+            }
+
+            return parameters;
         }
     },
 

@@ -766,6 +766,49 @@ describe("reel/template-spec", function() {
         });
     })
 
+    describe("template parameters", function() {
+        it("should find the star parameter", function() {
+            var html = require("reel/template/template-star-parameter.html").content;
+
+            return template.initWithHtml(html)
+            .then(function() {
+                var templateParameters = template.getTemplateParameters(),
+                    templateParameterKeys = Object.keys(templateParameters);
+
+                expect(templateParameterKeys.length).toBe(1);
+                expect(templateParameterKeys).toContain("*");
+            })
+        });
+
+        it("should find all parameters", function() {
+            var html = require("reel/template/template-parameters.html").content;
+
+            return template.initWithHtml(html)
+            .then(function() {
+                var templateParameters = template.getTemplateParameters(),
+                    templateParameterKeys = Object.keys(templateParameters);
+
+                expect(templateParameterKeys.length).toBe(2);
+                expect(templateParameterKeys).toContain("leftSide");
+                expect(templateParameterKeys).toContain("rightSide");
+            })
+        });
+
+        it("should fail when star and other parameters were declared", function() {
+            var html = require("reel/template/template-parameters-error.html").content;
+
+            return template.initWithHtml(html)
+            .then(function() {
+                try {
+                    template.getTemplateParameters(),
+                    expect("call").toBe("fail");
+                } catch (ex) {
+                    expect(true).toBe(true);
+                }
+            })
+        });
+    });
+
     describe("cache", function() {
         it("should treat same module id in different package as different templates", function() {
             return require.loadPackage("package-a").then(function(pkg1) {
