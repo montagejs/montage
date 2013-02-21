@@ -793,7 +793,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         value: function _prepareCanDraw() {
             if (!this._isComponentTreeLoaded) {
-                this.loadComponentTree();
+                this.loadComponentTree().done();
             }
         }
     },
@@ -840,12 +840,12 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                         promises.push(childComponent.loadComponentTree());
                     }
 
-                    Promise.all(promises).then(function() {
-                        self._isComponentTreeLoaded = true;
-                        canDrawGate.setField("componentTreeLoaded", true);
-                        deferred.resolve();
-                    });
-                });
+                    return Promise.all(promises);
+                }).then(function() {
+                    self._isComponentTreeLoaded = true;
+                    canDrawGate.setField("componentTreeLoaded", true);
+                    deferred.resolve();
+                }, deferred.reject);
             }
 
             return deferred.promise;
@@ -917,7 +917,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     this._instantiateTemplate().then(function() {
                         self._isComponentExpanded = true;
                         deferred.resolve();
-                    });
+                    }, deferred.reject);
                 } else {
                     this._isComponentExpanded = true;
                     deferred.resolve();

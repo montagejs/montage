@@ -46,7 +46,7 @@ var DocumentPart = Montage.create(Montage, {
 
                 Promise.all(promises).then(function() {
                     deferred.resolve();
-                });
+                }, deferred.reject);
             }
 
             return deferred.promise;
