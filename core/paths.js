@@ -38,35 +38,9 @@ Montage.defineProperties(Montage, {
         }
     },
 
-    observeProperty: {
-        value: function (key, emit, source, parameters, beforeChange) {
-            return observeProperty(
-                this,
-                key,
-                emit,
-                source || this,
-                parameters || source || this,
-                beforeChange
-            );
-        }
-    },
-
-    observeKey: {
-        value: function (key, emit, source, parameters, beforeChange) {
-            return observeKey(
-                this,
-                key,
-                emit,
-                source || this,
-                parameters || source || this,
-                beforeChange
-            );
-        }
-    },
-
     addRangeAtPathChangeListener: {
-        value: function (path, handler, token) {
-            var methodName = 'handle' + (token || "").toCapitalized() + 'RangeChange';
+        value: function (path, handler, methodName) {
+            methodName = methodName || "handleRangeChange";
             function dispatch(plus, minus, index) {
                 if (handler[methodName]) {
                     handler[methodName](plus, minus, index);

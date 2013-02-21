@@ -49,7 +49,7 @@ var Node = exports.TreeController = Montage.create(Montage, {
 
             // childrenPath -> children
             this.addOwnPropertyChangeListener("childrenPath", this);
-            this.defineBinding("children.*", {"<-": "[]" });
+            this.defineBinding("children.rangeContent()", {"<-": "[]" });
 
             // children -> childNodes
             this.children.addRangeChangeListener(this, "children");
@@ -58,7 +58,7 @@ var Node = exports.TreeController = Montage.create(Montage, {
             this.defineBinding("length", {"<-": "1 + (expanded ? childNodes.sum{length} : 0)"});
 
             // childNodes -> childIterations
-            this.defineBinding("childIterations.*", {
+            this.defineBinding("childIterations.rangeContent()", {
                 "<-": "expanded ? childNodes.flatten{iterations} : []"
             });
 
@@ -67,7 +67,7 @@ var Node = exports.TreeController = Montage.create(Montage, {
 
             // iteration + indentedChildIterations -> iterations
             this.iteration = Iteration.create().initWithNodeAndDepth(this, 0);
-            this.defineBinding("iterations.*", {
+            this.defineBinding("iterations.rangeContent()", {
                 "<-": "[[iteration], indentedChildIterations].flatten()"
             });
 
@@ -85,8 +85,8 @@ var Node = exports.TreeController = Montage.create(Montage, {
 
     handleChildrenPathChange: {
         value: function (childrenPath) {
-            this.cancelBinding("children.*");
-            this.defineBinding("children.*", {
+            this.cancelBinding("children.rangeContent()");
+            this.defineBinding("children.rangeContent()", {
                 "<-": childrenPath,
                 source: this.object
             })

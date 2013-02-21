@@ -54,7 +54,6 @@ var ContentController = exports.ContentController = Montage.create(Montage, {
             this.visibleIndexes = null;
             this.selectAddedContent = false;
             this.deselectInvisibleContent = false;
-            this.deselectDeletedContent = true;
             this.avoidsEmptySelection = false;
             // TODO this.start = null;
             // TODO this.length = null;
@@ -65,7 +64,7 @@ var ContentController = exports.ContentController = Montage.create(Montage, {
             // We do not need to directly observe changes to the selection
             // array since the controlled iterations bind directly to that
             // path.
-            this.addPathChangeListener("content", this, "handleContentChange");
+            this.addRangeAtPathChangeListener("content", this, "handleContentRangeChange");
             this.addPathChangeListener("selector", this, "handleSelectorChange");
             this.addPathChangeListener("visibleIndexes", this, "handleVisibleIndexesChange");
             // output
@@ -107,27 +106,15 @@ var ContentController = exports.ContentController = Montage.create(Montage, {
         }
     },
 
-    handleContentChange: {
-        value: function (content) {
-            if (content) {
-                // returns a canceler so addPathChangeListener canceles it
-                // automatically before the next handleContentChange.
-                return content.addRangeChangeListener(this, "content");
-            }
-        }
-    },
-
     handleContentRangeChange: {
         value: function (plus, minus, index) {
             if (this.selection) {
                 if (this.selectAddedContent) {
                     this.selection.addEach(plus);
                 }
-                if (this.deselectDeletedContent) {
-                    this.selection.deleteEach(minus);
-                    if (this.avoidsEmptySelection && minus.length) {
-                        this.selection.add(minus.one());
-                    }
+                this.selection.deleteEach(minus);
+                if (this.avoidsEmptySelection && minus.length) {
+                    this.selection.add(minus.one());
                 }
             }
         }

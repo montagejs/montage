@@ -27,7 +27,7 @@
     }
   },
   "dependencies": {
-    "collections": "~0.1.14",
+    "collections": "~0.1.15",
     "frb": "~0.1.19",
     "mousse": "git://github.com/montagejs/mousse.git#master"
   },
