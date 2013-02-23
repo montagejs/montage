@@ -1006,6 +1006,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             var self = this;
 
             return this._loadTemplate().then(function(template) {
+                if (!self._element) {
+                    console.error("Cannot instantiate template without an element.", self);
+                    return Promise.reject(new Error("Cannot instantiate template without an element.", self))
+                }
                 var instances = self.templateObjects,
                     _document = self._element.ownerDocument;
 
