@@ -40,7 +40,7 @@ var Montage = require("montage").Montage,
     ResultsList = require("ui/autocomplete/results-list.reel/results-list").ResultsList,
     Popup = require("ui/popup/popup.reel").Popup,
     PressComposer = require("ui/composer/press-composer").PressComposer,
-    ContentController = require("core/content-controller").ContentController;
+    RangeController = require("core/range-controller").RangeController;
 
 var KEY_UP = 38,
     KEY_DOWN = 40,
@@ -449,7 +449,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, /** @lends m
             this.element.classList.add('montage-Autocomplete');
 
             // create the Repetition for the suggestions
-            this.resultsController = ContentController.create();
+            this.resultsController = RangeController.create();
             this.defineBinding("resultsController.content", {
                 "<-": "suggestions"
             });

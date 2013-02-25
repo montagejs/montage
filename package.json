@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "collections": "~0.1.15",
-    "frb": "~0.1.19",
+    "frb": "~0.1.21",
     "mousse": "~0.1.0"
   },
   "devDependencies": {

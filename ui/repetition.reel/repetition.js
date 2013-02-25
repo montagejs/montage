@@ -3,7 +3,7 @@
 var Montage = require("montage").Montage;
 var Component = require("ui/component").Component;
 var Template = require("ui/template").Template;
-var ContentController = require("core/content-controller").ContentController;
+var RangeController = require("core/range-controller").RangeController;
 var Promise = require("q");
 
 var Map = require("collections/map");
@@ -386,7 +386,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
      * initializing.  You should not use the <code>content</code> property of a
      * repetition if you are using its <code>contentController</code>.
      */
-    initWithContentController: {
+    initWithRangeController: {
         value: function (contentController) {
             this.contentController = contentController;
             return this;
@@ -415,7 +415,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             if (this.contentController) {
                 this.contentController.content = content;
             } else {
-                this.contentController = ContentController.create().initWithContent(content);
+                this.contentController = RangeController.create().initWithContent(content);
             }
         }
     },

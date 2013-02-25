@@ -39,7 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 var Montage = require("montage").Montage,
     Bindings = require("core/bindings").Bindings,
-    ContentController = require("core/content-controller").ContentController,
+    RangeController = require("core/range-controller").RangeController,
     Component = require("ui/component").Component,
     NativeControl = require("ui/native-control").NativeControl,
     PressComposer = require("ui/composer/press-composer").PressComposer,
@@ -98,9 +98,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
                 NativeControl.didCreate.apply(this);
             }
 
-            this._contentMap = new Map();
             this._selectedIndexes = [];
-
             this._selectedIndexes.addRangeChangeListener(this, "selectedIndexes");
         }
     },
@@ -134,7 +132,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
     _content: {value: null, enumerable: false},
 /**
     An array of items to to assign to the component's
-    <code>contentController</code> property, which is an ContentController.
+    <code>contentController</code> property, which is a RangeController.
 */
     content: {
         set: function(value) {
@@ -144,7 +142,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
             this._content = value;
 
             if(!this.contentController) {
-                var contentController = ContentController.create();
+                var contentController = RangeController.create();
                 contentController.content = value;
                 this.contentController = contentController;
             }
@@ -193,27 +191,11 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
             this._contentController = value;
 
             Bindings.defineBindings(this, {
-                "content": {"<-": "_contentController.visibleContent"},
-                "_selectedObjects": {
-                    "<-": "_contentController.iterations.filter{selected}.map{object}"
-                },
+                "content": {"<-": "_contentController.organizedContent"},
                 "_iterations": {"<-": "_contentController.iterations"},
-
-                // creates a Map with {index: object}
-                "_contentMap[*]": {"<-": "_contentController.visibleContent"},
-                // _contentMap.items() ->
-                //      transforms a Map into an array: {key1: value1, key2:
-                //      value2} -> [[key1, value1], [key2, value2]]
-                //
-                // .map{$_iterations[()[0]].selected ? ()[0] : -1} ->
-                //      maps the array into its index "()[0]" if it's selected
-                //      "$_iterations[()[0]].selected" or -1 if it's not.
-                //
-                // .filter{>=0} ->
-                //      removes all -1 items from the array, they indicate the
-                //      objects that were not selected.
-                "_selectedIndexes.*": {
-                    "<-": "_contentMap.items().map{$_iterations[()[0]].selected ? ()[0] : -1}.filter{>=0}"
+                "_selection": {"<-": "_contentController.selection"},
+                "_selectedIndexes.rangeContent()": {
+                    "<-": "content.enumerate().filter{$_selection.has(.1)}.map{.0}"
                 }
             });
         }
@@ -221,14 +203,14 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
 
     _getSelectedValuesFromIndexes: {
         value: function() {
-            var selectedObjects = this._selectedObjects;//this.contentController ? this.contentController.selectedObjects : null;
+            var selection = this._selection;
             var arr = [];
-            if(selectedObjects && selectedObjects.length > 0) {
-                var i=0, len = selectedObjects.length, valuePath;
+            if(selection && selection.length > 0) {
+                var i=0, len = selection.length, valuePath;
                 for(; i<len; i++) {
                     valuePath = this.valuePropertyPath || 'value';
-                    if(selectedObjects[i][valuePath]) {
-                        arr.push(selectedObjects[i][valuePath]);
+                    if(selection[i][valuePath]) {
+                        arr.push(selection[i][valuePath]);
                     }
                 }
             }
