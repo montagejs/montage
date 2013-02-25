@@ -219,13 +219,13 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
     },
 
     /**
-     Description TODO
+     Returns true if the cardinality is more than one.
      @type {Property}
      @default {Boolean} false
      */
     isToMany:{
         get:function () {
-            return this.cardinality > 1;
+            return this.cardinality === Infinity || this.cardinality > 1;
         }
     },
 
