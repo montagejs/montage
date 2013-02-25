@@ -1349,21 +1349,9 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     handleTouchend: {
         value: function (event) {
             // TODO consider only grabbing touches that are in target touches
-            // Find the changed touch that refers to our selection pointer.
-            // Find the touch corresponding to the handleTouchstart
             for (var i = 0; i < event.changedTouches.length; i++) {
-                if (event.changedTouches[i].identifier === this._selectionPointer) {
-                    // Only if we retained our claim on that pointer
-                    if (this.eventManager.isPointerClaimedByComponent(this._selectionPointer, this)) {
-                        // Find the corresponing iteration
-                        var iteration = this.findIterationForElement(event.target);
-                        // And select it, if there is one
-                        if (iteration) {
-                            iteration.selected = !iteration.selected;
-                        }
-                    }
-                    this._ignoreSelectionPointer();
-                    return;
+                if (this._endSelectionOnTarget(event.changedTouches[i].identifier, event.target)) {
+                    break;
                 }
             }
 
@@ -1384,12 +1372,30 @@ var Repetition = exports.Repetition = Montage.create(Component, {
      */
     handleMouseup: {
         value: function (event) {
-            var iteration = this._findIterationContainingElement(event.target);
-            if (iteration) {
-                iteration.active = false;
-                iteration.selected = !iteration.selected;
+            this._endSelectionOnTarget("mouse", event.target);
+        }
+    },
+
+    _endSelectionOnTarget: {
+        value: function (identifier, target) {
+
+            if (identifier !== this._selectionPointer) {
+                return;
             }
+
+            if (this.eventManager.isPointerClaimedByComponent(this._selectionPointer, this)) {
+                // Find the corresponding iteration
+                var iteration = this._findIterationContainingElement(target);
+                // And select it, if there is one
+                if (iteration) {
+                    iteration.active = false;
+                    iteration.selected = !iteration.selected;
+                }
+            }
+
             this._ignoreSelectionPointer();
+
+            return true;
         }
     },
 
