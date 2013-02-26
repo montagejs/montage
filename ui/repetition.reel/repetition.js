@@ -134,8 +134,8 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             Object.getPrototypeOf(Iteration).didCreate.call(this);
             this.repetition = null;
             this.controller = null;
-            this.object = null;
-            this.defineBinding("object", {"<->": "controller.object"});
+            this.defineBinding("content", {"<->": "controller.object"});
+            this.defineBinding("object", {"<->": "content"}); // TODO remove this migration shim
             this.selected = false;
             // The iteration watches whether it is selected.  If the iteration
             // is drawn, it enqueue's selection change draw operations and
@@ -149,8 +149,8 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             // DOM.  The repetition manages the boundary markers around each
             // drawn index.
             this._fragment = null;
-            // The corresponding "object" is tracked in
-            // repetition._objectForIteration instead of on the iteration
+            // The corresponding "content" is tracked in
+            // repetition._contentForIteration instead of on the iteration
             // itself.  The bindings in the iteration template react to changes
             // in that map.
             this._childComponents = null;
@@ -406,17 +406,10 @@ var Repetition = exports.Repetition = Montage.create(Component, {
      */
     content: {
         get: function () {
-            if (!this.contentController) {
-                return null;
-            }
-            return this.contentController.content;
+            return this.getPath("contentController.content");
         },
         set: function (content) {
-            if (this.contentController) {
-                this.contentController.content = content;
-            } else {
-                this.contentController = RangeController.create().initWithContent(content);
-            }
+            this.contentController = RangeController.create().initWithContent(content);
         }
     },
 
@@ -483,7 +476,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
      * The user may bind the the <code>currentIteration.object</code> with this
      * shorthand.
      */
-    objectAtCurrentIteration: {value: null},
+    contentAtCurrentIteration: {value: null},
 
 
     // For the template:
@@ -563,18 +556,18 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // _freeIterations list.
             this._freeIterations = []; // push/pop LIFO
             // Whenever an iteration template is instantiated, it may have
-            // bindings to the repetition's "objectAtCurrentIteration".  The
-            // repetition delegates "objectAtCurrentIteration" to a mapping
+            // bindings to the repetition's "contentAtCurrentIteration".  The
+            // repetition delegates "contentAtCurrentIteration" to a mapping
             // from iterations to content, which it can dynamically update as
             // the iterations are reused, thereby updating the bindings.
-            this._objectForIteration = Map();
+            this._contentForIteration = Map();
             // We track the direct child nodes of every iteration so we can
             // look up which iteration a mouse or touch event occurs on, for
             // the purpose of selection tracking.
             this._iterationForElement = Map();
             // This variable is updated in the context of deserializing the
-            // iteration template so bindings to "objectAtCurrentIteration" are
-            // attached to the proper "iteration".  The "_objectForIteration"
+            // iteration template so bindings to "contentAtCurrentIteration" are
+            // attached to the proper "iteration".  The "_contentForIteration"
             // provides the level of indirection that allows iterations to be
             // paired with different content during their lifetime, but the
             // template and components for each iteration will always be tied
@@ -741,7 +734,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // purge the existing iterations
             this._iterationTemplate = null;
             this._freeIterations.clear();
-            this._objectForIteration.clear();
+            this._contentForIteration.clear();
             this._iterationForElement.clear();
             this.currentIteration = null;
             this._templateId = null;
@@ -828,7 +821,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
      * We can only create one iteration at a time because it is an asynchronous
      * operation and the "repetition.currentIteration" property may be bound
      * during this process.  If we were to attempt to instantiate multiple
-     * iterations asynchronously, currentIteration and objectAtCurrentIteration
+     * iterations asynchronously, currentIteration and contentAtCurrentIteration
      * bindings would get interleaved.  The "_iterationCreationPromise"
      * synchronizes "createIteration", ensuring we only create one at a time,
      * waiting for the previous to either succeed or fail before attempting
@@ -926,22 +919,22 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     },
 
     /**
-     * This ties <code>objectAtCurrentIteration</code> to an iteration.
+     * This ties <code>contentAtCurrentIteration</code> to an iteration.
      * <code>currentIteration</code> is only current in the stack of
      * instantiating a template, so this method is a hook that the redirects
-     * <code>objectAtCurrentIteration</code> property change listeners to a map
-     * change listener on the <code>_objectForIteration</code> map instead.
+     * <code>contentAtCurrentIteration</code> property change listeners to a map
+     * change listener on the <code>_contentForIteration</code> map instead.
      * The binding then reacts to changes to the map as iterations are reused
      * with different content at different positions in the DOM.
      * @private
      */
     observeProperty: {
         value: function (key, emit, source, parameters, beforeChange) {
-            if (key === "objectAtCurrentIteration") {
+            if (key === "contentAtCurrentIteration" || key === "objectAtCurrentIteration") {
                 // delegate to the mapping from iterations to content for the
                 // current iteration
                 return observeKey(
-                    this._objectForIteration,
+                    this._contentForIteration,
                     this.currentIteration,
                     emit,
                     source,
@@ -1004,7 +997,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     /**
      * @private
      */
-    _objectForIteration: {value: null},
+    _contentForIteration: {value: null},
 
     /**
      * @private
@@ -1036,9 +1029,9 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 // Update the corresponding controller.  This updates the
                 // "object" and "selected" bindings.
                 iteration.controller = controller;
-                // This updates the "repetition.objectAtCurrentIteration"
+                // This updates the "repetition.contentAtCurrentIteration"
                 // bindings.
-                this._objectForIteration.set(iteration, controller.object);
+                this._contentForIteration.set(iteration, controller.object);
                 return iteration;
             }, this));
             // Update indexes for all subsequent iterations
