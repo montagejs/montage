@@ -288,7 +288,7 @@ describe("paths-spec", function () {
         };
 
         var spy = jasmine.createSpy();
-        object.addRangeAtPathChangeListener("array.map{*2}", handler, "offsetArray");
+        object.addRangeAtPathChangeListener("array.map{*2}", handler, "handleOffsetArrayRangeChange");
         expect(spy).toHaveBeenCalledWith([], [], 0);
 
         spy = jasmine.createSpy();
