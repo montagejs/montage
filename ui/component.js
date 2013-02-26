@@ -1396,7 +1396,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
                 if (contents instanceof Element) {
                     element.appendChild(contents);
-                } else if(contents !== null) {
+                } else if(contents != null) {
                     for (var i = 0, content; (content = contents[i]); i++) {
                         element.appendChild(content);
                     }
