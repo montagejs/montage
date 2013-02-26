@@ -229,6 +229,16 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
+    getElementId: {
+        value: function() {
+            var element = this._element;
+
+            if (element) {
+                return element.getAttribute("data-montage-id");
+            }
+        }
+    },
+
     _initDomArguments: {
         value: function() {
             var elements = this._element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "]"),
@@ -1380,6 +1390,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 this._addTemplateStyles();
             }
             if (this._templateElement) {
+                this._bindTemplateParametersToArguments();
                 this._replaceElementWithTemplate();
             }
             // This will schedule a second draw for any component that has children
@@ -1393,6 +1404,38 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         },
         enumerable: false
     },
+
+    _bindTemplateParametersToArguments: {
+        value: function() {
+            var parameters = this._templateDocumentPart.parameters,
+                parameter,
+                templateArguments,
+                argument,
+                validation;
+
+            templateArguments = this._domArguments;
+
+            validation = this._validateTemplateArguments(
+                templateArguments, parameters);
+            if (validation) {
+                throw validation;
+            }
+
+            for (var key in parameters) {
+                parameter = parameters[key];
+                argument = templateArguments[key];
+
+                if (key === "*") {
+                    range = this._element.ownerDocument.createRange();
+                    range.selectNodeContents(this._element);
+                    parameter.parentNode.replaceChild(range.extractContents(), parameter);
+                } else {
+                    parameter.parentNode.replaceChild(argument, parameter);
+                }
+            }
+        }
+    },
+
     _validateTemplateArguments: {
         value: function(templateArguments, templateParameters) {
             var parameterNames = Object.keys(templateParameters);
