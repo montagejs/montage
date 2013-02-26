@@ -875,6 +875,11 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                             self._addChildComponent(childComponents[i]);
                         }
                         part.loadComponentTree().then(function() {
+                            // TODO: ask each component to draw, this should not
+                            // not be needed when the DrawManager is ready.
+                            for (var i = 0; i < childComponents.length; i++) {
+                                childComponents[i].needsDraw = true;
+                            }
                             self.didCreateIteration(iteration);
                         }).done();
                     }
