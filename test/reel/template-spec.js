@@ -276,6 +276,49 @@ describe("reel/template-spec", function() {
             });
         });
 
+        it("should add a node to the template without collisions", function() {
+            var html = require("reel/template/modification.html").content,
+                htmlModification = require("reel/template/modification-elements.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                children,
+                collisionTable;
+
+            template.initWithHtml(html, require);
+            htmlDocument.documentElement.innerHTML = htmlModification;
+
+            node = htmlDocument.getElementById("noCollision");
+            reference = template.getElementById("title");
+
+            collisionTable = template.insertNodeBefore(node, reference);
+
+            expect(collisionTable).toEqual({});
+            expect(reference.previousSibling).toBe(node);
+        });
+
+        it("should add a node to the template with collisions", function() {
+            var html = require("reel/template/modification.html").content,
+                htmlModification = require("reel/template/modification-elements.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                children,
+                collisionTable,
+                expectedCollisionTable;
+
+            template.initWithHtml(html, require);
+            htmlDocument.documentElement.innerHTML = htmlModification;
+
+            node = htmlDocument.getElementById("collisions");
+            reference = template.getElementById("title");
+
+            title = htmlDocument.getElementById("title");
+
+            collisionTable = template.insertNodeBefore(node, reference);
+            expectedCollisionTable = {
+                "repetition": node.getAttribute("data-montage-id"),
+                "title": title.getAttribute("data-montage-id")
+            };
+
+            expect(collisionTable).toEqual(expectedCollisionTable);
+        });
     });
 
     describe("instantiation", function() {

@@ -3,6 +3,7 @@ var Montage = require("montage").Montage,
     DocumentPart = require("ui/document-part").DocumentPart,
     DocumentResources = require("ui/document-resources").DocumentResources,
     Serialization = require("core/serialization/serialization").Serialization,
+    MontageLabeler = require("core/serialization/serializer/montage-labeler").MontageLabeler,
     Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("template"),
     defaultEventManager = require("core/event/event-manager").defaultEventManager,
@@ -655,6 +656,137 @@ var Template = Montage.create(Montage, {
             template._resources = this.getResources();
 
             return template;
+        }
+    },
+
+    /**
+     * Takes a foreign node and generate new ids for all element ids that
+     * already exist in the current template.
+     */
+    _resolveElementIdCollisions: {
+        value: function(node) {
+            var collisionTable = {},
+                nodeElements,
+                elementIds,
+                element,
+                newId,
+                labeler = MontageLabeler.create();
+
+            // Set up the labeler with the current element ids.
+            elementIds = this.getElementIds();
+            for (var i = 0, elementId; (elementId = elementIds[i]); i++) {
+                labeler.setObjectLabel(null, elementId);
+            }
+
+            // Resolve element ids collisions.
+            nodeElements = this._getElements(node);
+            for (var elementId in nodeElements) {
+                if (this.getElementById(elementId)) {
+                    element = nodeElements[elementId];
+                    newId = labeler.getObjectLabel(element);
+                    this.setElementId(element, newId);
+                    collisionTable[elementId] = newId;
+                }
+            }
+
+            return collisionTable;
+        }
+    },
+
+    replaceNode: {
+        value: function(newNode, oldNode) {
+            var collisionTable;
+
+            collisionTable = this._resolveElementIdCollisions(newNode);
+            oldNode.parentNode.replaceChild(newNode, oldNode);
+
+            return collisionTable;
+        }
+    },
+
+    insertNodeBefore: {
+        value: function(node, reference) {
+            var collisionTable;
+
+            collisionTable = this._resolveElementIdCollisions(node);
+            reference.parentNode.insertBefore(node, reference);
+
+            return collisionTable;
+        }
+    },
+
+    getElementId: {
+        value: function(element) {
+            if (element.getAttribute) {
+                return element.getAttribute(this._ELEMENT_ID_ATTRIBUTE);
+            }
+        }
+    },
+
+    setElementId: {
+        value: function(element, elementId) {
+            element.setAttribute(this._ELEMENT_ID_ATTRIBUTE, elementId);
+        }
+    },
+
+    getElementIds: {
+        value: function() {
+            return this._getElementIds(this.document.body);
+        }
+    },
+
+    _getElements: {
+        value: function(rootNode) {
+            var selector = "*[" + this._ELEMENT_ID_ATTRIBUTE + "]",
+                elements,
+                result = {},
+                elementId,
+                nodes;
+
+            elements = rootNode.querySelectorAll(selector);
+
+            for (var i = 0, element; (element = elements[i]); i++) {
+                elementId = this.getElementId(element);
+                result[elementId] = element;
+            }
+
+            elementId = this.getElementId(rootNode);
+            if (elementId) {
+                result[elementId] = rootNode;
+            }
+
+            return result;
+        }
+    },
+
+    _getChildrenElementIds: {
+        value: function(rootNode) {
+            // XPath might do a better job here...should test.
+            var selector = "*[" + this._ELEMENT_ID_ATTRIBUTE + "]",
+                elements,
+                elementIds = [];
+
+            elements = rootNode.querySelectorAll(selector);
+
+            for (var i = 0, element; (element = elements[i]); i++) {
+                elementIds.push(this.getElementId(element));
+            }
+
+            return elementIds;
+        }
+    },
+
+    _getElementIds: {
+        value: function(rootNode) {
+            var elementIds = this._getChildrenElementIds(rootNode),
+                elementId;
+
+            elementId = this.getElementId(rootNode);
+            if (elementId) {
+                elementIds.push(elementId);
+            }
+
+            return elementIds;
         }
     },
 
