@@ -876,7 +876,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                         }
                         part.loadComponentTree().then(function() {
                             self.didCreateIteration(iteration);
-                        });
+                        }).done();
                     }
                     self.currentIteration = null;
                 })
