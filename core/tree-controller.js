@@ -16,8 +16,8 @@ var Iteration = Montage.create(Montage, {
         value: function () {
             this.depth = null;
             this.node = null;
-            this.object = null;
-            this.defineBinding("object", {"<->": "node.object"});
+            this.content = null;
+            this.defineBinding("content", {"<->": "node.content"});
             this.defineBinding("expanded", {"<->": "node.expanded"});
             this.defineBinding("parent", {"<-": "node.parent"});
             this.defineBinding("children", {"<-": "node.children"});
@@ -38,6 +38,8 @@ var Node = exports.TreeController = Montage.create(Montage, {
 
     didCreate: {
         value: function () {
+
+            this.content = null;
             this.parent = null;
             this.expanded = false;
             this.childrenPath = null;
@@ -48,8 +50,7 @@ var Node = exports.TreeController = Montage.create(Montage, {
             this.iterations = [];
 
             // childrenPath -> children
-            this.addOwnPropertyChangeListener("childrenPath", this);
-            this.defineBinding("children.rangeContent()", {"<-": "[]" });
+            this.defineBinding("children.rangeContent()", {"<-": "content.path(childrenPath)"});
 
             // children -> childNodes
             this.children.addRangeChangeListener(this, "children");
@@ -75,21 +76,11 @@ var Node = exports.TreeController = Montage.create(Montage, {
     },
 
     init: {
-        value: function (object, childrenPath, parent) {
+        value: function (content, childrenPath, parent) {
             this.parent = parent || null;
-            this.object = object;
+            this.content = content;
             this.childrenPath = childrenPath;
             return this;
-        }
-    },
-
-    handleChildrenPathChange: {
-        value: function (childrenPath) {
-            this.cancelBinding("children.rangeContent()");
-            this.defineBinding("children.rangeContent()", {
-                "<-": childrenPath,
-                source: this.object
-            })
         }
     },
 
