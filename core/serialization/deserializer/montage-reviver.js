@@ -249,8 +249,9 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
 
                 if (!(objectName in module)) {
                     throw new Error('Error deserializing "' + label +
-                        '": object named "' + object +
-                        "' was not found given '" + value.prototype + "'");
+                        '": object named "' + objectName + '"' +
+                        ' was not found in "' + value.prototype + '".' +
+                        " Available objects are: " + Object.keys(module) + ".");
                 }
                 // TODO: For now we need this because we need to set
                 // isDeserilizing before calling didCreate.
