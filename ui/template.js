@@ -54,6 +54,12 @@ var Template = Montage.create(Montage, {
         }
     },
 
+    getSerialization: {
+        value: function() {
+            return Serialization.create().initWithString(this.objectsString);
+        }
+    },
+
     _templateCache: {
         value: {
             moduleId: Object.create(null)
@@ -610,11 +616,13 @@ var Template = Montage.create(Montage, {
 
     _addObjects: {
         value: function(doc, objectsString) {
-            var script = doc.createElement("script");
+            if (objectsString) {
+                var script = doc.createElement("script");
 
-            script.setAttribute("type", this._SERIALIZATON_SCRIPT_TYPE);
-            script.textContent = JSON.stringify(JSON.parse(objectsString), null, 4);
-            doc.head.appendChild(script);
+                script.setAttribute("type", this._SERIALIZATON_SCRIPT_TYPE);
+                script.textContent = JSON.stringify(JSON.parse(objectsString), null, 4);
+                doc.head.appendChild(script);
+            }
         }
     },
 
@@ -656,6 +664,85 @@ var Template = Montage.create(Montage, {
             template._resources = this.getResources();
 
             return template;
+        }
+    },
+
+    // TODO: should this be on Serialization?
+    _createSerializationWithElementIds: {
+        value: function(elementIds) {
+            var serialization = Serialization.create(),
+                labels,
+                extractedSerialization;
+
+            serialization.initWithString(this.objectsString);
+            labels = serialization.getSerializationLabelsWithElements(
+                elementIds);
+
+            extractedSerialization = serialization.extractSerialization(
+                labels, ["owner"]);
+
+            return extractedSerialization;
+        }
+    },
+
+    /**
+     * @param {Template} template The template object where the arguments reside
+     * @param {Object} delegate A delegate object that needs to implement
+     *        getTemplateParameterArgument(template, name) function that returns
+     *        the argument to replace with the `name` parameter.
+     * @returns {Object} A dictionary of object collisions from importing the
+     *          serialization associated with the argument into the template.
+     */
+    expandParameters: {
+        value: function(template, delegate) {
+            var parameterElements,
+                argumentsElementIds = [],
+                collisionTable,
+                argumentElementsCollisionTable = {},
+                objectsCollisionTable,
+                parameterElement,
+                argumentElement,
+                serialization = Serialization.create(),
+                argumentsSerialization;
+
+            parameterElements = this.getParameters();
+
+            // Expand elements.
+            for (var parameterName in parameterElements) {
+                parameterElement = parameterElements[parameterName];
+                argumentElement = delegate.getTemplateParameterArgument(
+                    template, parameterName);
+
+                // Store all element ids of the argument, we need to create
+                // a serialization with the components that point to them.
+                argumentsElementIds.push.apply(argumentsElementIds,
+                    this._getElementIds(argumentElement)
+                );
+
+                // Replace the parameter with the argument and save the
+                // element ids collision table because we need to correct the
+                // serialization that is created from the stored element ids.
+                collisionTable = this.replaceNode(argumentElement, parameterElement);
+                for (var key in collisionTable) {
+                    argumentElementsCollisionTable[key] = collisionTable[key];
+                }
+            }
+
+            // Expand objects.
+            argumentsSerialization = template
+                ._createSerializationWithElementIds(argumentsElementIds);
+
+            for (var elementId in argumentElementsCollisionTable) {
+                argumentsSerialization.renameElementReference(elementId, argumentElementsCollisionTable[elementId]);
+            }
+
+            serialization.initWithString(this.objectsString);
+
+            objectsCollisionTable = serialization.mergeSerialization(
+                argumentsSerialization);
+            this.objectsString = serialization.getSerializationString();
+
+            return objectsCollisionTable;
         }
     },
 

@@ -661,6 +661,36 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 .toEqual(expectedSerialization);
         });
 
+        it("should modify a label of a montage object", function() {
+            var serialization = Serialization.create().initWithObject({
+                    "object1": {
+                        "prototype": "montage/ui/dynamic-text.reel"
+                    }
+                }),
+                expectedSerialization = {
+                    "object": {
+                        "prototype": "montage/ui/dynamic-text.reel"
+                    }
+                },
+                visitor,
+                visitorSpy,
+                args;
+
+            visitor = function(node) {
+                if (node.label === "object1") {
+                    node.label = "object";
+                }
+            };
+
+            visitorSpy = jasmine.createSpy('visitor').andCallFake(visitor);
+
+            inspector.initWithSerialization(serialization);
+            inspector.visitSerialization(visitorSpy);
+
+            expect(serialization.getSerializationObject())
+                .toEqual(expectedSerialization);
+        });
+
         it("should modify binding references", function() {
             var serialization = Serialization.create().initWithObject({
                     "text": {

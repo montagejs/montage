@@ -853,6 +853,269 @@ describe("reel/template-spec", function() {
         });
     });
 
+    describe("expanding template parameters", function() {
+        var parametersTemplate,
+            argumentsTemplate;
+
+        beforeEach(function() {
+            parametersTemplate = Template.create();
+            argumentsTemplate = Template.create();
+        });
+
+        it("should expand a parameter with non-colliding element", function() {
+            var parametersHtml = require("reel/template/template-star-parameter.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                delegate;
+
+            delegate = {
+                getTemplateParameterArgument: function(template, name) {
+                    range = document.createRange();
+                    range.selectNodeContents(template.getElementById("list"));
+                    return range.extractContents();
+                }
+            };
+
+            return Promise.all([
+                parametersTemplate.initWithHtml(parametersHtml),
+                argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var repetition,
+                    args;
+
+                parametersTemplate.expandParameters(
+                    argumentsTemplate, delegate);
+
+                repetition = parametersTemplate.getElementById("repetition");
+                args = repetition.children[0].children;
+
+                expect(args.length).toBe(2);
+                expect(args[0].textContent).toBe("Section");
+                expect(args[1].textContent).toBe("Paragraph");
+            });
+        });
+
+        it("should expand a parameter with colliding element", function() {
+            var parametersHtml = require("reel/template/template-star-parameter.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                delegate;
+
+            delegate = {
+                getTemplateParameterArgument: function(template, name) {
+                    range = document.createRange();
+                    range.selectNodeContents(
+                        template.getElementById("element-id-collision"));
+                    return range.extractContents();
+                }
+            };
+
+            return Promise.all([
+                parametersTemplate.initWithHtml(parametersHtml),
+                argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var repetition,
+                    args;
+
+                parametersTemplate.expandParameters(
+                    argumentsTemplate, delegate);
+
+                repetition = parametersTemplate.getElementById("repetition");
+                args = repetition.children[0].children;
+
+                expect(parametersTemplate.getElementId(args[0]))
+                    .not.toBe("repetition");
+            });
+        });
+
+        it("should expand multiple parameters with non-colliding element", function() {
+            var parametersHtml = require("reel/template/template-parameters.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                delegate;
+
+            delegate = {
+                getTemplateParameterArgument: function(template, name) {
+                    range = document.createRange();
+                    range.selectNodeContents(
+                        template.getElementById("multiple-elements-" + name));
+                    return range.extractContents();
+                }
+            };
+
+            return Promise.all([
+                parametersTemplate.initWithHtml(parametersHtml),
+                argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var repetition,
+                    side;
+
+                parametersTemplate.expandParameters(
+                    argumentsTemplate, delegate);
+
+                side = parametersTemplate.getElementById("leftSide");
+                expect(side.children.length).toBe(1);
+                expect(side.children[0].textContent).toBe("Left Side");
+
+                side = parametersTemplate.getElementById("rightSide");
+                expect(side.children.length).toBe(1);
+                expect(side.children[0].textContent).toBe("Right Side");
+            });
+        });
+
+        it("should expand multiple parameters with colliding elements", function() {
+            var parametersHtml = require("reel/template/template-parameters.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                delegate;
+
+            delegate = {
+                getTemplateParameterArgument: function(template, name) {
+                    range = document.createRange();
+                    range.selectNodeContents(
+                        template.getElementById("multiple-elements-colliding-" + name));
+                    return range.extractContents();
+                }
+            };
+
+            return Promise.all([
+                parametersTemplate.initWithHtml(parametersHtml),
+                argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var repetition,
+                    side,
+                    leftSideElementId,
+                    rightSideElementId;
+
+                parametersTemplate.expandParameters(
+                    argumentsTemplate, delegate);
+
+                side = parametersTemplate.getElementById("leftSide");
+                leftSideElementId = parametersTemplate.getElementId(
+                    side.children[0]);
+
+                side = parametersTemplate.getElementById("rightSide");
+                rightSideElementId = parametersTemplate.getElementId(
+                    side.children[0]);
+
+                expect(leftSideElementId).not.toBe("leftSide");
+                expect(rightSideElementId).not.toBe("rightSide");
+                expect(leftSideElementId).not.toBe(rightSideElementId);
+            });
+        });
+
+        it("should expand a parameter with element and non-colliding objects", function() {
+            var parametersHtml = require("reel/template/template-star-parameter.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                delegate,
+                serialization;
+
+            delegate = {
+                getTemplateParameterArgument: function(template, name) {
+                    range = document.createRange();
+                    range.selectNodeContents(
+                        template.getElementById("objects-no-collision"));
+                    return range.extractContents();
+                }
+            };
+
+            return Promise.all([
+                parametersTemplate.initWithHtml(parametersHtml),
+                argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var repetition,
+                    args,
+                    collisionTable;
+
+                collisionTable = parametersTemplate.expandParameters(
+                    argumentsTemplate, delegate);
+
+                serialization = parametersTemplate.getSerialization();
+                labels = serialization.getSerializationLabels();
+
+                expect(collisionTable).toBeFalsy();
+                expect(labels).toContain("section");
+            });
+        });
+
+        it("should expand a parameter with element and colliding objects", function() {
+            var parametersHtml = require("reel/template/template-star-parameter.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                delegate,
+                serialization;
+
+            delegate = {
+                getTemplateParameterArgument: function(template, name) {
+                    range = document.createRange();
+                    range.selectNodeContents(
+                        template.getElementById("objects-collision"));
+                    return range.extractContents();
+                }
+            };
+
+            return Promise.all([
+                parametersTemplate.initWithHtml(parametersHtml),
+                argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var repetition,
+                    args,
+                    collisionTable;
+
+                collisionTable = parametersTemplate.expandParameters(
+                    argumentsTemplate, delegate);
+
+                serialization = parametersTemplate.getSerialization();
+                labels = serialization.getSerializationLabelsWithElements(
+                    ["foo"]);
+
+                expect(labels).not.toContain("foo");
+            });
+        });
+
+        it("should expand multiple parameters with elements and colliding objects", function() {
+            var parametersHtml = require("reel/template/template-parameters.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                delegate,
+                serialization;
+
+            delegate = {
+                getTemplateParameterArgument: function(template, name) {
+                    range = document.createRange();
+                    range.selectNodeContents(
+                        template.getElementById("multiple-objects-" + name));
+                    return range.extractContents();
+                }
+            };
+
+            return Promise.all([
+                parametersTemplate.initWithHtml(parametersHtml),
+                argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var repetition,
+                    collisionTable,
+                    labels,
+                    serializationObject,
+                    leftSide,
+                    rightSide;
+
+                collisionTable = parametersTemplate.expandParameters(
+                    argumentsTemplate, delegate);
+
+                serialization = parametersTemplate.getSerialization();
+                serializationObject = serialization.getSerializationObject();
+                labels = Object.keys(collisionTable);
+
+                expect(labels.length).toBe(2);
+                expect(labels).toContain("leftSide");
+                expect(labels).toContain("rightSide");
+
+                leftSide = serializationObject[collisionTable.leftSide];
+                rightSide = serializationObject[collisionTable.rightSide];
+
+                // Make sure the binding from rightSide to leftSide was
+                // changed to the new label.
+                expect(rightSide.bindings.value["<-"])
+                    .toBe("@" + collisionTable.leftSide + ".value");
+            });
+        });
+    });
+
     describe("cache", function() {
         it("should treat same module id in different package as different templates", function() {
             return require.loadPackage("package-a").then(function(pkg1) {

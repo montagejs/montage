@@ -251,6 +251,23 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
+    getTemplateParameterArgument: {
+        value: function(template, name) {
+            var element,
+                range;
+
+            element = template.getElementById(this.getElementId());
+
+            if (name === "*") {
+                range = template.document.createRange();
+                range.selectNodeContents(element);
+                return range.cloneContents();
+            } else {
+                return this._getDomArgument(element, name).cloneNode(true);
+            }
+        }
+    },
+
     setElementWithParentComponent: {
         value: function(element, parent) {
             this._alternateParentComponent = parent;

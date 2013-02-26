@@ -79,6 +79,20 @@ var Serialization = Montage.create(Montage, {
         }
     },
 
+    renameElementReference: {
+        value: function(oldId, newId) {
+            var inspector = SerializationInspector.create(),
+                labels = [];
+
+            inspector.initWithSerialization(this);
+            inspector.visitSerialization(function(node) {
+                if (node.type === "Element" && node.data === oldId) {
+                    node.data = newId;
+                }
+            });
+        }
+    },
+
     mergeSerialization: {
         value: function(serialization) {
             return SerializationMerger.mergeSerializations(this, serialization);
@@ -192,167 +206,6 @@ var SerializationMerger = Object.create(Montage, {
                     }
                 }
             });
-        }
-    }
-});
-
-function Inspector(serialization) {
-    this._serialization= serialization;
-}
-
-Object.defineProperties(Inspector.prototype, {
-    constructor: {value: Inspector},
-
-    _serialization: {value: null, writable: true},
-
-    visitSerialization: {
-        value: function(visitor) {
-            var serialization = this._serialization.getSerializationObject();
-
-            this._walkRootObjects(visitor, serialization);
-            this._serialization.initWithObject(serialization);
-        }
-    },
-
-    visitSerializationObject: {
-        value: function(label, visitor) {
-            var serialization = this._serialization.getSerializationObject();
-
-            if (label in serialization) {
-                this._walkRootObject(visitor, serialization, label);
-                this._serialization.initWithObject(serialization);
-            } else {
-                throw new Error('Object "' + label + '" does not exist in ' + this._serialization.getSerializationString());
-            }
-        }
-    },
-
-    changeLabel: {
-        value: function(oldLabel, newLabel) {
-            var serialization = this._serialization.getSerializationObject(),
-                object;
-
-            object = serialization[oldLabel];
-            delete serialization[oldLabel];
-            serialization[newLabel] = object;
-        }
-    },
-
-    _walkRootObjects: {
-        value: function(visitor, objects) {
-            var object,
-                type;
-
-            for (var label in objects) {
-                this._walkRootObject(visitor, objects, label);
-            }
-        }
-    },
-
-    _walkRootObject: {
-        value: function(visitor, objects, label) {
-            var object = objects[label];
-
-            if ("value" in object) {
-                this._walkObject(visitor, object, "value", label);
-            } else {
-                this._walkCustomObject(visitor, objects, label);
-            }
-        }
-    },
-
-    /**
-     * @param parentObject {Object} The parent object of the object to walk
-     * @param key {String} The key of the object in the parent object
-     * @param label {String} Optional label for when the object has no
-     *                       parent
-     * @param parent {Object} The representation of the object's parent
-     */
-    _walkObject: {
-        value: function(visitor, parentObject, key, label, parent) {
-            var object = parentObject[key],
-                type = MontageReviver.getTypeOf(object),
-                value,
-                serialization,
-                data;
-
-            // Create the value representing this object in the serialization.
-            value = {
-                type: type
-            };
-            if (label) {
-                value.label = label;
-            } else {
-                value.name = key;
-            }
-            if (parent) {
-                value.parent = parent;
-            }
-
-            // Visit the value
-            if (type === "number" || type === "string" || type === "null") {
-                value.data = object;
-                visitor(value);
-                parentObject[key] = value.data;
-
-            } else if (type === "regexp") {
-                value.data = object["/"];
-                visitor(value);
-                object["/"] = value.data;
-
-            } else if (type === "reference") {
-                value.data = object["@"];
-                visitor(value);
-                object["@"] = value.data;
-
-            } else if (type === "Element") {
-                value.data = object["#"];
-                visitor(value);
-                object["#"] = value.data;
-
-            } else if (type === "array") {
-                value.data = object;
-                visitor(value);
-                parentObject[key] = object = value.data;
-
-                for (var i = 0, ii = object.length; i < ii; i++) {
-                    this._walkObject(visitor, object, ""+i, null, value);
-                }
-
-            } else if (type === "object") {
-                value.data = object;
-                visitor(value);
-                parentObject[key] = object = value.data;
-
-                for (var key in object) {
-                    this._walkObject(visitor, object, key, null, value);
-                }
-            }
-
-            // Update the label if it was changed.
-            if (value.label != label) {
-                this.changeLabel(label, value.label);
-            }
-        }
-    },
-
-    _walkCustomObject: {
-        value: function(visitor, objects, label) {
-            var object = objects[label],
-                value;
-
-            value = {
-                type: "customObject",
-                label: label,
-                data: object
-            };
-
-            visitor(value);
-            objects[label] = value.data;
-
-            for (var key in object) {
-                this._walkObject(visitor, object, key, null, value);
-            }
         }
     }
 });
@@ -508,6 +361,9 @@ var SerializationInspector = Montage.create(Montage, {
 
             visitor(value);
             objects[label] = object = value.data;
+            if (value.label != label) {
+                this.changeLabel(label, value.label);
+            }
 
             if (object.properties) {
                 this._walkObject(visitor, object, "properties", null, value);
@@ -570,7 +426,7 @@ var SerializationInspector = Montage.create(Montage, {
                 modified = false;
 
             sourcePath = object["<-"] || object["<->"];
-            parseTree = parse(sourcePath);
+            parseTree = parse.semantics.parse(sourcePath, true);
             this._walksBindingReferences(parseTree, function(syntax) {
                 var value = {
                     type: "reference",

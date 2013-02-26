@@ -43,4 +43,32 @@ describe("reel/serialization/serialization-spec", function() {
         expect(labels).toContain("one");
         expect(labels).toContain("three");
     });
+
+    it("should rename an element reference", function() {
+        var objects = {
+                "one": {
+                    "properties": {
+                        "element": {"#": "oneId"}
+                    }
+                },
+
+                "two": {
+                    "properties": {
+                        "element": {"#": "twoId"},
+                        "details": {
+                            "oneElement": {"#": "oneId"}
+                        }
+                    }
+                }
+            },
+            oldId = "oneId",
+            newId = "newId";
+
+        serialization.initWithObject(objects);
+        serialization.renameElementReference(oldId, newId);
+
+        expect(objects.one.properties.element["#"]).toBe(newId);
+        expect(objects.two.properties.details.oneElement["#"]).toBe(newId);
+        expect(objects.two.properties.element["#"]).toBe("twoId");
+    });
 });
