@@ -1415,6 +1415,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
             templateArguments = this._domArguments;
 
+            if (!this._template.hasParameters() &&
+                templateArguments.length == 1) {
+                return;
+            }
+
             validation = this._validateTemplateArguments(
                 templateArguments, parameters);
             if (validation) {

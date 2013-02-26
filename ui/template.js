@@ -217,6 +217,19 @@ var Template = Montage.create(Montage, {
         }
     },
 
+    clone: {
+        value: function() {
+            var clonedTemplate = Template.create();
+
+            clonedTemplate._require = this._require;
+            clonedTemplate.setDocument(this.document);
+            clonedTemplate.objectsString = this.objectsString;
+            clonedTemplate._instances = Object.clone(this._instances, 0);
+
+            return clonedTemplate;
+        }
+    },
+
     instantiate: {
         value: function(targetDocument) {
             return this.instantiateWithInstances(null, targetDocument);
@@ -445,6 +458,12 @@ var Template = Montage.create(Montage, {
     setInstances: {
         value: function(instances) {
             this._instances = instances;
+        }
+    },
+
+    getInstances: {
+        value: function(instances) {
+            return this._instances;
         }
     },
 

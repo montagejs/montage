@@ -243,7 +243,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                 });
             });
 
-            it("TODO should create a repetition programmatically", function() {
+            xit("TODO should create a repetition programmatically", function() {
                 var Repetition = testPage.window.require("montage/ui/repetition.reel").Repetition,
                     repetition = Repetition.create();
 
@@ -807,5 +807,97 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
             var lis = querySelectorAll(".list17 > li");
             expect(lis.length).toBe(3*2);
         })
+
+        describe("iteration template", function() {
+            it("should expand template star parameter", function() {
+                var component = querySelector(".listParameters ul").controller,
+                    template = component._iterationTemplate,
+                    serialization = template.getSerialization(),
+                    labels = serialization.getSerializationLabels();
+
+                expect(labels).toContain("listParametersText");
+                expect(template.getElementById("listParametersText"))
+                    .toBeDefined();
+            });
+
+            it("should expand template star parameter with multiple expansions", function() {
+                var component = querySelector(".listParametersDecorator ul").controller,
+                    template = component._iterationTemplate,
+                    serialization = template.getSerialization(),
+                    labels = serialization.getSerializationLabels(),
+                    instances = template.getInstances();
+
+                expect(labels).toContain("text");
+                expect(labels).toContain("decoratorText");
+                expect(labels).toContain("listParametersDecoratorText");
+
+                expect(template.getElementById("text"))
+                    .toBeDefined();
+                expect(template.getElementById("listParametersDecoratorText"))
+                    .toBeDefined();
+
+                expect("decoratorText" in instances).toBeTruthy();
+            });
+
+            it("should expand template star parameter with multiple expansions and colliding object", function() {
+                var component = querySelector(".listParametersDecoratorColliding ul").controller,
+                    template = component._iterationTemplate,
+                    serialization = template.getSerialization(),
+                    labels = serialization.getSerializationLabels(),
+                    instances = template.getInstances(),
+                    serializationObject = serialization.getSerializationObject(),
+                    textObjectLabel;
+
+                expect(labels).toContain("text");
+                expect(labels).toContain("decoratorText");
+                expect(labels).toContain("listParametersDecoratorCollidingText");
+
+                expect(template.getElementById("text"))
+                    .toBeDefined();
+                expect(template.getElementById("listParametersDecoratorCollidingText"))
+                    .toBeDefined();
+
+                expect("decoratorText" in instances).toBeTruthy();
+
+                // Make sure that external object "text" that collided with
+                // another object's label has the correct instance associated
+                // with it.
+                textObjectLabel = serializationObject.listParametersDecoratorCollidingText.properties.text["@"];
+                expect(instances[textObjectLabel]).toBe("Text Collision");
+            });
+
+            it("should expand template with named parameters", function() {
+                var elements = querySelectorAll(".namedParameters ul"),
+                    template,
+                    serialization,
+                    labels;
+
+                // left side
+                template = elements[0].controller._iterationTemplate;
+                serialization = template.getSerialization();
+                labels = serialization.getSerializationLabels();
+
+                expect(labels).toContain("leftSideTitle");
+                expect(labels).toContain("textfield9");
+
+                expect(template.getElementById("leftSideTitle"))
+                    .toBeDefined();
+                expect(template.getElementById("textfield9"))
+                    .toBeDefined();
+
+                // right side
+                template = elements[1].controller._iterationTemplate;
+                serialization = template.getSerialization();
+                labels = serialization.getSerializationLabels();
+
+                expect(labels).toContain("rightSideTitle");
+                expect(labels).toContain("textfield10");
+
+                expect(template.getElementById("rightSideTitle"))
+                    .toBeDefined();
+                expect(template.getElementById("textfield10"))
+                    .toBeDefined();
+            });
+        });
     });
 });

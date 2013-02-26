@@ -766,7 +766,12 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 return;
             }
 
-            this._iterationTemplate = this.innerTemplate;
+            if (this.innerTemplate.hasParameters()) {
+                this._iterationTemplate = this.innerTemplate.clone();
+                this._expandIterationTemplateParameters();
+            } else {
+                this._iterationTemplate = this.innerTemplate;
+            }
 
             // Before we get rid of these, check how many there are so that we
             // can use arithmetic to splice the repetition's childComponents
@@ -842,7 +847,59 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             this._selectionPointer = null;
             this.activeIterations.clear();
             this._dirtyClassListIterations.clear();
+        }
+    },
 
+    _expandIterationTemplateParameters: {
+        value: function() {
+            var template = this._iterationTemplate,
+                owner = this,
+                argumentsTemplate,
+                collisionTable,
+                reverseCollisionTable,
+                externalLabels,
+                objects,
+                instances;
+
+            // Crawl up the template chain while there are parameters to expand
+            // in the iteration template.
+            while (template.hasParameters()) {
+                owner = owner.ownerComponent;
+                argumentsTemplate = owner._ownerDocumentPart.template;
+                objects = owner._ownerDocumentPart.objects;
+
+                collisionTable = template.expandParameters(argumentsTemplate, owner);
+
+                // Associate the new external objects with the objects in the
+                // instantiation of argumentsTemplate.
+                externalLabels = template.getSerialization()
+                    .getExternalObjectLabels();
+
+                if (externalLabels.length > 0) {
+                    // collisionTable give us "oldLabel" => "newLabel" mapping
+                    // but we need "newLabel" => "oldLabel" mapping.
+                    reverseCollisionTable = Object.create(null);
+                    for (var key in collisionTable) {
+                        reverseCollisionTable[collisionTable[key]] = key;
+                    }
+
+                    instances = template.getInstances();
+
+                    for (var i = 0, label; (label = externalLabels[i]); i++) {
+                        if (label in instances) {
+                            // This external object already has an instance
+                            // associated with.
+                            continue;
+                        }
+
+                        if (label in reverseCollisionTable) {
+                            instances[label] = objects[reverseCollisionTable[label]];
+                        } else {
+                            instances[label] = objects[label];
+                        }
+                    }
+                }
+            }
         }
     },
 

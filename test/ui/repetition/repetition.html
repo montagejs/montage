@@ -34,6 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
     <title>Repetition Spec</title>
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
     <script type="text/montage-serialization">{
+            "owner": {
+                "value": {}
+            },
 
             "application": {
                 "prototype": "montage/ui/application",
@@ -418,6 +421,78 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list17"},
                     "content": [1, 2]
                 }
+            },
+
+            "listParameters": {
+                "prototype": "ui/repetition/list-parameters.reel",
+                "properties": {
+                    "element": {"#": "listParameters"}
+                }
+            },
+
+            "listParametersText": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "listParametersText"},
+                    "value": "Text"
+                }
+            },
+
+            "listParametersDecorator": {
+                "prototype": "ui/repetition/list-parameters-decorator.reel",
+                "properties": {
+                    "element": {"#": "listParametersDecorator"}
+                }
+            },
+
+            "listParametersDecoratorText": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "listParametersDecoratorText"},
+                    "value": "Text"
+                }
+            },
+
+            "listParametersDecoratorColliding": {
+                "prototype": "ui/repetition/list-parameters-decorator.reel",
+                "properties": {
+                    "element": {"#": "listParametersDecoratorColliding"}
+                }
+            },
+
+            "text": {
+                "value": "Text Collision"
+            },
+
+            "listParametersDecoratorCollidingText": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "listParametersDecoratorCollidingText"},
+                    "text": {"@": "text"}
+                }
+            },
+
+            "namedParameters": {
+                "prototype": "ui/repetition/named-parameters.reel",
+                "properties": {
+                    "element": {"#": "namedParameters"}
+                }
+            },
+
+            "textfield9": {
+                "prototype": "ui/repetition/textfield.reel[TextField]",
+                "properties": {
+                    "element": {"#": "textfield9"},
+                    "text": "left"
+                }
+            },
+
+            "textfield10": {
+                "prototype": "ui/repetition/textfield.reel[TextField]",
+                "properties": {
+                    "element": {"#": "textfield10"},
+                    "text": "right"
+                }
             }
     }</script>
 </head>
@@ -550,5 +625,23 @@ POSSIBILITY OF SUCH DAMAGE.
             </ul>
         </li>
     </ul>
+
+    <h2>Iteration Template with parameters</h2>
+    <div data-montage-id="listParameters" class="listParameters">
+        <span data-montage-id="listParametersText"></span>
+    </div>
+
+    <div data-montage-id="listParametersDecorator" class="listParametersDecorator">
+        <span data-montage-id="listParametersDecoratorText"></span>
+    </div>
+
+    <div data-montage-id="listParametersDecoratorColliding" class="listParametersDecoratorColliding">
+        <span data-montage-id="listParametersDecoratorCollidingText"></span>
+    </div>
+
+    <div data-montage-id="namedParameters" class="namedParameters">
+        <span data-montage-id="textfield9" data-arg="leftSide"></span>
+        <span data-montage-id="textfield10" data-arg="rightSide"></span>
+    </div>
 </body>
 </html>
