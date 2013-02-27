@@ -1,3 +1,13 @@
+// Consider proposal at https://rniwa.com/editing/undomanager.html
+/**
+ @module montage/core/undo-manager
+ */
+
+var Montage = require("montage").Montage,
+    Promise = require("core/promise").Promise,
+    Map = require("collections/map"),
+    List = require("collections/list");
+
 /* <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
@@ -28,16 +38,6 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-
-// Consider proposal at https://rniwa.com/editing/undomanager.html
-/**
-    @module montage/core/undo-manager
-*/
-
-var Montage = require("montage").Montage,
-    Promise = require("core/promise").Promise,
-    WeakMap = require("collections/weak-map"),
-    List = require("collections/list");
 
 var UNDO_OPERATION = 0,
     REDO_OPERATION = 1;
@@ -175,19 +175,19 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
     didCreate: {
         value: function () {
             this._operationQueue = [];
-            this._promiseOperationMap = new WeakMap();
+            this._promiseOperationMap = new Map();
             this._undoStack = new List();
             this._redoStack = new List();
 
-            this.defineBinding("undoCount", {
-                "<-": "length",
-                source: this._undoStack
-            });
+            this.defineBinding("undoLabel", {"<-": "_promiseOperationMap.get(_undoStack.head.prev.value).label", source: this});
+            this.defineBinding("undoCount", {"<-": "length", source: this._undoStack});
+            this.defineBinding("canUndo", {"<-": "!!length", source: this._undoStack});
+            this.defineBinding("isUndoing", {"<-": "!!undoEntry", source: this});
 
-            this.defineBinding("redoCount", {
-                "<-": "length",
-                source: this._redoStack
-            });
+            this.defineBinding("redoLabel", {"<-": "_promiseOperationMap.get(_redoStack.head.prev.value).label", source: this});
+            this.defineBinding("redoCount", {"<-": "length", source: this._redoStack});
+            this.defineBinding("canRedo", {"<-": "!!length", source: this._redoStack});
+            this.defineBinding("isRedoing", {"<-": "!!redoEntry", source: this});
         }
     },
 
@@ -202,10 +202,10 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
         the oldest undos/redos as necessary to meet the new limit.
     */
     maxUndoCount: {
-        get: function() {
+        get: function () {
             return this._maxUndoCount;
         },
-        set: function(value) {
+        set: function (value) {
             if (value === this._maxUndoCount) {
                 return;
             }
@@ -238,12 +238,12 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
         The current number of stored redoable operations
      */
     redoCount: {
-       value: 0
+        value: 0
     },
 
     _trimStacks: {
         enumerable: false,
-        value: function() {
+        value: function () {
 
             var undoRemoveCount = this._undoStack.length - this._maxUndoCount,
                 redoRemoveCount = this._redoStack.length - this._maxUndoCount;
@@ -419,7 +419,7 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
         @function
     */
     clearUndo: {
-        value: function() {
+        value: function () {
             this._undoStack.splice(0, this._undoStack.length);
         }
     },
@@ -429,7 +429,7 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
         @function
     */
     clearRedo: {
-        value: function() {
+        value: function () {
             this._redoStack.splice(0, this._redoStack.length);
         }
     },
@@ -438,20 +438,16 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
         Returns `true` if the UndoManager is in the middle of an undo operation, otherwise returns `false`.
     */
     isUndoing: {
-        dependencies: ["undoEntry"],
-        get: function() {
-            return !!this.undoEntry;
-        }
+        // TODO restore as computed property with dependency on undoEntry
+        value: false
     },
 
     /**
         Returns `true` if the UndoManager is in the middle of an redo operation, otherwise returns `false`.
     */
     isRedoing: {
-        dependencies: ["redoEntry"],
-        get: function() {
-            return !!this.redoEntry;
-        }
+        // TODO restore as computed property with dependency on reoEntry
+        value: false
     },
 
 
@@ -471,10 +467,10 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
         @returns {Promise} A promise resolving to true when this undo request has been performed
      */
     undo: {
-        value: function() {
+        value: function () {
 
             if (0 === this.undoCount) {
-               return Promise.resolve(null);
+                return Promise.resolve(null);
             }
 
             return this._scheduleOperation(this._undoStack.pop(), UNDO_OPERATION);
@@ -487,7 +483,7 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
         @returns {Promise} A promise resolving to true when this redo request has been performed
     */
     redo: {
-        value: function() {
+        value: function () {
 
             if (0 === this.redoCount) {
                 return Promise.resolve(null);
@@ -517,20 +513,16 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
         Returns true if the undo stack contains any items, otherwise returns false.
     */
     canUndo: {
-        dependencies: ["_undoStack.length"],
-        get: function() {
-            return !!this._undoStack.length;
-        }
+        // TODO restore this as a readOnly getter with a dependency on the undoStack.length
+        value: null
     },
 
     /**
         Returns true if the redo stack contains any items, otherwise returns false.
     */
     canRedo: {
-        dependencies: ["_redoStack.length"],
-        get: function() {
-            return !!this._redoStack.length;
-        }
+        // TODO restore this as a readOnly getter with a dependency on the redoStack.length
+        value: null
     },
 
     /**
@@ -539,17 +531,8 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
         presenting the label within an interface.
     */
     undoLabel: {
-        // TODO also depend on the actual label property of that object
-        dependencies: ["_undoStack.length"],
-        get: function() {
-            var label;
-
-            if (this.canUndo) {
-                label = this._promiseOperationMap.get(this._undoStack.one()).label;
-            }
-
-            return label;
-        }
+        // TODO restore this as a readOnly getter with a dependency on the undoStack.head.prev
+        value: null
     },
 
     /**
@@ -558,24 +541,15 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
      presenting the label within an interface.
     */
     redoLabel: {
-        // TODO also depend on the actual label property of that object
-        dependencies: ["_redoStack.length"],
-        get: function() {
-            var label;
-
-            if (this.canRedo) {
-                label = this._promiseOperationMap.get(this._redoStack.one()).label
-            }
-
-            return label;
-        }
+        // TODO restore this as a readOnly getter with a dependency on the redoStack.head.prev
+        value: null
     }
 
 });
 
 var _defaultUndoManager = null;
 Montage.defineProperty(exports, "defaultUndoManager", {
-    get: function() {
+    get: function () {
         if (!_defaultUndoManager) {
             _defaultUndoManager = UndoManager.create();
         }
