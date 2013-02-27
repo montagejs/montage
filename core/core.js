@@ -633,6 +633,14 @@ Object.defineProperty(Montage, "__OBJECT_COUNT", {
 
 var UUID = require("core/uuid");
 
+// HACK: This is to fix an IE10 bug where a getter on the window prototype chain
+// gets some kind of proxy Window object which cannot have properties defined
+// on it, instead of the `window` itself. Adding the uuid directly to the
+// window removes the needs to call the getter.
+if (typeof window !== "undefined") {
+    window.uuid = UUID.generate();
+}
+
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
 var uuidGetGenerator = function() {
