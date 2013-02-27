@@ -407,7 +407,7 @@ var SerializationInspector = Montage.create(Montage, {
             };
 
             visitor(value);
-            parentObject.bindings = value.data;
+            parentObject.bindings = object = value.data;
 
             for (var key in object) {
                 this._walkBinding(visitor, object, key, value);
