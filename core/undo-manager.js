@@ -179,15 +179,15 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
             this._undoStack = new List();
             this._redoStack = new List();
 
-            this.defineBinding("undoLabel", {"<-": "_promiseOperationMap.get(_undoStack.head.prev.value).label", source: this});
+            this.defineBinding("undoLabel", {"<-": "_promiseOperationMap.get(_undoStack.head.prev.value).label"});
             this.defineBinding("undoCount", {"<-": "length", source: this._undoStack});
             this.defineBinding("canUndo", {"<-": "!!length", source: this._undoStack});
-            this.defineBinding("isUndoing", {"<-": "!!undoEntry", source: this});
+            this.defineBinding("isUndoing", {"<-": "!!undoEntry"});
 
-            this.defineBinding("redoLabel", {"<-": "_promiseOperationMap.get(_redoStack.head.prev.value).label", source: this});
+            this.defineBinding("redoLabel", {"<-": "_promiseOperationMap.get(_redoStack.head.prev.value).label"});
             this.defineBinding("redoCount", {"<-": "length", source: this._redoStack});
             this.defineBinding("canRedo", {"<-": "!!length", source: this._redoStack});
-            this.defineBinding("isRedoing", {"<-": "!!redoEntry", source: this});
+            this.defineBinding("isRedoing", {"<-": "!!redoEntry"});
         }
     },
 
