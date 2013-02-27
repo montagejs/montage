@@ -142,9 +142,12 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
                 return module.then(function(exports) {
                     return self.instantiateMontageObject(value, exports, objectName, context, label);
                 }, function (error) {
+                    if (error.stack) {
+                        console.error(error.stack);
+                    }
                     throw new Error('Error deserializing "' + label +
-                        '": module named "' + locationDesc.moduleId +
-                        "' was not found given '" + value.prototype + "'");
+                        '" when loading module "' + locationDesc.moduleId +
+                        "' from '" + value.prototype + "'");
                 });
             } else {
                 return this.instantiateMontageObject(value, module, objectName, context, label);
