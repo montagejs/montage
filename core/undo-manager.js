@@ -405,7 +405,13 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
                 this.redoEntry = entry;
             }
 
-            entry.undoFunction.apply(entry.context, entry.args);
+            var opResult = entry.undoFunction.apply(entry.context, entry.args);
+
+            //TODO do we need to wait for the promise to resolve before moving to the next operation?
+            // If the operation return a promise, end it to not hide exceptions
+            if (Promise.isPromiseAlike(opResult)) {
+                opResult.done();
+            }
 
             this.undoEntry = null;
             this.redoEntry = null;
