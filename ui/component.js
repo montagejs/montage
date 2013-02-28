@@ -314,10 +314,12 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         get: function() {
             var cachedParentComponent = this._cachedParentComponent;
             if (cachedParentComponent == null) {
-                return (this._cachedParentComponent = this.findParentComponent());
-            } else {
-                return cachedParentComponent;
+                this._cachedParentComponent = this.findParentComponent();
             }
+            return this._cachedParentComponent;
+        },
+        set: function(parentComponent) {
+            this._cachedParentComponent = parentComponent;
         }
     },
 

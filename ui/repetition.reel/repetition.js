@@ -207,8 +207,9 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
      * This function is called by handleControllerIterationsRangeChange when it
      * recycles an iteration.
      */
-    free: {
+    recycle: {
         value: function () {
+            this.index = null;
             this.controller = null;
             // Adding the "no-transition" class ensures that the iteration will
             // stop any transitions applied when the iteration was bound to
@@ -239,6 +240,13 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
 
             // Inject the elements into the document
             element.insertBefore(this._fragment, bottomBoundary);
+
+            // Inject the child components onto the repetition
+            repetition.childComponents.swap(
+                index * repetition._childComponentsPerIteration,
+                0,
+                this._childComponents
+            );
 
             // Once the child components have drawn once, and thus created all
             // their elements, we can add them to the _iterationForElement map
@@ -294,6 +302,12 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
                 child = next;
             }
             element.removeChild(topBoundary);
+
+            // Retract child components from the repetition
+            repetition.childComponents.splice(
+                index * repetition._childComponentsPerIteration,
+                repetition._childComponentsPerIteration
+            );
 
             this._drawnIndex = null;
             repetition._drawnIterations.splice(index, 1);
@@ -409,6 +423,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             return this.getPath("contentController.content");
         },
         set: function (content) {
+            // TODO if we provide an implicit content controller, it should be
+            // excluded from a serialization of the repetition.
             this.contentController = RangeController.create().initWithContent(content);
         }
     },
@@ -521,7 +537,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             Object.getPrototypeOf(Repetition).didCreate.call(this);
 
             // XXX Note: Any property added to initialize in didCreate must
-            // also be added to contentWillChange to reset the iteration.
+            // also be accounted for in _teardownIterationTemplate to reset the
+            // repetition.
 
             // Knobs:
             this.contentController = null;
@@ -540,6 +557,10 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 
             // The template that gets repeated in the DOM
             this._iterationTemplate = null;
+
+            // React to changes to the inner template by setting up a new
+            // iteration template and purging all obsolete iterations.
+            this.addOwnPropertyChangeListener("innerTemplate", this);
 
             // The "iterations" array tracks "_controllerIterations"
             // synchronously.  Each iteration corresponds to controlled content
@@ -578,8 +599,14 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // nested in another repetition) so that it can memoize the
             // template instance:
             this._templateId = null;
+
             // This promise synchronizes the creation of new iterations.
             this._iterationCreationPromise = Promise.resolve();
+
+            // Tracks the number of child components per iteration so that
+            // iteration._childComponents can be spliced arithmetically into
+            // the repetition's childComponents array.
+            this._childComponentsPerIteration = null;
 
             // Where we want to be after the next draw:
             // ---
@@ -605,30 +632,11 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // and iterations on the DOM:
             // ---
 
-            // Iterations that may have changed their "active", "selected", and
-            // "no-transition" CSS classes, to be updated in the next draw.
             this._dirtyClassListIterations = Set();
-
-            // The cumulative number of iterations that _createIteration has
-            // started making.
-            this._requestedIterations = 0;
-            // The cumulative number of iterations that _createIteration has
-            // finished making.
-            this._createdIterations = 0;
             // We can draw when we have created all requested iterations.
-
-            // We have to keep the HTML content of the repetition in tact until
-            // it has been captured by _setupIterationTemplate.  Unfortunately,
-            // we can't set up the iteration template in this turn of the event
-            // loop because it would interfere with deserialization, so this is
-            // usually deferred to the first draw.
-            // TODO @aadsm, please verify and delete this comment if it is
-            // still true that we cannot setup the iteration template with the
-            // new template that does not use the serializer.
+            this._requestedIterations = 0;
+            this._createdIterations = 0;
             this._canDrawInitialContent = false;
-            // Indicates that the elements from the template have been erased.
-            // Setting this to true allows those elements to be erased in the
-            // next draw.
             this._initialContentDrawn = false;
 
             // Selection gestures
@@ -642,7 +650,9 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // This is a list of iterations that are active.  It is maintained
             // entirely by a bidirectional binding to each iteration's "active"
             // property, which in turn manages the "active" class on each
-            // element in the iteration in the draw cycle.
+            // element in the iteration in the draw cycle.  Iterations are
+            // activated by gestures when selection is enabled, and can also be
+            // managed manually for a cursor, as in an autocomplete drop-down.
             // TODO Provide some assurance that the activeIterations will
             // always appear in the same order as they appear in the iterations
             // list.
@@ -652,28 +662,19 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     },
 
     /**
-     * Prepares this component and all its children for garbage collection.
-     * @private
+     * Prepares this component and all its children for garbage collection
+     * (permanently) or reuse.
+     *
+     * @param permanently whether to cancel bindings on this component
+     * and all of its descendants in the component tree.
      */
     cleanupDeletedComponentTree: {
-        value: function (pleaseCancelBindings) {
-            if (pleaseCancelBindings) {
-                this.cancelBindings();
-            }
-
-            for (var i = 0; i < this._drawnIterations.length; i++) {
-                var iteration = this._drawnIterations[i];
-                for (var j = 0; j < iteration._childComponents.length; j++) {
-                    var childComponent = iteration._childComponents[j];
-                    childComponent.cleanupDeletedComponentTree(pleaseCancelBindings);
-                }
-            }
-
-            // Remove the range change listener, but only if we are presently
-            // watching it.  We start watching when the iteration template is
-            // ready, and stop if it is in flux.
+        value: function (permanently) {
             if (this._iterationTemplate) {
-                this._controllerIterations.removeRangeChangeListener(this);
+                this._teardownIterationTemplate();
+            }
+            if (permanently) {
+                this.cancelBindings();
             }
         }
     },
@@ -707,55 +708,18 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         }
     },
 
-    // TODO consider using handleInnerTemplateChange instead of
-    // contentWillChange and contentDidChange.
-
     /**
-     * This handler is dispatched if the <code>innerTemplate</code> gets
-     * replaced.  This invalidates all existing iterations, so we reset the
-     * iteration and set up a new iteration template, then recreate our
-     * content.
+     * The initial innerTemplate is provided by the Component system and is a
+     * facility for cloning the HTML and child components that a repetition
+     * contains.  The innerTemplate may be replaced at any time by another
+     * component in order to provide an alternate template to repeat.
      * @private
      */
-    // If the domContent property is going to change, it invalidates the
-    // current iterationTemplates, so we reset and start over.
-    contentWillChange: {
+    handleInnerTemplateChange: {
         value: function () {
-
-            // stop listenting to controller iteration changes until the new
-            // iteration template is ready.  (at which point we will manually
-            // dispatch handleControllerIterationsRangeChange with the entire
-            // content of the array when _setupIterationTemplate has finished)
-            this._controllerIterations.removeRangeChangeListener(this, "controllerIterations");
-            // simulate removal of all iterations from the controller to purge
-            // the iterations and _drawnIterations.
-            this.handleControllerIterationsRangeChange(0, [], this._controllerIterations);
-
-            // purge the existing iterations
-            this._iterationTemplate = null;
-            this._freeIterations.clear();
-            this._contentForIteration.clear();
-            this._iterationForElement.clear();
-            this.currentIteration = null;
-            this._templateId = null;
-            this._requestedIterations = 0;
-            this._createdIterations = 0;
-            this._canDrawInitialContent = false;
-            this._initialContentDrawn = false;
-            this._selectionPointer = null;
-            this.activeIterations.clear();
-            this._dirtyClassListIterations.clear();
-
-        }
-    },
-
-    /**
-     * Signaled by the Component to indicate that a new inner template is
-     * ready, so set up a new iteration template and recreate our content.
-     * @private
-     */
-    contentDidChange: {
-        value: function () {
+            if (this._iterationTemplate) {
+                this._teardownIterationTemplate();
+            }
             this._setupIterationTemplate();
         }
     },
@@ -777,6 +741,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     // TODO aadsm: is all this true still? - @kriskowal
     _setupIterationTemplate: {
         value: function () {
+
             // We shouldn't set up the iteration template if the repetition
             // received new content, we'll wait until contentDidLoad is called.
             // The problem is that the new components from the new DOM are
@@ -791,26 +756,81 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 
             this._iterationTemplate = this.innerTemplate;
 
-            // TODO aadsm: do we need this logic any more since we're now using
-            // innerTemplate and not reserializing? - @kriskowal
-            // The components inside the repetition in the markup are going to
-            // be instantiated once when the component is initially
-            // deserialized, but only for the purpose of reserializing them for
-            // the iteration template, and then removed.  This removes the
-            // initial components and ascertains that we waste no time dawing
-            // them.
+            // Before we get rid of these, check how many there are so that we
+            // can use arithmetic to splice the repetition's childComponents
+            // when iterations enter and leave the document.
+            this._childComponentsPerIteration = this.childComponents.length;
+
+            // Erase the initial child component trees. The initial document
+            // children will be purged on first draw.  We use the innerTemplate
+            // as the iteration template and replicate it for each iteration
+            // instead of using the initial DOM and components.
             var childComponent;
-            while ((childComponent = this.childComponents.shift())) {
+            // pop() each component instead of shift() to avoid bubbling the
+            // indexes of each child component on every iteration.
+            while ((childComponent = this.childComponents.pop())) {
                 childComponent.needsDraw = false;
+                childComponent.cleanupDeletedComponentTree(true); // cancel bindings, permanent
             }
 
-            // Begin tracking the controller iterations
+            // Begin tracking the controller iterations.  We manually dispatch
+            // a range change to track all the iterations that have come and gone
+            // while we were not watching.
             this.handleControllerIterationsRangeChange(this._controllerIterations, [], 0);
-            // dispatches handleControllerIterationsRangeChange
+            // Dispatches handleControllerIterationsRangeChange:
             this._controllerIterations.addRangeChangeListener(this, "controllerIterations");
 
             this._canDrawInitialContent = true;
             this.needsDraw = true;
+        }
+    },
+
+    /**
+     * This method is used both in <code>cleanupDeletedComponentTree</code> and
+     * the internal <code>handleInnerTemplateChange</code> functions, to
+     * retract all drawn iterations from the document, prepare all allocated
+     * iterations for garbage collection, and pause observation of the
+     * controller's iterations.
+     * @private
+     */
+    _teardownIterationTemplate: {
+        value: function () {
+
+            // stop listenting to controller iteration changes until the new
+            // iteration template is ready.  (at which point we will manually
+            // dispatch handleControllerIterationsRangeChange with the entire
+            // content of the array when _setupIterationTemplate has finished)
+            this._controllerIterations.removeRangeChangeListener(this, "controllerIterations");
+            // simulate removal of all iterations from the controller to purge
+            // the iterations and _drawnIterations.
+            this.handleControllerIterationsRangeChange(0, [], this._controllerIterations);
+
+            // prepare all the free iterations and their child component trees
+            // for garbage collection
+            for (var i = 0; i < this._freeIterations.length; i++) {
+                var iteration = this._freeIterations[i];
+                for (var j = 0; j < iteration._childComponents.length; j++) {
+                    var childComponent = iteration._childComponents[j];
+                    childComponent.cleanupDeletedComponentTree(true); // true cancels bindings
+                }
+            }
+
+            // purge the existing iterations
+            this._iterationTemplate = null;
+            this._freeIterations.clear();
+            this._contentForIteration.clear();
+            this._iterationForElement.clear();
+            this.currentIteration = null;
+            this._templateId = null;
+            this._requestedIterations = 0;
+            this._createdIterations = 0;
+            this._canDrawInitialContent = false;
+            this._initialContentDrawn = false;
+            this._childComponentsPerIteration = null;
+            this._selectionPointer = null;
+            this.activeIterations.clear();
+            this._dirtyClassListIterations.clear();
+
         }
     },
 
@@ -852,30 +872,12 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 .then(function (part) {
                     iteration._childComponents = part.childComponents;
                     iteration._fragment = part.fragment;
-                    // The iteration has been created.  We need to expand the
-                    // child components and their transitive children.  For the
-                    // special case of a repetition that only has HTML and no
-                    // components, we skip that process.
-                    if (part.childComponents.length === 0) {
+                    part.childComponents.forEach(function (component) {
+                        component.parentComponent = self;
+                    });
+                    part.loadComponentTree().then(function() {
                         self.didCreateIteration(iteration);
-                    } else {
-                        var childComponents = part.childComponents;
-                        iteration._childComponents = childComponents;
-                        // Build out the child component hierarchy.
-                        for (var i = 0; i < childComponents.length; i++) {
-                            // _addChildComponent comes from our parent type,
-                            // Component
-                            self._addChildComponent(childComponents[i]);
-                        }
-                        part.loadComponentTree().then(function() {
-                            // TODO: ask each component to draw, this should not
-                            // not be needed when the DrawManager is ready.
-                            for (var i = 0; i < childComponents.length; i++) {
-                                childComponents[i].needsDraw = true;
-                            }
-                            self.didCreateIteration(iteration);
-                        }).done();
-                    }
+                    }).done();
                     self.currentIteration = null;
                 })
 
@@ -900,6 +902,16 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         value: function (iteration) {
             iteration.initWithRepetition(this);
             this._createdIterations++;
+
+            // The template instantiator implicitly adds child components to
+            // the end of the parent component.  We don't want that.  The child
+            // components will be injected in their proper position whenever
+            // the iteration gets injected into the document, and removed from
+            // their respective positions when the iteration is retracted.
+            this.childComponents.splice(
+                this.childComponents.length - this._childComponentsPerIteration,
+                this._childComponentsPerIteration
+            );
 
             if (this._createdIterations >= this._requestedIterations) {
                 this.needsDraw = true;
@@ -980,11 +992,27 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     // ----
 
     /**
+     * The content controller produces an array of iterations.  The controller
+     * may come and go, but each instance of a repetition has its own array to
+     * track the corresponding content controller's content, which gets emptied
+     * and refilled by a range content binding  when the controller changes.
+     * This is to simplify management of the repetition's controller iterations
+     * range change listener.
+     *
+     * The controller iterations themselves instruct the repetition to display
+     * an iteration at the corresponding position, and provide a convenient
+     * interface for getting and setting whether the corresponding content is
+     * selected.
      * @private
      */
     _controllerIterations: {value: null},
 
     /**
+     * The drawn iterations get synchronized with the <code>iterations</code>
+     * array each time the repetition draws.  The <code>draw</code> method
+     * simply walks down the iterations and drawn iterations arrays, redacting
+     * drawn iterations if they are not at the correct position and injecting
+     * the proper iteration from the model in its place.
      * @private
      */
     _drawnIterations: {value: null},
@@ -1002,10 +1030,16 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     /**
      * @private
      */
-    // In responses to changes in the controlled _controllerIterations array,
-    // this method creates a plan to add and delete iterations with their
-    // corresponding DOM elements on the next "draw" event.  This may require
-    // more iterations to be constructed before the next draw event.
+    _childComponentsPerIteration: {value: null},
+
+    /**
+     * In responses to changes in the controlled
+     * <code>_controllerIterations</code> array, this method creates a plan to
+     * add and delete iterations with their corresponding DOM elements on the
+     * next "draw" event.  This may require more iterations to be constructed
+     * before the next draw event.
+     * @private
+     */
     handleControllerIterationsRangeChange: {
         value: function (plus, minus, index) {
 
@@ -1015,7 +1049,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 // Notify these iterations that they have been recycled,
                 // particularly so they know to disable animations with the
                 // "no-transition" CSS class.
-                iteration.free();
+                iteration.recycle();
             });
             // Add them back to the free list so they can be reused
             this._freeIterations.addEach(freedIterations);
@@ -1043,10 +1077,10 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     },
 
     /**
+     * Used by handleControllerIterationsRangeChange to update the controller
+     * index of every iteration following a change.
      * @private
      */
-    // Used by handleControllerIterationsRangeChange to update the controller
-    // index of every iteration following a change.
     _updateIndexes: {
         value: function (index) {
             var iterations = this.iterations;
@@ -1064,7 +1098,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // block for the usual component-related issues
             var canDraw = this.canDrawGate.value;
 
-            // block until we have created enough iterations to draw
+            // block until we have created enough (iterations to draw
             canDraw = canDraw && this._requestedIterations <= this._createdIterations;
             // block until we can draw initial content if we have not already
             canDraw = canDraw && (this._initialContentDrawn || this._canDrawInitialContent);
@@ -1075,7 +1109,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // child component). It's possible to get into a state where the
             // inner repetition will never be able to draw unless the outer
             // repetition draws first. Hopefully the DrawManager will be able
-            // to solve this.
+            // to solve this. - @aadsm
             // block until all child components can draw
             //if (canDraw) {
             //    for (var i = 0; i < this.childComponents.length; i++) {
@@ -1091,31 +1125,51 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     },
 
     /**
+     * An array of comment nodes that mark the boundaries between iterations on
+     * the DOM.  When an iteration is retracted, the top boundary gets
+     * retracted with it so the iteration at index N will always have boundary
+     * N above it and N + 1 below it.  There must always be one more boundary
+     * than there are iterations, representing the bottom boundary of the last
+     * iteration.  That boundary gets added in first draw.
      * @private
      */
     _boundaries: {value: null},
 
     /**
+     * A Set of iterations that have changed their CSS classes that are managed
+     * by the repetition, "active", "selected", and "no-transition".
      * @private
      */
     _dirtyClassListIterations: {value: null},
 
     /**
+     * The cumulative number of iterations that _createIteration has started
+     * making.
      * @private
      */
     _requestedIterations: {value: null},
 
     /**
+     * The cumulative number of iterations that _createIteration has finished
+     * making.
      * @private
      */
     _createdIterations: {value: null},
 
     /**
+     * In the first draw, the repetition gets rid of its innerHTML, which was
+     * captured by the innerTemplate, and replaces it with the bottom boundary
+     * marker comment.  This cannot be done until after the iteration template
+     * is ready.
+     *
+     * This cycle may occur again if the innerTemplate is replaced.
      * @private
      */
     _canDrawInitialContent: {value: null},
 
     /**
+     * Indicates that the first draw has come and gone and the repetition is
+     * ready for business.
      * @private
      */
     _initialContentDrawn: {value: null},
@@ -1161,6 +1215,15 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             }, this);
 
             // Synchronize iterations and _drawnIterations
+
+            // Retract iterations that should no longer be visible
+            for (var index = this._drawnIterations.length - 1; index >= 0; index--) {
+                if (this._drawnIterations[index].index == null) {
+                    this._drawnIterations[index].retractFromDocument();
+                }
+            }
+
+            // Inject iterations if they are not already in the right location
             for (
                 var index = 0;
                 index < this.iterations.length;
@@ -1168,15 +1231,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             ) {
                 var iteration = this.iterations[index];
                 if (iteration._drawnIndex !== iteration.index) {
-                    if (iteration._drawnIndex !== null) {
-                        iteration.retractFromDocument();
-                    }
                     iteration.injectIntoDocument(index);
                 }
-            }
-            // Trim trailing iterations
-            while (this._drawnIterations.length > this.iterations.length) {
-                this._drawnIterations[index].retractFromDocument();
             }
 
         }
@@ -1212,6 +1268,12 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     // Selection Tracking
     // ------------------
 
+    /**
+     * If <code>isSelectionEnabled</code>, the repetition captures the pointer,
+     * preventing it from passing to parent components, for example for the
+     * purpose of scrolling.
+     * @private
+     */
     _selectionPointer: {value: null},
 
     /**
@@ -1374,6 +1436,9 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         }
     },
 
+    /**
+     * @private
+     */
     _endSelectionOnTarget: {
         value: function (identifier, target) {
 
