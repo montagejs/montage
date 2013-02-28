@@ -654,7 +654,8 @@ var Template = Montage.create(Montage, {
                 objectsString,
                 template,
                 range,
-                serialization = Serialization.create();
+                serialization = Serialization.create(),
+                extractedSerialization;
 
             // Find all elements of interest to the serialization.
             element = this.getElementById(elementId);
