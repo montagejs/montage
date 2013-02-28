@@ -127,15 +127,15 @@ Montage.defineProperties(Montage, {
                 };
             } else if (methodName) {
                 emit = function (value) {
-                    return handler[methodName].apply(handler, arguments);
+                    return handler[methodName].call(handler, value, path, self);
                 };
             } else if (handler.handlePathChange) {
                 emit = function (value) {
-                    return handler.handlePathChange.apply(handler, arguments);
+                    return handler.handlePathChange.call(handler, value, path, self);
                 };
             } else if (typeof handler === "function") {
                 emit = function (value) {
-                    return handler.apply(self, arguments);
+                    return handler.call(self, value, path, self);
                 };
             } else {
                 throw new Error("Can't recognize handler type: " + handler + ". Must be function or delegate implementing handlePathChange.");
