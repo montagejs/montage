@@ -317,9 +317,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 this._cachedParentComponent = this.findParentComponent();
             }
             return this._cachedParentComponent;
-        },
-        set: function(parentComponent) {
-            this._cachedParentComponent = parentComponent;
         }
     },
 

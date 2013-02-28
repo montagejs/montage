@@ -885,7 +885,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                     iteration._childComponents = part.childComponents;
                     iteration._fragment = part.fragment;
                     part.childComponents.forEach(function (component) {
-                        component.parentComponent = self;
+                        component._cachedParentComponent = self;
                     });
                     part.loadComponentTree().then(function() {
                         self.didCreateIteration(iteration);
