@@ -71,4 +71,47 @@ describe("reel/serialization/serialization-spec", function() {
         expect(objects.two.properties.details.oneElement["#"]).toBe(newId);
         expect(objects.two.properties.element["#"]).toBe("twoId");
     });
+
+
+    it("should find no external object labels", function() {
+        var object = {
+                "one": {
+                    "value": 1
+                },
+
+                "two": {
+                    "value": 2
+                },
+
+                "three": {
+                    "value": 3
+                }
+            },
+            labels;
+
+        serialization.initWithObject(object);
+        labels = serialization.getExternalObjectLabels();
+
+        expect(labels.length).toBe(0);
+    });
+
+    it("should find all external object labels", function() {
+        var object = {
+                "one": {},
+
+                "two": {
+                    "value": 2
+                },
+
+                "three": {}
+            },
+            labels;
+
+        serialization.initWithObject(object);
+        labels = serialization.getExternalObjectLabels();
+
+        expect(labels.length).toBe(2);
+        expect(labels).toContain("one");
+        expect(labels).toContain("three");
+    });
 });

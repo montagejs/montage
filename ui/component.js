@@ -763,7 +763,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 ownerDocumentPart,
                 ownerTemplate,
                 elementId,
-                deserializer,
+                serialization,
                 externalObjectLabels,
                 externalObjects;
 
@@ -773,11 +773,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 if (ownerDocumentPart) {
                     ownerTemplate = ownerDocumentPart.template;
 
-                    elementId = this.element.getAttribute("data-montage-id");
+                    elementId = this.getElementId();
                     innerTemplate = ownerTemplate.createTemplateFromElementContents(elementId);
 
-                    deserializer = innerTemplate.getDeserializer();
-                    externalObjectLabels = deserializer.getExternalObjectLabels();
+                    serialization = innerTemplate.getSerialization();
+                    externalObjectLabels = serialization.getExternalObjectLabels();
                     ownerTemplateObjects = ownerDocumentPart.objects;
                     externalObjects = Object.create(null);
 

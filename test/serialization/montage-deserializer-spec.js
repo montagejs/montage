@@ -998,54 +998,6 @@ describe("serialization/montage-deserializer-spec", function() {
         });
     });
 
-    describe("external object labels", function() {
-        it("should find no external object labels", function() {
-            var serialization = {
-                    "one": {
-                        "value": 1
-                    },
-
-                    "two": {
-                        "value": 2
-                    },
-
-                    "three": {
-                        "value": 3
-                    }
-                },
-                serializationString = JSON.stringify(serialization),
-                labels;
-
-            deserializer.initWithSerializationStringAndRequire(
-                serializationString, require);
-            labels = deserializer.getExternalObjectLabels();
-
-            expect(labels.length).toBe(0);
-        });
-
-        it("should find all external object labels", function() {
-            var serialization = {
-                    "one": {},
-
-                    "two": {
-                        "value": 2
-                    },
-
-                    "three": {}
-                },
-                serializationString = JSON.stringify(serialization),
-                labels;
-
-            deserializer.initWithSerializationStringAndRequire(
-                serializationString, require);
-            labels = deserializer.getExternalObjectLabels();
-
-            expect(labels.length).toBe(2);
-            expect(labels).toContain("one");
-            expect(labels).toContain("three");
-        });
-    });
-
     describe("errors", function() {
         it("should fail if no require was given", function() {
             var serialization = {
