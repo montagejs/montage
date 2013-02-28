@@ -672,7 +672,7 @@ describe("reel/template-spec", function() {
                 return template.initWithModuleId(moduleId, require)
                 .then(function() {
                     node = template.document.getElementById("title");
-                    elementIds = template._findElementIdsInDomTree(node);
+                    elementIds = template._getChildrenElementIds(node);
                     expect(elementIds.length).toBe(0);
                 }).fail(function(reason) {
                     console.log(reason.stack);
@@ -689,7 +689,7 @@ describe("reel/template-spec", function() {
                 return template.initWithModuleId(moduleId, require)
                 .then(function() {
                     node = template.document.getElementById("list");
-                    elementIds = template._findElementIdsInDomTree(node);
+                    elementIds = template._getChildrenElementIds(node);
 
                     expect(elementIds.length).toBe(1);
                     expect(elementIds).toContain("item")
@@ -708,7 +708,7 @@ describe("reel/template-spec", function() {
                 return template.initWithModuleId(moduleId, require)
                 .then(function() {
                     node = template.document.getElementById("rows");
-                    elementIds = template._findElementIdsInDomTree(node);
+                    elementIds = template._getChildrenElementIds(node);
 
                     expect(elementIds.length).toBe(3);
                     expect(elementIds).toContain("row");

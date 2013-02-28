@@ -658,7 +658,7 @@ var Template = Montage.create(Montage, {
 
             // Find all elements of interest to the serialization.
             element = this.getElementById(elementId);
-            elementIds = this._findElementIdsInDomTree(element);
+            elementIds = this._getChildrenElementIds(element);
 
             // Create a new serialization with the components found in the
             // element.
@@ -901,25 +901,6 @@ var Template = Montage.create(Montage, {
             var selector = "*[" + this._ELEMENT_ID_ATTRIBUTE + "='" + elementId + "']";
 
             return this.document.querySelector(selector);
-        }
-    },
-
-    _findElementIdsInDomTree: {
-        value: function(rootNode, elementIds) {
-            var children = rootNode.children;
-
-            elementIds = elementIds || [];
-
-            for (var i = 0, child; (child = children[i]); i++) {
-                if (child.hasAttribute(this._ELEMENT_ID_ATTRIBUTE)) {
-                    elementIds.push(
-                        child.getAttribute(this._ELEMENT_ID_ATTRIBUTE)
-                    );
-                }
-                this._findElementIdsInDomTree(child, elementIds);
-            }
-
-            return elementIds;
         }
     },
 
