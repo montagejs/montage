@@ -303,12 +303,6 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             }
             element.removeChild(topBoundary);
 
-            // Retract child components from the repetition
-            repetition.childComponents.splice(
-                index * repetition._childComponentsPerIteration,
-                repetition._childComponentsPerIteration
-            );
-
             this._drawnIndex = null;
             repetition._drawnIterations.splice(index, 1);
             repetition._updateDrawnIndexes(index);
@@ -446,8 +440,21 @@ var Repetition = exports.Repetition = Montage.create(Component, {
      *
      * Selection may be enabled and disabled at any time in the life cycle of
      * the repetition.  The repetition watches changes to this property.
+     *
+     * All repetitions support selection, whether it is used or not.  This
+     * property merely dictates whether the repetition handles gestures for
+     * selection.
      */
     isSelectionEnabled: {value: null},
+
+    /**
+     * A collection of the selected content.  It may be any ranged collection
+     * like Array or SortedSet.  The user may get, set, or modify the selection
+     * directly.  The selection property is bidirectionally bound to the
+     * selection of the content controller.  Every repetition has a content
+     * controller, and will use a RangeController if not given one.
+     */
+    selection: {value: null},
 
     /**
      * The repetition maintains an array of every visible, selected iteration,
@@ -553,15 +560,14 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // events to select iterations, which involves "activating" the
             // iteration when the user touches.
             this.isSelectionEnabled = false;
+            this.defineBinding("selection", {
+                "<->": "contentController.selection"
+            });
             this.defineBinding("selectedIterations", {
-                "<-": "iterations.filter{selected}",
-                // TODO Ascertain why this has to be explicated.  It should not:
-                "serializable": false
+                "<-": "iterations.filter{selected}"
             });
             this.defineBinding("selectedIndexes", {
-                "<-": "iterations.map{index}",
-                // TODO Ascertain why this has to be explicated.  It should not:
-                "serializable": false
+                "<-": "iterations.map{index}"
             });
 
             // The state of the DOM:
@@ -581,8 +587,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             this.iterations = [];
             // The "_drawnIterations" array gets synchronized with
             // "iterations" by applying draw operations when "Repetition.draw"
-            // occurs.  We watch the "iterations" array and produce operations
-            // in "handleIterationsRangeChange".
+            // occurs.
             this._drawnIterations = [];
             // Iteration content can be reused.  When an iteration is collected
             // (and when it is initially created), it gets put in the
@@ -614,11 +619,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 
             // This promise synchronizes the creation of new iterations.
             this._iterationCreationPromise = Promise.resolve();
-
-            // Tracks the number of child components per iteration so that
-            // iteration._childComponents can be spliced arithmetically into
-            // the repetition's childComponents array.
-            this._childComponentsPerIteration = null;
 
             // Where we want to be after the next draw:
             // ---
@@ -714,7 +714,9 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // process.  We wait until the deserialization is complete and the
             // template is fully instantiated so we can capture all the child
             // components and DOM elements.
-            this._setupIterationTemplate();
+            if (!this._iterationTemplate) {
+                this._setupIterationTemplate();
+            }
             this._isComponentExpanded = true;
             return Promise.resolve();
         }
@@ -773,11 +775,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 this._iterationTemplate = this.innerTemplate;
             }
 
-            // Before we get rid of these, check how many there are so that we
-            // can use arithmetic to splice the repetition's childComponents
-            // when iterations enter and leave the document.
-            this._childComponentsPerIteration = this.childComponents.length;
-
             // Erase the initial child component trees. The initial document
             // children will be purged on first draw.  We use the innerTemplate
             // as the iteration template and replicate it for each iteration
@@ -820,7 +817,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             this._controllerIterations.removeRangeChangeListener(this, "controllerIterations");
             // simulate removal of all iterations from the controller to purge
             // the iterations and _drawnIterations.
-            this.handleControllerIterationsRangeChange(0, [], this._controllerIterations);
+            this.handleControllerIterationsRangeChange([], this._controllerIterations, 0);
 
             // prepare all the free iterations and their child component trees
             // for garbage collection
@@ -843,7 +840,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             this._createdIterations = 0;
             this._canDrawInitialContent = false;
             this._initialContentDrawn = false;
-            this._childComponentsPerIteration = null;
             this._selectionPointer = null;
             this.activeIterations.clear();
             this._dirtyClassListIterations.clear();
@@ -942,7 +938,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                     iteration._childComponents = part.childComponents;
                     iteration._fragment = part.fragment;
                     part.childComponents.forEach(function (component) {
-                        component._cachedParentComponent = self;
+                        self.addChildComponent(component);
                     });
                     part.loadComponentTree().then(function() {
                         self.didCreateIteration(iteration);
@@ -971,16 +967,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         value: function (iteration) {
             iteration.initWithRepetition(this);
             this._createdIterations++;
-
-            // The template instantiator implicitly adds child components to
-            // the end of the parent component.  We don't want that.  The child
-            // components will be injected in their proper position whenever
-            // the iteration gets injected into the document, and removed from
-            // their respective positions when the iteration is retracted.
-            this.childComponents.splice(
-                this.childComponents.length - this._childComponentsPerIteration,
-                this._childComponentsPerIteration
-            );
 
             if (this._createdIterations >= this._requestedIterations) {
                 this.needsDraw = true;

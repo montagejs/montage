@@ -532,19 +532,28 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     _treeLevel: {
         value: 0
     },
-/**
-    Description TODO
-    @function
-    @param {Component} childComponent The childComponent
-    */
+
+    // TODO update all calls to use addChildComponent and remove this method.
     _addChildComponent: {
         value: function(childComponent) {
+            return this.addChildComponent(childComponent);
+        }
+    },
+
+    /**
+     * Description TODO
+     * @function
+     * @param {Component} childComponent The childComponent
+     */
+    addChildComponent: {
+        value: function (childComponent) {
             if (this.childComponents.indexOf(childComponent) == -1) {
                 this.childComponents.push(childComponent);
                 childComponent._cachedParentComponent = this;
             }
         }
     },
+
 /**
     Description TODO
     @function
