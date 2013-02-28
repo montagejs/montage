@@ -451,9 +451,16 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 
     /**
      * The repetition maintains an array of every visible, selected iteration,
-     * in the order of its appearance.
+     * in the order of its appearance.  The user should not modify the selected
+     * iterations array.
      */
     selectedIterations: {value: null},
+
+    /**
+     * The repetition maintains an array of the indexes of every selected
+     * iteration.  The user should not modify the array.
+     */
+    selectedIndexes: {value: null},
 
     /**
      * The user may determine which iterations are active by setting or
@@ -548,6 +555,11 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             this.isSelectionEnabled = false;
             this.defineBinding("selectedIterations", {
                 "<-": "iterations.filter{selected}",
+                // TODO Ascertain why this has to be explicated.  It should not:
+                "serializable": false
+            });
+            this.defineBinding("selectedIndexes", {
+                "<-": "iterations.map{index}",
                 // TODO Ascertain why this has to be explicated.  It should not:
                 "serializable": false
             });
