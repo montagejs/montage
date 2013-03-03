@@ -2,7 +2,7 @@
   "name": "montage",
   "version": "0.13.0",
   "publishConfig": {
-    "tag": "bleeding-edge"
+    "tag": "edge"
   },
   "description": "A UI Framework",
   "main": "montage",
