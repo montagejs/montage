@@ -40,7 +40,10 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     NativeControl = require("ui/native-control").NativeControl,
-    PressComposer = require("ui/composer/press-composer").PressComposer;
+    PressComposer = require("ui/composer/press-composer").PressComposer,
+    Dict = require("collections/dict");
+
+// TODO migrate away from using undefinedGet and undefinedSet
 
 /**
     Wraps a native <code>&lt;button></code> or <code>&lt;input[type="button"]></code> HTML element. The element's standard attributes are exposed as bindable properties.
@@ -242,7 +245,9 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
 
     didCreate: {
         value: function() {
+            NativeControl.didCreate.call(this); // super
             this._pressComposer = PressComposer.create();
+            this._pressComposer.longPressThreshold = this.holdThreshold;
             this.addComposer(this._pressComposer);
         }
     },
@@ -442,7 +447,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
     detail: {
         get: function() {
             if (this._detail === null) {
-                this._detail = EventData.create();
+                this._detail = new Dict();
             }
             return this._detail;
         }
@@ -451,10 +456,9 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
     createActionEvent: {
         value: function() {
             var actionEvent = document.createEvent("CustomEvent"),
-                detail, eventDetail;
-            if(detail = this._detail) {
-                eventDetail = detail._data;
-            }
+                eventDetail;
+
+            eventDetail = this._detail;
             actionEvent.initCustomEvent("action", true, true, eventDetail);
             return actionEvent;
         }
@@ -542,71 +546,5 @@ Button.addAttributes( /** @lends module:"montage/ui/native/button.reel".Button# 
     @see label
 */
     value: null
-
-});
-
-var EventData = Montage.create(Montage, {
-
-    didCreate: {
-        value: function() {
-            this._data = Object.create(null);
-        }
-    },
-
-    initWithReservedAndOptions: {
-        value: function(reserved, options) {
-            Map.call(this, reserved, options);
-        }
-    },
-
-    get: {
-        value: function (key) {
-            return this.undefinedGet(key);
-        }
-    },
-
-    set: {
-        value: function (key, value) {
-            this.undefinedSet(key, value);
-        }
-    },
-
-    _data: {
-        value: null
-    },
-
-    _defineProperty: {
-        value: function(key, value) {
-            value = typeof value !== "undefined" ? value : null;
-            Montage.defineProperty(this, key, {
-                get: function() {
-                    return this._data[key];
-                },
-                set: function(value) {
-                    this._data[key] = value;
-                }
-            });
-            this._data[key] = value;
-        }
-    },
-
-    undefinedGet: {
-        value: function(key) {
-            if (typeof this._data[key] === "undefined") {
-                this._defineProperty(key);
-            }
-            return this._data[key];
-        }
-    },
-
-    undefinedSet: {
-        value: function(key, value) {
-            if (typeof this._data[key] === "undefined") {
-                this._defineProperty(key, value);
-            } else {
-                this._data[key] = value;
-            }
-        }
-    }
 
 });

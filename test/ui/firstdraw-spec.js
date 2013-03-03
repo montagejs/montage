@@ -53,6 +53,11 @@ var simpleTestPage = TestPageLoader.queueTest("firstdraw-simple", {src: "ui/draw
                 expect(text.textContent).toEqual("Custom Test Value");
             });
         });
+        it("should insert styles from component template with no templateElement", function() {
+            var onlyStyle = simpleTestPage.iframe.contentDocument.getElementsByClassName("onlyStyle")[0];
+
+            expect(getComputedStyle(onlyStyle).paddingTop).toBe("42px");
+        });
     });
 });
 
@@ -63,9 +68,14 @@ var repetitionTestPage = TestPageLoader.queueTest("firstdraw-repetition", {src: 
         });
         describe("repeating component", function() {
             it("should draw within first draw", function() {
-                var text0 = repetitionTestPage.iframe.contentDocument.querySelectorAll(".list1 > div")[0];
-                expect(text0).not.toBeNull();
-                expect(text0.textContent).toEqual("Test Value");
+
+                repetitionTestPage.waitForComponentDraw(repetitionTestPage.test.repetition1);
+
+                runs(function() {
+                    var text0 = repetitionTestPage.iframe.contentDocument.querySelectorAll(".list1 > div")[0];
+                    expect(text0).not.toBeNull();
+                    expect(text0.textContent).toEqual("Test Value");
+                });
             });
         });
         describe("repeating component with template", function() {
@@ -106,3 +116,47 @@ var cancelDrawTestPage = TestPageLoader.queueTest("firstdraw-cancel-draw", {src:
         });
     });
 });
+var templateParametersTestPage = TestPageLoader.queueTest("firstdraw-template-parameters", {src: "ui/drawing/template-parameters.html", firstDraw: true}, function() {
+    describe("Template parameters draw", function() {
+        it("should load", function() {
+            expect(templateParametersTestPage.loaded).toBeTruthy();
+        });
+
+        it("should replace the template parameters with the component dom arguments", function() {
+            var decorator = templateParametersTestPage.test.decorator,
+                element = decorator.element;
+
+            expect(element.children.length).toBe(1);
+            expect(element.children[0].children.length).toBe(2);
+        });
+
+        it("should pass the component arguments to another component arguments using template parameters", function() {
+            var compositionDecorator = templateParametersTestPage.test.compositionDecorator,
+                element = compositionDecorator.element,
+                decoration;
+
+            decoration = element.querySelector(".decoration");
+            expect(decoration.children.length).toBe(2);
+        });
+
+        it("should pass the component arguments to another component arguments along with other elements using template parameters", function() {
+            var compositionDecoratorMore = templateParametersTestPage.test.compositionDecoratorMore,
+                element = compositionDecoratorMore.element,
+                decoration;
+
+            decoration = element.querySelector(".decoration");
+            expect(decoration.children.length).toBe(2);
+        });
+
+        it("should replace the template named parameters with the component dom arguments", function() {
+            var parameters = templateParametersTestPage.test.parameters,
+                element = parameters.element,
+                item1 = element.querySelector(".item1 > span"),
+                item2 = element.querySelector(".item2 > span");
+
+            expect(item1.textContent).toBe("One");
+            expect(item2.textContent).toBe("Two");
+        });
+    });
+});
+

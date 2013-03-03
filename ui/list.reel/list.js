@@ -34,7 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
     @requires montage/ui/component
 */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
+    Component = require("ui/component").Component,
+    observeProperty = require("frb/observers").observeProperty;
+
 /**
  @class module:"montage/ui/list.reel".List
  @extends module:montage/ui/component.Component
@@ -56,12 +58,30 @@ var List = exports.List = Montage.create(Component,/** @lends module:"montage/ui
         value: null
     },
 
-    objects: {
-        value: null
+    _content: {value: null},
+    content: {
+        set: function(value) {
+            this._content = value;
+            this.defineBinding("_repetition.content", {
+                "<-": "_content"
+            });
+        },
+        get: function() {
+            return this._content;
+        }
     },
 
+    _contentController: {value: null},
     contentController: {
-        value: null
+        set: function(value) {
+            this._contentController = value;
+            this.defineBinding("_repetition.contentController", {
+                "<-": "_contentController"
+            });
+        },
+        get: function() {
+            return this._contentController;
+        }
     },
 
     axis: {
@@ -82,38 +102,15 @@ var List = exports.List = Montage.create(Component,/** @lends module:"montage/ui
     // along to the repetition
     // I want to say that if somebody knows enough to do that they know enough to append the child components' elements
     // into the repetition, not the list
-/**
-    Description TODO
-    @function
-    @param {Property} type TODO
-    @param {Property} listener TODO
-    @param {Property} useCapture TODO
-    @param {Property} atSignIndex TODO
-    @param {Property} bindingOrigin TODO
-    @param {Property} bindingPropertyPath TODO
-    @param {Property} bindingDescriptor TODO
-    @returns null or object
-    */
-    propertyChangeBindingListener: {
-        value: function(type, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, bindingDescriptor) {
 
-            // TODO could forward along less-special bindings this way such as "objects" in general, just to reduce an extra
-            // hop in the derived property path
-            if (bindingDescriptor.boundObjectPropertyPath.match(/objectAtCurrentIteration/)) {
+    observeProperty: {
+        value: function (key, emit, source, parameters, beforeChange) {
+            if (key === "objectAtCurrentIteration" || key === "currentIteration") {
                 if (this._repetition) {
-                    // TODO not sure how safe this is, but I may want to use it in the repetition's oimplementation of
-                    // this method as well as it looks like it should obviously be faster than replicating the descriptor
-                    bindingDescriptor.boundObject = this._repetition;
-                    return this._repetition.propertyChangeBindingListener.apply(this._repetition, arguments);
-                } else {
-                    // Don't install this binding; we'll deal with that when the children are actually used inside
-                    // the repetition and try to bind to the list directly in the future
-                    // TODO maybe we could rewrite the bindingDescriptor at this point on the bindingOrigin
-                    // to prevent this man-in-the-middle game we're playing with the list later on
-                    return null;
+                    return this._repetition.observeProperty(key, emit, source, parameters, beforeChange);
                 }
             } else {
-                return Object.prototype.propertyChangeBindingListener.apply(this, arguments);
+                return observeProperty(this, key, emit, source, parameters, beforeChange);
             }
         }
     }

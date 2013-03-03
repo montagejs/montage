@@ -54,6 +54,14 @@ POSSIBILITY OF SUCH DAMAGE.
             "value": "Test Value"
         }
     },
+
+    "onlyStyle": {
+        "prototype": "ui/drawing/component/only-style.reel",
+        "properties": {
+            "element": {"#": "onlyStyle"}
+        }
+    },
+
     "owner": {
         "prototype": "montage/ui/application",
         "properties": {
@@ -69,7 +77,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 </head>
 <body>
-<div id="dynamictext" class="dynamictext"></div>
-<div id="custom"></div>
+<div data-montage-id="dynamictext" class="dynamictext"></div>
+<div data-montage-id="custom"></div>
+<div data-montage-id="onlyStyle" class="onlyStyle"></div>
 </body>
 </html>

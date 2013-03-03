@@ -64,22 +64,15 @@ POSSIBILITY OF SUCH DAMAGE.
             "element": {"#": "hex"},
             "minValue": 0,
             "maxValue": 255,
-            "smallStepSize": 1,
-            "converter": {"@": "hexConverter"}
-        }
-    },
-
-    "hexConverter": {
-        "prototype": "montage/core/converter/converter",
-        "properties": {
-            "convert": {"->": {"arguments": ["value"], "body": "return value.toString(16).toUpperCase()"}},
-            "revert": {"->": {"arguments": ["value"], "body": "return parseInt(value, 16)"}}
+            "smallStepSize": 1
+        },
+        "bindings": {
+            "converter": {"<-": "@test.hexConverter"}
         }
     },
 
     "test": {
-        "module": "ui/text-slider-test/text-slider-test",
-        "name": "TextSliderTest",
+        "prototype": "ui/text-slider-test/text-slider-test",
         "properties": {
             "number": {"@": "number"},
             "percent": {"@": "percent"},
@@ -88,8 +81,6 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
         "properties": {
             "delegate": {"@": "test"}
         }

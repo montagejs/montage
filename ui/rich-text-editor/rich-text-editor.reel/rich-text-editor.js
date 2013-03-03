@@ -38,7 +38,6 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     RichTextEditorBase = require("./rich-text-editor-base").RichTextEditorBase,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
-    ChangeNotification = require("core/change-notification").ChangeNotification,
     Promise = require("core/promise").Promise;
 
 /**
@@ -184,9 +183,9 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 }
 
                 if (this._value != content) {
-                    this.dispatchPropertyChange("value", function(){
-                        this._value = content;
-                    });
+                    this.dispatchBeforeOwnPropertyChange("value", this._value);
+                    this._value = content;
+                    this.dispatchOwnPropertyChange("value", this._value);
                 }
 
                 this._dirtyValue = false;
@@ -249,9 +248,9 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 }
 
                 if (this._textValue != content) {
-                    this.dispatchPropertyChange("textValue", function(){
-                        this._textValue = content;
-                    });
+                    this.dispatchBeforeOwnPropertyChange("textValue", this._textValue);
+                    this._textValue = content;
+                    this.dispatchOwnPropertyChange("textValue", this._textValue);
                 }
 
                 this._dirtyTextValue = false;
@@ -692,16 +691,10 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 delete thisRef._updateValuesTimeout;
 
                 if (thisRef._dirtyValue) {
-                    descriptor = ChangeNotification.getPropertyChangeDescriptor(thisRef, "value");
-                    if (descriptor) {
-                        value = thisRef.value;  // Will force to update the value and send a property change notification
-                    }
+                    thisRef.dispatchOwnPropertyChange("value", thisRef.value);
                 }
                 if (thisRef._dirtyTextValue) {
-                    descriptor = ChangeNotification.getPropertyChangeDescriptor(thisRef, "textValue");
-                    if (descriptor) {
-                        value = thisRef.textValue;  // Will force to update the value and send a property change notification
-                    }
+                    thisRef.dispatchOwnPropertyChange("textValue", thisRef.textValue);
                 }
                 thisRef._dispatchEditorEvent("editorChange");
             };

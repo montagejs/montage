@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 require("montage");
-var deserialize = require("montage/core/deserializer").deserialize;
+var deserialize = require("montage/core/serialization").deserialize;
 
 // load generated serialization
 exports.load = function () {

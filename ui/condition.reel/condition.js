@@ -60,6 +60,10 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
     _condition: {
         value: null
     },
+
+    _contents: {
+        value: null
+    },
 /**
         Description TODO
         @type {Function}
@@ -74,11 +78,12 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
 
             this._condition = value;
             this.needsDraw = true;
-            // If it is being deserialized originalContent has not been populated yet
+            // If it is being deserialized element might not been set yet
             if (this.removalStrategy === "remove"  && !this.isDeserializing) {
                 if (value) {
-                    this.domContent = this.originalContent;
+                    this.domContent = this._contents;
                 } else {
+                    this._contents = this.domContent;
                     this.domContent = null;
                 }
             }
@@ -102,11 +107,15 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
             return this._removalStrategy;
         },
         set:function (value) {
+            var contents;
+
             if (this._removalStrategy === value) {
                 return;
             }
             if (value === "hide" && !this.isDeserializing) {
-                this.domContent = this.originalContent;
+                contents = this.domContent;
+                this.domContent = this._contents;
+                this._contents = contents;
             }
             this._removalStrategy = value;
             this.needsDraw = true;
@@ -116,6 +125,7 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
     prepareForDraw: {
         value: function() {
             if (this.removalStrategy === "remove" && !this.condition) {
+                this._contents = this.domContent;
                 this.domContent = null;
             }
         }

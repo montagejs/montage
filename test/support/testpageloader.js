@@ -6,6 +6,7 @@ var Montage = require("montage").Montage,
     URL = require("montage/core/url"),
     ActionEventListener = require("montage/core/event/action-event-listener").ActionEventListener,
     MutableEvent = require("montage/core/event/mutable-event").MutableEvent,
+    Promise = require("montage/core/promise").Promise,
     defaultEventManager;
 
 var PAGE_LOAD_TIMEOUT = 10000;
@@ -185,6 +186,9 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                                     }
                                     firstDraw = false;
                                 }
+                                if (theTestPage._drawHappened) {
+                                    theTestPage._drawHappened();
+                                }
                             };
 
                             var pause = queryString("pause");
@@ -260,6 +264,31 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                 this.iframe.src = "";
             }
             return this;
+        }
+    },
+
+    nextDraw: {
+        value: function(numDraws, forceDraw) {
+            var theTestPage = this,
+                deferred = Promise.defer();
+
+            this.drawHappened = false;
+
+            if (!numDraws) {
+                numDraws = 1;
+            }
+
+            theTestPage._drawHappened = function() {
+                if(theTestPage.drawHappened == numDraws) {
+                    deferred.resolve(numDraws);
+                    theTestPage._drawHappened = null;
+                }
+            }
+            if(forceDraw) {
+                var root = COMPONENT.__root__;
+                root['drawTree']();
+            }
+            return deferred.promise.timeout(1000);
         }
     },
 

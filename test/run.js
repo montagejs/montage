@@ -31,6 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 var Promise = require("montage/core/promise").Promise;
 
+Error.stackTraceLimit = 100;
+
 var spec = queryString("spec");
 if (spec) {
     require.async(decodeURIComponent(spec))
@@ -44,34 +46,32 @@ if (spec) {
 } else {
     var modules = [
         // Please keep in alphabetical order
-        "array-spec",
         "bitfield-spec",
         "claimed-pointer-spec",
         "converter-spec",
         "enum-spec",
         "gate-spec",
-        "getset-spec",
         "logger-spec",
-        "propertychange-spec",
+        "paths-spec",
         "require-spec",
         "state-chart-spec",
         "string-spec",
 
         // packages
         "collections-spec",
+        "frb-spec",
 
-        "binding/binding-converter-spec",
-        "binding/dependent-properties-spec",
-        "binding/definebinding-spec",
-        "binding/self-binding-spec",
-
-        "controllers/array-controller-spec",
+        "bindings/spec",
+        "bindings/converter-spec",
+        "bindings/self-spec",
 
         "core/core-spec",
         "core/localizer-spec",
         "core/localizer/serialization-spec",
         "core/selector-spec",
         "core/undo-manager-spec",
+
+        "core/tree-controller-spec",
 
         "core/extras/function",
         "core/extras/string",
@@ -81,7 +81,6 @@ if (spec) {
         "data/context-spec",
         "data/transactionmanager-spec",
 
-        "events/change-notification-spec",
         "events/eventmanager-spec",
         "events/mutable-event-spec",
         "events/object-hierarchy-spec",
@@ -95,13 +94,20 @@ if (spec) {
         "meta/controller-blueprint-spec",
 
         "reel/template-spec",
+        "document-resources-spec",
 
-        "serialization/deserializer-spec",
-        "serialization/serializer-spec",
+        "serialization/serialization-spec",
+        "serialization/montage-serializer-spec",
+        "serialization/montage-deserializer-spec",
+        "serialization/serialization-extractor-spec",
+        "serialization/bindings-spec",
+        "serialization/serialization-inspector-spec",
+        "serialization/serialization-merger-spec",
 
         "ui/application-spec",
         "ui/anchor-spec",
-        "ui/autocomplete-spec",
+        // Uses old controller: - @kriskowal
+        // TODO "ui/autocomplete-spec",
         "ui/button-spec",
         "ui/check-spec",
         "ui/condition-spec",
@@ -120,7 +126,8 @@ if (spec) {
         "ui/number-input-spec",
         "ui/popup-spec",
         "ui/popup-in-window-spec",
-        "ui/repetition-spec",
+        // Broken due to changes to repetition
+        // TODO "ui/repetition-spec",
         "ui/rich-text-editor-spec",
         "ui/select-input-spec",
         "ui/native-input-range-spec",

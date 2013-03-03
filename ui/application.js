@@ -40,8 +40,6 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 var Montage = require("core/core").Montage,
-    Template = require("ui/template").Template,
-    Component = require("ui/component").Component,
     MontageWindow = require("ui/montage-window").MontageWindow,
     Slot;
 
@@ -448,8 +446,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
 
     _load: {
         value: function(applicationRequire, callback) {
-            var template = Template.create().initWithDocument(window.document, applicationRequire),
-                rootComponent,
+            var rootComponent,
                 self = this;
 
             // assign to the exports so that it is available in the deserialization of the template
@@ -459,7 +456,9 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
             .then(function(exports) {
                 rootComponent = exports.__root__;
                 rootComponent.element = document;
-                template.instantiateWithOwnerAndDocument(null, window.document, function() {
+
+                return require("ui/template").instantiateDocument(window.document, applicationRequire)
+                .then(function(part) {
                     self.callDelegateMethod("willFinishLoading", self);
                     rootComponent.needsDraw = true;
                     if (callback) {

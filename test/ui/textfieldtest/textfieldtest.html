@@ -142,16 +142,16 @@ POSSIBILITY OF SUCH DAMAGE.
 <body>
     <form id="input-form" class="form-stacked">
         <label for="textfield1">Required Text</label>
-        <input type="text" placeholder="Enter first name" id="textfield1" required maxlength="20" size="10" />
+        <input type="text" placeholder="Enter first name" data-montage-id="textfield1" required maxlength="20" size="10" />
 
         <label for="textfield2">Disabled Initially</label>
-        <input type="text" id="textfield2" disabled="true" value="Foo" />
+        <input type="text" id="textfield2" data-montage-id="textfield2" disabled="true" value="Foo" />
 
         <label for="txt3"></label>
-        <input type="text" id="txt3"  value="bar" src="src" size="20" max="20" min="0" step="2"  width="100" height="100" multiple="true" name="txt3" list="list1" />
+        <input type="text" id="txt3" data-montage-id="txt3"  value="bar" src="src" size="20" max="20" min="0" step="2"  width="100" height="100" multiple="true" name="txt3" list="list1" />
 
         <label for="date1"></label>
-        <input type="date" id="date1"  value="12-31-2012" />
+        <input type="date" id="date1" data-montage-id="date1"  value="12-31-2012" />
 
          <label for="txt4">Test use of Converter</label>
         <input type="text" data-montage-id="txt4" id="txt4" value="hello" />

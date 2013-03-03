@@ -48,6 +48,7 @@ exports.Slot = Montage.create(Component, /** @lends module:"montage/ui/slot.reel
 
     didCreate: {
         value: function() {
+            Component.didCreate.call(this);
             this.content = null;
         }
     },

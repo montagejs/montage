@@ -15,7 +15,7 @@ var ParentController = require("meta/controller-blueprint-test/parent-controller
 var ChildController = require("meta/controller-blueprint-test/child-controller").ChildController;
 var TestController = require("meta/controller-blueprint-test/test-controller").TestController;
 
-var Serializer = require("montage/core/serializer").Serializer;
+var Serializer = require("montage/core/serialization").Serializer;
 
 var logger = require("montage/core/logger").logger("meta/blueprint-spec.js");
 

@@ -1,34 +1,85 @@
-/* <copyright>
-Copyright (c) 2012, Motorola Mobility LLC.
-All Rights Reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+var Montage = require("montage").Montage;
 
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
+var parse = require("frb/parse");
+var stringify = require("frb/stringify");
+var evaluate = require("frb/evaluate");
 
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
+var Selector = exports.Selector = Montage.create(Montage, {
 
-* Neither the name of Motorola Mobility LLC nor the names of its
-  contributors may be used to endorse or promote products derived from this
-  software without specific prior written permission.
+    syntax: {
+        value: null
+    },
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-</copyright> */
+    initWithSyntax: {
+        value: function (syntax) {
+            this.syntax = syntax;
+            return this;
+        }
+    },
 
-var Language = require("./selector/language").Language;
-exports.Selector = Language.Selector
+    initWithPath: {
+        value: function (path) {
+            this.syntax = parse(path);
+            return this;
+        }
+    },
+
+    stringify: {
+        value: function () {
+            return stringify(this.syntax);
+        }
+    },
+
+    serializeSelf: {
+        value: function (serializer) {
+            serializer.setProperty("path", stringify(this.syntax));
+        }
+    },
+
+    deserializeSelf: {
+        value: function (deserializer) {
+            this.syntax = parse(deserializer.getProperty("path"));
+        }
+    },
+
+    evaluate: {
+        value: function (value, parameters) {
+            return evaluate(this.syntax, value, parameters);
+        }
+    }
+
+});
+
+// generate methods on Selector for each of the tokens of the language.
+// support invocation both as class and instance methods like
+// Selector.and("a", "b") and aSelector.and("b")
+parse.semantics.precedence.keys().forEach(function (type) {
+    Montage.defineProperty(Selector, type, {
+        value: function () {
+            var args = Array.prototype.map.call(arguments, function (argument) {
+                if (typeof argument === "string") {
+                    return parse(argument);
+                } else if (argument.syntax) {
+                    return argument.syntax;
+                } else if (typeof argument === "object") {
+                    return argument;
+                }
+            });
+            if (this.syntax === null) {
+                // invoked as class method
+                return this.create().initWithSyntax({
+                    type: type,
+                    args: args
+                });
+            } else {
+                // invoked as instance method
+                return Object.getPrototypeOf(this).create().initWithSyntax({
+                    type: type,
+                    args: [this.syntax].concat(args)
+                });
+            }
+        }
+    });
+});
 

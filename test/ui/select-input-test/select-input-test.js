@@ -144,7 +144,6 @@ var SelectInputTest = exports.SelectInputTest = Montage.create(Montage, {
            set: function(value) {
                this._justify = value;
                this.needsDraw = true;
-               console.log('JUSTIFY - ', value);
            }
        },
 

@@ -38,17 +38,26 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 var Montage = require("montage").Montage,
+    Bindings = require("core/bindings").Bindings,
+    RangeController = require("core/range-controller").RangeController,
     Component = require("ui/component").Component,
-    ArrayController = require("ui/controller/array-controller").ArrayController,
     NativeControl = require("ui/native-control").NativeControl,
-    PressComposer = require("ui/composer/press-composer").PressComposer;
+    PressComposer = require("ui/composer/press-composer").PressComposer,
+    Map = require("collections/map");
 
 /**
- * Wraps the a &lt;select> element with binding support for the element's standard attributes. Uses an ArrayController instance to manage the element's contents and selection.
-   @class module:"montage/ui/native/select.reel".Select
-   @extends module:montage/ui/native-control.NativeControl
-   @summary
-   If the &lt;select> markup contains <option> is provided in the markup and <code>contentController</code> is not, the <code>contentController</code> collection is populated with the options from the markup. If <code>contentController</code> is present, any options in the markup are overwritten by the values from the <code>contentController</code> when they are available.
+    Wraps the a &lt;select&gt; element with binding support for the element's
+    standard attributes. Uses an ArrayController instance to manage the
+    element's contents and selection.
+    @class module:"montage/ui/native/select.reel".Select
+    @extends module:montage/ui/native-control.NativeControl
+    @summary
+    If the &lt;select&gt; markup contains <option> is provided in the markup
+    and <code>contentController</code> is not, the
+    <code>contentController</code> collection is populated with the options
+    from the markup. If <code>contentController</code> is present, any options
+    in the markup are overwritten by the values from the
+    <code>contentController</code> when they are available.
  */
 var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"montage/ui/native/select.reel".Select */ {
 
@@ -56,17 +65,63 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
     _synching: {value: null},
     //_internalSet: {value: null},
 
-    __selectedIndexes: {value: null, enumerable: false},
     _selectedIndexes: {
-        set: function(value) {
-            this.__selectedIndexes = value;
+        value: null
+    },
+
+    selectedIndexes: {
+        get: function() {
+            return this._selectedIndexes;
+        },
+        set: function(selectedIndexes) {
+            // _selectedIndexes is automatically filled from
+            // this.contentController.iterations{selected}
+            var iterations = this.contentController.iterations,
+                values = [];
+
+            for (var i = 0, ii = selectedIndexes.length; i < ii; i++) {
+                values.push(iterations[selectedIndexes[i]].object[this.valuePropertyPath || 'value']);
+            }
+
+            // values should be automatically created by a binding
+            if (selectedIndexes.length <= 1) {
+                this.value = values[0];
+            } else {
+                this.values = values;
+            }
+        }
+    },
+
+    didCreate: {
+        value: function() {
+            if (typeof NativeControl.didCreate === "function") {
+                NativeControl.didCreate.apply(this);
+            }
+
+            this._selectedIndexes = [];
+            this._selectedIndexes.addRangeChangeListener(this, "selectedIndexes");
+        }
+    },
+
+    handleSelectedIndexesRangeChange: {
+        value: function() {
             if(this.needsDraw === false) {
                 this.needsDraw = this._synching || !this._fromInput;
             }
+        }
+    },
 
-        },
-        get: function() {
-            return this.__selectedIndexes;
+    _setContentControllerSelectedIndexes: {
+        value: function(selectedIndexes) {
+            var iterations = this.contentController.iterations;
+
+            for (var i = 0, ii = iterations.length; i < ii; i++) {
+                if (selectedIndexes.indexOf(i) === -1) {
+                    iterations[i].selected = false;
+                } else {
+                    iterations[i].selected = true;
+                }
+            }
         }
     },
 
@@ -76,17 +131,18 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
 
     _content: {value: null, enumerable: false},
 /**
-    An array of items to to assign to the component's <code>contentController</code> property, which is an ArrayController.
+    An array of items to to assign to the component's
+    <code>contentController</code> property, which is a RangeController.
 */
     content: {
         set: function(value) {
-            if(!Array.isArray(value)) {
-                value = [value];
-            }
+            //if(!Array.isArray(value)) {
+            //    value = [value];
+            //}
             this._content = value;
 
             if(!this.contentController) {
-                var contentController = ArrayController.create();
+                var contentController = RangeController.create();
                 contentController.content = value;
                 this.contentController = contentController;
             }
@@ -121,7 +177,6 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
 
 /**
     An ArrayController instance used to manage the content and selection of the select input control.
-    @type {module:montage/ui/controller/array-controller.ArrayController}
     @default null
 */
     contentController: {
@@ -133,45 +188,29 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
                 return;
             }
 
-            if (this._contentController) {
-                Object.deleteBinding(this, "_selectedIndexes");
-            }
-
             this._contentController = value;
 
-            if (this._contentController) {
-
-                // If we're already getting contentController related values from other bindings...stop that
-                if (this._bindingDescriptors) {
-                    Object.deleteBinding(this, "content");
+            Bindings.defineBindings(this, {
+                "content": {"<-": "_contentController.organizedContent"},
+                "_iterations": {"<-": "_contentController.iterations"},
+                "_selection": {"<-": "_contentController.selection"},
+                "_selectedIndexes.rangeContent()": {
+                    "<-": "content.enumerate().filter{$_selection.has(.1)}.map{.0}"
                 }
-
-                Object.defineBinding(this, "content", {
-                    boundObject: this._contentController,
-                    boundObjectPropertyPath: "organizedObjects",
-                    oneway: true
-                });
-
-
-                Object.defineBinding(this, "_selectedIndexes", {
-                    boundObject: this._contentController,
-                    boundObjectPropertyPath: "selectedIndexes"
-                });
-            }
-
+            });
         }
     },
 
     _getSelectedValuesFromIndexes: {
         value: function() {
-            var selectedObjects = this.contentController ? this.contentController.selectedObjects : null;
+            var selection = this._selection;
             var arr = [];
-            if(selectedObjects && selectedObjects.length > 0) {
-                var i=0, len = selectedObjects.length, valuePath;
+            if(selection && selection.length > 0) {
+                var i=0, len = selection.length, valuePath;
                 for(; i<len; i++) {
                     valuePath = this.valuePropertyPath || 'value';
-                    if(selectedObjects[i][valuePath]) {
-                        arr.push(selectedObjects[i][valuePath]);
+                    if(selection[i][valuePath]) {
+                        arr.push(selection[i][valuePath]);
                     }
                 }
             }
@@ -192,6 +231,8 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
     },
 
 
+    // values should be automatically created by
+    // iterations.filter{selected}.map{object}.value
     _values: {value: null},
     values: {
         get: function() {
@@ -199,20 +240,24 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
         },
         set: function(valuesArray) {
             var content = this.contentController ? this.contentController.content : null;
+
             if(valuesArray && content) {
                 this._values = valuesArray;
 
                 if(!this._synching) {
                     var selectedIndexes = [];
                     var i=0, len = this._values.length, index;
+
                     for(; i<len; i++) {
                         index = this._indexOf(this._values[i]);
                         if(index >= 0) {
                             selectedIndexes.push(index);
                         }
                     }
+
                     this._synching = true;
-                    this.contentController.selectedIndexes = selectedIndexes;
+                    this._setContentControllerSelectedIndexes(selectedIndexes);
+                    //this.contentController.selectedIndexes = selectedIndexes;
                     this._synching = false;
                 }
             }
@@ -220,6 +265,8 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
         //dependencies: ["_selectedIndexes"]
     },
 
+    // values should be automatically created by
+    // iterations.map{selected}.0.object.value
     _value: {value: null},
     value: {
         get: function() {
@@ -262,31 +309,39 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
             // add options to contentController
             // look for selected options in the markup and mark these as selected
             if(!this.contentController) {
-                var contentController = ArrayController.create();
-                var selectedIndexes = [];
+                var contentController = ContentController.create();
+                var selection = [];
+                var content = [];
 
-                contentController.content = [];
                 if(options && options.length > 0) {
                     var i=0, len = options.length, selected;
                     for(; i< len; i++) {
                         selected = options[i].getAttribute('selected');
-                        if(selected) {
-                            selectedIndexes.push(i);
-                        }
-                        contentController.addObjects({
+                        var object = {
                             value: options[i].value,
                             text: options[i].textContent
-                        });
+                        };
+                        if (selected) {
+                            selection.push(object);
+                        }
+                        content.push(object);
                     }
 
-                    this.contentController = contentController;
-                    if(selectedIndexes.length === 0 && len > 0) {
-                        // nothing was marked as selected by default. Select the first one (gh-122)
-                        selectedIndexes = [0];
+                    if (selection.length === 0 && len > 0) {
+                        // nothing is marked as selected by default. Select the
+                        // first one (gh-122)
+                        selection.push(content[0]);
                     }
                     this._fromInput = true;
-                    this.contentController.selectedIndexes = selectedIndexes;
+                    this.contentController = contentController;
+                    contentController.content = content;
 
+                    var iterations = contentController.iterations;
+                    for (var i = 0, ii = iterations.length; i < ii; i++) {
+                        if (selection.indexOf(iterations[i].object)) {
+                            iterations[i].selected = true;
+                        }
+                    }
                 }
             }
 
@@ -425,11 +480,11 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
         }
     },
 
-    _getSelectedOptionsIndices: {
+    _getSelectedOptionsIndexes: {
         value: function(selectEl) {
             var options = selectEl.querySelectorAll('option');
-            // TODO: looks like querySelectorAll('option[selected]') only returns the default selected
-            // value
+            // TODO: looks like querySelectorAll('option[selected]') only
+            // returns the default selected value
             var i, len = options.length, arr = [];
             for(i=0; i< len; i++) {
                 if(options[i].selected) {
@@ -446,12 +501,13 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
             //var selectedOptions = this.element.selectedOptions || [];
             // select.selectedOptions does not work on Chrome !
 
-            var arr = this._getSelectedOptionsIndices(this.element);
+            var arr = this._getSelectedOptionsIndexes(this.element);
 
             if(arr.length > 0) {
                 this._fromInput = true;
                 this._synching = false;
-                this.contentController.selectedIndexes = arr;
+                //this.contentController.selectedIndexes = arr;
+                this._setContentControllerSelectedIndexes(arr);
                 this._synchValues();
             }
 

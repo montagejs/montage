@@ -33,7 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 // generate sample-seriazation.json from sample.json
 
 var binder = require("./object/binderhelper").companyBinder();
-var serialize = require("montage/core/serializer").serialize;
+var serialize = require("montage/core/serialization").serialize;
 var Person = require("data/object/person").Person;
 var Company = require("data/object/company").Company;
 var Project = require("data/object/project").Project;

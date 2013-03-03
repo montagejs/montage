@@ -31,11 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
     Component = require("montage/ui/component").Component,
-    Serializer = require("montage/core/serializer").Serializer;
-
-var stripPP = function stripPrettyPrintting(str) {
-    return str.replace(/\n\s*/g, "");
-};
+    Serializer = require("montage/core/serialization").Serializer;
 
 var testPage = TestPageLoader.queueTest("draw", function() {
 
@@ -55,26 +51,22 @@ var testPage = TestPageLoader.queueTest("draw", function() {
             });
 
 
-            describe("originalContent", function() {
-                it("should contain the original content of the component markup", function() {
-                    var originalContent = testPage.test.repetition.originalContent;
-                    expect(originalContent.length).toBe(2);
-                    expect(originalContent[0].outerHTML).toBe("<h3>Original Content</h3>");
-                    expect(originalContent[1].outerHTML).toBe("<p>here</p>");
-                });
+            describe("innerTemplate", function() {
+                it("should be a template with the contents of the element", function() {
+                    var innerTemplate = testPage.test.repetition.innerTemplate,
+                        childNodes = innerTemplate.document.body.childNodes;
 
-                it("should set the original content to the domContent of the component before inserting the template", function() {
-                    var componentList = testPage.test.componentList,
-                        texts = componentList.element.querySelectorAll("*[data-montage-id='text2']");
-
-                    expect(texts.length).toBe(3);
+                    expect(childNodes.length).toBe(2);
+                    expect(childNodes[0].outerHTML).toBe("<h3>Original Content</h3>");
+                    expect(childNodes[1].outerHTML).toBe("<p>here</p>");
                 });
             });
 
             describe("domContent", function() {
                 it("should contain the current content of the component markup", function() {
                     var content = testPage.test.repetition.domContent;
-                    expect(content.length).toBe(6);
+
+                    expect(content.length).toBe(10);
                 });
 
                 it("should change the content of the component for markup", function() {
@@ -115,10 +107,10 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 });
 
                 it("should change the content of the component for another component with root elements that are not components themselves", function() {
-                    var originalContent = testPage.test.componentD.originalContent,
+                    var domContent = testPage.test.componentD.domContent,
                         componentDtarget = testPage.test.componentDtarget;
 
-                    componentDtarget.domContent = originalContent;
+                    componentDtarget.domContent = domContent;
                     testPage.waitForDraw();
                     runs(function() {
                         expect(componentDtarget._element.innerHTML).toBe("\n    <h1>\n        <div data-montage-id=\"componentD1\">D1</div>\n    </h1>\n");
@@ -517,13 +509,6 @@ var testPage = TestPageLoader.queueTest("draw", function() {
             expect(testPage.test.text1.element).toBe(oldElement);
         });
 
-        it("should serialize delegate as a reference", function() {
-            var serializer = Serializer.create().initWithRequire(require),
-                serialization = serializer.serializeObject(testPage.test.componentWithDelegate);
-
-            expect(stripPP(serialization)).toBe('{"root":{"prototype":"montage/ui/component","properties":{"delegate":{"@":"application"},"parentProperty":"parentComponent","identifier":"componentWithDelegate"}},"application":{}}');
-        });
-
         it("should have templateObjects object", function() {
             expect(testPage.test.componentOwner.templateObjects).not.toBeNull();
         });
@@ -538,6 +523,128 @@ var testPage = TestPageLoader.queueTest("draw", function() {
            var element = testPage.test.componentList.element;
 
            expect(element.getAttribute("id")).toBe("componentList");
+        });
+
+        describe("dom arguments", function() {
+            testPage.test.arguments._initDomArguments();
+            testPage.test.noArguments._initDomArguments();
+
+            it("should have dom arguments", function() {
+                var component = testPage.test.arguments,
+                    domArguments = component._domArguments,
+                    names = Object.keys(domArguments);
+
+                expect(names.length).toBe(3);
+                expect(names).toContain("*");
+                expect(names).toContain("one");
+                expect(names).toContain("two");
+            });
+
+            it("should have no dom arguments", function() {
+                var component = testPage.test.noArguments,
+                    domArguments = component._domArguments,
+                    names = Object.keys(domArguments);
+
+                expect(names.length).toBe(1);
+                expect(names).toContain("*");
+            });
+
+            it("should have dom arguments with the right elements", function() {
+                var component = testPage.test.arguments,
+                    domArguments = component._domArguments;
+
+                expect(domArguments.one)
+                    .toBe(component.element.querySelector(".one"));
+                expect(domArguments.two)
+                    .toBe(component.element.querySelector(".two"));
+            });
+
+            it("should satisfy the star parameter", function() {
+                var templateArguments = {
+                        "*": document.createElement("div")
+                    },
+                    templateParameters = {
+                        "*": document.createElement("div")
+                    },
+                    validation;
+
+                validation = Component._validateTemplateArguments(
+                    templateArguments, templateParameters);
+                expect(validation).toBeUndefined();
+            });
+
+            it("should fail when the star parameter is not satisfied", function() {
+                var templateArguments = {
+                        "right": document.createElement("div")
+                    },
+                    templateParameters = {
+                        "*": document.createElement("div")
+                    },
+                    validation;
+
+                validation = Component._validateTemplateArguments(
+                    templateArguments, templateParameters);
+                expect(validation).toBeDefined();
+            });
+
+            it("should not fail when the star parameter is satisfied and there are aditional arguments", function() {
+                var templateArguments = {
+                        "*": document.createElement("div"),
+                        "right": document.createElement("div")
+                    },
+                    templateParameters = {
+                        "*": document.createElement("div")
+                    },
+                    validation;
+
+                validation = Component._validateTemplateArguments(
+                    templateArguments, templateParameters);
+                expect(validation).toBeUndefined();
+            });
+
+            it("should fail when a star argument is given but named parameters are not satisfied", function() {
+                var templateArguments = {
+                        "*": document.createElement("div"),
+                    },
+                    templateParameters = {
+                        "right": document.createElement("div")
+                    },
+                    validation;
+
+                validation = Component._validateTemplateArguments(
+                    templateArguments, templateParameters);
+                expect(validation).toBeDefined();
+            });
+
+            it("should fail when any parameter is not satisfied", function() {
+                var templateArguments = {
+                        "right": document.createElement("div")
+                    },
+                    templateParameters = {
+                        "right": document.createElement("div"),
+                        "center": document.createElement("div")
+                    },
+                    validation;
+
+                validation = Component._validateTemplateArguments(
+                    templateArguments, templateParameters);
+                expect(validation).toBeDefined();
+            });
+
+            it("should fail when a parameter does not exist", function() {
+                var templateArguments = {
+                        "right": document.createElement("div"),
+                        "center": document.createElement("div")
+                    },
+                    templateParameters = {
+                        "right": document.createElement("div")
+                    },
+                    validation;
+
+                validation = Component._validateTemplateArguments(
+                    templateArguments, templateParameters);
+                expect(validation).toBeDefined();
+            });
         });
     });
 });

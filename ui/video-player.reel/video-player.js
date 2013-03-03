@@ -35,13 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
     @requires montage/ui/component
     @requires core/logger
     @requires core/event/action-event-listener
-    @requires ui/controller/media-controller
+    @requires core/media-controller
 */
 var Montage = require("montage").Montage,
+    Bindings = require("core/bindings").Bindings,
     Component = require("ui/component").Component,
     logger = require("core/logger").logger("video-player"),
     ActionEventListener = require("core/event/action-event-listener").ActionEventListener,
-    MediaController = require("ui/controller/media-controller").MediaController;
+    MediaController = require("core/media-controller").MediaController;
 /**
  @class module:montage/ui/video-player.VideoPlayer
  */
@@ -128,7 +129,7 @@ var VideoPlayer = exports.VideoPlayer = Montage.create(Component,/** @lends modu
     -----------------------------------------------------------------------------*/
     /**
         The MediaController instance used by the VideoPlayer.
-        @type {module:montage/ui/controller/media-controller.MediaController}
+        @type {module:montage/core/media-controller.MediaController}
         @default null
     */
     controller: { value: null, enumerable: false },     /* montage/controller/media-controller */
@@ -169,22 +170,20 @@ var VideoPlayer = exports.VideoPlayer = Montage.create(Component,/** @lends modu
             if(logger.isDebug) {
                 logger.debug("MediaController:templateDidLoad");
             }
-            Object.defineBinding(this.positionText, "value", {
-                    boundObject: this.controller,
-                    boundObjectPropertyPath: "position",
-                    boundValueMutator: this._prettyTime
-                });
-            Object.defineBinding(this.durationText, "value", {
-                    boundObject: this.controller,
-                    boundObjectPropertyPath: "duration",
-                    boundValueMutator: this._prettyTime
-                });
-            Object.defineBinding(this.slider, "maxValue", {
-                boundObject: this.controller,
-                boundObjectPropertyPath: "duration",
-                boundValueMutator: this._roundTime,
-                oneWay: false
-                });
+            Bindings.defineBindings(this, {
+                "positionText.value": {
+                    "<->": "controller.position",
+                    convert: this._prettyTime
+                },
+                "durationText.value": {
+                    "<->": "controller.duration",
+                    convert: this._prettyTime,
+                },
+                "slider.maxValue": {
+                    "<->": "controller.duration",
+                    convert: this._roundTime
+                }
+            });
         }
     },
 /**

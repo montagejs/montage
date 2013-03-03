@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script type="text/montage-serialization">{
+        "section": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "section"}
+            }
+        },
+
+        "foo": {
+            "prototype": "montage/ui/dynamic-element.reel",
+            "properties": {
+                "element": {"#": "foo"}
+            }
+        },
+
+        "leftSide": {
+            "prototype": "montage/ui/dynamic-element.reel",
+            "properties": {
+                "element": {"#": "leftSide"}
+            }
+        },
+
+        "rightSide": {
+            "prototype": "montage/ui/dynamic-element.reel",
+            "properties": {
+                "element": {"#": "rightSide"}
+            },
+            "bindings": {
+                "value": {"<-": "@leftSide.value"}
+            }
+        }
+    }</script>
+</head>
+<body>
+    <div data-montage-id="list">
+        <h2>Section</h2>
+        <h3>Paragraph</h3>
+    </div>
+
+    <div data-montage-id="element-id-collision">
+        <h2 data-montage-id="repetition">Section</h2>
+        <h3>Paragraph</h3>
+    </div>
+
+    <div data-montage-id="multiple-elements-leftSide">
+        <h2>Left Side</h2>
+    </div>
+    <div data-montage-id="multiple-elements-rightSide">
+        <h2>Right Side</h2>
+    </div>
+
+    <div data-montage-id="multiple-elements-colliding-leftSide">
+        <h2 data-montage-id="leftSide">Left Side</h2>
+    </div>
+    <div data-montage-id="multiple-elements-colliding-rightSide">
+        <h2 data-montage-id="rightSide">Right Side</h2>
+    </div>
+
+    <div data-montage-id="objects-no-collision">
+        <h2 data-montage-id="section">Section</h2>
+        <h3>Paragraph</h3>
+    </div>
+
+    <div data-montage-id="objects-collision">
+        <h2 data-montage-id="foo">Section</h2>
+        <h3>Paragraph</h3>
+    </div>
+
+    <div data-montage-id="multiple-objects-leftSide">
+        <h2 data-montage-id="leftSide">Left Side</h2>
+    </div>
+    <div data-montage-id="multiple-objects-rightSide">
+        <h2 data-montage-id="rightSide">Right Side</h2>
+    </div>
+</body>
+</html>

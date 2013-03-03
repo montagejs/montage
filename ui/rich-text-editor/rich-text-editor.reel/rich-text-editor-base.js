@@ -38,7 +38,6 @@ var Montage = require("montage").Montage,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
     RichTextLinkPopup = require("../overlays/rich-text-linkpopup.reel").RichTextLinkPopup,
     RichTextResizer = require("../overlays/rich-text-resizer.reel").RichTextResizer,
-    ChangeNotification = require("core/change-notification").ChangeNotification,
     Promise = require("core/promise").Promise,
     defaultUndoManager = require("core/undo-manager").defaultUndoManager;
 
@@ -115,6 +114,10 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     */
     _innerElement: {
         enumerable: false,
+        value: null
+    },
+
+    _originalDomContent: {
         value: null
     },
 
@@ -579,15 +582,16 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                     continue;
                 }
 
-                descriptor = ChangeNotification.getPropertyChangeDescriptor(this, propertyName);
+                descriptor = this.getOwnPropertyChangeDescriptor(propertyName);
+
                 if (descriptor) {
                     prevState = this["_" + propertyName];
                     state = method.call(this, propertyName, commandName);
                     if (state !== prevState) {
                         this["_" + propertyName + "_locked"] = true;
-                        this.dispatchPropertyChange(propertyName, function() {
-                            thisRef["_" + propertyName] = state;
-                        });
+                        this.dispatchBeforeOwnPropertyChange(propertyName, prevState);
+                        this["_" + propertyName] = state;
+                        this.dispatchOwnPropertyChange(propertyName, state);
                         thisRef["_" + propertyName + "_locked"] = false;
                     }
                 }
@@ -678,7 +682,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         }
                     }
                 } else if (this._needsAssignOriginalContent) {
-                    contents = this.originalContent;
+                    contents = this._originalDomContent;
                     contentChanged = false;
                     if (contents instanceof Element) {
                         editorInnerElement.appendChild(contents);
@@ -837,14 +841,14 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 savedRange,
                 timer;
 
-            this.dispatchPropertyChange("hasFocus", function() {
-                thisRef._hasFocus = true;
-            });
+            this.dispatchBeforeOwnPropertyChange("hasFocus", thisRef._hasFocus);
+            thisRef._hasFocus = true;
+            this.dispatchOwnPropertyChange("hasFocus", thisRef._hasFocus);
             isActive = (content && content === document.activeElement);
             if (isActive != this._isActiveElement) {
-                this.dispatchPropertyChange("isActiveElement", function() {
-                    thisRef._isActiveElement = isActive;
-                });
+                this.dispatchBeforeOwnPropertyChange("isActiveElement", this._isActiveElement);
+                thisRef._isActiveElement = isActive;
+                this.dispatchOwnPropertyChange("isActiveElement", this._isActiveElement);
             }
 
             if (this._setCaretAtEndOfContent) {
@@ -925,14 +929,14 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 content = this._innerElement,
                 isActive;
 
-            this.dispatchPropertyChange("hasFocus", function() {
-                thisRef._hasFocus = false;
-            });
+            this.dispatchBeforeOwnPropertyChange("hasFocus", thisRef._hasFocus);
+            thisRef._hasFocus = false;
+            this.dispatchOwnPropertyChange("hasFocus", thisRef._hasFocus);
             isActive = (content && content === document.activeElement);
             if (isActive != this._isActiveElement) {
-                this.dispatchPropertyChange("isActiveElement", function() {
-                    thisRef._isActiveElement = isActive;
-                });
+                this.dispatchBeforeOwnPropertyChange("isActiveElement", this._isActiveElement);
+                thisRef._isActiveElement = isActive;
+                this.dispatchOwnPropertyChange("isActiveElement", this._isActiveElement);
             }
 
             // As we lost focus, we need to prevent the selection change timer to fired, else it will cause the RTE to regain focus
@@ -1764,6 +1768,12 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             }
 
             return result;
+        }
+    },
+
+    deserializedFromTemplate: {
+        value: function() {
+            this._originalDomContent = this.domContent;
         }
     }
 });

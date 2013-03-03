@@ -1,1578 +1,1561 @@
-/* <copyright>
-Copyright (c) 2012, Motorola Mobility LLC.
-All Rights Reserved.
+"use strict";
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+var Montage = require("montage").Montage;
+var Component = require("ui/component").Component;
+var Template = require("ui/template").Template;
+var RangeController = require("core/range-controller").RangeController;
+var Promise = require("q");
 
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
+var Map = require("collections/map");
+var Set = require("collections/set");
 
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
+var Observers = require("frb/observers");
+var observeProperty = Observers.observeProperty;
+var observeKey = Observers.observeKey;
 
-* Neither the name of Motorola Mobility LLC nor the names of its
-  contributors may be used to endorse or promote products derived from this
-  software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-</copyright> */
 /**
-	@module "montage/ui/repetition.reel"
-    @requires montage/core/core
-    @requires montage/ui/component
-    @requires montage/ui/template
-    @requires montage/core/logger
-    @requires montage/core/gate
-    @requires montage/core/change-notification
-*/
-var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
-    Template = require("ui/template").Template,
-    logger = require("core/logger").logger("repetition"),
-    Gate = require("core/gate").Gate,
-    ChangeNotification = require("core/change-notification").ChangeNotification,
-    PropertyChangeNotification = require("core/change-notification").PropertyChangeNotification;
+ * A reusable view-model for each iteration of a repetition.  Each iteration
+ * corresponds to a value from the contentController.  When an iteration is
+ * drawn, it is tied to the corresponding controller-model that carries which
+ * object the iteration is coupled to, and whether it is selected.
+ */
+var Iteration = exports.Iteration = Montage.create(Montage, {
 
-var FakeObjects = Montage.create(Object.prototype, {
-    _repetition: {value: null},
-    _fakeIndex: {value: null},
-    _unusedIndexes: {value: null},
+    /**
+     * The parent repetition component.
+     */
+    repetition: {value: null},
 
+    /**
+     * The repetition gets iterations from its <code>contentController</code>.
+     * The controller is responsible for tracking which iterations are drawn
+     * and which are selected.  The iteration view-model is attached to the
+     * controller view-model by this property. The <code>selected</code> and
+     * <code>object</code> properties are bound to the eponymous properties of
+     * the iteration controller.
+     */
+    controller: {value: null},
+
+    /**
+     * The corresponding content for this iteration.
+     */
+    object: {value: null},
+
+    /**
+     * Whether the content for this iteration is selected.  This property is
+     * bound bidirectionally to whether every element on the document for the
+     * corresponding drawn iteration has the <code>selected</code> CSS class
+     * (synchronized on draw), and whether the <code>object</code> is in the
+     * <code>contentController.selection</code> collection.
+     */
+    selected: {value: null},
+
+    /**
+     * A <code>DocumentFragment</code>, donated by the repetition's
+     * <code>_iterationTemplate</code> n&eacute;e <code>innerTemplate</code>
+     * which contains the elements that the iteration owns when they are not on
+     * the document between the top and bottom boundaries.
+     * @private
+     */
+    _fragment: {value: null},
+
+    /**
+     * @private
+     */
+    _childComponents: {value: null},
+
+    /**
+     * The position of this iteration within the content controller, and within
+     * the document immediately after the repetition has drawn.
+     */
+    index: {value: null},
+
+    /**
+     * The position of this iteration on the document last time it was drawn,
+     * and its position within the <code>repetition.drawnIterations</code>.
+     * @private
+     */
+    _drawnIndex: {value: null},
+
+    /**
+     * Whether this iteration should be highlighted.  It might be highlighted
+     * because the user is touching it, or because it is under some other user
+     * cursor as in an autocomplete popdown where the arrow keys manipulate the
+     * active iteration.
+     */
+    active: {value: null},
+
+    /**
+     * Whether this iteration appears first in the visible order of iterations.
+     */
+    isFirst: {value: null},
+
+    /**
+     * Whether this iteration appears last in the visible order of iterations.
+     */
+    isLast: {value: null},
+
+    /**
+     * Whether this iteration appears on the 0th position within the iteration,
+     * or every other position thereafter.
+     */
+    isEven: {value: null},
+
+    /**
+     * Whether this iteration appears on the 1st position within the iteration,
+     * or every other position thereafter.
+     */
+    isOdd: {value: null},
+
+    /**
+     * A <code>Set</code> of DOM class names for every element within the
+     * iteration, synchronized when the repetition draws.  The iteration and
+     * repetition manage the "active", "selected", and "no-transition" classes,
+     * but the user may bind to
+     * <code>repetition.currentIteration.classList.has(className)</code> for
+     * arbitrary class names.
+     */
+    classList: {value: null},
+
+    /**
+     * A flag that indicates that the "no-transition" CSS class should be added
+     * to every element in the iteration in the next draw, and promptly removed
+     * the draw thereafter.
+     * @private
+     */
+    _noTransition: {value: null},
+
+    /**
+     * Creates the initial values of all instance state.
+     * @private
+     */
+    didCreate: {
+        value: function () {
+            Object.getPrototypeOf(Iteration).didCreate.call(this);
+            this.repetition = null;
+            this.controller = null;
+            this.defineBinding("content", {"<->": "controller.object"});
+            this.defineBinding("object", {"<->": "content"}); // TODO remove this migration shim
+            this.selected = false;
+            // The iteration watches whether it is selected.  If the iteration
+            // is drawn, it enqueue's selection change draw operations and
+            // notifies the repetition it needs to be redrawn.
+            // Dispatches handlePropertyChange with the "selected" key:
+            this.defineBinding("selected", {"<->": "controller.selected"});
+            this.defineBinding("classList.has('selected')", {"<->": "selected"});
+            // An iteration can be "on" or "off" the document.  When the
+            // iteration is added to a document, the "fragment" is depopulated
+            // and placed between "topBoundary" and "bottomBoundary" on the
+            // DOM.  The repetition manages the boundary markers around each
+            // drawn index.
+            this._fragment = null;
+            // The corresponding "content" is tracked in
+            // repetition._contentForIteration instead of on the iteration
+            // itself.  The bindings in the iteration template react to changes
+            // in that map.
+            this._childComponents = null;
+            // The position that this iteration occupies in the controller.
+            // This is updated synchronously in response to changes to
+            // repetition.iterations, which are in turn synchronized with
+            // controller.iterations.  The drawnIndex tracks the index by the
+            // end of the next Repetition.draw.
+            this.index = null;
+            // The position that this iteration occupies in the repetition.
+            // This is updated whenever views are added or removed before it in
+            // the sequence, an operation of linear complexity but which is not
+            // onerous since there should be a managable, fixed-maximum number
+            // of drawn iterations.
+            this._drawnIndex = null;
+
+            // Describes whether a user gesture is touching this iteration.
+            this.active = false;
+            // Changes to whether a user is touching the iteration are
+            // reflected by the "active" CSS class on each element in the
+            // iteration.  This gets updated in the draw cycle, in response to
+            // operations that handlePropertyChange adds to the repetition draw
+            // cycle.
+            // Dispatches handlePropertyChange with the "active" key:
+            this.defineBinding("active", {"<->": "repetition.activeIterations.has(())"});
+
+            this.defineBinding("isFirst", {"<-": "index == 0"});
+            this.defineBinding("isLast", {"<-": "index == repetition.iterations.length - 1"});
+            this.defineBinding("isEven", {"<-": "index % 2 == 0"});
+            this.defineBinding("isOdd", {"<-": "index % 2 != 0"});
+
+            this._noTransition = false;
+
+            // dispatch handlePropertyChange:
+            this.addOwnPropertyChangeListener("active", this);
+            this.addOwnPropertyChangeListener("selected", this);
+            this.addOwnPropertyChangeListener("_noTransition", this);
+
+        }
+    },
+
+    /**
+     * Associates the iteration instance with a repetition.
+     */
     initWithRepetition: {
-        value: function(repetition) {
-            this._repetition = repetition;
-            this._fakeIndex = [];
-            this._unusedIndexes = [];
-            return this;
+        value: function (repetition) {
+            this.repetition = repetition;
         }
     },
 
-    automaticallyDispatchPropertyChangeListener: {
-        value: function() {
-            return false;
+    /**
+     * Disassociates an iteration with its content and prepares it to be
+     * recycled on the repetition's list of free iterations.
+     * This function is called by handleControllerIterationsRangeChange when it
+     * recycles an iteration.
+     */
+    recycle: {
+        value: function () {
+            this.index = null;
+            this.controller = null;
+            // Adding the "no-transition" class ensures that the iteration will
+            // stop any transitions applied when the iteration was bound to
+            // other content.  It has the side-effect of scheduling a draw, and
+            // in that draw scheduling another draw to remove the
+            // "no-transition" class.
+            this._noTransition = true;
         }
     },
 
-    undefinedGet: {
-        value: function(propertyName) {
-            if (this._repetition.objects) {
-                return this._repetition.objects[this._fakeIndex.indexOf(propertyName)];
-            }
-        }
-    },
+    /**
+     * Injects this iteration to the document between its top and bottom
+     * boundaries.
+     * @param {Number} index The drawn index at which to place the iteration.
+     */
+    injectIntoDocument: {
+        value: function (index) {
+            var self = this;
+            var repetition = this.repetition;
+            var element = repetition.element;
+            var boundaries = repetition._boundaries;
 
-    // This is to catch a two-way binding on
-    "0": {
-        // This is to catch two way bindings
-        set: function() {
-            throw("You cannot use a two-way binding on the \"objectAtCurrentIteration\" or \"current\" property.");
-        },
-        get: function() {
-            if (this._repetition.objects) {
-                return this._repetition.objects[this._fakeIndex.indexOf("0")];
-            }
-        }
-    },
+            // Add a new top boundary before the next iteration
+            var topBoundary = element.ownerDocument.createComment("");
+            var bottomBoundary = boundaries[index]; // previous
+            boundaries.splice(index, 0, topBoundary);
+            element.insertBefore(topBoundary, bottomBoundary);
 
-    addFakeObjectAtPosition: {
-        value: function(position) {
-            var index;
+            // Inject the elements into the document
+            element.insertBefore(this._fragment, bottomBoundary);
 
-            if (this._unusedIndexes.length > 0) {
-                index = this._unusedIndexes.pop();
-            } else {
-                index = String(this._fakeIndex.length);
-            }
+            // Inject the child components onto the repetition
+            repetition.childComponents.swap(
+                index * repetition._childComponentsPerIteration,
+                0,
+                this._childComponents
+            );
 
-            this._fakeIndex.splice(position, 0, index);
-            return index;
-        }
-    },
-    resetFakeObjects: {
-        value: function() {
-            var objects = this._repetition.objects;
+            // Once the child components have drawn once, and thus created all
+            // their elements, we can add them to the _iterationForElement map
+            var childComponentsLeftToDraw = this._childComponents.length;
 
-            this._fakeIndex.length = 0;
-            if (objects) {
-                for (var i = 0, l = objects.length; i < l; i++) {
-                    this._fakeIndex[i] = String(i);
+            var firstDraw = function (event) {
+                event.target.removeEventListener("firstDraw", firstDraw, false);
+                childComponentsLeftToDraw--;
+                if (!childComponentsLeftToDraw) {
+                    self.forEachElement(function (element) {
+                        repetition._iterationForElement.set(element, self);
+                    });
                 }
+            };
+
+            // notify the components to wake up and smell the document
+            for (var i = 0; i < this._childComponents.length; i++) {
+                var childComponent = this._childComponents[i];
+                childComponent.addEventListener("firstDraw", firstDraw, false);
+                childComponent.needsDraw = true;
             }
+
+            this._drawnIndex = index;
+            repetition._drawnIterations.splice(index, 0, this);
+            repetition._updateDrawnIndexes(index);
+            repetition._dirtyClassListIterations.add(this);
         }
     },
-    removeFakeObjectAtPosition: {
-        value: function(position) {
-            var index;
 
-            this._unusedIndexes.unshift(this._fakeIndex.splice(position, 1)[0]);
+    /**
+     * Retracts an iteration from the document, scooping its child nodes into
+     * its DOMFragment.
+     */
+    retractFromDocument: {
+        value: function () {
+            var index = this._drawnIndex;
+            var repetition = this.repetition;
+            var element = repetition.element;
+            var topBoundary = repetition._boundaries[index];
+            var bottomBoundary = repetition._boundaries[index + 1];
 
-            return this._unusedIndexes[0];
+            // Remove the elements between the boundaries.  Also remove the top
+            // boundary and adjust the boundaries array accordingly so future
+            // injections and retractions can find their corresponding
+            // boundaries.
+            repetition._boundaries.splice(index, 1);
+            var fragment = this._fragment;
+            var child = topBoundary.nextSibling;
+            while (child != bottomBoundary) {
+                var next = child.nextSibling;
+                element.removeChild(child);
+                fragment.appendChild(child);
+                child = next;
+            }
+            element.removeChild(topBoundary);
+
+            this._drawnIndex = null;
+            repetition._drawnIterations.splice(index, 1);
+            repetition._updateDrawnIndexes(index);
         }
     },
-    _dispatchFakePropertyChange: {
-        value: function(propertyName, minus) {
-            var descriptor,
-                notification;
 
-            descriptor = ChangeNotification.getPropertyChangeDescriptor(this, propertyName);
-            if (descriptor) {
-                notification = Object.create(PropertyChangeNotification);
+    /**
+     * Dispatched by the "active" and "selected" property change listeners to
+     * notify the repetition that these iterations need to have their CSS class
+     * lists updated.
+     * @private
+     */
+    handlePropertyChange: {
+        value: function () {
+            if (!this.repetition)
+                return;
+            this.repetition._dirtyClassListIterations.add(this);
+            this.repetition.needsDraw = true;
+        }
+    },
 
-                notification.target = this;
-                notification.propertyPath = propertyName;
-                notification.minus = minus;
-                notification.plus = this.undefinedGet(propertyName);
-                if (minus !== notification.plus) {
-                    descriptor.handleChange(notification);
+    /**
+     * A utility method for applying changes to every element in this iteration
+     * if it is on the document.  This may be safely called on a retracted
+     * iteration with no effect.
+     * @private
+     */
+    forEachElement: {
+        value: function (callback, thisp) {
+            var repetition = this.repetition;
+            var index = this._drawnIndex;
+            // Short-circuit if the iteration is not on the document.
+            if (index == null)
+                return;
+            for (
+                var child = repetition._boundaries[index];
+                child !== repetition._boundaries[index + 1];
+                child = child.nextSibling
+            ) {
+                if (child.nodeType === 1) { // tags
+                    callback.call(thisp, child);
                 }
             }
         }
     }
+
 });
 
+// Here it is, what we have all been waiting for, the prototype of the hour.
+// Give it up for the Repetition...
+
 /**
- @class module:"montage/ui/repetition.reel".Repetition
- @extends module:montage/ui/component.Component
+ * A component that manages copies of its inner template for each value in its
+ * content.  The content is managed by a controller.  The repetition will
+ * create a <code>RangeController</code> for the content if you provide a
+ * <code>content</code> property instead of a <code>contentController</code>.
+ *
+ * Ensures that the document contains iterations in the same order as provided
+ * by the content controller.
+ *
+ * The repetition strives to avoid moving iterations on, off, or around on the
+ * document, prefering to inject or retract iterations between ones that remain
+ * in their respective order, or even just rebind existing iterations to
+ * alternate content instead of injecting and retracting in the same position.
  */
-var Repetition = exports.Repetition = Montage.create(Component, /** @lends module:"montage/ui/repetition.reel".Repetition# */{
+var Repetition = exports.Repetition = Montage.create(Component, {
+
+    // For the creator:
+    // ----
+
     /**
-     Description TODO
+     * Imperatively initializes a repetition with content.  You can alternately
+     * bind the <code>content</code> property of a repetition without
+     * initializing.  You should not use the <code>contentController</code>
+     * property of the repetition if you are initialize with the
+     * <code>content</code> property.
      */
-    hasTemplate: {value: false},
-
-    didCreate: {
-        value: function() {
-            this.addPropertyChangeListener("objects", this);
-            this._fakeObjects = Object.create(FakeObjects).initWithRepetition(this);
-        }
-    },
-
-    clonesChildComponents: {
-        value: true
-    },
-
-    _emptyFunction: {value: function(){}},
-
-    _updateItems: {
-        value: function(minus, plus, index) {
-            var fakeObjects = this._fakeObjects,
-                fakeIndex,
-                minusCount = minus ? minus.length : 0,
-                plusCount = plus ? plus.length : 0,
-                max, min, delta;
-
-            max = Math.max(minusCount, plusCount);
-            min = Math.min(minusCount, plusCount);
-            delta = plusCount - minusCount;
-
-//console.log("Going to change " + min + " iterations", fakeObjects._fakeIndex);
-
-            // send updates for the elements that were just replaced by new ones
-            for (var i = 0; i < min; i++) {
-//console.log("Going to change " + (index+i), minus[index+i]);
-                fakeObjects._dispatchFakePropertyChange(fakeObjects._fakeIndex[index+i], minus[index+i]);
-            }
-
-            // add new objects, no need to send updates on this one, they're new!
-            if (delta > 0) {
-//console.log("Going to add " + (max-i) + " iterations");
-                this._expectedChildComponentsCount += (this._iterationChildComponentsCount||1) * delta;
-                this.canDrawGate.setField("iterationLoaded", false);
-                for (; i < max; i++) {
-//console.log("New item " + (index+i) + " " + plus[index+i].uuid);
-                    fakeObjects.addFakeObjectAtPosition(index + i);
-                    this._addItem({index: index + i, insertionIndex: index + i});
-                }
-            } else if (delta < 0) { // remove elements and send updates
-//console.log("Going to remove " + (max-i) + " iterations");
-                // this index is fixed because we're changing the array at each iteration of the for loop
-                var removeIndex = index + min;
-                for (; i < max; i++) {
-//console.log("Going to remove " + (index+i), minus[i], min);
-                    fakeIndex = fakeObjects.removeFakeObjectAtPosition(removeIndex);
-                    fakeObjects._dispatchFakePropertyChange(fakeIndex, minus[i]);
-                    this._deleteItem(removeIndex);
-                }
-            }
-        }
-    },
-
-    handleChange: {
-        enumerable: false,
-        value: function(notification) {
-            if ("objects" === notification.currentPropertyPath && this._isComponentExpanded) {
-                this._updateItems(notification.minus, notification.plus, notification.index || 0);
-            }
-        }
-    },
-
-    _fakeObjects: {
-        value: null
-    },
-
-/**
-    @private
-*/
-    _hasBeenDeserialized: {
-        value: false,
-        enumerable: false
-    },
-
-/**
-  Description TODO
-  @private
-*/
-    _nextDeserializedItemIx: {
-        enumerable: false,
-        value: 0,
-        distinct: true
-    },
-/**
-    Description TODO
-    @function
-    @returns itself
-    */
-    init: {
-        enumerable: false,
-        value: function() {
-            this._items = [];
-            this._itemsToAppend = [];
-            this._nextDeserializedItemIx = 0;
-            this._itemsToRemove = [];
-            this._deletedItems = [];
+    initWithContent: {
+        value: function (content) {
+            this.content = content;
             return this;
         }
     },
-/**
-  Description TODO
-  @private
-*/
-    _contentController: {
-        value: null
+
+    /**
+     * Imperatively initializes a repetition with a content controller, like a
+     * <code>RangeController</code>.  You can alternately bind the
+     * <code>contentController</code> property of a repetition without
+     * initializing.  You should not use the <code>content</code> property of a
+     * repetition if you are using its <code>contentController</code>.
+     */
+    initWithRangeController: {
+        value: function (contentController) {
+            this.contentController = contentController;
+            return this;
+        }
     },
-/**
-        The collection of items managed the Repetition.
-        @type {Function}
-        @default null
-    */
-    contentController: {
-        get: function() {
-            return this._contentController;
+
+    /**
+     * A getter and setter for the content of a repetition.  If you set the
+     * content property of a repetition, it produces a range content controller
+     * for you.  If you get the content property, it will reach into the
+     * content controller to give you its content.
+     *
+     * The content represents the entire backing collection.  The content
+     * controller may filter, sort, or otherwise manipulate the visible region
+     * of the content.  The <code>index</code> of each iteration corresponds
+     * to the position within the visible region of the controller.
+     */
+    content: {
+        get: function () {
+            return this.getPath("contentController.content");
         },
-        set: function(value) {
-            if (this._contentController === value) {
-                return;
-            }
+        set: function (content) {
+            // TODO if we provide an implicit content controller, it should be
+            // excluded from a serialization of the repetition.
+            this.contentController = RangeController.create().initWithContent(content);
+        }
+    },
 
-            if (this._contentController) {
-                Object.deleteBinding(this, "objects");
-                Object.deleteBinding(this, "selectedIndexes");
-            }
+    /**
+     * A range controller or instance with the same interface
+     * (<code>iterations</code> and <code>selection</code> properties, where
+     * each <iteration has <code>object</code> and <code>selected</code>
+     * properties).  The controller is responsible for managing which contents
+     * are visible, selected, and the order of their appearance.
+     */
+    contentController: {value: null},
 
-            this._contentController = value;
+    /**
+     * When selection is enabled, each element in an iteration responds to
+     * touch and click events such that the iteration is highlighted (with the
+     * "active" CSS class) when the user touches or clicks it, and toggles
+     * whether the corresponding content is selected.
+     *
+     * Selection may be enabled and disabled at any time in the life cycle of
+     * the repetition.  The repetition watches changes to this property.
+     *
+     * All repetitions support selection, whether it is used or not.  This
+     * property merely dictates whether the repetition handles gestures for
+     * selection.
+     */
+    isSelectionEnabled: {value: null},
 
-            if (this._contentController) {
+    /**
+     * A collection of the selected content.  It may be any ranged collection
+     * like Array or SortedSet.  The user may get, set, or modify the selection
+     * directly.  The selection property is bidirectionally bound to the
+     * selection of the content controller.  Every repetition has a content
+     * controller, and will use a RangeController if not given one.
+     */
+    selection: {value: null},
 
-                // If we're already getting contentController related values from other bindings...stop that
-                if (this._bindingDescriptors) {
-                    Object.deleteBinding(this, "objects");
-                }
+    /**
+     * The repetition maintains an array of every visible, selected iteration,
+     * in the order of its appearance.  The user should not modify the selected
+     * iterations array.
+     */
+    selectedIterations: {value: null},
 
-                // And bind what we need from the new contentController
-                var objectsBindingDescriptor,
-                    selectedIndexesBindingDescriptor;
+    /**
+     * The repetition maintains an array of the indexes of every selected
+     * iteration.  The user should not modify the array.
+     */
+    selectedIndexes: {value: null},
 
-                objectsBindingDescriptor = {
-                    boundObject: this._contentController,
-                    boundObjectPropertyPath: "organizedObjects",
-                    oneway: true
-                };
+    /**
+     * The user may determine which iterations are active by setting or
+     * manipulating the content of the <code>activeIterations</code> array.  At
+     * present, the repetition does not guarantee any particular order of
+     * appearnce of the contained iterations.
+     */
+    activeIterations: {value: null},
 
-                selectedIndexesBindingDescriptor = {
-                    boundObject: this._contentController,
-                    boundObjectPropertyPath: "selectedIndexes"
-                };
+    /**
+     * The repetition coordinates this array of repetition iterations.  Each
+     * iteration tracks its corresponding content, whether it is selected,
+     * whether it is active, and what CSS classes are applied on each of its
+     * direct child nodes.  This array appears in the order that the iterations
+     * will be drawn.  There is one repetition iteration for each controller
+     * iteration.  The repetition iterations have more responsibilities than
+     * the corresponding controller, but some of the properties are bound by
+     * the same names, like <code>object</code> and <code>selected</code>.
+     */
+    iterations: {value: null},
 
-                // If we're ready for bindings...go ahead an install
-                // TODO: Look at changing this once the new serialization has been implemented
-                if (this._hasBeenDeserialized) {
-                    Object.defineBinding(this, "objects", objectsBindingDescriptor);
-                    Object.defineBinding(this, "selectedIndexes", selectedIndexesBindingDescriptor);
+    /**
+     * The user may bind to the <code>currentIteration</code> when the
+     * repetition instantiates a new iteration.  The template guarantees that
+     * child components can safely bind to the containing repetition.
+     *
+     * At present, you cannot bind to a grandparent repetition's
+     * <code>currentIteration</code>, so it becomes the responsibility of the
+     * parent repetition to bind its parent repetition's
+     * <code>currentIteration</code> to a property of itself so its children
+     * can access their grandparent.
+     */
+    currentIteration: {value: null},
 
-                } else {
-                    // otherwise we need to defer it until later; we haven't been deserialized yet
-                    if (!this._controllerBindingsToInstall) {
-                        this._controllerBindingsToInstall = {};
-                    }
+    /**
+     * The user may bind the the <code>currentIteration.object</code> with this
+     * shorthand.
+     */
+    contentAtCurrentIteration: {value: null},
 
-                    this._controllerBindingsToInstall.objects = objectsBindingDescriptor;
-                    this._controllerBindingsToInstall.selectedIndexes = selectedIndexesBindingDescriptor;
-                }
-            }
 
-            //TODO otherwise if no contentController should we disable selections?
+    // For the template:
+    // ----
+
+    /**
+     * Informs the super-type, <code>Component</code>, that there is no
+     * <code>repetition.html</code>.
+     * @private
+     */
+    hasTemplate: {value: false},
+
+    /**
+     * A copy of <code>innerTemplate</code>, provided by the
+     * <code>Component</code> layer, that produces the HTML and components for
+     * each iteration.  If this property is <code>null</code>, it signifies
+     * that the template is in transition, either during initialization or due
+     * to resetting <code>innerTemplate</code>.  In either case, it is a
+     * reliable indicator that the repetition is responding to controller
+     * iteration range changes, since that requires a functioning template.
+     * @private
+     */
+    _iterationTemplate: {value: null},
+
+    /**
+     * Informs Template that it is not safe to reference the initial DOM
+     * contents of the repetition.
+     * @see Component.clonesChildComponents
+     * @private
+     */
+    clonesChildComponents: {value: true},
+
+
+    // Implementation:
+    // ----
+
+    /**
+     * @private
+     */
+    didCreate: {
+        value: function () {
+            Object.getPrototypeOf(Repetition).didCreate.call(this);
+
+            // XXX Note: Any property added to initialize in didCreate must
+            // also be accounted for in _teardownIterationTemplate to reset the
+            // repetition.
+
+            // Knobs:
+            this.contentController = null;
+            // Determines whether the repetition listens for mouse and touch
+            // events to select iterations, which involves "activating" the
+            // iteration when the user touches.
+            this.isSelectionEnabled = false;
+            this.defineBinding("selection", {
+                "<->": "contentController.selection"
+            });
+            this.defineBinding("selectedIterations", {
+                "<-": "iterations.filter{selected}"
+            });
+            this.defineBinding("selectedIndexes", {
+                "<-": "iterations.map{index}"
+            });
+
+            // The state of the DOM:
+            // ---
+
+            // The template that gets repeated in the DOM
+            this._iterationTemplate = null;
+
+            // React to changes to the inner template by setting up a new
+            // iteration template and purging all obsolete iterations.
+            this.addOwnPropertyChangeListener("innerTemplate", this);
+
+            // The "iterations" array tracks "_controllerIterations"
+            // synchronously.  Each iteration corresponds to controlled content
+            // at its visible position.  An iteration has an instance of the
+            // iteration template / inner template.
+            this.iterations = [];
+            // The "_drawnIterations" array gets synchronized with
+            // "iterations" by applying draw operations when "Repetition.draw"
+            // occurs.
+            this._drawnIterations = [];
+            // Iteration content can be reused.  When an iteration is collected
+            // (and when it is initially created), it gets put in the
+            // _freeIterations list.
+            this._freeIterations = []; // push/pop LIFO
+            // Whenever an iteration template is instantiated, it may have
+            // bindings to the repetition's "contentAtCurrentIteration".  The
+            // repetition delegates "contentAtCurrentIteration" to a mapping
+            // from iterations to content, which it can dynamically update as
+            // the iterations are reused, thereby updating the bindings.
+            this._contentForIteration = Map();
+            // We track the direct child nodes of every iteration so we can
+            // look up which iteration a mouse or touch event occurs on, for
+            // the purpose of selection tracking.
+            this._iterationForElement = Map();
+            // This variable is updated in the context of deserializing the
+            // iteration template so bindings to "contentAtCurrentIteration" are
+            // attached to the proper "iteration".  The "_contentForIteration"
+            // provides the level of indirection that allows iterations to be
+            // paired with different content during their lifetime, but the
+            // template and components for each iteration will always be tied
+            // to the same Iteration instance.
+            this.currentIteration = null;
+            // A memo key used by Template.createWithComponent to uniquely
+            // identify this repetition (and equivalent instances if this is
+            // nested in another repetition) so that it can memoize the
+            // template instance:
+            this._templateId = null;
+
+            // This promise synchronizes the creation of new iterations.
+            this._iterationCreationPromise = Promise.resolve();
+
+            // Where we want to be after the next draw:
+            // ---
+
+            // Use a range content binding to synchronize our local copy of the
+            // controller.iterations. This ensures that this repetition owns
+            // its _controllerIterations array, that it will never be replaced,
+            // and that we can safely add and remove content range change
+            // listener.
+            this._controllerIterations = [];
+            // Ascertains that _controllerIterations does not get changed by
+            // the controller, but the changes are projected on our array.
+            this.defineBinding("_controllerIterations.rangeContent()", {
+                "<-": "contentController.iterations",
+                "serializable": false
+            });
+            // The _boundaries array contains comment nodes that serve as the
+            // top and bottom boundary of each iteration.  There will always be
+            // one more boundary than iteration.
+            this._boundaries = [];
+
+            // The plan for the next draw to synchronize _controllerIterations
+            // and iterations on the DOM:
+            // ---
+
+            this._dirtyClassListIterations = Set();
+            // We can draw when we have created all requested iterations.
+            this._requestedIterations = 0;
+            this._createdIterations = 0;
+            this._canDrawInitialContent = false;
+            this._initialContentDrawn = false;
+
+            // Selection gestures
+            // ------------------
+
+            this.addOwnPropertyChangeListener("isSelectionEnabled", this);
+            // Used by selection tracking (last part of Repetition
+            // implementation) to track which selection pointer the repetition
+            // is monitoring
+            this._selectionPointer = null;
+            // This is a list of iterations that are active.  It is maintained
+            // entirely by a bidirectional binding to each iteration's "active"
+            // property, which in turn manages the "active" class on each
+            // element in the iteration in the draw cycle.  Iterations are
+            // activated by gestures when selection is enabled, and can also be
+            // managed manually for a cursor, as in an autocomplete drop-down.
+            // TODO Provide some assurance that the activeIterations will
+            // always appear in the same order as they appear in the iterations
+            // list.
+            this.activeIterations = [];
 
         }
     },
-/**
-  Description TODO
-  @private
-*/
-    _objects: {
-        enumerable: false,
-        value: null
+
+    /**
+     * Prepares this component and all its children for garbage collection
+     * (permanently) or reuse.
+     *
+     * @param permanently whether to cancel bindings on this component
+     * and all of its descendants in the component tree.
+     */
+    cleanupDeletedComponentTree: {
+        value: function (permanently) {
+            if (this._iterationTemplate) {
+                this._teardownIterationTemplate();
+            }
+            if (permanently) {
+                this.cancelBindings();
+            }
+        }
     },
 
-    _mappedObjects: {
-        enumerable: false,
-        value: null
+    // Creating an iteration template:
+    // ----
+
+    /**
+     * Called by Component to build the component tree, conveniently abused
+     * here to set up an iteration template since we know that this method is
+     * called after the inner template becomes available and after
+     * <code>didCreate</code>.  We must set up the iteration template after
+     * creation because the deserializer would interfere with instantiating the
+     * inner template.
+     * @private
+     */
+    // TODO @aadsm, are the comments above and below still true, or could we
+    // put _setupIterationTemplate in didCreate again?
+    expandComponent: {
+        value: function expandComponent() {
+            // "_isComponentExpanded" is used by Component to determine whether
+            // the node of the component object hierarchy is traversable.
+            // We can't set up the iteration template during "didCreate"
+            // because it would interfere with the active deserialization
+            // process.  We wait until the deserialization is complete and the
+            // template is fully instantiated so we can capture all the child
+            // components and DOM elements.
+            if (!this._iterationTemplate) {
+                this._setupIterationTemplate();
+            }
+            this._isComponentExpanded = true;
+            return Promise.resolve();
+        }
     },
-/**
-        Description TODO
-        @type {Function}
-        @default null
-    */
-    objects: {
-        dependencies: ["indexMap", "indexMapEnabled"],
-        enumerable: false,
-        serializable: true,
-        get: function() {
-            if (!this.indexMap || !this.indexMapEnabled) {
-                return this._objects;
+
+    /**
+     * The initial innerTemplate is provided by the Component system and is a
+     * facility for cloning the HTML and child components that a repetition
+     * contains.  The innerTemplate may be replaced at any time by another
+     * component in order to provide an alternate template to repeat.
+     * @private
+     */
+    handleInnerTemplateChange: {
+        value: function () {
+            if (this._iterationTemplate) {
+                this._teardownIterationTemplate();
+            }
+            this._setupIterationTemplate();
+        }
+    },
+
+    /**
+     * When a template contains a repetition, the deserializer produces a
+     * repetition instance that initially contains a single iteration's worth of
+     * DOM nodes and components.  To create an iteration template, we must
+     * reserialize the repetition component in isolation, with just its element
+     * and child components.  To accomplish this, set up a temporary
+     * serializer
+     *
+     * Note that this function must be called on demand for the first iteration
+     * needed because it cannot be called in didCreate.  Setting up the
+     * iteration template would interfere with normal deserialization.
+     *
+     * @private
+     */
+    // TODO aadsm: is all this true still? - @kriskowal
+    _setupIterationTemplate: {
+        value: function () {
+
+            // We shouldn't set up the iteration template if the repetition
+            // received new content, we'll wait until contentDidLoad is called.
+            // The problem is that the new components from the new DOM are
+            // already in the component tree but not in the DOM, and since this
+            // function removes the child components from the repetition we
+            // lose them forever.
+            // TODO @aadsm: this is part of the chicken-and-egg problem the
+            // draw cycle current has, the DrawManager will solve this.
+            if (this._newDomContent || this._shouldClearDomContentOnNextDraw) {
+                return;
+            }
+
+            if (this.innerTemplate.hasParameters()) {
+                this._iterationTemplate = this.innerTemplate.clone();
+                this._expandIterationTemplateParameters();
             } else {
-                if (this._objects && !this._mappedObjects) {
-                    this._mappedObjects = this.indexMap.map(function(value) {
-                        return !isNaN(value) ? this._objects.getProperty(value) : undefined;
-                    }, this);
-                }
-                return this._mappedObjects;
-            }
-        },
-        set: function(value) {
-            if (logger.isDebug) {
-                logger.debug(this, " set objects:", (value ? value.length : null), value, "same objects?", value === this._objects);
+                this._iterationTemplate = this.innerTemplate;
             }
 
-            this._mappedObjects = null;
-            this._objects = value;
-
-            // Objects have changed, clear the selectedIndexes, if we're managing our own selection
-            if (!this.contentController) {
-                this.selectedIndexes = null;
+            // Erase the initial child component trees. The initial document
+            // children will be purged on first draw.  We use the innerTemplate
+            // as the iteration template and replicate it for each iteration
+            // instead of using the initial DOM and components.
+            var childComponent;
+            // pop() each component instead of shift() to avoid bubbling the
+            // indexes of each child component on every iteration.
+            while ((childComponent = this.childComponents.pop())) {
+                childComponent.needsDraw = false;
+                childComponent.cleanupDeletedComponentTree(true); // cancel bindings, permanent
             }
 
-            //if (this._isComponentExpanded) {
-            //    this._refreshItems();
-            //}
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _isSelectionEnabled: {
-        enumerable: false,
-        value: false
-    },
-/**
-        Description TODO
-        @type {Function}
-        @default {Boolean} false
-    */
-    isSelectionEnabled: {
-        get: function() {
-            return this._isSelectionEnabled;
-        },
-        set: function(value) {
-            if (value === this._isSelectionEnabled) {
-                return;
-            }
+            // Begin tracking the controller iterations.  We manually dispatch
+            // a range change to track all the iterations that have come and gone
+            // while we were not watching.
+            this.handleControllerIterationsRangeChange(this._controllerIterations, [], 0);
+            // Dispatches handleControllerIterationsRangeChange:
+            this._controllerIterations.addRangeChangeListener(this, "controllerIterations");
 
-            this._isSelectionEnabled = value;
-
-            if (this._isComponentExpanded) {
-                this._refreshSelectionTracking();
-            }
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _childLoadedCount: {
-        enumerable: false,
-        value: 0
-    },
-/**
-  Description TODO
-  @private
-*/
-    _iterationChildComponentsCount: {
-        enumerable: false,
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
-    _expectedChildComponentsCount: {
-        enumerable: false,
-        value: null
-    },
-
-    _indexMap: {
-        enumerable: false,
-        value: null
-    },
-
-    indexMap: {
-        get: function() {
-            return this._indexMap;
-        }
-    },
-
-    _indexMapEnabled: {
-        enumerable: false,
-        value: false
-    },
-
-    indexMapEnabled: {
-        get: function() {
-            return this._indexMapEnabled;
-        },
-        set: function(value) {
-            if (value === this._indexMapEnabled) {
-                return;
-            }
-
-            if (!this._indexMap && value) {
-                this._indexMap = [];
-            }
-
-            this._indexMapEnabled = value;
-
-            this.refreshIndexMap();
-        }
-    },
-
-    _drawnIndexMap: {
-        enumerable: false,
-        value: null
-    },
-
-    drawnIndexMap: {
-        get: function() {
-            return this._drawnIndexMap;
-        }
-    },
-
-    mapIndexToIndex: {
-        value: function(actual, apparent, update) {
-
-            if (!this._indexMap) {
-                this._indexMap = [];
-            }
-
-            if (apparent === this._indexMap[actual] || (!isNaN(apparent) && this._indexMap.indexOf(apparent) > -1)) {
-                return;
-            }
-
-            this._indexMap[actual] = apparent;
-
-            // Track that the indexMap changed what is appearing at the given index
-            // so that we can force it to not transition
-            this._indexMapAffectedIndexes[actual] = true;
-            this._indexMapChanged = true;
-
-            // Don't update if the end-user forced no update, they might be doing a bunch of modifications
-            // and want to manually refresh the indexMap when they're done.
-            if (update || typeof update === "undefined") {
-                this.refreshIndexMap();
-            }
-        }
-    },
-
-    clearIndexMap: {
-        value: function() {
-            this._indexMap.clear();
-        }
-    },
-
-    refreshIndexMap: {
-        value: function() {
-            var oldMappedObjects = this._mappedObjects;
-            this._mappedObjects = null;
-
-            if (this._isComponentExpanded) {
-                this._updateItems(oldMappedObjects, this.objects, 0);
-                this.needsDraw = true;
-            }
-        }
-    },
-
-    _indexMapChanged: {
-        enumerable: false,
-        value: false
-    },
-
-    _indexMapAffectedIndexes: {
-        enumerable: false,
-        distinct: true,
-        value: {}
-    },
-
-    _dirtyIndexes: {
-        enumerable: false,
-        distinct: true,
-        value: {}
-    },
-
- /**
-  Description TODO
-  @private
-*/
-    _items: {
-        enumerable: false,
-        value: [],
-        distinct: true
-    },
-/**
-  Description TODO
-  @private
-*/
-    _itemsToAppend: {
-        enumerable: false,
-        value: [],
-        distinct: true
-    },
-/**
-  Description TODO
-  @private
-*/
-    _itemsToRemove: {
-        enumerable: false,
-        value: [],
-        distinct: true
-    },
-/**
-  Description TODO
-  @private
-*/
-    _deletedItems: {
-        enumerable: false,
-        value: [],
-        distinct: true
-    },
-/**
-  Description TODO
-  @private
-*/
-    _updatingItems: {
-        value: false
-    },
-/**
-  Description TODO
-  @private
-*/
-    _refreshItems: {
-        value: function() {
-            if (this._updatingItems) {
-                return;
-            }
-            this._updatingItems = true;
-
-            var objectCount = this._objects ? this._objects.length : 0,
-                itemCount = this._items.length + this._itemsToAppend.length,
-                neededItemCount,
-                i,
-                addItem = this._addItem,
-                deleteItem = this._deleteItem;
-
-            if (this._objects && this.indexMap && this._indexMapEnabled) {
-                objectCount = this.indexMap.length;
-            }
-
-            neededItemCount = objectCount - itemCount;
-
-            // TODO: this needs to be here because the repetition might be ready to draw during a call to _addItem (if all modules are already loaded).
-            // The problem is that when the gate is open, and the repetition hasn't ask to be drawn, the _canDraw = true will never happen and it will not happen when needsDraw = true afterwards. This kind of sucks because it means the needsDraw=true and the opening of the Gate needs to be in the correct order.
-            // needsDraw should do _canDraw = true if the gate was opened, but we need to be careful since _canDraw=true only works if there was a previous _canDraw=false.
-            if (0 !== neededItemCount) {
-                this.needsDraw = true;
-            }
-
-            // TODO what if instead of actually adding/removing (effectively loading and unloading child components) at this
-            // point, we instead only changed the count or something about how many items are needed...
-            // only after that count is changed such that we know how many items we will need to load
-            // do we then try to add them
-            // each one of these addItem calls triggers a refreshItems
-            // or well I'm trying a flag right
-            // http://jsperf.com/direct-vs-dynamic-call
-            if (neededItemCount > 0) {
-                // _addItem might be completly synchrounous since we cache both template and deserializer so we need to set this before adding any item otherwise it will trigger a draw after every iteration template instantiation.
-                this._expectedChildComponentsCount += (this._iterationChildComponentsCount||1) * neededItemCount;
-                this.canDrawGate.setField("iterationLoaded", false);
-                // Need to add more items
-                for (i = 0; i < neededItemCount; i++) {
-                    addItem.call(this);
-                }
-            } else if (neededItemCount < 0) {
-                // Need to remove extra items
-                for (i = neededItemCount; i < 0; i++) {
-                    deleteItem.call(this);
-                }
-            }
-
-            this._updatingItems = false;
-            // Otherwise, no change in length; don't add or remove items
-            // bindings should already be in place
-        }
-    },
-
-    _addItems: {
-        value: function(plus, index) {
-            var length = plus.length;
-
-            if (this._updatingItems) {
-                return;
-            }
-            this._updatingItems = true;
-
-            this._expectedChildComponentsCount += (this._iterationChildComponentsCount||1) * length;
-            this.canDrawGate.setField("iterationLoaded", false);
-
-            for (var i = 0; i < length; i++) {
-                this._addItem({index: index + i, insertionIndex: index + i});
-            }
-
-            this._updatingItems = false;
-        }
-    },
-
-/**
-  Description TODO
-  @private
-*/
-    _addItem: {value: function(item) {
-        var self = this,
-            items = this._items,
-            childComponents,
-            childComponent,
-            componentsCount,
-            index,
-            itemsToAppend = this._itemsToAppend,
-            itemsToAppendCount,
-            componentStartIndex,
-            componentEndIndex,
-            canDrawGate = self.canDrawGate,
-            i;
-
-        // TODO simply pop from deletedItems if we have any in that pool
-        if (!item) {
-            item = {};
-        }
-
-        // TODO when do we actually consider the item part of the "items" array? now or after drawing?
-        // right now I think we want to say if it's not in the DOM; it's not in the items list
-        // for clarity sake
-        itemsToAppendCount = itemsToAppend.push(item) - 1;
-        index = items.length + itemsToAppendCount;
-
-        if ("index" in item) {
-            for (i = 0; i < itemsToAppendCount; i++) {
-                var itemToAppend = itemsToAppend[i];
-                if (itemToAppend.index >= item.index) {
-                    itemToAppend.index++;
-                }
-            }
-        }
-
-        self._canDraw = false;
-        componentsCount = this._iterationChildComponentsCount;
-
-        this._iterationTemplate.instantiateWithComponent(this, function() {
-            if (componentsCount === 0) {
-                if (++self._childLoadedCount === self._expectedChildComponentsCount) {
-                    canDrawGate.setField("iterationLoaded", true);
-                    self.needsDraw = true;
-                }
-            } else {
-                childComponents = self.childComponents;
-                componentStartIndex = index * self._iterationChildComponentsCount;
-                componentEndIndex = componentStartIndex + componentsCount;
-                for (i = componentStartIndex; i < componentEndIndex; i++) {
-                    childComponent = childComponents[i];
-                    childComponent.needsDraw = true;
-                    childComponent.loadComponentTree(function() {
-                        if (++self._childLoadedCount === self._expectedChildComponentsCount) {
-                            canDrawGate.setField("iterationLoaded", true);
-                            self.needsDraw = true;
-                        }
-                    });
-                }
-            }
-        });
-    }},
-/**
-  Description TODO
-  @private
-*/
-    _deleteItem: {
-        value: function(index) {
-            var deletedItem,
-                itemIndex = index,
-                removedComponents,
-                childComponents = this.childComponents,
-                childComponentsCount = this._iterationChildComponentsCount,
-                itemsToAppend = this._itemsToAppend,
-                itemsToAppendCount = itemsToAppend.length,
-                itemWasToBeAppended = false,
-                removedItemsBeforeIndexCount = 0;
-
-
-            for (var i = 0; i < itemsToAppendCount; i++) {
-                var itemToAppend = itemsToAppend[i];
-                if (itemToAppend.index > index) {
-                    itemToAppend.index--;
-                } else if (itemToAppend.index < index) {
-                    removedItemsBeforeIndexCount++;
-                } else {
-                    itemWasToBeAppended = itemToAppend.removed = true;
-                }
-            }
-
-            if (!itemWasToBeAppended) {
-                if (this._items.length > 0) {
-                    itemIndex = index - removedItemsBeforeIndexCount;
-
-                    deletedItem = this._items.splice(itemIndex, 1)[0];
-                    deletedItem.removalIndex = itemIndex;
-                    this._itemsToRemove.push(deletedItem);
-                } else {
-                    throw "BUG: _deleteItem was called on the repetition but no elements exist to be removed";
-                }
-
-                this._removeIterationChildComponents(deletedItem.childComponentsIndex);
-            }
-
+            this._canDrawInitialContent = true;
             this.needsDraw = true;
         }
     },
 
+    /**
+     * This method is used both in <code>cleanupDeletedComponentTree</code> and
+     * the internal <code>handleInnerTemplateChange</code> functions, to
+     * retract all drawn iterations from the document, prepare all allocated
+     * iterations for garbage collection, and pause observation of the
+     * controller's iterations.
+     * @private
+     */
+    _teardownIterationTemplate: {
+        value: function () {
 
-    _removeIterationChildComponents: {
-        value: function(index) {
-            var childComponents = this.childComponents,
-                childComponentsCount = this._iterationChildComponentsCount,
-                removedComponents,
-                items, item;
+            // stop listenting to controller iteration changes until the new
+            // iteration template is ready.  (at which point we will manually
+            // dispatch handleControllerIterationsRangeChange with the entire
+            // content of the array when _setupIterationTemplate has finished)
+            this._controllerIterations.removeRangeChangeListener(this, "controllerIterations");
+            // simulate removal of all iterations from the controller to purge
+            // the iterations and _drawnIterations.
+            this.handleControllerIterationsRangeChange([], this._controllerIterations, 0);
 
-            if (childComponentsCount > 0) {
-                removedComponents = childComponents.splice(index, childComponentsCount);
-                this._childLoadedCount -= childComponentsCount;
-                this._expectedChildComponentsCount -= childComponentsCount;
-                for (var i = 0, l = removedComponents.length; i < l; i++) {
-                    removedComponents[i].cleanupDeletedComponentTree(true);
+            // prepare all the free iterations and their child component trees
+            // for garbage collection
+            for (var i = 0; i < this._freeIterations.length; i++) {
+                var iteration = this._freeIterations[i];
+                for (var j = 0; j < iteration._childComponents.length; j++) {
+                    var childComponent = iteration._childComponents[j];
+                    childComponent.cleanupDeletedComponentTree(true); // true cancels bindings
                 }
-                items = this._items;
-                for (var i = 0; item = items[i]; i++) {
-                    if (item.childComponentsIndex > index) {
-                        item.childComponentsIndex -= childComponentsCount;
+            }
+
+            // purge the existing iterations
+            this._iterationTemplate = null;
+            this._freeIterations.clear();
+            this._contentForIteration.clear();
+            this._iterationForElement.clear();
+            this.currentIteration = null;
+            this._templateId = null;
+            this._requestedIterations = 0;
+            this._createdIterations = 0;
+            this._canDrawInitialContent = false;
+            this._initialContentDrawn = false;
+            this._selectionPointer = null;
+            this.activeIterations.clear();
+            this._dirtyClassListIterations.clear();
+        }
+    },
+
+    _expandIterationTemplateParameters: {
+        value: function() {
+            var template = this._iterationTemplate,
+                owner = this,
+                argumentsTemplate,
+                collisionTable,
+                reverseCollisionTable,
+                externalLabels,
+                objects,
+                instances;
+
+            // Crawl up the template chain while there are parameters to expand
+            // in the iteration template.
+            while (template.hasParameters()) {
+                owner = owner.ownerComponent;
+                argumentsTemplate = owner._ownerDocumentPart.template;
+                objects = owner._ownerDocumentPart.objects;
+
+                collisionTable = template.expandParameters(argumentsTemplate, owner);
+
+                // Associate the new external objects with the objects in the
+                // instantiation of argumentsTemplate.
+                externalLabels = template.getSerialization()
+                    .getExternalObjectLabels();
+
+                if (externalLabels.length > 0) {
+                    // collisionTable give us "oldLabel" => "newLabel" mapping
+                    // but we need "newLabel" => "oldLabel" mapping.
+                    reverseCollisionTable = Object.create(null);
+                    for (var key in collisionTable) {
+                        reverseCollisionTable[collisionTable[key]] = key;
+                    }
+
+                    instances = template.getInstances();
+
+                    for (var i = 0, label; (label = externalLabels[i]); i++) {
+                        if (label in instances) {
+                            // This external object already has an instance
+                            // associated with.
+                            continue;
+                        }
+
+                        if (label in reverseCollisionTable) {
+                            instances[label] = objects[reverseCollisionTable[label]];
+                        } else {
+                            instances[label] = objects[label];
+                        }
                     }
                 }
-                items = this._itemsToAppend;
-                for (var i = 0; item = items[i]; i++) {
-                    if (item.childComponentsIndex > index) {
-                        item.childComponentsIndex -= childComponentsCount;
-                    }
-                }
+            }
+        }
+    },
+
+    // Instantiating an iteration template:
+    // ----
+
+    /**
+     * We can only create one iteration at a time because it is an asynchronous
+     * operation and the "repetition.currentIteration" property may be bound
+     * during this process.  If we were to attempt to instantiate multiple
+     * iterations asynchronously, currentIteration and contentAtCurrentIteration
+     * bindings would get interleaved.  The "_iterationCreationPromise"
+     * synchronizes "createIteration", ensuring we only create one at a time,
+     * waiting for the previous to either succeed or fail before attempting
+     * another.
+     * @private
+     */
+    _iterationCreationPromise: {value: null},
+
+    /**
+     * Creates a new iteration and sets up a new instance of the iteration
+     * template.  Ensures that only one iteration is being instantiated at a
+     * time to guarantee that <code>currentIteration</code> can be reliably
+     * bound to the particular iteration.
+     * @private
+     */
+    _createIteration: {
+        value: function () {
+            var self = this,
+                iteration = this.Iteration.create();
+
+            this._iterationCreationPromise = this._iterationCreationPromise
+            .then(function() {
+                var _document = self.element.ownerDocument;
+
+                self.currentIteration = iteration;
+
+                var promise = self._iterationTemplate.instantiate(_document)
+                .then(function (part) {
+                    iteration._childComponents = part.childComponents;
+                    iteration._fragment = part.fragment;
+                    part.childComponents.forEach(function (component) {
+                        self.addChildComponent(component);
+                    });
+                    part.loadComponentTree().then(function() {
+                        self.didCreateIteration(iteration);
+                    }).done();
+                    self.currentIteration = null;
+                })
+
+                promise.done(); // radiate an error if necessary
+                return promise.then(null, function () {
+                    // but regardless of whether this iteration failed, allow
+                    // another iteration to be created
+                });
+            })
+
+            this._requestedIterations++;
+            return iteration;
+        }
+    },
+
+    /**
+     * @private
+     */
+    // This utility method is shared by two special cases for the completion of
+    // _createIteration.
+    didCreateIteration: {
+        value: function (iteration) {
+            iteration.initWithRepetition(this);
+            this._createdIterations++;
+
+            if (this._createdIterations >= this._requestedIterations) {
+                this.needsDraw = true;
+                // TODO: When we change the canDraw() function of a component
+                // we need to _canDraw = true whenever we request a draw.
+                // This is because if the component gets into a state where it
+                // is part of the draw cycle but not able to draw (canDraw()
+                // === false) its needsDraw property is not set to false and
+                // further needsDraw = true will result in a noop, the only way
+                // to make the component draw again is by informing the root
+                // component directly that it can draw now, and this is done by
+                // _canDraw = true. Another option is to make its parent draw,
+                // but we probably don't want that.
+                this._canDraw = true;
+            }
+        }
+    },
+
+    /**
+     * This ties <code>contentAtCurrentIteration</code> to an iteration.
+     * <code>currentIteration</code> is only current in the stack of
+     * instantiating a template, so this method is a hook that the redirects
+     * <code>contentAtCurrentIteration</code> property change listeners to a map
+     * change listener on the <code>_contentForIteration</code> map instead.
+     * The binding then reacts to changes to the map as iterations are reused
+     * with different content at different positions in the DOM.
+     * @private
+     */
+    observeProperty: {
+        value: function (key, emit, source, parameters, beforeChange) {
+            if (key === "contentAtCurrentIteration" || key === "objectAtCurrentIteration") {
+                // delegate to the mapping from iterations to content for the
+                // current iteration
+                return observeKey(
+                    this._contentForIteration,
+                    this.currentIteration,
+                    emit,
+                    source,
+                    parameters,
+                    beforeChange
+                );
+            } else if (key === "currentIteration") {
+                // Shortcut since this property is sticky -- won't change in
+                // the course of instantiating an iteration and should not
+                // dispatch a change notification when we instantiate the next.
+                return emit(this.currentIteration);
             } else {
-                this._childLoadedCount--;
-                this._expectedChildComponentsCount--;
+                // fall back to normal property observation
+                return observeProperty(
+                    this,
+                    key,
+                    emit,
+                    source,
+                    parameters,
+                    beforeChange
+                );
             }
         }
     },
 
-    _iterationTemplate: {
-        enumerable: false,
-        value: null
-    },
-/**
-    Description TODO
-    @function
-    @param {Function} callback The callback method.
-    */
-    expandComponent: {value: function expandComponent(callback) {
-        if (!this._updatingItems) {
-            this._setupIterationTemplate();
-        }
-        this._isComponentExpanded = true;
-        if (callback) {
-            callback();
-        }
-    }},
-
-    // we don't want to reinitialize the ownerComponent again
-    templateDidDeserializeObject: {
-        value: null
-    },
-
-    _setupIterationTemplate: {
-        value: function() {
-            var element = this._element,
-                childComponents = this.childComponents,
-                childComponent;
-
-            this.setupIterationSerialization();
-            this.setupIterationDeserialization();
-            this._iterationChildComponentsCount = childComponents.length;
-            this._iterationChildCount = element.childNodes.length;
-            this._iterationChildElementCount = element.children.length;
-
-            if (this._iterationChildComponentsCount > 0) {
-                this._templateId = childComponents[0]._suuid || childComponents[0].uuid;
-                this._iterationTemplate = Template.templateWithComponent(this, this._templateDelegate);
-            } else {
-                this._iterationTemplate = Template.create();
-                this._iterationTemplate.delegate = this._templateDelegate;
-                this._iterationTemplate.initWithComponent(this);
-            }
-            this._iterationTemplate.optimize();
-            this._removeOriginalContent = true;
-
-            if (logger.isDebug) {
-                logger.debug(this._iterationTemplate.exportToString());
-            }
-
-            // just needed to create the iteration Template, so we get rid of it.
-            this.removeIterationSerialization();
-
-            while ((childComponent = childComponents.shift())) {
-                childComponent.needsDraw = false;
-            }
-
-            if (this.objects && (this.objects.length !== this._items.length)) {
-                this._updateItems([], this.objects, 0);
+    /**
+     * This makes bindings to <code>currentIteration</code> stick regardless of
+     * how the repetition manipulates the property, and prevents a
+     * getter/setter pair from being attached to the property.
+     * <code>makePropertyObservable</code> is called by in the
+     * <code>listen/property-changes</code> module in the Collections package.
+     * @private
+     */
+    makePropertyObservable: {
+        value: function (key) {
+            if (key !== "currentIteration") {
+                return Montage.makePropertyObservable.call(this, key);
             }
         }
     },
 
-    _templateDelegate: {
-        value: {
-            serializeObjectProperties: function(serializable, object) {
-                serializable.set("ownerComponent", object.ownerComponent, "reference");
+    // Reacting to changes in the controlled visible content:
+    // ----
+
+    /**
+     * The content controller produces an array of iterations.  The controller
+     * may come and go, but each instance of a repetition has its own array to
+     * track the corresponding content controller's content, which gets emptied
+     * and refilled by a range content binding  when the controller changes.
+     * This is to simplify management of the repetition's controller iterations
+     * range change listener.
+     *
+     * The controller iterations themselves instruct the repetition to display
+     * an iteration at the corresponding position, and provide a convenient
+     * interface for getting and setting whether the corresponding content is
+     * selected.
+     * @private
+     */
+    _controllerIterations: {value: null},
+
+    /**
+     * The drawn iterations get synchronized with the <code>iterations</code>
+     * array each time the repetition draws.  The <code>draw</code> method
+     * simply walks down the iterations and drawn iterations arrays, redacting
+     * drawn iterations if they are not at the correct position and injecting
+     * the proper iteration from the model in its place.
+     * @private
+     */
+    _drawnIterations: {value: null},
+
+    /**
+     * @private
+     */
+    _freeIterations: {value: null},
+
+    /**
+     * @private
+     */
+    _contentForIteration: {value: null},
+
+    /**
+     * @private
+     */
+    _childComponentsPerIteration: {value: null},
+
+    /**
+     * In responses to changes in the controlled
+     * <code>_controllerIterations</code> array, this method creates a plan to
+     * add and delete iterations with their corresponding DOM elements on the
+     * next "draw" event.  This may require more iterations to be constructed
+     * before the next draw event.
+     * @private
+     */
+    handleControllerIterationsRangeChange: {
+        value: function (plus, minus, index) {
+
+            // Subtract iterations
+            var freedIterations = this.iterations.splice(index, minus.length);
+            freedIterations.forEach(function (iteration) {
+                // Notify these iterations that they have been recycled,
+                // particularly so they know to disable animations with the
+                // "no-transition" CSS class.
+                iteration.recycle();
+            });
+            // Add them back to the free list so they can be reused
+            this._freeIterations.addEach(freedIterations);
+            // Create more iterations if we will need them
+            while (this._freeIterations.length < plus.length) {
+                this._freeIterations.push(this._createIteration());
+            }
+            // Add iterations
+            this.iterations.swap(index, 0, plus.map(function (controller, offset) {
+                var iteration = this._freeIterations.pop();
+                // Update the corresponding controller.  This updates the
+                // "object" and "selected" bindings.
+                iteration.controller = controller;
+                // This updates the "repetition.contentAtCurrentIteration"
+                // bindings.
+                this._contentForIteration.set(iteration, controller.object);
+                return iteration;
+            }, this));
+            // Update indexes for all subsequent iterations
+            this._updateIndexes(index);
+
+            this.needsDraw = true;
+
+        }
+    },
+
+    /**
+     * Used by handleControllerIterationsRangeChange to update the controller
+     * index of every iteration following a change.
+     * @private
+     */
+    _updateIndexes: {
+        value: function (index) {
+            var iterations = this.iterations;
+            for (; index < iterations.length; index++) {
+                iterations[index].index = index;
             }
         }
     },
 
-    // called on iteration instantiation
-    templateDidLoad: {value: function() {
-        var item = this._deserializedItem,
-            children;
-
-        // if this iteration was removed in the meanwhile there's no
-        // _deserializedItem so we need to ignore this.
-        if (item) {
-            children = item.element.childNodes;
-            item.fragment = document.createDocumentFragment();
-            item.childComponentsIndex = this.childComponents.length - this._iterationChildComponentsCount;
-            while (children.length > 0) {
-                // As the nodes are appended to item.fragment they are removed
-                // from item.element, so always use index 0.
-                item.fragment.appendChild(children[0]);
-            }
-            delete item.element;
-        }
-    }},
-
-    contentWillChange: {
-        value: function(content) {
-            this._updatingItems = true;
-            this.reset();
-        }
-    },
-
-    contentDidChange: {
-        value: function() {
-            this._updatingItems = false;
-            this._setupIterationTemplate();
-        }
-    },
-
-    reset: {
-        value: function() {
-            this._items.clear();
-            this._itemsToAppend.clear();
-            this._nextDeserializedItemIx = 0;
-            this._itemsToRemove.clear();
-            this._deletedItems.clear();
-        }
-    },
-
-    deserializedFromTemplate: {value: function deserializedFromTemplate() {
-        if (this._isComponentExpanded) {
-            // this is setup just for the flattening of the template iteration, the iteration needs to be serialized once it's completely flatten.
-            this.setupIterationSerialization();
-        }
-        var controllerBindingDescriptorsToInstall = this._controllerBindingsToInstall,
-            key;
-
-        if (controllerBindingDescriptorsToInstall) {
-            for (key in controllerBindingDescriptorsToInstall) {
-                Object.defineBinding(this, key, controllerBindingDescriptorsToInstall[key]);
-            }
-            delete this._controllerBindingsToInstall;
-        }
-        this._hasBeenDeserialized = true;
-    }},
-
+    /**
+     * @private
+     */
     canDraw: {
-        value: function() {
-            var canDraw = this.canDrawGate.value, component, i, length = this.childComponents.length;
-            if (canDraw) {
-                for (i = 0; i < length; i++) {
-                    if (!this.childComponents[i].canDraw()) {
-                        canDraw = false;
-                        break;
-                    }
-                }
-            }
+        value: function () {
+            // block for the usual component-related issues
+            var canDraw = this.canDrawGate.value;
+
+            // block until we have created enough (iterations to draw
+            canDraw = canDraw && this._requestedIterations <= this._createdIterations;
+            // block until we can draw initial content if we have not already
+            canDraw = canDraw && (this._initialContentDrawn || this._canDrawInitialContent);
+
+            // TODO: we're going to comment this out for now at least because
+            // the repetition can get into a dead lock in the case of a nested
+            // repetition (a repetition that has another repetition as direct
+            // child component). It's possible to get into a state where the
+            // inner repetition will never be able to draw unless the outer
+            // repetition draws first. Hopefully the DrawManager will be able
+            // to solve this. - @aadsm
+            // block until all child components can draw
+            //if (canDraw) {
+            //    for (var i = 0; i < this.childComponents.length; i++) {
+            //        var childComponent = this.childComponents[i];
+            //        if (!childComponent.canDraw()) {
+            //            canDraw = false;
+            //        }
+            //    }
+            //}
+
             return canDraw;
         }
     },
-/**
-    Description TODO
-    @function
-    */
-    prepareForDraw: {
-        value: function() {
-            this._refreshSelectionTracking();
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _selectedIndexesToDeselectOnDraw: {
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
-    _selectedIndexes: {
-        value: null
-    },
-/**
-        Description TODO
-        @type {Function}
-        @default null
-    */
-    selectedIndexes: {
-        get: function() {
-            return this._selectedIndexes;
-        },
-        set: function(value) {
-            this._selectedIndexes = value;
 
-            this._markIndexesDirty(value);
+    /**
+     * An array of comment nodes that mark the boundaries between iterations on
+     * the DOM.  When an iteration is retracted, the top boundary gets
+     * retracted with it so the iteration at index N will always have boundary
+     * N above it and N + 1 below it.  There must always be one more boundary
+     * than there are iterations, representing the bottom boundary of the last
+     * iteration.  That boundary gets added in first draw.
+     * @private
+     */
+    _boundaries: {value: null},
 
-            if (this._isComponentExpanded) {
-                this.needsDraw = true;
+    /**
+     * A Set of iterations that have changed their CSS classes that are managed
+     * by the repetition, "active", "selected", and "no-transition".
+     * @private
+     */
+    _dirtyClassListIterations: {value: null},
+
+    /**
+     * The cumulative number of iterations that _createIteration has started
+     * making.
+     * @private
+     */
+    _requestedIterations: {value: null},
+
+    /**
+     * The cumulative number of iterations that _createIteration has finished
+     * making.
+     * @private
+     */
+    _createdIterations: {value: null},
+
+    /**
+     * In the first draw, the repetition gets rid of its innerHTML, which was
+     * captured by the innerTemplate, and replaces it with the bottom boundary
+     * marker comment.  This cannot be done until after the iteration template
+     * is ready.
+     *
+     * This cycle may occur again if the innerTemplate is replaced.
+     * @private
+     */
+    _canDrawInitialContent: {value: null},
+
+    /**
+     * Indicates that the first draw has come and gone and the repetition is
+     * ready for business.
+     * @private
+     */
+    _initialContentDrawn: {value: null},
+
+    /**
+     * @private
+     */
+    draw: {
+        value: function () {
+
+            if (!this._initialContentDrawn) {
+                this._drawInitialContent();
+                this._initialContentDrawn = true;
             }
-        }
-    },
 
-/**
-  Description TODO
-  @private
-*/
-    _activeIndexes: {
-        value: null
-    },
-/**
-        Description TODO
-        @type {Function}
-        @default null
-    */
-    activeIndexes: {
-        get: function() {
-            return this._activeIndexes;
-        },
-        set: function(value) {
+            // Update class lists
+            var iterations = this._dirtyClassListIterations.toArray();
+            // Note that the iterations list must be cleared first because we
+            // remove the "no-transition" class during the update if we find
+            // it, which in turn schedules another draw and adds the iteration
+            // back to the schedule.
+            this._dirtyClassListIterations.clear();
+            iterations.forEach(function (iteration) {
+                iteration.forEachElement(function (element) {
 
-            this._activeIndexes = value;
+                    if (iteration.selected) {
+                        element.classList.add("selected");
+                    } else {
+                        element.classList.remove("selected");
+                    }
 
-            this._markIndexesDirty(value);
+                    if (iteration.active) {
+                        element.classList.add("active");
+                    } else {
+                        element.classList.remove("active");
+                    }
 
-            if (this._isComponentExpanded) {
-                this.needsDraw = true;
+                    // While we're at it, if the "no-transition" class has been
+                    // added to this iteration, we will need to remove it in
+                    // the next draw to allow the iteration to animate.
+                    element.classList.remove("no-transition");
+                }, this);
+            }, this);
+
+            // Synchronize iterations and _drawnIterations
+
+            // Retract iterations that should no longer be visible
+            for (var index = this._drawnIterations.length - 1; index >= 0; index--) {
+                if (this._drawnIterations[index].index == null) {
+                    this._drawnIterations[index].retractFromDocument();
+                }
             }
-        }
-    },
 
-    _markIndexesDirty: {
-        value: function(indexes) {
-
-            if (indexes) {
-                for (var i = 0, indexCount = indexes.length; i < indexCount; i++) {
-                    this._dirtyIndexes[this._indexMap ? this._indexMap.indexOf(indexes[i]) : indexes[i]] = true;
+            // Inject iterations if they are not already in the right location
+            for (
+                var index = 0;
+                index < this.iterations.length;
+                index++
+            ) {
+                var iteration = this.iterations[index];
+                if (iteration._drawnIndex !== iteration.index) {
+                    iteration.injectIntoDocument(index);
                 }
             }
 
         }
     },
 
-/**
-  Description TODO
-  @private
-*/
-    _refreshSelectionTracking: {
-        value: function() {
+    /**
+     * @private
+     */
+    _drawInitialContent: {
+        value: function () {
+            var element = this.element;
+            element.innerHTML = "";
+            var bottomBoundary = element.ownerDocument.createComment("");
+            element.appendChild(bottomBoundary);
+            this._boundaries.push(bottomBoundary);
+        }
+    },
 
-            if (this.isSelectionEnabled) {
-                if (window.Touch) {
-                    this.element.addEventListener("touchstart", this, true);
-                } else {
-                    this.element.addEventListener("mousedown", this, true);
-                }
+    /**
+     * @private
+     */
+    // Used by the insertion and retraction operations to update the drawn
+    // indexes of every iteration following a change.
+    _updateDrawnIndexes: {
+        value: function (drawnIndex) {
+            var drawnIterations = this._drawnIterations;
+            for (; drawnIndex < drawnIterations.length; drawnIndex++) {
+                drawnIterations[drawnIndex]._drawnIndex = drawnIndex;
+            }
+        }
+    },
+
+    // Selection Tracking
+    // ------------------
+
+    /**
+     * If <code>isSelectionEnabled</code>, the repetition captures the pointer,
+     * preventing it from passing to parent components, for example for the
+     * purpose of scrolling.
+     * @private
+     */
+    _selectionPointer: {value: null},
+
+    /**
+     * @private
+     */
+    // Called by didCreate to monitor changes to isSelectionEnabled and arrange
+    // the appropriate event listeners.
+    handleIsSelectionEnabledChange: {
+        value: function (selectionTracking) {
+            if (selectionTracking) {
+                this._enableSelectionTracking();
             } else {
-                if (window.Touch) {
-                    this.element.removeEventListener("touchstart", this, true);
-                } else {
-                    this.element.removeEventListener("mousedown", this, true);
-                }
+                this._disableSelectionTracking();
             }
-
         }
     },
-/**
-  Description TODO
-  @private
-*/
-    _itemIndexOfElement: {
-        value: function (element) {
 
-            var repetitionChild = element,
-                itemIndex = null,
-                endOffsetAdjustment,
-                range;
+    /**
+     * @private
+     */
+    // Called by handleIsSelectionEnabledChange in response to
+    // isSelectionEnabled becoming true.
+    _enableSelectionTracking: {
+        value: function () {
+            this.element.addEventListener("touchstart", this, true);
+            this.element.addEventListener("mousedown", this, true);
+        }
+    },
 
-            // from the given element go up until we hit the repetitionElement;
-            // meaning the last element we hit is an immediate child of the repetition
-            if (repetitionChild === this.element) {
-                return itemIndex;
+    /**
+     * @private
+     */
+    // Called by handleIsSelectionEnabledChange in response to
+    // isSelectionEnabled becoming false.
+    _disableSelectionTracking: {
+        value: function () {
+            this.element.removeEventListener("touchstart", this, true);
+            this.element.removeEventListener("mousedown", this, true);
+        }
+    },
+
+    // ---
+
+    // Called by captureMousedown and captureTouchstart when a gesture begins:
+    /**
+     * @param pointerIdentifier an identifier that can be "mouse" or the
+     * "identifier" property of a "Touch" in a touch change event.
+     * @private
+     */
+    _observeSelectionPointer: {
+        value: function (pointerIdentifier) {
+            this._selectionPointer = pointerIdentifier;
+            this.eventManager.claimPointer(pointerIdentifier, this);
+
+            var document = this.element.ownerDocument;
+            // dispatches handleTouchend
+            document.addEventListener("touchend", this, false);
+            // dispatches handleTouchcancel
+            document.addEventListener("touchcacnel", this, false);
+            // dispatches handleMouseup
+            document.addEventListener("mouseup", this, false);
+            // TODO after significant mouse movement or touch movement
+            // on the "active" element, forget the selection pointer,
+            // deactivate, and do not select.
+        }
+    },
+
+    /**
+     * @private
+     */
+    _ignoreSelectionPointer: {
+        value: function () {
+            // The pointer may have been already taken
+            if (this.eventManager.isPointerClaimedByComponent(this._selectionPointer, this)) {
+                this.eventManager.forfeitPointer(this._selectionPointer, this);
             }
-            while (repetitionChild && repetitionChild.parentNode !== this.element) {
-                repetitionChild = repetitionChild.parentNode;
-            }
+            this._selectionPointer = null;
 
-            if (!repetitionChild) {
-                return null;
-            }
+            this.activeIterations.clear();
 
-            // figure out what index that node is inside the repetitionElement's.childNodes collection
-            // knowing how many nodes we have per iteration and which index was clicked we can figure out the selectedIndex
-            range = this.element.ownerDocument.createRange();
-            range.setStart(this.element, 0);
-            range.setEndAfter(repetitionChild);
-            endOffsetAdjustment = this._iterationChildCount > 1 ? 1 : 0;
+            var document = this.element.ownerDocument;
+            document.removeEventListener("touchend", this, false);
+            document.removeEventListener("touchcancel", this, false);
+            document.removeEventListener("mouseup", this, false);
+        }
+    },
 
-            itemIndex = ((range.endOffset + endOffsetAdjustment) / this._iterationChildCount) - 1;
+    // ---
 
-            // TODO#3493  francois shift the index by the amount defined by the large array controller?
-
-            if (this.indexMap) {
-                 return this.indexMap[itemIndex];
+    /**
+     * @private
+     */
+    // Dispatched by "mousedown" event listener if isSelectionEnabled
+    captureMousedown: {
+        value: function (event) {
+            this._observeSelectionPointer("mouse");
+            var iteration = this._findIterationContainingElement(event.target);
+            if (iteration) {
+                iteration.active = true;
             } else {
-                return itemIndex;
+                this._ignoreSelectionPointer();
             }
         }
     },
-    // TODO by the time we have batches/subsets of the entire content/repetition visible at a time
-    // we'll need to really translate selected indexes within a repetition viewing a subset to the
-    // selected indexes within the actual content collection
-/**
-    Description TODO
-    @function
-    @param {Event} event TODO
-    */
+
+    /**
+     * @private
+     */
+    // Dispatched by "touchstart" event listener if isSelectionEnabled
     captureTouchstart: {
-        value: function(event) {
-
-            if (this._selectionPointer || 0 === this._selectionPointer) {
-                // If we already have one touch making a selection, ignore any others
+        value: function (event) {
+            if (this._selectionPointer != null) {
+                // If we already have one touch making a selection, ignore any
+                // others.
                 return;
             }
 
             this._observeSelectionPointer(event.changedTouches[0].identifier);
-
-            var activeIndex = this._itemIndexOfElement(event.target);
-            if (null !== activeIndex) {
-                this.activeIndexes = [activeIndex];
+            var iteration = this._findIterationContainingElement(event.target);
+            if (iteration) {
+                iteration.active = true;
             } else {
                 this._ignoreSelectionPointer();
             }
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Event} event TODO
-    */
+
+    // ---
+
+    /**
+     * @private
+     */
     handleTouchend: {
-        value: function(event) {
-            // TODO only grab new touches that are in target touches as well maybe?
-
-            var i = 0,
-                selectedIndex;
-
-            while (i < event.changedTouches.length && event.changedTouches[i].identifier !== this._selectionPointer) {
-                i++;
-            }
-
-            if (i < event.changedTouches.length) {
-                if (this.eventManager.isPointerClaimedByComponent(this._selectionPointer, this)) {
-                    selectedIndex = this._itemIndexOfElement(event.target);
-
-                    if (null !== selectedIndex) {
-                        this.selectedIndexes = [selectedIndex];
-                    }
+        value: function (event) {
+            // TODO consider only grabbing touches that are in target touches
+            for (var i = 0; i < event.changedTouches.length; i++) {
+                if (this._endSelectionOnTarget(event.changedTouches[i].identifier, event.target)) {
+                    break;
                 }
-
-                this._ignoreSelectionPointer();
             }
 
         }
     },
-/**
-    Description TODO
-    @function
-    */
+
+    /**
+     * @private
+     */
     handleTouchcancel: {
-        value: function() {
+        value: function () {
             this._ignoreSelectionPointer();
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Event} event TODO
-    */
-    captureMousedown: {
-        value: function(event) {
-            this._observeSelectionPointer("mouse");
 
-            var activeIndex = this._itemIndexOfElement(event.target);
-            if (null !== activeIndex) {
-                this.activeIndexes = [activeIndex];
-            } else {
-                this._ignoreSelectionPointer();
-            }
-        }
-    },
-/**
-    Description TODO
-    @function
-    */
+    /**
+     * @private
+     */
     handleMouseup: {
-        value: function(event) {
-            var selectedIndex = this._itemIndexOfElement(event.target);
+        value: function (event) {
+            this._endSelectionOnTarget("mouse", event.target);
+        }
+    },
 
-            if (null !== selectedIndex) {
-                // TODO expand the selection if shift/cmd etc (it's not necessarily a single selection being added
-                this.selectedIndexes = [selectedIndex];
+    /**
+     * @private
+     */
+    _endSelectionOnTarget: {
+        value: function (identifier, target) {
+
+            if (identifier !== this._selectionPointer) {
+                return;
+            }
+
+            if (this.eventManager.isPointerClaimedByComponent(this._selectionPointer, this)) {
+                // Find the corresponding iteration
+                var iteration = this._findIterationContainingElement(target);
+                // And select it, if there is one
+                if (iteration) {
+                    iteration.active = false;
+                    iteration.selected = !iteration.selected;
+                }
             }
 
             this._ignoreSelectionPointer();
-        }
-    },
-/**
-    Description TODO
-    @function
-    @param {String} pointer TODO
-    @param {Component} demandingComponent TODO
-    @returns {Boolean} true
-    */
-    surrenderPointer: {
-        value: function(pointer, demandingComponent) {
-            this._ignoreSelectionPointer();
+
             return true;
         }
     },
-/**
-  Description TODO
-  @private
-*/
-    _selectionPointer: {
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
-    _observeSelectionPointer: {
-        value: function(pointer) {
-            this._selectionPointer = pointer;
-            this.eventManager.claimPointer(pointer, this);
 
-            if (window.Touch) {
-                document.addEventListener("touchend", this, false);
-                document.addEventListener("touchcancel", this, false);
-            } else {
-                document.addEventListener("mouseup", this, false);
-                // TODO on significant mousemovement/mouseout of the "selected" element, should we forget the selectionPointer
-            }
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _ignoreSelectionPointer: {
-        value: function() {
-            this.eventManager.forfeitPointer(this._selectionPointer, this);
-            this._selectionPointer = null;
+    // ---
 
-            this.activeIndexes = [];
-
-            if (window.Touch) {
-                document.removeEventListener("touchend", this, false);
-                document.removeEventListener("touchcancel", this, false);
-            } else {
-                document.removeEventListener("mouseup", this, false);
+    /**
+     * Finds the iteration that contains an element within the repetition.
+     * This requires the repetition to maintain an index of all of the
+     * <em>shallow</em> child elements of an iteration, _iterationForElement.
+     * It does so in the Iteration.injectIntoDocument, but is only
+     * approximately accurate since technically the child components of an
+     * iteration may add and remove siblings after injection.  For the sake of
+     * simplicity, we ignore these dynamic elements for the purpose of
+     * selection.  Also, as such, this method may return undefined.
+     * @private
+     */
+    _findIterationContainingElement: {
+        value: function (element) {
+            // Walk the document upward until we find the repetition and
+            // a direct child of the repetition element.  The direct
+            // child must be tracked by the repetition.
+            var child;
+            while (element) {
+                if (element === this.element) {
+                    return this._iterationForElement.get(child);
+                }
+                child = element;
+                element = element.parentNode;
             }
         }
     },
-/**
-  Description TODO
-  @private
-*/
-    _iterationChildCount: {
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
-    _iterationChildElementCount: {
-        value: null
-    },
-/**
-    Description TODO
-    @function
-    */
-    draw: {value: function() {
-        var i,
-            iItem,
-            fragment,
-            j,
-            itemCount = this._items.length,
-            addFragment,
-            repetitionElement = this.element,
-            doc = repetitionElement.ownerDocument,
-            selectionCount,
-            rangeToRemove,
-            iterationElements,
-            selectableElementCount,
-            activatedCount,
-            activatableElementCount,
-            iterationElement,
-            iterationElementClassList,
-            indexMapChanged = this._indexMapChanged,
-            activeIndex,
-            selectedIndex,
-            childCount = this._iterationChildCount,
-            childComponentsCount;
 
-        // this is needed to make sure that a new iteration wasn't created after the repetition has been added to the draw list of the draw cycle
-        if (!this.canDrawGate.value) {
-            return;
-        }
+    // Polymorphic helper types
+    // ------------------------
 
-        if (this._removeOriginalContent) {
-            this._removeOriginalContent = false;
-            repetitionElement.innerHTML = "";
-        }
+    /**
+     * The Iteration type for this repetition.  The repetition calls
+     * <code>this.Iteration.create()</code> to make new instances of
+     * iterations, so a child class of <code>Repetition</code> may provide an
+     * alternate implementation of <code>Iteration</code>.
+     */
+    Iteration: { value: Iteration, serializable: false }
 
-        // Before we remove any nodes, make sure we "deselect" them
-        //but only for single element iterations
-        if (1 === this._iterationChildElementCount) {
-
-            iterationElements = repetitionElement.children;
-
-            // NOTE Might be a bit excessive, but with the idea that the repetition will have a reasonable amount
-            // of elements given the indexMap support I'll start with this
-            // Wipe-out selection related classnames throughout the repetition to ensure a clean slate
-            for (i = 0; i < iterationElements.length; i++) {
-                iterationElement = iterationElements.item(i);
-                if (iterationElement) {
-
-                    if (this._dirtyIndexes[i]) {
-                        iterationElementClassList = iterationElement.classList;
-
-                        iterationElementClassList.remove("active");
-                        iterationElementClassList.remove("selected");
-                        iterationElementClassList.remove("no-transition");
-
-                        if (indexMapChanged && this._indexMapAffectedIndexes[i]) {
-                            iterationElementClassList.add("no-transition");
-                            this._dirtyIndexes[i] = false;
-                        }
-
-                    }
-                }
-            }
-        }
-
-        // We've accounted for drawing given an indexMap change, schedule the next draw to clean up from that
-        // by re-enabling transitions
-        if (indexMapChanged) {
-            this._indexMapAffectedIndexes.clear();
-            this._indexMapChanged = false;
-            this.needsDraw = true;
-        }
-
-        // Remove items pending removal
-        var removalIndex;
-        if (this._itemsToRemove.length > 0) {
-            rangeToRemove = document.createRange();
-            for (i = 0; (iItem = this._itemsToRemove[i]); i++) {
-                removalIndex = iItem.removalIndex;
-                rangeToRemove.setStart(repetitionElement, removalIndex * childCount);
-                rangeToRemove.setEnd(repetitionElement, removalIndex * childCount + childCount);
-
-                rangeToRemove.extractContents();
-            }
-            this._itemsToRemove.clear();
-        }
-
-        var insertionIndex;
-        if (this._itemsToAppend.length > 0) {
-            //addFragment = doc.createDocumentFragment();
-            //firstAddedIndex = itemCount;
-            // Append items pending addition
-            for (i = 0; (iItem = this._itemsToAppend[i]); i++) {
-                // this item could have been removed from the objects array after it's adition.
-                if (iItem.removed) {
-                    this._removeIterationChildComponents(iItem.childComponentsIndex);
-
-                    continue;
-                }
-
-                fragment = iItem.fragment;
-                insertionIndex = iItem.insertionIndex;
-                delete iItem.fragment;
-                delete iItem.insertionIndex;
-                delete iItem.index;
-                //isFirstItem = (repetitionElement.childNodes.length === 0);
-
-                //iItem.start = (itemCount + i) * this._iterationChildCount;
-                //iItem.end = iItem.start + this._iterationChildCount;
-                //nextItem = this._items[insertionIndex];
-
-                if (isNaN(insertionIndex)) {
-                    repetitionElement.appendChild(fragment);
-                } else {
-                    repetitionElement.insertBefore(fragment, repetitionElement.childNodes[insertionIndex * this._iterationChildCount]);
-                }
-                //addFragment.appendChild(fragment);
-
-                //now that the item has been appended, we add it to our items array
-                //this._items.push(iItem);
-                this._items.splice(insertionIndex, 0, iItem);
-                // Tell childComponents that are associated with this new item
-                //componentStartIndex = (itemCount + i) * this._iterationChildComponentsCount;
-                //componentEndIndex = componentStartIndex + this._iterationChildComponentsCount;
-            }
-
-            //repetitionElement.appendChild(addFragment);
-
-            itemCount = this._items.length;
-
-            this._itemsToAppend.clear();
-            this._nextDeserializedItemIx = 0;
-        }
-
-        // TODO Add selection class to selected items; may be easier to have this bound to an item or something directly
-        // basically we have a couple of ways to attack this; leaving it like this for now prior to optimization
-        if (null !== this.selectedIndexes && this.selectedIndexes.length > 0 && 1 === this._iterationChildElementCount) {
-
-            iterationElements = repetitionElement.children;
-            selectionCount = this.selectedIndexes.length;
-            selectableElementCount = Math.min(selectionCount, iterationElements.length);
-
-            for (i = 0; i < selectableElementCount; i++) {
-                selectedIndex = this.indexMap ? this.indexMap.indexOf(this.selectedIndexes[i]): this.selectedIndexes[i];
-                iterationElement = iterationElements.item(selectedIndex);
-                if (iterationElement) {
-                    iterationElement.classList.add("selected");
-                    //Mark the rediscovered selected index as dirty
-                    this._dirtyIndexes[selectedIndex] = true;
-                }
-            }
-        }
-
-        // TODO Add active class to active items; may be easier to have this bound to an item or something directly
-        // basically we have a couple of ways to attack this; leaving it like this for now prior to optimization
-        if (null !== this._activeIndexes && this._activeIndexes.length > 0 && 1 === this._iterationChildElementCount) {
-
-            iterationElements = this.element.children;
-            activatedCount = this._activeIndexes.length;
-            activatableElementCount = Math.min(activatedCount, iterationElements.length);
-
-            for (i = 0; i < activatableElementCount; i++) {
-                activeIndex = this.indexMap ? this.indexMap.indexOf(this._activeIndexes[i]): this._activeIndexes[i];
-                iterationElement = iterationElements.item(activeIndex);
-                if (iterationElement) {
-                    iterationElement.classList.add("active");
-                    //Mark the rediscovered active index as dirty
-                    this._dirtyIndexes[activeIndex] = true;
-                }
-            }
-        }
-
-        this._drawnIndexMap = this._indexMap ? this.indexMap.slice(0) : null;
-
-    }},
-/**
-    Description TODO
-    @function
-    */
-    setupIterationSerialization: {value: function() {
-        Montage.defineProperty(this, "serializeSelf", {value: this.serializeIteration});
-    }},
-/**
-    Description TODO
-    @function
-    */
-    setupIterationDeserialization: {value: function() {
-        //        Montage.defineProperty(this, "deserializeProperties", {value: this.deserializeIteration});
-        this.deserializeProperties = this.deserializeIteration;
-    }},
-/**
-    Description TODO
-    @function
-    */
-    removeIterationSerialization: {value: function() {
-        delete this.serializeSelf;
-    }},
-/**
-    Description TODO
-    @function
-    @param {Property} type TODO
-    @param {Property} listener TODO
-    @param {Property} useCapture TODO
-    @param {Property} atSignIndex TODO
-    @param {Property} bindingOrigin TODO
-    @param {Property} bindingPropertyPath TODO
-    @param {Property} bindingDescriptor TODO
-    @returns null or Object.prototype.propertyChangeBindingListener.call
-    */
-    propertyChangeBindingListener: {value: function(type, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, bindingDescriptor) {
-
-        var usefulBindingDescriptor = bindingDescriptor,
-            usefulType = type,
-            currentIndex, currentFakeIndex, descriptorKeys, descriptorKeyCount,
-            iDescriptorKey, modifiedBoundObjectPropertyPath;
-
-        if (bindingDescriptor && bindingDescriptor.boundObjectPropertyPath.match(/objectAtCurrentIteration/)) {
-            if (this._deserializedItem) {
-                currentFakeIndex = this._fakeObjects._fakeIndex[this._deserializedItem.index];
-                usefulBindingDescriptor = {};
-                descriptorKeys = Object.keys(bindingDescriptor);
-                descriptorKeyCount = descriptorKeys.length;
-                for (var i = 0; i < descriptorKeyCount; i++) {
-                    iDescriptorKey = descriptorKeys[i];
-                    usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
-                }
-
-                //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
-                modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/objectAtCurrentIteration/, '_fakeObjects.' + currentFakeIndex);
-
-                usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
-
-                usefulType = type.replace(/objectAtCurrentIteration/, '_fakeObjects.' + currentFakeIndex);
-            } else {
-                return null;
-            }
-        } else if(bindingDescriptor && bindingDescriptor.boundObjectPropertyPath.match(/selectionAtCurrentIteration/)) {
-            if (this._deserializedItem) {
-                currentFakeIndex = this._fakeObjects._fakeIndex[this._deserializedItem.index];
-                usefulBindingDescriptor = {};
-                descriptorKeys = Object.keys(bindingDescriptor);
-                descriptorKeyCount = descriptorKeys.length;
-                for (var i = 0; i < descriptorKeyCount; i++) {
-                    iDescriptorKey = descriptorKeys[i];
-                    usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
-                }
-
-                //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
-
-                modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/selectionAtCurrentIteration/, 'contentController.selections.' + currentFakeIndex);
-                usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
-
-                usefulType = type.replace(/selectionAtCurrentIteration/, 'contentController.selections.' + currentFakeIndex);
-
-            }   else {
-                return null;
-            }
-        }
-
-        if (usefulBindingDescriptor.boundObject === this) {
-            return Object.prototype.propertyChangeBindingListener.call(this, usefulType, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, usefulBindingDescriptor);
-        } else {
-            return usefulBindingDescriptor.boundObject.propertyChangeBindingListener(usefulType, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, usefulBindingDescriptor);
-        }
-    }},
-/**
-    Description TODO
-    @function
-    @param {Property} serializer TODO
-    */
-    serializeIteration: {value: function(serializer) {
-        serializer.setProperty("element", this.element);
-        var childComponents = this.childComponents,
-            addObject = serializer.addObject,
-            i,
-            childComponentCount = childComponents.length;
-
-        for (i = 0; i < childComponentCount; i++) {
-            addObject.call(serializer, childComponents[i]);
-        }
-        // iterations are already expanded
-        serializer.setProperty("_isComponentExpanded", true);
-    }},
-/**
-    Description TODO
-    @function
-    @param {Property} deserializer TODO
-    */
-    deserializeIteration: {value: function(deserializer) {
-        var item = this._itemsToAppend[this._nextDeserializedItemIx++];
-
-        if (item) {
-            this._deserializedItem = item;
-            item.element = deserializer.get("element");
-
-            this.eventManager.registerEventHandlerForElement(this, item.element);
-            if (logger.debug) {
-                logger.debug(this._montage_metadata.objectName + ":deserializeIteration", "childNodes: " , item.element);
-            }
-        } else {
-            this._deserializedItem = null;
-        }
-    }}
 });
+

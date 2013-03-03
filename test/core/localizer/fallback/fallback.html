@@ -90,7 +90,7 @@
                 "key": "welcome"
             },
             "bindings": {
-                "data.name": {"<-": "@bindingInput.value"}
+                "data.get('name')": {"<-": "@bindingInput.value"}
             }
         },
 
@@ -98,7 +98,7 @@
             "prototype": "montage/ui/repetition.reel",
             "properties": {
                 "element": {"#": "messageRepetition"},
-                "objects": [
+                "content": [
                     {"animal": "cow", "number": 4},
                     {"animal": "horse", "number": 1},
                     {"animal": "sheep", "number": 2}

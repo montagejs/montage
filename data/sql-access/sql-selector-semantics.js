@@ -37,7 +37,9 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 
 var Montage = require("montage").Montage;
-var Semantics = require("core/selector/semantics").Semantics;
+// TODO kriskowal: massage selectors and FRB together
+var Semantics = Montage;
+// var Semantics = (require)("core/selector/semantics").Semantics;
 var SqlBinderMapping = require("data/sql-access/sql-mapping").SqlBinderMapping;
 var SqlBlueprintMapping = require("data/sql-access/sql-mapping").SqlBlueprintMapping;
 var SqlAttributeMapping = require("data/sql-access/sql-mapping").SqlAttributeMapping;

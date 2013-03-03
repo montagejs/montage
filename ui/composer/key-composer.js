@@ -277,6 +277,7 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
     didCreate: {
         value: function() {
             // console.log("KEY CREATED")
+            Composer.didCreate.call(this);
         }
     },
 
