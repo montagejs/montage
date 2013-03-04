@@ -353,7 +353,7 @@ var Template = Montage.create(Montage, {
 
     _instantiateObjects: {
         value: function(instances, fragment) {
-            return this._deserializer.deserializeWithElement(instances, fragment);
+            return this._deserializer.deserialize(instances, fragment);
         }
     },
 

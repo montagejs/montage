@@ -46,7 +46,7 @@ var MontageDeserializer = Montage.create(Deserializer.prototype, {
         }
     },
 
-    deserializeWithElement: {
+    deserialize: {
         value: function(instances, element) {
             var serialization;
 
