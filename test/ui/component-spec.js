@@ -525,6 +525,40 @@ var testPage = TestPageLoader.queueTest("draw", function() {
            expect(element.getAttribute("id")).toBe("componentList");
         });
 
+        describe("_makeTemplateObjectGetter", function () {
+            it("returns a single component", function () {
+                var a = {};
+                var owner = {
+                    querySelectorAllComponent: function () {
+                        return [a];
+                    }
+                };
+                a.parentComponent = owner;
+
+                var getter = Component._makeTemplateObjectGetter(owner, "test");
+
+                expect(getter()).toEqual(a);
+                expect(getter()).toEqual(a);
+            });
+
+            it("returns all repeated components", function () {
+                var a = {};
+                var b = {};
+                var owner = {
+                    querySelectorAllComponent: function () {
+                        return [a, b];
+                    }
+                };
+                a.parentComponent = owner;
+                b.parentComponent = owner;
+
+                var getter = Component._makeTemplateObjectGetter(owner, "test");
+
+                expect(getter()).toEqual([a, b]);
+                expect(getter()).toEqual([a, b]);
+            });
+        });
+
         describe("dom arguments", function() {
             testPage.test.arguments._initDomArguments();
             testPage.test.noArguments._initDomArguments();
