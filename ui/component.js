@@ -1006,7 +1006,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 var object = objects[label];
 
                 if (typeof object === "object" && object != null) {
-                    if (object.parentComponent === this) {
+                    if (object === this || object.parentComponent === this) {
                         templateObjects[label] = object;
                     } else {
                         descriptor.get = this._makeTemplateObjectGetter(this, label);
