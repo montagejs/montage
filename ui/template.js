@@ -257,12 +257,14 @@ var Template = Montage.create(Montage, {
             templateParameters = this._getParameters(fragment);
 
             part.initWithTemplateAndFragment(this, fragment);
+            part.startActingAsTopComponent();
             part.parameters = templateParameters;
 
             templateObjects = this._createTemplateObjects(instances);
 
             return this._instantiateObjects(templateObjects, fragment)
             .then(function(objects) {
+                part.stopActingAsTopComponent();
                 part.objects = objects;
                 self._invokeDelegates(part, instances);
 

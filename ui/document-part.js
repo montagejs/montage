@@ -17,9 +17,23 @@ var DocumentPart = Montage.create(Montage, {
             this.objects = null;
             this.childComponents = [];
             this.parameters = null;
+        }
+    },
 
-            if (fragment) {
-                defaultEventManager.registerEventHandlerForElement(this, fragment);
+    startActingAsTopComponent: {
+        value: function() {
+            if (this.fragment) {
+                defaultEventManager.registerEventHandlerForElement(
+                    this, this.fragment);
+            }
+        }
+    },
+
+    stopActingAsTopComponent: {
+        value: function() {
+            if (this.fragment) {
+                defaultEventManager.unregisterEventHandlerForElement(
+                    this.fragment);
             }
         }
     },
