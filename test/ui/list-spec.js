@@ -48,7 +48,7 @@ var testPage = TestPageLoader.queueTest("list-test", function() {
                 var repetition = list._element.querySelector('*[data-montage-id="repetition"]').controller;
                 expect(repetition).toBeDefined();
                 expect(repetition.iterations.length).toBe(3);
-                expect(list._element.querySelectorAll(".montage-Slider").length).toBe(3);
+                expect(list._element.querySelectorAll(".montage-InputRange").length).toBe(3);
             });
         });
     });

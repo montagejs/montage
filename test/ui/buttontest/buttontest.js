@@ -28,8 +28,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var Montage = require("montage").Montage,
-    Button = require("montage/ui/bluemoon/button.reel").Button;
+var Montage = require("montage").Montage;
 
 var ButtonTest = exports.ButtonTest = Montage.create(Montage, {
   handleAction: {
