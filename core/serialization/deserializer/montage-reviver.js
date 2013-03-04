@@ -6,19 +6,12 @@ var UnitDeserializer = require("./unit-deserializer").UnitDeserializer;
 
 var Promise = require("q");
 
-var ModuleLoader = Montage.create(Object.prototype, {
-    _modules: {value: Object.create(null)},
-    _moduleKeyPrefix: {value: null},
+var ModuleLoader = Montage.create(Montage, {
     _require: {value: null},
+    _objectRequires: {value: null},
 
-    create: {
-        value: function() {
-            return Montage.create(this);
-        }
-    },
-
-    initWithRequire: {
-        value: function(_require) {
+    init: {
+        value: function(_require, objectRequires) {
             if (typeof _require !== "function") {
                 throw new Error("Function 'require' missing.");
             }
@@ -27,34 +20,36 @@ var ModuleLoader = Montage.create(Object.prototype, {
                 throw new Error("Function 'require' location is missing");
             }
 
+            if (typeof objectRequires !== "object" &&
+                typeof objectRequires !== "undefined") {
+                throw new Error("Parameter 'objectRequires' should be an object.");
+            }
+
             this._require = _require;
-            this._moduleKeyPrefix = _require.location + "#";
+            this._objectRequires = objectRequires;
 
             return this;
         }
     },
 
     getModule: {
-        value: function(moduleId) {
-            var modules = this._modules,
-                moduleKey = this._moduleKeyPrefix + moduleId,
-                _require = this._require,
-                module = modules[moduleKey];
+        value: function(moduleId, label) {
+            var objectRequires = this._objectRequires,
+                _require,
+                module;
 
-            if (!module) {
-                // require.getModuleDescriptor(id).exports != null tell us if
-                // a module is ready to go.
-                if (_require.getModuleDescriptor(moduleId).exports != null) {
-                    module = _require(moduleId);
-                } else {
-                    module = _require.async(moduleId).then(function(exports) {
-                        // Store the final module and skip promises the next
-                        // time.
-                        return (modules[moduleKey] = exports);
-                    });
-                }
-                // store the promise for use until the module is loaded
-                modules[moduleKey] = module;
+            if (objectRequires && label in objectRequires) {
+                _require = objectRequires[label];
+            } else {
+                _require = this._require;
+            }
+
+            // require.getModuleDescriptor(id).exports != null tell us if
+            // a module is ready to go.
+            if (_require.getModuleDescriptor(moduleId).exports != null) {
+                module = _require(moduleId);
+            } else {
+                module = _require.async(moduleId);
             }
 
             return module;
@@ -73,10 +68,16 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
         }
     },
 
-    initWithRequire: {
-        value: function(_require) {
+    /**
+     * @param {Require} _require The require object to load modules
+     * @param {Object} objectRequires A dictionary indexed by object label with
+     *        the require object to use for a specific object of the
+     *        serialization.
+     */
+    init: {
+        value: function(_require, objectRequires) {
             this._moduleLoader = ModuleLoader.create()
-                                 .initWithRequire(_require);
+                                 .init(_require, objectRequires);
 
             return this;
         }
@@ -134,7 +135,8 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
 
             if (locationId) {
                 locationDesc = this.parseObjectLocationId(locationId);
-                module = this._moduleLoader.getModule(locationDesc.moduleId);
+                module = this._moduleLoader.getModule(locationDesc.moduleId,
+                    label);
                 objectName = locationDesc.objectName;
             }
 
@@ -311,6 +313,8 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
                 }
 
                 if (!context.hasUserObject(label)) {
+                    // TODO: merge deserializedFromSerialization with
+                    //       deserializedFromTemplate?
                     if (object && typeof object.deserializedFromSerialization === "function") {
                         object.deserializedFromSerialization(label);
                     }

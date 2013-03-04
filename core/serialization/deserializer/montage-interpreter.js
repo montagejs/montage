@@ -16,7 +16,7 @@ var MontageInterpreter = Montage.create(Interpreter.prototype, {
     initWithRequire: {
         value: function(_require) {
             this._require = _require;
-            this._reviver = MontageReviver.create().initWithRequire(_require);
+            this._reviver = MontageReviver.create().init(_require);
 
             return this;
         }
