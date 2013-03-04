@@ -1003,7 +1003,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 templateObjects = Object.create(null);
 
             for (var label in objects) {
-                object = objects[label];
+                var object = objects[label];
 
                 if (typeof object === "object" && object != null) {
                     if (object.parentComponent === this) {
@@ -1020,9 +1020,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     _makeTemplateObjectGetter: {
-        value: function(label) {
-            var owner = this,
-                querySelectorLabel = "@"+label,
+        value: function(owner, label) {
+            var querySelectorLabel = "@"+label,
                 isRepeated,
                 components,
                 component;
