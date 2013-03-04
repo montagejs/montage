@@ -40,8 +40,7 @@ var Template = Montage.create(Montage, {
             var deserializer = this.__deserializer;
             if (!deserializer) {
                 deserializer = Deserializer.create()
-                    .initWithSerializationStringAndRequire(
-                        this.objectsString, this._require);
+                    .init(this.objectsString, this._require);
                 this.__deserializer = deserializer;
             }
 

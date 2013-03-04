@@ -211,7 +211,7 @@ describe("meta/blueprint-spec", function () {
             });
             it("can deserialize", function () {
                 var serializedBinder = Serializer.create().initWithRequire(require).serializeObject(companyBinder);
-                return Deserializer.create().initWithSerializationStringAndRequire(serializedBinder, require).deserializeObject().then(function (deserializedBinder) {
+                return Deserializer.create().init(serializedBinder, require).deserializeObject().then(function (deserializedBinder) {
                     var metadata = Montage.getInfoForObject(deserializedBinder);
                     expect(serializedBinder).not.toBeNull();
                     expect(metadata.objectName).toBe("Binder");

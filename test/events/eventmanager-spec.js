@@ -1005,7 +1005,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                 var labels = {};
                 labels.actioneventlistener = handlerObject;
 
-                deserializer.initWithSerializationStringAndRequire(
+                deserializer.init(
                     serialization, require);
                 spyOn(MontageReviver._unitRevivers, "listeners").andCallThrough();
 

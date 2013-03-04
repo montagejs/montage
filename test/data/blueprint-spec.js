@@ -241,7 +241,7 @@ describe("data/blueprint-spec", function () {
                 serializedBinder = serializer.serializeObject(companyBinder);
 
                 return Deserializer.create()
-                .initWithSerializationStringAndRequire(serializedBinder, require)
+                .init(serializedBinder, require)
                 .deserializeObject()
                 .then(function (deserializedBinder) {
                     var metadata = Montage.getInfoForObject(deserializedBinder);

@@ -18,7 +18,7 @@ var MontageDeserializer = Montage.create(Deserializer.prototype, {
         }
     },
 
-    initWithSerializationStringAndRequire: {
+    init: {
         value: function(serializationString, _require) {
             if (! this.isSerializationStringValid(serializationString)) {
                 throw new Error("Serialization string is invalid: " + serializationString);
@@ -96,7 +96,7 @@ var MontageDeserializer = Montage.create(Deserializer.prototype, {
 exports.MontageDeserializer = MontageDeserializer;
 exports.deserialize = function(serializationString, _require) {
     return MontageDeserializer.create().
-        initWithSerializationStringAndRequire(serializationString, _require)
+        init(serializationString, _require)
         .deserializeObject();
 }
 

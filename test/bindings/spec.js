@@ -1120,7 +1120,7 @@ describe("bindings/spec", function() {
 
             labels["root"] = source;
             labels.montage = {};
-            deserializer.initWithSerializationStringAndRequire(serialization, require);
+            deserializer.init(serialization, require);
             spyOn(MontageReviver._unitRevivers, "bindings").andCallThrough();
 
             return deserializer.deserialize(labels)
@@ -1187,7 +1187,7 @@ describe("bindings/spec", function() {
                 },
                 serializationString = JSON.stringify(serialization);
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
             return deserializer.deserialize()
             .then(function(objects) {
@@ -1225,7 +1225,7 @@ describe("bindings/spec", function() {
                 },
                 serializationString = JSON.stringify(serialization);
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
             return deserializer.deserialize()
             .then(function(objects) {
