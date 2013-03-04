@@ -56,7 +56,8 @@ var MontageDeserializer = Montage.create(Deserializer.prototype, {
                 return Promise.reject(error);
             }
 
-            return this._interpreter.instantiateWithElement(serialization, instances, element);
+            return this._interpreter.instantiate(
+                serialization, instances, element);
         }
     },
 

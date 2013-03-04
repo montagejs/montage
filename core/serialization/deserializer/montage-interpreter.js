@@ -1,8 +1,8 @@
-var Montage = require("core/core").Montage;
-var Interpreter = require("mousse/deserialization/interpreter").Interpreter;
-var Context = require("mousse/deserialization/context").Context;
-var MontageReviver = require("./montage-reviver").MontageReviver;
-var Promise = require("q");
+var Montage = require("core/core").Montage,
+    Interpreter = require("mousse/deserialization/interpreter").Interpreter,
+    Context = require("mousse/deserialization/context").Context,
+    MontageReviver = require("./montage-reviver").MontageReviver,
+    Promise = require("core/promise").Promise;
 
 var MontageInterpreter = Montage.create(Interpreter.prototype, {
     _require: {value: null},
@@ -23,20 +23,11 @@ var MontageInterpreter = Montage.create(Interpreter.prototype, {
     },
 
     instantiate: {
-        value: function(serialization, objects) {
-            var context = MontageContext.create()
-                    .initWithSerializationAndReviverAndObjects(
-                        serialization, this._reviver, objects);
-
-            return context.getObjects();
-        }
-    },
-
-    instantiateWithElement: {
         value: function(serialization, objects, element) {
-            var context = MontageContext.create()
-                    .initWithSerializationAndReviverAndObjectsAndElement(
-                        serialization, this._reviver, objects, element);
+            var context;
+
+            context = MontageContext.create()
+                .init(serialization, this._reviver, objects, element);
 
             return context.getObjects();
         }
@@ -60,17 +51,9 @@ var MontageContext = Montage.create(Context.prototype, {
         }
     },
 
-    initWithSerializationAndReviverAndObjects: {
-        value: function(serialization, reviver, objects) {
-            Context.call(this, serialization, reviver, objects);
-
-            return this;
-        }
-    },
-
-    initWithSerializationAndReviverAndObjectsAndElement: {
+    init: {
         value: function(serialization, reviver, objects, element) {
-            this.initWithSerializationAndReviverAndObjects(serialization, reviver, objects);
+            Context.call(this, serialization, reviver, objects);
 
             this._element = element;
 
