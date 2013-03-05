@@ -42,7 +42,6 @@ POSSIBILITY OF SUCH DAMAGE.
             }
         },
         "bindings": {
-            "innerTemplate": {"<-": "@owner.innerTemplate"},
             "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"}
         }
     },
@@ -74,7 +73,9 @@ POSSIBILITY OF SUCH DAMAGE.
 <body>
     <div data-montage-id="EA5D3E95-BA4E-4696-BBBE-B4DE2F6ED6C9">
         <div data-montage-id="scroller" class="montage-List-Scroller">
-            <div data-montage-id="repetition"></div>
+            <span data-montage-id="repetition">
+                <div data-param="*"></div>
+            </span>
         </div>
     </div>
 </body>
