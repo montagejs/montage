@@ -1381,7 +1381,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // dispatches handleTouchend
             document.addEventListener("touchend", this, false);
             // dispatches handleTouchcancel
-            document.addEventListener("touchcacnel", this, false);
+            document.addEventListener("touchcancel", this, false);
             // dispatches handleMouseup
             document.addEventListener("mouseup", this, false);
             // TODO after significant mouse movement or touch movement
