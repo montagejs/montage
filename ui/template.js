@@ -19,6 +19,7 @@ var Template = Montage.create(Montage, {
     document: {value: null},
     _baseUrl: {value: null},
     _instances: {value: null},
+    _metadata: {value: null},
 
     _objectsString: {value: null},
     objectsString: {
@@ -37,10 +38,20 @@ var Template = Montage.create(Montage, {
     __deserializer: {value: null},
     _deserializer: {
         get: function() {
-            var deserializer = this.__deserializer;
+            var deserializer = this.__deserializer,
+                metadata,
+                requires;
+
             if (!deserializer) {
-                deserializer = Deserializer.create()
-                    .init(this.objectsString, this._require);
+                metadata = this._metadata;
+                if (metadata) {
+                    requires = Object.create(null);
+                    for (var label in metadata) {
+                        requires[label] = metadata[label].require;
+                    }
+                }
+                deserializer = Deserializer.create().init(this.objectsString,
+                    this._require, requires);
                 this.__deserializer = deserializer;
             }
 
@@ -472,6 +483,51 @@ var Template = Montage.create(Montage, {
         value: function(objects) {
             // TODO: use Serializer.formatSerialization(object|string)
             this.objectsString = JSON.stringify(objects, null, 4);
+        }
+    },
+
+    /**
+     * Add metadata to specific objects of the serialization.
+     *
+     * @param {String} label The label of the object in the serialization.
+     * @param {Require} _require The require function to be used when loading
+     *        the module.
+     * @param {String} effectiveLabel An alternative label to be given to the
+     *        object.
+     * @param {Object} owner The owner object to be given to the object.
+     */
+    setObjectMetadata: {
+        value: function(label, _require, effectiveLabel, owner) {
+            var metadata = this._metadata;
+
+            if (!metadata) {
+                this._metadata = metadata = Object.create(null);
+            }
+
+            metadata[label] = {
+                "require": _require,
+                "label": effectiveLabel,
+                "owner": owner
+            };
+
+            // Invalidate the deserializer cache since we need to setup new
+            // requires.
+            this.__deserializer = null;
+        }
+    },
+
+    getObjectMetadata: {
+        value: function(label) {
+            var metadata = this._metadata;
+
+            if (metadata && label in metadata) {
+                return metadata[label];
+            } else {
+                return {
+                    "require": this._require,
+                    "label": label
+                }
+            }
         }
     },
 
