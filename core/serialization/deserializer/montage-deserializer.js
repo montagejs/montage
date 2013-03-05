@@ -26,8 +26,7 @@ var MontageDeserializer = Montage.create(Deserializer.prototype, {
 
             this._serializationString = serializationString;
             this._serialization = null;
-            this._interpreter = MontageInterpreter.create()
-                .initWithRequire(_require);
+            this._interpreter = MontageInterpreter.create().init(_require);
 
             return this;
         }

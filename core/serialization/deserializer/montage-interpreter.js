@@ -13,10 +13,14 @@ var MontageInterpreter = Montage.create(Interpreter.prototype, {
         }
     },
 
-    initWithRequire: {
-        value: function(_require) {
-            this._require = _require;
-            this._reviver = MontageReviver.create().init(_require);
+    init: {
+        value: function(_require, objectRequires) {
+            if (typeof _require !== "function") {
+                throw new Error("Function 'require' missing.");
+            }
+
+            this._reviver = MontageReviver.create()
+                .init(_require, objectRequires);
 
             return this;
         }
