@@ -1021,15 +1021,15 @@ describe("reel/template-spec", function() {
             ]).then(function() {
                 var repetition,
                     args,
-                    collisionTable;
+                    expansionResult;
 
-                collisionTable = parametersTemplate.expandParameters(
+                expansionResult = parametersTemplate.expandParameters(
                     argumentsTemplate, delegate);
 
                 serialization = parametersTemplate.getSerialization();
                 labels = serialization.getSerializationLabels();
 
-                expect(collisionTable).toBeFalsy();
+                expect(expansionResult.labelsCollision).toBeFalsy();
                 expect(labels).toContain("section");
             });
         });
@@ -1088,30 +1088,32 @@ describe("reel/template-spec", function() {
                 argumentsTemplate.initWithHtml(argumentsHtml)
             ]).then(function() {
                 var repetition,
-                    collisionTable,
+                    expansionResult,
+                    labelsCollisions,
                     labels,
                     serializationObject,
                     leftSide,
                     rightSide;
 
-                collisionTable = parametersTemplate.expandParameters(
+                expansionResult = parametersTemplate.expandParameters(
                     argumentsTemplate, delegate);
 
                 serialization = parametersTemplate.getSerialization();
                 serializationObject = serialization.getSerializationObject();
-                labels = Object.keys(collisionTable);
+                labelsCollisions = expansionResult.labelsCollisions;
+                labels = Object.keys(labelsCollisions);
 
                 expect(labels.length).toBe(2);
                 expect(labels).toContain("leftSide");
                 expect(labels).toContain("rightSide");
 
-                leftSide = serializationObject[collisionTable.leftSide];
-                rightSide = serializationObject[collisionTable.rightSide];
+                leftSide = serializationObject[labelsCollisions.leftSide];
+                rightSide = serializationObject[labelsCollisions.rightSide];
 
                 // Make sure the binding from rightSide to leftSide was
                 // changed to the new label.
                 expect(rightSide.bindings.value["<-"])
-                    .toBe("@" + collisionTable.leftSide + ".value");
+                    .toBe("@" + labelsCollisions.leftSide + ".value");
             });
         });
     });

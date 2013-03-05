@@ -767,8 +767,17 @@ var Template = Montage.create(Montage, {
      * @param {Object} delegate A delegate object that needs to implement
      *        getTemplateParameterArgument(template, name) function that returns
      *        the argument to replace with the `name` parameter.
-     * @returns {Object} A dictionary of object collisions from importing the
-     *          serialization associated with the argument into the template.
+     * @returns {Object} A dictionary with four properties representing the
+     *          objects and elements that were imported into the template:
+     *          - labels: the labels of the objects added from template
+     *                    argument.
+     *          - labelsCollisions: a dictionary of label collisions in the form
+     *                              of {oldLabel: newLabel}.
+     *          - elementIds: the element ids of the markup imported from
+     *                        template argument.
+     *          - elementIdsCollisions: a dictionary of element id collisions in
+     *                                  the form of {oldElementId: newElementId}
+     *
      */
     expandParameters: {
         value: function(template, delegate) {
@@ -780,7 +789,8 @@ var Template = Montage.create(Montage, {
                 parameterElement,
                 argumentElement,
                 serialization = Serialization.create(),
-                argumentsSerialization;
+                argumentsSerialization,
+                result = {};
 
             parameterElements = this.getParameters();
 
@@ -804,6 +814,8 @@ var Template = Montage.create(Montage, {
                     argumentElementsCollisionTable[key] = collisionTable[key];
                 }
             }
+            result.elementIds = argumentsElementIds;
+            result.elementIdsCollisions = argumentElementsCollisionTable;
 
             // Expand objects.
             argumentsSerialization = template
@@ -819,7 +831,10 @@ var Template = Montage.create(Montage, {
                 argumentsSerialization);
             this.objectsString = serialization.getSerializationString();
 
-            return objectsCollisionTable;
+            result.labels = argumentsSerialization.getSerializationLabels();
+            result.labelsCollisions = objectsCollisionTable;
+
+            return result;
         }
     },
 
