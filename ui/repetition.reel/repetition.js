@@ -108,16 +108,6 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
     isOdd: {value: null},
 
     /**
-     * A <code>Set</code> of DOM class names for every element within the
-     * iteration, synchronized when the repetition draws.  The iteration and
-     * repetition manage the "active", "selected", and "no-transition" classes,
-     * but the user may bind to
-     * <code>repetition.currentIteration.classList.has(className)</code> for
-     * arbitrary class names.
-     */
-    classList: {value: null},
-
-    /**
      * A flag that indicates that the "no-transition" CSS class should be added
      * to every element in the iteration in the next draw, and promptly removed
      * the draw thereafter.
@@ -142,7 +132,6 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             // notifies the repetition it needs to be redrawn.
             // Dispatches handlePropertyChange with the "selected" key:
             this.defineBinding("selected", {"<->": "controller.selected"});
-            this.defineBinding("classList.has('selected')", {"<->": "selected"});
             // An iteration can be "on" or "off" the document.  When the
             // iteration is added to a document, the "fragment" is depopulated
             // and placed between "topBoundary" and "bottomBoundary" on the
