@@ -222,7 +222,7 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             var boundaries = repetition._boundaries;
 
             // Add a new top boundary before the next iteration
-            var topBoundary = element.ownerDocument.createComment("");
+            var topBoundary = element.ownerDocument.createTextNode("");
             var bottomBoundary = boundaries[index]; // previous
             boundaries.splice(index, 0, topBoundary);
             element.insertBefore(topBoundary, bottomBoundary);
@@ -1294,7 +1294,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         value: function () {
             var element = this.element;
             element.innerHTML = "";
-            var bottomBoundary = element.ownerDocument.createComment("");
+            var bottomBoundary = element.ownerDocument.createTextNode("");
             element.appendChild(bottomBoundary);
             this._boundaries.push(bottomBoundary);
         }
