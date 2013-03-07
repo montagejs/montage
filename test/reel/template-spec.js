@@ -487,6 +487,21 @@ describe("reel/template-spec", function() {
             });
         });
 
+        it("should not call deserializedFromTemplate on null values", function() {
+            var html = require("reel/template/delegate-methods-null-template.html").content;
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                return template.instantiate(document)
+                .then(function(documentPart) {
+                    expect(true).toBe(true);
+                });
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+
         it("should call templateDidLoad on owner object", function() {
             var html = require("reel/template/delegate-methods-template.html").content;
 

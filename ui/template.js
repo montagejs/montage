@@ -445,11 +445,13 @@ var Template = Montage.create(Montage, {
             for (var i = 0, label; (label = labels[i]); i++) {
                 object = objects[label];
 
-                if (typeof object._deserializedFromTemplate === "function") {
-                    object._deserializedFromTemplate(owner, documentPart);
-                }
-                if (typeof object.deserializedFromTemplate === "function") {
-                    object.deserializedFromTemplate(owner, documentPart);
+                if (object) {
+                    if (typeof object._deserializedFromTemplate === "function") {
+                        object._deserializedFromTemplate(owner, documentPart);
+                    }
+                    if (typeof object.deserializedFromTemplate === "function") {
+                        object.deserializedFromTemplate(owner, documentPart);
+                    }
                 }
             }
 
