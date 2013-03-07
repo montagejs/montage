@@ -241,14 +241,27 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     _initDomArguments: {
         value: function() {
-            var elements = this._element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "]"),
+            var candidates = this._element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "]"),
                 domArguments = {},
-                name;
+                name,
+                node,
+                element = this.element;
 
             domArguments["*"] = this.domContent;
-            for (var i = 0, element; (element = elements[i]); i++) {
-                name = element.getAttribute(this.DOM_ARG_ATTRIBUTE);
-                domArguments[name] = element;
+
+            // Need to make sure that we filter dom args that are for nested
+            // components and not for this component.
+            nextCandidate:
+            for (var i = 0, candidate; (candidate = candidates[i]); i++) {
+                node = candidate;
+                while ((node = node.parentNode) !== element) {
+                    // This candidate is inside another component so skip it.
+                    if (node.controller) {
+                        continue nextCandidate;
+                    }
+                }
+                name = candidate.getAttribute(this.DOM_ARG_ATTRIBUTE);
+                domArguments[name] = candidate;
             }
 
             this._domArguments = domArguments;

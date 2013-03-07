@@ -593,6 +593,13 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     .toBe(component.element.querySelector(".two"));
             });
 
+            it("should have dom arguments of the component only and not of nested components", function() {
+                var component = testPage.test.nestedArguments,
+                    domArguments = component._domArguments;
+
+                expect(Object.keys(domArguments).length).toBe(3);
+            });
+
             it("should satisfy the star parameter", function() {
                 var templateArguments = {
                         "*": document.createElement("div")

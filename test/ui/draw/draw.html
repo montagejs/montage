@@ -60,7 +60,8 @@ POSSIBILITY OF SUCH DAMAGE.
             "componentWithDelegate": {"@": "componentWithDelegate"},
             "componentList": {"@": "componentList"},
             "arguments": {"@": "arguments"},
-            "noArguments": {"@": "noArguments"}
+            "noArguments": {"@": "noArguments"},
+            "nestedArguments": {"@": "nestedArguments"}
         }
     },
     "repetition": {
@@ -234,6 +235,18 @@ POSSIBILITY OF SUCH DAMAGE.
             "element": {"#": "noArguments"}
         }
     },
+    "nestedArguments": {
+        "prototype": "montage/ui/dynamic-element.reel",
+        "properties": {
+            "element": {"#": "nestedArguments"}
+        }
+    },
+    "nestedArgumentsComponent": {
+        "prototype": "montage/ui/dynamic-element.reel",
+        "properties": {
+            "element": {"#": "nestedArgumentsComponent"}
+        }
+    },
     "owner": {
         "prototype": "montage/ui/application",
         "properties": {
@@ -295,6 +308,15 @@ POSSIBILITY OF SUCH DAMAGE.
 <div data-montage-id="noArguments">
     <span class="content1"></span>
     <span class="content2"></span>
+</div>
+
+<div data-montage-id="nestedArguments">
+    <span data-arg="one" class="one"></span>
+    <span data-arg="two" class="two"></span>
+    <div data-montage-id="nestedArgumentsComponent">
+        <span data-arg="three" class="three"></span>
+        <span data-arg="four" class="four"></span>
+    </div>
 </div>
 
 </body>
