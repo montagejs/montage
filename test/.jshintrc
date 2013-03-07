@@ -15,11 +15,23 @@
     "eqnull": true,
     "es5": true,
     "browser": true,
+    "devel": true,
     "predef": [
         "CustomEvent",
         "WebSocket",
 
         "require",
-        "exports"
+        "exports",
+
+        "beforeEach",
+        "afterEach",
+        "describe",
+        "xdescribe",
+        "it",
+        "xit",
+        "expect",
+        "spyOn",
+        "runs",
+        "waits"
     ]
 }
