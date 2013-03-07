@@ -43,24 +43,11 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
 
         beforeEach(function() {
             var testDocument = testPage.iframe.contentDocument;
-            testMontage = testDocument.defaultView.montageRequire("montage").Montage,
+            testMontage = testDocument.defaultView.montageRequire("core/target").Target,
             testApplication = testDocument.application;
             eventManager = testApplication.eventManager;
             eventManager.reset();
         });
-
-        it("should have a parentProperty on a Montage object", function() {
-            expect((Montage.create()).parentProperty).toBeDefined();
-        });
-
-        // TODO @mczepiel Are these cases this necessary? - @kriskowal
-        //it("should have a parentProperty on a object", function() {
-        //    expect((Object.create(Object.prototype)).parentProperty).toBeDefined();
-        //});
-        //
-        //it("should have a parentProperty on a object literal", function() {
-        //    expect({}.parentProperty).toBeDefined();
-        //});
 
         describe("handling events throughout the object hierarchy", function() {
 
@@ -75,20 +62,16 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
                 parent = testMontage.create();
 
                 orphan = testMontage.create();
-                orphan.parentProperty = "parent";
-                orphan.parent = null;
+                orphan.nextTarget = null;
 
                 childFoo = testMontage.create();
-                childFoo.parentProperty = "foo";
-                childFoo.foo = parent;
+                childFoo.nextTarget = parent;
 
                 childBar = testMontage.create();
-                childBar.parentProperty = "bar";
-                childBar.bar = parent;
+                childBar.nextTarget = parent;
 
                 grandchildFoo = testMontage.create();
-                grandchildFoo.parentProperty = "parent";
-                grandchildFoo.parent = childFoo;
+                grandchildFoo.nextTarget = childFoo;
 
                 bubbleEvent = window.document.createEvent("CustomEvent");
                 bubbleEvent.initCustomEvent("bubbleEvent", true, false, null);
@@ -385,8 +368,9 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
                 bubbleEvent.initCustomEvent("bubbleEvent", true, false, null);
             });
 
-            it("should have a default parentProperty on all components", function() {
-                expect((Component.create()).parentProperty).toBe("parentComponent");
+            it("should have a default nextTarget of the parentComponent on all components", function() {
+                var component = Component.create();
+                expect(component.nextTarget).toBe(component.parentComponent);
             });
 
             describe("during the capture phase", function() {

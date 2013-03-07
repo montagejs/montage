@@ -129,8 +129,7 @@ var testPage = TestPageLoader.queueTest("fallback", {directory: module.directory
                             "properties": {
                                 "messages": null,
                                 "locale": "en-x-test",
-                                "identifier": null,
-                                "parentProperty": null
+                                "identifier": null
                             }
                         }
                     };
@@ -277,8 +276,7 @@ var testPage = TestPageLoader.queueTest("fallback", {directory: module.directory
                             "root": {
                                 "prototype": "montage/core/core[Montage]",
                                 "properties": {
-                                    "identifier": null,
-                                    "parentProperty": null
+                                    "identifier": null
                                 },
                                 "localizations": {
                                     "message": {
@@ -320,8 +318,7 @@ var testPage = TestPageLoader.queueTest("fallback", {directory: module.directory
                             "root": {
                                 "prototype": "montage/core/core[Montage]",
                                 "properties": {
-                                    "identifier": null,
-                                    "parentProperty": null
+                                    "identifier": null
                                 },
                                 "localizations": {
                                     "binding": {
@@ -369,8 +366,7 @@ var testPage = TestPageLoader.queueTest("fallback", {directory: module.directory
                             "root": {
                                 "prototype": "montage/core/core[Montage]",
                                 "properties": {
-                                    "identifier": null,
-                                    "parentProperty": null
+                                    "identifier": null
                                 },
                                 "localizations": {
                                     "binding": {

@@ -48,6 +48,10 @@ var Montage = require("montage").Montage,
 */
 var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
 
+    acceptsFocus: {
+        value: true
+    },
+
     // HTMLInputElement methods
 
     blur: { value: function() { this._element.blur(); } },

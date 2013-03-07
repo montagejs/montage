@@ -1,0 +1,268 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>ActiveTargetTest</title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+        {
+            "test": {
+                "prototype": "events/active-target-test/active-target-test",
+                "properties": {
+                    "topEditor": {"@": "C0"},
+                    "editorA": {"@": "C0C0"},
+                    "editorB": {"@": "C0C1"}
+                }
+            },
+
+            "application": {
+                "prototype": "montage/ui/application",
+                "properties": {
+                    "delegate": {"@": "test"}
+                }
+            },
+
+            "menuItem": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "menuItem"},
+                    "label": "MenuItem",
+                    "acceptsFocus": false
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "test"}
+                    }
+                ]
+            },
+
+            "nameField": {
+                "prototype": "montage/ui/input-text.reel",
+                "properties": {
+                    "element": {"#": "nameField"}
+                }
+            },
+
+            "C0": {
+                "prototype": "events/active-target-test/action-counter",
+                "properties": {
+                    "element": {"#": "C0"}
+                }
+            },
+
+            "C0Count": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "C0Count"}
+                },
+                "bindings": {
+                    "value": {"<-": "@C0.handledMenuActionCount"}
+                }
+            },
+
+            "C0C0": {
+                "prototype": "events/active-target-test/action-counter",
+                "properties": {
+                    "element": {"#": "C0C0"},
+                    "acceptsFocus": true
+                }
+            },
+
+            "C0C0Count": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "C0C0Count"}
+                },
+                "bindings": {
+                    "value": {"<-": "@C0C0.handledMenuActionCount"}
+                }
+            },
+
+            "C0C0B0": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "C0C0B0"},
+                    "label": " Enabled Button"
+                }
+            },
+
+            "C0C0B1": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "C0C0B1"},
+                    "label": " Disabled Button",
+                    "enabled": false
+                }
+            },
+
+            "C0C0CB0": {
+                "prototype": "montage/ui/input-checkbox.reel",
+                "properties": {
+                    "element": {"#": "C0C0CB0"}
+                }
+            },
+
+            "C0C1": {
+                "prototype": "events/active-target-test/action-counter",
+                "properties": {
+                    "element": {"#": "C0C1"}
+                }
+            },
+
+            "C0C1Count": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "C0C1Count"}
+                },
+                "bindings": {
+                    "value": {"<-": "@C0C1.handledMenuActionCount"}
+                }
+            },
+
+            "C0C1B0": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "C0C1B0"},
+                    "label": " Enabled Button"
+                }
+            },
+
+            "C0C1B1": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "C0C1B1"},
+                    "label": " Enabled Button Input"
+                }
+            },
+
+            "C0C1B2": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "C0C1B2"},
+                    "label": " Disabled Button",
+                    "enabled": false
+                }
+            },
+
+            "C0C1TA0": {
+                "prototype": "montage/ui/textarea.reel",
+                "properties": {
+                    "element": {"#": "C0C1TA0"}
+                }
+            },
+
+            "targetInfoConverter": {
+                "prototype": "events/active-target-test/target-info-converter"
+            },
+
+            "activeTargetObjectName": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "activeTargetObjectName"}
+                },
+                "bindings": {
+                    "value": {
+                        "<-": "@nameField.eventManager.activeTarget",
+                        "converter": {"@": "targetInfoConverter"}
+                    }
+                }
+            },
+
+            "activeTargetIdentifier": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "activeTargetIdentifier"}
+                },
+                "bindings": {
+                    "value": {
+                        "<-": "@nameField.eventManager.activeTarget.identifier"
+                    }
+                }
+            }
+
+        }
+    </script>
+
+    <style type="text/css">
+        body {
+            background: hsl(0,0%,95%);
+        }
+
+        .container {
+            margin: 1em;
+            padding: 1em;
+            background-color: hsla(0,0%,0%, 0.1)
+        }
+
+        .playground {
+            background: white;
+            padding: 2em;
+        }
+
+    </style>
+
+</head>
+<body>
+    <h1>Testing ActiveTarget…</h1>
+
+    <menu>
+        <p>This button simulates a keyboard shortcut invoked menuAction and as such never becomes the activeTarget of the application
+            the event itself is fired after a three seconds to allow choosing the activeTarget
+        </p>
+        <button data-montage-id="menuItem"></button>
+
+        <div>
+            <h2>Information about the activeTarget</h2>
+            <table>
+                <tr>
+                    <th>ObjectName</th>
+                    <td data-montage-id="activeTargetObjectName"></td>
+                </tr>
+                <tr>
+                    <th>Identifier</th>
+                    <td data-montage-id="activeTargetIdentifier"></td>
+                </tr>
+            </table>
+        </div>
+
+    </menu>
+
+    <section class="playground">
+        <p>All of the control-like-UI components below should become activeTarget when focused</p>
+        <label>Label of a input-text component <em>Name</em><input type="text" data-montage-id="nameField"></label>
+
+        <div data-montage-id="C0" class="container">
+            <p>This component cannot become the activeTarget</p>
+            <p>Handled MenuAction Count <span data-montage-id="C0Count"></span></p>
+
+            <div data-montage-id="C0C0" class="container">
+                <p>The component can become the activeTarget</p>
+                <p>Handled MenuAction Count <span data-montage-id="C0C0Count"></span></p>
+
+                <button data-montage-id="C0C0B0"></button>
+                <button data-montage-id="C0C0B1"></button>
+                <input type="checkbox" data-montage-id="C0C0CB0">
+
+                These HTML controls are not Montage Target (The nearest parent component should be considered active)
+                <div>
+                    <select>
+                        <option>Not a Component</option>
+                    </select>
+                    <button>Not a Component</button>
+                </div>
+            </div>
+
+            <div data-montage-id="C0C1" class="container">
+                <p>This component cannot become the activeTarget</p>
+                <p>Handled MenuAction Count <span data-montage-id="C0C1Count"></span></p>
+
+                <button data-montage-id="C0C1B0"></button>
+                <input type="button" data-montage-id="C0C1B1">
+                <button data-montage-id="C0C1B2"></button>
+                <textarea data-montage-id="C0C1TA0"></textarea>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

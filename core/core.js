@@ -627,13 +627,6 @@ Montage.defineProperty(Montage, "identifier", {
     serializable: true
 });
 
-// TODO @mczepiel Is the level of indirection of parentProperty necessary?  Why
-// not just use `parent` instead of `[this.parentProperty]` throughout?
-// - @kriskowal
-Montage.defineProperty(Montage, "parentProperty", {
-    value: null
-});
-
 /**
     Returns true if two objects are equal, otherwise returns false.
     @function module:montage/core/core.Montage.equals

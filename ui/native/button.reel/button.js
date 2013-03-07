@@ -123,6 +123,18 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
         }
     },
 
+    _acceptsFocus: {
+        value: true
+    },
+
+    acceptsFocus: {
+        get: function () {
+            return this._acceptsFocus && this.enabled && !this.preventFocus;
+        },
+        set: function (value) {
+            this._acceptsFocus = value;
+        }
+    },
 
 /**
     Enables or disables the Button from user input. When this property is set to <code>false</code>, the "disabled" CSS style is applied to the button's DOM element during the next draw cycle. When set to <code>true</code> the "disabled" CSS class is removed from the element's class list.

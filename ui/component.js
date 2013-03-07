@@ -39,6 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
     @requires montage/core/event/event-manager
  */
 var Montage = require("montage").Montage,
+    Target = require("core/target").Target,
     Bindings = require("core/bindings").Bindings,
     Template = require("ui/template").Template,
     Gate = require("core/gate").Gate,
@@ -55,7 +56,7 @@ var Montage = require("montage").Montage,
  * @classdesc Base class for all Montage components.
    @extends module:montage/core/core.Montage
  */
-var Component = exports.Component = Montage.create(Montage,/** @lends module:montage/ui/component.Component# */ {
+var Component = exports.Component = Montage.create(Target,/** @lends module:montage/ui/component.Component# */ {
     DOM_ARG_ATTRIBUTE: {value: "data-arg"},
 
     didCreate: {
@@ -82,8 +83,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: null
     },
 
-    parentProperty: {
-        value: "parentComponent"
+    nextTarget: {
+        get: function () {
+            return this.parentComponent;
+        }
     },
 
     _ownerDocumentPart: {
@@ -335,17 +338,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             return rootComponent;
         }
     },
-/**
-    Description TODO
-    @function
-    @returns {Boolean} false
-    */
-    acceptsDirectFocus: {
-        enumerable: false,
-        value: function() {
-            return false;
-        }
-    },
+
 /**
     Description TODO
     @function

@@ -1142,8 +1142,7 @@ describe("bindings/spec", function() {
                         "prototype": "montage/core/core[Montage]",
                         "properties": {
                             "foo": null,
-                            "identifier": null,
-                            "parentProperty": null
+                            "identifier": null
                         },
                         "bindings": {
                             "foo": {

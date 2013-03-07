@@ -943,11 +943,21 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 this._activationHandler = function(evt) {
                     var eventType = evt.type;
 
-                    // Don't double call handleEvent if we're already handling it becasue we have a registered listener
-                    if (!eventManager.registeredEventListeners[eventType]) {
-                        eventManager.handleEvent(evt);
+                    // Prepare any components associated with elements that may receive this event
+                    // They need to registered there listeners before the next step, which is to find the components that
+                    // observing for this type of event
+                    if ("focus" === eventType || "mousedown" === eventType || "touchstart" === eventType) {
+                        if (evt.changedTouches) {
+                            touchCount = evt.changedTouches.length;
+                            for (i = 0; i < touchCount; i++) {
+                                eventManager._prepareComponentsForActivationEventTarget(evt.changedTouches[i].target);
+                            }
+                        } else {
+                            eventManager._prepareComponentsForActivationEventTarget(evt.target);
+                        }
                     }
-                }
+
+                };
             }
 
             // The EventManager needs to handle "gateway/pointer/activation events" that we
@@ -962,6 +972,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 aWindow.document.nativeAddEventListener("mousedown", this._activationHandler, true);
                 //TODO also should accommodate mouseenter/mouseover possibly
             }
+            aWindow.document.nativeAddEventListener("focus", this._activationHandler, true);
 
             if (this.application) {
 
@@ -1760,20 +1771,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 mutableEvent = event;
             }
 
-            // Prepare any components associated with elements that may receive this event
-            // They need to registered there listeners before the next step, which is to find the components that
-            // observing for this type of event
-            if ("mousedown" === eventType || "touchstart" === eventType) {
-                if (mutableEvent.changedTouches) {
-                    touchCount = mutableEvent.changedTouches.length;
-                    for (i = 0; i < touchCount; i++) {
-                        this._prepareComponentsForActivationEventTarget(mutableEvent.changedTouches[i].target);
-                    }
-                } else {
-                    this._prepareComponentsForActivationEventTarget(mutableEvent.target);
-                }
-            }
-
             eventPath = this._eventPathForTarget(mutableEvent.target);
 
             // use most specific handler method available, possibly based upon the identifier of the event target
@@ -1933,22 +1930,25 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 previousTarget,
                 targetView = target && target.defaultView ? target.defaultView : window,
                 targetDocument = targetView.document ? targetView.document : document,
-                associatedComponent;
+                associatedComponent,
+                hasRegisteredActiveTarget = false;
 
             do {
 
                 if (target) {
                     associatedComponent = this.eventHandlerForElement(target);
                     if (associatedComponent) {
-                        if (!associatedComponent._preparedForActivationEvents) {
 
+                        if (!hasRegisteredActiveTarget) {
+                            if (associatedComponent.acceptsFocus) {
+                                this.activeTarget = associatedComponent;
+                                hasRegisteredActiveTarget = true;
+                            }
+                        }
+
+                        if (!associatedComponent._preparedForActivationEvents) {
                             associatedComponent._prepareForActivationEvents();
                             associatedComponent._preparedForActivationEvents = true;
-
-                        } else if (associatedComponent._preparedForActivationEvents) {
-                            //TODO can we safely stop if we find the currentTarget has already been activated?
-                            // I want to say no as the tree above may have changed, but I'm going to give it a try
-                            return;
                         }
                     }
                 }
@@ -1974,6 +1974,10 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 }
 
             } while (target && previousTarget !== target);
+
+            if (!hasRegisteredActiveTarget) {
+                this.activeTarget = null;
+            }
 
         }
     },
@@ -2021,7 +2025,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                         targetCandidate = targetDocument;
                         break;
                     default:
-                        targetCandidate = targetCandidate.parentProperty ? targetCandidate[targetCandidate.parentProperty] : targetCandidate.parentNode;
+                        targetCandidate = typeof targetCandidate.nextTarget === "undefined" ? targetCandidate.parentNode : targetCandidate.nextTarget;
 
                         // Run out of hierarchy candidates? go up to the application
                         if (!targetCandidate) {
@@ -2081,7 +2085,59 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         value: function(anElement) {
             return this._elementEventHandlerByUUID[anElement.eventHandlerUUID];
         }
+    },
+
+    _activeTarget: {
+        value: null
+    },
+
+    /**
+     * The logical component that has focus within the application
+     *
+     * This can be used as the proximal target for dispatching in
+     * situations where it logically makes sense that and event, while
+     * created by some other component, should appear to originate from
+     * where the user is currently focused.
+     *
+     * This is particularly useful for things such as keyboard shortcuts or
+     * menuAction events.
+     */
+    activeTarget: {
+        get: function () {
+            return this._activeTarget || this.application;
+        },
+        set: function (value) {
+            if (value === this._activeTarget) {
+                return;
+            }
+
+            this._activeTarget = value;
+        }
+    },
+
+    /**
+     * Dispatches the specified event with the activeTarget as the event's proximal target
+     * @param {Event} event The event object to dispatch
+     */
+    dispatchFocusedEvent: {
+        value: function (event) {
+            this.activeTarget.dispatchEvent(event);
+        }
+    },
+
+    /**
+     * Creates and dispatches an event with the specified properties
+     * @param {string} type The type of the event to dispatch
+     * @param {boolean} canBubble Whether or not the event can bubble
+     * @param {boolean} cancelable Whether or not the event can be cancelled
+     * @param {Object} detail The optional detail object of the event
+     */
+    dispatchFocusedEventNamed: {
+        value: function (type, canBubble, cancelable, detail) {
+            this.activeTarget.dispatchEventNamed(type, canBubble, cancelable, detail);
+        }
     }
+
 
 });
 
