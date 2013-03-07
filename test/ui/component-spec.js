@@ -525,6 +525,12 @@ var testPage = TestPageLoader.queueTest("draw", function() {
            expect(element.getAttribute("id")).toBe("componentList");
         });
 
+        it("should have templateObjects ready at templateDidLoad", function() {
+            var component = testPage.test.templateObjects;
+
+            expect(component.templateObjectsPresent).toBeTruthy();
+        });
+
         describe("_makeTemplateObjectGetter", function () {
             it("returns a single component", function () {
                 var a = {};

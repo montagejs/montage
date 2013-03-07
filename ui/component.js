@@ -1091,22 +1091,25 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 if (instances) {
                     instances.owner = self;
                 } else {
-                    self.templateObjects = instances = {owner: self};
+                    instances = {owner: self};
                 }
 
                 self._isTemplateInstantiated = true;
 
-                return template.instantiateWithInstances(
-                    instances, _document)
-                .then(function(part) {
-                    self._setupTemplateObjects(part.objects);
-                    self._templateDocumentPart = part;
-                }).fail(function(reason) {
+                return template.instantiateWithInstances(instances, _document)
+                .fail(function(reason) {
                     var message = reason.stack || reason;
                     console.error("Error in", template.getBaseUrl() + ":", message);
                     throw reason;
                 });
             });
+        }
+    },
+
+    _templateDidLoad: {
+        value: function(documentPart) {
+            this._templateDocumentPart = documentPart;
+            this._setupTemplateObjects(documentPart.objects);
         }
     },
 

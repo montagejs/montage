@@ -61,7 +61,8 @@ POSSIBILITY OF SUCH DAMAGE.
             "componentList": {"@": "componentList"},
             "arguments": {"@": "arguments"},
             "noArguments": {"@": "noArguments"},
-            "nestedArguments": {"@": "nestedArguments"}
+            "nestedArguments": {"@": "nestedArguments"},
+            "templateObjects": {"@": "templateObjects"}
         }
     },
     "repetition": {
@@ -247,6 +248,12 @@ POSSIBILITY OF SUCH DAMAGE.
             "element": {"#": "nestedArgumentsComponent"}
         }
     },
+    "templateObjects": {
+        "prototype": "ui/draw/template-objects.reel",
+        "properties": {
+            "element": {"#": "templateObjects"}
+        }
+    },
     "owner": {
         "prototype": "montage/ui/application",
         "properties": {
@@ -318,6 +325,8 @@ POSSIBILITY OF SUCH DAMAGE.
         <span data-arg="four" class="four"></span>
     </div>
 </div>
+
+<div data-montage-id="templateObjects"></div>
 
 </body>
 </html>
