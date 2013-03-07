@@ -1903,7 +1903,8 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 targetView = target && target.defaultView ? target.defaultView : window,
                 targetDocument = targetView.document ? targetView.document : document,
                 associatedComponent,
-                hasRegisteredActiveTarget = false;
+                lookedForActiveTarget = false,
+                activeTarget = null;
 
             do {
 
@@ -1911,11 +1912,11 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                     associatedComponent = this.eventHandlerForElement(target);
                     if (associatedComponent) {
 
-                        if (!hasRegisteredActiveTarget) {
-                            if (associatedComponent.acceptsFocus) {
-                                this.activeTarget = associatedComponent;
-                                hasRegisteredActiveTarget = true;
-                            }
+                        // Once we've found a component starting point,
+                        // find the closest Target that accepts focus
+                        if (!lookedForActiveTarget) {
+                            lookedForActiveTarget = true;
+                            activeTarget = this._findActiveTarget(associatedComponent);
                         }
 
                         if (!associatedComponent._preparedForActivationEvents) {
@@ -1947,12 +1948,36 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
             } while (target && previousTarget !== target);
 
-            if (!hasRegisteredActiveTarget) {
-                this.activeTarget = null;
-            }
-
+            this.activeTarget = activeTarget;
         }
     },
+
+    /**
+     *
+     @private
+     */
+    _findActiveTarget: {
+        value: function(target) {
+
+            var foundTarget = null,
+                previousTarget;
+
+            while (!foundTarget && target && previousTarget !== target) {
+
+                //TODO complain if a non-Target is considered
+
+                if (target.acceptsFocus) {
+                    foundTarget = target;
+                } else {
+                    previousTarget = target;
+                    target = target.nextTarget;
+                }
+            }
+
+            return foundTarget;
+        }
+    },
+
 /**
   @private
 */
