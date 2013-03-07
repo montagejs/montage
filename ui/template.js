@@ -405,6 +405,12 @@ var Template = Montage.create(Montage, {
                 element = elements[i];
                 parameterName = this.getParameterName(element);
 
+                if (parameterName in parameters) {
+                    throw new Error('The parameter "' + parameterName + '" is' +
+                        ' declared more than once in ' + this.getBaseUrl() +
+                        '.');
+                }
+
                 parameters[parameterName] = element;
             }
 

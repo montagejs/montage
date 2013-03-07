@@ -844,7 +844,21 @@ describe("reel/template-spec", function() {
             return template.initWithHtml(html)
             .then(function() {
                 try {
-                    template.getParameters(),
+                    template.getParameters();
+                    expect("call").toBe("fail");
+                } catch (ex) {
+                    expect(true).toBe(true);
+                }
+            })
+        });
+
+        it("should fail when the same parameter is declared more than once", function() {
+            var html = require("reel/template/template-duplicate-parameters.html").content;
+
+            return template.initWithHtml(html)
+            .then(function() {
+                try {
+                    template.getParameters();
                     expect("call").toBe("fail");
                 } catch (ex) {
                     expect(true).toBe(true);
