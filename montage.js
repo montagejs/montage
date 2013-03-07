@@ -205,7 +205,7 @@ if (typeof window !== "undefined") {
 	                        if (event.source === remoteInjector && event.data.type === "montageInit") {
 	                            trigger.resolve(event.data.location);
 	                        }
-						}
+                        }
                     });
 
                     remoteInjector.postMessage({
