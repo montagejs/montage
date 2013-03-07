@@ -39,11 +39,11 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
             expect(testPage.loaded).toBeTruthy();
         });
 
-        var eventManager, parent, testApplication, testMontage;
+        var eventManager, parent, testApplication, testTarget;
 
         beforeEach(function() {
             var testDocument = testPage.iframe.contentDocument;
-            testMontage = testDocument.defaultView.montageRequire("core/target").Target,
+            testTarget = testDocument.defaultView.montageRequire("core/target").Target;
             testApplication = testDocument.application;
             eventManager = testApplication.eventManager;
             eventManager.reset();
@@ -59,18 +59,18 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
             beforeEach(function() {
                 // We need to use the testMontage as the base so the global defaultEventManager is the testEventManager
                 // from the test iframe, not the global defaultEventManager of the test
-                parent = testMontage.create();
+                parent = testTarget.create();
 
-                orphan = testMontage.create();
+                orphan = testTarget.create();
                 orphan.nextTarget = null;
 
-                childFoo = testMontage.create();
+                childFoo = testTarget.create();
                 childFoo.nextTarget = parent;
 
-                childBar = testMontage.create();
+                childBar = testTarget.create();
                 childBar.nextTarget = parent;
 
-                grandchildFoo = testMontage.create();
+                grandchildFoo = testTarget.create();
                 grandchildFoo.nextTarget = childFoo;
 
                 bubbleEvent = window.document.createEvent("CustomEvent");
