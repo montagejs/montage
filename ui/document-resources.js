@@ -1,5 +1,5 @@
 var Montage = require("montage").Montage,
-    Promise = require("q");
+    Promise = require("core/promise").Promise;
 
 var DocumentResources = Montage.create(Montage, {
     _SCRIPT_TIMEOUT: {value: 5000},

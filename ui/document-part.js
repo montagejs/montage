@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage,
     logger = require("core/logger").logger("document-part"),
-    Promise = require("q"),
+    Promise = require("core/promise").Promise,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
 var DocumentPart = Montage.create(Montage, {

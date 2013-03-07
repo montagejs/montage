@@ -1,5 +1,5 @@
 var Montage = require("core/core").Montage;
-var Promise = require("q");
+var Promise = require("core/promise").Promise;
 
 var UnitDeserializer = Montage.create(Montage, {
     _context: {value: null},

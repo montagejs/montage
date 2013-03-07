@@ -4,7 +4,7 @@ var PropertiesDeserializer = require("./properties-deserializer").PropertiesDese
 var SelfDeserializer = require("./self-deserializer").SelfDeserializer;
 var UnitDeserializer = require("./unit-deserializer").UnitDeserializer;
 
-var Promise = require("q");
+var Promise = require("core/promise").Promise;
 
 var ModuleLoader = Montage.create(Montage, {
     _require: {value: null},
