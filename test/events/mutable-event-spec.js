@@ -30,6 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 var MutableEvent = require("montage/core/event/mutable-event").MutableEvent;
+var Target = require("montage/core/target").Target;
 
 describe("events/mutable-event-spec", function() {
 
@@ -40,7 +41,7 @@ describe("events/mutable-event-spec", function() {
         beforeEach(function() {
             type = "myCustomEventType";
             listener = {};
-            target = {};
+            target = Target.create();
 
             target.addEventListener(type, listener);
         });
@@ -126,7 +127,7 @@ describe("events/mutable-event-spec", function() {
         beforeEach(function() {
             type = "myCustomEventType";
             listener = {};
-            target = {};
+            target = Target.create();
 
             target.addEventListener(type, listener);
         });
