@@ -1097,6 +1097,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 self._isTemplateInstantiated = true;
 
                 return template.instantiateWithInstances(instances, _document)
+                .then(function(documentPart) {
+                    self._templateDocumentPart = documentPart;
+                })
                 .fail(function(reason) {
                     var message = reason.stack || reason;
                     console.error("Error in", template.getBaseUrl() + ":", message);
@@ -1108,7 +1111,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     _templateDidLoad: {
         value: function(documentPart) {
-            this._templateDocumentPart = documentPart;
             this._setupTemplateObjects(documentPart.objects);
         }
     },
