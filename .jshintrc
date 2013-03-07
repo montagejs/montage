@@ -1,0 +1,31 @@
+{
+    "bitwise": true,
+    "camelcase": true,
+    "curly": true,
+    "eqeqeq": true,
+    "forin": true,
+    "noarg": true,
+    "noempty": true,
+    "nonew": true,
+    "undef": true,
+    "unused": true,
+    "trailing": true,
+    "indent": 4,
+    "boss": true,
+    "eqnull": true,
+    "es5": true,
+    "browser": true,
+    "globals": {
+        "require": false,
+        "exports": false,
+        "WebSocket": false,
+        "beforeEach": false,
+        "afterEach": false,
+        "describe": false,
+        "xdescribe": false,
+        "it": false,
+        "xit": false,
+        "expect": false,
+        "spyOn": false
+    }
+}
