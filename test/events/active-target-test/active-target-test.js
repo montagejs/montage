@@ -1,6 +1,7 @@
-var Montage = require("montage").Montage;
+var Montage = require("montage").Montage,
+    Target = require("montage/core/target").Target;
 
-exports.ActiveTargetTest = Montage.create(Montage, {
+exports.ActiveTargetTest = Montage.create(Target, {
 
     topEditor: {
         value: null
@@ -20,21 +21,19 @@ exports.ActiveTargetTest = Montage.create(Montage, {
 
     handleAction: {
         value: function (evt) {
-            var eventManager = evt.target.eventManager,
-                self = this;
-
             console.log("About to dispatch menuAction…");
 
+            var self = this;
             setTimeout(function () {
                 console.log("Dispatch menuAction");
-                self.dispatchMenuAction(eventManager);
+                self.dispatchMenuAction();
             }, this.menuActionDelay * 1000);
         }
     },
 
     dispatchMenuAction: {
-        value: function (eventManager) {
-            eventManager.dispatchFocusedEventNamed("menuAction", true, true);
+        value: function () {
+            this.dispatchFocusedEventNamed("menuAction", true, true);
         }
     }
 

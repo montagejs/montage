@@ -40,6 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 var Montage = require("core/core").Montage,
+    Target = require("core/target").Target,
     MontageWindow = require("ui/montage-window").MontageWindow,
     Slot;
 
@@ -63,7 +64,7 @@ var Montage = require("core/core").Montage,
  @class module:montage/ui/application.Application
  @extends module:montage/core/core.Montage
  */
-var Application = exports.Application = Montage.create(Montage, /** @lends montage/ui/application.Application# */ {
+var Application = exports.Application = Montage.create(Target, /** @lends montage/ui/application.Application# */ {
 
     /**
      Provides a reference to the Montage event manager used in the application.
