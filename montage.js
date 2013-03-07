@@ -201,11 +201,11 @@ if (typeof window !== "undefined") {
                     var remoteInjector = window;
 
                     window.addEventListener("message", function (event) {
-						if (params.remoteTrigger == event.origin) {
+                        if (params.remoteTrigger == event.origin) {
 	                        if (event.source === remoteInjector && event.data.type === "montageInit") {
 	                            trigger.resolve(event.data.location);
 	                        }
-						}
+                        }
                     });
 
                     remoteInjector.postMessage({
