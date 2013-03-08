@@ -1,4 +1,4 @@
-<!doctype HTML>
+<!DOCTYPE html>
 <!-- <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
@@ -31,45 +31,77 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> -->
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>ClaimedPointerTest</title>
-    <script type="text/javascript" src="../../montage.js" data-package="../"></script>
-    <script type="text/montage-serialization">
-{
-    "component1": {
-        "prototype": "montage/ui/component",
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Translate Composer Test</title>
+    <script type="text/javascript" src="../../../../montage.js" data-package="../../../"></script>
+    <script type="text/montage-serialization">{
+
+    "translate_composer": {
+        "prototype": "montage/composer/translate-composer",
         "properties": {
-            "element": {"#": "componentA"},
-            "hasTemplate": false
+            "component": {"@": "example"},
+            "maxTranslateX": 350,
+            "maxTranslateY": 350,
+            "minTranslateX": 20,
+            "minTranslateY": -40,
+            "hasMomentum": false
         }
     },
-    "component2": {
-        "prototype": "montage/ui/component",
+    "example": {
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
-            "element": {"#": "componentB"},
-            "hasTemplate": false
+            "element": {"#": "example"},
+            "value": "hi"
         }
     },
-    "claimedpointertest1": {
-        "prototype": "claimed-pointer-test/claimed-pointer-test",
+
+    "test": {
+        "prototype": "composer/translate-composer-test/translate-composer-test",
         "properties": {
-            "componentA": {"@": "component1"},
-            "componentB": {"@": "component2"}
+            "translate_composer": {"@": "translate_composer"},
+            "example": {"@": "example"}
+        },
+        "bindings": {
+            "x": {"<-": "@translate_composer.translateX"},
+            "y": {"<-": "@translate_composer.translateY"}
         }
     },
     "application": {
         "prototype": "montage/core/application",
         "properties": {
-            "delegate": {"@": "claimedpointertest1"}
+            "delegate": {"@": "test"}
         }
     }
-}
-    </script>
+
+    }</script>
+
+<style type="text/css">
+    .wrap {
+        position: relative;
+        background-color: #CCC;
+        width: 400px;
+        height: 400px;
+        overflow: hidden;
+    }
+    .mover {
+        background: #C00;
+        position: absolute;
+        width: 50px;
+        height: 50px;
+    }
+</style>
 
 </head>
 <body>
-    <div data-montage-id="componentA"></div>
-    <div data-montage-id="componentB"></div>
-    ClaimedPointerTest…
+    <h1>Translate Composer test</h1>
+
+    <p>
+    The box can be taken 40px off the top, and must stay 20px from the right
+    hand side.
+    </p>
+
+    <div class="wrap">
+        <div class="mover" data-montage-id="example">something</div>
+    </div>
 </body>
 </html>

@@ -1,5 +1,4 @@
-<!doctype HTML>
-<!-- <copyright>
+/* <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
 
@@ -28,48 +27,92 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
-</copyright> -->
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>ClaimedPointerTest</title>
-    <script type="text/javascript" src="../../montage.js" data-package="../"></script>
-    <script type="text/montage-serialization">
-{
-    "component1": {
-        "prototype": "montage/ui/component",
-        "properties": {
-            "element": {"#": "componentA"},
-            "hasTemplate": false
+</copyright> */
+/**
+	@module test/composer/simple-test-composer
+    @requires montage
+    @requires montage/composer/composer
+*/
+var Montage = require("montage").Montage,
+    Composer = require("montage/composer/composer").Composer;
+/**
+ @module test/composer/simple-test-composer
+ */
+/**
+ @class module:test/composer/simple-test-composer.SimpleTestComposer
+ @classdesc Used to test that the framework is calling a composer's methods
+ @extends module:montage/composer/composer.Composer
+ */
+exports.SimpleTestComposer = Montage.create(Composer, {
+
+    _loadWasCalled: {
+        value: false
+    },
+
+/**
+    Description TODO
+    @function
+    @param {Element}
+    */
+    load: {
+        value: function() {
+            this._loadWasCalled = true;
         }
     },
-    "component2": {
-        "prototype": "montage/ui/component",
-        "properties": {
-            "element": {"#": "componentB"},
-            "hasTemplate": false
+
+/**
+    Description TODO
+    @function
+    */
+    unload: {
+        value: function() {
+
         }
     },
-    "claimedpointertest1": {
-        "prototype": "claimed-pointer-test/claimed-pointer-test",
-        "properties": {
-            "componentA": {"@": "component1"},
-            "componentB": {"@": "component2"}
-        }
-    },
-    "application": {
-        "prototype": "montage/core/application",
-        "properties": {
-            "delegate": {"@": "claimedpointertest1"}
+
+    frame: {
+        value: function(timestamp) {
+
         }
     }
-}
-    </script>
 
-</head>
-<body>
-    <div data-montage-id="componentA"></div>
-    <div data-montage-id="componentB"></div>
-    ClaimedPointerTest…
-</body>
-</html>
+});
+
+exports.LazyLoadTestComposer = Montage.create(Composer, {
+
+    lazyLoad: {
+        value: true
+    },
+
+    _loadWasCalled: {
+        value: false
+    },
+
+/**
+    Description TODO
+    @function
+    @param {Element}
+    */
+    load: {
+        value: function() {
+            this._loadWasCalled = true;
+        }
+    },
+
+/**
+    Description TODO
+    @function
+    */
+    unload: {
+        value: function() {
+
+        }
+    },
+
+    frame: {
+        value: function(timestamp) {
+
+        }
+    }
+
+});

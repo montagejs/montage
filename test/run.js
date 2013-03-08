@@ -46,6 +46,7 @@ if (spec) {
 } else {
     var modules = [
         // Please keep in alphabetical order
+        "application-spec",
         "bitfield-spec",
         "claimed-pointer-spec",
         "converter-spec",
@@ -65,7 +66,12 @@ if (spec) {
         "bindings/converter-spec",
         "bindings/self-spec",
 
+        "composer/composer-spec",
+        "composer/press-composer-spec",
+        "composer/translate-composer-spec",
+
         "core/core-spec",
+        "core/dom-spec",
         "core/localizer-spec",
         "core/localizer/serialization-spec",
         "core/selector-spec",
@@ -99,12 +105,7 @@ if (spec) {
         "serialization/serialization-inspector-spec",
         "serialization/serialization-merger-spec",
 
-        "ui/application-spec",
         "ui/component-spec",
-        "ui/composer-spec",
-        "ui/composer/press-composer-spec",
-        "ui/composer/translate-composer-spec",
-        "ui/dom-spec",
         "ui/firstdraw-spec",
         // Broken due to changes to repetition
         // TODO "ui/repetition-spec",

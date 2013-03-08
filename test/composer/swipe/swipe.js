@@ -1,5 +1,4 @@
-<!doctype HTML>
-<!-- <copyright>
+/* <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
 
@@ -28,48 +27,34 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
-</copyright> -->
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>ClaimedPointerTest</title>
-    <script type="text/javascript" src="../../montage.js" data-package="../"></script>
-    <script type="text/montage-serialization">
-{
-    "component1": {
-        "prototype": "montage/ui/component",
-        "properties": {
-            "element": {"#": "componentA"},
-            "hasTemplate": false
+</copyright> */
+var Montage = require("montage").Montage,
+    Component = require("montage/ui/component").Component,
+    SwipeComposer = require("montage/composer/swipe-composer").SwipeComposer;
+
+exports.Swipe = Montage.create(Montage, {
+
+    deserializedFromTemplate: {
+        value: function() {
+            var dummyComponent = Montage.create(Component);
+            dummyComponent.hasTemplate = false;
+            dummyComponent.element = document.body;
+            dummyComponent.needsDraw = true;
+            this.swipeComposer = SwipeComposer.create();
+            dummyComponent.addComposer(this.swipeComposer);
+            this.swipeComposer.addEventListener("swipe", this, false);
+            this.swipeComposer.addEventListener("swipemove", this, false);
         }
     },
-    "component2": {
-        "prototype": "montage/ui/component",
-        "properties": {
-            "element": {"#": "componentB"},
-            "hasTemplate": false
+
+    handleSwipe: {
+        value: function(event) {
         }
     },
-    "claimedpointertest1": {
-        "prototype": "claimed-pointer-test/claimed-pointer-test",
-        "properties": {
-            "componentA": {"@": "component1"},
-            "componentB": {"@": "component2"}
-        }
-    },
-    "application": {
-        "prototype": "montage/core/application",
-        "properties": {
-            "delegate": {"@": "claimedpointertest1"}
+
+    handleSwipemove: {
+        value: function(event) {
         }
     }
-}
-    </script>
 
-</head>
-<body>
-    <div data-montage-id="componentA"></div>
-    <div data-montage-id="componentB"></div>
-    ClaimedPointerTest…
-</body>
-</html>
+});

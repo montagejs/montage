@@ -1,4 +1,4 @@
-<!doctype HTML>
+<!DOCTYPE html>
 <!-- <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
@@ -31,45 +31,32 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> -->
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>ClaimedPointerTest</title>
-    <script type="text/javascript" src="../../montage.js" data-package="../"></script>
-    <script type="text/montage-serialization">
-{
-    "component1": {
-        "prototype": "montage/ui/component",
-        "properties": {
-            "element": {"#": "componentA"},
-            "hasTemplate": false
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Slot Test</title>
+    <script src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">{
+        "application": {
+            "prototype": "montage/core/application",
+            "properties": {
+                "delegate": {"@": "test"}
+            }
+        },
+        "test": {
+            "prototype": "core/application/test",
+            "properties": {
+                "theOne": "true"
+            }
+        },
+        "pageLoaded": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "text"},
+                "value": "Loaded"
+            }
         }
-    },
-    "component2": {
-        "prototype": "montage/ui/component",
-        "properties": {
-            "element": {"#": "componentB"},
-            "hasTemplate": false
-        }
-    },
-    "claimedpointertest1": {
-        "prototype": "claimed-pointer-test/claimed-pointer-test",
-        "properties": {
-            "componentA": {"@": "component1"},
-            "componentB": {"@": "component2"}
-        }
-    },
-    "application": {
-        "prototype": "montage/core/application",
-        "properties": {
-            "delegate": {"@": "claimedpointertest1"}
-        }
-    }
-}
-    </script>
-
+    }</script>
 </head>
 <body>
-    <div data-montage-id="componentA"></div>
-    <div data-montage-id="componentB"></div>
-    ClaimedPointerTest…
+<span data-montage-id="text"></span>
 </body>
 </html>

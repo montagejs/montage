@@ -1,4 +1,4 @@
-<!doctype HTML>
+<!DOCTYPE html>
 <!-- <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
@@ -31,45 +31,54 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> -->
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>ClaimedPointerTest</title>
-    <script type="text/javascript" src="../../montage.js" data-package="../"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Press Composer Test</title>
+    <script type="text/javascript" src="../../../../montage.js" data-package="../../../"></script>
     <script type="text/montage-serialization">
 {
-    "component1": {
-        "prototype": "montage/ui/component",
+    "press_composer": {
+        "prototype": "montage/composer/press-composer",
         "properties": {
-            "element": {"#": "componentA"},
-            "hasTemplate": false
+            "component": {"@": "example"}
         }
     },
-    "component2": {
-        "prototype": "montage/ui/component",
+    "example": {
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
-            "element": {"#": "componentB"},
-            "hasTemplate": false
+            "element": {"#": "example"},
+            "value": "hi"
         }
     },
-    "claimedpointertest1": {
-        "prototype": "claimed-pointer-test/claimed-pointer-test",
+
+    "test": {
+        "prototype": "composer/press-composer-test/press-composer-test",
         "properties": {
-            "componentA": {"@": "component1"},
-            "componentB": {"@": "component2"}
+            "press_composer": {"@": "press_composer"},
+            "example": {"@": "example"}
         }
     },
     "application": {
         "prototype": "montage/core/application",
         "properties": {
-            "delegate": {"@": "claimedpointertest1"}
+            "delegate": {"@": "test"}
         }
     }
 }
     </script>
 
+<style type="text/css">
+    .example {
+        background: #C00;
+        position: absolute;
+        width: 50px;
+        height: 50px;
+    }
+</style>
+
 </head>
 <body>
-    <div data-montage-id="componentA"></div>
-    <div data-montage-id="componentB"></div>
-    ClaimedPointerTest…
+    <h1>Press Composer test</h1>
+
+    <div data-montage-id="example" class="example"></div>
 </body>
 </html>

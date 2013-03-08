@@ -3,7 +3,7 @@ Copyright (c) 2013, António Afonso
 All Rights Reserved.
 </copyright> */
 var Montage = require("montage").Montage,
-    DocumentResources = require("montage/ui/document-resources").DocumentResources,
+    DocumentResources = require("montage/core/document-resources").DocumentResources,
     Promise = require("montage/q");
 
 function createPage(url) {

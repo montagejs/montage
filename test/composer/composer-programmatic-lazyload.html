@@ -1,4 +1,4 @@
-<!doctype HTML>
+<!DOCTYPE html>
 <!-- <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
@@ -31,45 +31,34 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> -->
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>ClaimedPointerTest</title>
-    <script type="text/javascript" src="../../montage.js" data-package="../"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
     <script type="text/montage-serialization">
-{
-    "component1": {
-        "prototype": "montage/ui/component",
-        "properties": {
-            "element": {"#": "componentA"},
-            "hasTemplate": false
-        }
-    },
-    "component2": {
-        "prototype": "montage/ui/component",
-        "properties": {
-            "element": {"#": "componentB"},
-            "hasTemplate": false
-        }
-    },
-    "claimedpointertest1": {
-        "prototype": "claimed-pointer-test/claimed-pointer-test",
-        "properties": {
-            "componentA": {"@": "component1"},
-            "componentB": {"@": "component2"}
-        }
-    },
-    "application": {
-        "prototype": "montage/core/application",
-        "properties": {
-            "delegate": {"@": "claimedpointertest1"}
+    {
+        "test": {
+            "prototype": "composer/test[ProgrammaticLazyTest]",
+            "properties": {
+                "dynamicTextC": {"@": "dynamictext1"}
+            }
+        },
+        "dynamictext1": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "dynamictext"},
+                "value": "Test Value"
+            }
+        },
+        "application": {
+            "prototype": "montage/core/application",
+            "properties": {
+                "delegate" : {"@": "test"}
+            }
         }
     }
-}
     </script>
 
 </head>
 <body>
-    <div data-montage-id="componentA"></div>
-    <div data-montage-id="componentB"></div>
-    ClaimedPointerTest…
+<div data-montage-id="dynamictext" class="dynamictext"></div>
 </body>
 </html>

@@ -2,7 +2,7 @@
  * @see https://developer.mozilla.org/en/DOM/HTMLIFrameElement
  */
 var Montage = require("montage").Montage,
-    dom = require("montage/ui/dom"),
+    dom = require("montage/core/dom"),
     URL = require("montage/core/url"),
     ActionEventListener = require("montage/core/event/action-event-listener").ActionEventListener,
     MutableEvent = require("montage/core/event/mutable-event").MutableEvent,

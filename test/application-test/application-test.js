@@ -1,5 +1,4 @@
-<!doctype HTML>
-<!-- <copyright>
+/* <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
 
@@ -28,48 +27,23 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
-</copyright> -->
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>ClaimedPointerTest</title>
-    <script type="text/javascript" src="../../montage.js" data-package="../"></script>
-    <script type="text/montage-serialization">
-{
-    "component1": {
-        "prototype": "montage/ui/component",
-        "properties": {
-            "element": {"#": "componentA"},
-            "hasTemplate": false
-        }
-    },
-    "component2": {
-        "prototype": "montage/ui/component",
-        "properties": {
-            "element": {"#": "componentB"},
-            "hasTemplate": false
-        }
-    },
-    "claimedpointertest1": {
-        "prototype": "claimed-pointer-test/claimed-pointer-test",
-        "properties": {
-            "componentA": {"@": "component1"},
-            "componentB": {"@": "component2"}
-        }
-    },
-    "application": {
-        "prototype": "montage/core/application",
-        "properties": {
-            "delegate": {"@": "claimedpointertest1"}
-        }
-    }
-}
-    </script>
+</copyright> */
+var Montage = require("montage").Montage,
+    Application = require("montage/core/application").Application,
+    TestController = require("specs/support/test-controller").TestController;
 
-</head>
-<body>
-    <div data-montage-id="componentA"></div>
-    <div data-montage-id="componentB"></div>
-    ClaimedPointerTest…
-</body>
-</html>
+var Test = exports.TestController = Montage.create(TestController, {
+
+    testedComponent: {
+        value: null
+    }
+});
+exports.theTest = Test.create();
+
+exports.MyApp = Montage.create(Application, {
+
+    testProperty: {
+        value: true
+    }
+
+});

@@ -1,4 +1,4 @@
-<!doctype HTML>
+<!DOCTYPE html>
 <!-- <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
@@ -31,45 +31,75 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> -->
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>ClaimedPointerTest</title>
-    <script type="text/javascript" src="../../montage.js" data-package="../"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Key Composer Test</title>
+    <script type="text/javascript" src="../../../../montage.js" data-package="../../../"></script>
     <script type="text/montage-serialization">
 {
-    "component1": {
-        "prototype": "montage/ui/component",
+    "key_composer1": {
+        "prototype": "montage/composer/key-composer",
         "properties": {
-            "element": {"#": "componentA"},
-            "hasTemplate": false
+            "keys": "command+j",
+            "identifier": "j",
+            "component": {"@": "example"}
         }
     },
-    "component2": {
-        "prototype": "montage/ui/component",
+    "key_composer2": {
+        "prototype": "montage/composer/key-composer",
         "properties": {
-            "element": {"#": "componentB"},
-            "hasTemplate": false
+            "keys": "shift+control+k",
+            "identifier": "k",
+            "component": {"@": "application"}
+        },
+        "listeners": [
+            {
+                "type": "keyPress",
+                "listener": {"@": "test"}
+            },
+            {
+                "type": "keyRelease",
+                "listener": {"@": "test"}
+            }
+        ]
+    },
+    "example": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "example"},
+            "value": "hi"
         }
     },
-    "claimedpointertest1": {
-        "prototype": "claimed-pointer-test/claimed-pointer-test",
+
+    "test": {
+        "prototype": "composer/key-composer-test/key-composer-test",
         "properties": {
-            "componentA": {"@": "component1"},
-            "componentB": {"@": "component2"}
+            "key_composer1": {"@": "key_composer1"},
+            "key_composer2": {"@": "key_composer2"},
+            "example": {"@": "example"}
         }
     },
     "application": {
         "prototype": "montage/core/application",
         "properties": {
-            "delegate": {"@": "claimedpointertest1"}
+            "delegate": {"@": "test"}
         }
     }
 }
     </script>
 
+<style type="text/css">
+    .example {
+        background: #C00;
+        position: absolute;
+        width: 50px;
+        height: 50px;
+    }
+</style>
+
 </head>
 <body>
-    <div data-montage-id="componentA"></div>
-    <div data-montage-id="componentB"></div>
-    ClaimedPointerTest…
+    <h1>Key Composer test</h1>
+
+    <div data-montage-id="example" class="example" tabIndex=-1></div>
 </body>
 </html>
