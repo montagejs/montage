@@ -83,9 +83,26 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
         value: null
     },
 
+    _nextTarget: {
+        value: null
+    },
+
+    /**
+     * The next Target to consider in the event target chain
+     *
+     * Currently, components themselves do not allow this chain to be broken;
+     * setting a component's nextTarget to a falsy value will cause nextTarget
+     * to resolve as the parentComponent.
+     *
+     * To interrupt the propagation path a Target that accepts a falsy
+     * nextTarget needs to be set at a component's nextTarget.
+     */
     nextTarget: {
         get: function () {
-            return this.parentComponent;
+            return this._nextTarget || this.parentComponent;
+        },
+        set: function (value) {
+            this._nextTarget = value;
         }
     },
 

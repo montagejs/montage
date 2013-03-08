@@ -151,6 +151,39 @@
                 }
             },
 
+            "C0C2": {
+                "prototype": "events/active-target-test/action-counter",
+                "properties": {
+                    "element": {"#": "C0C2"},
+                    "acceptsFocus": true,
+                    "nextTarget": {"@": "C0C2Controller"}
+                }
+            },
+
+            "C0C2Controller": {
+                "prototype": "montage/core/target",
+                "properties": {
+                    "nextTarget": {"@": "C1"}
+                }
+            },
+
+            "C1": {
+                "prototype": "events/active-target-test/action-counter",
+                "properties": {
+                    "element": {"#": "C1"}
+                }
+            },
+
+            "C1Count": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "C1Count"}
+                },
+                "bindings": {
+                    "value": {"<-": "@C1.handledMenuActionCount"}
+                }
+            },
+
             "targetInfoConverter": {
                 "prototype": "events/active-target-test/target-info-converter"
             },
@@ -261,7 +294,19 @@
                 <button data-montage-id="C0C1B2"></button>
                 <textarea data-montage-id="C0C1TA0"></textarea>
             </div>
+
+            <div data-montage-id="C0C2" class="container">
+                This container accepts focus but has its nextTarget set as a Target other than the natural DOM based component hierarchy
+                The next Target is not a visual component, but does specify that it's next target is a component in this document,
+                but in a different part of the hierarchy. Just for fun.
+            </div>
         </div>
+
+        <div data-montage-id="C1" class="container">
+            And here's that component with no children that happens to be along the event target chain of another component (C0C2)
+            <p>Handled MenuAction Count <span data-montage-id="C1Count"></span></p>
+        </div>
+
     </section>
 
 </body>
