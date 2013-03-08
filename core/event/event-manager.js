@@ -922,10 +922,10 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                         if (evt.changedTouches) {
                             touchCount = evt.changedTouches.length;
                             for (i = 0; i < touchCount; i++) {
-                                eventManager._prepareComponentsForActivationEventTarget(evt.changedTouches[i].target);
+                                eventManager._prepareComponentsForActivation(evt.changedTouches[i].target);
                             }
                         } else {
-                            eventManager._prepareComponentsForActivationEventTarget(evt.target);
+                            eventManager._prepareComponentsForActivation(evt.target);
                         }
                     }
 
@@ -1743,7 +1743,11 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 mutableEvent = event;
             }
 
-            eventPath = this._eventPathForTarget(mutableEvent.target);
+            if (Element.isElement(mutableEvent.target)) {
+                eventPath = this._eventPathForDomTarget(mutableEvent.target);
+            } else {
+                eventPath = this._eventPathForTarget(mutableEvent.target);
+            }
 
             // use most specific handler method available, possibly based upon the identifier of the event target
             if (mutableEvent.target.identifier) {
@@ -1895,7 +1899,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
  /**
   @private
 */
-    _prepareComponentsForActivationEventTarget: {
+    _prepareComponentsForActivation: {
         value: function(eventTarget) {
 
             var target = eventTarget,
@@ -1978,10 +1982,47 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 
-/**
-  @private
-*/
+    /**
+     * Build the event target chain for the the specified Target
+     * @private
+     */
     _eventPathForTarget: {
+        enumerable: false,
+        value: function(target) {
+
+            if (!target) {
+                return [];
+            }
+
+            var targetCandidate  = target,
+                application = this.application,
+                eventPath = [],
+                discoveredTargets = {};
+
+            do {
+                // Don't include the target itself as the root of the path
+                if (targetCandidate !== target) {
+                    eventPath.push(targetCandidate);
+                    discoveredTargets[targetCandidate.uuid] = targetCandidate;
+                }
+
+                targetCandidate = targetCandidate.nextTarget;
+
+                if (!targetCandidate && application !== targetCandidate) {
+                    targetCandidate = application;
+                }
+            }
+            while (targetCandidate && !(targetCandidate.uuid in discoveredTargets));
+
+            return eventPath;
+        }
+    },
+
+    /**
+     * Build the event target chain for the the specified DOM target
+     * @private
+     */
+    _eventPathForDomTarget: {
         enumerable: false,
         value: function(target) {
 
@@ -1997,7 +2038,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 eventPath = [];
 
             do {
-                // Don't include the target itself in the event path
+                // Don't include the target itself as the root of the event path
                 if (targetCandidate !== target) {
                     eventPath.push(targetCandidate);
                 }
@@ -2022,7 +2063,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                         targetCandidate = targetDocument;
                         break;
                     default:
-                        targetCandidate = typeof targetCandidate.nextTarget === "undefined" ? targetCandidate.parentNode : targetCandidate.nextTarget;
+                        targetCandidate = targetCandidate.parentNode;
 
                         // Run out of hierarchy candidates? go up to the application
                         if (!targetCandidate) {

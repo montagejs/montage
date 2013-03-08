@@ -7,11 +7,12 @@
         {
             "test": {
                 "prototype": "events/active-target-test/active-target-test",
-                "properties": {
-                    "topEditor": {"@": "C0"},
-                    "editorA": {"@": "C0C0"},
-                    "editorB": {"@": "C0C1"}
-                }
+                "listeners": [
+                    {
+                        "type": "keyPress",
+                        "listener": {"@": "test"}
+                    }
+                ]
             },
 
             "application": {
@@ -21,16 +22,16 @@
                 }
             },
 
-            "menuItem": {
-                "prototype": "montage/ui/button.reel",
+            "shortcutComposer": {
+                "prototype": "montage/ui/composer/key-composer",
                 "properties": {
-                    "element": {"#": "menuItem"},
-                    "label": "MenuItem",
-                    "acceptsFocus": false
+                    "identifier:": "shortcut",
+                    "keys": "f",
+                    "component": {"@": "application"}
                 },
                 "listeners": [
                     {
-                        "type": "action",
+                        "type": "keyPress",
                         "listener": {"@": "test"}
                     }
                 ]
@@ -239,10 +240,7 @@
     <h1>Testing ActiveTarget…</h1>
 
     <menu>
-        <p>This button simulates a keyboard shortcut invoked menuAction and as such never becomes the activeTarget of the application
-            the event itself is fired after a three seconds to allow choosing the activeTarget
-        </p>
-        <button data-montage-id="menuItem"></button>
+        <p>To fire a focused event, press the 'f' key.</p>
 
         <div>
             <h2>Information about the activeTarget</h2>

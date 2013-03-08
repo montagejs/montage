@@ -265,6 +265,12 @@ var Application = exports.Application = Montage.create(Target, /** @lends montag
         value: null
     },
 
+    nextTarget: {
+        get: function () {
+            return this.delegate;
+        }
+    },
+
     /**
      Opens a component in a new browser window, and registers the window with the Montage event manager.<br>
      The component URL must be in the same domain as the calling script. Can be relative to the main application
