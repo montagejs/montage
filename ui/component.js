@@ -261,6 +261,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     }
                 }
                 name = candidate.getAttribute(this.DOM_ARG_ATTRIBUTE);
+                candidate.removeAttribute(this.DOM_ARG_ATTRIBUTE);
                 domArguments[name] = candidate;
             }
 

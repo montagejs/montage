@@ -566,9 +566,6 @@ var testPage = TestPageLoader.queueTest("draw", function() {
         });
 
         describe("dom arguments", function() {
-            testPage.test.arguments._initDomArguments();
-            testPage.test.noArguments._initDomArguments();
-
             it("should have dom arguments", function() {
                 var component = testPage.test.arguments,
                     domArguments = component._domArguments,
@@ -691,6 +688,13 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 validation = Component._validateTemplateArguments(
                     templateArguments, templateParameters);
                 expect(validation).toBeDefined();
+            });
+
+            it("should remove the data argument attribute from the element", function() {
+                var component = testPage.test.arguments,
+                    domArguments = component._domArguments;
+
+                expect(domArguments.one.hasAttribute(Component.DOM_ARG_ATTRIBUTE)).toBe(false);
             });
         });
     });
