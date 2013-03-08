@@ -4,8 +4,8 @@ All Rights Reserved.
 </copyright> */
 var Montage = require("montage").Montage,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
-    Template = require("montage/ui/template").Template,
-    TemplateResources = require("montage/ui/template").TemplateResources,
+    Template = require("montage/core/template").Template,
+    TemplateResources = require("montage/core/template").TemplateResources,
     Component = require("montage/ui/component").Component,
     Promise = require("montage/q"),
     objects = require("serialization/testobjects-v2").objects;
@@ -792,7 +792,7 @@ describe("reel/template-spec", function() {
 
     describe("document (live) templates", function() {
         it("should instantiate in a live page", function() {
-            var module = require("montage/ui/template");
+            var module = require("montage/core/template");
 
             return createPage("reel/template/simple-template.html")
             .then(function(page) {

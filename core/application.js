@@ -40,7 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 var Montage = require("core/core").Montage,
-    MontageWindow = require("ui/montage-window").MontageWindow,
+    MontageWindow = require("window-loader/montage-window").MontageWindow,
     Slot;
 
     require("core/dom");
@@ -162,7 +162,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
 
     /**
      Provides a reference to the MontageWindow associated with the application.
-     @type {module:montage/ui/montage-windows.js/MontageWindow}
+     @type {module:montage/window-loader/montage-window.MontageWindow}
      */
     window: {
         get: function() {
@@ -360,7 +360,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
             }
 
             window.require.loadPackage({name: "montage"}).then(function(require) {
-                var newWindow = window.open(require.location + "ui/window-loader/index.html", "_blank", stringParamaters);
+                var newWindow = window.open(require.location + "window-loader/index.html", "_blank", stringParamaters);
                 newWindow.loadInfo = loadInfo;
             }).done();
 
@@ -372,7 +372,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
      Attach a window to a parent application. When a window open, it's automatically attach to the Application used to
      create the window.
      @function
-     @param {module:montage/ui/montage-windows.js/MontageWindow} window to detach.
+     @param {module:montage/window-loader/montage-window/MontageWindow} window to detach.
      */
     attachWindow: {
         value: function(montageWindow) {
@@ -403,7 +403,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
      Detach the window from its parent application. If no montageWindow is specified, the current application's windows
      will be detached
      @function
-     @param {module:montage/ui/montage-windows.js/MontageWindow} window to detach.
+     @param {module:montage/window-loader/montage-window.MontageWindow} window to detach.
      */
     detachWindow: {
         value: function(montageWindow) {
