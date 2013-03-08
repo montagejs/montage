@@ -76,11 +76,6 @@ if (spec) {
         "core/extras/function",
         "core/extras/string",
 
-        "data/blueprint-spec",
-        "data/store-spec",
-        "data/context-spec",
-        "data/transactionmanager-spec",
-
         "events/eventmanager-spec",
         "events/mutable-event-spec",
         "events/object-hierarchy-spec",
@@ -105,37 +100,15 @@ if (spec) {
         "serialization/serialization-merger-spec",
 
         "ui/application-spec",
-        "ui/anchor-spec",
-        // Uses old controller: - @kriskowal
-        // TODO "ui/autocomplete-spec",
-        "ui/button-spec",
-        "ui/check-spec",
-        "ui/condition-spec",
         "ui/component-spec",
         "ui/composer-spec",
         "ui/composer/press-composer-spec",
         "ui/composer/translate-composer-spec",
         "ui/dom-spec",
-        "ui/dynamic-element-spec",
-        "ui/dynamic-text-spec",
         "ui/firstdraw-spec",
-        "ui/text-slider-spec",
-        "ui/scroller-spec",
-        "ui/list-spec",
-        "ui/native-control-spec",
-        "ui/number-input-spec",
-        "ui/popup-spec",
-        "ui/popup-in-window-spec",
         // Broken due to changes to repetition
         // TODO "ui/repetition-spec",
-        "ui/rich-text-editor-spec",
-        "ui/select-input-spec",
-        "ui/native-input-range-spec",
-        "ui/input-range-spec",
-        "ui/slider-spec",
-        "ui/slot-spec",
-        "ui/textfield-spec",
-        "ui/token-field-spec"
+        "ui/slot-spec"
     ];
     Promise.all(modules.map(require.deepLoad))
     .then(function () {
