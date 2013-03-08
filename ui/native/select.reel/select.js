@@ -309,7 +309,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
             // add options to contentController
             // look for selected options in the markup and mark these as selected
             if(!this.contentController) {
-                var contentController = ContentController.create();
+                var contentController = RangeController.create();
                 var selection = [];
                 var content = [];
 
