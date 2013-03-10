@@ -824,7 +824,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                             longPressEvent.initCustomEvent(LONGKEYPRESS_EVENT_TYPE, true, true, null);
                             longPressEvent.activeElement = event.target;
                             longPressEvent = MutableEvent.fromEvent(longPressEvent);
-                            keyComposer.dispatchEvent(longPressEvent);
+                            keyComposer.dispatchFocusedEventEvent(longPressEvent);
                             delete thisRef._longPressKeys[keyComposer.uuid];
                         }, this._longPressThreshold);
 
@@ -840,7 +840,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 if (this._opera) {
                     keyComposerEvent.type = eventType; // Opera modifes the capitalization of custom event's type when that one is similar to a native event's type
                 }
-                keyComposer.dispatchEvent(keyComposerEvent);
+                keyComposer.dispatchFocusedEvent(keyComposerEvent);
 
                 // console.log("keyComposer Event DISPATCHED:", keyComposerEvent, event.target, keyComposer);
                 if (keyComposerEvent.defaultPrevented) {
