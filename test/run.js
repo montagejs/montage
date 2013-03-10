@@ -109,7 +109,8 @@ if (spec) {
         "ui/firstdraw-spec",
         // Broken due to changes to repetition
         // TODO "ui/repetition-spec",
-        "ui/slot-spec"
+        "ui/slot-spec",
+        "ui/text/text-spec"
     ];
     Promise.all(modules.map(require.deepLoad))
     .then(function () {
