@@ -5,7 +5,7 @@ exports.TargetInfoConverter = Montage.create(Converter, {
 
     convert: {
         value: function (value) {
-            return value._montage_metadata.objectName;
+            return value && value._montage_metadata ? value._montage_metadata.objectName : null;
         }
     }
 

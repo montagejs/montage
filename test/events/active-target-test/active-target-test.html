@@ -7,6 +7,9 @@
         {
             "test": {
                 "prototype": "events/active-target-test/active-target-test",
+                "properties": {
+                    "targetChainRangeController": {"@": "targetChainRangeController"}
+                },
                 "listeners": [
                     {
                         "type": "keyPress",
@@ -212,8 +215,56 @@
                         "<-": "@nameField.eventManager.activeTarget.identifier"
                     }
                 }
-            }
+            },
 
+            "targetChainController": {
+                "prototype": "events/active-target-test/target-chain-controller",
+                "bindings": {
+                    "content": {"<-": "@nameField.eventManager.activeTarget"}
+                }
+            },
+
+            "targetChainRangeController": {
+                "prototype": "montage/core/range-controller",
+                "bindings": {
+                    "content": {"<-": "@targetChainController.organizedContent"}
+                }
+            },
+
+            "targetRepetition": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "targetRepetition"}
+                },
+                "bindings": {
+                    "contentController": {"<-": "@test.targetChainRangeController"}
+                }
+            },
+
+            "targetObjectName": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "targetObjectName"}
+                },
+                "bindings": {
+                    "value": {
+                        "<-": "@targetRepetition.objectAtCurrentIteration",
+                        "converter": {"@": "targetInfoConverter"}
+                    }
+                }
+            },
+
+            "targetIdentifier": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "targetIdentifier"}
+                },
+                "bindings": {
+                    "value": {
+                        "<-": "@targetRepetition.objectAtCurrentIteration.identifier"
+                    }
+                }
+            }
         }
     </script>
 
@@ -254,6 +305,15 @@
                     <td data-montage-id="activeTargetIdentifier"></td>
                 </tr>
             </table>
+
+            <h2>Target Chain</h2>
+            <ul data-montage-id="targetRepetition">
+                <li>
+                    <span data-montage-id="targetObjectName"></span>
+                    <em data-montage-id="targetIdentifier"></em>
+                </li>
+            </ul>
+
         </div>
 
     </menu>
