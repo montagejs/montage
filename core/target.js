@@ -39,6 +39,12 @@ exports.Target = Montage.create(Montage, {
         value: null
     },
 
+    /**
+     * Dispatches the specified event with this target
+     * as the event's proximal target
+     *
+     * @param {Event} event The event object to dispatch
+     */
     dispatchEvent: {
         value: function(event) {
             var targettedEvent = event;
@@ -52,6 +58,15 @@ exports.Target = Montage.create(Montage, {
         }
     },
 
+    /**
+     * Creates and dispatches an event with the specified properties with this
+     * target as the event's proximal target
+     *
+     * @param {string} type The type of the event to dispatch
+     * @param {boolean} canBubble Whether or not the event can bubble
+     * @param {boolean} cancelable Whether or not the event can be cancelled
+     * @param {Object} detail The optional detail object of the event
+     */
     dispatchEventNamed: {
         value: function(type, canBubble, cancelable, detail) {
             var event = MutableEvent.fromType(type, canBubble, cancelable, detail);
@@ -71,7 +86,9 @@ exports.Target = Montage.create(Montage, {
     },
 
     /**
-     * Creates and dispatches an event with the specified properties
+     * Creates and dispatches an event with the specified properties with the
+     * defaultEventManager's activeTarget as the proximal target
+     *
      * @param {string} type The type of the event to dispatch
      * @param {boolean} canBubble Whether or not the event can bubble
      * @param {boolean} cancelable Whether or not the event can be cancelled
@@ -80,6 +97,34 @@ exports.Target = Montage.create(Montage, {
     dispatchFocusedEventNamed: {
         value: function (type, canBubble, cancelable, detail) {
             defaultEventManager.activeTarget.dispatchEventNamed(type, canBubble, cancelable, detail);
+        }
+    },
+
+    /**
+     * Adds an event listener to the object.
+     * @param {string} type The event type to listen for.
+     * @param {object | function} listener The listener object or function.
+     * @param {boolean} useCapture Specifies whether to listen for the event during the bubble or capture phases.
+     */
+    addEventListener: {
+        value: function addEventListener(type, listener, useCapture) {
+            if (listener) {
+                defaultEventManager.registerEventListener(this, type, listener, useCapture);
+            }
+        }
+    },
+
+    /**
+     * Removes an event listener from the object.
+     * @param {string} type The event type.
+     * @param {object | function} listener The listener object or function.
+     * @param {boolean} useCapture The phase of the event listener.
+     */
+    removeEventListener: {
+        value: function removeEventListener(type, listener, useCapture) {
+            if (listener) {
+                defaultEventManager.unregisterEventListener(this, type, listener, useCapture);
+            }
         }
     }
 });
