@@ -16,7 +16,7 @@ var testPage = TestPageLoader.queueTest("text-test", {src:"ui/text/text-test.htm
             });
         });
 
-        describe("DynamicText using plain text", function() {
+        describe("Text using plain text", function() {
             it("can be created", function() {
                 expect(test.plainText).toBeDefined();
             });

@@ -51,7 +51,7 @@ describe("reel/template-spec", function() {
             var html = require("reel/template/simple-template.html").content,
                 expectedObjects = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "text"},
                             "value": "Hello, World!"
@@ -78,7 +78,7 @@ describe("reel/template-spec", function() {
                 htmlDocument = document.implementation.createHTMLDocument(""),
                 expectedObjects = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "text"},
                             "value": "Hello, World!"
@@ -108,7 +108,7 @@ describe("reel/template-spec", function() {
                 objects,
                 expectedObjects = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "text"},
                             "value": "Hello, World!"
@@ -134,7 +134,7 @@ describe("reel/template-spec", function() {
             var moduleId = "reel/template/simple-template.html",
                 expectedObjects = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "text"},
                             "value": "Hello, World!"
@@ -251,7 +251,7 @@ describe("reel/template-spec", function() {
             var html = require("reel/template/simple-template.html").content,
                 expectedObjects = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "text"},
                             "value": "Hello, World!"
@@ -725,7 +725,7 @@ describe("reel/template-spec", function() {
             var moduleId = "reel/template/sub-template.html",
                 expectedObjects = {
                     "item": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "item"}
                         }
@@ -752,7 +752,7 @@ describe("reel/template-spec", function() {
             var moduleId = "reel/template/sub-template.html",
                 expectedObjects = {
                     "row": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "row"}
                         }
@@ -766,7 +766,7 @@ describe("reel/template-spec", function() {
                     },
 
                     "column": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "column"}
                         }

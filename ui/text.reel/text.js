@@ -38,7 +38,7 @@ exports.Text = Montage.create(Component, /** @lends module:"montage/ui/text.reel
     },
 
     /**
-        The Montage converted used to convert or format values displayed by this DynamicText instance.
+        The Montage converted used to convert or format values displayed by this Text instance.
         @type {Property}
         @default null
     */
@@ -47,7 +47,7 @@ exports.Text = Montage.create(Component, /** @lends module:"montage/ui/text.reel
     },
 
     /**
-        The default string value assigned to the DynamicText instance.
+        The default string value assigned to the Text instance.
         @type {Property}
         @default {String} ""
     */

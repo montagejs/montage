@@ -222,7 +222,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         it("should visit a montage object", function() {
             var object = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "identifier": "text"
                         }
@@ -252,7 +252,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         it("should visit bindings", function() {
             var object = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "bindings": {
                             "value": {"<-": "path"}
                         }
@@ -274,7 +274,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         it("should visit a binding", function() {
             var object = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "bindings": {
                             "value": {"<-": "path"}
                         }
@@ -297,7 +297,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         it("should visit a binding reference", function() {
             var object = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "bindings": {
                             "value": {"<-": "@object"}
                         }
@@ -319,7 +319,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         it("should visit complex binding references", function() {
             var object = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "bindings": {
                             "value": {"<-": "@objects.filter{@owner.selected}"}
                         }
@@ -345,7 +345,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         it("should visit localizations", function() {
             var object = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "localizations": {
                             "value": {"key": "hello"}
                         }
@@ -367,7 +367,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         it("should visit a localization", function() {
             var object = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "localizations": {
                             "value": {"key": "hello"}
                         }
@@ -390,7 +390,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         it("should visit localization references", function() {
             var object = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "localizations": {
                             "value": {
                                 "key": {"<-": "@owner.value"}
@@ -664,12 +664,12 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         it("should modify a label of a montage object", function() {
             var serialization = Serialization.create().initWithObject({
                     "object1": {
-                        "prototype": "montage/ui/dynamic-text.reel"
+                        "prototype": "montage/ui/text.reel"
                     }
                 }),
                 expectedSerialization = {
                     "object": {
-                        "prototype": "montage/ui/dynamic-text.reel"
+                        "prototype": "montage/ui/text.reel"
                     }
                 },
                 visitor,
@@ -694,7 +694,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         it("should modify binding references", function() {
             var serialization = Serialization.create().initWithObject({
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "bindings": {
                             "value": {"<-": "@object"}
                         }
@@ -702,7 +702,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 }),
                 expectedSerialization = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "bindings": {
                             "value": {"<-": "@array"}
                         }
@@ -728,7 +728,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         it("should modify complex binding references", function() {
             var serialization = Serialization.create().initWithObject({
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "bindings": {
                             "value": {"<-": "@objects.filter{@owner.selected}"}
                         }
@@ -736,7 +736,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 }),
                 expectedSerialization = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "bindings": {
                             "value": {"<-": "@objects2.filter{@owner2.selected}"}
                         }
@@ -766,7 +766,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         it("should modify a localization reference", function() {
             var serialization = Serialization.create().initWithObject({
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "localizations": {
                             "value": {
                                 "key": {"<-": "@owner.value"}
@@ -776,7 +776,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 }),
                 expectedSerialization = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "localizations": {
                             "value": {
                                 "key": {"<-": "@foo.value"}
