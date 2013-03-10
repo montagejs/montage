@@ -90,10 +90,10 @@ Montage.defineProperty(Element.prototype, "eventHandlerUUID", /** @lends module:
 
 
 /**
- The controller (Montage component) for the element.
- @member external:Element#controller
+ The component instance directly associated with the specified element.
+ @member external:Element#component
  */
-Montage.defineProperty(Element.prototype, "controller", {
+Montage.defineProperty(Element.prototype, "component", {
     get: function() {
         return defaultEventManager._elementEventHandlerByUUID[this.eventHandlerUUID];
     },

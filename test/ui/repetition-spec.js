@@ -57,7 +57,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
         });
 
         xit("should expect unloaded new iterations to be present during the draw", function() {
-            var list14 = querySelector(".list14").controller,
+            var list14 = querySelector(".list14").component,
                 willDraw = list14.willDraw,
                 draw = list14.draw,
                 didThrow = false;
@@ -90,7 +90,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
         });
 
         it("TODO should remove the correct child components when removing an iteration", function() {
-            var list15 = querySelector(".list15").controller;
+            var list15 = querySelector(".list15").component;
 
             list15.content.unshift(1);
             testPage.waitForComponentDraw(list15);
@@ -366,7 +366,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
                     expect(querySelectorAll(".list3 > li").length).toBe(1);
 
-                    innerRepetition = querySelector(".list3 > li > .list3a").controller;
+                    innerRepetition = querySelector(".list3 > li > .list3a").component;
                     testPage.waitForComponentDraw(innerRepetition);
 
                     runs(function() {
@@ -380,7 +380,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should draw one>three iteration on the nested repetition w/ component", function() {
                 delegate.list3Objects = [[{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}]];
-                testPage.waitForComponentDraw(querySelector(".list3 > li > ul.list3a").controller);
+                testPage.waitForComponentDraw(querySelector(".list3 > li > ul.list3a").component);
 
                 runs(function() {
                     expect(querySelectorAll(".list3 > li").length).toBe(1);
@@ -399,7 +399,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                     // we need to wait till one of the inner repetitions draws
                     // because atm we're not able to draw two nested repetitions
                     // in a single draw.
-                    var innerRepetition = delegate.repetition4.element.querySelector(".list3a").controller;
+                    var innerRepetition = delegate.repetition4.element.querySelector(".list3a").component;
                     testPage.waitForComponentDraw(innerRepetition);
 
                     runs(function() {
@@ -457,7 +457,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                     // we need to wait till one of the inner repetitions draws
                     // because atm we're not able to draw two nested repetitions
                     // in a single draw.
-                    var innerRepetition = delegate.repetition5.element.querySelector(".list4a").controller;
+                    var innerRepetition = delegate.repetition5.element.querySelector(".list4a").component;
                     testPage.waitForComponentDraw(innerRepetition);
 
                     runs(function() {
@@ -477,7 +477,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                     // we need to wait till one of the inner repetitions draws
                     // because atm we're not able to draw two nested repetitions
                     // in a single draw.
-                    var innerRepetition = delegate.repetition5.element.querySelectorAll(".list4a")[1].controller;
+                    var innerRepetition = delegate.repetition5.element.querySelectorAll(".list4a")[1].component;
                     testPage.waitForComponentDraw(innerRepetition);
 
                     runs(function() {
@@ -534,7 +534,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                     // we need to wait till one of the inner repetitions draws
                     // because atm we're not able to draw two nested repetitions
                     // in a single draw.
-                    var innerRepetition = delegate.repetition7.element.querySelector(".list5a").controller;
+                    var innerRepetition = delegate.repetition7.element.querySelector(".list5a").component;
                     testPage.waitForComponentDraw(innerRepetition);
 
                     runs(function() {
@@ -554,7 +554,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                     // we need to wait till one of the inner repetitions draws
                     // because atm we're not able to draw two nested repetitions
                     // in a single draw.
-                    var innerRepetition = delegate.repetition7.element.querySelectorAll(".list5a")[1].controller;
+                    var innerRepetition = delegate.repetition7.element.querySelectorAll(".list5a")[1].component;
                     testPage.waitForComponentDraw(innerRepetition);
 
                     runs(function() {
@@ -614,7 +614,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
         describe("Repetition of a component with an action event listener", function() {
             it("should draw the repetition with the correct duplicated action event listeners", function() {
-                var component = querySelectorAll(".textfield6")[0].controller;
+                var component = querySelectorAll(".textfield6")[0].component;
                 spyOn(application.delegate, "listener");
 
                 var anEvent = document.createEvent("CustomEvent");
@@ -681,7 +681,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                 componentit1.listObjects = [{text: "rep1-0"}, {text: "rep1-1"}];
                 componentit2.listObjects = [{text: "rep2-0"}, {text: "rep2-1"}];;
 
-                testPage.waitForComponentDraw(querySelector(".componentrep2 > ul").controller);
+                testPage.waitForComponentDraw(querySelector(".componentrep2 > ul").component);
 
                 runs(function() {
                     var inputs;
@@ -707,7 +707,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                     // we need to wait till one of the inner repetitions draws
                     // because atm we're not able to draw two nested repetitions
                     // in a single draw.
-                    var innerRepetition = querySelector(".list6 ul").controller;
+                    var innerRepetition = querySelector(".list6 ul").component;
 
                     testPage.waitForComponentDraw(innerRepetition);
 
@@ -746,7 +746,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
         describe("Repetition content change", function() {
             it("TODO should rebuild the repetition", function() {
-                var list11 = querySelector(".list11").controller,
+                var list11 = querySelector(".list11").component,
                     content = querySelectorAll(".list11 > li"),
                     newTemplate = Template.create();
 
@@ -774,7 +774,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
         });
 
         describe("manual objects changes", function() {
-            var list13 = querySelector(".list13").controller;
+            var list13 = querySelector(".list13").component;
             var object = {array: [1, 2, 3]};
 
             it("should add an iteration when an object is pushed", function() {
@@ -810,7 +810,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
         describe("iteration template", function() {
             it("should expand template star parameter", function() {
-                var component = querySelector(".listParameters ul").controller,
+                var component = querySelector(".listParameters ul").component,
                     template = component._iterationTemplate,
                     serialization = template.getSerialization(),
                     labels = serialization.getSerializationLabels();
@@ -821,7 +821,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
             });
 
             it("should expand template star parameter with multiple expansions", function() {
-                var component = querySelector(".listParametersDecorator ul").controller,
+                var component = querySelector(".listParametersDecorator ul").component,
                     template = component._iterationTemplate,
                     serialization = template.getSerialization(),
                     labels = serialization.getSerializationLabels(),
@@ -840,7 +840,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
             });
 
             it("should expand template star parameter with multiple expansions and colliding object", function() {
-                var component = querySelector(".listParametersDecoratorColliding ul").controller,
+                var component = querySelector(".listParametersDecoratorColliding ul").component,
                     template = component._iterationTemplate,
                     serialization = template.getSerialization(),
                     labels = serialization.getSerializationLabels(),
@@ -873,7 +873,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                     labels;
 
                 // left side
-                template = elements[0].controller._iterationTemplate;
+                template = elements[0].component._iterationTemplate;
                 serialization = template.getSerialization();
                 labels = serialization.getSerializationLabels();
 
@@ -886,7 +886,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                     .toBeDefined();
 
                 // right side
-                template = elements[1].controller._iterationTemplate;
+                template = elements[1].component._iterationTemplate;
                 serialization = template.getSerialization();
                 labels = serialization.getSerializationLabels();
 

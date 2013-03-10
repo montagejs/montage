@@ -256,7 +256,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 node = candidate;
                 while ((node = node.parentNode) !== element) {
                     // This candidate is inside another component so skip it.
-                    if (node.controller) {
+                    if (node.component) {
                         continue nextCandidate;
                     }
                 }
@@ -738,7 +738,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
             // find the component fringe and detach them from the component tree
             function findAndDetachComponents(node) {
-                var component = node.controller;
+                var component = node.component;
 
                 if (component) {
                     component.detachFromParentComponent();

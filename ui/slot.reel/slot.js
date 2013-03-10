@@ -115,7 +115,7 @@ exports.Slot = Montage.create(Component, /** @lends module:"montage/ui/slot.reel
     contentDidChange: {
         value: function(newContent, oldContent) {
             if (this.delegate && typeof this.delegate.slotDidSwitchContent === "function") {
-                this.delegate.slotDidSwitchContent(this, newContent, (newContent ? newContent.controller : null), oldContent, (oldContent ? oldContent.controller : null));
+                this.delegate.slotDidSwitchContent(this, newContent, (newContent ? newContent.component : null), oldContent, (oldContent ? oldContent.component : null));
             }
         }
     }

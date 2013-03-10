@@ -1324,8 +1324,8 @@ var Flow = exports.Flow = Montage.create(Component, {
             // doing anyelse reliably.
             var originalContent = this.originalContent;
             for (var i = 0, node; node = originalContent[i]; i++) {
-                if (node.controller) {
-                    serializer.addObject(node.controller);
+                if (node.component) {
+                    serializer.addObject(node.component);
                 }
             }
         }

@@ -45,7 +45,7 @@ var testPage = TestPageLoader.queueTest("list-test", function() {
 
         describe("when first loaded", function() {
             it("it should have no initial content", function() {
-                var repetition = list._element.querySelector('*[data-montage-id="repetition"]').controller;
+                var repetition = list._element.querySelector('*[data-montage-id="repetition"]').component;
                 expect(repetition).toBeDefined();
                 expect(repetition.iterations.length).toBe(3);
                 expect(list._element.querySelectorAll(".montage-Slider").length).toBe(3);

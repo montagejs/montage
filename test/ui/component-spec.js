@@ -102,7 +102,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     runs(function() {
                         expect(componentC.domContent.length).toBe(1);
                         expect(componentC.domContent[0].outerHTML).toBe('<div data-montage-id="componentC1">C1</div>');
-                        expect(componentC.domContent[0].controller).toBe(componentC1);
+                        expect(componentC.domContent[0].component).toBe(componentC1);
                     });
                 });
 
