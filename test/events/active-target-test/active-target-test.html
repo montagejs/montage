@@ -8,6 +8,7 @@
             "test": {
                 "prototype": "events/active-target-test/active-target-test",
                 "properties": {
+                    "identifier": "ApplicationDelegate",
                     "targetChainRangeController": {"@": "targetChainRangeController"}
                 },
                 "listeners": [
@@ -36,6 +37,41 @@
                     {
                         "type": "keyPress",
                         "listener": {"@": "test"}
+                    }
+                ]
+            },
+
+            "menu": {
+                "prototype": "events/active-target-test/menu",
+                "properties": {
+                    "element": {"@": "menu"}
+                }
+            },
+
+            "fooMenu": {
+                "prototype": "events/active-target-test/menu-item",
+                "properties": {
+                    "element": {"#": "fooMenu"},
+                    "menu": {"@": "menu"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "menu"}
+                    }
+                ]
+            },
+
+            "barMenu": {
+                "prototype": "events/active-target-test/menu-item",
+                "properties": {
+                    "element": {"#": "barMenu"},
+                    "menu": {"@": "menu"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "menu"}
                     }
                 ]
             },
@@ -290,8 +326,11 @@
 <body>
     <h1>Testing ActiveTarget…</h1>
 
-    <menu>
+    <menu data-montage-id="menu">
         <p>To fire a focused event, press the 'f' key.</p>
+
+        <button data-montage-id="fooMenu">Foo</button>
+        <button data-montage-id="barMenu">Bar</button>
 
         <div>
             <h2>Information about the activeTarget</h2>

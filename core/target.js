@@ -32,6 +32,29 @@ exports.Target = Montage.create(Montage, {
     },
 
     /**
+     * Called prior to this target becoming the activeTarget
+     * @param {Target} oldTarget the current activeTarget
+     */
+    willBecomeActiveTarget: {
+        value: Function.noop
+    },
+
+    /**
+     * Called after to this target became the activeTarget
+     */
+    didBecomeActiveTarget: {
+        value: Function.noop
+    },
+
+    /**
+     * Called prior to this target surrendering the activeTarget
+     * @param {Target} newTarget the Target that is about to become the activeTarget
+     */
+    willSurrenderActiveTarget: {
+        value: Function.noop
+    },
+
+    /**
      * Which target to distribute an event after this when distributing events throughout a
      * graph of targets.
      */

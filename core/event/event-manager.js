@@ -1923,7 +1923,18 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
             } while (target && previousTarget !== target);
 
-            this.activeTarget = activeTarget;
+            activeTarget = activeTarget || this.application;
+
+            if (activeTarget !== this.activeTarget) {
+                if (this.activeTarget) {
+                    this.activeTarget.willSurrenderActiveTarget(activeTarget);
+                }
+                activeTarget.willBecomeActiveTarget(this.activeTarget);
+
+                this.activeTarget = activeTarget;
+
+                activeTarget.didBecomeActiveTarget();
+            }
         }
     },
 
