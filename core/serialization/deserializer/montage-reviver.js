@@ -361,7 +361,7 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
     // When the last path component ends with ".reel" it is removed before
     // creating the default objectName.
     //
-    // Example: "montage/ui/input-range.reel" has a default objectName of
+    // Example: "matte/ui/input-range.reel" has a default objectName of
     //          InputRange.
     //
     // @returns {moduleId, objectName}
