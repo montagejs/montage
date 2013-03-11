@@ -135,12 +135,14 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "componentWithoutIdentifier": {
-        "prototype": "montage/ui/component"
+        "prototype": "montage/ui/component",
+        "hasTemplate": false
     },
     "componentWithIdentifier": {
         "prototype": "montage/ui/component",
         "properties": {
-            "identifier": "anIdentifier"
+            "identifier": "anIdentifier",
+            "hasTemplate": false
         }
     },
     "componentOwner": {
@@ -225,13 +227,15 @@ POSSIBILITY OF SUCH DAMAGE.
     "arguments": {
         "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "arguments"}
+            "element": {"#": "arguments"},
+            "hasTemplate": false
         }
     },
     "noArguments": {
         "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "noArguments"}
+            "element": {"#": "noArguments"},
+            "hasTemplate": false
         }
     },
     "owner": {

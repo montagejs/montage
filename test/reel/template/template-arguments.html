@@ -14,21 +14,24 @@
         "foo": {
             "prototype": "montage/ui/component",
             "properties": {
-                "element": {"#": "foo"}
+                "element": {"#": "foo"},
+                "hasTemplate": false
             }
         },
 
         "leftSide": {
             "prototype": "montage/ui/component",
             "properties": {
-                "element": {"#": "leftSide"}
+                "element": {"#": "leftSide"},
+                "hasTemplate": false
             }
         },
 
         "rightSide": {
             "prototype": "montage/ui/component",
             "properties": {
-                "element": {"#": "rightSide"}
+                "element": {"#": "rightSide"},
+                "hasTemplate": false
             },
             "bindings": {
                 "value": {"<-": "@leftSide.value"}
