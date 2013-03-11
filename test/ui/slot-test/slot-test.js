@@ -210,21 +210,21 @@ var SlotTest = exports.SlotTest = Montage.create(Component, {
         }
     },
 
-    handleComponentWithNoElementButtonAction: {
+    handleComponentWithNoElementButtonPress: {
         enumerable: false,
         value: function() {
             this.showContent(this.componentWithNoElement);
         }
     },
 
-    handleComponentInPageWithElementButtonAction: {
+    handleComponentInPageWithElementButtonPress: {
         enumerable: false,
         value: function() {
             this.showContent(this.componentInPageWithElement);
         }
     },
 
-    handleVideoButtonAction: {
+    handleVideoButtonPress: {
         enumerable: false,
         value: function() {
             this.currentMedia = this.video;
@@ -232,7 +232,7 @@ var SlotTest = exports.SlotTest = Montage.create(Component, {
         }
     },
 
-    handlePhotoButtonAction: {
+    handlePhotoButtonPress: {
         enumerable: false,
         value: function() {
             this.currentMedia = this.photo;
@@ -240,28 +240,28 @@ var SlotTest = exports.SlotTest = Montage.create(Component, {
         }
     },
 
-    handleBarButtonAction: {
+    handleBarButtonPress: {
         enumerable: false,
         value: function() {
             this.showContent(this.barContent);
         }
     },
 
-    handleBazButtonAction: {
+    handleBazButtonPress: {
         enumerable: false,
         value: function() {
             this.showContent(this.bazContent);
         }
     },
 
-    handleQuxButtonAction: {
+    handleQuxButtonPress: {
         enumerable: false,
         value: function() {
             this.showContent(this.quxContent);
         }
     },
 
-    handleEmptyButtonAction: {
+    handleEmptyButtonPress: {
         enumerable: false,
         value: function() {
             this.showContent(null);
@@ -271,7 +271,7 @@ var SlotTest = exports.SlotTest = Montage.create(Component, {
     showContent: {
         enumerable: false,
         value: function(content) {
-            console.log("chooser showContent:", content);
+            //console.log("chooser showContent:", content);
             this.slot.content = content;
         }
     }
