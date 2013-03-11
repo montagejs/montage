@@ -1941,7 +1941,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
                 //TODO complain if a non-Target is considered
 
-                if (target.acceptsFocus) {
+                if (target.acceptsActiveTarget) {
                     foundTarget = target;
                 } else {
                     previousTarget = target;

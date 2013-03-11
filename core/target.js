@@ -18,7 +18,7 @@ exports.Target = Montage.create(Montage, {
      *
      * By default a target does not accept this responsibility.
      */
-    acceptsFocus: {
+    acceptsActiveTarget: {
         value: false
     },
 

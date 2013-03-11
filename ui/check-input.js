@@ -48,7 +48,7 @@ var Montage = require("montage").Montage,
 */
 var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
 
-    acceptsFocus: {
+    acceptsActiveTarget: {
         value: true
     },
 

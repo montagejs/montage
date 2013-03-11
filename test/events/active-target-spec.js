@@ -61,7 +61,7 @@ var testPage = TestPageLoader.queueTest("active-target-test", function () {
                 beforeEach(function () {
                     proximalElement = testDocument.querySelector("[data-montage-id=C0C0B0]");
                     proximalComponent = proximalElement.component;
-                    proximalComponent.acceptsFocus = false;
+                    proximalComponent.acceptsActiveTarget = false;
 
                     activeElement = testDocument.querySelector("[data-montage-id=C0C0]");
                     activeComponent = activeElement.component;

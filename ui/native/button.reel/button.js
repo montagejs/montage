@@ -123,16 +123,16 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
         }
     },
 
-    _acceptsFocus: {
+    _acceptsActiveTarget: {
         value: true
     },
 
-    acceptsFocus: {
+    acceptsActiveTarget: {
         get: function () {
-            return this._acceptsFocus && this.enabled && !this.preventFocus;
+            return this._acceptsActiveTarget && this.enabled && !this.preventFocus;
         },
         set: function (value) {
-            this._acceptsFocus = value;
+            this._acceptsActiveTarget = value;
         }
     },
 
