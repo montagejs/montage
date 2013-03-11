@@ -70,6 +70,7 @@ exports.Text = Montage.create(Component, /** @lends module:"montage/ui/text.reel
             range.deleteContents();
             this._valueNode = document.createTextNode("");
             range.insertNode(this._valueNode);
+            this.element.classList.add("montage-Text");
         }
     },
 
