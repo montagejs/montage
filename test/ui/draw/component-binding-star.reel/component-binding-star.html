@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Component Binding Star</title>
+    <script type="text/montage-serialization">{
+        "owner": {
+            "properties": {
+                "element": {"#": "component-binding-star"}
+            }
+        },
+
+        "center": {
+            "prototype": "montage/ui/component",
+            "properties": {
+                "element": {"#": "center"},
+                "hasTemplate": false
+            }
+        }
+    }</script>
+
+</head>
+<body>
+<div data-montage-id="component-binding-star">
+    <div data-montage-id="center" style="float: right">
+        <div data-param="*"></div>
+    </div>
+</div>
+</body>
+</html>

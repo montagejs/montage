@@ -31,7 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
     Component = require("montage/ui/component").Component,
-    Serializer = require("montage/core/serialization").Serializer;
+    Serializer = require("montage/core/serialization").Serializer,
+    Template = require("montage/ui/template").Template;
 
 var testPage = TestPageLoader.queueTest("draw", function() {
 
@@ -711,6 +712,84 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     templateArguments, templateParameters);
                 expect(validation).toBeDefined();
             });
+
+            it("should bind the contents to the template star parameter", function() {
+                var component = testPage.test.componentBindingStar1,
+                    parameters,
+                    center,
+                    text;
+
+                Component._bindTemplateParametersToArguments.call(component);
+
+                parameters = Template._getParameters(component._templateElement);
+                center = component.templateObjects.center;
+                text = component._templateElement.querySelector(".text");
+
+                expect(Object.keys(parameters).length).toBe(0);
+                expect(text).toBeDefined();
+                expect(center.element.children.length).toBe(3);
+            });
+
+            it("should bind the arguments to the template parameters", function() {
+                var component = testPage.test.componentBindingParams1,
+                    parameters,
+                    left,
+                    right,
+                    leftText,
+                    rightText;
+
+                Component._bindTemplateParametersToArguments.call(component);
+
+                parameters = Template._getParameters(component._templateElement);
+                left = component.templateObjects.left;
+                right = component.templateObjects.right;
+                leftText = left.element.querySelector(".leftText");
+                rightText = right.element.querySelector(".rightText");
+
+                expect(Object.keys(parameters).length).toBe(0);
+                expect(leftText).toBeDefined();
+                expect(rightText).toBeDefined();
+            });
+
+            it("should fix the component tree when binding a template star parameter", function() {
+                var component = testPage.test.componentBindingStar2,
+                    parameters,
+                    center,
+                    text;
+
+                Component._bindTemplateParametersToArguments.call(component);
+
+                parameters = Template._getParameters(component._templateElement);
+                center = component.templateObjects.center;
+                text = component._templateElement.querySelector(".text");
+
+                expect(center.childComponents.length).toBe(1);
+                expect(center.childComponents).toHave(text.component);
+
+                expect(component.childComponents.length).toBe(1);
+                expect(component.childComponents).toHave(center);
+            });
+
+            it("should fix the component tree when binding template parameters", function() {
+                var component = testPage.test.componentBindingParams2,
+                    parameters,
+                    center,
+                    text;
+
+                Component._bindTemplateParametersToArguments.call(component);
+
+                left = component.templateObjects.left;
+                right = component.templateObjects.right;
+                leftText = left.element.querySelector(".leftText");
+                rightText = right.element.querySelector(".rightText");
+
+                expect(left.childComponents.length).toBe(1);
+                expect(left.childComponents).toHave(leftText.component);
+
+                expect(right.childComponents.length).toBe(1);
+                expect(right.childComponents).toHave(rightText.component);
+            });
+
         });
     });
 });

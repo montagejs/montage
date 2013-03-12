@@ -1486,7 +1486,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 parameter,
                 templateArguments,
                 argument,
-                validation;
+                validation,
+                contents,
+                components;
 
             templateArguments = this._domArguments;
 
@@ -1508,9 +1510,15 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 if (key === "*") {
                     range = this._element.ownerDocument.createRange();
                     range.selectNodeContents(this._element);
-                    parameter.parentNode.replaceChild(range.extractContents(), parameter);
+                    contents = range.extractContents();
                 } else {
-                    parameter.parentNode.replaceChild(argument, parameter);
+                    contents = argument;
+                }
+
+                components = this._findAndDetachComponents(contents);
+                parameter.parentNode.replaceChild(contents, parameter);
+                for (var i = 0; (component = components[i]); i++) {
+                    component.attachToParentComponent();
                 }
             }
         }
