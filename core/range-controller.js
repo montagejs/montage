@@ -30,7 +30,7 @@ var RangeControllerIteration = exports.RangeControllerIteration = Montage.create
         value: function () {
             this.object = null;
             this.controller = null;
-            this.defineBinding("selected", {"<->": "controller.selection.has(object)"});
+            this.defineBinding("selected", {"<->": "controller._selection.has(object)"});
             // TODO remove this migration shim
             this.defineBinding("content", {"<->": "object"});
         }
@@ -118,7 +118,10 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
         value: function () {
 
             this.content = null;
-            this.selection = [];
+            this._selection = [];
+            this.defineBinding("_selection.rangeContent()", {
+                "<->": "selection"
+            });
 
             this.sortPath = null;
             this.filterPath = null;
@@ -161,7 +164,7 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
                 ")"
             });
 
-            this.addRangeAtPathChangeListener("selection", this, "handleSelectionRangeChange");
+            this._selection.addRangeChangeListener(this, "selection");
             this.addRangeAtPathChangeListener("content", this, "handleContentRangeChange");
             this.addPathChangeListener("sortPath", this, "handleOrderChange");
             this.addPathChangeListener("reversed", this, "handleOrderChange");
@@ -307,6 +310,14 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
     selection: {value: null},
 
     /**
+     * Because the user can replace the selection object, we use a range
+     * content change listener on a hidden selection array that tracks the
+     * actual selection.
+     * @private
+     */
+    _selection: {value: null},
+
+    /**
      * A managed interface for adding values to the selection, accounting for
      * <code>multiSelect</code>.
      * You can however directly manipulate the selection, but that will update
@@ -315,10 +326,10 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
      */
     select: {
         value: function (value) {
-            if (!this.multiSelect && this.selection.length >= 1) {
-                this.selection.clear();
+            if (!this.multiSelect && this._selection.length >= 1) {
+                this._selection.clear();
             }
-            this.selection.add(value);
+            this._selection.add(value);
         }
     },
 
@@ -331,8 +342,8 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
      */
     deselect: {
         value: function (value) {
-            if (!this.avoidsEmptySelection || this.selection.length > 1) {
-                this.selection["delete"](value);
+            if (!this.avoidsEmptySelection || this._selection.length > 1) {
+                this._selection["delete"](value);
             }
         }
     },
@@ -346,8 +357,8 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
      */
     clearSelection: {
         value: function () {
-            if (!this.avoidsEmptySelection || this.selection.length > 1) {
-                this.selection.clear();
+            if (!this.avoidsEmptySelection || this._selection.length > 1) {
+                this._selection.clear();
             }
         }
     },
@@ -489,12 +500,10 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
      */
     handleContentRangeChange: {
         value: function (plus, minus, index) {
-            if (this.selection) {
-                // remove all values from the selection that were removed (but
-                // not added back)
-                minus.deleteEach(plus);
-                this.selection.deleteEach(minus);
-            }
+            // remove all values from the selection that were removed (but
+            // not added back)
+            minus.deleteEach(plus);
+            this._selection.deleteEach(minus);
         }
     },
 
@@ -511,21 +520,19 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
     handleSelectionRangeChange: {
         value: function (plus, minus, index) {
             var self = this;
-            if (this.selection) {
-                Promise.nextTick(function () {
-                    var length = self.selection.length;
-                    // Performing these in next tick avoids interfering with the
-                    // plan in the dispatcher, highlighting the fact that there is
-                    // a plan interference hazard inherent to the present
-                    // implementation of collection event dispatch.
-                    if (self.avoidsEmptySelection && length === 0) {
-                        self.select(minus.one());
-                    } else if (!self.multiSelect && length > 1) {
-                        self.selection.clear();
-                        self.select(plus.one());
-                    }
-                });
-            }
+            Promise.nextTick(function () {
+                var length = self._selection.length;
+                // Performing these in next tick avoids interfering with the
+                // plan in the dispatcher, highlighting the fact that there is
+                // a plan interference hazard inherent to the present
+                // implementation of collection event dispatch.
+                if (self.avoidsEmptySelection && length === 0) {
+                    self.select(minus.one());
+                } else if (!self.multiSelect && length > 1) {
+                    self._selection.clear();
+                    self.select(plus.one());
+                }
+            });
         }
     },
 
@@ -538,10 +545,10 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
      */
     handleOrganizedContentRangeChange: {
         value: function (plus, minus, index) {
-            if (this.deselectInvisibleContent && this.selection) {
+            if (this.deselectInvisibleContent) {
                 var diff = minus.clone(1);
                 diff.deleteEach(plus);
-                this.selection.deleteEach(minus);
+                this._selection.deleteEach(minus);
             }
             this.iterations.swap(index, minus.length, plus.map(function (object) {
                 return this.Iteration.create().initWithContentAndController(object, this);
@@ -556,8 +563,8 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
      */
     handleOrderChange: {
         value: function () {
-            if (this.selection && this.clearSelectionOnOrderChange) {
-                this.selection.clear();
+            if (this.clearSelectionOnOrderChange) {
+                this._selection.clear();
             }
         }
     },
@@ -570,16 +577,14 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
      */
     handleAdd: {
         value: function (value) {
-            if (this.selection) {
-                if (this.selectAddedContent) {
-                    if (
-                        !this.multiSelect &&
-                        this.selection.length >= 1
-                    ) {
-                        this.selection.clear();
-                    }
-                    this.selection.add(value);
+            if (this.selectAddedContent) {
+                if (
+                    !this.multiSelect &&
+                    this._selection.length >= 1
+                ) {
+                    this._selection.clear();
                 }
+                this._selection.add(value);
             }
         }
     },
@@ -597,4 +602,7 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
 
 // TODO multiSelectWithModifiers to support ctrl/command/shift selection such
 // that individual values and ranges of values.
+
+// TODO @kriskowal decouple such that content controllers can be chained using
+// adapter pattern
 

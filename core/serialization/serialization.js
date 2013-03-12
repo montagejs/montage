@@ -461,6 +461,10 @@ var SerializationInspector = Montage.create(Montage, {
                     object["<->"] = stringify(parseTree);
                 }
             }
+
+            if (object.converter) {
+                this._walkObject(visitor, object, "converter", null, parent);
+            }
         }
     },
 

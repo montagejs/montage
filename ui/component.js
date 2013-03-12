@@ -241,14 +241,28 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     _initDomArguments: {
         value: function() {
-            var elements = this._element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "]"),
+            var candidates = this._element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "]"),
                 domArguments = {},
-                name;
+                name,
+                node,
+                element = this.element;
 
             domArguments["*"] = this.domContent;
-            for (var i = 0, element; (element = elements[i]); i++) {
-                name = element.getAttribute(this.DOM_ARG_ATTRIBUTE);
-                domArguments[name] = element;
+
+            // Need to make sure that we filter dom args that are for nested
+            // components and not for this component.
+            nextCandidate:
+            for (var i = 0, candidate; (candidate = candidates[i]); i++) {
+                node = candidate;
+                while ((node = node.parentNode) !== element) {
+                    // This candidate is inside another component so skip it.
+                    if (node.component) {
+                        continue nextCandidate;
+                    }
+                }
+                name = candidate.getAttribute(this.DOM_ARG_ATTRIBUTE);
+                candidate.removeAttribute(this.DOM_ARG_ATTRIBUTE);
+                domArguments[name] = candidate;
             }
 
             this._domArguments = domArguments;
@@ -724,7 +738,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
             // find the component fringe and detach them from the component tree
             function findAndDetachComponents(node) {
-                var component = node.controller;
+                var component = node.component;
 
                 if (component) {
                     component.detachFromParentComponent();
@@ -1003,10 +1017,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 templateObjects = Object.create(null);
 
             for (var label in objects) {
-                object = objects[label];
+                var object = objects[label];
 
                 if (typeof object === "object" && object != null) {
-                    if (object.parentComponent === this) {
+                    if (!Component.isPrototypeOf(object) || object === this ||
+                        object.parentComponent === this) {
                         templateObjects[label] = object;
                     } else {
                         descriptor.get = this._makeTemplateObjectGetter(this, label);
@@ -1020,9 +1035,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     _makeTemplateObjectGetter: {
-        value: function(label) {
-            var owner = this,
-                querySelectorLabel = "@"+label,
+        value: function(owner, label) {
+            var querySelectorLabel = "@"+label,
                 isRepeated,
                 components,
                 component;
@@ -1078,22 +1092,27 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 if (instances) {
                     instances.owner = self;
                 } else {
-                    self.templateObjects = instances = {owner: self};
+                    instances = {owner: self};
                 }
 
                 self._isTemplateInstantiated = true;
 
-                return template.instantiateWithInstances(
-                    instances, _document)
-                .then(function(part) {
-                    self._setupTemplateObjects(part.objects);
-                    self._templateDocumentPart = part;
-                }).fail(function(reason) {
+                return template.instantiateWithInstances(instances, _document)
+                .then(function(documentPart) {
+                    self._templateDocumentPart = documentPart;
+                })
+                .fail(function(reason) {
                     var message = reason.stack || reason;
                     console.error("Error in", template.getBaseUrl() + ":", message);
                     throw reason;
                 });
             });
+        }
+    },
+
+    _templateDidLoad: {
+        value: function(documentPart) {
+            this._setupTemplateObjects(documentPart.objects);
         }
     },
 

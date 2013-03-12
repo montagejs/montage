@@ -4,6 +4,7 @@ var Deserializer = require("mousse/deserialization/deserializer").Deserializer;
 var MontageInterpreter = require("./montage-interpreter").MontageInterpreter;
 var MontageReviver = require("./montage-reviver").MontageReviver;
 var Promise = require("core/promise").Promise;
+var JSHINT = require("core/jshint").JSHINT;
 
 var logger = require("core/logger").logger("montage-deserializer");
 
@@ -18,16 +19,19 @@ var MontageDeserializer = Montage.create(Deserializer.prototype, {
         }
     },
 
-    initWithSerializationStringAndRequire: {
-        value: function(serializationString, _require) {
+    init: {
+        value: function(serializationString, _require, objectRequires, origin) {
             if (! this.isSerializationStringValid(serializationString)) {
-                throw new Error("Serialization string is invalid: " + serializationString);
+                throw new Error(
+                    this._formatSerializationSyntaxError(serializationString)
+                );
             }
 
-            this._serializationString = serializationString;
+            Deserializer.call(this, serializationString);
+            this._origin;
             this._serialization = null;
             this._interpreter = MontageInterpreter.create()
-                .initWithRequire(_require);
+                .init(_require, objectRequires);
 
             return this;
         }
@@ -46,7 +50,7 @@ var MontageDeserializer = Montage.create(Deserializer.prototype, {
         }
     },
 
-    deserializeWithElement: {
+    deserialize: {
         value: function(instances, element) {
             var serialization;
 
@@ -56,7 +60,8 @@ var MontageDeserializer = Montage.create(Deserializer.prototype, {
                 return Promise.reject(error);
             }
 
-            return this._interpreter.instantiateWithElement(serialization, instances, element);
+            return this._interpreter.instantiate(
+                serialization, instances, element);
         }
     },
 
@@ -90,13 +95,45 @@ var MontageDeserializer = Montage.create(Deserializer.prototype, {
                 return false;
             }
         }
+    },
+
+    _formatSerializationSyntaxError: {
+        value: function(source) {
+            var gutterPadding = "   ",
+                origin = this._origin,
+                message,
+                error,
+                lines,
+                gutterSize,
+                line;
+
+            if (!JSHINT(source)) {
+                error = JSHINT.errors[0];
+                lines = source.split("\n");
+                gutterSize = (gutterPadding + lines.length).length;
+                line = error.line - 1;
+
+                for (var i = 0, l = lines.length; i < l; i++) {
+                    lines[i] = (new Array(gutterSize - (i + 1 + "").length + 1)).join(i === line ? ">" : " ") +
+                        (i + 1) + " " + lines[i];
+                }
+                message = "Syntax error at line " + error.line +
+                    (origin ? " from " + origin : "") + ":\n" +
+                    error.evidence + "\n" + error.reason + "\n" +
+                    lines.join("\n");
+            } else {
+                message = "Syntax error in the serialization but not able to find it!\n" + source;
+            }
+
+            return message;
+        }
     }
 });
 
 exports.MontageDeserializer = MontageDeserializer;
 exports.deserialize = function(serializationString, _require) {
     return MontageDeserializer.create().
-        initWithSerializationStringAndRequire(serializationString, _require)
+        init(serializationString, _require)
         .deserializeObject();
 }
 

@@ -58,7 +58,7 @@ describe("serialization/montage-deserializer-spec", function() {
                 },
                 serializationString = JSON.stringify(serialization);
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             return deserializer.deserializeObject().then(function(root) {
@@ -89,7 +89,7 @@ describe("serialization/montage-deserializer-spec", function() {
                 },
                 serializationString = JSON.stringify(serialization);
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             return deserializer.deserializeObject().then(function(root) {
@@ -117,7 +117,7 @@ describe("serialization/montage-deserializer-spec", function() {
                     simple: simple
                 };
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             return deserializer.deserializeObject(instances)
@@ -148,7 +148,7 @@ describe("serialization/montage-deserializer-spec", function() {
                     simple: simple
                 };
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             return deserializer.deserializeObject(instances)
@@ -171,7 +171,7 @@ describe("serialization/montage-deserializer-spec", function() {
                 },
                 serializationString = JSON.stringify(serialization);
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             return deserializer.deserializeObject()
@@ -198,7 +198,7 @@ describe("serialization/montage-deserializer-spec", function() {
                     root: root
                 };
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             return deserializer.deserializeObject(instances)
@@ -225,7 +225,7 @@ describe("serialization/montage-deserializer-spec", function() {
                     owner: owner
                 };
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             return deserializer.deserialize(instances)
@@ -255,7 +255,7 @@ describe("serialization/montage-deserializer-spec", function() {
                     root: objects.OneProp.create()
                 };
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             return deserializer.deserialize(instances)
@@ -312,7 +312,7 @@ describe("serialization/montage-deserializer-spec", function() {
                 serializationString = JSON.stringify(serialization),
                 isDeserializing;
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             Deserializer.defineDeserializationUnit("spec", function(deserializer, object) {
@@ -343,7 +343,7 @@ describe("serialization/montage-deserializer-spec", function() {
                 },
                 serializationString = JSON.stringify(serialization);
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             return deserializer.deserializeObject()
@@ -370,7 +370,7 @@ describe("serialization/montage-deserializer-spec", function() {
                 },
                 serializationString = JSON.stringify(serialization);
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             return deserializer.deserializeObject()
@@ -401,7 +401,7 @@ describe("serialization/montage-deserializer-spec", function() {
                 },
                 serializationString = JSON.stringify(serialization);
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             return deserializer.deserializeObject()
@@ -429,7 +429,7 @@ describe("serialization/montage-deserializer-spec", function() {
                 },
                 serializationString = JSON.stringify(serialization);
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             return deserializer.deserializeObject()
@@ -459,7 +459,7 @@ describe("serialization/montage-deserializer-spec", function() {
                 },
                 serializationString = JSON.stringify(serialization);
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             return deserializer.deserializeObject()
@@ -550,10 +550,10 @@ describe("serialization/montage-deserializer-spec", function() {
                 serializationString = JSON.stringify(serialization);
 
             element.innerHTML = '<div data-montage-id="id">content</div>';
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
-            return deserializer.deserializeWithElement(null, element)
+            return deserializer.deserialize(null, element)
             .then(function(objects) {
                 expect(objects.root instanceof Element).toBe(true);
                 expect(objects.root.textContent).toBe("content");
@@ -752,7 +752,7 @@ describe("serialization/montage-deserializer-spec", function() {
         it("should only create the object", function() {
             var serializationString = JSON.stringify(serialization);
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             customDeserialization.deserializeSelf = function(deserializer) {
@@ -777,7 +777,7 @@ describe("serialization/montage-deserializer-spec", function() {
                 type,
                 typeValue;
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             customDeserialization.deserializeSelf = function(deserializer) {
@@ -805,7 +805,7 @@ describe("serialization/montage-deserializer-spec", function() {
                 type,
                 typeValue;
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             customDeserialization.deserializeSelf = function(deserializer) {
@@ -827,7 +827,7 @@ describe("serialization/montage-deserializer-spec", function() {
             var serializationString = JSON.stringify(serialization),
                 prop1;
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             customDeserialization.deserializeSelf = function(deserializer) {
@@ -846,7 +846,7 @@ describe("serialization/montage-deserializer-spec", function() {
         it("should only deserialize properties", function() {
             var serializationString = JSON.stringify(serialization);
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             customDeserialization.deserializeSelf = function(deserializer) {
@@ -869,7 +869,7 @@ describe("serialization/montage-deserializer-spec", function() {
         it("should deserialize properties and listeners", function() {
             var serializationString = JSON.stringify(serialization);
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             customDeserialization.deserializeSelf = function(deserializer) {
@@ -892,7 +892,7 @@ describe("serialization/montage-deserializer-spec", function() {
         it("should deserialize properties and bindings", function() {
             var serializationString = JSON.stringify(serialization);
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             customDeserialization.deserializeSelf = function(deserializer) {
@@ -917,7 +917,7 @@ describe("serialization/montage-deserializer-spec", function() {
         it("should deserialize properties and all units", function() {
             var serializationString = JSON.stringify(serialization);
 
-            deserializer.initWithSerializationStringAndRequire(
+            deserializer.init(
                 serializationString, require);
 
             customDeserialization.deserializeSelf = function(deserializer) {
@@ -950,9 +950,9 @@ describe("serialization/montage-deserializer-spec", function() {
 
         return require.loadPackage("package-a").then(function(pkg1) {
             return require.loadPackage("package-b").then(function(pkg2) {
-                return deserializer1.initWithSerializationStringAndRequire(serializationString, pkg1)
+                return deserializer1.init(serializationString, pkg1)
                 .deserialize().then(function(object1) {
-                    return deserializer2.initWithSerializationStringAndRequire(serializationString, pkg2)
+                    return deserializer2.init(serializationString, pkg2)
                     .deserialize().then(function(object2) {
                         expect(object1.root.name).toBe("A");
                         expect(object2.root.name).toBe("B");
@@ -986,7 +986,7 @@ describe("serialization/montage-deserializer-spec", function() {
             },
             serializationString = JSON.stringify(serialization);
 
-        deserializer.initWithSerializationStringAndRequire(
+        deserializer.init(
             serializationString, require);
 
         return deserializer.deserialize(serializationString)
@@ -1012,7 +1012,7 @@ describe("serialization/montage-deserializer-spec", function() {
                 serializationString = JSON.stringify(serialization);
 
             try {
-                deserializer.initWithSerializationStringAndRequire(
+                deserializer.init(
                     serializationString, null);
                 // should never execute
                 expect(true).toBe(false);
@@ -1026,7 +1026,7 @@ describe("serialization/montage-deserializer-spec", function() {
 
             deserializer._serializationString = serializationString;
 
-            return deserializer.deserializeWithElement().then(function() {
+            return deserializer.deserialize().then(function() {
                 // should never execute
                 expect(true).toBe(false);
             }, function(reason) {
@@ -1041,7 +1041,7 @@ describe("serialization/montage-deserializer-spec", function() {
             var serializationString = "{root:}";
 
             try {
-                deserializer.initWithSerializationStringAndRequire(
+                deserializer.init(
                     serializationString, require);
                 // should never execute
                 expect(true).toBe(false);

@@ -4,7 +4,7 @@ var Montage = require("montage").Montage;
 var Component = require("ui/component").Component;
 var Template = require("core/template").Template;
 var RangeController = require("core/range-controller").RangeController;
-var Promise = require("q");
+var Promise = require("core/promise").Promise;
 
 var Map = require("collections/map");
 var Set = require("collections/set");
@@ -108,16 +108,6 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
     isOdd: {value: null},
 
     /**
-     * A <code>Set</code> of DOM class names for every element within the
-     * iteration, synchronized when the repetition draws.  The iteration and
-     * repetition manage the "active", "selected", and "no-transition" classes,
-     * but the user may bind to
-     * <code>repetition.currentIteration.classList.has(className)</code> for
-     * arbitrary class names.
-     */
-    classList: {value: null},
-
-    /**
      * A flag that indicates that the "no-transition" CSS class should be added
      * to every element in the iteration in the next draw, and promptly removed
      * the draw thereafter.
@@ -142,7 +132,6 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             // notifies the repetition it needs to be redrawn.
             // Dispatches handlePropertyChange with the "selected" key:
             this.defineBinding("selected", {"<->": "controller.selected"});
-            this.defineBinding("classList.has('selected')", {"<->": "selected"});
             // An iteration can be "on" or "off" the document.  When the
             // iteration is added to a document, the "fragment" is depopulated
             // and placed between "topBoundary" and "bottomBoundary" on the
@@ -233,7 +222,7 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             var boundaries = repetition._boundaries;
 
             // Add a new top boundary before the next iteration
-            var topBoundary = element.ownerDocument.createComment("");
+            var topBoundary = element.ownerDocument.createTextNode("");
             var bottomBoundary = boundaries[index]; // previous
             boundaries.splice(index, 0, topBoundary);
             element.insertBefore(topBoundary, bottomBoundary);
@@ -855,7 +844,11 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 reverseCollisionTable,
                 externalLabels,
                 objects,
-                instances;
+                instances,
+                expansionResult,
+                newLabel,
+                labels,
+                metadata;
 
             // Crawl up the template chain while there are parameters to expand
             // in the iteration template.
@@ -864,35 +857,36 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 argumentsTemplate = owner._ownerDocumentPart.template;
                 objects = owner._ownerDocumentPart.objects;
 
-                collisionTable = template.expandParameters(argumentsTemplate, owner);
+                expansionResult = template.expandParameters(argumentsTemplate, owner);
 
                 // Associate the new external objects with the objects in the
                 // instantiation of argumentsTemplate.
                 externalLabels = template.getSerialization()
                     .getExternalObjectLabels();
+                instances = template.getInstances();
 
-                if (externalLabels.length > 0) {
-                    // collisionTable give us "oldLabel" => "newLabel" mapping
-                    // but we need "newLabel" => "oldLabel" mapping.
-                    reverseCollisionTable = Object.create(null);
-                    for (var key in collisionTable) {
-                        reverseCollisionTable[collisionTable[key]] = key;
+                labels = expansionResult.labels;
+                collisionTable = expansionResult.labelsCollisions;
+
+                for (var i = 0, label; (label = labels[i]); i++) {
+                    if (collisionTable && label in collisionTable) {
+                        newLabel = collisionTable[label];
+                    } else {
+                        newLabel = label;
                     }
 
-                    instances = template.getInstances();
-
-                    for (var i = 0, label; (label = externalLabels[i]); i++) {
-                        if (label in instances) {
-                            // This external object already has an instance
-                            // associated with.
-                            continue;
+                    // Setup external objects and configure the correct require,
+                    // label and owner for the objects that came from the
+                    // template arguments.
+                    if (externalLabels.indexOf(newLabel) >= 0) {
+                        instances[newLabel] = objects[label];
+                    } else {
+                        metadata = argumentsTemplate.getObjectMetadata(label);
+                        if (!metadata.owner) {
+                            metadata.owner = objects.owner;
                         }
-
-                        if (label in reverseCollisionTable) {
-                            instances[label] = objects[reverseCollisionTable[label]];
-                        } else {
-                            instances[label] = objects[label];
-                        }
+                        template.setObjectMetadata(newLabel, metadata.require,
+                            metadata.label, metadata.owner);
                     }
                 }
             }
@@ -1300,7 +1294,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
         value: function () {
             var element = this.element;
             element.innerHTML = "";
-            var bottomBoundary = element.ownerDocument.createComment("");
+            var bottomBoundary = element.ownerDocument.createTextNode("");
             element.appendChild(bottomBoundary);
             this._boundaries.push(bottomBoundary);
         }
@@ -1387,7 +1381,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // dispatches handleTouchend
             document.addEventListener("touchend", this, false);
             // dispatches handleTouchcancel
-            document.addEventListener("touchcacnel", this, false);
+            document.addEventListener("touchcancel", this, false);
             // dispatches handleMouseup
             document.addEventListener("mouseup", this, false);
             // TODO after significant mouse movement or touch movement

@@ -102,7 +102,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     runs(function() {
                         expect(componentC.domContent.length).toBe(1);
                         expect(componentC.domContent[0].outerHTML).toBe('<div data-montage-id="componentC1">C1</div>');
-                        expect(componentC.domContent[0].controller).toBe(componentC1);
+                        expect(componentC.domContent[0].component).toBe(componentC1);
                     });
                 });
 
@@ -525,10 +525,47 @@ var testPage = TestPageLoader.queueTest("draw", function() {
            expect(element.getAttribute("id")).toBe("componentList");
         });
 
-        describe("dom arguments", function() {
-            testPage.test.arguments._initDomArguments();
-            testPage.test.noArguments._initDomArguments();
+        it("should have templateObjects ready at templateDidLoad", function() {
+            var component = testPage.test.templateObjects;
 
+            expect(component.templateObjectsPresent).toBeTruthy();
+        });
+
+        describe("_makeTemplateObjectGetter", function () {
+            it("returns a single component", function () {
+                var a = {};
+                var owner = {
+                    querySelectorAllComponent: function () {
+                        return [a];
+                    }
+                };
+                a.parentComponent = owner;
+
+                var getter = Component._makeTemplateObjectGetter(owner, "test");
+
+                expect(getter()).toEqual(a);
+                expect(getter()).toEqual(a);
+            });
+
+            it("returns all repeated components", function () {
+                var a = {};
+                var b = {};
+                var owner = {
+                    querySelectorAllComponent: function () {
+                        return [a, b];
+                    }
+                };
+                a.parentComponent = owner;
+                b.parentComponent = owner;
+
+                var getter = Component._makeTemplateObjectGetter(owner, "test");
+
+                expect(getter()).toEqual([a, b]);
+                expect(getter()).toEqual([a, b]);
+            });
+        });
+
+        describe("dom arguments", function() {
             it("should have dom arguments", function() {
                 var component = testPage.test.arguments,
                     domArguments = component._domArguments,
@@ -557,6 +594,13 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     .toBe(component.element.querySelector(".one"));
                 expect(domArguments.two)
                     .toBe(component.element.querySelector(".two"));
+            });
+
+            it("should have dom arguments of the component only and not of nested components", function() {
+                var component = testPage.test.nestedArguments,
+                    domArguments = component._domArguments;
+
+                expect(Object.keys(domArguments).length).toBe(3);
             });
 
             it("should satisfy the star parameter", function() {
@@ -644,6 +688,13 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 validation = Component._validateTemplateArguments(
                     templateArguments, templateParameters);
                 expect(validation).toBeDefined();
+            });
+
+            it("should remove the data argument attribute from the element", function() {
+                var component = testPage.test.arguments,
+                    domArguments = component._domArguments;
+
+                expect(domArguments.one.hasAttribute(Component.DOM_ARG_ATTRIBUTE)).toBe(false);
             });
         });
     });

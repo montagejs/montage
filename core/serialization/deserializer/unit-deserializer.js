@@ -1,5 +1,5 @@
 var Montage = require("core/core").Montage;
-var Promise = require("q");
+var Promise = require("core/promise").Promise;
 
 var UnitDeserializer = Montage.create(Montage, {
     _context: {value: null},
@@ -20,7 +20,11 @@ var UnitDeserializer = Montage.create(Montage, {
 
     getObjectByLabel: {
         value: function(label) {
-            return this._context.getObject(label);
+            var object = this._context.getObject(label);
+
+            if (!Promise.isPromise(object)) {
+                return object;
+            }
         }
     }
 });

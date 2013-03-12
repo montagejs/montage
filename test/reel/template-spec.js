@@ -487,6 +487,21 @@ describe("reel/template-spec", function() {
             });
         });
 
+        it("should not call deserializedFromTemplate on null values", function() {
+            var html = require("reel/template/delegate-methods-null-template.html").content;
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                return template.instantiate(document)
+                .then(function(documentPart) {
+                    expect(true).toBe(true);
+                });
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+
         it("should call templateDidLoad on owner object", function() {
             var html = require("reel/template/delegate-methods-template.html").content;
 
@@ -844,7 +859,21 @@ describe("reel/template-spec", function() {
             return template.initWithHtml(html)
             .then(function() {
                 try {
-                    template.getParameters(),
+                    template.getParameters();
+                    expect("call").toBe("fail");
+                } catch (ex) {
+                    expect(true).toBe(true);
+                }
+            })
+        });
+
+        it("should fail when the same parameter is declared more than once", function() {
+            var html = require("reel/template/template-duplicate-parameters.html").content;
+
+            return template.initWithHtml(html)
+            .then(function() {
+                try {
+                    template.getParameters();
                     expect("call").toBe("fail");
                 } catch (ex) {
                     expect(true).toBe(true);
@@ -1021,15 +1050,15 @@ describe("reel/template-spec", function() {
             ]).then(function() {
                 var repetition,
                     args,
-                    collisionTable;
+                    expansionResult;
 
-                collisionTable = parametersTemplate.expandParameters(
+                expansionResult = parametersTemplate.expandParameters(
                     argumentsTemplate, delegate);
 
                 serialization = parametersTemplate.getSerialization();
                 labels = serialization.getSerializationLabels();
 
-                expect(collisionTable).toBeFalsy();
+                expect(expansionResult.labelsCollision).toBeFalsy();
                 expect(labels).toContain("section");
             });
         });
@@ -1088,30 +1117,32 @@ describe("reel/template-spec", function() {
                 argumentsTemplate.initWithHtml(argumentsHtml)
             ]).then(function() {
                 var repetition,
-                    collisionTable,
+                    expansionResult,
+                    labelsCollisions,
                     labels,
                     serializationObject,
                     leftSide,
                     rightSide;
 
-                collisionTable = parametersTemplate.expandParameters(
+                expansionResult = parametersTemplate.expandParameters(
                     argumentsTemplate, delegate);
 
                 serialization = parametersTemplate.getSerialization();
                 serializationObject = serialization.getSerializationObject();
-                labels = Object.keys(collisionTable);
+                labelsCollisions = expansionResult.labelsCollisions;
+                labels = Object.keys(labelsCollisions);
 
                 expect(labels.length).toBe(2);
                 expect(labels).toContain("leftSide");
                 expect(labels).toContain("rightSide");
 
-                leftSide = serializationObject[collisionTable.leftSide];
-                rightSide = serializationObject[collisionTable.rightSide];
+                leftSide = serializationObject[labelsCollisions.leftSide];
+                rightSide = serializationObject[labelsCollisions.rightSide];
 
                 // Make sure the binding from rightSide to leftSide was
                 // changed to the new label.
                 expect(rightSide.bindings.value["<-"])
-                    .toBe("@" + collisionTable.leftSide + ".value");
+                    .toBe("@" + labelsCollisions.leftSide + ".value");
             });
         });
     });

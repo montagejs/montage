@@ -465,8 +465,9 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             if (!eventName) {
                 eventName = "click";
             }
-            eventInfo.clientX = eventInfo.clientX || eventInfo.target.offsetLeft;
-            eventInfo.clientY = eventInfo.clientY || eventInfo.target.offsetTop;
+
+            eventInfo.clientX = null == eventInfo.clientX ?  eventInfo.target.offsetLeft : eventInfo.clientX;
+            eventInfo.clientY = null == eventInfo.clientY ? eventInfo.target.offsetTop : eventInfo.clientY;
 
             var doc = this.iframe.contentDocument,
                 event = doc.createEvent('MouseEvents');
@@ -498,8 +499,8 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                 simulatedEvent = doc.createEvent("CustomEvent"),
                 touch = {};
 
-            eventInfo.clientX = eventInfo.clientX || eventInfo.target.offsetLeft;
-            eventInfo.clientY = eventInfo.clientY || eventInfo.target.offsetTop;
+            eventInfo.clientX = null == eventInfo.clientX ?  eventInfo.target.offsetLeft : eventInfo.clientX;
+            eventInfo.clientY = null == eventInfo.clientY ? eventInfo.target.offsetTop : eventInfo.clientY;
 
             touch.clientX = eventInfo.clientX;
             touch.clientY = eventInfo.clientY;

@@ -51,7 +51,7 @@ var testPage = TestPageLoader.queueTest("fallback", {directory: module.directory
             objects, latch,
             serializationString = JSON.stringify(object);
 
-        deserializer.initWithSerializationStringAndRequire(
+        deserializer.init(
             serializationString, require);
         deserializer.deserialize().then(function(objs) {
             latch = true;

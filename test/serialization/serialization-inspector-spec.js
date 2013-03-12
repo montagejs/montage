@@ -342,6 +342,30 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toBe("owner");
         });
 
+        it("should visit a binding converter", function() {
+            var serialization = Serialization.create().initWithObject({
+                    "text": {
+                        "prototype": "montage/ui/dynamic-text.reel",
+                        "bindings": {
+                            "value": {
+                                "<-": "@object",
+                                "converter": {"@": "converter"}
+                            }
+                        }
+                    }
+                }),
+                visitorSpy;
+
+            visitorSpy = jasmine.createSpy('visitor');
+
+            inspector.initWithSerialization(serialization);
+            inspector.visitSerialization(visitorSpy);
+
+            args = visitorSpy.argsForCall[4];
+            expect(args[0].type).toBe("reference");
+            expect(args[0].data).toBe("converter");
+        });
+
         it("should visit localizations", function() {
             var object = {
                     "text": {
@@ -751,6 +775,48 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         node.data = "objects2";
                     } else if (node.data == "owner") {
                         node.data = "owner2";
+                    }
+                }
+            };
+
+            visitorSpy = jasmine.createSpy('visitor').andCallFake(visitor);
+
+            inspector.initWithSerialization(serialization);
+            inspector.visitSerialization(visitorSpy);
+            expect(serialization.getSerializationObject())
+                .toEqual(expectedSerialization);
+        });
+
+        it("should modify a binding converter label", function() {
+            var serialization = Serialization.create().initWithObject({
+                    "text": {
+                        "prototype": "montage/ui/dynamic-text.reel",
+                        "bindings": {
+                            "value": {
+                                "<-": "@object",
+                                "converter": {"@": "converter"}
+                            }
+                        }
+                    }
+                }),
+                expectedSerialization = {
+                    "text": {
+                        "prototype": "montage/ui/dynamic-text.reel",
+                        "bindings": {
+                            "value": {
+                                "<-": "@object",
+                                "converter": {"@": "converterNewLabel"}
+                            }
+                        }
+                    }
+                },
+                visitorSpy,
+                visitor;
+
+            visitor = function(node) {
+                if (node.type === "reference") {
+                    if (node.data == "converter") {
+                        node.data = "converterNewLabel";
                     }
                 }
             };

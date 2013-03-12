@@ -19,6 +19,7 @@ var Template = Montage.create(Montage, {
     document: {value: null},
     _baseUrl: {value: null},
     _instances: {value: null},
+    _metadata: {value: null},
 
     _objectsString: {value: null},
     objectsString: {
@@ -37,11 +38,20 @@ var Template = Montage.create(Montage, {
     __deserializer: {value: null},
     _deserializer: {
         get: function() {
-            var deserializer = this.__deserializer;
+            var deserializer = this.__deserializer,
+                metadata,
+                requires;
+
             if (!deserializer) {
-                deserializer = Deserializer.create()
-                    .initWithSerializationStringAndRequire(
-                        this.objectsString, this._require);
+                metadata = this._metadata;
+                if (metadata) {
+                    requires = Object.create(null);
+                    for (var label in metadata) {
+                        requires[label] = metadata[label].require;
+                    }
+                }
+                deserializer = Deserializer.create().init(this.objectsString,
+                    this._require, requires);
                 this.__deserializer = deserializer;
             }
 
@@ -257,12 +267,14 @@ var Template = Montage.create(Montage, {
             templateParameters = this._getParameters(fragment);
 
             part.initWithTemplateAndFragment(this, fragment);
+            part.startActingAsTopComponent();
             part.parameters = templateParameters;
 
             templateObjects = this._createTemplateObjects(instances);
 
             return this._instantiateObjects(templateObjects, fragment)
             .then(function(objects) {
+                part.stopActingAsTopComponent();
                 part.objects = objects;
                 self._invokeDelegates(part, instances);
 
@@ -351,7 +363,7 @@ var Template = Montage.create(Montage, {
 
     _instantiateObjects: {
         value: function(instances, fragment) {
-            return this._deserializer.deserializeWithElement(instances, fragment);
+            return this._deserializer.deserialize(instances, fragment);
         }
     },
 
@@ -393,6 +405,12 @@ var Template = Montage.create(Montage, {
                 element = elements[i];
                 parameterName = this.getParameterName(element);
 
+                if (parameterName in parameters) {
+                    throw new Error('The parameter "' + parameterName + '" is' +
+                        ' declared more than once in ' + this.getBaseUrl() +
+                        '.');
+                }
+
                 parameters[parameterName] = element;
             }
 
@@ -427,11 +445,13 @@ var Template = Montage.create(Montage, {
             for (var i = 0, label; (label = labels[i]); i++) {
                 object = objects[label];
 
-                if (typeof object._deserializedFromTemplate === "function") {
-                    object._deserializedFromTemplate(owner, documentPart);
-                }
-                if (typeof object.deserializedFromTemplate === "function") {
-                    object.deserializedFromTemplate(owner, documentPart);
+                if (object) {
+                    if (typeof object._deserializedFromTemplate === "function") {
+                        object._deserializedFromTemplate(owner, documentPart);
+                    }
+                    if (typeof object.deserializedFromTemplate === "function") {
+                        object.deserializedFromTemplate(owner, documentPart);
+                    }
                 }
             }
 
@@ -471,6 +491,51 @@ var Template = Montage.create(Montage, {
         value: function(objects) {
             // TODO: use Serializer.formatSerialization(object|string)
             this.objectsString = JSON.stringify(objects, null, 4);
+        }
+    },
+
+    /**
+     * Add metadata to specific objects of the serialization.
+     *
+     * @param {String} label The label of the object in the serialization.
+     * @param {Require} _require The require function to be used when loading
+     *        the module.
+     * @param {String} effectiveLabel An alternative label to be given to the
+     *        object.
+     * @param {Object} owner The owner object to be given to the object.
+     */
+    setObjectMetadata: {
+        value: function(label, _require, effectiveLabel, owner) {
+            var metadata = this._metadata;
+
+            if (!metadata) {
+                this._metadata = metadata = Object.create(null);
+            }
+
+            metadata[label] = {
+                "require": _require,
+                "label": effectiveLabel,
+                "owner": owner
+            };
+
+            // Invalidate the deserializer cache since we need to setup new
+            // requires.
+            this.__deserializer = null;
+        }
+    },
+
+    getObjectMetadata: {
+        value: function(label) {
+            var metadata = this._metadata;
+
+            if (metadata && label in metadata) {
+                return metadata[label];
+            } else {
+                return {
+                    "require": this._require,
+                    "label": label
+                }
+            }
         }
     },
 
@@ -710,8 +775,17 @@ var Template = Montage.create(Montage, {
      * @param {Object} delegate A delegate object that needs to implement
      *        getTemplateParameterArgument(template, name) function that returns
      *        the argument to replace with the `name` parameter.
-     * @returns {Object} A dictionary of object collisions from importing the
-     *          serialization associated with the argument into the template.
+     * @returns {Object} A dictionary with four properties representing the
+     *          objects and elements that were imported into the template:
+     *          - labels: the labels of the objects added from template
+     *                    argument.
+     *          - labelsCollisions: a dictionary of label collisions in the form
+     *                              of {oldLabel: newLabel}.
+     *          - elementIds: the element ids of the markup imported from
+     *                        template argument.
+     *          - elementIdsCollisions: a dictionary of element id collisions in
+     *                                  the form of {oldElementId: newElementId}
+     *
      */
     expandParameters: {
         value: function(template, delegate) {
@@ -723,7 +797,8 @@ var Template = Montage.create(Montage, {
                 parameterElement,
                 argumentElement,
                 serialization = Serialization.create(),
-                argumentsSerialization;
+                argumentsSerialization,
+                result = {};
 
             parameterElements = this.getParameters();
 
@@ -747,6 +822,8 @@ var Template = Montage.create(Montage, {
                     argumentElementsCollisionTable[key] = collisionTable[key];
                 }
             }
+            result.elementIds = argumentsElementIds;
+            result.elementIdsCollisions = argumentElementsCollisionTable;
 
             // Expand objects.
             argumentsSerialization = template
@@ -762,7 +839,10 @@ var Template = Montage.create(Montage, {
                 argumentsSerialization);
             this.objectsString = serialization.getSerializationString();
 
-            return objectsCollisionTable;
+            result.labels = argumentsSerialization.getSerializationLabels();
+            result.labelsCollisions = objectsCollisionTable;
+
+            return result;
         }
     },
 

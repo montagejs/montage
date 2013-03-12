@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage,
     logger = require("core/logger").logger("document-part"),
-    Promise = require("q"),
+    Promise = require("core/promise").Promise,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
 var DocumentPart = Montage.create(Montage, {
@@ -17,9 +17,23 @@ var DocumentPart = Montage.create(Montage, {
             this.objects = null;
             this.childComponents = [];
             this.parameters = null;
+        }
+    },
 
-            if (fragment) {
-                defaultEventManager.registerEventHandlerForElement(this, fragment);
+    startActingAsTopComponent: {
+        value: function() {
+            if (this.fragment) {
+                defaultEventManager.registerEventHandlerForElement(
+                    this, this.fragment);
+            }
+        }
+    },
+
+    stopActingAsTopComponent: {
+        value: function() {
+            if (this.fragment) {
+                defaultEventManager.unregisterEventHandlerForElement(
+                    this.fragment);
             }
         }
     },
