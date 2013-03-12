@@ -581,9 +581,8 @@ var testPage = TestPageLoader.queueTest("draw", function() {
 
         describe("dom arguments", function() {
             it("should have dom arguments", function() {
-                var component = testPage.test.arguments,
-                    domArguments = component._domArguments,
-                    names = Object.keys(domArguments);
+                var component = testPage.test.arguments1,
+                    names = component.getDomArgumentNames();
 
                 expect(names.length).toBe(2);
                 expect(names).toContain("one");
@@ -592,27 +591,53 @@ var testPage = TestPageLoader.queueTest("draw", function() {
 
             it("should have no dom arguments", function() {
                 var component = testPage.test.noArguments,
-                    domArguments = component._domArguments,
-                    names = Object.keys(domArguments);
+                    names = component.getDomArgumentNames();
 
                 expect(names.length).toBe(0);
             });
 
-            it("should have dom arguments with the right elements", function() {
-                var component = testPage.test.arguments,
+            it("should have the correct dom arguments", function() {
+                var component = testPage.test.arguments1,
+                    one,
+                    two;
+
+                one = component.extractDomArgument("one");
+                expect(one.className).toBe("one");
+
+                two = component.extractDomArgument("two");
+                expect(two.className).toBe("two");
+            });
+
+            it("should have dom arguments removed from the DOM", function() {
+                var component = testPage.test.arguments2,
                     domArguments = component._domArguments;
 
-                expect(domArguments.one)
-                    .toBe(component.element.querySelector(".one"));
-                expect(domArguments.two)
-                    .toBe(component.element.querySelector(".two"));
+                expect(domArguments.one.parentNode).toBe(null);
+                expect(domArguments.two.parentNode).toBe(null);
+            });
+
+            it("should remove the data argument attribute from the element", function() {
+                var component = testPage.test.arguments2,
+                    domArguments = component._domArguments;
+
+                expect(domArguments.one.hasAttribute(Component.DOM_ARG_ATTRIBUTE)).toBe(false);
+            });
+
+            it("should extract the DOM arguments from the component", function() {
+                var component = testPage.test.arguments2,
+                    one;
+
+                one = component.extractDomArgument("one");
+                expect(one).toBeDefined();
+                one = component.extractDomArgument("one");
+                expect(one).toBeUndefined();
             });
 
             it("should have dom arguments of the component only and not of nested components", function() {
                 var component = testPage.test.nestedArguments,
-                    domArguments = component._domArguments;
+                    names = component.getDomArgumentNames();
 
-                expect(Object.keys(domArguments).length).toBe(2);
+                expect(names.length).toBe(2);
             });
 
             it("should satisfy the star parameter", function() {
@@ -685,13 +710,6 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 validation = Component._validateTemplateArguments(
                     templateArguments, templateParameters);
                 expect(validation).toBeDefined();
-            });
-
-            it("should remove the data argument attribute from the element", function() {
-                var component = testPage.test.arguments,
-                    domArguments = component._domArguments;
-
-                expect(domArguments.one.hasAttribute(Component.DOM_ARG_ATTRIBUTE)).toBe(false);
             });
         });
     });

@@ -59,7 +59,8 @@ POSSIBILITY OF SUCH DAMAGE.
             "componentParent": {"@": "componentParent"},
             "componentWithDelegate": {"@": "componentWithDelegate"},
             "componentList": {"@": "componentList"},
-            "arguments": {"@": "arguments"},
+            "arguments1": {"@": "arguments1"},
+            "arguments2": {"@": "arguments2"},
             "noArguments": {"@": "noArguments"},
             "nestedArguments": {"@": "nestedArguments"},
             "templateObjects": {"@": "templateObjects"}
@@ -224,10 +225,16 @@ POSSIBILITY OF SUCH DAMAGE.
             "value": "Text 2"
         }
     },
-    "arguments": {
+    "arguments1": {
         "prototype": "montage/ui/dynamic-element.reel",
         "properties": {
-            "element": {"#": "arguments"}
+            "element": {"#": "arguments1"}
+        }
+    },
+    "arguments2": {
+        "prototype": "montage/ui/dynamic-element.reel",
+        "properties": {
+            "element": {"#": "arguments2"}
         }
     },
     "noArguments": {
@@ -307,7 +314,12 @@ POSSIBILITY OF SUCH DAMAGE.
     <span data-montage-id="text2"></span>
 </div>
 
-<div data-montage-id="arguments">
+<div data-montage-id="arguments1">
+    <span data-arg="one" class="one"></span>
+    <span data-arg="two" class="two"></span>
+</div>
+
+<div data-montage-id="arguments2">
     <span data-arg="one" class="one"></span>
     <span data-arg="two" class="two"></span>
 </div>

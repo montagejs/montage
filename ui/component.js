@@ -241,12 +241,13 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     _initDomArguments: {
         value: function() {
-            var candidates = this._element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "]"),
+            var candidates,
                 domArguments = {},
                 name,
                 node,
                 element = this.element;
 
+            candidates = element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "]")
 
             // Need to make sure that we filter dom args that are for nested
             // components and not for this component.
@@ -260,12 +261,37 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     }
                 }
                 this._findAndDetachComponents(candidate);
+                candidate.parentNode.removeChild(candidate);
                 name = candidate.getAttribute(this.DOM_ARG_ATTRIBUTE);
                 candidate.removeAttribute(this.DOM_ARG_ATTRIBUTE);
                 domArguments[name] = candidate;
             }
 
             this._domArguments = domArguments;
+        }
+    },
+
+    getDomArgumentNames: {
+        value: function() {
+            return Object.keys(this._domArguments);
+        }
+    },
+
+    /**
+     * When a Dom Argument is extracted from a Component it is no longer
+     * available
+     *
+     * @param {String} name The name of the argument
+     * @returns The element
+     */
+    extractDomArgument: {
+        value: function(name) {
+            var argument;
+
+            argument = this._domArguments[name];
+            delete this._domArguments[name];
+
+            return argument;
         }
     },
 
