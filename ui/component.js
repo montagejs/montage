@@ -564,6 +564,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (this.childComponents.indexOf(childComponent) == -1) {
                 this.childComponents.push(childComponent);
                 childComponent._cachedParentComponent = this;
+
+                if (childComponent.needsDraw) {
+                    childComponent._addToParentsDrawList();
+                }
             }
         }
     },
@@ -619,6 +623,12 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 childComponents.splice(ix, 1);
                 childComponent._cachedParentComponent = null;
                 childComponent._alternateParentComponent = null;
+            }
+
+            if (childComponent._addedToDrawList) {
+                childComponent._addedToDrawList = false;
+                ix = this._drawList.indexOf(childComponent);
+                this._drawList.splice(ix, 1);
             }
         }
     },

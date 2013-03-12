@@ -121,6 +121,20 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                    var componentLayout = testPage.test.componentLayout; expect(componentLayout.leftComponent.ownerComponent).not.toBe(componentLayout);
                    expect(componentLayout.rightComponent.ownerComponent).not.toBe(componentLayout);
                 });
+
+                it("should correct the parent component's drawList of transplanted components", function() {
+                    var componentLayout = testPage.test.componentLayout,
+                        rightComponent = componentLayout.rightComponent,
+                        right = componentLayout.templateObjects.right,
+                        center = componentLayout.templateObjects.center;
+
+                    rightComponent.needsDraw = true;
+                    expect(right._drawList.length).toBe(1);
+
+                    center.domContent = right.domContent;
+                    expect(right._drawList.length).toBe(0);
+                });
+
             });
 
             describe("calling willDraw prior to drawing", function() {
@@ -156,7 +170,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     runs(function() {
                         spyOn(testPage.test.componentB, 'willDraw').andCallFake(function() {
                             testPage.test.componentB1.needsDraw = true;
-                        })
+                        });
                         spyOn(testPage.test.componentB1, 'draw').andCallThrough();
                         // trigger test
                         testPage.test.componentB.needsDraw = true;
@@ -473,16 +487,16 @@ var testPage = TestPageLoader.queueTest("draw", function() {
             });
 
             describe("the owner component property", function() {
-                var Component = testPage.window.require("montage/ui/component").Component;
-                var componentOwner = testPage.test.componentOwner;
-
-                var leaf1 = componentOwner.leaf1;
-                var leaf2 = componentOwner.leaf2;
-                var branch = componentOwner.branch;
-                var branchLeaf1 = branch.leaf1;
-                var branchLeaf2 = branch.leaf2;
-
                 it("should be the component that loaded the template", function() {
+                    var Component = testPage.window.require("montage/ui/component").Component;
+                    var componentOwner = testPage.test.componentOwner;
+
+                    var leaf1 = componentOwner.leaf1;
+                    var leaf2 = componentOwner.leaf2;
+                    var branch = componentOwner.branch;
+                    var branchLeaf1 = branch.leaf1;
+                    var branchLeaf2 = branch.leaf2;
+
                     expect(leaf1.ownerComponent).toBe(componentOwner);
                     expect(leaf2.ownerComponent).toBe(componentOwner);
                     expect(branch.ownerComponent).toBe(componentOwner);
@@ -498,8 +512,8 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 testPage.waitForDraw();
                 runs(function() {
                     expect(testPage.test.componentToBeCleaned.text._element.textContent).toBe("New Text");
-                })
-            })
+                });
+            });
 
         });
 
@@ -648,7 +662,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
 
             it("should fail when a star argument is given but named parameters are not satisfied", function() {
                 var templateArguments = {
-                        "*": document.createElement("div"),
+                        "*": document.createElement("div")
                     },
                     templateParameters = {
                         "right": document.createElement("div")
