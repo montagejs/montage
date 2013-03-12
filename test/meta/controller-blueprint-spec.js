@@ -40,7 +40,7 @@ describe("meta/controller-blueprint-spec", function () {
                 expect(blueprint).toBeTruthy();
                 var serializedDescription = serializer.serializeObject(blueprint);
                 expect(serializedDescription).toBeTruthy();
-                console.log(serializedDescription);
+                //console.log(serializedDescription);
             });
         });
 
@@ -77,7 +77,7 @@ describe("meta/controller-blueprint-spec", function () {
                 expect(blueprint).toBeTruthy();
                 var serializedDescription = serializer.serializeObject(blueprint);
                 expect(serializedDescription).toBeTruthy();
-                console.log(serializedDescription);
+                //console.log(serializedDescription);
             });
         });
 
@@ -106,7 +106,7 @@ describe("meta/controller-blueprint-spec", function () {
                 expect(blueprint.propertyBlueprintForName("customerSelectionList")).toBeTruthy();
                 var serializedDescription = serializer.serializeObject(blueprint);
                 expect(serializedDescription).toBeTruthy();
-                console.log(serializedDescription);
+                //console.log(serializedDescription);
             });
         });
 

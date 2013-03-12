@@ -90,7 +90,6 @@ if (spec) {
         "geometry/point-spec",
 
         "meta/blueprint-spec",
-        "meta/button-blueprint-spec",
         "meta/component-blueprint-spec",
         "meta/controller-blueprint-spec",
 

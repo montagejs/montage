@@ -206,7 +206,7 @@ describe("meta/blueprint-spec", function () {
 
             it("can serialize", function () {
                 var serializedBinder = Serializer.create().initWithRequire(require).serializeObject(companyBinder);
-                console.log(serializedBinder);
+                //console.log(serializedBinder);
                 expect(serializedBinder).not.toBeNull();
             });
             it("can deserialize", function () {
