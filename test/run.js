@@ -128,6 +128,7 @@ if (spec) {
         "ui/popup-in-window-spec",
         // Broken due to changes to repetition
         // TODO "ui/repetition-spec",
+        "ui/repetition-selection-spec",
         "ui/rich-text-editor-spec",
         "ui/select-input-spec",
         "ui/native-input-range-spec",

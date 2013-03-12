@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>SelectionTest</title>
+    <script type="text/javascript" src="../../../../montage.js" data-package="../../../"></script>
+    <script type="text/montage-serialization">
+        {
+            "application": {
+                "prototype": "montage/ui/application",
+                "properties": {
+                    "delegate": {"@": "test"}
+                }
+            },
+
+            "test": {
+                "prototype": "ui/repetition/selection-test/selection-test",
+                "properties": {
+                    "nameController": {"@": "nameController"}
+                }
+            },
+
+            "nameController": {
+                "prototype": "montage/core/range-controller",
+                "bindings": {
+                    "content": {"<-": "@test.content"}
+                }
+            },
+
+            "repetition": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "repetition"},
+                    "isSelectionEnabled": true
+                },
+                "bindings": {
+                    "contentController": {"<-": "@test.nameController"}
+                }
+            },
+
+            "name": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "name"}
+                },
+                "bindings": {
+                    "value": {"<-": "@repetition.objectAtCurrentIteration"}
+                }
+            },
+
+            "selectedName": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "selectedName"}
+                },
+                "bindings": {
+                    "value": {"<->": "@repetition.contentController.selection.0"}
+                }
+            },
+
+            "clearSelectionButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "clearSelectionButton"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "test"}
+                    }
+                ]
+            },
+
+            "selectIndex0Button": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "selectIndex0Button"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "test"}
+                    }
+                ]
+            },
+
+            "selectIndex2Button": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "selectIndex2Button"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "test"}
+                    }
+                ]
+            },
+
+            "selectIndex4Button": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "selectIndex4Button"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "test"}
+                    }
+                ]
+            }
+        }
+    </script>
+
+    <style type="text/css">
+        li {
+            list-style-type: none;
+            background-color: #fbf4e3;
+            margin: 0.2em;
+            padding: 0.2em
+        }
+
+        li.selected {
+            font-weight: bold;
+            background-color: #eee8d7;
+        }
+    </style>
+
+</head>
+<body>
+    <h1>Repetition Selection Test</h1>
+
+    <ul data-montage-id="repetition">
+        <li data-montage-id="name"></li>
+    </ul>
+
+    <p>Changing the selection through the user interface above should be reflected in the controller and reflected here:</p>
+    SelectedName: <span data-montage-id="selectedName"></span>
+
+    <p>Changing the selection in the controller directly should be reflected in all of the UI above</p>
+    <button data-montage-id="clearSelectionButton">Clear Selection</button>
+    <button data-montage-id="selectIndex0Button">Select Index 0</button>
+    <button data-montage-id="selectIndex2Button">Select Index 2</button>
+    <button data-montage-id="selectIndex4Button">Select Index 4</button>
+</body>
+</html>
