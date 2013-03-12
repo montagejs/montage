@@ -43,8 +43,8 @@ POSSIBILITY OF SUCH DAMAGE.
                     }
                 },
                 "bindings": {
-                    "content": {"<-": "@owner.objects"},
                     "contentController": {"<-": "@owner.contentController"},
+                    "content": {"<-": "@owner.content"},
                     "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"}
                 }
             },
@@ -101,7 +101,11 @@ POSSIBILITY OF SUCH DAMAGE.
 <body>
     <div data-montage-id="montage-flow" class="montage-Flow">
         <div data-montage-id="montage-flow-camera" class="montage-Flow-camera">
-            <div data-montage-id="montage-flow-repetition" class="montage-Flow-Repetition"></div>
+            <div data-montage-id="montage-flow-repetition" class="montage-Flow-Repetition">
+                <div data-montage-id="wrapper">
+                    <div data-param="*"></div>
+                </div>
+            </div>
             <div data-montage-id="montage-flow-slot" class="montage-Flow-Slot"></div>
         </div>
     </div>

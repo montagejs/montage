@@ -179,6 +179,8 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             this.addOwnPropertyChangeListener("selected", this);
             this.addOwnPropertyChangeListener("_noTransition", this);
 
+            this.cachedFirstElement = null;
+
         }
     },
 
@@ -337,6 +339,35 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
                 }
             }
         }
+    },
+
+    // TODO doc
+    /**
+     */
+    firstElement: {
+        get: function () {
+            var repetition = this.repetition;
+            var index = this._drawnIndex;
+            if (index == null)
+                return;
+            for (
+                var child = repetition._boundaries[index];
+                child !== repetition._boundaries[index + 1];
+                child = child.nextSibling
+            ) {
+                if (child.nodeType === 1) { // tags
+                    this.cachedFirstElement = child;
+                    return child;
+                }
+            }
+        }
+    },
+
+    // TODO doc
+    /**
+     */
+    cachedFirstElement: {
+        value: null
     }
 
 });

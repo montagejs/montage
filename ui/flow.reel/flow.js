@@ -36,13 +36,28 @@ var Montage = require("montage").Montage,
 
 var Flow = exports.Flow = Montage.create(Component, {
 
+    /**
+     * @private
+     */
     didCreate: {
         value: function () {
             Component.didCreate.call(this); // super
             this._slideOffsets = {};
+            this.defineBinding("_numberOfIterations", {
+                "<-": "_repetition.contentController.organizedContent.length"
+            });
+            // dispatches handle_numberOfIterationsChange
+            this.addOwnPropertyChangeListener("_numberOfIterations", this);
         }
     },
 
+    /**
+     * An optional component or element to place inside the camera's
+     * perspective shared by the slides.
+     *
+     * This will likely be replaced with a template parameter in a future
+     * version.
+     */
     slotContent: {
         serializable: true,
         value: null
@@ -498,10 +513,6 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: null
     },
 
-    _repetitionComponents: {
-        value: null
-    },
-
     // TODO: bounding box is working as bounding rectangle only. Update it to work with boxes
     _boundingBoxSize: {
         value: [200, 200, 0]
@@ -721,16 +732,18 @@ var Flow = exports.Flow = Montage.create(Component, {
             var self = this,
                 i;
 
-            this._repetitionComponents = this._repetition._childComponents;
             window.addEventListener("resize", function () {
                 self._isCameraUpdated = true;
                 self.needsDraw = true;
             }, false);
+            // TODO remove event listener
         }
     },
 
     _updateIndexMap: {
         value: function (newIndexes, newIndexesHash) {
+            // TODO replace
+            return;
             var currentIndexMap = this._repetition.indexMap,
                 emptySpaces = [],
                 j,
@@ -829,11 +842,12 @@ var Flow = exports.Flow = Montage.create(Component, {
     draw: {
         value: function () {
             var i,
-                length = this._repetitionComponents.length,
+                length = this._repetition._drawnIterations.length,
                 slideIndex, slideTime,
                 style,
                 j,
-                iElement,
+                iteration,
+                element,
                 pathsLength = this._paths.length,
                 pathIndex,
                 pos,
@@ -842,7 +856,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 positionKeyCount,
                 jPositionKey,
                 indexMap = this._repetition._indexMap,
-                iRepetitionComponentElement,
                 indexTime,
                 rotation,
                 offset,
@@ -899,11 +912,13 @@ var Flow = exports.Flow = Montage.create(Component, {
             }
             if (this.splinePaths.length) {
                 for (i = 0; i < length; i++) {
-                    offset = this.offset(indexMap[i]);
+                    // offset = this.offset(indexMap[i]);
+                    offset = this.offset(i); // TODO replace this line with previous to reenable frustrum culling with the index map
                     pathIndex = offset.pathIndex;
                     slideTime = offset.slideTime;
                     indexTime = this._splinePaths[pathIndex]._convertSplineTimeToBezierIndexTime(slideTime);
-                    iElement = this._repetitionComponents[i].element.parentNode;
+                    iteration = this._repetition._drawnIterations[i];
+                    element = iteration.cachedFirstElement || iteration.firstElement;
                     if (indexTime !== null) {
                         pos = this._splinePaths[pathIndex].getPositionAtIndexTime(indexTime);
                         rotation = this._splinePaths[pathIndex].getRotationAtIndexTime(indexTime);
@@ -913,18 +928,22 @@ var Flow = exports.Flow = Montage.create(Component, {
                             (rotation[1] ? "rotateY(" + (((rotation[1] * 100000) >> 0) * .00001) + "rad)" : "") +
                             (rotation[0] ? "rotateX(" + (((rotation[0] * 100000) >> 0) * .00001) + "rad)" : "") + ";" +
                             this._splinePaths[pathIndex].getStyleAtIndexTime(indexTime);
-                        iElement.setAttribute("style", style);
+                        element.setAttribute("style", style);
                     } else {
-                        iElement.setAttribute("style", "-webkit-transform:scale3d(0,0,0);opacity:0");
+                        element.setAttribute("style", "-webkit-transform:scale3d(0,0,0);opacity:0");
                     }
                 }
             } else {
                 for (i = 0; i < length; i++) {
-                    iElement = this._repetitionComponents[i].element.parentNode;
-                    iElement.setAttribute("style", "-webkit-transform:scale3d(0,0,0);opacity:0");
+                    iteration = this._repetition._drawnIterations[i];
+                    element = iteration.cachedFirstElement || iteration.firstElement;
+                    element.setAttribute("style", "-webkit-transform:scale3d(0,0,0);opacity:0");
                 }
             }
-            this.needsDraw = true;
+            // TODO conditionalize:
+            if (false) {
+                this.needsDraw = true;
+            }
         }
     },
 
@@ -957,32 +976,41 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
+    /**
+     * <code>numberOfIterations</code> represents the number of iterations that
+     * would be visible without culling the ones that are outside the field of
+     * view.  It is the same as the number of values from the content after
+     * filters are applied by the content controller.
+     *
+     * The content length is managed by the flow.  Do not set this property.
+     * It is however safe to read and  observe changes to the property.
+     */
     _numberOfIterations: {
         value: 0
     },
 
-    numberOfIterations: {
-        get: function () {
-            return this._numberOfIterations;
-        },
-        set: function (value) {
-            if (this._numberOfIterations !== value) {
-                this._numberOfIterations = value;
-                this._updateLength();
-            }
+    /**
+     * @private
+     */
+    handle_numberOfIterationsChange: {
+        value: function () {
+            this._updateLength();
         }
     },
 
-    _objects: {
+    _content: {
         value: null
     },
 
-    objects: {
+    // TODO doc
+    /**
+     */
+    content: {
         get: function() {
-            return this._objects;
+            return this._content;
         },
         set: function(value) {
-            this._objects = value;
+            this._content = value;
             this.needsDraw = true;
         }
     },
@@ -1007,45 +1035,28 @@ var Flow = exports.Flow = Montage.create(Component, {
 
     observeProperty: {
         value: function (key, emit, source, parameters, beforeChange) {
-            if (key === "objectAtCurrentIteration" || key === "currentIteration") {
-                return observeProperty(this._repetition, key, emit, source, parameters, beforeChange);
+            if (key === "currentIteration" || key === "objectAtCurrentIteration" || key === "contentAtCurrentIteration") {
+                if (this._repetition) {
+                    return this._repetition.observeProperty(key, emit, source, parameters, beforeChange);
+                }
             } else {
                 return observeProperty(this, key, emit, source, parameters, beforeChange);
             }
         }
     },
 
-    _orphanedChildren: {
-        value: null
-    },
-
-    deserializedFromTemplate: {
-        value: function() {
-            this._orphanedChildren = this.childComponents;
-            this.childComponents = null;
-        }
-    },
-
+    // TODO remove, will be obsoleted by inner template, provided we have a way
+    // to redraft the innter template with a wrapper node.
+    /**
+     * @private
+     */
     templateDidLoad: {
         value: function() {
-            var orphanedFragment,
-                currentContentRange = this.element.ownerDocument.createRange(),
-                wrapper,
-                self = this;
-
-            currentContentRange.selectNodeContents(this.element);
-            orphanedFragment = currentContentRange.extractContents();
-            wrapper = this._repetition.element.appendChild(document.createElement("div"));
-            wrapper.appendChild(orphanedFragment);
-            wrapper.setAttribute("data-montage-id","wrapper");
-            this._repetition.indexMapEnabled = true;
-            this._repetition.childComponents = this._orphanedChildren;
+            var self = this;
+            // TODO consider a two-way binding on needsDraw
             this._repetition.willDraw = function () {
                 self.needsDraw = true;
             }
-            this.defineBinding("numberOfIterations", {
-                "<-": "_repetition._objects.length"
-            });
         }
     },
 
