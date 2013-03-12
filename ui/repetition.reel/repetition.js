@@ -2,7 +2,7 @@
 
 var Montage = require("montage").Montage;
 var Component = require("ui/component").Component;
-var Template = require("ui/template").Template;
+var Template = require("core/template").Template;
 var RangeController = require("core/range-controller").RangeController;
 var Promise = require("core/promise").Promise;
 

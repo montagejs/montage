@@ -178,8 +178,8 @@ var testPage = TestPageLoader.queueTest("fallback", {directory: module.directory
             });
 
             it("can localize two properties", function() {
-                expect(test.twoProperties.unpressedLabel).toBe("Off");
-                expect(test.twoProperties.pressedLabel).toBe("On");
+                expect(test.twoProperties.value).toBe("On");
+                expect(test.twoProperties.secondValue).toBe("Off");
             });
 
             it("accepts a binding for the default message", function() {

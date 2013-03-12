@@ -556,7 +556,7 @@ if (typeof window !== "undefined") {
                     applicationLocation = MontageReviver.parseObjectLocationId(appProto);
                     appModulePromise = applicationRequire.async(applicationLocation.moduleId);
                 } else {
-                    appModulePromise = montageRequire.async("ui/application");
+                    appModulePromise = montageRequire.async("core/application");
                 }
 
                 return appModulePromise.then(function(exports) {

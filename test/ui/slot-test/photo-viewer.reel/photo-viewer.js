@@ -35,13 +35,13 @@ var PhotoViewer = exports.PhotoViewer = Montage.create(Component, {
 
     templateDidLoad: {
         value: function() {
-            console.log("PHOTOVIEWER REEL DID LOAD");
+            //console.log("PHOTOVIEWER REEL DID LOAD");
         }
     },
 
     deserializedFromTemplate: {
         value: function() {
-            console.log("PHOTOVIEWER DESERIALIZED FROM REEL");
+            //console.log("PHOTOVIEWER DESERIALIZED FROM REEL");
         }
     },
 
