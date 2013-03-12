@@ -345,7 +345,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         it("should visit a binding converter", function() {
             var serialization = Serialization.create().initWithObject({
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "bindings": {
                             "value": {
                                 "<-": "@object",
@@ -790,7 +790,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         it("should modify a binding converter label", function() {
             var serialization = Serialization.create().initWithObject({
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "bindings": {
                             "value": {
                                 "<-": "@object",
@@ -801,7 +801,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 }),
                 expectedSerialization = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "bindings": {
                             "value": {
                                 "<-": "@object",
