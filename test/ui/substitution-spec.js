@@ -1,16 +1,12 @@
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader;
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-var testPage = TestPageLoader.queueTest("substitution-test", function() {
+TestPageLoader.queueTest("substitution-test/substitution-test", function(testPage) {
     describe("ui/substitution-spec", function() {
         var templateObjects;
 
         beforeEach(function() {
             templateObjects = testPage.test.templateObjects;
-        });
-
-        it("should load", function() {
-            expect(testPage.loaded).toBeTruthy();
         });
 
         describe("pure dom arguments", function() {

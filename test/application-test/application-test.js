@@ -30,15 +30,14 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
     Application = require("montage/core/application").Application,
-    TestController = require("specs/support/test-controller").TestController;
+    TestController = require("montage-testing/test-controller").TestController;
 
-var Test = exports.TestController = Montage.create(TestController, {
+exports.ApplicationTest = Montage.create(TestController, {
 
     testedComponent: {
         value: null
     }
 });
-exports.theTest = Test.create();
 
 exports.MyApp = Montage.create(Application, {
 

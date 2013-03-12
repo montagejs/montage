@@ -1,6 +1,7 @@
 var Montage = require("montage").Montage;
+var TestController = require("montage-testing/test-controller").TestController;
 
-exports.SelectionTest = Montage.create(Montage, {
+exports.SelectionTest = Montage.create(TestController, {
 
     nameController: {
         value: null
@@ -12,6 +13,7 @@ exports.SelectionTest = Montage.create(Montage, {
 
     didCreate: {
         value: function () {
+            TestController.didCreate.call(this);
             this.content = ["Alice", "Bob", "Carol", "Dave", "Eve"];
         }
     },

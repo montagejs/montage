@@ -29,13 +29,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader;
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-var simpleTestPage = TestPageLoader.queueTest("firstdraw-simple", {src: "ui/drawing/simple.html", firstDraw: true}, function() {
+TestPageLoader.queueTest("firstdraw-simple", {src: "ui/drawing/simple.html", firstDraw: true}, function(simpleTestPage) {
     describe("ui/firstdraw-spec", function() {
-        it("should load", function() {
-            expect(simpleTestPage.loaded).toBeTruthy();
-        });
         describe("component", function() {
             it("should draw within first draw", function() {
                 var text = simpleTestPage.iframe.contentDocument.getElementsByClassName("dynamictext")[0];
@@ -58,11 +55,8 @@ var simpleTestPage = TestPageLoader.queueTest("firstdraw-simple", {src: "ui/draw
     });
 });
 
-var repetitionTestPage = TestPageLoader.queueTest("firstdraw-repetition", {src: "ui/drawing/repetition.html", firstDraw: true}, function() {
+TestPageLoader.queueTest("firstdraw-repetition", {src: "ui/drawing/repetition.html", firstDraw: true}, function(repetitionTestPage) {
     describe("Drawing Repetition", function() {
-        it("should load", function() {
-            expect(repetitionTestPage.loaded).toBeTruthy();
-        });
         describe("repeating component", function() {
             it("should draw within first draw", function() {
 

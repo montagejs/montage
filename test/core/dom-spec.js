@@ -29,12 +29,12 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader,
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Point = require("montage/core/geometry/point").Point,
     convertPointFromNodeToPage = require("montage/core/dom").convertPointFromNodeToPage,
     convertPointFromPageToNode = require("montage/core/dom").convertPointFromPageToNode;
 
-var testPage = TestPageLoader.queueTest("dom", function() {
+TestPageLoader.queueTest("dom/dom", function(testPage) {
     describe("core/dom-spec", function() {
         describe("convertPointFromNodeToPage parameter passing", function() {
             it("should not fail if no node passed", function() {

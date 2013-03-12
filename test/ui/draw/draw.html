@@ -37,7 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
     <script type="text/montage-serialization">
 {
-    "draw1": {
+    "test": {
         "prototype": "ui/draw/draw",
         "properties": {
             "repetition": {"@": "repetition"},
@@ -73,8 +73,12 @@ POSSIBILITY OF SUCH DAMAGE.
             "componentBindingParams2": {"@": "componentBindingParams2"},
             "componentBindingParamsLeft2": {"@": "componentBindingParamsLeft2"},
             "componentBindingParamsRight2": {"@": "componentBindingParamsRight2"},
-            "templateObjects": {"@": "templateObjects"}
+            "templateObjects": {"@": "templateObjects"},
+            "owner": {"@": "owner"}
         }
+    },
+    "owner": {
+        "prototype": "ui/draw/owner.reel"
     },
     "repetition": {
         "prototype": "montage/ui/repetition.reel",
@@ -220,7 +224,7 @@ POSSIBILITY OF SUCH DAMAGE.
     "componentWithDelegate": {
         "prototype": "montage/ui/component",
         "properties": {
-            "delegate": {"@": "owner"},
+            "delegate": {"@": "test"},
             "hasTemplate": false
         }
     },
@@ -342,12 +346,6 @@ POSSIBILITY OF SUCH DAMAGE.
         "prototype": "ui/draw/template-objects.reel",
         "properties": {
             "element": {"#": "templateObjects"}
-        }
-    },
-    "owner": {
-        "prototype": "montage/core/application",
-        "properties": {
-            "delegate": {"@": "draw1"}
         }
     }
 }

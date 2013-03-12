@@ -29,12 +29,12 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader,
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Component = require("montage/ui/component").Component,
     Serializer = require("montage/core/serialization").Serializer,
     Template = require("montage/core/template").Template;
 
-var testPage = TestPageLoader.queueTest("draw", function() {
+TestPageLoader.queueTest("draw/draw", function(testPage) {
 
     var querySelector = function(s) {
         return testPage.querySelector(s);
@@ -42,10 +42,6 @@ var testPage = TestPageLoader.queueTest("draw", function() {
 
     describe("ui/component-spec", function() {
         describe("draw test", function() {
-            it("should load", function() {
-                expect(testPage.loaded).toBeTruthy();
-            });
-
             it("should use the label as identifier if no identifier is given", function() {
                 expect(testPage.test.componentWithoutIdentifier.identifier).toBe("componentWithoutIdentifier");
                 expect(testPage.test.componentWithIdentifier.identifier).toBe("anIdentifier");
@@ -65,23 +61,25 @@ var testPage = TestPageLoader.queueTest("draw", function() {
 
             describe("domContent", function() {
                 it("should contain the current content of the component markup", function() {
-                    var content = testPage.test.repetition.domContent;
+                    var content = testPage.test.componentC.domContent;
 
-                    expect(content.length).toBe(10);
+                    expect(content.length).toBe(3);
                 });
 
-                it("should change the content of the component for markup", function() {
+                it("should change the content of the component for markup part1", function() {
                     var componentC = testPage.test.componentC,
                         content = componentC.domContent,
                         newContent = componentC._element.ownerDocument.createElement("div");
 
-                    expect(content.length).toBe(3);
                     newContent.setAttribute("class", "markup");
                     testPage.test.componentC.domContent = newContent;
                     // should only draw at draw cycle.
                     expect(componentC.domContent).toEqual(content);
+               });
 
-                    testPage.waitForDraw();
+                it("should change the content of the component for markup part2", function() {
+                    var componentC = testPage.test.componentC;
+                    testPage.waitForComponentDraw(componentC);
 
                     runs(function() {
                         expect(componentC.domContent.length).toBe(1);
@@ -89,7 +87,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     });
                 });
 
-                it("should change the content of the component for another component", function() {
+                it("should change the content of the component for another component part1", function() {
                     var componentC = testPage.test.componentC,
                         componentC1 = testPage.test.componentC1,
                         content = componentC.domContent,
@@ -98,7 +96,12 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     testPage.test.componentC.domContent = newContent;
                     // should only draw at draw cycle.
                     expect(componentC.domContent).toEqual(content);
-                    testPage.waitForDraw();
+                });
+
+                it("should change the content of the component for another component part2", function() {
+                    var componentC = testPage.test.componentC,
+                        componentC1 = testPage.test.componentC1;
+                    testPage.waitForComponentDraw(componentC);
 
                     runs(function() {
                         expect(componentC.domContent.length).toBe(1);
@@ -497,7 +500,6 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     var branch = componentOwner.branch;
                     var branchLeaf1 = branch.leaf1;
                     var branchLeaf2 = branch.leaf2;
-
                     expect(leaf1.ownerComponent).toBe(componentOwner);
                     expect(leaf2.ownerComponent).toBe(componentOwner);
                     expect(branch.ownerComponent).toBe(componentOwner);
@@ -525,28 +527,30 @@ var testPage = TestPageLoader.queueTest("draw", function() {
         });
 
         describe("template objects", function() {
-            var component = testPage.test.templateObjects;
-
+            var templateObjectsComponent;
+            beforeEach(function () {
+                templateObjectsComponent = testPage.test.templateObjects;
+            });
             it("should have templateObjects object", function() {
-                expect(component.templateObjects).not.toBeNull();
+                expect(templateObjectsComponent.templateObjects).not.toBeNull();
             });
 
             it("should have templateObjects ready at templateDidLoad", function() {
-                expect(component.templateObjectsPresent).toBeTruthy();
+                expect(templateObjectsComponent.templateObjectsPresent).toBeTruthy();
             });
 
             it("should have a reference to owner", function() {
-                expect(component.templateObjects.owner).toBe(component);
+                expect(templateObjectsComponent.templateObjects.owner).toBe(templateObjectsComponent);
             });
 
             it("should have a reference to an object", function() {
-                expect(component.templateObjects.object).toEqual({});
+                expect(templateObjectsComponent.templateObjects.object).toEqual({});
             });
 
             it("should have a reference to a component", function() {
-                var text = component.element.querySelector(".text").component;
+                var text = templateObjectsComponent.element.querySelector(".text").component;
 
-                expect(component.templateObjects.text).toBe(text);
+                expect(templateObjectsComponent.templateObjects.text).toBe(text);
             });
         });
 

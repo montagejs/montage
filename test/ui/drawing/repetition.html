@@ -35,14 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
     <script type="text/montage-serialization">
 {
-    "test1": {
+    "test": {
         "prototype": "ui/drawing/test",
         "properties": {
             "repetition1": {"@": "repetition1"},
             "repetition": {"@": "repetition2"}
         }
     },
-    "dynamictext1": {
+    "dynamictext": {
         "prototype": "montage/ui/text.reel",
         "properties": {
             "element": {"#": "dynamictext"},
@@ -60,7 +60,7 @@ POSSIBILITY OF SUCH DAMAGE.
             ]
         }
     },
-    "custom1": {
+    "custom": {
         "prototype": "ui/drawing/component/custom.reel",
         "properties": {
             "element": {"#": "custom"}
@@ -75,12 +75,6 @@ POSSIBILITY OF SUCH DAMAGE.
                 2,
                 3
             ]
-        }
-    },
-
-    "application": {
-        "properties": {
-            "delegate": {"@": "test1"}
         }
     }
 }

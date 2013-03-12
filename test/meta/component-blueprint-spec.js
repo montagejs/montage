@@ -1,19 +1,15 @@
 /* <copyright>
  </copyright> */
 var Montage = require("montage").Montage;
-var TestPageLoader = require("support/testpageloader").TestPageLoader;
+var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 var Component = require("montage/ui/component").Component;
 var Selector = require("montage/core/selector").Selector;
 var Blueprint = require("montage/core/meta/blueprint").Blueprint;
 var Promise = require("montage/core/promise").Promise;
 var Serializer = require("montage/core/serialization").Serializer;
 
-var testPage = TestPageLoader.queueTest("component-blueprint-test", function () {
+TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", function (testPage) {
     describe("meta/component-blueprint-spec", function () {
-        it("should load", function () {
-            expect(testPage.loaded).toBeTruthy();
-        });
-
         var component1;
         var component2;
         var component3;

@@ -29,14 +29,14 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader,
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Template = require("montage/core/template").Template;
 
 var stripPP = function stripPrettyPrintting(str) {
     return str.replace(/\n\s*/g, "");
 };
 
-var testPage = TestPageLoader.queueTest("repetition", function() {
+TestPageLoader.queueTest("repetition/repetition", function(testPage) {
     describe("ui/repetition-spec", function() {
         var eventManager,
             application,
@@ -49,8 +49,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
             return testPage.querySelectorAll(s);
         };
 
-        it("should load", function() {
-            expect(testPage.loaded).toBeTruthy();
+        beforeEach(function () {
             application = testPage.window.document.application;
             eventManager = application.eventManager;
             delegate = application.delegate;

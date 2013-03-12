@@ -3,7 +3,7 @@ Copyright (c) 2013, António Afonso
 All Rights Reserved.
 </copyright> */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader,
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Template = require("montage/core/template").Template,
     TemplateResources = require("montage/core/template").TemplateResources,
     Component = require("montage/ui/component").Component,
