@@ -124,14 +124,15 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
             Object.getPrototypeOf(Iteration).didCreate.call(this);
             this.repetition = null;
             this.controller = null;
-            this.defineBinding("content", {"<->": "controller.object"});
+            this.content = null;
             this.defineBinding("object", {"<->": "content"}); // TODO remove this migration shim
-            this.selected = false;
             // The iteration watches whether it is selected.  If the iteration
             // is drawn, it enqueue's selection change draw operations and
             // notifies the repetition it needs to be redrawn.
             // Dispatches handlePropertyChange with the "selected" key:
-            this.defineBinding("selected", {"<->": "controller.selected"});
+            this.defineBinding("selected", {
+                "<->": "repetition.contentController._selection.has(content)"
+            });
             // An iteration can be "on" or "off" the document.  When the
             // iteration is added to a document, the "fragment" is depopulated
             // and placed between "topBoundary" and "bottomBoundary" on the
@@ -192,14 +193,14 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
 
     /**
      * Disassociates an iteration with its content and prepares it to be
-     * recycled on the repetition's list of free iterations.
-     * This function is called by handleControllerIterationsRangeChange when it
-     * recycles an iteration.
+     * recycled on the repetition's list of free iterations.  This function is
+     * called by handleOrganizedContentRangeChange when it recycles an
+     * iteration.
      */
     recycle: {
         value: function () {
             this.index = null;
-            this.controller = null;
+            this.content = null;
             // Adding the "no-transition" class ensures that the iteration will
             // stop any transitions applied when the iteration was bound to
             // other content.  It has the side-effect of scheduling a draw, and
@@ -383,7 +384,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
      * initializing.  You should not use the <code>content</code> property of a
      * repetition if you are using its <code>contentController</code>.
      */
-    initWithRangeController: {
+    initWithContentController: {
         value: function (contentController) {
             this.contentController = contentController;
             return this;
@@ -543,8 +544,11 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // also be accounted for in _teardownIterationTemplate to reset the
             // repetition.
 
-            // Knobs:
             this.contentController = null;
+            this.organizedContent = [];
+            this.defineBinding("organizedContent.rangeContent()", {
+                "<-": "contentController.organizedContent"
+            });
             // Determines whether the repetition listens for mouse and touch
             // events to select iterations, which involves "activating" the
             // iteration when the user touches.
@@ -558,6 +562,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             this.defineBinding("selectedIndexes", {
                 "<-": "iterations.map{index}"
             });
+
 
             // The state of the DOM:
             // ---
@@ -612,18 +617,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             // Where we want to be after the next draw:
             // ---
 
-            // Use a range content binding to synchronize our local copy of the
-            // controller.iterations. This ensures that this repetition owns
-            // its _controllerIterations array, that it will never be replaced,
-            // and that we can safely add and remove content range change
-            // listener.
-            this._controllerIterations = [];
-            // Ascertains that _controllerIterations does not get changed by
-            // the controller, but the changes are projected on our array.
-            this.defineBinding("_controllerIterations.rangeContent()", {
-                "<-": "contentController.iterations",
-                "serializable": false
-            });
             // The _boundaries array contains comment nodes that serve as the
             // top and bottom boundary of each iteration.  There will always be
             // one more boundary than iteration.
@@ -776,12 +769,12 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 childComponent.cleanupDeletedComponentTree(true); // cancel bindings, permanent
             }
 
-            // Begin tracking the controller iterations.  We manually dispatch
-            // a range change to track all the iterations that have come and gone
-            // while we were not watching.
-            this.handleControllerIterationsRangeChange(this._controllerIterations, [], 0);
-            // Dispatches handleControllerIterationsRangeChange:
-            this._controllerIterations.addRangeChangeListener(this, "controllerIterations");
+            // Begin tracking the controller organizedContent.  We manually
+            // dispatch a range change to track all the iterations that have
+            // come and gone while we were not watching.
+            this.handleOrganizedContentRangeChange(this.organizedContent, [], 0);
+            // Dispatches handleOrganizedContentRangeChange:
+            this.organizedContent.addRangeChangeListener(this, "organizedContent");
 
             this._canDrawInitialContent = true;
             this.needsDraw = true;
@@ -799,14 +792,14 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     _teardownIterationTemplate: {
         value: function () {
 
-            // stop listenting to controller iteration changes until the new
+            // stop listenting to controlled content changes until the new
             // iteration template is ready.  (at which point we will manually
-            // dispatch handleControllerIterationsRangeChange with the entire
+            // dispatch handleOrganizedContentRangeChange with the entire
             // content of the array when _setupIterationTemplate has finished)
-            this._controllerIterations.removeRangeChangeListener(this, "controllerIterations");
+            this.organizedContent.removeRangeChangeListener(this, "organizedContent");
             // simulate removal of all iterations from the controller to purge
             // the iterations and _drawnIterations.
-            this.handleControllerIterationsRangeChange([], this._controllerIterations, 0);
+            this.handleOrganizedContentRangeChange([], this.organizedContent, 0);
 
             // prepare all the free iterations and their child component trees
             // for garbage collection
@@ -1082,14 +1075,30 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     _childComponentsPerIteration: {value: null},
 
     /**
-     * In responses to changes in the controlled
-     * <code>_controllerIterations</code> array, this method creates a plan to
-     * add and delete iterations with their corresponding DOM elements on the
-     * next "draw" event.  This may require more iterations to be constructed
-     * before the next draw event.
+     * Reacts to changes in the controller's organized content by altering the
+     * modeled iterations.  This may require additional iterations to be
+     * instantiated.  The repetition may redraw when all of the instantiated
+     * iterations have finished loading.
+     *
+     * This method is dispatched in response to changes to the organized
+     * content but only while the repetition is prepared to instantiate
+     * repetitions.  Any time the repetition needs to change its inner
+     * template, or when it is setting up its initial inner template, the
+     * repetition silences the organizedContent range change listener and
+     * manually calls this method as if organizedContent were cleared out, to
+     * cause all of the iterations to be collected and removed from the
+     * document.  When the iteration template is ready again, it manually
+     * dispatches this method again as if the organizedContent had been
+     * repopulated, then resumes listening for changes.
+     *
+     * Bindings react instantly to the change in the iteration model.  The draw
+     * method synchronizes <code>index</code> and <code>_drawnIndex</code> on
+     * each iteration as it rearranges <code>_drawnIterations</code> to match
+     * the order and content of the <code>iterations</code> array.
+     *
      * @private
      */
-    handleControllerIterationsRangeChange: {
+    handleOrganizedContentRangeChange: {
         value: function (plus, minus, index) {
 
             // Subtract iterations
@@ -1107,14 +1116,12 @@ var Repetition = exports.Repetition = Montage.create(Component, {
                 this._freeIterations.push(this._createIteration());
             }
             // Add iterations
-            this.iterations.swap(index, 0, plus.map(function (controller, offset) {
+            this.iterations.swap(index, 0, plus.map(function (content, offset) {
                 var iteration = this._freeIterations.pop();
-                // Update the corresponding controller.  This updates the
-                // "object" and "selected" bindings.
-                iteration.controller = controller;
+                iteration.content = content;
                 // This updates the "repetition.contentAtCurrentIteration"
                 // bindings.
-                this._contentForIteration.set(iteration, controller.object);
+                this._contentForIteration.set(iteration, content);
                 return iteration;
             }, this));
             // Update indexes for all subsequent iterations
@@ -1126,8 +1133,8 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     },
 
     /**
-     * Used by handleControllerIterationsRangeChange to update the controller
-     * index of every iteration following a change.
+     * Used by handleOrganizedContentRangeChange to update the controller index
+     * of every iteration following a change.
      * @private
      */
     _updateIndexes: {
