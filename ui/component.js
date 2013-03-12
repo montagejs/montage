@@ -247,7 +247,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 node,
                 element = this.element;
 
-            domArguments["*"] = this.domContent;
 
             // Need to make sure that we filter dom args that are for nested
             // components and not for this component.
@@ -1490,15 +1489,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     parameterNames + '.');
                 }
             } else {
-                if ("*" in templateParameters) {
-                    // When the template has a star parameter it needs to
-                    // receive it as an argument and all aditional arguments are
-                    // allowed.
-                    if (!("*" in templateArguments)) {
-                        return new Error('Star argument was not given in ' +
-                        this.templateModuleId);
-                    }
-                } else {
+                if (!("*" in templateParameters)) {
                     // All template parameters need to be satisfied.
                     for (var param in templateParameters) {
                         if (!(param in templateArguments)) {

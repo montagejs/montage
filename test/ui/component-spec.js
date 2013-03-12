@@ -585,8 +585,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     domArguments = component._domArguments,
                     names = Object.keys(domArguments);
 
-                expect(names.length).toBe(3);
-                expect(names).toContain("*");
+                expect(names.length).toBe(2);
                 expect(names).toContain("one");
                 expect(names).toContain("two");
             });
@@ -596,8 +595,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     domArguments = component._domArguments,
                     names = Object.keys(domArguments);
 
-                expect(names.length).toBe(1);
-                expect(names).toContain("*");
+                expect(names.length).toBe(0);
             });
 
             it("should have dom arguments with the right elements", function() {
@@ -614,7 +612,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 var component = testPage.test.nestedArguments,
                     domArguments = component._domArguments;
 
-                expect(Object.keys(domArguments).length).toBe(3);
+                expect(Object.keys(domArguments).length).toBe(2);
             });
 
             it("should satisfy the star parameter", function() {
@@ -629,20 +627,6 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 validation = Component._validateTemplateArguments(
                     templateArguments, templateParameters);
                 expect(validation).toBeUndefined();
-            });
-
-            it("should fail when the star parameter is not satisfied", function() {
-                var templateArguments = {
-                        "right": document.createElement("div")
-                    },
-                    templateParameters = {
-                        "*": document.createElement("div")
-                    },
-                    validation;
-
-                validation = Component._validateTemplateArguments(
-                    templateArguments, templateParameters);
-                expect(validation).toBeDefined();
             });
 
             it("should not fail when the star parameter is satisfied and there are aditional arguments", function() {
@@ -660,9 +644,8 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 expect(validation).toBeUndefined();
             });
 
-            it("should fail when a star argument is given but named parameters are not satisfied", function() {
+            it("should fail when no arguments are given and named parameters are not satisfied", function() {
                 var templateArguments = {
-                        "*": document.createElement("div")
                     },
                     templateParameters = {
                         "right": document.createElement("div")
