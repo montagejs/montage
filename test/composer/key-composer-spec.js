@@ -70,7 +70,6 @@ var testPage = TestPageLoader.queueTest("key-composer-test", function() {
             });
 
             it("should not fire keyComposer's event when pressing a composerKey which is not in the target path", function() {
-                console.log(window.document.title)
                 var target = test.example.element.parentNode,
                     keyPressCalled = false,
                     keyReleaseCalled = false;

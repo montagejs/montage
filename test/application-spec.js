@@ -32,8 +32,8 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     TestPageLoader = require("support/testpageloader").TestPageLoader;
 
-var testPage = TestPageLoader.queueTest("application-as-application", {src: "core/application/as-application.html"}, function() {
-    describe("core/application-spec", function() {
+var testPage = TestPageLoader.queueTest("application-as-application", {src: "application/as-application.html"}, function() {
+    describe("application-spec", function() {
         describe("Application used in application label", function() {
             it("should draw correctly", function() {
                 expect(testPage.test).toBeDefined();
@@ -45,8 +45,8 @@ var testPage = TestPageLoader.queueTest("application-as-application", {src: "cor
    });
 });
 
-var testPage = TestPageLoader.queueTest("application-as-owner", {src: "core/application/as-owner.html"}, function() {
-    describe("core/application-spec", function() {
+var testPage = TestPageLoader.queueTest("application-as-owner", {src: "application/as-owner.html"}, function() {
+    describe("application-spec", function() {
         describe("Application used in owner label", function() {
             it("should draw correctly", function() {
                 expect(testPage.test).toBeDefined();
@@ -55,10 +55,10 @@ var testPage = TestPageLoader.queueTest("application-as-owner", {src: "core/appl
    });
 });
 
-var testPage = TestPageLoader.queueTest("application-test", {src: "core/application-test/application-test.html"}, function() {
+var testPage = TestPageLoader.queueTest("application-test", {src: "application-test/application-test.html"}, function() {
     var test = testPage.test;
 
-    describe("core/application-spec", function() {
+    describe("application-spec", function() {
         it("should load", function() {
             expect(testPage.loaded).toBe(true);
         });
@@ -74,10 +74,10 @@ var testPage = TestPageLoader.queueTest("application-test", {src: "core/applicat
     });
 });
 
-var testPage = TestPageLoader.queueTest("application-test-subtype", {src: "core/application-test/application-test-subtype.html"}, function() {
+var testPage = TestPageLoader.queueTest("application-test-subtype", {src: "application-test/application-test-subtype.html"}, function() {
     var test = testPage.test;
 
-    describe("core/application-spec", function() {
+    describe("application-spec", function() {
         it("should load", function() {
             expect(testPage.loaded).toBe(true);
         });
