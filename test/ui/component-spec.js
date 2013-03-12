@@ -29,11 +29,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader,
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Component = require("montage/ui/component").Component,
     Serializer = require("montage/core/serialization").Serializer;
 
-var testPage = TestPageLoader.queueTest("draw", function() {
+TestPageLoader.queueTest("draw/draw", function(testPage) {
 
     var querySelector = function(s) {
         return testPage.querySelector(s);
@@ -41,10 +41,6 @@ var testPage = TestPageLoader.queueTest("draw", function() {
 
     describe("ui/component-spec", function() {
         describe("draw test", function() {
-            it("should load", function() {
-                expect(testPage.loaded).toBeTruthy();
-            });
-
             it("should use the label as identifier if no identifier is given", function() {
                 expect(testPage.test.componentWithoutIdentifier.identifier).toBe("componentWithoutIdentifier");
                 expect(testPage.test.componentWithIdentifier.identifier).toBe("anIdentifier");
@@ -473,16 +469,15 @@ var testPage = TestPageLoader.queueTest("draw", function() {
             });
 
             describe("the owner component property", function() {
-                var Component = testPage.window.require("montage/ui/component").Component;
-                var componentOwner = testPage.test.componentOwner;
-
-                var leaf1 = componentOwner.leaf1;
-                var leaf2 = componentOwner.leaf2;
-                var branch = componentOwner.branch;
-                var branchLeaf1 = branch.leaf1;
-                var branchLeaf2 = branch.leaf2;
-
                 it("should be the component that loaded the template", function() {
+                    var Component = testPage.window.require("montage/ui/component").Component;
+                    var componentOwner = testPage.test.componentOwner;
+
+                    var leaf1 = componentOwner.leaf1;
+                    var leaf2 = componentOwner.leaf2;
+                    var branch = componentOwner.branch;
+                    var branchLeaf1 = branch.leaf1;
+                    var branchLeaf2 = branch.leaf2;
                     expect(leaf1.ownerComponent).toBe(componentOwner);
                     expect(leaf2.ownerComponent).toBe(componentOwner);
                     expect(branch.ownerComponent).toBe(componentOwner);
