@@ -259,6 +259,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                         continue nextCandidate;
                     }
                 }
+                this._findAndDetachComponents(candidate);
                 name = candidate.getAttribute(this.DOM_ARG_ATTRIBUTE);
                 candidate.removeAttribute(this.DOM_ARG_ATTRIBUTE);
                 domArguments[name] = candidate;
@@ -738,25 +739,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
 
             if (value instanceof Element) {
-                findAndDetachComponents(value);
+                this._findAndDetachComponents(value, componentsToAdd);
             } else if (value) {
                 for (var i = 0; i < value.length; i++) {
-                    findAndDetachComponents(value[i]);
-                }
-            }
-
-            // find the component fringe and detach them from the component tree
-            function findAndDetachComponents(node) {
-                var component = node.component;
-
-                if (component) {
-                    component.detachFromParentComponent();
-                    componentsToAdd.push(component);
-                } else {
-                    var childNodes = node.childNodes;
-                    for (var i = 0, childNode; (childNode = childNodes[i]); i++) {
-                        findAndDetachComponents(childNode);
-                    }
+                    this._findAndDetachComponents(value[i], componentsToAdd);
                 }
             }
 
@@ -769,6 +755,33 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     _shouldClearDomContentOnNextDraw: {
         value: false
+    },
+
+    _findAndDetachComponents: {
+        value: function(node, components) {
+            // TODO: Check if searching the childComponents of the parent
+            //       component can make the search faster..
+            var component = node.component,
+                children;
+
+            if (!components) {
+                components = [];
+            }
+
+            if (component) {
+                component.detachFromParentComponent();
+                components.push(component);
+            } else {
+                // DocumentFragments don't have children so we default to
+                // childNodes.
+                children = node.children || node.childNodes;
+                for (var i = 0, child; (child = children[i]); i++) {
+                    this._findAndDetachComponents(child, components);
+                }
+            }
+
+            return components;
+        }
     },
 
     // Some components, like the repetition, might use their initial set of
