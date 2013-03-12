@@ -590,11 +590,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     var newParentComponent = childComponent.findParentComponent();
                     if (newParentComponent === this) {
                         parentComponent.removeChildComponent(childComponent);
-                        newParentComponent._addChildComponent(childComponent);
+                        newParentComponent.addChildComponent(childComponent);
                     }
                 }
 
-                parentComponent._addChildComponent(this);
+                parentComponent.addChildComponent(this);
             }
         }
     },
@@ -735,7 +735,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             components = this.childComponents;
             for (var i = 0, component; (component = components[i]); i++) {
                 component.detachFromParentComponent();
-                component.cleanupDeletedComponentTree();
             }
 
             if (value instanceof Element) {
@@ -748,7 +747,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
             // not sure if I can rely on _cachedParentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
             for (var i = 0, component; (component = componentsToAdd[i]); i++) {
-                this._addChildComponent(component);
+                this.addChildComponent(component);
             }
         }
     },
