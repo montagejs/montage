@@ -1,5 +1,6 @@
 .npmignore
 .tmp
+node_modules
 node_modules/qs
 .idea
 .DS_Store

@@ -42,7 +42,7 @@ var logger = require("core/logger").logger("pledge");
  @class module:montage/data/pledge.Pledge
  @extends module:montage/core/promise.Promise
  */
-var Pledge = exports.Pledge = Montage.create(Promise, /** @lends module:montage/data/pledge.Pledge# */ {
+var Pledge = exports.Pledge = Montage.create(Promise.prototype, /** @lends module:montage/data/pledge.Pledge# */ {
 
     /**
      Description TODO

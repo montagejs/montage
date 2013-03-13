@@ -35,7 +35,7 @@ var bootstrap = function () {
     });
 };
 
-var findPackage = function (directory, callback) {
+function findPackage(directory, callback) {
     if (directory == PATH.dirname(directory))
         return callback("Can't find package");
     var packageJson = PATH.join(directory, "package.json");
@@ -54,7 +54,7 @@ var loadPackagedModule = function (directory, program, command, args) {
         var id = program.slice(directory.length + 1);
         return require.async(id);
     })
-    .end();
+    .done();
 };
 
 exports.loadPackage = loadPackage;
@@ -79,7 +79,7 @@ var loadFreeModule = function (program, command, args) {
         var id = program.slice(directory.length);
         return require.async(id);
     })
-    .end();
+    .done();
 };
 
 if (require.main == module) {
