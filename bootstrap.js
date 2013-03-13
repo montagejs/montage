@@ -62,7 +62,7 @@
         function bootRequire(id) {
             if (!bootModules[id] && definitions[id]) {
                 var exports = bootModules[id] = {};
-                definitions[id](bootRequire, exports);
+                bootModules[id] = definitions[id](bootRequire, exports) || exports;
             }
             return bootModules[id];
         }
