@@ -10,21 +10,34 @@ var Require = require("./require");
 var Promise = require("q");
 var FS = require("fs");
 var URL = require("url");
+var PATH = require("path");
 
 var globalEval = eval;
 
-Require.getLocation = function () {
+Require.getLocation = function getLocation() {
     return URL.resolve("file:///", process.cwd() + "/");
 };
 
-Require.urlToPath = function (url) {
-    var parsed = URL.parse(url);
+Require.locationToPath = function locationToPath(location) {
+    var parsed = URL.parse(location);
     return parsed.path;
 };
 
-Require.read = function (url) {
+Require.filePathToLocation = function filePathToLocation(path) {
+    return URL.resolve(Require.getLocation(), path);
+};
+
+Require.directoryPathToLocation = function directoryPathToLocation(path) {
+    if (!/\/$/.test(path)) {
+        path += "/";
+    }
+    path = Require.filePathToLocation(path);
+    return path;
+};
+
+Require.read = function read(location) {
     var deferred = Promise.defer();
-    var path = Require.urlToPath(url);
+    var path = Require.locationToPath(location);
     FS.readFile(path, "utf-8", function (error, text) {
         if (error) {
             deferred.reject(new Error(error));
@@ -37,7 +50,7 @@ Require.read = function (url) {
 
 // Compiles module text into a function.
 // Can be overriden by the platform to make the engine aware of the source path. Uses sourceURL hack by default.
-Require.Compiler = function (config) {
+Require.Compiler = function Compiler(config) {
     config.scope = config.scope || {};
     var names = ["require", "exports", "module"];
     var scopeNames = Object.keys(config.scope);
@@ -67,31 +80,31 @@ Require.Compiler = function (config) {
     };
 };
 
-Require.Loader = function (config, load) {
-    return function (url, module) {
-        return Require.read(url)
+Require.Loader = function Loader(config, load) {
+    return function (location, module) {
+        return Require.read(location)
         .then(function (text) {
             module.type = "javascript";
             module.text = text;
-            module.location = url;
+            module.location = location;
         }, function (reason, error, rejection) {
-            return load(url, module);
+            return load(location, module);
         });
     };
 };
 
-Require.NodeLoader = function (config) {
-    return function (url, module) {
-        var id = url.slice(config.location.length);
+Require.NodeLoader = function NodeLoader(config) {
+    return function nodeLoad(location, module) {
+        var id = location.slice(config.location.length);
         return {
             type: "native",
             exports: require(id),
-            location: url
+            location: location
         }
     };
 };
 
-Require.makeLoader = function(config) {
+Require.makeLoader = function makeLoader(config) {
     return Require.MappingsLoader(
         config,
         Require.ExtensionsLoader(
@@ -108,5 +121,39 @@ Require.makeLoader = function(config) {
             )
         )
     );
+};
+
+Require.findPackagePath = function findPackagePath(directory) {
+    if (directory == PATH.dirname(directory))
+        return Promise.reject(new Error("Can't find package"));
+    var packageJson = PATH.join(directory, "package.json");
+    return Promise.ninvoke(FS, "stat", packageJson)
+    .then(function (stat) {
+        return stat.isFile();
+    }, function (error) {
+        return false;
+    }).then(function (isFile) {
+        if (isFile) {
+            return directory;
+        } else {
+            return Require.findPackagePath(PATH.dirname(directory));
+        }
+    });
+};
+
+Require.findPackageLocationAndModuleId = function findPackageLocationAndModuleId(path) {
+    path = PATH.resolve(process.cwd(), path);
+    var directory = PATH.dirname(path);
+    return Require.findPackagePath(directory)
+    .then(function (packageDirectory) {
+        var modulePath = PATH.relative(packageDirectory, path);
+        modulePath = modulePath.replace(/\.js$/, "");
+        return {
+            location: Require.directoryPathToLocation(packageDirectory),
+            id: modulePath
+        }
+    }, function (error) {
+        throw new Error("Can't find package: " + path);
+    });
 };
 
