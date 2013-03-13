@@ -304,17 +304,21 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     getTemplateParameterArgument: {
         value: function(template, name) {
             var element,
-                range;
+                range,
+                argument;
 
             element = template.getElementById(this.getElementId());
 
             if (name === "*") {
                 range = template.document.createRange();
                 range.selectNodeContents(element);
-                return range.cloneContents();
+                argument = range.cloneContents();
             } else {
-                return this._getDomArgument(element, name).cloneNode(true);
+                argument = this._getDomArgument(element, name).cloneNode(true);
+                argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
             }
+
+            return argument;
         }
     },
 

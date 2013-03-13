@@ -789,6 +789,78 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 expect(right.childComponents).toHave(rightText.component);
             });
 
+            it("should clone the argument from the template for a named parameter", function() {
+                 var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = Template.create(),
+                    component = Component.create();
+
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var section,
+                        element,
+                        originalArgument;
+
+                    element = template.getElementById("comp1");
+                    component._element = element;
+                    originalArgument = element.querySelector(".section");
+
+                    section = component.getTemplateParameterArgument(template, "section");
+
+
+                    expect(section).not.toBe(originalArgument);
+                });
+            });
+
+            it("should clone the contents of the component for the star parameter", function() {
+                 var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = Template.create(),
+                    component = Component.create();
+
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var star,
+                        element,
+                        originalNodes,
+                        starNodes;
+
+                    element = template.getElementById("comp2");
+                    component._element = element;
+
+                    star = component.getTemplateParameterArgument(template, "*");
+
+                    originalNodes = element.childNodes;
+                    starNodes = star.childNodes;
+
+                    expect(starNodes.length).toEqual(originalNodes.length);
+                    expect(starNodes).not.toEqual(originalNodes);
+                });
+            });
+
+            it("should remove the data-arg attributes when cloning an argument for a named parameter", function() {
+                 var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = Template.create(),
+                    component = Component.create();
+
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var section,
+                        comp1Element,
+                        dataArgs;
+
+                    comp1Element = template.getElementById("comp1");
+                    component._element = comp1Element;
+
+                    section = component.getTemplateParameterArgument(template, "section");
+
+                    dataArgs = section.querySelectorAll("*[data-arg]");
+
+                    expect(section.hasAttribute("data-arg")).toBeFalsy();
+                    expect(dataArgs.length).toBe(0);
+                });
+            });
         });
     });
 });
