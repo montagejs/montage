@@ -1526,7 +1526,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     _validateTemplateArguments: {
         value: function(templateArguments, templateParameters) {
-            var parameterNames = Object.keys(templateParameters);
+            var parameterNames = Object.keys(templateParameters),
+                argumentNames;
 
             if (templateArguments == null) {
                 if (parameterNames.length > 0) {
@@ -1535,7 +1536,14 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     parameterNames + '.');
                 }
             } else {
-                if (!("*" in templateParameters)) {
+                if ("*" in templateParameters) {
+                    argumentNames = Object.keys(templateArguments);
+                    if (argumentNames.length > 0) {
+                        return new Error('Arguments "' + argumentNames +
+                        '" were given to component but no named parameters ' +
+                        'are defined in ' + this.templateModuleId);
+                    }
+                } else {
                     // All template parameters need to be satisfied.
                     for (var param in templateParameters) {
                         if (!(param in templateArguments)) {

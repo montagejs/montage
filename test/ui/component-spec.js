@@ -641,9 +641,9 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 expect(names.length).toBe(2);
             });
 
-            it("should satisfy the star parameter", function() {
+            it("should satisfy the star parameter when no arguments are given", function() {
                 var templateArguments = {
-                        "*": document.createElement("div")
+
                     },
                     templateParameters = {
                         "*": document.createElement("div")
@@ -655,9 +655,8 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 expect(validation).toBeUndefined();
             });
 
-            it("should not fail when the star parameter is satisfied and there are aditional arguments", function() {
+            it("should fail when an argument is given and no named parameter is defined", function() {
                 var templateArguments = {
-                        "*": document.createElement("div"),
                         "right": document.createElement("div")
                     },
                     templateParameters = {
@@ -667,7 +666,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
 
                 validation = Component._validateTemplateArguments(
                     templateArguments, templateParameters);
-                expect(validation).toBeUndefined();
+                expect(validation).toBeDefined();
             });
 
             it("should fail when no arguments are given and named parameters are not satisfied", function() {
