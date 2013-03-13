@@ -1043,6 +1043,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 if (this.hasTemplate) {
                     this._instantiateTemplate().then(function() {
                         self._isComponentExpanded = true;
+                        self.needsDraw = true;
                         deferred.resolve();
                     }, deferred.reject);
                 } else {
