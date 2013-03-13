@@ -297,7 +297,38 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     _getDomArgument: {
         value: function(element, name) {
-            return element.querySelector("*[" + this.DOM_ARG_ATTRIBUTE + "='" + name + "']");
+            var candidates,
+                node,
+                elementId,
+                serialization,
+                labels;
+
+            candidates = element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "='" + name + "']");
+
+            // Make sure that the argument we find is indeed part of element and
+            // not an argument from an inner component.
+            nextCandidate:
+            for (var i = 0, candidate; (candidate = candidates[i]); i++) {
+                node = candidate;
+                while ((node = node.parentNode) !== element) {
+                    elementId = this._template.getElementId(node);
+
+                    // Check if this node is an element of a component.
+                    // TODO: Make this operation faster
+                    if (elementId) {
+                        serialization = this._template.getSerialization();
+                        labels = serialization.getSerializationLabelsWithElements(
+                            elementId);
+
+                        if (labels.length > 0) {
+                            // This candidate is inside another component so
+                            // skip it.
+                            continue nextCandidate;
+                        }
+                    }
+                }
+                return candidate;
+            }
         }
     },
 

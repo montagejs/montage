@@ -802,6 +802,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                         originalArgument;
 
                     element = template.getElementById("comp1");
+                    component._template = template;
                     component._element = element;
                     originalArgument = element.querySelector(".section");
 
@@ -826,6 +827,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                         starNodes;
 
                     element = template.getElementById("comp2");
+                    component._template = template;
                     component._element = element;
 
                     star = component.getTemplateParameterArgument(template, "*");
@@ -847,11 +849,12 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 return template.initWithHtml(templateHtml)
                 .then(function() {
                     var section,
-                        comp1Element,
+                        element,
                         dataArgs;
 
-                    comp1Element = template.getElementById("comp1");
-                    component._element = comp1Element;
+                    element = template.getElementById("comp1");
+                    component._template = template;
+                    component._element = element;
 
                     section = component.getTemplateParameterArgument(template, "section");
 
@@ -859,6 +862,46 @@ var testPage = TestPageLoader.queueTest("draw", function() {
 
                     expect(section.hasAttribute("data-arg")).toBeFalsy();
                     expect(dataArgs.length).toBe(0);
+                });
+            });
+
+            it("should clone the right argument and ignore arguments for nested components", function() {
+                 var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = Template.create(),
+                    component = Component.create();
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var two,
+                        element;
+
+                    element = template.getElementById("comp3");
+                    component._template = template;
+                    component._element = element;
+
+                    two = component.getTemplateParameterArgument(template, "two");
+
+                    expect(two.className).toBe("two");
+                });
+            });
+
+            it("should clone an argument even if it's inside a data-montage-id element", function() {
+                 var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = Template.create(),
+                    component = Component.create();
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var one,
+                        element;
+
+                    element = template.getElementById("comp4");
+                    component._template = template;
+                    component._element = element;
+
+                    one = component.getTemplateParameterArgument(template, "one");
+
+                    expect(one).toBeDefined();
                 });
             });
         });

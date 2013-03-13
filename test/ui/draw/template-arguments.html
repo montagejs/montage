@@ -3,6 +3,42 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title></title>
+    <script type="text/montage-serialization">{
+        "comp1": {
+            "prototype": "montage/ui/component.reel",
+            "properties": {
+                "element": {"#": "comp1"}
+            }
+        },
+
+        "comp2": {
+            "prototype": "montage/ui/component.reel",
+            "properties": {
+                "element": {"#": "comp2"}
+            }
+        },
+
+        "comp3": {
+            "prototype": "montage/ui/component.reel",
+            "properties": {
+                "element": {"#": "comp3"}
+            }
+        },
+
+        "otherComp": {
+            "prototype": "montage/ui/component.reel",
+            "properties": {
+                "element": {"#": "otherComp"}
+            }
+        },
+
+        "comp4": {
+            "prototype": "montage/ui/component.reel",
+            "properties": {
+                "element": {"#": "comp4"}
+            }
+        }
+    }</script>
 </head>
 <body>
     <div data-montage-id="comp1">
@@ -14,6 +50,23 @@
 
     <div data-montage-id="comp2">
         <h2 class="section">Section</h2>
+    </div>
+
+    <div data-montage-id="comp3">
+        <div data-arg="one" class="one">
+            <div data-montage-id="otherComp">
+                <div data-arg="one"></div>
+                <div data-arg="two"></div>
+            </div>
+        </div>
+        <div data-arg="two" class="two"></div>
+    </div>
+
+    <div data-montage-id="comp4">
+        <div data-montage-id="componentLess">
+            <div data-arg="one"></div>
+            <div data-arg="two"></div>
+        </div>
     </div>
 </body>
 </html>
