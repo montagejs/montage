@@ -135,6 +135,7 @@ if (spec) {
         "ui/input-range-spec",
         "ui/slider-spec",
         "ui/slot-spec",
+        "ui/substitution-spec",
         "ui/textfield-spec",
         "ui/token-field-spec"
     ];
