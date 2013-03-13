@@ -1600,7 +1600,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
                 element.innerHTML = "";
 
-                if (contents instanceof Element) {
+                if (Element.isElement(contents)) {
                     element.appendChild(contents);
                 } else if(contents != null) {
                     for (var i = 0, content; (content = contents[i]); i++) {
