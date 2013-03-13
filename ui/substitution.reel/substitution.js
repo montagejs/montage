@@ -53,9 +53,19 @@ exports.Substitution = Montage.create(Slot, /** @lends module:"montage/ui/substi
         @type {Property}
         @default {}
     */
-    switchComponents: {
+    _switchElements: {
         distinct: true,
         value: {}
+    },
+
+    addSwitchElement: {
+        value: function(key, element) {
+            if (element.parentNode) {
+                throw new Error("Can't handle elements inside the DOM.");
+            }
+
+            this._switchElements[key] = element;
+        }
     },
 
     /**
@@ -81,11 +91,32 @@ exports.Substitution = Montage.create(Slot, /** @lends module:"montage/ui/substi
                 return;
             }
 
+            if (this._switchValue) {
+                // We need to update the switchElements dictionary because
+                // the element might have changed during draw.
+                this._switchElements[this._switchValue] = this.element.children[0];
+            }
+
             this._switchValue = value;
 
-            if (this.switchComponents) {
-                this.content = this.switchComponents[this.switchValue];
+            if (this._switchElements) {
+                this.content = this._switchElements[this.switchValue];
             }
+        }
+    },
+
+    prepareForDraw: {
+        value: function() {
+            var argumentNames;
+
+            Slot.prepareForDraw.apply(this, arguments);
+
+            argumentNames = this.getDomArgumentNames();
+            for (var i = 0, name; (name = argumentNames[i]); i++) {
+                this._switchElements[name] = this.extractDomArgument(name);
+            }
+
+            this.content = this._switchElements[this.switchValue];
         }
     },
 

@@ -241,13 +241,13 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     _initDomArguments: {
         value: function() {
-            var candidates = this._element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "]"),
+            var candidates,
                 domArguments = {},
                 name,
                 node,
                 element = this.element;
 
-            domArguments["*"] = this.domContent;
+            candidates = element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "]")
 
             // Need to make sure that we filter dom args that are for nested
             // components and not for this component.
@@ -260,6 +260,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                         continue nextCandidate;
                     }
                 }
+                this._findAndDetachComponents(candidate);
+                candidate.parentNode.removeChild(candidate);
                 name = candidate.getAttribute(this.DOM_ARG_ATTRIBUTE);
                 candidate.removeAttribute(this.DOM_ARG_ATTRIBUTE);
                 domArguments[name] = candidate;
@@ -269,26 +271,85 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
+    getDomArgumentNames: {
+        value: function() {
+            return Object.keys(this._domArguments);
+        }
+    },
+
+    /**
+     * When a Dom Argument is extracted from a Component it is no longer
+     * available
+     *
+     * @param {String} name The name of the argument
+     * @returns The element
+     */
+    extractDomArgument: {
+        value: function(name) {
+            var argument;
+
+            argument = this._domArguments[name];
+            delete this._domArguments[name];
+
+            return argument;
+        }
+    },
+
     _getDomArgument: {
         value: function(element, name) {
-            return element.querySelector("*[" + this.DOM_ARG_ATTRIBUTE + "='" + name + "']");
+            var candidates,
+                node,
+                elementId,
+                serialization,
+                labels;
+
+            candidates = element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "='" + name + "']");
+
+            // Make sure that the argument we find is indeed part of element and
+            // not an argument from an inner component.
+            nextCandidate:
+            for (var i = 0, candidate; (candidate = candidates[i]); i++) {
+                node = candidate;
+                while ((node = node.parentNode) !== element) {
+                    elementId = this._template.getElementId(node);
+
+                    // Check if this node is an element of a component.
+                    // TODO: Make this operation faster
+                    if (elementId) {
+                        serialization = this._template.getSerialization();
+                        labels = serialization.getSerializationLabelsWithElements(
+                            elementId);
+
+                        if (labels.length > 0) {
+                            // This candidate is inside another component so
+                            // skip it.
+                            continue nextCandidate;
+                        }
+                    }
+                }
+                return candidate;
+            }
         }
     },
 
     getTemplateParameterArgument: {
         value: function(template, name) {
             var element,
-                range;
+                range,
+                argument;
 
             element = template.getElementById(this.getElementId());
 
             if (name === "*") {
                 range = template.document.createRange();
                 range.selectNodeContents(element);
-                return range.cloneContents();
+                argument = range.cloneContents();
             } else {
-                return this._getDomArgument(element, name).cloneNode(true);
+                argument = this._getDomArgument(element, name).cloneNode(true);
+                argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
             }
+
+            return argument;
         }
     },
 
@@ -564,6 +625,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (this.childComponents.indexOf(childComponent) == -1) {
                 this.childComponents.push(childComponent);
                 childComponent._cachedParentComponent = this;
+
+                if (childComponent.needsDraw) {
+                    childComponent._addToParentsDrawList();
+                }
             }
         }
     },
@@ -586,11 +651,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     var newParentComponent = childComponent.findParentComponent();
                     if (newParentComponent === this) {
                         parentComponent.removeChildComponent(childComponent);
-                        newParentComponent._addChildComponent(childComponent);
+                        newParentComponent.addChildComponent(childComponent);
                     }
                 }
 
-                parentComponent._addChildComponent(this);
+                parentComponent.addChildComponent(this);
             }
         }
     },
@@ -619,6 +684,12 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 childComponents.splice(ix, 1);
                 childComponent._cachedParentComponent = null;
                 childComponent._alternateParentComponent = null;
+            }
+
+            if (childComponent._addedToDrawList) {
+                childComponent._addedToDrawList = false;
+                ix = this._drawList.indexOf(childComponent);
+                this._drawList.splice(ix, 1);
             }
         }
     },
@@ -725,41 +796,52 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             components = this.childComponents;
             for (var i = 0, component; (component = components[i]); i++) {
                 component.detachFromParentComponent();
-                component.cleanupDeletedComponentTree();
             }
 
             if (value instanceof Element) {
-                findAndDetachComponents(value);
+                this._findAndDetachComponents(value, componentsToAdd);
             } else if (value) {
                 for (var i = 0; i < value.length; i++) {
-                    findAndDetachComponents(value[i]);
-                }
-            }
-
-            // find the component fringe and detach them from the component tree
-            function findAndDetachComponents(node) {
-                var component = node.component;
-
-                if (component) {
-                    component.detachFromParentComponent();
-                    componentsToAdd.push(component);
-                } else {
-                    var childNodes = node.childNodes;
-                    for (var i = 0, childNode; (childNode = childNodes[i]); i++) {
-                        findAndDetachComponents(childNode);
-                    }
+                    this._findAndDetachComponents(value[i], componentsToAdd);
                 }
             }
 
             // not sure if I can rely on _cachedParentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
             for (var i = 0, component; (component = componentsToAdd[i]); i++) {
-                this._addChildComponent(component);
+                this.addChildComponent(component);
             }
         }
     },
 
     _shouldClearDomContentOnNextDraw: {
         value: false
+    },
+
+    _findAndDetachComponents: {
+        value: function(node, components) {
+            // TODO: Check if searching the childComponents of the parent
+            //       component can make the search faster..
+            var component = node.component,
+                children;
+
+            if (!components) {
+                components = [];
+            }
+
+            if (component) {
+                component.detachFromParentComponent();
+                components.push(component);
+            } else {
+                // DocumentFragments don't have children so we default to
+                // childNodes.
+                children = node.children || node.childNodes;
+                for (var i = 0, child; (child = children[i]); i++) {
+                    this._findAndDetachComponents(child, components);
+                }
+            }
+
+            return components;
+        }
     },
 
     // Some components, like the repetition, might use their initial set of
@@ -992,6 +1074,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 if (this.hasTemplate) {
                     this._instantiateTemplate().then(function() {
                         self._isComponentExpanded = true;
+                        self.needsDraw = true;
                         deferred.resolve();
                     }, deferred.reject);
                 } else {
@@ -1439,7 +1522,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 parameter,
                 templateArguments,
                 argument,
-                validation;
+                validation,
+                contents,
+                components;
 
             templateArguments = this._domArguments;
 
@@ -1461,9 +1546,15 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 if (key === "*") {
                     range = this._element.ownerDocument.createRange();
                     range.selectNodeContents(this._element);
-                    parameter.parentNode.replaceChild(range.extractContents(), parameter);
+                    contents = range.extractContents();
                 } else {
-                    parameter.parentNode.replaceChild(argument, parameter);
+                    contents = argument;
+                }
+
+                components = this._findAndDetachComponents(contents);
+                parameter.parentNode.replaceChild(contents, parameter);
+                for (var i = 0; (component = components[i]); i++) {
+                    component.attachToParentComponent();
                 }
             }
         }
@@ -1471,7 +1562,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     _validateTemplateArguments: {
         value: function(templateArguments, templateParameters) {
-            var parameterNames = Object.keys(templateParameters);
+            var parameterNames = Object.keys(templateParameters),
+                argumentNames;
 
             if (templateArguments == null) {
                 if (parameterNames.length > 0) {
@@ -1481,12 +1573,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 }
             } else {
                 if ("*" in templateParameters) {
-                    // When the template has a star parameter it needs to
-                    // receive it as an argument and all aditional arguments are
-                    // allowed.
-                    if (!("*" in templateArguments)) {
-                        return new Error('Star argument was not given in ' +
-                        this.templateModuleId);
+                    argumentNames = Object.keys(templateArguments);
+                    if (argumentNames.length > 0) {
+                        return new Error('Arguments "' + argumentNames +
+                        '" were given to component but no named parameters ' +
+                        'are defined in ' + this.templateModuleId);
                     }
                 } else {
                     // All template parameters need to be satisfied.
@@ -1553,7 +1644,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
                 element.innerHTML = "";
 
-                if (contents instanceof Element) {
+                if (Element.isElement(contents)) {
                     element.appendChild(contents);
                 } else if(contents != null) {
                     for (var i = 0, content; (content = contents[i]); i++) {

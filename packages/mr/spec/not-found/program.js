@@ -34,7 +34,7 @@ test.print("Can't XHR a.js expected", "info");
 try {
     require("a");
 } catch (exception) {
-    console.log(exception.message);
-    test.assert(exception.message === 'Can\'t require module "a" via "program"');
+    test.print(exception.message);
+    test.assert(/Can't require module "a" via "program" because Can't XHR /.test(exception.message));
 }
 test.print('DONE', 'info');

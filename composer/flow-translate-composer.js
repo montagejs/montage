@@ -4,6 +4,8 @@ var Montage = require("montage").Montage,
     Point = require("core/geometry/point").Point,
     convertPointFromPageToNode = require("core/dom").convertPointFromPageToNode;
 
+// TODO move to ui/flow.reel/flow-translate-composer.js
+
 var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(TranslateComposer, {
 
     _scrollingMode: {
@@ -88,7 +90,8 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
                 this._pointerStartY = this._pointerY = point.y - borderTop - paddingTop;
                 this._contentOffsetX = this._startPageX - this._pointerStartX;
                 this._contentOffsetY = this._startPageY - this._pointerStartY;
-                this._computePointedElement();
+                // TODO uncomment to reenable frustrum culling
+                // this._computePointedElement();
             //}
             this._startPageX = this._pageX = x;
             this._startPageY = this._pageY = y;

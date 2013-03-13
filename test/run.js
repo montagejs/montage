@@ -105,10 +105,13 @@ if (spec) {
         "serialization/serialization-merger-spec",
 
         "ui/component-spec",
+        "ui/condition-spec",
         "ui/firstdraw-spec",
         // Broken due to changes to repetition
         // TODO "ui/repetition-spec",
+        "ui/repetition-selection-spec",
         "ui/slot-spec",
+        "ui/substitution-spec",
         "ui/text/text-spec"
     ];
     Promise.all(modules.map(require.deepLoad))

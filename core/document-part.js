@@ -38,7 +38,7 @@ var DocumentPart = Montage.create(Montage, {
         }
     },
 
-    _addChildComponent: {
+    addChildComponent: {
         value: function(childComponent) {
             this.childComponents.push(childComponent);
         }
