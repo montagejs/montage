@@ -6,12 +6,24 @@ var Montage = require("montage").Montage,
 
 // TODO move to ui/flow.reel/flow-translate-composer.js
 
+// TODO doc
+/**
+ */
 var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(TranslateComposer, {
 
     _scrollingMode: {
         value: "linear"
     },
 
+    /**
+     * One of "linear" or "drag".
+     *
+     * Bound to the eponymous property of the Flow that owns it.
+     *
+     * Drag mode is an experiment to preserve the dragged slide's
+     * position relative to the gesture pointer.  Since this feature is
+     * not yet ready, "linear" is the default.
+     */
     scrollingMode: {
         get: function () {
             return this._scrollingMode;
@@ -30,10 +42,13 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         value: [-300, 0]
     },
 
-
     /**
-        Only applicable when linear scrollingMode is selected
-    */
+     * A constant 2d vector used to transform a drag vector into a
+     * scroll vector, applicable only in the "linear"
+     * <code>scrollingMode</code>.
+     *
+     * Bound to the eponymous property of the Flow that owns it.
+     */
     linearScrollingVector: {
         get: function () {
             return this._linearScrollingVector;
@@ -43,38 +58,65 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     _startPageX: {
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     _startPageY: {
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     _pageX: {
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     _pageY: {
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     _pointerStartX: {
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     _pointerStartY: {
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     _contentOffsetX: {
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     _contentOffsetY: {
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     _start: {
         value: function(x, y) {
             //if (this._scrollingMode === "drag") {
@@ -110,6 +152,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     _analyzeMovement: {
         value: function(event) {
             var velocity = event.velocity,
@@ -131,6 +176,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     _dispatchTranslateStart: {
         value: function(x, y) {
             var translateStartEvent = document.createEvent("CustomEvent");
@@ -141,6 +189,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     _dispatchTranslateEnd: {
         value: function() {
             var translateEndEvent = document.createEvent("CustomEvent");
@@ -151,6 +202,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     _dispatchTranslate: {
         value: function() {
             var translateEvent = document.createEvent("CustomEvent");
@@ -160,6 +214,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     _move: {
         value: function(x, y) {
             var pointerDelta;
@@ -186,6 +243,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     _end: {
         value: function (event) {
             /*this.startTime = Date.now();
@@ -228,15 +288,24 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     handleMousewheel: {
         value: function () {
         }
     },
 
+    // TODO doc
+    /**
+     */
     _scroll: {
         value: 0
     },
 
+    // TODO doc
+    /**
+     */
     scroll: {
         get: function () {
             return this._scroll;
@@ -252,18 +321,30 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     minScroll: {
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     maxScroll: {
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     _flow: {
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     flow: {
         get: function () {
             return this._flow;
@@ -274,6 +355,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     _updateScroll: {
         value: function () {
             if (this._scrollingMode === "linear") {
@@ -284,6 +368,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     _updateLinearScroll: {
         value: function () {
             var ratio = 500 / this._flow._height,
@@ -297,6 +384,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     _updateDragScroll: {
         value: function () {
             var x = (this._pointerX - this._pointerStartX) * this._lineVectorX,
@@ -475,6 +565,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     frame: {
         value: function(timestamp) {
             if (this.isAnimating) {
@@ -483,6 +576,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     convertCssPixelsPropertyStringToNumber: {
         value: function (property) {
             if (typeof property === "string") {
@@ -498,12 +594,15 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
     },
 
     /**
-        Intersects a ray with origin at (0, 0, 0) and its given direction vector with
-        a parallelogram/rectangle defined by a corner vertex and two edge vectors.
-        It returns false if there is no intersection in front of the ray, or the distance
-        to the intersection as rayVector units/multiplier (a normalized rayVector will
-        return euclidean distance).
-        The code has been speed optimized by inlining cross and dot product functions.
+     * Intersects a ray with origin at (0, 0, 0) and its given direction
+     * vector with a parallelogram/rectangle defined by a corner vertex
+     * and two edge vectors.  It returns false if there is no
+     * intersection in front of the ray, or the distance to the
+     * intersection as rayVector units/multiplier (a normalized
+     * rayVector will return euclidean distance).
+     *
+     * The code has been speed optimized by inlining cross and dot
+     * product functions.
     */
     _rayRectangleIntersection: {
         value: function (rayVector, rectangleCornerVertex, rectangleVector1, rectangleVector2) {
@@ -562,10 +661,11 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
     },
 
     /**
-        Same as _rayRectangleIntersection but returns the intersection position relative to the rectangle
-        It assumes intersection was found previously with _rayRectangleIntersection
-        and so several checkings have been removed for speed reasons
-    */
+     * Same as _rayRectangleIntersection but returns the intersection
+     * position relative to the rectangle It assumes intersection was
+     * found previously with _rayRectangleIntersection and so several
+     * checkings have been removed for speed reasons
+     */
     _rayRectangleIntersectionPosition: {
         enumerable: false,
         value: function (rayVector, rectangleCornerVertex, rectangleVector1, rectangleVector2) {
@@ -585,6 +685,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     _rotateXYZ: {
         enumerable: false,
         value: function (vector, angles) {
@@ -607,16 +710,25 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     _pointerIntersectionPosition: {
         enumerable: false,
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     _closerIndex: {
         enumerable: false,
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     _computePointedElement: {
         value: function () {
             var splinePaths = this._flow._splinePaths,
@@ -697,11 +809,12 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO This test function is from a previous iteration of Flow.  I
+    // need to re-read and analyze it before removing it, as I don't
+    // remember what it is doing. - @romancortes
     /**
-        This test function is from a previous iteration of Flow.
-        I need to re-read and analyze it before removing it, as
-        I don't remember what it is doing. Roman Cortes
-    */
+     * @private
+     */
     test: {
         enumerable: false,
         value: function () {
@@ -789,46 +902,73 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO
+    /**
+     */
     _lineVectorX: {
         enumerable: false,
         value: Math.cos(Math.PI - .6) * 80
     },
 
+    // TODO
+    /**
+     */
     _lineVectorY: {
         enumerable: false,
         value: Math.sin(Math.PI - .6) * 80
     },
 
+    // TODO
+    /**
+     */
     _startX: {
         enumerable: false,
         value: 0
     },
 
+    // TODO
+    /**
+     */
     _startY: {
         enumerable: false,
         value: 0
     },
 
+    // TODO
+    /**
+     */
     _currentX: {
         enumerable: false,
         value: 0
     },
 
+    // TODO
+    /**
+     */
     _currentY: {
         enumerable: false,
         value: 0
     },
 
+    // TODO
+    /**
+     */
     _previousScrollDelta: {
         enumerable: false,
         value: 0
     },
 
+    // TODO
+    /**
+     */
     _startScroll: {
         enumerable: false,
         value: 0
     },
 
+    // TODO
+    /**
+     */
     _bezierValue: {
         enumerable: false,
         value: function (b0, b1, b2, b3, t) {
@@ -839,12 +979,12 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
     },
 
     /**
-        Computes the rotation values that would rotate the given vector
-        first around Z axis and then around Y axis, ending in the X axis.
-        These rotation values can be understood as a subset of a full
-        rotation matrix, optimized for lower memory usage and less amount
-        of computations than storing and using the full matrix.
-    */
+     * Computes the rotation values that would rotate the given vector
+     * first around Z axis and then around Y axis, ending in the X axis.
+     * These rotation values can be understood as a subset of a full
+     * rotation matrix, optimized for lower memory usage and less amount
+     * of computations than storing and using the full matrix.
+     */
     _computeRotationValuesToXAxis: {
         enumerable: false,
         value: function (vectorX, vectorY, vectorZ) {
@@ -867,15 +1007,18 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     _infinite: {
         enumerable: false,
         value: 1e100
     },
 
     /**
-        Raycasts a given sphere [x, y, z, radius] with a ray with origin
-        at (0, 0, 0) and rotationValuesToXAxis given by the ray vector.
-    */
+     * Raycasts a given sphere [x, y, z, radius] with a ray with origin
+     * at (0, 0, 0) and rotationValuesToXAxis given by the ray vector.
+     */
     _sphereIntersection: {
         enumerable: false,
         value: function (sphere, rotationValuesToXAxis) {
@@ -909,11 +1052,11 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
     },
 
     /**
-        Computes a loose bounding sphere for a given bezier tube.
-        A tube is defined by the distance_to_a_bezier_curve <= tubeRadius.
-        The bezier curve is expected to be an array with 12 values:
-        4 points in space, with interleaved x, y and z.
-    */
+     * Computes a loose bounding sphere for a given bezier tube.
+     * A tube is defined by the distance_to_a_bezier_curve <= tubeRadius.
+     * The bezier curve is expected to be an array with 12 values:
+     * 4 points in space, with interleaved x, y and z.
+     */
     _bezierTubeBoundingSphere: {
         enumerable: false,
         value: function (bezier, tubeRadius) {
@@ -990,6 +1133,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     _raycastBezierTubes: {
         enumerable: false,
         value: function (px, py, pz, ang) {
@@ -1113,11 +1259,17 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     _translateStride: {
         enumerable: false,
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     translateStride: {
         serializable: true,
         get: function () {
@@ -1129,26 +1281,41 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
         }
     },
 
+    // TODO doc
+    /**
+     */
     startStrideTime: {
         enumerable: false,
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     _scrollEnd: {
         enumerable: false,
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     _scrollStart: {
         enumerable: false,
         value: null
     },
 
+    // TODO doc
+    /**
+     */
     _hasMomentum: {
         enumerable: false,
         value: true
     },
 
+    // TODO doc
+    /**
+     */
     _animationInterval: {
         enumerable: false,
         value: function () {
