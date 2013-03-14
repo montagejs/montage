@@ -28,6 +28,9 @@ var Template = Montage.create(Montage, {
         },
         set: function(value) {
             this._objectsString = value;
+            if (this._serialization) {
+                this._serialization.initWithString(value);
+            }
             // Invalidate the deserializer cache since there's a new
             // serialization in town.
             this.__deserializer = null;
@@ -64,9 +67,19 @@ var Template = Montage.create(Montage, {
         }
     },
 
+    _serialization: {
+        value: null
+    },
     getSerialization: {
         value: function() {
-            return Serialization.create().initWithString(this.objectsString);
+            var serialiation = this._serialization;
+
+            if (!serialiation) {
+                serialiation = this._serialization = Serialization.create();
+                serialiation.initWithString(this.objectsString);
+            }
+
+            return serialiation;
         }
     },
 
@@ -773,7 +786,7 @@ var Template = Montage.create(Montage, {
                 objectsCollisionTable,
                 parameterElement,
                 argumentElement,
-                serialization = Serialization.create(),
+                serialization = this.getSerialization(),
                 argumentsSerialization,
                 result = {};
 
@@ -809,8 +822,6 @@ var Template = Montage.create(Montage, {
             for (var elementId in argumentElementsCollisionTable) {
                 argumentsSerialization.renameElementReference(elementId, argumentElementsCollisionTable[elementId]);
             }
-
-            serialization.initWithString(this.objectsString);
 
             objectsCollisionTable = serialization.mergeSerialization(
                 argumentsSerialization);
