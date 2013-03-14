@@ -41,6 +41,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Bindings = require("core/bindings").Bindings,
     Template = require("core/template").Template,
+    DocumentResources = require("core/document-resources").DocumentResources,
     Gate = require("core/gate").Gate,
     Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("component"),
@@ -1074,6 +1075,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 if (this.hasTemplate) {
                     this._instantiateTemplate().then(function() {
                         self._isComponentExpanded = true;
+                        self._addTemplateStyles();
                         self.needsDraw = true;
                         deferred.resolve();
                     }, deferred.reject);
@@ -1484,7 +1486,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 styles = resources.createStylesForDocument(_document);
 
                 for (var i = 0, style; (style = styles[i]); i++) {
-                    documentHead.insertBefore(style, documentHead.firstChild);
+                    this.rootComponent.addStylesheet(style);
                 }
             }
         }
@@ -1501,9 +1503,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
 
             this._initDomArguments();
-            if (this._template) {
-                this._addTemplateStyles();
-            }
             if (this._templateElement) {
                 this._bindTemplateParametersToArguments();
                 this._replaceElementWithTemplate();
@@ -2544,6 +2543,35 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         value: 0
     },
 
+
+    _documentResources: {
+        value: null
+    },
+    _needsStylesheetsDraw: {
+        value: false
+    },
+    _stylesheets: {
+        value: []
+    },
+    addStylesheet: {
+        value: function(style) {
+            this._stylesheets.push(style);
+            this._needsStylesheetsDraw = true;
+        }
+    },
+    drawStylesheets: {
+        value: function() {
+            var documentResources = this._documentResources,
+                stylesheets = this._stylesheets,
+                stylesheet;
+
+            while ((stylesheet = stylesheets.shift())) {
+                documentResources.addStyle(stylesheet);
+            }
+            this._needsStylesheetsDraw = false;
+        }
+    },
+
     drawTree: {
         value: function drawTree() {
             if (this.requestedAnimationFrame === null) { // 0 is a valid requestedAnimationFrame value
@@ -2552,6 +2580,18 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                 }
                 var self = this, requestAnimationFrame = this.requestAnimationFrame;
                 var _drawTree = function(timestamp) {
+                    // Before initiating a draw cycle through the components we
+                    // need to have a draw cycle just to add all the stylesheets
+                    // if any is requested to draw.
+                    // We need to do this because adding the stylesheets at the
+                    // same time the components draw won't make the styles
+                    // available at that first draw.
+                    if (self._needsStylesheetsDraw) {
+                        self.drawStylesheets();
+                        self.requestedAnimationFrame = null;
+                        self.drawTree();
+                        return;
+                    }
                     self._frameTime = (timestamp ? timestamp : Date.now());
                     if (self._clearNeedsDrawTimeOut) {
                         self._clearNeedsDrawList();
@@ -2742,6 +2782,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         set:function(value) {
             defaultEventManager.registerEventHandlerForElement(this, value);
             this._element = value;
+            this._documentResources = DocumentResources.getInstanceForDocument(value);
         }
     }
 });
