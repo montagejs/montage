@@ -31,7 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
     Component = require("montage/ui/component").Component,
-    Serializer = require("montage/core/serialization").Serializer;
+    Serializer = require("montage/core/serialization").Serializer,
+    Template = require("montage/core/template").Template;
 
 var testPage = TestPageLoader.queueTest("draw", function() {
 
@@ -121,6 +122,20 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                    var componentLayout = testPage.test.componentLayout; expect(componentLayout.leftComponent.ownerComponent).not.toBe(componentLayout);
                    expect(componentLayout.rightComponent.ownerComponent).not.toBe(componentLayout);
                 });
+
+                it("should correct the parent component's drawList of transplanted components", function() {
+                    var componentLayout = testPage.test.componentLayout,
+                        rightComponent = componentLayout.rightComponent,
+                        right = componentLayout.templateObjects.right,
+                        center = componentLayout.templateObjects.center;
+
+                    rightComponent.needsDraw = true;
+                    expect(right._drawList.length).toBe(1);
+
+                    center.domContent = right.domContent;
+                    expect(right._drawList.length).toBe(0);
+                });
+
             });
 
             describe("calling willDraw prior to drawing", function() {
@@ -156,7 +171,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     runs(function() {
                         spyOn(testPage.test.componentB, 'willDraw').andCallFake(function() {
                             testPage.test.componentB1.needsDraw = true;
-                        })
+                        });
                         spyOn(testPage.test.componentB1, 'draw').andCallThrough();
                         // trigger test
                         testPage.test.componentB.needsDraw = true;
@@ -473,16 +488,16 @@ var testPage = TestPageLoader.queueTest("draw", function() {
             });
 
             describe("the owner component property", function() {
-                var Component = testPage.window.require("montage/ui/component").Component;
-                var componentOwner = testPage.test.componentOwner;
-
-                var leaf1 = componentOwner.leaf1;
-                var leaf2 = componentOwner.leaf2;
-                var branch = componentOwner.branch;
-                var branchLeaf1 = branch.leaf1;
-                var branchLeaf2 = branch.leaf2;
-
                 it("should be the component that loaded the template", function() {
+                    var Component = testPage.window.require("montage/ui/component").Component;
+                    var componentOwner = testPage.test.componentOwner;
+
+                    var leaf1 = componentOwner.leaf1;
+                    var leaf2 = componentOwner.leaf2;
+                    var branch = componentOwner.branch;
+                    var branchLeaf1 = branch.leaf1;
+                    var branchLeaf2 = branch.leaf2;
+
                     expect(leaf1.ownerComponent).toBe(componentOwner);
                     expect(leaf2.ownerComponent).toBe(componentOwner);
                     expect(branch.ownerComponent).toBe(componentOwner);
@@ -498,8 +513,8 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 testPage.waitForDraw();
                 runs(function() {
                     expect(testPage.test.componentToBeCleaned.text._element.textContent).toBe("New Text");
-                })
-            })
+                });
+            });
 
         });
 
@@ -567,45 +582,68 @@ var testPage = TestPageLoader.queueTest("draw", function() {
 
         describe("dom arguments", function() {
             it("should have dom arguments", function() {
-                var component = testPage.test.arguments,
-                    domArguments = component._domArguments,
-                    names = Object.keys(domArguments);
+                var component = testPage.test.arguments1,
+                    names = component.getDomArgumentNames();
 
-                expect(names.length).toBe(3);
-                expect(names).toContain("*");
+                expect(names.length).toBe(2);
                 expect(names).toContain("one");
                 expect(names).toContain("two");
             });
 
             it("should have no dom arguments", function() {
                 var component = testPage.test.noArguments,
-                    domArguments = component._domArguments,
-                    names = Object.keys(domArguments);
+                    names = component.getDomArgumentNames();
 
-                expect(names.length).toBe(1);
-                expect(names).toContain("*");
+                expect(names.length).toBe(0);
             });
 
-            it("should have dom arguments with the right elements", function() {
-                var component = testPage.test.arguments,
+            it("should have the correct dom arguments", function() {
+                var component = testPage.test.arguments1,
+                    one,
+                    two;
+
+                one = component.extractDomArgument("one");
+                expect(one.className).toBe("one");
+
+                two = component.extractDomArgument("two");
+                expect(two.className).toBe("two");
+            });
+
+            it("should have dom arguments removed from the DOM", function() {
+                var component = testPage.test.arguments2,
                     domArguments = component._domArguments;
 
-                expect(domArguments.one)
-                    .toBe(component.element.querySelector(".one"));
-                expect(domArguments.two)
-                    .toBe(component.element.querySelector(".two"));
+                expect(domArguments.one.parentNode).toBe(null);
+                expect(domArguments.two.parentNode).toBe(null);
+            });
+
+            it("should remove the data argument attribute from the element", function() {
+                var component = testPage.test.arguments2,
+                    domArguments = component._domArguments;
+
+                expect(domArguments.one.hasAttribute(Component.DOM_ARG_ATTRIBUTE)).toBe(false);
+            });
+
+            it("should extract the DOM arguments from the component", function() {
+                var component = testPage.test.arguments2,
+                    one;
+
+                one = component.extractDomArgument("one");
+                expect(one).toBeDefined();
+                one = component.extractDomArgument("one");
+                expect(one).toBeUndefined();
             });
 
             it("should have dom arguments of the component only and not of nested components", function() {
                 var component = testPage.test.nestedArguments,
-                    domArguments = component._domArguments;
+                    names = component.getDomArgumentNames();
 
-                expect(Object.keys(domArguments).length).toBe(3);
+                expect(names.length).toBe(2);
             });
 
-            it("should satisfy the star parameter", function() {
+            it("should satisfy the star parameter when no arguments are given", function() {
                 var templateArguments = {
-                        "*": document.createElement("div")
+
                     },
                     templateParameters = {
                         "*": document.createElement("div")
@@ -617,7 +655,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 expect(validation).toBeUndefined();
             });
 
-            it("should fail when the star parameter is not satisfied", function() {
+            it("should fail when an argument is given and no named parameter is defined", function() {
                 var templateArguments = {
                         "right": document.createElement("div")
                     },
@@ -631,24 +669,8 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 expect(validation).toBeDefined();
             });
 
-            it("should not fail when the star parameter is satisfied and there are aditional arguments", function() {
+            it("should fail when no arguments are given and named parameters are not satisfied", function() {
                 var templateArguments = {
-                        "*": document.createElement("div"),
-                        "right": document.createElement("div")
-                    },
-                    templateParameters = {
-                        "*": document.createElement("div")
-                    },
-                    validation;
-
-                validation = Component._validateTemplateArguments(
-                    templateArguments, templateParameters);
-                expect(validation).toBeUndefined();
-            });
-
-            it("should fail when a star argument is given but named parameters are not satisfied", function() {
-                var templateArguments = {
-                        "*": document.createElement("div"),
                     },
                     templateParameters = {
                         "right": document.createElement("div")
@@ -690,11 +712,197 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 expect(validation).toBeDefined();
             });
 
-            it("should remove the data argument attribute from the element", function() {
-                var component = testPage.test.arguments,
-                    domArguments = component._domArguments;
+            it("should bind the contents to the template star parameter", function() {
+                var component = testPage.test.componentBindingStar1,
+                    parameters,
+                    center,
+                    text;
 
-                expect(domArguments.one.hasAttribute(Component.DOM_ARG_ATTRIBUTE)).toBe(false);
+                Component._bindTemplateParametersToArguments.call(component);
+
+                parameters = Template._getParameters(component._templateElement);
+                center = component.templateObjects.center;
+                text = component._templateElement.querySelector(".text");
+
+                expect(Object.keys(parameters).length).toBe(0);
+                expect(text).toBeDefined();
+                expect(center.element.children.length).toBe(3);
+            });
+
+            it("should bind the arguments to the template parameters", function() {
+                var component = testPage.test.componentBindingParams1,
+                    parameters,
+                    left,
+                    right,
+                    leftText,
+                    rightText;
+
+                Component._bindTemplateParametersToArguments.call(component);
+
+                parameters = Template._getParameters(component._templateElement);
+                left = component.templateObjects.left;
+                right = component.templateObjects.right;
+                leftText = left.element.querySelector(".leftText");
+                rightText = right.element.querySelector(".rightText");
+
+                expect(Object.keys(parameters).length).toBe(0);
+                expect(leftText).toBeDefined();
+                expect(rightText).toBeDefined();
+            });
+
+            it("should fix the component tree when binding a template star parameter", function() {
+                var component = testPage.test.componentBindingStar2,
+                    parameters,
+                    center,
+                    text;
+
+                Component._bindTemplateParametersToArguments.call(component);
+
+                parameters = Template._getParameters(component._templateElement);
+                center = component.templateObjects.center;
+                text = component._templateElement.querySelector(".text");
+
+                expect(center.childComponents.length).toBe(1);
+                expect(center.childComponents).toHave(text.component);
+
+                expect(component.childComponents.length).toBe(1);
+                expect(component.childComponents).toHave(center);
+            });
+
+            it("should fix the component tree when binding template parameters", function() {
+                var component = testPage.test.componentBindingParams2,
+                    parameters,
+                    center,
+                    text;
+
+                Component._bindTemplateParametersToArguments.call(component);
+
+                left = component.templateObjects.left;
+                right = component.templateObjects.right;
+                leftText = left.element.querySelector(".leftText");
+                rightText = right.element.querySelector(".rightText");
+
+                expect(left.childComponents.length).toBe(1);
+                expect(left.childComponents).toHave(leftText.component);
+
+                expect(right.childComponents.length).toBe(1);
+                expect(right.childComponents).toHave(rightText.component);
+            });
+
+            it("should clone the argument from the template for a named parameter", function() {
+                 var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = Template.create(),
+                    component = Component.create();
+
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var section,
+                        element,
+                        originalArgument;
+
+                    element = template.getElementById("comp1");
+                    component._template = template;
+                    component._element = element;
+                    originalArgument = element.querySelector(".section");
+
+                    section = component.getTemplateParameterArgument(template, "section");
+
+
+                    expect(section).not.toBe(originalArgument);
+                });
+            });
+
+            it("should clone the contents of the component for the star parameter", function() {
+                 var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = Template.create(),
+                    component = Component.create();
+
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var star,
+                        element,
+                        originalNodes,
+                        starNodes;
+
+                    element = template.getElementById("comp2");
+                    component._template = template;
+                    component._element = element;
+
+                    star = component.getTemplateParameterArgument(template, "*");
+
+                    originalNodes = element.childNodes;
+                    starNodes = star.childNodes;
+
+                    expect(starNodes.length).toEqual(originalNodes.length);
+                    expect(starNodes).not.toEqual(originalNodes);
+                });
+            });
+
+            it("should remove the data-arg attributes when cloning an argument for a named parameter", function() {
+                 var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = Template.create(),
+                    component = Component.create();
+
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var section,
+                        element,
+                        dataArgs;
+
+                    element = template.getElementById("comp1");
+                    component._template = template;
+                    component._element = element;
+
+                    section = component.getTemplateParameterArgument(template, "section");
+
+                    dataArgs = section.querySelectorAll("*[data-arg]");
+
+                    expect(section.hasAttribute("data-arg")).toBeFalsy();
+                    expect(dataArgs.length).toBe(0);
+                });
+            });
+
+            it("should clone the right argument and ignore arguments for nested components", function() {
+                 var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = Template.create(),
+                    component = Component.create();
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var two,
+                        element;
+
+                    element = template.getElementById("comp3");
+                    component._template = template;
+                    component._element = element;
+
+                    two = component.getTemplateParameterArgument(template, "two");
+
+                    expect(two.className).toBe("two");
+                });
+            });
+
+            it("should clone an argument even if it's inside a data-montage-id element", function() {
+                 var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = Template.create(),
+                    component = Component.create();
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var one,
+                        element;
+
+                    element = template.getElementById("comp4");
+                    component._template = template;
+                    component._element = element;
+
+                    one = component.getTemplateParameterArgument(template, "one");
+
+                    expect(one).toBeDefined();
+                });
             });
         });
     });

@@ -119,3 +119,26 @@ jasmine.Block.prototype.execute = function (onComplete) {
     }
 };
 
+beforeEach(function() {
+    this.addMatchers({
+        toHave: function(expected) {
+            var actual = this.actual,
+                notText = this.isNot ? " not" : "",
+                isArray = jasmine.isArray_(actual);
+
+            this.message = function() {
+                if (isArray) {
+                    return "Expected " + actual + " to" + notText + " have " + expected;
+                } else {
+                    return "Expected " + actual + " to be an array";
+                }
+            };
+
+            if (isArray) {
+                return actual.indexOf(expected) >= 0;
+            } else {
+                return false;
+            }
+        }
+    })
+});

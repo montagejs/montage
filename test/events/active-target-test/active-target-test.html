@@ -20,14 +20,14 @@
             },
 
             "application": {
-                "prototype": "montage/ui/application",
+                "prototype": "montage/core/application",
                 "properties": {
                     "delegate": {"@": "test"}
                 }
             },
 
             "shortcutComposer": {
-                "prototype": "montage/ui/composer/key-composer",
+                "prototype": "montage/composer/key-composer",
                 "properties": {
                     "identifier:": "shortcut",
                     "keys": "f",
@@ -76,13 +76,6 @@
                 ]
             },
 
-            "nameField": {
-                "prototype": "montage/ui/input-text.reel",
-                "properties": {
-                    "element": {"#": "nameField"}
-                }
-            },
-
             "C0": {
                 "prototype": "events/active-target-test/action-counter",
                 "properties": {
@@ -91,7 +84,7 @@
             },
 
             "C0Count": {
-                "prototype": "montage/ui/dynamic-text.reel",
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "C0Count"}
                 },
@@ -109,7 +102,7 @@
             },
 
             "C0C0Count": {
-                "prototype": "montage/ui/dynamic-text.reel",
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "C0C0Count"}
                 },
@@ -119,26 +112,23 @@
             },
 
             "C0C0B0": {
-                "prototype": "montage/ui/button.reel",
+                "prototype": "montage/ui/component",
                 "properties": {
                     "element": {"#": "C0C0B0"},
+                    "hasTemplate": false,
+                    "acceptsActiveTarget": true,
                     "label": " Enabled Button"
                 }
             },
 
             "C0C0B1": {
-                "prototype": "montage/ui/button.reel",
+                "prototype": "montage/ui/component",
                 "properties": {
                     "element": {"#": "C0C0B1"},
+                    "hasTemplate": false,
+                    "acceptsActiveTarget": true,
                     "label": " Disabled Button",
                     "enabled": false
-                }
-            },
-
-            "C0C0CB0": {
-                "prototype": "montage/ui/input-checkbox.reel",
-                "properties": {
-                    "element": {"#": "C0C0CB0"}
                 }
             },
 
@@ -150,7 +140,7 @@
             },
 
             "C0C1Count": {
-                "prototype": "montage/ui/dynamic-text.reel",
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "C0C1Count"}
                 },
@@ -160,34 +150,33 @@
             },
 
             "C0C1B0": {
-                "prototype": "montage/ui/button.reel",
+                "prototype": "montage/ui/component",
                 "properties": {
                     "element": {"#": "C0C1B0"},
+                    "hasTemplate": false,
+                    "acceptsActiveTarget": true,
                     "label": " Enabled Button"
                 }
             },
 
             "C0C1B1": {
-                "prototype": "montage/ui/button.reel",
+                "prototype": "montage/ui/component",
                 "properties": {
                     "element": {"#": "C0C1B1"},
+                    "hasTemplate": false,
+                    "acceptsActiveTarget": true,
                     "label": " Enabled Button Input"
                 }
             },
 
             "C0C1B2": {
-                "prototype": "montage/ui/button.reel",
+                "prototype": "montage/ui/component",
                 "properties": {
                     "element": {"#": "C0C1B2"},
+                    "hasTemplate": false,
+                    "acceptsActiveTarget": true,
                     "label": " Disabled Button",
                     "enabled": false
-                }
-            },
-
-            "C0C1TA0": {
-                "prototype": "montage/ui/textarea.reel",
-                "properties": {
-                    "element": {"#": "C0C1TA0"}
                 }
             },
 
@@ -195,6 +184,7 @@
                 "prototype": "events/active-target-test/action-counter",
                 "properties": {
                     "element": {"#": "C0C2"},
+                    "hasTemplate": false,
                     "acceptsActiveTarget": true,
                     "nextTarget": {"@": "C0C2Controller"}
                 }
@@ -215,7 +205,7 @@
             },
 
             "C1Count": {
-                "prototype": "montage/ui/dynamic-text.reel",
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "C1Count"}
                 },
@@ -229,26 +219,26 @@
             },
 
             "activeTargetObjectName": {
-                "prototype": "montage/ui/dynamic-text.reel",
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "activeTargetObjectName"}
                 },
                 "bindings": {
                     "value": {
-                        "<-": "@nameField.eventManager.activeTarget",
+                        "<-": "eventManager.activeTarget",
                         "converter": {"@": "targetInfoConverter"}
                     }
                 }
             },
 
             "activeTargetIdentifier": {
-                "prototype": "montage/ui/dynamic-text.reel",
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "activeTargetIdentifier"}
                 },
                 "bindings": {
                     "value": {
-                        "<-": "@nameField.eventManager.activeTarget.identifier"
+                        "<-": "eventManager.activeTarget.identifier"
                     }
                 }
             },
@@ -256,7 +246,7 @@
             "targetChainController": {
                 "prototype": "events/active-target-test/target-chain-controller",
                 "bindings": {
-                    "content": {"<-": "@nameField.eventManager.activeTarget"}
+                    "content": {"<-": "@activeTargetObjectName.eventManager.activeTarget"}
                 }
             },
 
@@ -278,7 +268,7 @@
             },
 
             "targetObjectName": {
-                "prototype": "montage/ui/dynamic-text.reel",
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "targetObjectName"}
                 },
@@ -291,7 +281,7 @@
             },
 
             "targetIdentifier": {
-                "prototype": "montage/ui/dynamic-text.reel",
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "targetIdentifier"}
                 },
@@ -359,7 +349,6 @@
 
     <section class="playground">
         <p>All of the control-like-UI components below should become activeTarget when focused</p>
-        <label>Label of a input-text component <em>Name</em><input type="text" data-montage-id="nameField"></label>
 
         <div data-montage-id="C0" class="container">
             <p>This component cannot become the activeTarget</p>

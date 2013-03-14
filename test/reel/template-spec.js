@@ -4,8 +4,8 @@ All Rights Reserved.
 </copyright> */
 var Montage = require("montage").Montage,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
-    Template = require("montage/ui/template").Template,
-    TemplateResources = require("montage/ui/template").TemplateResources,
+    Template = require("montage/core/template").Template,
+    TemplateResources = require("montage/core/template").TemplateResources,
     Component = require("montage/ui/component").Component,
     Promise = require("montage/q"),
     objects = require("serialization/testobjects-v2").objects;
@@ -51,7 +51,7 @@ describe("reel/template-spec", function() {
             var html = require("reel/template/simple-template.html").content,
                 expectedObjects = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "text"},
                             "value": "Hello, World!"
@@ -78,7 +78,7 @@ describe("reel/template-spec", function() {
                 htmlDocument = document.implementation.createHTMLDocument(""),
                 expectedObjects = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "text"},
                             "value": "Hello, World!"
@@ -108,7 +108,7 @@ describe("reel/template-spec", function() {
                 objects,
                 expectedObjects = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "text"},
                             "value": "Hello, World!"
@@ -134,7 +134,7 @@ describe("reel/template-spec", function() {
             var moduleId = "reel/template/simple-template.html",
                 expectedObjects = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "text"},
                             "value": "Hello, World!"
@@ -251,7 +251,7 @@ describe("reel/template-spec", function() {
             var html = require("reel/template/simple-template.html").content,
                 expectedObjects = {
                     "text": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "text"},
                             "value": "Hello, World!"
@@ -740,7 +740,7 @@ describe("reel/template-spec", function() {
             var moduleId = "reel/template/sub-template.html",
                 expectedObjects = {
                     "item": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "item"}
                         }
@@ -767,7 +767,7 @@ describe("reel/template-spec", function() {
             var moduleId = "reel/template/sub-template.html",
                 expectedObjects = {
                     "row": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "row"}
                         }
@@ -781,7 +781,7 @@ describe("reel/template-spec", function() {
                     },
 
                     "column": {
-                        "prototype": "montage/ui/dynamic-text.reel",
+                        "prototype": "montage/ui/text.reel",
                         "properties": {
                             "element": {"#": "column"}
                         }
@@ -807,7 +807,7 @@ describe("reel/template-spec", function() {
 
     describe("document (live) templates", function() {
         it("should instantiate in a live page", function() {
-            var module = require("montage/ui/template");
+            var module = require("montage/core/template");
 
             return createPage("reel/template/simple-template.html")
             .then(function(page) {

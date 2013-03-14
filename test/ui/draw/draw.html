@@ -59,9 +59,20 @@ POSSIBILITY OF SUCH DAMAGE.
             "componentParent": {"@": "componentParent"},
             "componentWithDelegate": {"@": "componentWithDelegate"},
             "componentList": {"@": "componentList"},
-            "arguments": {"@": "arguments"},
+            "arguments1": {"@": "arguments1"},
+            "arguments2": {"@": "arguments2"},
             "noArguments": {"@": "noArguments"},
             "nestedArguments": {"@": "nestedArguments"},
+            "componentBindingStar1": {"@": "componentBindingStar1"},
+            "componentBindingStarText1": {"@": "componentBindingStarText1"},
+            "componentBindingStar2": {"@": "componentBindingStar2"},
+            "componentBindingStarText2": {"@": "componentBindingStarText2"},
+            "componentBindingParams1": {"@": "componentBindingParams1"},
+            "componentBindingParamsLeft1": {"@": "componentBindingParamsLeft1"},
+            "componentBindingParamsRight1": {"@": "componentBindingParamsRight1"},
+            "componentBindingParams2": {"@": "componentBindingParams2"},
+            "componentBindingParamsLeft2": {"@": "componentBindingParamsLeft2"},
+            "componentBindingParamsRight2": {"@": "componentBindingParamsRight2"},
             "templateObjects": {"@": "templateObjects"}
         }
     },
@@ -137,12 +148,14 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "componentWithoutIdentifier": {
-        "prototype": "montage/ui/component"
+        "prototype": "montage/ui/component",
+        "hasTemplate": false
     },
     "componentWithIdentifier": {
         "prototype": "montage/ui/component",
         "properties": {
-            "identifier": "anIdentifier"
+            "identifier": "anIdentifier",
+            "hasTemplate": false
         }
     },
     "componentOwner": {
@@ -184,7 +197,7 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "text1": {
-        "prototype": "montage/ui/dynamic-text.reel",
+        "prototype": "montage/ui/text.reel",
         "properties": {
             "element": {"#": "text1"},
             "value": "Text"
@@ -218,34 +231,111 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "text2": {
-        "prototype": "montage/ui/dynamic-text.reel",
+        "prototype": "montage/ui/text.reel",
         "properties": {
             "element": {"#": "text2"},
             "value": "Text 2"
         }
     },
-    "arguments": {
-        "prototype": "montage/ui/dynamic-element.reel",
+    "arguments1": {
+        "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "arguments"}
+            "element": {"#": "arguments1"},
+            "hasTemplate": false
+        }
+    },
+    "arguments2": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "arguments2"},
+            "hasTemplate": false
         }
     },
     "noArguments": {
-        "prototype": "montage/ui/dynamic-element.reel",
+        "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "noArguments"}
+            "element": {"#": "noArguments"},
+            "hasTemplate": false
         }
     },
     "nestedArguments": {
-        "prototype": "montage/ui/dynamic-element.reel",
+        "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "nestedArguments"}
+            "element": {"#": "nestedArguments"},
+            "hasTemplate": false
         }
     },
     "nestedArgumentsComponent": {
-        "prototype": "montage/ui/dynamic-element.reel",
+        "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "nestedArgumentsComponent"}
+            "element": {"#": "nestedArgumentsComponent"},
+            "hasTemplate": false
+        }
+    },
+    "componentBindingStar1": {
+        "prototype": "ui/draw/component-binding-star.reel",
+        "properties": {
+            "element": {"#": "componentBindingStar1"}
+        }
+    },
+    "componentBindingStarText1": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "componentBindingStarText1"},
+            "hasTemplate": false
+        }
+    },
+    "componentBindingStar2": {
+        "prototype": "ui/draw/component-binding-star.reel",
+        "properties": {
+            "element": {"#": "componentBindingStar2"}
+        }
+    },
+    "componentBindingStarText2": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "componentBindingStarText2"},
+            "hasTemplate": false
+        }
+    },
+    "componentBindingParams1": {
+        "prototype": "ui/draw/component-binding-params.reel",
+        "properties": {
+            "element": {"#": "componentBindingParams1"}
+        }
+    },
+    "componentBindingParamsLeft1": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "componentBindingParamsLeft1"},
+                        "hasTemplate": false
+        }
+    },
+    "componentBindingParamsRight1": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "componentBindingParamsRight1"},
+            "hasTemplate": false
+        }
+    },
+    "componentBindingParams2": {
+        "prototype": "ui/draw/component-binding-params.reel",
+        "properties": {
+            "element": {"#": "componentBindingParams2"}
+        }
+    },
+    "componentBindingParamsLeft2": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "componentBindingParamsLeft2"},
+            "hasTemplate": false
+        }
+    },
+    "componentBindingParamsRight2": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "componentBindingParamsRight2"},
+            "hasTemplate": false
         }
     },
     "templateObjects": {
@@ -255,7 +345,7 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "owner": {
-        "prototype": "montage/ui/application",
+        "prototype": "montage/core/application",
         "properties": {
             "delegate": {"@": "draw1"}
         }
@@ -307,7 +397,12 @@ POSSIBILITY OF SUCH DAMAGE.
     <span data-montage-id="text2"></span>
 </div>
 
-<div data-montage-id="arguments">
+<div data-montage-id="arguments1">
+    <span data-arg="one" class="one"></span>
+    <span data-arg="two" class="two"></span>
+</div>
+
+<div data-montage-id="arguments2">
     <span data-arg="one" class="one"></span>
     <span data-arg="two" class="two"></span>
 </div>
@@ -323,6 +418,44 @@ POSSIBILITY OF SUCH DAMAGE.
     <div data-montage-id="nestedArgumentsComponent">
         <span data-arg="three" class="three"></span>
         <span data-arg="four" class="four"></span>
+    </div>
+</div>
+
+<div data-montage-id="componentBindingStar1">
+    <h1></h1>
+    <span data-montage-id="componentBindingStarText1" class="text"></span>
+    <h1></h1>
+</div>
+
+<div data-montage-id="componentBindingStar2">
+    <span data-montage-id="componentBindingStarText2" class="text"></span>
+</div>
+
+<div data-montage-id="componentBindingParams1">
+    <div data-arg="left">
+        <h1></h1>
+        <span data-montage-id="componentBindingParamsLeft1" class="leftText"></span>
+        <h1></h1>
+    </div>
+
+    <div data-arg="right">
+        <h1></h1>
+        <span data-montage-id="componentBindingParamsRight1" class="rightText"></span>
+        <h1></h1>
+    </div>
+</div>
+
+<div data-montage-id="componentBindingParams2">
+    <div data-arg="left">
+        <h1></h1>
+        <span data-montage-id="componentBindingParamsLeft2" class="leftText"></span>
+        <h1></h1>
+    </div>
+
+    <div data-arg="right">
+        <h1></h1>
+        <span data-montage-id="componentBindingParamsRight2" class="rightText"></span>
+        <h1></h1>
     </div>
 </div>
 

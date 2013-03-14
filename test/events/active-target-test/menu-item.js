@@ -1,14 +1,30 @@
 var Montage = require("montage").Montage,
-    Button = require("montage/ui/button.reel").Button;
+    Component = require("montage/ui/component").Component;
 
-exports.MenuItem = Montage.create(Button, {
+exports.MenuItem = Montage.create(Component, {
 
     hasTemplate: {
         value: false
     },
 
+    acceptsActiveTarget: {
+        value: true
+    },
+
     menu: {
         value: null
+    },
+
+    prepareForActivationEvents: {
+        value: function() {
+            this.element.addEventListener("mouseup", this);
+        }
+    },
+
+    handleMouseup: {
+        value: function () {
+            this.dispatchEventNamed("action", true, true);
+        }
     },
 
     willBecomeActiveTarget: {

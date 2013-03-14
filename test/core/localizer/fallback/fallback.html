@@ -11,7 +11,7 @@
         },
 
         "missingKey": {
-            "prototype": "montage/ui/dynamic-text.reel",
+            "prototype": "montage/ui/text.reel",
             "properties": {
                 "element": {"#": "missingKey"},
                 "value": "Pass"
@@ -24,7 +24,7 @@
         },
 
         "basic": {
-            "prototype": "montage/ui/dynamic-text.reel",
+            "prototype": "montage/ui/text.reel",
             "properties": {
                 "element": {"#": "basic"}
             },
@@ -37,7 +37,7 @@
         },
 
         "resources": {
-            "prototype": "montage/ui/dynamic-text.reel",
+            "prototype": "montage/ui/text.reel",
             "properties": {
                 "element": {"#": "resources"}
             },
@@ -50,14 +50,14 @@
         },
 
         "bindingInput": {
-            "prototype": "montage/ui/input-text.reel",
+            "prototype": "montage/ui/text.reel",
             "properties": {
                 "element": {"#": "bindingInput"},
                 "value": "World"
             }
         },
         "binding": {
-            "prototype": "montage/ui/dynamic-text.reel",
+            "prototype": "montage/ui/text.reel",
             "properties": {
                 "element": {"#": "binding"},
                 "defaultValue": "fail"
@@ -74,13 +74,13 @@
         },
 
         "twoProperties": {
-            "prototype": "montage/ui/toggle-button.reel",
+            "prototype": "double.reel",
             "properties": {
                 "element": {"#": "twoProperties"}
             },
             "localizations": {
-                "pressedLabel": {"key": "on", "default": "On"},
-                "unpressedLabel": {"key": "off", "default": "Off"}
+                "value": {"key": "on", "default": "On"},
+                "secondValue": {"key": "off", "default": "Off"}
             }
         },
 
@@ -107,7 +107,7 @@
         },
 
         "repeatedMessageText": {
-            "prototype": "montage/ui/dynamic-text.reel",
+            "prototype": "montage/ui/text.reel",
             "properties": {
                 "element": {"#": "repeatedMessageText"}
             },
@@ -134,7 +134,7 @@
             }
         },
         "application": {
-            "prototype": "montage/ui/application",
+            "prototype": "montage/core/application",
             "properties": {
                 "delegate": {"@": "test"}
             }

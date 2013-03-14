@@ -500,7 +500,7 @@ if (typeof window !== "undefined") {
             function bootRequire(id) {
                 if (!bootModules[id] && definitions[id]) {
                     var exports = bootModules[id] = {};
-                    definitions[id](bootRequire, exports);
+                    bootModules[id] = definitions[id](bootRequire, exports) || exports;
                 }
                 return bootModules[id];
             }
@@ -556,7 +556,7 @@ if (typeof window !== "undefined") {
                     applicationLocation = MontageReviver.parseObjectLocationId(appProto);
                     appModulePromise = applicationRequire.async(applicationLocation.moduleId);
                 } else {
-                    appModulePromise = montageRequire.async("ui/application");
+                    appModulePromise = montageRequire.async("core/application");
                 }
 
                 return appModulePromise.then(function(exports) {

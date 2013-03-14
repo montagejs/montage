@@ -15,70 +15,6 @@ var GenericCollection = require("collections/generic-collection");
 // "selections" collection and the "selected" property of each iteration are in
 // sync.
 
-/**
- * A <code>RangeController.Iteration</code> is one of the iterations from a
- * <code>RangeController</code> corresponding to a single, visible entry from
- * its content.  The only service of an iteration controller is a bidirectional
- * binding for whether the iteration is selected or not.
- */
-var RangeControllerIteration = exports.RangeControllerIteration = Montage.create(Montage, {
-
-    /**
-     * @private
-     */
-    didCreate: {
-        value: function () {
-            this.object = null;
-            this.controller = null;
-            this.defineBinding("selected", {"<->": "controller._selection.has(object)"});
-            // TODO remove this migration shim
-            this.defineBinding("content", {"<->": "object"});
-        }
-    },
-
-    /**
-     * The <code>RangeController</code> uses this method to associate an
-     * iteration with its owner and corresponding content.
-     * @param content A value to associate this iteration with from one of  the
-     * range controller's content.
-     * @param controller The corresponding range controller
-     */
-    initWithContentAndController: {
-        value: function (content, controller) {
-            this.content = content;
-            this.controller = controller;
-            return this;
-        }
-    },
-
-    /**
-     * The associated content for this iteration.
-     * @deprecated Use <code>content</code>
-     */
-    // TODO remove this deprecated property
-    object: {value: null},
-
-    /**
-     * The associated content for this iteration.
-     */
-    content: {value: null},
-
-    /**
-     * The range controller that owns this iteration.
-     */
-    controller: {value: null},
-
-    /**
-     * Whether the content at this iteration is selected.  This is
-     * bidirectionally bound, so changes to the range controller's selection
-     * will automatically update this property, and changes to this property
-     * will automatically add or remove the corresponding content to or from
-     * the range controller's selection.
-     */
-    selected: {value: null}
-
-});
-
 // The controller can determine which content to display and the order in which
 // to render them in a variety of ways.  You can either use a "selector" to
 // filter and sort the content or use a "visibleIndexes" array.  The controller
@@ -119,8 +55,9 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
 
             this.content = null;
             this._selection = [];
+            this.selection = [];
             this.defineBinding("_selection.rangeContent()", {
-                "<->": "selection"
+                "<->": "selection.rangeContent()"
             });
 
             this.sortPath = null;
@@ -242,6 +179,7 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
      * Off by default.
      */
     selectAddedContent: {value: false},
+    // TODO make this work
 
     /**
      * Whether to automatically deselect content that disappears from the
@@ -527,10 +465,9 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
                 // a plan interference hazard inherent to the present
                 // implementation of collection event dispatch.
                 if (self.avoidsEmptySelection && length === 0) {
-                    self.select(minus.one());
+                    self.select(minus[minus.length - 1]);
                 } else if (!self.multiSelect && length > 1) {
-                    self._selection.clear();
-                    self.select(plus.one());
+                    self._selection.splice(0, self._selection.length, plus[plus.length - 1]);
                 }
             });
         }
@@ -550,9 +487,6 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
                 diff.deleteEach(plus);
                 this._selection.deleteEach(minus);
             }
-            this.iterations.swap(index, minus.length, plus.map(function (object) {
-                return this.Iteration.create().initWithContentAndController(object, this);
-            }, this));
         }
     },
 
@@ -588,13 +522,6 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
             }
         }
     },
-
-    /**
-     * The <code>RangeControllerIteration</code>, overridable by inheritors.
-     */
-    Iteration: {
-        value: RangeControllerIteration
-    }
 
 });
 
