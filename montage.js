@@ -87,15 +87,17 @@ if (typeof window !== "undefined") {
             var config = platform.getConfig();
 
             var montageLocation = URL.resolve(Require.getLocation(), params.montageLocation);
-            var location = URL.resolve(config.location, params["package"] || ".");
+            var location = URL.resolve(config.location, params.package || ".");
 
             // setup the reel loader
             config.makeLoader = function (config) {
-                config.mappings.__stage = {
-                      location: location,
-                      name: "stage",
-                      version: "*"
-                  };
+                if ("remoteTrigger" in params) {
+                    config.mappings.__stage = {
+                        location: location,
+                        name: "stage",
+                        version: "*"
+                    };
+                }
                 return exports.ReelLoader(
                     config,
                     Require.makeLoader(config)
@@ -194,25 +196,24 @@ if (typeof window !== "undefined") {
                 // allows the bootstrapping to be remote controlled by the
                 // parent window, with a dynamically generated package
                 // description
-                var trigger = Promise.defer();
+                var trigger;
                 if ("remoteTrigger" in params) {
+                    trigger = Promise.defer();
 
-                    //TODO where to post the message, the window being loaded? somewhere else?
-                    var remoteInjector = window;
-
-                    window.addEventListener("message", function (event) {
+                    var messageCallback = function (event) {
                         if (params.remoteTrigger == event.origin) {
-	                        if (event.source === remoteInjector && event.data.type === "montageInit") {
-	                            trigger.resolve(event.data.location);
-	                        }
+                            if ((event.source === window || event.source === window.parent) && event.data.type === "montageInit") {
+                                trigger.resolve(event.data.location);
+                                window.removeEventListener("message", messageCallback );
+                            }
                         }
-                    });
 
-                    remoteInjector.postMessage({
+                    }
+                    window.addEventListener("message", messageCallback );
+
+                    window.postMessage({
                         type: "montageReady"
                     }, "*");
-                } else {
-                    trigger.resolve(location);
                 }
 
                 if ("autoPackage" in params) {
@@ -223,7 +224,7 @@ if (typeof window !== "undefined") {
                     });
                 }
 
-                return trigger.promise.then(function (location) {
+                var loadAtLocation = function (location) {
                     // handle explicit package.json location
                     if (location.slice(location.length - 5) === ".json") {
                         var packageDescriptionLocation = location;
@@ -244,7 +245,8 @@ if (typeof window !== "undefined") {
                         global.montageRequire = montageRequire;
                         platform.initMontage(montageRequire, applicationRequire, params);
                     });
-                });
+                };
+                return trigger ? trigger.promise.then(loadAtLocation) : loadAtLocation(location);
             })
             .done();
 
