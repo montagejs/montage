@@ -16,25 +16,25 @@ exports.SelectionTest = Montage.create(Montage, {
         }
     },
 
-    handleClearSelectionButtonAction: {
+    handleClearSelectionButtonPress: {
         value: function (evt) {
             this.clearSelection();
         }
     },
 
-    handleSelectIndex0ButtonAction: {
+    handleSelectIndex0ButtonPress: {
         value: function (evt) {
             this.selectIndex(0);
         }
     },
 
-    handleSelectIndex2ButtonAction: {
+    handleSelectIndex2ButtonPress: {
         value: function (evt) {
             this.selectIndex(2);
         }
     },
 
-    handleSelectIndex4ButtonAction: {
+    handleSelectIndex4ButtonPress: {
         value: function (evt) {
             this.selectIndex(4);
         }

@@ -32,7 +32,7 @@ var Montage = require("montage").Montage,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
     Component = require("montage/ui/component").Component,
     Serializer = require("montage/core/serialization").Serializer,
-    Template = require("montage/ui/template").Template;
+    Template = require("montage/core/template").Template;
 
 var testPage = TestPageLoader.queueTest("draw", function() {
 
