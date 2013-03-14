@@ -524,8 +524,30 @@ var testPage = TestPageLoader.queueTest("draw", function() {
             expect(testPage.test.text1.element).toBe(oldElement);
         });
 
-        it("should have templateObjects object", function() {
-            expect(testPage.test.componentOwner.templateObjects).not.toBeNull();
+        describe("template objects", function() {
+            var component = testPage.test.templateObjects;
+
+            it("should have templateObjects object", function() {
+                expect(component.templateObjects).not.toBeNull();
+            });
+
+            it("should have templateObjects ready at templateDidLoad", function() {
+                expect(component.templateObjectsPresent).toBeTruthy();
+            });
+
+            it("should have a reference to owner", function() {
+                expect(component.templateObjects.owner).toBe(component);
+            });
+
+            it("should have a reference to an object", function() {
+                expect(component.templateObjects.object).toEqual({});
+            });
+
+            it("should have a reference to a component", function() {
+                var text = component.element.querySelector(".text").component;
+
+                expect(component.templateObjects.text).toBe(text);
+            });
         });
 
         it("should maintain the placeholder data-montage-id and not the one from the template", function() {
@@ -538,12 +560,6 @@ var testPage = TestPageLoader.queueTest("draw", function() {
            var element = testPage.test.componentList.element;
 
            expect(element.getAttribute("id")).toBe("componentList");
-        });
-
-        it("should have templateObjects ready at templateDidLoad", function() {
-            var component = testPage.test.templateObjects;
-
-            expect(component.templateObjectsPresent).toBeTruthy();
         });
 
         describe("_makeTemplateObjectGetter", function () {

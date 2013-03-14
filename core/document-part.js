@@ -40,7 +40,9 @@ var DocumentPart = Montage.create(Montage, {
 
     addChildComponent: {
         value: function(childComponent) {
-            this.childComponents.push(childComponent);
+            if (this.childComponents.indexOf(childComponent) == -1) {
+                this.childComponents.push(childComponent);
+            }
         }
     },
 
