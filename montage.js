@@ -87,9 +87,15 @@ if (typeof window !== "undefined") {
             var config = platform.getConfig();
 
             var montageLocation = URL.resolve(Require.getLocation(), params.montageLocation);
+            var location = URL.resolve(config.location, params["package"] || ".");
 
             // setup the reel loader
             config.makeLoader = function (config) {
+                config.mappings.__stage = {
+                      location: location,
+                      name: "stage",
+                      version: "*"
+                  };
                 return exports.ReelLoader(
                     config,
                     Require.makeLoader(config)
@@ -107,7 +113,6 @@ if (typeof window !== "undefined") {
                 );
             };
 
-            var location = URL.resolve(config.location, params["package"] || ".");
             var applicationHash = params.applicationHash;
 
             if (typeof BUNDLE === "object") {
@@ -186,6 +191,30 @@ if (typeof window !== "undefined") {
                     .done();
                 };
 
+                // allows the bootstrapping to be remote controlled by the
+                // parent window, with a dynamically generated package
+                // description
+                var trigger = Promise.defer();
+                if ("remoteTrigger" in params) {
+
+                    //TODO where to post the message, the window being loaded? somewhere else?
+                    var remoteInjector = window;
+
+                    window.addEventListener("message", function (event) {
+                        if (params.remoteTrigger == event.origin) {
+	                        if (event.source === remoteInjector && event.data.type === "montageInit") {
+	                            trigger.resolve(event.data.location);
+	                        }
+                        }
+                    });
+
+                    remoteInjector.postMessage({
+                        type: "montageReady"
+                    }, "*");
+                } else {
+                    trigger.resolve(location);
+                }
+
                 if ("autoPackage" in params) {
                     montageRequire.injectPackageDescription(location, {
                         dependencies: {
@@ -194,26 +223,28 @@ if (typeof window !== "undefined") {
                     });
                 }
 
-                // handle explicit package.json location
-                if (location.slice(location.length - 5) === ".json") {
-                    var packageDescriptionLocation = location;
-                    location = URL.resolve(location, ".");
-                    montageRequire.injectPackageDescriptionLocation(
-                        location,
-                        packageDescriptionLocation
-                    );
-                }
+                return trigger.promise.then(function (location) {
+                    // handle explicit package.json location
+                    if (location.slice(location.length - 5) === ".json") {
+                        var packageDescriptionLocation = location;
+                        location = URL.resolve(location, ".");
+                        montageRequire.injectPackageDescriptionLocation(
+                            location,
+                            packageDescriptionLocation
+                        );
+                    }
 
-                return montageRequire.loadPackage({
-                    location: location,
-                    hash: applicationHash
-                })
-                .then(function (applicationRequire) {
+                    return montageRequire.loadPackage({
+                        location: location,
+                        hash: applicationHash
+                    })
+                    .then(function (applicationRequire) {
 
-                    global.require = applicationRequire;
-                    global.montageRequire = montageRequire;
-                    platform.initMontage(montageRequire, applicationRequire, params);
-                })
+                        global.require = applicationRequire;
+                        global.montageRequire = montageRequire;
+                        platform.initMontage(montageRequire, applicationRequire, params);
+                    });
+                });
             })
             .done();
 
