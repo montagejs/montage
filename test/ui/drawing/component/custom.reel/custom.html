@@ -35,21 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
     <script type="text/montage-serialization">
 {
     "dynamictext1": {
-        "prototype": "montage/ui/dynamic-text.reel",
+        "prototype": "montage/ui/text.reel",
         "properties": {
             "element": {"#": "dynamictext"},
             "value": "Custom Test Value"
-        }
-    },
-    "button1": {
-        "prototype": "montage/ui/bluemoon/button.reel",
-        "properties": {
-            "element": {"#": "montage-button"},
-            "behavior": "toggle",
-            "value": "Button",
-            "valueActive": "Button Active!",
-            "pressedValue": "Button Pressed",
-            "pressedValueActive": "Button Pressed Active"
         }
     },
     "owner": {
@@ -64,7 +53,6 @@ POSSIBILITY OF SUCH DAMAGE.
 </head>
 <body>
 <div data-montage-id="custom">
-    <div class="text" data-montage-id="montage-button"></div>
     <div data-montage-id="dynamictext" class="dynamictext"></div>
 </div>
 </body>

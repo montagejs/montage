@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<!--
+ fast/dom/Window/webkitConvertPoint.html
+-->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>DOM Test</title>
+    <script src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">{
+        "application": {
+            "prototype": "montage/core/application",
+            "properties": {
+                "delegate": {"@": "test"}
+            }
+        },
+        "test": {
+            "prototype": "core/dom/test",
+            "properties": {
+                "convertPoint1": {"#": "convertPoint1"},
+                "convertPoint2": {"#": "convertPoint2"},
+                "convertPoint3": {"#": "convertPoint3"},
+                "convertPoint4": {"#": "convertPoint4"},
+                "convertPoint5": {"#": "convertPoint5"},
+                "convertPoint6": {"#": "convertPoint6"},
+                "convertPoint7": {"#": "convertPoint7"},
+                "svg": {"#": "svg"},
+                "html": {"#": "text"}
+            }
+        },
+        "pageLoaded": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "text"},
+                "value": "Loaded"
+            }
+        }
+    }</script>
+    <style>
+        body {
+            font-size: 20px;
+        }
+        h1 {
+            font-size: 20px;
+        }
+
+        /*
+        Different browsers lay things out with pixel differences, so we do
+        this to normalise.
+        */
+        body > * {
+            position: absolute;
+            top: 23px;
+            left: 46px;
+        }
+
+        .border {
+            border: #000088 double thick;
+        }
+        .translate {
+            -webkit-transform: translate(10px);
+            -o-transform: translate(10px);
+            -moz-transform: translate(10px);
+            transform: translate(10px);
+        }
+        .scale_rotate {
+            -webkit-transform-origin: top left;
+            -webkit-transform: translate(10px,10px) rotate(66deg) scale(0.3);
+            -o-transform-origin: top left;
+            -o-transform: translate(10px,10px) rotate(66deg) scale(0.3);
+            -moz-transform-origin: top left;
+            -moz-transform: translate(10px,10px) rotate(66deg) scale(0.3);
+            transform-origin: top left;
+            transform: translate(10px,10px) rotate(66deg) scale(0.3);
+        }
+    </style>
+</head>
+<body>
+    <h1 data-montage-id="convertPoint1">Lorem Ipsum</h1>
+    <p data-montage-id="convertPoint2">Lorem Ipsum</p>
+    <p data-montage-id="convertPoint3">Lorem Ipsum <a>dolor sit amet</a></p>
+    <p data-montage-id="convertPoint4">Lorem Ipsum <a class="border">dolor sit amet</a></p>
+    <p class="translate">Lorem Ipsum <a data-montage-id="convertPoint5" class="border">dolor sit amet</a></p>
+    <p class="translate">Lorem Ipsum <a data-montage-id="convertPoint6" class="border">dolor sit amet,<br>consectetur</a></p>
+    <p class="scale_rotate">Lorem Ipsum <a class="border">dolor sit amet,<br><span data-montage-id="convertPoint7">consectetur</span></a></p>
+
+    <span data-montage-id="text" class="classOne"></span>
+    <svg data-montage-id="svg" class="classTwo" xmlns="http://www.w3.org/2000/svg" version="1.1" width="300" height="300">
+        <defs>
+            <linearGradient id="r-c9ca85a05ecd40fe8d826de7ae31fcc4" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#ffffff"></stop>
+                <stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop>
+            </linearGradient>
+            <linearGradient id="r-cc69007d7bdd47cb9ef45434dbd71709" x1="0" y1="1" x2="6.123031769111886e-17" y2="0">
+                <stop offset="0%" stop-color="#000000"></stop>
+                <stop offset="100%" stop-color="#000000" stop-opacity="0"></stop>
+            </linearGradient>
+        </defs>
+        <path fill="#ff0000" stroke="none" d="M150,3A147,147,0,0,1,156.36800661309204,3.1379950709659568L155.06841342674673,33.10983281158515A117,117,0,0,0,150,33Z" transform=""></path>
+    </svg>
+</body>
+</html>

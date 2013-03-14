@@ -5,30 +5,33 @@
     <title></title>
     <script type="text/montage-serialization">{
         "section": {
-            "prototype": "montage/ui/dynamic-text.reel",
+            "prototype": "montage/ui/text.reel",
             "properties": {
                 "element": {"#": "section"}
             }
         },
 
         "foo": {
-            "prototype": "montage/ui/dynamic-element.reel",
+            "prototype": "montage/ui/component",
             "properties": {
-                "element": {"#": "foo"}
+                "element": {"#": "foo"},
+                "hasTemplate": false
             }
         },
 
         "leftSide": {
-            "prototype": "montage/ui/dynamic-element.reel",
+            "prototype": "montage/ui/component",
             "properties": {
-                "element": {"#": "leftSide"}
+                "element": {"#": "leftSide"},
+                "hasTemplate": false
             }
         },
 
         "rightSide": {
-            "prototype": "montage/ui/dynamic-element.reel",
+            "prototype": "montage/ui/component",
             "properties": {
-                "element": {"#": "rightSide"}
+                "element": {"#": "rightSide"},
+                "hasTemplate": false
             },
             "bindings": {
                 "value": {"<-": "@leftSide.value"}

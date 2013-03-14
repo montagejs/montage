@@ -32,7 +32,7 @@ var Montage = require("montage").Montage,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
     Component = require("montage/ui/component").Component,
     Serializer = require("montage/core/serialization").Serializer,
-    Template = require("montage/ui/template").Template;
+    Template = require("montage/core/template").Template;
 
 var testPage = TestPageLoader.queueTest("draw", function() {
 
@@ -524,8 +524,30 @@ var testPage = TestPageLoader.queueTest("draw", function() {
             expect(testPage.test.text1.element).toBe(oldElement);
         });
 
-        it("should have templateObjects object", function() {
-            expect(testPage.test.componentOwner.templateObjects).not.toBeNull();
+        describe("template objects", function() {
+            var component = testPage.test.templateObjects;
+
+            it("should have templateObjects object", function() {
+                expect(component.templateObjects).not.toBeNull();
+            });
+
+            it("should have templateObjects ready at templateDidLoad", function() {
+                expect(component.templateObjectsPresent).toBeTruthy();
+            });
+
+            it("should have a reference to owner", function() {
+                expect(component.templateObjects.owner).toBe(component);
+            });
+
+            it("should have a reference to an object", function() {
+                expect(component.templateObjects.object).toEqual({});
+            });
+
+            it("should have a reference to a component", function() {
+                var text = component.element.querySelector(".text").component;
+
+                expect(component.templateObjects.text).toBe(text);
+            });
         });
 
         it("should maintain the placeholder data-montage-id and not the one from the template", function() {
@@ -538,12 +560,6 @@ var testPage = TestPageLoader.queueTest("draw", function() {
            var element = testPage.test.componentList.element;
 
            expect(element.getAttribute("id")).toBe("componentList");
-        });
-
-        it("should have templateObjects ready at templateDidLoad", function() {
-            var component = testPage.test.templateObjects;
-
-            expect(component.templateObjectsPresent).toBeTruthy();
         });
 
         describe("_makeTemplateObjectGetter", function () {
@@ -641,9 +657,9 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 expect(names.length).toBe(2);
             });
 
-            it("should satisfy the star parameter", function() {
+            it("should satisfy the star parameter when no arguments are given", function() {
                 var templateArguments = {
-                        "*": document.createElement("div")
+
                     },
                     templateParameters = {
                         "*": document.createElement("div")
@@ -655,9 +671,8 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 expect(validation).toBeUndefined();
             });
 
-            it("should not fail when the star parameter is satisfied and there are aditional arguments", function() {
+            it("should fail when an argument is given and no named parameter is defined", function() {
                 var templateArguments = {
-                        "*": document.createElement("div"),
                         "right": document.createElement("div")
                     },
                     templateParameters = {
@@ -667,7 +682,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
 
                 validation = Component._validateTemplateArguments(
                     templateArguments, templateParameters);
-                expect(validation).toBeUndefined();
+                expect(validation).toBeDefined();
             });
 
             it("should fail when no arguments are given and named parameters are not satisfied", function() {
@@ -790,6 +805,121 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 expect(right.childComponents).toHave(rightText.component);
             });
 
+            it("should clone the argument from the template for a named parameter", function() {
+                 var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = Template.create(),
+                    component = Component.create();
+
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var section,
+                        element,
+                        originalArgument;
+
+                    element = template.getElementById("comp1");
+                    component._template = template;
+                    component._element = element;
+                    originalArgument = element.querySelector(".section");
+
+                    section = component.getTemplateParameterArgument(template, "section");
+
+
+                    expect(section).not.toBe(originalArgument);
+                });
+            });
+
+            it("should clone the contents of the component for the star parameter", function() {
+                 var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = Template.create(),
+                    component = Component.create();
+
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var star,
+                        element,
+                        originalNodes,
+                        starNodes;
+
+                    element = template.getElementById("comp2");
+                    component._template = template;
+                    component._element = element;
+
+                    star = component.getTemplateParameterArgument(template, "*");
+
+                    originalNodes = element.childNodes;
+                    starNodes = star.childNodes;
+
+                    expect(starNodes.length).toEqual(originalNodes.length);
+                    expect(starNodes).not.toEqual(originalNodes);
+                });
+            });
+
+            it("should remove the data-arg attributes when cloning an argument for a named parameter", function() {
+                 var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = Template.create(),
+                    component = Component.create();
+
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var section,
+                        element,
+                        dataArgs;
+
+                    element = template.getElementById("comp1");
+                    component._template = template;
+                    component._element = element;
+
+                    section = component.getTemplateParameterArgument(template, "section");
+
+                    dataArgs = section.querySelectorAll("*[data-arg]");
+
+                    expect(section.hasAttribute("data-arg")).toBeFalsy();
+                    expect(dataArgs.length).toBe(0);
+                });
+            });
+
+            it("should clone the right argument and ignore arguments for nested components", function() {
+                 var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = Template.create(),
+                    component = Component.create();
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var two,
+                        element;
+
+                    element = template.getElementById("comp3");
+                    component._template = template;
+                    component._element = element;
+
+                    two = component.getTemplateParameterArgument(template, "two");
+
+                    expect(two.className).toBe("two");
+                });
+            });
+
+            it("should clone an argument even if it's inside a data-montage-id element", function() {
+                 var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = Template.create(),
+                    component = Component.create();
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var one,
+                        element;
+
+                    element = template.getElementById("comp4");
+                    component._template = template;
+                    component._element = element;
+
+                    one = component.getTemplateParameterArgument(template, "one");
+
+                    expect(one).toBeDefined();
+                });
+            });
         });
     });
 });

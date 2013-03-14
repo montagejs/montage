@@ -69,6 +69,18 @@ var Serialization = Montage.create(Montage, {
         }
     },
 
+    isExternalObject: {
+        value: function(label) {
+            var serializationObject = this.getSerializationObject();
+
+            if (label in serializationObject) {
+                return Object.keys(serializationObject[label]).length === 0;
+            } else {
+                return false;
+            }
+        }
+    },
+
     getSerializationLabelsWithElements: {
         value: function(elementIds) {
             var inspector = SerializationInspector.create(),

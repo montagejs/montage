@@ -32,7 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 /**
 	@module montage/ui/component
     @requires montage
-    @requires montage/ui/template
+    @requires montage/core/template
     @requires montage/core/gate
     @requires montage/core/logger | component
     @requires montage/core/logger | drawing
@@ -40,7 +40,8 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 var Montage = require("montage").Montage,
     Bindings = require("core/bindings").Bindings,
-    Template = require("ui/template").Template,
+    Template = require("core/template").Template,
+    DocumentResources = require("core/document-resources").DocumentResources,
     Gate = require("core/gate").Gate,
     Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("component"),
@@ -297,24 +298,59 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     _getDomArgument: {
         value: function(element, name) {
-            return element.querySelector("*[" + this.DOM_ARG_ATTRIBUTE + "='" + name + "']");
+            var candidates,
+                node,
+                elementId,
+                serialization,
+                labels;
+
+            candidates = element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "='" + name + "']");
+
+            // Make sure that the argument we find is indeed part of element and
+            // not an argument from an inner component.
+            nextCandidate:
+            for (var i = 0, candidate; (candidate = candidates[i]); i++) {
+                node = candidate;
+                while ((node = node.parentNode) !== element) {
+                    elementId = this._template.getElementId(node);
+
+                    // Check if this node is an element of a component.
+                    // TODO: Make this operation faster
+                    if (elementId) {
+                        serialization = this._template.getSerialization();
+                        labels = serialization.getSerializationLabelsWithElements(
+                            elementId);
+
+                        if (labels.length > 0) {
+                            // This candidate is inside another component so
+                            // skip it.
+                            continue nextCandidate;
+                        }
+                    }
+                }
+                return candidate;
+            }
         }
     },
 
     getTemplateParameterArgument: {
         value: function(template, name) {
             var element,
-                range;
+                range,
+                argument;
 
             element = template.getElementById(this.getElementId());
 
             if (name === "*") {
                 range = template.document.createRange();
                 range.selectNodeContents(element);
-                return range.cloneContents();
+                argument = range.cloneContents();
             } else {
-                return this._getDomArgument(element, name).cloneNode(true);
+                argument = this._getDomArgument(element, name).cloneNode(true);
+                argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
             }
+
+            return argument;
         }
     },
 
@@ -1039,6 +1075,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 if (this.hasTemplate) {
                     this._instantiateTemplate().then(function() {
                         self._isComponentExpanded = true;
+                        self._addTemplateStyles();
+                        self.needsDraw = true;
                         deferred.resolve();
                     }, deferred.reject);
                 } else {
@@ -1219,6 +1257,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 } else {
                     this.ownerComponent = this.rootComponent;
                 }
+            }
+
+            if (this._needsDrawInDeserialization) {
+                this.needsDraw = true;
             }
         }
     },
@@ -1444,7 +1486,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 styles = resources.createStylesForDocument(_document);
 
                 for (var i = 0, style; (style = styles[i]); i++) {
-                    documentHead.insertBefore(style, documentHead.firstChild);
+                    this.rootComponent.addStylesheet(style);
                 }
             }
         }
@@ -1461,20 +1503,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
 
             this._initDomArguments();
-            if (this._template) {
-                this._addTemplateStyles();
-            }
             if (this._templateElement) {
                 this._bindTemplateParametersToArguments();
                 this._replaceElementWithTemplate();
-            }
-            // This will schedule a second draw for any component that has children
-            var childComponents = this.childComponents;
-            for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
-                if (drawLogger.isDebug) {
-                    drawLogger.debug(this, "needsDraw = true for: " + childComponent._montage_metadata.exportedSymbol);
-                }
-                childComponent.needsDraw = true;
             }
         },
         enumerable: false
@@ -1526,7 +1557,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     _validateTemplateArguments: {
         value: function(templateArguments, templateParameters) {
-            var parameterNames = Object.keys(templateParameters);
+            var parameterNames = Object.keys(templateParameters),
+                argumentNames;
 
             if (templateArguments == null) {
                 if (parameterNames.length > 0) {
@@ -1535,7 +1567,14 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     parameterNames + '.');
                 }
             } else {
-                if (!("*" in templateParameters)) {
+                if ("*" in templateParameters) {
+                    argumentNames = Object.keys(templateArguments);
+                    if (argumentNames.length > 0) {
+                        return new Error('Arguments "' + argumentNames +
+                        '" were given to component but no named parameters ' +
+                        'are defined in ' + this.templateModuleId);
+                    }
+                } else {
                     // All template parameters need to be satisfied.
                     for (var param in templateParameters) {
                         if (!(param in templateArguments)) {
@@ -1681,7 +1720,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
        @private
      */
     _needsDraw: {
-        enumerable: false,
+        value: false
+    },
+
+    _needsDrawInDeserialization: {
         value: false
     },
 
@@ -1705,6 +1747,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         set: function(value) {
             if (this.isDeserializing) {
                 // Ignore needsDraw(s) which happen during deserialization
+                this._needsDrawInDeserialization = true;
                 return;
             }
             if (this._needsDraw !== value) {
@@ -2500,6 +2543,35 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         value: 0
     },
 
+
+    _documentResources: {
+        value: null
+    },
+    _needsStylesheetsDraw: {
+        value: false
+    },
+    _stylesheets: {
+        value: []
+    },
+    addStylesheet: {
+        value: function(style) {
+            this._stylesheets.push(style);
+            this._needsStylesheetsDraw = true;
+        }
+    },
+    drawStylesheets: {
+        value: function() {
+            var documentResources = this._documentResources,
+                stylesheets = this._stylesheets,
+                stylesheet;
+
+            while ((stylesheet = stylesheets.shift())) {
+                documentResources.addStyle(stylesheet);
+            }
+            this._needsStylesheetsDraw = false;
+        }
+    },
+
     drawTree: {
         value: function drawTree() {
             if (this.requestedAnimationFrame === null) { // 0 is a valid requestedAnimationFrame value
@@ -2508,6 +2580,18 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                 }
                 var self = this, requestAnimationFrame = this.requestAnimationFrame;
                 var _drawTree = function(timestamp) {
+                    // Before initiating a draw cycle through the components we
+                    // need to have a draw cycle just to add all the stylesheets
+                    // if any is requested to draw.
+                    // We need to do this because adding the stylesheets at the
+                    // same time the components draw won't make the styles
+                    // available at that first draw.
+                    if (self._needsStylesheetsDraw) {
+                        self.drawStylesheets();
+                        self.requestedAnimationFrame = null;
+                        self.drawTree();
+                        return;
+                    }
                     self._frameTime = (timestamp ? timestamp : Date.now());
                     if (self._clearNeedsDrawTimeOut) {
                         self._clearNeedsDrawList();
@@ -2698,6 +2782,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         set:function(value) {
             defaultEventManager.registerEventHandlerForElement(this, value);
             this._element = value;
+            this._documentResources = DocumentResources.getInstanceForDocument(value);
         }
     }
 });

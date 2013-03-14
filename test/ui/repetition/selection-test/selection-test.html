@@ -7,7 +7,7 @@
     <script type="text/montage-serialization">
         {
             "application": {
-                "prototype": "montage/ui/application",
+                "prototype": "montage/core/application",
                 "properties": {
                     "delegate": {"@": "test"}
                 }
@@ -39,7 +39,7 @@
             },
 
             "name": {
-                "prototype": "montage/ui/dynamic-text.reel",
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "name"}
                 },
@@ -49,7 +49,7 @@
             },
 
             "selectedName": {
-                "prototype": "montage/ui/dynamic-text.reel",
+                "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "selectedName"}
                 },
@@ -59,52 +59,52 @@
             },
 
             "clearSelectionButton": {
-                "prototype": "montage/ui/button.reel",
+                "prototype": "montage/composer/press-composer",
                 "properties": {
                     "element": {"#": "clearSelectionButton"}
                 },
                 "listeners": [
                     {
-                        "type": "action",
+                        "type": "press",
                         "listener": {"@": "test"}
                     }
                 ]
             },
 
             "selectIndex0Button": {
-                "prototype": "montage/ui/button.reel",
+                "prototype": "montage/composer/press-composer",
                 "properties": {
                     "element": {"#": "selectIndex0Button"}
                 },
                 "listeners": [
                     {
-                        "type": "action",
+                        "type": "press",
                         "listener": {"@": "test"}
                     }
                 ]
             },
 
             "selectIndex2Button": {
-                "prototype": "montage/ui/button.reel",
+                "prototype": "montage/composer/press-composer",
                 "properties": {
                     "element": {"#": "selectIndex2Button"}
                 },
                 "listeners": [
                     {
-                        "type": "action",
+                        "type": "press",
                         "listener": {"@": "test"}
                     }
                 ]
             },
 
             "selectIndex4Button": {
-                "prototype": "montage/ui/button.reel",
+                "prototype": "montage/composer/press-composer",
                 "properties": {
                     "element": {"#": "selectIndex4Button"}
                 },
                 "listeners": [
                     {
-                        "type": "action",
+                        "type": "press",
                         "listener": {"@": "test"}
                     }
                 ]

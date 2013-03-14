@@ -40,7 +40,6 @@ var testPage = TestPageLoader.queueTest("slot-test", function() {
         var slot;
 
         beforeEach(function() {
-            console.log("CLEAR!")
             slot = testPage.test.slot;
             slot.content = null;
         });
@@ -77,7 +76,7 @@ var testPage = TestPageLoader.queueTest("slot-test", function() {
                 testPage.waitForDraw();
 
                 runs(function() {
-                    console.log(content.element, originalElement)
+                    //console.log(content.element, originalElement)
                     expect(content.element).toBe(originalElement);
                 });
             });

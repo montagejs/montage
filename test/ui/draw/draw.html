@@ -148,12 +148,14 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "componentWithoutIdentifier": {
-        "prototype": "montage/ui/component"
+        "prototype": "montage/ui/component",
+        "hasTemplate": false
     },
     "componentWithIdentifier": {
         "prototype": "montage/ui/component",
         "properties": {
-            "identifier": "anIdentifier"
+            "identifier": "anIdentifier",
+            "hasTemplate": false
         }
     },
     "componentOwner": {
@@ -195,7 +197,7 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "text1": {
-        "prototype": "montage/ui/dynamic-text.reel",
+        "prototype": "montage/ui/text.reel",
         "properties": {
             "element": {"#": "text1"},
             "value": "Text"
@@ -229,40 +231,45 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "text2": {
-        "prototype": "montage/ui/dynamic-text.reel",
+        "prototype": "montage/ui/text.reel",
         "properties": {
             "element": {"#": "text2"},
             "value": "Text 2"
         }
     },
     "arguments1": {
-        "prototype": "montage/ui/dynamic-element.reel",
+        "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "arguments1"}
+            "element": {"#": "arguments1"},
+            "hasTemplate": false
         }
     },
     "arguments2": {
-        "prototype": "montage/ui/dynamic-element.reel",
+        "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "arguments2"}
+            "element": {"#": "arguments2"},
+            "hasTemplate": false
         }
     },
     "noArguments": {
-        "prototype": "montage/ui/dynamic-element.reel",
+        "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "noArguments"}
+            "element": {"#": "noArguments"},
+            "hasTemplate": false
         }
     },
     "nestedArguments": {
-        "prototype": "montage/ui/dynamic-element.reel",
+        "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "nestedArguments"}
+            "element": {"#": "nestedArguments"},
+            "hasTemplate": false
         }
     },
     "nestedArgumentsComponent": {
-        "prototype": "montage/ui/dynamic-element.reel",
+        "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "nestedArgumentsComponent"}
+            "element": {"#": "nestedArgumentsComponent"},
+            "hasTemplate": false
         }
     },
     "componentBindingStar1": {
@@ -272,9 +279,10 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "componentBindingStarText1": {
-        "prototype": "montage/ui/dynamic-element.reel",
+        "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "componentBindingStarText1"}
+            "element": {"#": "componentBindingStarText1"},
+            "hasTemplate": false
         }
     },
     "componentBindingStar2": {
@@ -284,9 +292,10 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "componentBindingStarText2": {
-        "prototype": "montage/ui/dynamic-element.reel",
+        "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "componentBindingStarText2"}
+            "element": {"#": "componentBindingStarText2"},
+            "hasTemplate": false
         }
     },
     "componentBindingParams1": {
@@ -296,15 +305,17 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "componentBindingParamsLeft1": {
-        "prototype": "montage/ui/dynamic-element.reel",
+        "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "componentBindingParamsLeft1"}
+            "element": {"#": "componentBindingParamsLeft1"},
+                        "hasTemplate": false
         }
     },
     "componentBindingParamsRight1": {
-        "prototype": "montage/ui/dynamic-element.reel",
+        "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "componentBindingParamsRight1"}
+            "element": {"#": "componentBindingParamsRight1"},
+            "hasTemplate": false
         }
     },
     "componentBindingParams2": {
@@ -314,15 +325,17 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "componentBindingParamsLeft2": {
-        "prototype": "montage/ui/dynamic-element.reel",
+        "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "componentBindingParamsLeft2"}
+            "element": {"#": "componentBindingParamsLeft2"},
+            "hasTemplate": false
         }
     },
     "componentBindingParamsRight2": {
-        "prototype": "montage/ui/dynamic-element.reel",
+        "prototype": "montage/ui/component",
         "properties": {
-            "element": {"#": "componentBindingParamsRight2"}
+            "element": {"#": "componentBindingParamsRight2"},
+            "hasTemplate": false
         }
     },
     "templateObjects": {
@@ -332,7 +345,7 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "owner": {
-        "prototype": "montage/ui/application",
+        "prototype": "montage/core/application",
         "properties": {
             "delegate": {"@": "draw1"}
         }

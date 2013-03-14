@@ -7,13 +7,13 @@ var ComponentBlueprintTest1 = exports.ComponentBlueprintTest1 = Montage.create(C
 
     templateDidLoad: {
         value: function() {
-            console.log("Component Blueprint Test 1 template did load");
+            //console.log("Component Blueprint Test 1 template did load");
         }
     },
 
     deserializedFromTemplate: {
         value: function() {
-            console.log("Component Blueprint Test 1 deserialized from template");
+            //console.log("Component Blueprint Test 1 deserialized from template");
         }
     }
 

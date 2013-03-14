@@ -46,6 +46,7 @@ if (spec) {
 } else {
     var modules = [
         // Please keep in alphabetical order
+        "application-spec",
         "bitfield-spec",
         "claimed-pointer-spec",
         "converter-spec",
@@ -65,7 +66,12 @@ if (spec) {
         "bindings/converter-spec",
         "bindings/self-spec",
 
+        "composer/composer-spec",
+        "composer/press-composer-spec",
+        "composer/translate-composer-spec",
+
         "core/core-spec",
+        "core/dom-spec",
         "core/localizer-spec",
         "core/localizer/serialization-spec",
         "core/selector-spec",
@@ -76,11 +82,6 @@ if (spec) {
         "core/extras/function",
         "core/extras/string",
 
-        "data/blueprint-spec",
-        "data/store-spec",
-        "data/context-spec",
-        "data/transactionmanager-spec",
-
         "events/eventmanager-spec",
         "events/mutable-event-spec",
         "events/object-hierarchy-spec",
@@ -89,7 +90,6 @@ if (spec) {
         "geometry/point-spec",
 
         "meta/blueprint-spec",
-        "meta/button-blueprint-spec",
         "meta/component-blueprint-spec",
         "meta/controller-blueprint-spec",
 
@@ -104,40 +104,15 @@ if (spec) {
         "serialization/serialization-inspector-spec",
         "serialization/serialization-merger-spec",
 
-        "ui/application-spec",
-        "ui/anchor-spec",
-        // Uses old controller: - @kriskowal
-        // TODO "ui/autocomplete-spec",
-        "ui/button-spec",
-        "ui/check-spec",
-        "ui/condition-spec",
         "ui/component-spec",
-        "ui/composer-spec",
-        "ui/composer/press-composer-spec",
-        "ui/composer/translate-composer-spec",
-        "ui/dom-spec",
-        "ui/dynamic-element-spec",
-        "ui/dynamic-text-spec",
+        "ui/condition-spec",
         "ui/firstdraw-spec",
-        "ui/text-slider-spec",
-        "ui/scroller-spec",
-        "ui/list-spec",
-        "ui/native-control-spec",
-        "ui/number-input-spec",
-        "ui/popup-spec",
-        "ui/popup-in-window-spec",
         // Broken due to changes to repetition
         // TODO "ui/repetition-spec",
         "ui/repetition-selection-spec",
-        "ui/rich-text-editor-spec",
-        "ui/select-input-spec",
-        "ui/native-input-range-spec",
-        "ui/input-range-spec",
-        "ui/slider-spec",
         "ui/slot-spec",
         "ui/substitution-spec",
-        "ui/textfield-spec",
-        "ui/token-field-spec"
+        "ui/text/text-spec"
     ];
     Promise.all(modules.map(require.deepLoad))
     .then(function () {
