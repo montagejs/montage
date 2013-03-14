@@ -333,34 +333,6 @@ var Template = Montage.create(Montage, {
         }
     },
 
-    /**
-     * Receives two objects with labels as property names and returns an array
-     * with labels that existed in the first object but not on the second one.
-     *
-     * @function
-     * @param {Object} objects The objects of the deserialization.
-     * @param {Object} instances The instances given by the user.
-     * @returns {Array} The array with the labels that were filtered.
-     */
-    _filterObjectLabels: {
-        value: function(objects, instances) {
-            var labels;
-
-            if (instances) {
-                labels = [];
-                for (var label in objects) {
-                    if (!(label in instances)) {
-                        labels.push(label);
-                    }
-                }
-            } else {
-                labels = Object.keys(objects);
-            }
-
-            return labels;
-        }
-    },
-
     _instantiateObjects: {
         value: function(instances, fragment) {
             return this._deserializer.deserialize(instances, fragment);
@@ -434,15 +406,15 @@ var Template = Montage.create(Montage, {
         value: function(documentPart, instances) {
             var objects = documentPart.objects,
                 object,
-                labels,
                 owner = objects.owner;
 
-            // array with the object labels that were created during the
-            // deserialization and not passed in the instances object, only
-            // those will have deserializedFromTemplate called.
-            labels = this._filterObjectLabels(objects, instances);
+            for (var label in objects) {
+                // Don't call delegate methods on objects that were passed to
+                // the instantiation.
+                if (instances && label in instances) {
+                    continue;
+                }
 
-            for (var i = 0, label; (label = labels[i]); i++) {
                 object = objects[label];
 
                 if (object) {
@@ -456,11 +428,16 @@ var Template = Montage.create(Montage, {
             }
 
             if (owner) {
-                if (typeof owner._templateDidLoad === "function") {
-                    owner._templateDidLoad(documentPart);
-                }
-                if (typeof owner.templateDidLoad === "function") {
-                    owner.templateDidLoad(documentPart);
+                var serialization = this.getSerialization();
+
+                // Don't call delegate methods on external objects
+                if (!serialization.isExternalObject("owner")) {
+                    if (typeof owner._templateDidLoad === "function") {
+                        owner._templateDidLoad(documentPart);
+                    }
+                    if (typeof owner.templateDidLoad === "function") {
+                        owner.templateDidLoad(documentPart);
+                    }
                 }
             }
         }
