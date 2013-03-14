@@ -344,4 +344,32 @@ describe("document-resources-spec", function() {
             expect("test").toBe("executed");
         });
     });
+
+    it("should not add a style file twice when requested in serial", function() {
+        var resources = DocumentResources.create(),
+            url = "resource.css";
+
+        return createPage("reel/template/page.html")
+        .then(function(page) {
+            var deferred = Promise.defer(),
+                style,
+                links;
+
+            resources.initWithDocument(page.document);
+
+            style = page.document.createElement("link");
+            style.rel = "stylesheet";
+            style.href = url;
+
+            resources.addStyle(style);
+            resources.addStyle(style);
+
+            links = page.document.head.querySelectorAll("link");
+
+            expect(links.length).toBe(1);
+        }).fail(function(reason) {
+            console.log(reason.stack);
+            expect("test").toBe("executed");
+        });
+    });
 });
