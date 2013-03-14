@@ -1256,6 +1256,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     this.ownerComponent = this.rootComponent;
                 }
             }
+
+            if (this._needsDrawInDeserialization) {
+                this.needsDraw = true;
+            }
         }
     },
 
@@ -1504,14 +1508,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 this._bindTemplateParametersToArguments();
                 this._replaceElementWithTemplate();
             }
-            // This will schedule a second draw for any component that has children
-            var childComponents = this.childComponents;
-            for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
-                if (drawLogger.isDebug) {
-                    drawLogger.debug(this, "needsDraw = true for: " + childComponent._montage_metadata.exportedSymbol);
-                }
-                childComponent.needsDraw = true;
-            }
         },
         enumerable: false
     },
@@ -1725,7 +1721,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
        @private
      */
     _needsDraw: {
-        enumerable: false,
+        value: false
+    },
+
+    _needsDrawInDeserialization: {
         value: false
     },
 
@@ -1749,6 +1748,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         set: function(value) {
             if (this.isDeserializing) {
                 // Ignore needsDraw(s) which happen during deserialization
+                this._needsDrawInDeserialization = true;
                 return;
             }
             if (this._needsDraw !== value) {
