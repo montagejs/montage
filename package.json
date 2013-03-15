@@ -35,7 +35,7 @@
     "mousse": "~0.1.0"
   },
   "devDependencies": {
-    "montage-testing": "~0.1.3",
+    "montage-testing": "0.2.0-alpha",
     "mr": "~0.12.6",
     "q": "~0.8.12",
     "q-io": "~1.3.2",
