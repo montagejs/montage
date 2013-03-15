@@ -190,6 +190,7 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
     initWithRepetition: {
         value: function (repetition) {
             this.repetition = repetition;
+            return this;
         }
     },
 
@@ -943,7 +944,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     _createIteration: {
         value: function () {
             var self = this,
-                iteration = this.Iteration.create();
+                iteration = this.Iteration.create().initWithRepetition(this);
 
             this._iterationCreationPromise = this._iterationCreationPromise
             .then(function() {
@@ -983,7 +984,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     // _createIteration.
     didCreateIteration: {
         value: function (iteration) {
-            iteration.initWithRepetition(this);
             this._createdIterations++;
 
             if (this._createdIterations >= this._requestedIterations) {
