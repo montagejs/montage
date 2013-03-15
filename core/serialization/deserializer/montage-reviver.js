@@ -32,6 +32,22 @@ var ModuleLoader = Montage.create(Montage, {
         }
     },
 
+    getExports: {
+        value: function(_require, moduleId) {
+            var module = _require.getModuleDescriptor(moduleId);
+
+            while (module.redirect !== void 0) {
+                module = _require.getModuleDescriptor(module.redirect);
+            }
+
+            if (module.mappingRedirect !== void 0) {
+                return module.mappingRequire(module.mappingRedirect);
+            }
+
+            return module.exports;
+        }
+    },
+
     getModule: {
         value: function(moduleId, label) {
             var objectRequires = this._objectRequires,
@@ -44,11 +60,9 @@ var ModuleLoader = Montage.create(Montage, {
                 _require = this._require;
             }
 
-            // require.getModuleDescriptor(id).exports != null tell us if
-            // a module is ready to go.
-            if (_require.getModuleDescriptor(moduleId).exports != null) {
-                module = _require(moduleId);
-            } else {
+            module = this.getExports(_require, moduleId);
+
+            if (!module) {
                 module = _require.async(moduleId);
             }
 
