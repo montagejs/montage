@@ -46,6 +46,10 @@ var DocumentPart = Montage.create(Montage, {
         }
     },
 
+    _addToDrawList: {
+        value: function() {}
+    },
+
     _componentTreeLoadedDeferred: {value: null},
     loadComponentTree: {
         value: function() {
