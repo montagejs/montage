@@ -291,10 +291,18 @@ var Template = Montage.create(Montage, {
                 part.objects = objects;
                 self._invokeDelegates(part, instances);
 
-                return self.getResources().loadResources(targetDocument)
-                .then(function() {
+                var resources = self.getResources();
+
+                if (resources.resourcesLoaded()) {
                     return part;
-                });
+                } else if (resources.hasResources()) {
+                    return resources.loadResources(targetDocument)
+                    .then(function() {
+                        return part;
+                    });
+                } else {
+                    return part;
+                }
             });
         }
     },
@@ -987,6 +995,7 @@ var Template = Montage.create(Montage, {
 
 var TemplateResources = Montage.create(Montage, {
     _resources: {value: null},
+    _resourcesLoaded: {value: false},
     template: {value: null},
     rootUrl: {value: ""},
 
@@ -1002,8 +1011,22 @@ var TemplateResources = Montage.create(Montage, {
         }
     },
 
+    hasResources: {
+        value: function() {
+            return this.getStyles().length > 0 || this.getScripts().length > 0;
+        }
+    },
+
+    resourcesLoaded: {
+        value: function() {
+            return this._resourcesLoaded;
+        }
+    },
+
     loadResources: {
         value: function(targetDocument) {
+            this._resourcesLoaded = true;
+
             return Promise.all([
                 this.loadScripts(targetDocument),
                 this.loadStyles(targetDocument)
