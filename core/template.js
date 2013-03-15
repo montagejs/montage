@@ -754,6 +754,9 @@ var Template = Montage.create(Montage, {
         }
     },
 
+    _templateFromElementContentsCache: {
+        value: null
+    },
     createTemplateFromElementContents: {
         value: function(elementId) {
             var element,
@@ -764,7 +767,21 @@ var Template = Montage.create(Montage, {
                 template,
                 range,
                 serialization = Serialization.create(),
-                extractedSerialization;
+                extractedSerialization,
+                cache = this._templateFromElementContentsCache;
+
+            if (!cache) {
+                cache = Object.create(null);
+                this._templateFromElementContentsCache = cache;
+            }
+
+            if (elementId in cache) {
+                // We always return an extension of the cached object, this
+                // is because the template can be assigned with instances.
+                // An alternate idea would be to clone it but it's much more
+                // expensive.
+                return Object.create(cache[elementId]);
+            }
 
             // Find all elements of interest to the serialization.
             element = this.getElementById(elementId);
@@ -792,7 +809,13 @@ var Template = Montage.create(Montage, {
                 .getSerializationString();
             template._resources = this.getResources();
 
-            return template;
+            cache[elementId] = template;
+
+            // We always return an extension of the cached object, this
+            // is because the template is mutable.
+            // An alternate idea would be to clone it but it's much more
+            // expensive.
+            return Object.create(template);
         }
     },
 
