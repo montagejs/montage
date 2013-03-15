@@ -72,7 +72,7 @@ var ModuleLoader = Montage.create(Montage, {
 });
 
 var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, {
-    _moduleLoader: {value: null},
+    moduleLoader: {value: null},
     _unitRevivers: {value: Object.create(null)},
     _unitNames: {value: []},
 
@@ -90,7 +90,7 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
      */
     init: {
         value: function(_require, objectRequires) {
-            this._moduleLoader = ModuleLoader.create()
+            this.moduleLoader = ModuleLoader.create()
                                  .init(_require, objectRequires);
 
             return this;
@@ -149,7 +149,7 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
 
             if (locationId) {
                 locationDesc = this.parseObjectLocationId(locationId);
-                module = this._moduleLoader.getModule(locationDesc.moduleId,
+                module = this.moduleLoader.getModule(locationDesc.moduleId,
                     label);
                 objectName = locationDesc.objectName;
             }

@@ -307,6 +307,40 @@ var Template = Montage.create(Montage, {
         }
     },
 
+    _objectsInstantiationOptimized: {
+        value: false
+    },
+    _optimizeObjectsInstantiationPromise: {
+        value: null
+    },
+    /**
+     * @return {undefined|Promise} A promise if there are objects to optimize,
+     *         nothing otherwise.
+     */
+    _optimizeObjectsInstantiation: {
+        value: function() {
+            var self = this,
+                promise;
+
+            if (!this._objectsInstantiationOptimized) {
+                if (!this._optimizeObjectsInstantiationPromise) {
+                    promise = this._deserializer.preloadModules();
+
+                    if (promise) {
+                        this._optimizeObjectsInstantiationPromise = promise
+                        .then(function() {
+                            self._objectsInstantiationOptimized = true;
+                        });
+                    } else {
+                        this._objectsInstantiationOptimized = true;
+                    }
+                }
+
+                return this._optimizeObjectsInstantiationPromise;
+            }
+        }
+    },
+
     setBaseUrl: {
         value: function(baseUrl) {
             this._baseUrl = baseUrl;
@@ -356,7 +390,19 @@ var Template = Montage.create(Montage, {
 
     _instantiateObjects: {
         value: function(instances, fragment) {
-            return this._deserializer.deserialize(instances, fragment);
+            var self = this,
+                deserializer = this._deserializer,
+                optimizationPromise;
+
+            optimizationPromise = this._optimizeObjectsInstantiation();
+
+            if (optimizationPromise) {
+                return optimizationPromise.then(function() {
+                    return deserializer.deserialize(instances, fragment);
+                });
+            } else {
+                return deserializer.deserialize(instances, fragment);
+            }
         }
     },
 
