@@ -30,14 +30,10 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
-var TestPageLoader = require("support/testpageloader").TestPageLoader;
+var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
+TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function(testPage) {
     describe("events/object-hierarchy-spec", function() {
-
-        it("should load", function() {
-            expect(testPage.loaded).toBeTruthy();
-        });
 
         var eventManager, parent, testApplication, testMontage;
 
@@ -53,13 +49,14 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
             expect((Montage.create()).parentProperty).toBeDefined();
         });
 
-        it("should have a parentProperty on a object", function() {
-            expect((Object.create(Object.prototype)).parentProperty).toBeDefined();
-        });
-
-        it("should have a parentProperty on a object literal", function() {
-            expect({}.parentProperty).toBeDefined();
-        });
+        // TODO @mczepiel Are these cases this necessary? - @kriskowal
+        //it("should have a parentProperty on a object", function() {
+        //    expect((Object.create(Object.prototype)).parentProperty).toBeDefined();
+        //});
+        //
+        //it("should have a parentProperty on a object literal", function() {
+        //    expect({}.parentProperty).toBeDefined();
+        //});
 
         describe("handling events throughout the object hierarchy", function() {
 

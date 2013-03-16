@@ -144,7 +144,7 @@
     "property_blueprint_colectionValueType":{
          "prototype":"core/meta/property-blueprint",
          "properties":{
-             "name":"colectionValueType",
+             "name":"collectionValueType",
              "blueprint":{
                  "@":"root"
              },

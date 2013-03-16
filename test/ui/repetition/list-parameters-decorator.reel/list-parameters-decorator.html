@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script type="text/montage-serialization">{
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"}
+            }
+        },
+
+        "decoratorText": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "decoratorText"},
+                "value": "Texting"
+            }
+        },
+
+        "listParameters": {
+            "prototype": "ui/repetition/list-parameters.reel",
+            "properties": {
+                "element": {"#": "listParameters"}
+            }
+        },
+
+        "text": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "text"}
+            },
+            "bindings": {
+                "value": {"<-": "@decoratorText.value"}
+            }
+        }
+    }</script>
+</head>
+<body>
+    <div data-montage-id="owner">
+        <span data-montage-id="decoratorText"></span>
+        <div data-montage-id="listParameters">
+            <span data-montage-id="text"></span>
+            <span data-param="*"></span>
+        </div>
+    </div>
+</body>
+</html>

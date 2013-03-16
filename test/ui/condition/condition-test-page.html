@@ -57,19 +57,19 @@ POSSIBILITY OF SUCH DAMAGE.
             }
         },
         "application": {
-            "prototype": "montage/ui/application",
+            "prototype": "montage/core/application",
             "properties": {
                 "delegate" : {"@": "test"}
             }
         }
-    
+
     }</script>
 
 </head>
 <body>
 
-    <div id="hideMe" class="fetchHide"><span>Hello</span></div>
-    <div id="removeContent" class="fetchRemove"><span>Foo</span></div>
+    <div data-montage-id="hideMe" class="fetchHide"><span>Hello</span></div>
+    <div data-montage-id="removeContent" class="fetchRemove"><span>Foo</span></div>
 
 </body>
 </html>

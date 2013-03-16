@@ -298,7 +298,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
                 children = loaderElement.children;
 
                 for (i = 0; (iChild = children[i]); i++) {
-                    if ((iComponent = iChild.controller)) {
+                    if ((iComponent = iChild.component)) {
                         iComponent.attachToParentComponent();
                         iComponent.needsDraw = true;
                     }

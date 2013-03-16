@@ -87,9 +87,17 @@ if (typeof window !== "undefined") {
             var config = platform.getConfig();
 
             var montageLocation = URL.resolve(Require.getLocation(), params.montageLocation);
+            var location = URL.resolve(config.location, params.package || ".");
 
             // setup the reel loader
             config.makeLoader = function (config) {
+                if ("remoteTriggerMapping" in params) {
+                    config.mappings[params.remoteTriggerMapping] = {
+                        location: location,
+                        name: params.remoteTriggerMapping,
+                        version: "*"
+                    };
+                }
                 return exports.ReelLoader(
                     config,
                     Require.makeLoader(config)
@@ -107,7 +115,6 @@ if (typeof window !== "undefined") {
                 );
             };
 
-            var location = URL.resolve(config.location, params["package"] || ".");
             var applicationHash = params.applicationHash;
 
             if (typeof BUNDLE === "object") {
@@ -186,6 +193,29 @@ if (typeof window !== "undefined") {
                     .done();
                 };
 
+                // allows the bootstrapping to be remote controlled by the
+                // parent window, with a dynamically generated package
+                // description
+                var trigger;
+                if ("remoteTrigger" in params) {
+                    trigger = Promise.defer();
+
+                    var messageCallback = function (event) {
+                        if (params.remoteTrigger == event.origin) {
+                            if ((event.source === window || event.source === window.parent) && event.data.type === "montageInit") {
+                                trigger.resolve(event.data.location);
+                                window.removeEventListener("message", messageCallback );
+                            }
+                        }
+
+                    }
+                    window.addEventListener("message", messageCallback );
+
+                    window.postMessage({
+                        type: "montageReady"
+                    }, "*");
+                }
+
                 if ("autoPackage" in params) {
                     montageRequire.injectPackageDescription(location, {
                         dependencies: {
@@ -194,26 +224,29 @@ if (typeof window !== "undefined") {
                     });
                 }
 
-                // handle explicit package.json location
-                if (location.slice(location.length - 5) === ".json") {
-                    var packageDescriptionLocation = location;
-                    location = URL.resolve(location, ".");
-                    montageRequire.injectPackageDescriptionLocation(
-                        location,
-                        packageDescriptionLocation
-                    );
-                }
+                var loadAtLocation = function (location) {
+                    // handle explicit package.json location
+                    if (location.slice(location.length - 5) === ".json") {
+                        var packageDescriptionLocation = location;
+                        location = URL.resolve(location, ".");
+                        montageRequire.injectPackageDescriptionLocation(
+                            location,
+                            packageDescriptionLocation
+                        );
+                    }
 
-                return montageRequire.loadPackage({
-                    location: location,
-                    hash: applicationHash
-                })
-                .then(function (applicationRequire) {
+                    return montageRequire.loadPackage({
+                        location: location,
+                        hash: applicationHash
+                    })
+                    .then(function (applicationRequire) {
 
-                    global.require = applicationRequire;
-                    global.montageRequire = montageRequire;
-                    platform.initMontage(montageRequire, applicationRequire, params);
-                })
+                        global.require = applicationRequire;
+                        global.montageRequire = montageRequire;
+                        platform.initMontage(montageRequire, applicationRequire, params);
+                    });
+                };
+                return trigger ? trigger.promise.then(loadAtLocation) : loadAtLocation(location);
             })
             .done();
 
@@ -526,12 +559,8 @@ if (typeof window !== "undefined") {
 
             var dependencies = [
                 "core/event/event-manager",
-                "core/deserializer"
+                "core/serialization/deserializer/montage-reviver"
             ];
-
-            if (typeof window !== "undefined") {
-                dependencies.push("core/event/binding");
-            }
 
             var Promise = montageRequire("core/promise").Promise;
 
@@ -541,7 +570,7 @@ if (typeof window !== "undefined") {
                 dependencies.forEach(montageRequire);
 
                 var EventManager = montageRequire("core/event/event-manager").EventManager;
-                var Deserializer = montageRequire("core/deserializer").Deserializer;
+                var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                 var defaultEventManager, application;
 
                 // Load the event-manager
@@ -555,16 +584,16 @@ if (typeof window !== "undefined") {
                 // Load the application
 
                 var appProto = applicationRequire.packageDescription.applicationPrototype,
-                    applicationDescription, appModulePromise;
+                    applicationLocation, appModulePromise;
                 if (appProto) {
-                    applicationDescription = Deserializer.parseForModuleAndName(appProto);
-                    appModulePromise = applicationRequire.async(applicationDescription.module);
+                    applicationLocation = MontageReviver.parseObjectLocationId(appProto);
+                    appModulePromise = applicationRequire.async(applicationLocation.moduleId);
                 } else {
-                    appModulePromise = montageRequire.async("ui/application");
+                    appModulePromise = montageRequire.async("core/application");
                 }
 
                 return appModulePromise.then(function(exports) {
-                    application = exports[(applicationDescription ? applicationDescription.name : "Application")].create();
+                    application = exports[(applicationLocation ? applicationLocation.objectName : "Application")].create();
                     window.document.application = application;
                     defaultEventManager.application = application;
                     application.eventManager = defaultEventManager;

@@ -7,7 +7,9 @@
  @requires core/logger
  */
 var Montage = require("montage").Montage;
-var Semantics = require("core/selector/semantics").Semantics;
+// TODO kriskowal: massage selectors and FRB together
+var Semantics = Montage;
+// var Semantics = (require)("core/selector/semantics").Semantics;
 
 var logger = require("core/logger").logger("blueprint");
 

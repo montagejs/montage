@@ -1,8 +1,0 @@
-{
-    "name": "test",
-    "mappings": {
-        "specs": "../../",
-        "montage": "../../../"
-    },
-    "applicationPrototype":"application-test[MyApp]"
-}

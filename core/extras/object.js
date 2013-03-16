@@ -44,218 +44,6 @@ var STRING = "string";
 var FUNCTION = "function";
 
 /**
-    Returns the value at the end of a property path starting from this object.
-
-    <p>A property path is a dot delimited list of property names and supports
-    certain "function calls".  The argument of any function is a property
-    path to traverse on each element of a collection of elements.  Indexing
-    a property of an array maps to an array of the corresponding property
-    of each element in the array.
-
-    @param {String} propertyPath
-    @param {Property} unique
-    @param {Property} preserve
-    @param {Function} visitedComponentCallback
-    @param {Array} currentIndex
-    @returns result
-    @deprecated in favor of upcoming selector evaluator and observer
-    interfaces.
-    @function external:Object#getProperty
-*/
-Object.defineProperty(Object.prototype, "getProperty", {
-    value: function(aPropertyPath, unique, preserve, visitedComponentCallback, currentIndex) {
-        var dotIndex,
-            result,
-            currentPathComponent,
-            nextDotIndex,
-            remainingPath = null;
-
-        if (aPropertyPath == null) {
-            return;
-        }
-
-        dotIndex = aPropertyPath.indexOf(".", currentIndex);
-        currentIndex = currentIndex || 0;
-        currentPathComponent = aPropertyPath.substring(currentIndex, (dotIndex === -1 ? aPropertyPath.length : dotIndex));
-
-        if (currentPathComponent in this) {
-            result = this[currentPathComponent];
-        } else {
-            result = typeof this.undefinedGet === FUNCTION ? this.undefinedGet(currentPathComponent) : undefined;
-        }
-
-        if (visitedComponentCallback) {
-            nextDotIndex = aPropertyPath.indexOf(".", currentIndex);
-            if (nextDotIndex != -1) {
-                remainingPath = aPropertyPath.substr(nextDotIndex+1);
-            }
-            visitedComponentCallback(this, currentPathComponent, result, null, remainingPath);
-        }
-
-        if (visitedComponentCallback && result && -1 === dotIndex) {
-
-            // We resolved the last object on the propertyPath, be sure to give the visitor a chance to handle this one
-            //visitedComponentCallback(result, null, null, null, null);
-
-        } else if (result && dotIndex !== -1) {
-            // We resolved that component of the path, but there's more path components; go to the next
-
-            if (result.getProperty) {
-                result = result.getProperty(aPropertyPath, unique, preserve, visitedComponentCallback, dotIndex + 1);
-            } else {
-                // TODO track when this happens, right now it's only happening with CanvasPixelArray in WebKit
-                result = Object.prototype.getProperty.call(result, aPropertyPath, unique, preserve, visitedComponentCallback, dotIndex + 1);
-            }
-        }
-        // Otherwise, we reached the end of the propertyPath, or at least as far as we could; stop
-        return result;
-    },
-    writable: true,
-    configurable: true
-});
-
-// TODO(mczepiel): determine whether the following two memos on the object
-// prototype are necessary, and if necessary, document why.
-
-/**
-    @private
-*/
-Object.defineProperty(Object.prototype, "_propertySetterNamesByName", {
-    value: {},
-    writable: true,
-    configurable: true
-});
-
-/**
-    @private
-*/
-Object.defineProperty(Object.prototype, "_propertySetterByName", {
-    value: {},
-    writable: true,
-    configurable: true
-});
-
-/**
-    Sets the value on the end of a property path starting at this object.
-
-    @see external:Object#getProperty
-    @member external:Object#setProperty
-    @function
-    @param {Object} propertyPath
-    @param {Object} value
-    @returns this
-    @deprecated
-*/
-Object.defineProperty(Object.prototype, "setProperty", {
-    value: function(aPropertyPath, value) {
-        var propertyIsNumber = !isNaN(aPropertyPath),
-            lastDotIndex = propertyIsNumber ? -1 : aPropertyPath.lastIndexOf("."),
-            setObject,
-            lastObjectAtPath,
-            propertyToSetOnArray;
-
-        if (lastDotIndex !== -1) {
-            //The propertyPath describes a property that is deeper inside this object
-            setObject = this.getProperty(aPropertyPath.substring(0, lastDotIndex));
-
-            if (!setObject) {
-                this.undefinedSet(aPropertyPath);
-                return;
-            }
-
-            aPropertyPath = aPropertyPath.substring(lastDotIndex + 1);
-        } else {
-            // The property path describes a property on this object
-            setObject = this;
-        }
-
-        lastObjectAtPath = setObject.getProperty(aPropertyPath);
-
-        // TODO clean up some of the duplicated code here
-
-        if (lastObjectAtPath && Array.isArray(lastObjectAtPath)) {
-
-            if (Array.isArray(setObject)) {
-                // If the setObject is an array itself; splice (typically called by set) to trigger bindings, do it here to save time
-                propertyToSetOnArray = parseInt(aPropertyPath, 10);
-                if (!isNaN(propertyToSetOnArray)) {
-                    if (setObject.length < propertyToSetOnArray) {
-                        // TODO while I could set the value here I'm setting null and letting the splice,
-                        // which we need to do anyway to trigger bindings, do the actual setting
-                        setObject[propertyToSetOnArray] = null;
-                    }
-
-                    setObject.splice(propertyToSetOnArray, 1, value);
-
-                } else {
-                    setObject[aPropertyPath] = value;
-                }
-
-            } else {
-                setObject[aPropertyPath] = value;
-            }
-
-        } else if (Array.isArray(setObject)) {
-            // If the setObject is an array itself; splice (typically called by set) to trigger bindings, do it here to save time
-            propertyToSetOnArray = parseInt(aPropertyPath, 10);
-            if (!isNaN(propertyToSetOnArray)) {
-                if (setObject.length < propertyToSetOnArray) {
-                    // TODO while I could set the value here I'm setting null and letting the splice,
-                    // which we need to do anyway to trigger bindings, do the actual setting
-                    setObject[propertyToSetOnArray] = null;
-                }
-            }
-            setObject.splice(propertyToSetOnArray, 1, value);
-        } else {
-            setObject[aPropertyPath] = value;
-        }
-    },
-    writable: true,
-    configurable: true
-});
-
-/**
-    @member external:Object#parentProperty
-    @default null
-    @private
-*/
-Object.defineProperty(Object.prototype, "parentProperty", {
-    value: null,
-    writable: true,
-    configurable: true
-});
-
-/**
-    Observes when an undefined property has been accessed, but may be
-    overridden on other types of objects to return an alternate sensible
-    default for the given key, perhaps even memoizing that value by setting it
-    before returning.
-    @param {Object} key A missing property name on the given object.
-    @returns <code>undefined</code>
-    @function extenal:Object#undefinedGet
-*/
-Object.defineProperty(Object.prototype, "undefinedGet", {
-    value: function(aPropertyName) {
-        console.warn("get undefined property -" + aPropertyName + "-");
-    },
-    writable: true,
-    configurable: true
-});
-
-/**
-    Observes when an undefined property has been changed.
-    @function external:Object#undefinedSet
-    @param {Object} aPropertyName The object property name.
-*/
-Object.defineProperty(Object.prototype, "undefinedSet", {
-    value: function(aPropertyName) {
-        console.warn("set undefined property -" + aPropertyName + "-");
-    },
-    writable: true,
-    configurable: true
-});
-
-/**
     Returns the descriptor object for an object's property.
     @param {Object} anObject The object containing the property.
     @param {String} propertyName The name of the property.
@@ -304,7 +92,6 @@ Object.defineProperty(Object, "getPrototypeAndDescriptorDefiningProperty", {
     configurable: true
 });
 
-// TODO migrate from object.clear() to Object.clear(object)
 /**
     Removes all properties owned by this object making the object suitable for
     reuse.
@@ -326,5 +113,52 @@ Object.defineProperty(Object.prototype, "clear", {
     },
     writable: true,
     configurable: true
+});
+
+Object.defineProperty(Object, "defineBinding", {
+    value: function (target, targetPath, descriptor) {
+        var depth = Error.stackTraceLimit;
+        Error.stackTraceLimit = 2;
+        console.warn(
+            "Object.defineBinding deprecated.  " +
+            "See the comment below this warning for migration instructions.",
+            new Error("deprecated").stack
+        );
+        Error.stackTraceLimit = depth;
+
+        //
+        // Migration instructions:
+        //
+        // Replace Object.defineBinding with
+        // import Bindings from "montage/core/bindings"
+        // Bindings.defineBinding(target, targetPath, descriptor);
+        // - Use "<-", "<->", and "source" in place of
+        //   "boundObjectPropertyPath", "oneway", and "boundObject".
+        // - Use "convert" or "converter.convert" in place of
+        //   "boundValueMutator".
+        //
+
+        var Bindings = require("frb");
+
+        descriptor.source = descriptor.boundObject;
+        if (descriptor.oneway) {
+            descriptor["<-"] = descriptor.boundObjectPropertyPath;
+        } else {
+            descriptor["<->"] = descriptor.boundObjectPropertyPath;
+        }
+
+        if (descriptor.boundValueMutator) {
+            descriptor.convert = descriptor.boundValueMutator;
+        }
+
+        Bindings.defineBinding(target, targetPath, descriptor);
+    }
+});
+
+Object.defineProperty(Object, "deleteBinding", {
+    value: function (target, targetPath) {
+        var Bindings = require("frb");
+        Bindings.cancelBinding(target, targetPath);
+    }
 });
 

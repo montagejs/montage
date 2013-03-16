@@ -49,7 +49,7 @@ Require.read = function (url) {
     }
 
     function onerror() {
-        response.reject("Can't XHR " + JSON.stringify(url));
+        response.reject(new Error("Can't XHR " + JSON.stringify(url)));
     }
 
     try {

@@ -39,7 +39,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Mon
             serializer.setProperty("blueprint", this.owner, "reference");
             //            serializer.setProperty("validationSelector", this._validationSelector, "reference");
             serializer.setProperty("messageKey", this.messageKey);
-            serializer.setProperties();
+            serializer.setAllProperties();
         }
     },
 

@@ -35,14 +35,15 @@ POSSIBILITY OF SUCH DAMAGE.
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
     <script type="text/montage-serialization">
 {
-    "test1": {
+    "test": {
         "prototype": "ui/drawing/test",
         "properties": {
-
+            "repetition1": {"@": "repetition1"},
+            "repetition": {"@": "repetition2"}
         }
     },
-    "dynamictext1": {
-        "prototype": "montage/ui/dynamic-text.reel",
+    "dynamictext": {
+        "prototype": "montage/ui/text.reel",
         "properties": {
             "element": {"#": "dynamictext"},
             "value": "Test Value"
@@ -52,14 +53,14 @@ POSSIBILITY OF SUCH DAMAGE.
         "prototype": "montage/ui/repetition.reel",
         "properties": {
             "element": {"#": "list1"},
-            "objects": [
+            "content": [
                 1,
                 2,
                 3
             ]
         }
     },
-    "custom1": {
+    "custom": {
         "prototype": "ui/drawing/component/custom.reel",
         "properties": {
             "element": {"#": "custom"}
@@ -69,20 +70,10 @@ POSSIBILITY OF SUCH DAMAGE.
         "prototype": "montage/ui/repetition.reel",
         "properties": {
             "element": {"#": "list2"},
-            "objects": [
+            "content": [
                 1,
                 2,
                 3
-            ]
-        }
-    },
-    "owner": {
-        "prototype": "montage/ui/application",
-        "properties": {
-            "delegate": {"@": "test1"},
-            "components": [
-                {"@": "repetition1"},
-                {"@": "repetition2"}
             ]
         }
     }

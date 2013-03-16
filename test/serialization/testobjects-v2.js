@@ -36,10 +36,10 @@ var Montage = require("montage").Montage,
 exports.Empty = Montage.create(Montage, {});
 
 exports.Simple = Montage.create(Montage, {
-    number: {value: 42},
-    string: {value: "string"},
+    number: {value: 42, serializable: true},
+    string: {value: "string", serializable: true},
     regexp: {value: /regexp/gi, serializable: false},
-    foo: {value: null}
+    foo: {value: null, serializable: false}
 });
 
 exports.OneProp = Montage.create(Montage, {
@@ -49,6 +49,10 @@ exports.OneProp = Montage.create(Montage, {
     deserializedFromSerialization: {value: function() {
         this.deserializedFromSerializationCount++;
     }}
+});
+
+exports.OneReferenceProp = Montage.create(Montage, {
+    referenceProp: {value: null, serializable: "reference"}
 });
 
 exports.TwoProps = Montage.create(Montage, {
@@ -95,6 +99,21 @@ exports.CustomPropertiesRef = Montage.create(Montage, {
     }}
 });
 
+exports.CustomAllProperties = Montage.create(Montage, {
+    manchete: {value: 42, serializable: true},
+    rodriguez: {value: exports.Empty.create(), serializable: "reference"},
+    luz: {value: exports.Empty.create(), serializable: true},
+    tarantino: {value: 105, serializable: false},
+
+    serializeProperties: {value: function(serializer) {
+        serializer.setAll();
+    }},
+
+    deserializeProperties: {value: function(serializer) {
+        this.manchete = serializer.get("manchete");
+    }}
+});
+
 exports.CustomRef = Montage.create(Montage, {
     object: {value: exports.Empty.create()},
 
@@ -109,8 +128,8 @@ exports.CustomRef = Montage.create(Montage, {
 
 exports.Singleton = Montage.create(Montage, {
     instance: {value: {another: "object"}},
-    deserializeProperties: {value: function(serializer) {
-        this.manchete = serializer.get("manchete");
+
+    deserializeSelf: {value: function(serializer) {
         return this.instance;
     }}
 });
@@ -139,19 +158,26 @@ exports.CustomDeserialization = Montage.create(exports.TwoProps, {
 
 });
 
+exports.TestobjectsV2 = Montage.create(exports.Empty, {
+
+});
+
 exports.objects = {
     Empty: exports.Empty,
     Simple: exports.Simple,
     OneProp: exports.OneProp,
     TwoProps: exports.TwoProps,
+    OneReferenceProp: exports.OneReferenceProp,
     SerializableAttribute: exports.SerializableAttribute,
     DistinctArrayProp: exports.DistinctArrayProp,
     DistinctLiteralProp: exports.DistinctLiteralProp,
     CustomProperties: exports.CustomProperties,
     CustomPropertiesRef: exports.CustomPropertiesRef,
+    CustomAllProperties: exports.CustomAllProperties,
     CustomRef: exports.CustomRef,
     Singleton: exports.Singleton,
     Comp: exports.Comp,
     Custom: exports.Custom,
-    CustomDeserialization: exports.CustomDeserialization
+    CustomDeserialization: exports.CustomDeserialization,
+    TestobjectsV2: exports.TestobjectsV2
 };

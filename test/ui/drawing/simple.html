@@ -48,20 +48,17 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "dynamictext1": {
-        "prototype": "montage/ui/dynamic-text.reel",
+        "prototype": "montage/ui/text.reel",
         "properties": {
             "element": {"#": "dynamictext"},
             "value": "Test Value"
         }
     },
-    "owner": {
-        "prototype": "montage/ui/application",
+
+    "onlyStyle": {
+        "prototype": "ui/drawing/component/only-style.reel",
         "properties": {
-            "delegate": {"@": "test1"},
-            "components": [
-                {"@": "custom1"},
-                {"@": "dynamictext1"}
-            ]
+            "element": {"#": "onlyStyle"}
         }
     }
 }
@@ -69,7 +66,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 </head>
 <body>
-<div id="dynamictext" class="dynamictext"></div>
-<div id="custom"></div>
+<div data-montage-id="dynamictext" class="dynamictext"></div>
+<div data-montage-id="custom"></div>
+<div data-montage-id="onlyStyle" class="onlyStyle"></div>
 </body>
 </html>

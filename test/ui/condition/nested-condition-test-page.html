@@ -57,20 +57,20 @@ POSSIBILITY OF SUCH DAMAGE.
             }
         },
         "application": {
-            "prototype": "montage/ui/application",
+            "prototype": "montage/core/application",
             "properties": {
                 "delegate" : {"@": "test"}
             }
         }
-    
+
     }</script>
 
 </head>
 <body>
 
-    <div id="outerCondition">
+    <div data-montage-id="outerCondition">
         Hey
-        <div id="innerCondition">Sample</div>
+        <div data-montage-id="innerCondition">Sample</div>
     </div>
 
 </body>

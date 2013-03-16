@@ -35,13 +35,13 @@ var VideoViewer = exports.VideoViewer = Montage.create(Component, {
 
     templateDidLoad: {
         value: function() {
-            console.log("VIDEOVIEWER REEL DID LOAD");
+            //console.log("VIDEOVIEWER REEL DID LOAD");
         }
     },
 
     deserializedFromTemplate: {
         value: function() {
-            console.log("VIDEOVIEWER DESERIALIZED FROM REEL");
+            //console.log("VIDEOVIEWER DESERIALIZED FROM REEL");
         }
     },
 

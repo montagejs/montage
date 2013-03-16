@@ -29,14 +29,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader;
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-var conditionTestPage = TestPageLoader.queueTest("ui/condition", {src: "ui/condition/condition-test-page.html", firstDraw: false}, function() {
+TestPageLoader.queueTest("ui/condition", {src: "ui/condition/condition-test-page.html", firstDraw: false}, function(conditionTestPage) {
     describe("ui/condition-spec", function() {
-        it("should load", function() {
-            expect(conditionTestPage.loaded).toBeTruthy();
-        });
-
         describe("condition with false condition and removal strategy hide", function() {
             it("upon initial load content should have a class of montage-invisible", function() {
                 var conditionDiv = conditionTestPage.iframe.contentDocument.getElementsByClassName("fetchHide")[0];
@@ -71,10 +67,5 @@ var conditionTestPage = TestPageLoader.queueTest("ui/condition", {src: "ui/condi
     });
 });
 
-var nestedConditionTestPage = TestPageLoader.queueTest("ui/nested-condition", {src: "ui/condition/nested-condition-test-page.html", firstDraw: false}, function() {
-    describe("ui/nested-condition-spec", function() {
-        it("should load", function() {
-            expect(nestedConditionTestPage.loaded).toBeTruthy();
-        });
-    });
+TestPageLoader.queueTest("ui/nested-condition", {src: "ui/condition/nested-condition-test-page.html", firstDraw: false}, function(nestedConditionTestPage) {
 });

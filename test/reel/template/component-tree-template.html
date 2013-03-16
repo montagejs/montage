@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script type="text/montage-serialization">{
+        "title": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "title"}
+            }
+        },
+
+        "rows": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "rows"}
+            }
+        },
+
+        "columns": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "columns"}
+            }
+        },
+
+        "text": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "text"},
+                "value": "Hello, World!"
+            }
+        }
+    }</script>
+</head>
+<body>
+    <p data-montage-id="title"></p>
+
+    <ul data-montage-id="rows">
+        <li>
+            <ul data-montage-id="columns">
+                <li>
+                    <span data-montage-id="text"></span>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</body>
+</html>

@@ -11,10 +11,15 @@
 var Montage = require("montage").Montage,
     MessageFormat = require("core/messageformat"),
     logger = require("core/logger").logger("localizer"),
-    Serializer = require("core/serializer").Serializer,
-    Deserializer = require("core/deserializer").Deserializer,
+    Serializer = require("core/serialization").Serializer,
+    Deserializer = require("core/serialization").Deserializer,
     Promise = require("core/promise").Promise,
-    deserializeBindingToBindingDescriptor = require("core/event/binding").deserializeBindingToBindingDescriptor;
+    Bindings = require("core/bindings").Bindings,
+    PropertyChanges = require("collections/listen/property-changes"),
+    FrbBindings = require("frb/bindings"),
+    parse = require("frb/parse"),
+    stringify = require("frb/stringify"),
+    expand = require("frb/expand");
 
 // Add all locales to MessageFormat object
 MessageFormat.locale = require("core/messageformat-locale");
@@ -627,65 +632,6 @@ var defaultLocalizer = exports.defaultLocalizer = DefaultLocalizer.create().init
 exports.localize = defaultLocalizer.localize.bind(defaultLocalizer);
 
 /**
-    Stores data needed for {@link Message}.
-
-    When any of the properties in this object are set using setProperty (i.e.
-    through a binding) a change event will be dispatched.
-
-    Really this is a proxy, and can be replaced by one once they become
-    readily available.
-
-    @class module:montage/core/localizer.MessageData
-    @extends module:montage/core/core.Montage
-    @private
-*/
-var MessageData = Montage.create(Montage, /** @lends module:montage/core/localizer.MessageVariables# */{
-    /**
-        Initialize the object.
-
-        @function
-        @param {Object} data Object with own properties to set on this object.
-    */
-    init: {
-        value: function(data) {
-            for (var p in data) {
-                // adding this binding will call setProperty below which will
-                // add the PropertyChangeListener
-                Object.defineBinding(this, p, {
-                    boundObject: data,
-                    boundObjectPropertyPath: p,
-                    oneway: false
-                });
-            }
-
-            return this;
-        }
-    },
-
-    /**
-        Watch any properties set through bindings for changes.
-
-        @function
-        @private
-    */
-    setProperty: {
-        value: function(path, value) {
-            // The same listener will only be registered once. It's faster to
-            // just register again than it would be to check for the existance
-            // of an existing listener.
-            this.addPropertyChangeListener(path, this);
-
-            Object.setProperty.call(this, path, value);
-        }
-    },
-
-    handleChange: {
-        value: function(event) {
-            this.dispatchEventNamed("change", true, false);
-        }
-    }
-});
-/**
     Tracks a message function and its data for changes in order to generate a
     localized message.
 
@@ -696,8 +642,11 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
 
     didCreate: {
         value: function() {
-            this._data = MessageData.create();
-            this._data.addEventListener("change", this, false);
+            // _data Map needs to track changes on existing properties of
+            // _dataObject, .toMap() provides this behaviour.
+            // _dataObject is set in the data setter.
+            this.defineBinding("_data", {"<-": "_dataObject.toMap()"});
+            this._data.addMapChangeListener(this, "data");
         }
     },
 
@@ -799,7 +748,7 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
             // Don't use fcall, so that if the `data` object is completely
             // changed we have the latest version.
             this.localized = this._messageFunction.then(function (fn) {
-                return fn(self._data);
+                return fn(self._data.toObject());
             });
 
             Promise.nextTick(function() {
@@ -820,6 +769,7 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
                     temp.resolve(EMPTY_STRING_FUNCTION);
                     return;
                 }
+
                 // Replace the _messageFunction promise with the real one.
                 temp.resolve(self._localizer.localize(
                     self._key,
@@ -843,24 +793,26 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
         @type {MessageData}
         @default null
     */
+    _dataObject: {
+        value: null
+    },
+
     _data: {
         value: null
     },
 
+    // Receives an object literal and creates a Map that tracks it.
     data: {
         get: function() {
             return this._data;
         },
         set: function(value) {
-            if (this._data === value) {
+            if (this._dataObject === value) {
                 return;
             }
-            if (this._data) {
-                this._data.removeEventListener("change", this);
-            }
-            this._data = MessageData.create().init(value);
-            this._data.addEventListener("change", this, false);
-            this.handleChange();
+
+            // _data is bound to _dataObject.toMap()
+            this._dataObject = value;
         }
     },
 
@@ -903,26 +855,14 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
         }
     },
 
-    setProperty: {
-        value: function(path, value) {
-            // If a binding to a data property has been set directly on this
-            // object, instead of on the data object, install a listener for
-            // the data object
-            if (path.indexOf("data.") === 0) {
-                this._data.addPropertyChangeListener(path.substring(5), this._data);
-            }
-            Object.setProperty.call(this, path, value);
-        }
-    },
-
     /**
      * Whenever there is a change set the localized property.
      * @type {Function}
      * @private
      */
-    handleChange: {
+    handleDataMapChange: {
         value: function(event) {
-            this.localized = this._messageFunction.fcall(this._data);
+            this.localized = this._messageFunction.fcall(this._data.toObject());
         }
     },
 
@@ -947,48 +887,107 @@ var Message = exports.Message = Montage.create(Montage, /** @lends module:montag
 
     serializeForLocalizations: {
         value: function(serializer) {
-            var result = {};
+            var result = {},
+                data,
+                bindings;
 
-            var bindings = this._bindingDescriptors;
+            bindings = FrbBindings.getBindings(this);
 
             if (bindings && bindings.key) {
-                result[KEY_KEY] = bindings.key;
+                result[KEY_KEY] = {};
+                this._serializeBinding(this, result[KEY_KEY], bindings.key, serializer);
             } else {
                 result[KEY_KEY] = this._key;
             }
 
             if (bindings && bindings.defaultMessage) {
-                result[DEFAULT_MESSAGE_KEY] = bindings.defaultMessage;
+                result[DEFAULT_MESSAGE_KEY] = {};
+                this._serializeBinding(this, result[DEFAULT_MESSAGE_KEY], bindings.defaultMessage, serializer);
             } else {
                 result[DEFAULT_MESSAGE_KEY] = this._defaultMessage;
             }
 
-            var dataBindings = this._data._bindingDescriptors;
+            var dataBindings = FrbBindings.getBindings(this._data);
 
             // NOTE: Can't use `Montage.getSerializablePropertyNames(this._data)`
             // because the properties we want to serialize are not defined
             // using `Montage.defineProperty`, and so don't have
             // `serializable: true` as part of the property descriptor.
-            for (var p in this._data) {
-                if (this._data.hasOwnProperty(p) &&
-                    (!dataBindings || !dataBindings[p])
+            data = this._data.toObject();
+
+            for (var p in data) {
+                if (data.hasOwnProperty(p) &&
+                    (!dataBindings || !dataBindings[".get('"+ p + "')"])
                 ) {
                     if (!result.data) result.data = {};
-                    result.data[p] = this._data[p];
+                    result.data[p] = data[p];
                 }
             }
 
             // Loop through bindings seperately in case the bound properties
             // haven't been set on the data object yet.
             for (var b in dataBindings) {
+                // binding is in the form of "get('key')" because it's a map
+                // but we want to serialize into an object literal instead.
+                var key = /\.get\('([^']+)'\)/.exec(b)[1];
+
                 if (!result.data) result.data = {};
-                result.data[b] = dataBindings[b];
+                result.data[key] = {};
+                this._serializeBinding(this._data, result.data[key], dataBindings[b], serializer);
             }
 
             return result;
         }
-    }
+    },
 
+    _serializeBinding: {
+        value: function(object, output, input, serializer) {
+            //bindingsParameters = ["<-", "<->", "source", "revert", "convert", "trace", "serializable"];
+            //
+            //bindingsParameters.forEach(function(key) {
+            //    if (key in binding) {
+            //        data[key] = binding[key];
+            //    }
+            //});
+
+            if (("serializable" in input) && !input.serializable) {
+                return;
+            }
+
+            var parameters = {
+                serialization: serializer
+            };
+            var sourcePath = input.sourcePath;
+
+            if (input.source !== object) {
+                var reference = serializer.addObjectReference(input.source);
+                var syntax = expand(parse(sourcePath), {
+                    type: "component",
+                    label: reference["@"]
+                }, parameters);
+            } else {
+                var syntax = expand(parse(sourcePath), null, parameters);
+            }
+            sourcePath = stringify(syntax);
+
+            if (input.twoWay) {
+                output["<->"] = sourcePath;
+            } else {
+                output["<-"] = sourcePath;
+            }
+
+            if (input.converter) {
+                output.converter = input.converter;
+            } else {
+                output.convert = input.convert;
+                output.revert = input.revert;
+            }
+
+            if (input.trace) {
+                output.trace = true;
+            }
+        }
+    }
 });
 
 var createMessageBinding = function(object, prop, key, defaultMessage, data, deserializer) {
@@ -996,57 +995,61 @@ var createMessageBinding = function(object, prop, key, defaultMessage, data, des
 
     for (var d in data) {
         if (typeof data[d] === "string") {
-            message.data[d] = data[d];
+            message.data.set(d, data[d]);
         } else {
-            deserializeBindingToBindingDescriptor(data[d], deserializer);
-            Object.defineBinding(message.data, d, data[d]);
+            Bindings.defineBinding(message.data, ".get('" + d + "')", data[d], {
+                serialization: deserializer
+            });
         }
     }
 
     if (typeof key === "object") {
-        deserializeBindingToBindingDescriptor(key, deserializer);
-        Object.defineBinding(message, "key", key);
+        Bindings.defineBinding(message, "key", key, {
+            serialization: deserializer
+        });
     } else {
         message.key = key;
     }
 
     if (typeof defaultMessage === "object") {
-        deserializeBindingToBindingDescriptor(defaultMessage, deserializer);
-        Object.defineBinding(message, "defaultMessage", defaultMessage);
+//console.log("Define default binding: ", defaultMessage);
+        Bindings.defineBinding(message, "defaultMessage", defaultMessage, {
+            serialization: deserializer
+        });
+//console.log(FrbBindings.getBindings(message).source, deserializer.getObjectByLabel("source"));
     } else {
         message.defaultMessage = defaultMessage;
     }
 
-    Object.defineBinding(object, prop, {
-        boundObject: message,
+    Bindings.defineBinding(object, prop, {
         // TODO: Remove when possible to bind to promises and replace with
         // binding to "localized"
-        boundObjectPropertyPath: "__localizedResolved",
-        oneway: true,
+        "<-": "__localizedResolved",
+        source: message,
         serializable: false
     });
 };
 
-Serializer.defineSerializationUnit("localizations", function(object) {
-    var bindingDescriptors = object._bindingDescriptors;
+Serializer.defineSerializationUnit("localizations", function(serializer, object) {
+    var bindingDescriptors = FrbBindings.getBindings(object);
 
     if (bindingDescriptors) {
         var result;
         for (var prop in bindingDescriptors) {
             var desc = bindingDescriptors[prop];
-            if (Message.isPrototypeOf(desc.boundObject)) {
+            if (Message.isPrototypeOf(desc.source)) {
                 if (!result) {
                     result = {};
                 }
-                var message = desc.boundObject;
-                result[prop] = message.serializeForLocalizations();
+                var message = desc.source;
+                result[prop] = message.serializeForLocalizations(serializer);
             }
         }
         return result;
     }
 });
 
-Deserializer.defineDeserializationUnit("localizations", function(object, properties, deserializer) {
+Deserializer.defineDeserializationUnit("localizations", function(deserializer, object, properties) {
     for (var prop in properties) {
         var desc = properties[prop],
             key,

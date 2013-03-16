@@ -10,8 +10,8 @@ var Binder = require("montage/core/meta/binder").Binder;
 var PropertyBlueprint = require("montage/core/meta/property-blueprint").PropertyBlueprint;
 var AssociationBlueprint = require("montage/core/meta/association-blueprint").AssociationBlueprint;
 
-var Serializer = require("montage/core/serializer").Serializer;
-var Deserializer = require("montage/core/deserializer").Deserializer;
+var Serializer = require("montage/core/serialization").Serializer;
+var Deserializer = require("montage/core/serialization").Deserializer;
 
 var BinderHelper = require("meta/blueprint/binderhelper").BinderHelper;
 var Person = require("meta/blueprint/person").Person;
@@ -206,12 +206,12 @@ describe("meta/blueprint-spec", function () {
 
             it("can serialize", function () {
                 var serializedBinder = Serializer.create().initWithRequire(require).serializeObject(companyBinder);
-                console.log(serializedBinder);
+                //console.log(serializedBinder);
                 expect(serializedBinder).not.toBeNull();
             });
             it("can deserialize", function () {
                 var serializedBinder = Serializer.create().initWithRequire(require).serializeObject(companyBinder);
-                Deserializer.create().initWithStringAndRequire(serializedBinder, require).deserializeObject(function (deserializedBinder) {
+                return Deserializer.create().init(serializedBinder, require).deserializeObject().then(function (deserializedBinder) {
                     var metadata = Montage.getInfoForObject(deserializedBinder);
                     expect(serializedBinder).not.toBeNull();
                     expect(metadata.objectName).toBe("Binder");
@@ -219,7 +219,7 @@ describe("meta/blueprint-spec", function () {
                     var personBlueprint = deserializedBinder.blueprintForPrototype("Person", "meta/blueprint/person");
                     expect(personBlueprint).not.toBeNull();
                     expect(personBlueprint.propertyBlueprintForName("phoneNumbers")).not.toBeNull();
-                }, require);
+                });
             });
         });
 
