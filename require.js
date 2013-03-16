@@ -317,6 +317,16 @@
                 Require.injectPackageDescriptionLocation(location, descriptionLocation, config);
             };
 
+            require.injectMapping = function (dependency, name) {
+                dependency = normalizeDependency(dependency, config, name);
+                name = name || dependency.name;
+                config.mappings[name] = dependency;
+            };
+
+            require.injectDependency = function (name) {
+                require.injectMapping({name: name}, name);
+            };
+
             require.identify = identify;
             require.inject = inject;
 
@@ -761,12 +771,12 @@
         config.mappings = config.mappings || {};
         config.name = config.name;
 
-        var mappings = config.mappings;
-        var prefixes = Object.keys(mappings);
-        var length = prefixes.length;
-
         // finds a mapping to follow, if any
         return function (id, module) {
+            var mappings = config.mappings;
+            var prefixes = Object.keys(mappings);
+            var length = prefixes.length;
+
             if (Require.isAbsolute(id)) {
                 return load(id, module);
             }
