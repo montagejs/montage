@@ -41,7 +41,7 @@ var ModuleLoader = Montage.create(Montage, {
             }
 
             if (module.mappingRedirect !== void 0) {
-                return module.mappingRequire(module.mappingRedirect);
+                return this.getExports(module.mappingRequire, module.mappingRedirect);
             }
 
             return module.exports;
