@@ -87,17 +87,9 @@ if (typeof window !== "undefined") {
             var config = platform.getConfig();
 
             var montageLocation = URL.resolve(Require.getLocation(), params.montageLocation);
-            var location = URL.resolve(config.location, params.package || ".");
 
             // setup the reel loader
             config.makeLoader = function (config) {
-                if ("remoteTrigger" in params) {
-                    config.mappings.__stage = {
-                        location: location,
-                        name: "stage",
-                        version: "*"
-                    };
-                }
                 return exports.ReelLoader(
                     config,
                     Require.makeLoader(config)
@@ -115,6 +107,7 @@ if (typeof window !== "undefined") {
                 );
             };
 
+            var location = URL.resolve(config.location, params.package || ".");
             var applicationHash = params.applicationHash;
 
             if (typeof BUNDLE === "object") {
@@ -193,60 +186,61 @@ if (typeof window !== "undefined") {
                     .done();
                 };
 
-                // allows the bootstrapping to be remote controlled by the
-                // parent window, with a dynamically generated package
-                // description
-                var trigger;
-                if ("remoteTrigger" in params) {
-                    trigger = Promise.defer();
+                var promiseForLoadedPackage;
 
-                    var messageCallback = function (event) {
-                        if (params.remoteTrigger == event.origin) {
-                            if ((event.source === window || event.source === window.parent) && event.data.type === "montageInit") {
-                                trigger.resolve(event.data.location);
-                                window.removeEventListener("message", messageCallback );
+                if (!("remoteTrigger" in params)) {
+                    if ("autoPackage" in params) {
+                        montageRequire.injectPackageDescription(location, {
+                            dependencies: {
+                                montage: "*"
                             }
+                        });
+                    } else {
+                        // handle explicit package.json location
+                        if (location.slice(location.length - 5) === ".json") {
+                            var packageDescriptionLocation = location;
+                            location = URL.resolve(location, ".");
+                            montageRequire.injectPackageDescriptionLocation(
+                                location,
+                                packageDescriptionLocation
+                            );
                         }
-
                     }
-                    window.addEventListener("message", messageCallback );
-
+                    promiseForLoadedPackage = montageRequire.loadPackage({
+                        location: location,
+                        hash: applicationHash
+                    });
+                } else {
+                    // allows the bootstrapping to be remote controlled by the
+                    // parent window, with a dynamically generated package
+                    // description
+                    var trigger = Promise.defer();
                     window.postMessage({
                         type: "montageReady"
                     }, "*");
-                }
-
-                if ("autoPackage" in params) {
-                    montageRequire.injectPackageDescription(location, {
-                        dependencies: {
-                            montage: "*"
+                    var messageCallback = function (event) {
+                        if (params.remoteTrigger === event.origin &&
+                                (event.source === window || event.source === window.parent) &&
+                                event.data.type === "montageInit") {
+                            trigger.resolve([event.data.location, event.data.packageJSON]);
+                            window.removeEventListener("message", messageCallback);
                         }
-                    });
-                }
-
-                var loadAtLocation = function (location) {
-                    // handle explicit package.json location
-                    if (location.slice(location.length - 5) === ".json") {
-                        var packageDescriptionLocation = location;
+                    };
+                    window.addEventListener("message", messageCallback);
+                    promiseForLoadedPackage = trigger.promise.spread(function (location, packageJSON) {
                         location = URL.resolve(location, ".");
-                        montageRequire.injectPackageDescriptionLocation(
-                            location,
-                            packageDescriptionLocation
-                        );
-                    }
-
-                    return montageRequire.loadPackage({
-                        location: location,
-                        hash: applicationHash
+                        montageRequire.injectPackageDescription(location, packageJSON);
+                        return montageRequire.loadPackage({
+                            location: location,
+                            hash: applicationHash
+                        });
                     })
-                    .then(function (applicationRequire) {
-
-                        global.require = applicationRequire;
-                        global.montageRequire = montageRequire;
-                        platform.initMontage(montageRequire, applicationRequire, params);
-                    });
-                };
-                return trigger ? trigger.promise.then(loadAtLocation) : loadAtLocation(location);
+                }
+                return promiseForLoadedPackage.then(function (applicationRequire) {
+                    global.require = applicationRequire;
+                    global.montageRequire = montageRequire;
+                    platform.initMontage(montageRequire, applicationRequire, params);
+                });
             })
             .done();
 

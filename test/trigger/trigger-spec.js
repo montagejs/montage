@@ -32,12 +32,32 @@ describe("trigger-test", function() {
         });
         it("load when message is posted", function() {
             console.log("load when message is posted");
-            testWindow.postMessage({
-                type: "montageInit",
-                location: options.directory + "../package.json"
-            }, "*");
-            return TestPageLoader.testPage.loadTest(promiseForFrameLoad, options).then(function(testPage) {
-                expect(TestPageLoader.testPage.loaded).toBeTruthy();
+            return require.async("trigger/package.json").then(function(packageJSON) {
+
+                packageJSON.mappings.__custom = {
+                    location: ".",
+                    name: "__custom",
+                    version: "*"
+                }
+
+                testWindow.postMessage({
+                    type: "montageInit",
+                    location: options.directory,
+                    packageJSON: packageJSON
+                }, "*");
+            }).then(function() {
+                return TestPageLoader.testPage.loadTest(promiseForFrameLoad, options).then(function(testPage) {
+                    expect(TestPageLoader.testPage.loaded).toBeTruthy();
+                });
+            }) ;
+        });
+        it("should accept to load a custom mapping", function() {
+            console.log("should accept to load a custom mapping");
+
+            var injectModule = TestPageLoader.testPage.window.require.async("__custom/inject");
+
+            return injectModule.then(function(inject) {
+                expect(inject.injected).toBeTruthy();
             });
 
         });
