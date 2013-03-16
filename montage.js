@@ -91,10 +91,10 @@ if (typeof window !== "undefined") {
 
             // setup the reel loader
             config.makeLoader = function (config) {
-                if ("remoteTrigger" in params) {
-                    config.mappings.__stage = {
+                if ("remoteTriggerMapping" in params) {
+                    config.mappings[params.remoteTriggerMapping] = {
                         location: location,
-                        name: "stage",
+                        name: params.remoteTriggerMapping,
                         version: "*"
                     };
                 }
