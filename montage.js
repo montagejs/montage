@@ -107,7 +107,7 @@ if (typeof window !== "undefined") {
                 );
             };
 
-            var location = URL.resolve(config.location, params.package || ".");
+            var location = URL.resolve(config.location, params["package"] || ".");
             var applicationHash = params.applicationHash;
 
             if (typeof BUNDLE === "object") {
@@ -220,20 +220,60 @@ if (typeof window !== "undefined") {
                     }, "*");
                     var messageCallback = function (event) {
                         if (params.remoteTrigger === event.origin &&
-                                (event.source === window || event.source === window.parent) &&
-                                event.data.type === "montageInit") {
-                            trigger.resolve([event.data.location, event.data.packageJSON]);
+                            (event.source === window || event.source === window.parent) &&
+                            event.data.type === "montageInit") {
+                            trigger.resolve([event.data.location, event.data.injections]);
                             window.removeEventListener("message", messageCallback);
                         }
                     };
                     window.addEventListener("message", messageCallback);
-                    promiseForLoadedPackage = trigger.promise.spread(function (location, packageJSON) {
+                    var injectIntoRequire = function (targetRequire, location, injections, type) {
+                        if (!injections) {
+                            return;
+                        }
                         location = URL.resolve(location, ".");
-                        montageRequire.injectPackageDescription(location, packageJSON);
+                        var packageDescriptions = injections.packageDescriptions;
+                        if (Array.isArray(packageDescriptions) && packageDescriptions.length > 0) {
+                            for (var index in packageDescriptions) {
+                                if (packageDescriptions[index][type]) {
+                                    targetRequire.injectPackageDescription(location, packageDescriptions[index].description);
+                                }
+                            }
+                        }
+                        var packageDescriptionLocations = injections.packageDescriptionLocations;
+                        if (Array.isArray(packageDescriptionLocations) && packageDescriptionLocations.length > 0) {
+                            for (var index in packageDescriptionLocations) {
+                                if (packageDescriptionLocations[index][type]) {
+                                    targetRequire.injectPackageDescriptionLocation(location, packageDescriptionLocations[index].descriptionLocation);
+                                }
+                            }
+                        }
+                        var mappings = injections.mappings;
+                        if (Array.isArray(mappings) && mappings.length > 0) {
+                            for (var index in mappings) {
+                                if (mappings[index][type]) {
+                                    targetRequire.injectMapping(mappings[index].dependency, mappings[index].name);
+                                }
+                            }
+                        }
+                        var dependencies = injections.dependencies;
+                        if (Array.isArray(dependencies) && dependencies.length > 0) {
+                            for (var index in dependencies) {
+                                if (dependencies[index][type]) {
+                                    targetRequire.injectDependency(dependencies[index].name);
+                                }
+                            }
+                        }
+                    }
+                    promiseForLoadedPackage = trigger.promise.spread(function (location, injections) {
+                        injectIntoRequire.call(this, montageRequire, location, injections, "montage")
                         return montageRequire.loadPackage({
                             location: location,
-                            hash: applicationHash
-                        });
+                            hash: applicationHash})
+                            .then(function (applicationRequire) {
+                                injectIntoRequire.call(this, applicationRequire, location, injections, "application")
+                                return Promise.resolve(applicationRequire);
+                            });
                     })
                 }
                 return promiseForLoadedPackage.then(function (applicationRequire) {
