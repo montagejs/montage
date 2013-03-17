@@ -34,20 +34,57 @@ describe("trigger-test", function() {
             console.log("load when message is posted");
             return require.async("trigger/package.json").then(function(packageJSON) {
 
-                packageJSON.mappings.__custom = {
-                    location: ".",
-                    name: "__custom",
-                    version: "*"
-                }
+                var injections = {}
+                injections.packageDescriptions = [];
+                injections.packageDescriptionLocations = [];
+                injections.mappings = [
+                    {
+                        name: "test",
+                        application: true,
+                        dependency: {
+                            name: "test",
+                            location: "../",
+                            version: "*"
+                        }
+                    },
+                    {
+                        name: "montage",
+                        application: true,
+                        dependency: {
+                            name: "montage",
+                            location: "../../",
+                            version: "*"
+                        }
+                    },
+                    {
+                        name: "montage-testing",
+                        application: true,
+                        dependency: {
+                            name: "montage-testing",
+                            location: "../../node_modules/montage-testing",
+                            version: "*"
+                        }
+                    },
+                    {
+                        name: "__custom",
+                        application: true,
+                        dependency: {
+                            name: "__custom",
+                            location: ".",
+                            version: "*"
+                        }
+                    }
+                ];
+                injections.dependencies = [];
 
                 testWindow.postMessage({
                     type: "montageInit",
                     location: options.directory,
-                    packageJSON: packageJSON
+                    injections: injections
                 }, "*");
             }).then(function() {
                 return TestPageLoader.testPage.loadTest(promiseForFrameLoad, options).then(function(testPage) {
-                    expect(TestPageLoader.testPage.loaded).toBeTruthy();
+                    expect(testPage.loaded).toBeTruthy();
                 });
             }) ;
         });
