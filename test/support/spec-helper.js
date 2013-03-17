@@ -25,6 +25,18 @@ queryString = function(parameter) {
     return value;
 };
 
+function createJavaScriptContext() {
+    var iframe = document.createElement("iframe"),
+        context;
+
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+    context = iframe.contentWindow;
+    iframe.parentNode.removeChild(iframe);
+
+    return context;
+}
+
 var updateReporter = function() {
     var runner = jasmine.getEnv().currentRunner();
     runner.finishCallback();
@@ -100,10 +112,33 @@ jasmine.Block.prototype.execute = function (onComplete) {
                 spec.fail('Promise fulfilled with unexpected value: ' + value);
             }
             onComplete();
-        }, function (error) {
+        }).timeout(15000).fail(function (error) {
             spec.fail(error);
             onComplete();
         });
     }
 };
 
+beforeEach(function() {
+    this.addMatchers({
+        toHave: function(expected) {
+            var actual = this.actual,
+                notText = this.isNot ? " not" : "",
+                isArray = jasmine.isArray_(actual);
+
+            this.message = function() {
+                if (isArray) {
+                    return "Expected " + actual + " to" + notText + " have " + expected;
+                } else {
+                    return "Expected " + actual + " to be an array";
+                }
+            };
+
+            if (isArray) {
+                return actual.indexOf(expected) >= 0;
+            } else {
+                return false;
+            }
+        }
+    })
+});

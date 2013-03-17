@@ -3,6 +3,7 @@
     "version": "0.0.0",
     "mappings": {
         "montage": "../",
+        "montage-testing": "../node_modules/montage-testing",
         "package-a": {
             "name": "package-a",
             "location": "package-a"

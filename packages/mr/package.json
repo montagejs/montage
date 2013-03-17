@@ -1,8 +1,11 @@
 {
   "name": "mr",
-  "version": "0.12.6",
+  "version": "0.12.11",
   "description": "A refresh-only CommonJS module system for browsers, used in Montage",
   "main": "require",
+  "scripts": {
+    "test": "node spec/phantom.js"
+  },
   "bin": {
     "mr": "bin/mr"
   },
@@ -16,7 +19,9 @@
     "q": "~0.8.12"
   },
   "devDependencies": {
-    "qs": "~0.5.3"
+    "qs": "~0.5.3",
+    "wd": "~0.0.31",
+    "connect": "~2.7.3"
   },
   "exclude": [
     "README.md",

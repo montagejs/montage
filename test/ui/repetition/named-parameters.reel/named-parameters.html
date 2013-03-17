@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script type="text/montage-serialization">{
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"}
+            }
+        },
+
+        "leftSideRepetition": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "leftSideRepetition"},
+                "content": [1, 2]
+            }
+        },
+
+        "leftSideTitle": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "leftSideTitle"}
+            }
+        },
+
+        "rightSideRepetition": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "rightSideRepetition"},
+                "content": [1, 2]
+            }
+        },
+
+        "rightSideTitle": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "rightSideTitle"}
+            }
+        }
+    }</script>
+</head>
+<body>
+    <div data-montage-id="owner">
+        <div data-montage-id="owner">
+            <div data-montage-id="leftSide">
+                <ul data-montage-id="leftSideRepetition">
+                    <li>
+                        <span data-montage-id="leftSideTitle"></span>
+                        <span data-param="leftSide"></span>
+                    </li>
+                </ul>
+            </div>
+            <div data-montage-id="rightSide">
+                <ul data-montage-id="rightSideRepetition">
+                    <li>
+                        <span data-montage-id="rightSideTitle"></span>
+                        <span data-param="rightSide"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

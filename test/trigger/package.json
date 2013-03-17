@@ -1,0 +1,8 @@
+{
+    "name": "trigger-test",
+    "mappings": {
+        "test": "../",
+        "montage": "../../",
+        "montage-testing": "../../node_modules/montage-testing"
+    }
+}

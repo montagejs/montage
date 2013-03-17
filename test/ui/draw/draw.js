@@ -32,6 +32,7 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     _root = require("montage/ui/component")._root,
     logger = require("montage/core/logger").logger("Draw");
+var TestController = require("montage-testing/test-controller").TestController;
 
 var FirstDrawListenerComponent = Montage.create(Component, {
    handleFirstDraw: {
@@ -41,7 +42,7 @@ var FirstDrawListenerComponent = Montage.create(Component, {
 });
 
 
-var Draw = exports.Draw = Montage.create(Montage, {
+var Draw = exports.Draw = Montage.create(TestController, {
     loadComponents: {
         enumerable: false,
         value: function() {

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script type="text/javascript">
+        var script = document.createElement("script");
+        script.setAttribute("type", "text/javascript");
+        script.setAttribute("src", "../../montage.js");
+        script.dataset.remoteTrigger = window.location.origin;
+
+        document.head.appendChild(script);
+        console.log("appendChild", script.dataset)
+    </script>
+    <script type="text/montage-serialization">
+        {
+            "test": {
+                "prototype": "trigger-test",
+                "properties": {
+                    "text": {"@": "text"}
+                }
+            },
+
+            "text": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "text"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+    <div data-montage-id="text"></div>
+</body>
+</html>

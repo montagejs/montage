@@ -8,7 +8,7 @@
  */
 var Montage = require("montage").Montage;
 var Promise = require("core/promise").Promise;
-var Deserializer = require("core/deserializer").Deserializer;
+var Deserializer = require("core/serialization").Deserializer;
 var ObjectProperty = require("core/meta/object-property").ObjectProperty;
 var Enum = require("core/enum").Enum;
 var BinderModule = require("core/meta/binder");
@@ -279,7 +279,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
 
             targetRequire.async(blueprintModuleId).then(function(object) {
                 try {
-                    Deserializer.create().initWithObjectAndRequire(object, targetRequire, blueprintModuleId).deserializeObject(function(blueprint) {
+                    Deserializer.create().init(JSON.stringify(object), targetRequire).deserializeObject().then(function(blueprint) {
                         if (blueprint) {
                             var binder = (blueprint._binder ? blueprint._binder : BinderModule.Binder.manager.defaultBinder); // We do not want to trigger the auto registration
                             var existingBlueprint = binder.blueprintForPrototype(blueprint.prototypeName, blueprint.moduleId);

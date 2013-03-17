@@ -32,14 +32,16 @@ POSSIBILITY OF SUCH DAMAGE.
 /**
 	@module montage/ui/component
     @requires montage
-    @requires montage/ui/template
+    @requires montage/core/template
     @requires montage/core/gate
     @requires montage/core/logger | component
     @requires montage/core/logger | drawing
     @requires montage/core/event/event-manager
  */
 var Montage = require("montage").Montage,
-    Template = require("ui/template").Template,
+    Bindings = require("core/bindings").Bindings,
+    Template = require("core/template").Template,
+    DocumentResources = require("core/document-resources").DocumentResources,
     Gate = require("core/gate").Gate,
     Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("component"),
@@ -55,6 +57,18 @@ var Montage = require("montage").Montage,
    @extends module:montage/core/core.Montage
  */
 var Component = exports.Component = Montage.create(Montage,/** @lends module:montage/ui/component.Component# */ {
+    DOM_ARG_ATTRIBUTE: {value: "data-arg"},
+
+    didCreate: {
+        value: function () {
+            Montage.didCreate.call(this);
+            this._isComponentExpanded = false;
+            this._isTemplateLoaded = false;
+            this._isTemplateInstantiated = false;
+            this._isComponentTreeLoaded = false;
+        }
+    },
+
 /**
         Description TODO
         @type {Property}
@@ -71,6 +85,18 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     parentProperty: {
         value: "parentComponent"
+    },
+
+    _ownerDocumentPart: {
+        value: null
+    },
+
+    _templateDocumentPart: {
+        value: null
+    },
+
+    _domArguments: {
+        value: null
     },
 
     /**
@@ -204,6 +230,130 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
+    getElementId: {
+        value: function() {
+            var element = this._element;
+
+            if (element) {
+                return element.getAttribute("data-montage-id");
+            }
+        }
+    },
+
+    _initDomArguments: {
+        value: function() {
+            var candidates,
+                domArguments = {},
+                name,
+                node,
+                element = this.element;
+
+            candidates = element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "]")
+
+            // Need to make sure that we filter dom args that are for nested
+            // components and not for this component.
+            nextCandidate:
+            for (var i = 0, candidate; (candidate = candidates[i]); i++) {
+                node = candidate;
+                while ((node = node.parentNode) !== element) {
+                    // This candidate is inside another component so skip it.
+                    if (node.component) {
+                        continue nextCandidate;
+                    }
+                }
+                this._findAndDetachComponents(candidate);
+                candidate.parentNode.removeChild(candidate);
+                name = candidate.getAttribute(this.DOM_ARG_ATTRIBUTE);
+                candidate.removeAttribute(this.DOM_ARG_ATTRIBUTE);
+                domArguments[name] = candidate;
+            }
+
+            this._domArguments = domArguments;
+        }
+    },
+
+    getDomArgumentNames: {
+        value: function() {
+            return Object.keys(this._domArguments);
+        }
+    },
+
+    /**
+     * When a Dom Argument is extracted from a Component it is no longer
+     * available
+     *
+     * @param {String} name The name of the argument
+     * @returns The element
+     */
+    extractDomArgument: {
+        value: function(name) {
+            var argument;
+
+            argument = this._domArguments[name];
+            delete this._domArguments[name];
+
+            return argument;
+        }
+    },
+
+    _getDomArgument: {
+        value: function(element, name) {
+            var candidates,
+                node,
+                elementId,
+                serialization,
+                labels;
+
+            candidates = element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "='" + name + "']");
+
+            // Make sure that the argument we find is indeed part of element and
+            // not an argument from an inner component.
+            nextCandidate:
+            for (var i = 0, candidate; (candidate = candidates[i]); i++) {
+                node = candidate;
+                while ((node = node.parentNode) !== element) {
+                    elementId = this._template.getElementId(node);
+
+                    // Check if this node is an element of a component.
+                    // TODO: Make this operation faster
+                    if (elementId) {
+                        serialization = this._template.getSerialization();
+                        labels = serialization.getSerializationLabelsWithElements(
+                            elementId);
+
+                        if (labels.length > 0) {
+                            // This candidate is inside another component so
+                            // skip it.
+                            continue nextCandidate;
+                        }
+                    }
+                }
+                return candidate;
+            }
+        }
+    },
+
+    getTemplateParameterArgument: {
+        value: function(template, name) {
+            var element,
+                range,
+                argument;
+
+            element = template.getElementById(this.getElementId());
+
+            if (name === "*") {
+                range = template.document.createRange();
+                range.selectNodeContents(element);
+                argument = range.cloneContents();
+            } else {
+                argument = this._getDomArgument(element, name).cloneNode(true);
+                argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
+            }
+
+            return argument;
+        }
+    },
+
     setElementWithParentComponent: {
         value: function(element, parent) {
             this._alternateParentComponent = parent;
@@ -294,10 +444,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         get: function() {
             var cachedParentComponent = this._cachedParentComponent;
             if (cachedParentComponent == null) {
-                return (this._cachedParentComponent = this.findParentComponent());
-            } else {
-                return cachedParentComponent;
+                this._cachedParentComponent = this.findParentComponent();
             }
+            return this._cachedParentComponent;
         }
     },
 
@@ -459,19 +608,32 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     _treeLevel: {
         value: 0
     },
-/**
-    Description TODO
-    @function
-    @param {Component} childComponent The childComponent
-    */
+
+    // TODO update all calls to use addChildComponent and remove this method.
     _addChildComponent: {
         value: function(childComponent) {
+            return this.addChildComponent(childComponent);
+        }
+    },
+
+    /**
+     * Description TODO
+     * @function
+     * @param {Component} childComponent The childComponent
+     */
+    addChildComponent: {
+        value: function (childComponent) {
             if (this.childComponents.indexOf(childComponent) == -1) {
                 this.childComponents.push(childComponent);
                 childComponent._cachedParentComponent = this;
+
+                if (childComponent.needsDraw) {
+                    childComponent._addToParentsDrawList();
+                }
             }
         }
     },
+
 /**
     Description TODO
     @function
@@ -490,11 +652,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     var newParentComponent = childComponent.findParentComponent();
                     if (newParentComponent === this) {
                         parentComponent.removeChildComponent(childComponent);
-                        newParentComponent._addChildComponent(childComponent);
+                        newParentComponent.addChildComponent(childComponent);
                     }
                 }
 
-                parentComponent._addChildComponent(this);
+                parentComponent.addChildComponent(this);
             }
         }
     },
@@ -523,6 +685,12 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 childComponents.splice(ix, 1);
                 childComponent._cachedParentComponent = null;
                 childComponent._alternateParentComponent = null;
+            }
+
+            if (childComponent._addedToDrawList) {
+                childComponent._addedToDrawList = false;
+                ix = this._drawList.indexOf(childComponent);
+                this._drawList.splice(ix, 1);
             }
         }
     },
@@ -578,27 +746,22 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
      * @function
      */
     cleanupDeletedComponentTree: {
-        value: function(deleteBindings) {
+        value: function(cancelBindings) {
             // Deleting bindings in all cases was causing the symptoms expressed in gh-603
             // Until we have a more granular way we shouldn't do this,
-            // the deleteBindings parameter is a short term fix.
-            if (deleteBindings) {
-                Object.deleteBindings(this);
+            // the cancelBindings parameter is a short term fix.
+            if (cancelBindings) {
+                Bindings.cancelBindings(this);
             }
             this.needsDraw = false;
             this.traverseComponentTree(function(component) {
                 // See above comment
-                if (deleteBindings) {
-                    Object.deleteBindings(component);
+                if (cancelBindings) {
+                    Bindings.cancelBindings(component);
                 }
                 component.needsDraw = false;
             });
         }
-    },
-
-    originalContent: {
-        serializable: false,
-        value: null
     },
 
     _newDomContent: {
@@ -634,35 +797,19 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             components = this.childComponents;
             for (var i = 0, component; (component = components[i]); i++) {
                 component.detachFromParentComponent();
-                component.cleanupDeletedComponentTree();
             }
 
             if (value instanceof Element) {
-                findAndDetachComponents(value);
+                this._findAndDetachComponents(value, componentsToAdd);
             } else if (value) {
                 for (var i = 0; i < value.length; i++) {
-                    findAndDetachComponents(value[i]);
-                }
-            }
-
-            // find the component fringe and detach them from the component tree
-            function findAndDetachComponents(node) {
-                var component = node.controller;
-
-                if (component) {
-                    component.detachFromParentComponent();
-                    componentsToAdd.push(component);
-                } else {
-                    var childNodes = node.childNodes;
-                    for (var i = 0, childNode; (childNode = childNodes[i]); i++) {
-                        findAndDetachComponents(childNode);
-                    }
+                    this._findAndDetachComponents(value[i], componentsToAdd);
                 }
             }
 
             // not sure if I can rely on _cachedParentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
             for (var i = 0, component; (component = componentsToAdd[i]); i++) {
-                this._addChildComponent(component);
+                this.addChildComponent(component);
             }
         }
     },
@@ -671,42 +818,104 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: false
     },
 
+    _findAndDetachComponents: {
+        value: function(node, components) {
+            // TODO: Check if searching the childComponents of the parent
+            //       component can make the search faster..
+            var component = node.component,
+                children;
+
+            if (!components) {
+                components = [];
+            }
+
+            if (component) {
+                component.detachFromParentComponent();
+                components.push(component);
+            } else {
+                // DocumentFragments don't have children so we default to
+                // childNodes.
+                children = node.children || node.childNodes;
+                for (var i = 0, child; (child = children[i]); i++) {
+                    this._findAndDetachComponents(child, components);
+                }
+            }
+
+            return components;
+        }
+    },
+
+    // Some components, like the repetition, might use their initial set of
+    // child components as a template to clone them and instantiate them as the
+    // real/effective child components.
+    //
+    // When this happens the original child components are in a way pointless
+    // to the application and should not be used.
+    //
+    // If other objects get a reference to these child components in the
+    // template serialization the way to know that they are going to be
+    // cloned is by checking if one of their parent components has
+    // its clonesChildComponents set to true.
     clonesChildComponents: {
         writable: false,
         value: false
+    },
+
+    _innerTemplate: {value: null},
+    innerTemplate: {
+        serializable: false,
+        get: function() {
+            var innerTemplate = this._innerTemplate,
+                ownerDocumentPart,
+                ownerTemplate,
+                elementId,
+                serialization,
+                externalObjectLabels,
+                externalObjects;
+
+            if (!innerTemplate) {
+                ownerDocumentPart = this._ownerDocumentPart;
+
+                if (ownerDocumentPart) {
+                    ownerTemplate = ownerDocumentPart.template;
+
+                    elementId = this.getElementId();
+                    innerTemplate = ownerTemplate.createTemplateFromElementContents(elementId);
+
+                    serialization = innerTemplate.getSerialization();
+                    externalObjectLabels = serialization.getExternalObjectLabels();
+                    ownerTemplateObjects = ownerDocumentPart.objects;
+                    externalObjects = Object.create(null);
+
+                    for (var i = 0, label; (label = externalObjectLabels[i]); i++) {
+                        externalObjects[label] = ownerTemplateObjects[label];
+                    }
+                    innerTemplate.setInstances(externalObjects);
+
+                    this._innerTemplate = innerTemplate;
+                }
+            }
+
+            return innerTemplate;
+        },
+        set: function(value) {
+            this._innerTemplate = value;
+        }
     },
 
 /**
     Description TODO
     @function
     */
+    // this is a handler that gets called by the deserializer, called on each
+    // object created, after didCreate, then deserializedFromSerialization if it exists
     deserializedFromSerialization: {
-        value: function() {
-            this.attachToParentComponent();
-            if (this._element) {
-                // the DOM content of the component was dynamically modified
-                // but it hasn't been drawn yet, we're going to assume that
-                // this new DOM content is the desired original content for
-                // this component since it has been set at deserialization
-                // time.
-                if (this._newDomContent) {
-                    this.originalContent = this._newDomContent;
-                } else {
-                    this.originalContent = Array.prototype.slice.call(this._element.childNodes, 0);
-                }
-            }
-            if (! this.hasOwnProperty("identifier")) {
-                this.identifier = Montage.getInfoForObject(this).label;
-            }
-        }
-    },
+        value: function(label) {
+            Montage.getInfoForObject(this).label = label;
 
-    serializeProperties: {
-        value: function(serializer) {
-            serializer.setAll();
-            var childComponents = this.childComponents;
-            for (var i = 0, l = childComponents.length; i < l; i++) {
-                serializer.addObject(childComponents[i]);
+            this.attachToParentComponent();
+            if (! this.hasOwnProperty("identifier")) {
+                this.identifier = label;
             }
         }
     },
@@ -743,7 +952,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         value: function _prepareCanDraw() {
             if (!this._isComponentTreeLoaded) {
-                this.loadComponentTree();
+                this.loadComponentTree().done();
             }
         }
     },
@@ -751,24 +960,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
   Description TODO
   @private
 */
-    _loadComponentTreeCallbacks: {
-        enumerable: false,
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
     _isComponentTreeLoaded: {
-        enumerable: false,
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
-    _isComponentTreeLoading: {
-        enumerable: false,
         value: null
     },
 /**
@@ -777,73 +969,47 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @param {Object} callback Callback object
     @returns itself
     */
-    loadComponentTree: {value: function loadComponentTree(callback) {
-        var self = this,
-            canDrawGate = this.canDrawGate;
+    _loadComponentTreeDeferred: {value: null},
+    loadComponentTree: {
+        value: function loadComponentTree() {
+            var self = this,
+                canDrawGate = this.canDrawGate,
+                deferred = this._loadComponentTreeDeferred;
 
-        if (this._isComponentTreeLoaded) {
-            if (callback) {
-                callback(this);
-            }
-            return;
-        }
+            if (!deferred) {
+                deferred = Promise.defer();
+                this._loadComponentTreeDeferred = deferred;
 
-        if (callback) {
-            if (this._loadComponentTreeCallbacks == null) {
-                this._loadComponentTreeCallbacks = [callback];
-            } else {
-                this._loadComponentTreeCallbacks.push(callback);
-            }
-        }
-        if (this._isComponentTreeLoading) {
-            return;
-        }
+                canDrawGate.setField("componentTreeLoaded", false);
 
-        canDrawGate.setField("componentTreeLoaded", false);
-        // only put it in the root component's draw list if the component has requested to be draw, it's possible to load the component tree without asking for a draw.
-        // What about the hasTemplate check?
-        if (this.needsDraw || this.hasTemplate) {
-            this._canDraw = false;
-        }
-
-        function callCallbacks() {
-            var callback, callbacks = self._loadComponentTreeCallbacks;
-
-            self._isComponentTreeLoading = false;
-            self._isComponentTreeLoaded = true;
-
-            canDrawGate.setField("componentTreeLoaded", true);
-
-            if (callbacks) {
-                for (var i = 0; (callback = callbacks[i]); i++) {
-                    callback(self);
+                // only put it in the root component's draw list if the
+                // component has requested to be draw, it's possible to load the
+                // component tree without asking for a draw.
+                // What about the hasTemplate check?
+                if (this.needsDraw || this.hasTemplate) {
+                    this._canDraw = false;
                 }
-                self._loadComponentTreeCallbacks = callbacks = null;
-            }
-        }
 
-        this._isComponentTreeLoading = true;
-        this.expandComponent(function() {
-            var childComponent,
-                childComponents = self.childComponents,
-                childComponentsCount = childComponents.length,
-                childrenLoadedCount = 0,
-                i;
+                this.expandComponent().then(function() {
+                    var promises = [],
+                        childComponents = self.childComponents,
+                        childComponent;
 
-            if (childComponentsCount === 0) {
-                callCallbacks();
-                return;
-            }
-
-            for (i = 0; (childComponent = childComponents[i]); i++) {
-                childComponent.loadComponentTree(function() {
-                    if (++childrenLoadedCount === childComponentsCount) {
-                        callCallbacks();
+                    for (var i = 0; (childComponent = childComponents[i]); i++) {
+                        promises.push(childComponent.loadComponentTree());
                     }
-                });
+
+                    return Promise.all(promises);
+                }).then(function() {
+                    self._isComponentTreeLoaded = true;
+                    canDrawGate.setField("componentTreeLoaded", true);
+                    deferred.resolve();
+                }, deferred.reject);
             }
-        });
-    }},
+
+            return deferred.promise;
+        }
+    },
 /**
     Description TODO
     @function
@@ -887,10 +1053,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
         if (this._isComponentExpanded) {
             traverse();
-        } else {
-            this.expandComponent(function() {
-                traverse();
-            });
+        } else if (callback) {
+            callback();
         }
     }},
 /**
@@ -898,31 +1062,99 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @function
     @param {Object} callback  TODO
     */
-    expandComponent: {value: function expandComponent(callback) {
-        var self = this;
+    _expandComponentDeferred: {value: null},
+    expandComponent: {
+        value: function expandComponent() {
+            var self = this,
+                deferred = this._expandComponentDeferred;
 
-        if (this.hasTemplate && !this._isTemplateInstantiated) {
-            this.loadTemplate(function() {
-                self._isComponentExpanded = true;
-                if (callback) {
-                    callback();
+            if (!deferred) {
+                deferred = Promise.defer();
+                this._expandComponentDeferred = deferred;
+
+                if (this.hasTemplate) {
+                    this._instantiateTemplate().then(function() {
+                        self._isComponentExpanded = true;
+                        self._addTemplateStyles();
+                        self.needsDraw = true;
+                        deferred.resolve();
+                    }, deferred.reject);
+                } else {
+                    this._isComponentExpanded = true;
+                    deferred.resolve();
                 }
-            });
-        } else {
-            self._isComponentExpanded = true;
-            if (callback) {
-                callback();
             }
-        }
-    }},
 
-/**
-  Description TODO
-  @private
-*/
-    _loadTemplateCallbacks: {
-        enumerable: false,
-        value: null
+            return deferred.promise;
+        }
+    },
+
+    _templateObjectDescriptor: {
+        value: {
+            enumerable: true,
+            configurable: true
+        }
+    },
+
+    _setupTemplateObjects: {
+        value: function(objects) {
+            var descriptor = this._templateObjectDescriptor,
+                templateObjects = Object.create(null);
+
+            for (var label in objects) {
+                var object = objects[label];
+
+                if (typeof object === "object" && object != null) {
+                    if (!Component.isPrototypeOf(object) || object === this ||
+                        object.parentComponent === this) {
+                        templateObjects[label] = object;
+                    } else {
+                        descriptor.get = this._makeTemplateObjectGetter(this, label);
+                        Object.defineProperty(templateObjects, label, descriptor);
+                    }
+                }
+            }
+
+            this.templateObjects = templateObjects;
+        }
+    },
+
+    _makeTemplateObjectGetter: {
+        value: function(owner, label) {
+            var querySelectorLabel = "@"+label,
+                isRepeated,
+                components,
+                component;
+
+            return function templateObjectGetter() {
+                if (isRepeated) {
+                    return owner.querySelectorAllComponent(querySelectorLabel, owner);
+                } else {
+                    components = owner.querySelectorAllComponent(querySelectorLabel, owner);
+                    // if there's only one maybe it's not repeated, let's go up
+                    // the tree and found out.
+                    if (components.length === 1) {
+                        component = components[0];
+                        while (component = component.parentComponent) {
+                            if (component === owner) {
+                                // we got to the owner without ever hitting a component
+                                // that repeats its child components, we can
+                                // safely recreate this property with a static value
+                                Object.defineProperty(this, label, {
+                                    value: components[0]
+                                });
+                                return components[0];
+                            } else if (component.clonesChildComponents) {
+                                break;
+                            }
+                        }
+                    }
+
+                    isRepeated = true;
+                    return components;
+                };
+            };
+        }
     },
 
 /**
@@ -930,74 +1162,68 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @function
     @param {Object} callback  TODO
 */
-    loadTemplate: {value: function loadTemplate(callback) {
-        var self = this;
+    _instantiateTemplate: {
+        value: function() {
+            var self = this;
 
-        if (!this._isTemplateInstantiated) {
-            this._loadTemplate(function(template) {
-                var instances = self.templateObjects;
+            return this._loadTemplate().then(function(template) {
+                if (!self._element) {
+                    console.error("Cannot instantiate template without an element.", self);
+                    return Promise.reject(new Error("Cannot instantiate template without an element.", self))
+                }
+                var instances = self.templateObjects,
+                    _document = self._element.ownerDocument;
 
                 if (instances) {
                     instances.owner = self;
                 } else {
-                    self.templateObjects = instances = {owner: self};
+                    instances = {owner: self};
                 }
 
-                // this actually also serves as isTemplateInstantiating
                 self._isTemplateInstantiated = true;
-                template.instantiateWithInstancesAndDocument(instances, self._element.ownerDocument, function() {
-                    if (callback) {
-                        callback();
-                    }
+
+                return template.instantiateWithInstances(instances, _document)
+                .then(function(documentPart) {
+                    self._templateDocumentPart = documentPart;
+                })
+                .fail(function(reason) {
+                    var message = reason.stack || reason;
+                    console.error("Error in", template.getBaseUrl() + ":", message);
+                    throw reason;
                 });
             });
         }
-    }},
+    },
 
-    _loadTemplate: {value: function _loadTemplate(callback) {
-        if (this._isTemplateLoaded) {
-            if (callback) {
-                callback(this._template);
+    _templateDidLoad: {
+        value: function(documentPart) {
+            this._setupTemplateObjects(documentPart.objects);
+        }
+    },
+
+    _loadTemplatePromise: {value: null},
+    _loadTemplate: {
+        value: function _loadTemplate() {
+            var self = this,
+                promise = this._loadTemplatePromise,
+                info;
+
+            if (!promise) {
+                info = Montage.getInfoForObject(this);
+
+                promise = this._loadTemplatePromise = Template.getTemplateWithModuleId(
+                    this.templateModuleId, info.require)
+                .then(function(template) {
+                    self._template = template;
+                    self._isTemplateLoaded = true;
+
+                    return template;
+                });
             }
-            return;
-        }
-        // TODO we can create _loadTemplateCallbacks with [] and use "distinct" after merging with master
-        if (callback) {
-            if (this._loadTemplateCallbacks === null) {
-                this._loadTemplateCallbacks = [callback];
-            } else {
-                this._loadTemplateCallbacks.push(callback);
-            }
-        }
-        if (this._isTemplateLoading) {
-            return;
-        }
-        this._isTemplateLoading = true;
-        var self = this;
-        var info, moduleId;
 
-        var onTemplateLoad = function(template) {
-            var callbacks = self._loadTemplateCallbacks;
-            self._template = template;
-            self._isTemplateLoaded = true;
-            self._isTemplateLoading = false;
-
-            if (callbacks) {
-                for (var i = 0; (callback = callbacks[i]); i++) {
-                    callback(template);
-                }
-                self._loadTemplateCallbacks = callbacks = null;
-            }
-        };
-
-        info = Montage.getInfoForObject(this);
-
-        if (logger.isDebug) {
-            logger.debug(this, "Will load " + this.templateModuleId);
+            return promise;
         }
-        // this call will be synchronous if the template is cached.
-        Template.templateWithModuleId(info.require, this.templateModuleId, onTemplateLoad);
-    }},
+    },
 
     templateModuleId: {
         get: function() {
@@ -1022,13 +1248,19 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     _deserializedFromTemplate: {
-        value: function(owner) {
+        value: function(owner, documentPart) {
+            this._ownerDocumentPart = documentPart;
+
             if (!this.ownerComponent) {
                 if (Component.isPrototypeOf(owner)) {
                     this.ownerComponent = owner;
                 } else {
                     this.ownerComponent = this.rootComponent;
                 }
+            }
+
+            if (this._needsDrawInDeserialization) {
+                this.needsDraw = true;
             }
         }
     },
@@ -1238,6 +1470,28 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
+    _addTemplateStyles: {
+        value: function() {
+            var part = this._templateDocumentPart,
+                resources,
+                styles,
+                style,
+                _document,
+                documentHead;
+
+            if (part) {
+                resources = part.template.getResources();
+                _document = this.element.ownerDocument;
+                documentHead = _document.head;
+                styles = resources.createStylesForDocument(_document);
+
+                for (var i = 0, style; (style = styles[i]); i++) {
+                    this.rootComponent.addStylesheet(style);
+                }
+            }
+        }
+    },
+
 /**
   Description TODO
   @private
@@ -1247,19 +1501,98 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (logger.isDebug) {
                 logger.debug(this, "_templateElement: " + this._templateElement);
             }
+
+            this._initDomArguments();
             if (this._templateElement) {
+                this._bindTemplateParametersToArguments();
                 this._replaceElementWithTemplate();
-            }
-            // This will schedule a second draw for any component that has children
-            var childComponents = this.childComponents;
-            for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
-                if (drawLogger.isDebug) {
-                    drawLogger.debug(this, "needsDraw = true for: " + childComponent._montage_metadata.exportedSymbol);
-                }
-                childComponent.needsDraw = true;
             }
         },
         enumerable: false
+    },
+
+    _bindTemplateParametersToArguments: {
+        value: function() {
+            var parameters = this._templateDocumentPart.parameters,
+                parameter,
+                templateArguments,
+                argument,
+                validation,
+                contents,
+                components;
+
+            templateArguments = this._domArguments;
+
+            if (!this._template.hasParameters() &&
+                templateArguments.length == 1) {
+                return;
+            }
+
+            validation = this._validateTemplateArguments(
+                templateArguments, parameters);
+            if (validation) {
+                throw validation;
+            }
+
+            for (var key in parameters) {
+                parameter = parameters[key];
+                argument = templateArguments[key];
+
+                if (key === "*") {
+                    range = this._element.ownerDocument.createRange();
+                    range.selectNodeContents(this._element);
+                    contents = range.extractContents();
+                } else {
+                    contents = argument;
+                }
+
+                components = this._findAndDetachComponents(contents);
+                parameter.parentNode.replaceChild(contents, parameter);
+                for (var i = 0; (component = components[i]); i++) {
+                    component.attachToParentComponent();
+                }
+            }
+        }
+    },
+
+    _validateTemplateArguments: {
+        value: function(templateArguments, templateParameters) {
+            var parameterNames = Object.keys(templateParameters),
+                argumentNames;
+
+            if (templateArguments == null) {
+                if (parameterNames.length > 0) {
+                    return new Error('No arguments provided for ' +
+                    this.templateModuleId + '. Arguments needed: ' +
+                    parameterNames + '.');
+                }
+            } else {
+                if ("*" in templateParameters) {
+                    argumentNames = Object.keys(templateArguments);
+                    if (argumentNames.length > 0) {
+                        return new Error('Arguments "' + argumentNames +
+                        '" were given to component but no named parameters ' +
+                        'are defined in ' + this.templateModuleId);
+                    }
+                } else {
+                    // All template parameters need to be satisfied.
+                    for (var param in templateParameters) {
+                        if (!(param in templateArguments)) {
+                            return new Error('"' + param + '" argument not ' +
+                            'given in ' + this.templateModuleId);
+                        }
+                    }
+                    // Arguments for non-existant parameters are not allowed.
+                    // Only the star argument is allowed.
+                    for (var param in templateArguments) {
+                        if (param !== "*" && !(param in templateParameters)) {
+                            return new Error('"' + param + '" parameter does ' +
+                            'not exist in ' + this.templateModuleId);
+                        }
+                    }
+                }
+            }
+        }
     },
 /**
         Description TODO
@@ -1306,9 +1639,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
                 element.innerHTML = "";
 
-                if (contents instanceof Element) {
+                if (Element.isElement(contents)) {
                     element.appendChild(contents);
-                } else if(contents !== null) {
+                } else if(contents != null) {
                     for (var i = 0, content; (content = contents[i]); i++) {
                         element.appendChild(content);
                     }
@@ -1387,7 +1720,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
        @private
      */
     _needsDraw: {
-        enumerable: false,
+        value: false
+    },
+
+    _needsDrawInDeserialization: {
         value: false
     },
 
@@ -1411,6 +1747,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         set: function(value) {
             if (this.isDeserializing) {
                 // Ignore needsDraw(s) which happen during deserialization
+                this._needsDrawInDeserialization = true;
                 return;
             }
             if (this._needsDraw !== value) {
@@ -2206,6 +2543,35 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         value: 0
     },
 
+
+    _documentResources: {
+        value: null
+    },
+    _needsStylesheetsDraw: {
+        value: false
+    },
+    _stylesheets: {
+        value: []
+    },
+    addStylesheet: {
+        value: function(style) {
+            this._stylesheets.push(style);
+            this._needsStylesheetsDraw = true;
+        }
+    },
+    drawStylesheets: {
+        value: function() {
+            var documentResources = this._documentResources,
+                stylesheets = this._stylesheets,
+                stylesheet;
+
+            while ((stylesheet = stylesheets.shift())) {
+                documentResources.addStyle(stylesheet);
+            }
+            this._needsStylesheetsDraw = false;
+        }
+    },
+
     drawTree: {
         value: function drawTree() {
             if (this.requestedAnimationFrame === null) { // 0 is a valid requestedAnimationFrame value
@@ -2214,6 +2580,18 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                 }
                 var self = this, requestAnimationFrame = this.requestAnimationFrame;
                 var _drawTree = function(timestamp) {
+                    // Before initiating a draw cycle through the components we
+                    // need to have a draw cycle just to add all the stylesheets
+                    // if any is requested to draw.
+                    // We need to do this because adding the stylesheets at the
+                    // same time the components draw won't make the styles
+                    // available at that first draw.
+                    if (self._needsStylesheetsDraw) {
+                        self.drawStylesheets();
+                        self.requestedAnimationFrame = null;
+                        self.drawTree();
+                        return;
+                    }
                     self._frameTime = (timestamp ? timestamp : Date.now());
                     if (self._clearNeedsDrawTimeOut) {
                         self._clearNeedsDrawList();
@@ -2404,6 +2782,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         set:function(value) {
             defaultEventManager.registerEventHandlerForElement(this, value);
             this._element = value;
+            this._documentResources = DocumentResources.getInstanceForDocument(value);
         }
     }
 });

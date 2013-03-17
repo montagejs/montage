@@ -84,9 +84,6 @@ describe("core/core-spec", function() {
                 expect(object.uuid).toBe(object.uuid);
             });
 
-            it("should have a collection of binding descriptors", function() {
-                expect(Object.getPropertyDescriptor(object, "_bindingDescriptors")).toBeTruthy();
-            });
         });
 
         describe("Montage objects", function() {
@@ -138,10 +135,6 @@ describe("core/core-spec", function() {
                 });
                 a3.__proto__ = Montage;
                 expect(a.equals(a3)).toBeTruthy();
-            });
-
-            it("should have a collection of binding descriptors", function() {
-                expect(Object.getPropertyDescriptor(Montage, "_bindingDescriptors")).toBeTruthy();
             });
 
             describe("create", function() {
@@ -787,65 +780,6 @@ describe("core/core-spec", function() {
                 });
             });
 
-        });
-
-    });
-
-    describe("getting properties", function() {
-
-        it("should return the value at the specified property", function() {
-            var foo = {a:42};
-            expect(foo.getProperty("a")).toBe(42);
-        });
-
-        it("must return undefined if the specified property does not exist", function() {
-            var foo = {a:42};
-            expect(foo.getProperty("b")).toBeUndefined();
-        });
-
-    });
-
-    describe("setting properties", function() {
-
-        it("should set the value at the specified property", function() {
-            var foo = {a:42};
-            foo.setProperty("a", 22);
-            expect(foo.getProperty("a")).toBe(22);
-        });
-
-        it("should set the value at the specified property even if that property did not exist", function() {
-            var foo = {a:42};
-            foo.setProperty("b", 22);
-            expect(foo.getProperty("b")).toBe(22);
-        });
-
-        it("should set the value at the specified index of an empty array if that array did not contain that index", function() {
-
-            var foo = [];
-            foo.setProperty("0", "hello");
-            expect(foo.getProperty("0")).toBe("hello");
-
-            foo = [];
-            foo.setProperty("1", "hello");
-            expect(foo.getProperty("1")).toBe("hello");
-
-            foo = [];
-            foo.setProperty("100", "goodbye");
-            expect(foo.getProperty("100")).toBe("goodbye");
-        });
-
-        it("should set the value at the specified index of an non-empty array if that array did not contain that index", function() {
-            var foo = ["original"];
-            foo.setProperty("0", "hello");
-            expect(foo.getProperty("0")).toBe("hello");
-
-            foo = ["original"];
-            foo.setProperty("1", "hello");
-            expect(foo.getProperty("1")).toBe("hello");
-
-            foo = ["original"];
-            foo.setProperty("100", "goodbye");
-            expect(foo.getProperty("100")).toBe("goodbye");
         });
 
     });

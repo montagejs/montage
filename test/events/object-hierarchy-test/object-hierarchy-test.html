@@ -59,7 +59,7 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "application": {
-        "prototype": "montage/ui/application",
+        "prototype": "montage/core/application",
         "properties": {
             "delegate": {"@": "test"}
         }
@@ -69,8 +69,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 </head>
 <body>
-    <div id="drawTrigger">
-        <div id="child"></div>
+    <div data-montage-id="drawTrigger">
+        <div data-montage-id="child"></div>
     </div>
     ObjectHierarchy…
 </body>

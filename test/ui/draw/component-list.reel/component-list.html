@@ -41,13 +41,13 @@ POSSIBILITY OF SUCH DAMAGE.
         },
 
         "list": {
-            "prototype": "montage/ui/list.reel",
+            "prototype": "ui/draw/list.reel",
             "properties": {
                 "element": {"#": "list"},
-                "objects": [1, 2, 3]
+                "content": [1, 2, 3]
             },
             "bindings": {
-                "domContent": {"<->": "@owner.originalContent"}
+                "innerTemplate": {"<->": "@owner.innerTemplate"}
             }
         }
     }</script>

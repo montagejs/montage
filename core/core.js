@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
  @requires core/shim/array
  @requires core/shim/string
  @requires core/extras/object
- @requires core/extras/array
  @requires core/extras/string
  @requires core/extras/function
  @requires core/extras/date
@@ -47,7 +46,6 @@ require("core/shim/object");
 require("core/shim/array");
 require("core/shim/string");
 require("core/extras/object");
-require("core/extras/array");
 require("core/extras/date");
 require("core/extras/element");
 require("core/extras/function");
@@ -102,14 +100,16 @@ Object.defineProperty(Montage, "create", {
         if (aPrototype !== undefined && typeof aPrototype !== "object") {
             throw new TypeError("Object prototype may only be an Object or null, not '" + aPrototype + "'");
         }
+        // Prototype.create() and Montage.create(Prototype)
+        // both create instances:
         if (!propertyDescriptor) {
             var newObject = Object.create(typeof aPrototype === "undefined" ? this : aPrototype);
-
             if (typeof newObject.didCreate === "function") {
                 newObject.didCreate();
             }
-
             return newObject;
+        // Montage.create(Prototype, properties)
+        // creates instances
         } else {
             var result = Object.create(aPrototype);
             Montage.defineProperties(result, propertyDescriptor);
@@ -154,8 +154,7 @@ Object.defineProperty(Montage, "defineProperty", {
             throw new TypeError("Object must be an object, not '" + obj + "'");
         }
 
-        var dependencies = descriptor.dependencies,
-            isValueDescriptor = (VALUE in descriptor);
+        var isValueDescriptor = (VALUE in descriptor);
 
         if (DISTINCT in descriptor && !isValueDescriptor) {
             throw ("Cannot use distinct attribute on non-value property '" + prop + "'");
@@ -197,21 +196,12 @@ Object.defineProperty(Montage, "defineProperty", {
             }
         }
 
-        if (dependencies) {
-            var i = 0,
-                independentProperty;
-
-            for (; (independentProperty = dependencies[i]); i++) {
-                Montage.addDependencyToProperty(obj, independentProperty, prop);
-            }
-
-        }
-
         if (SERIALIZABLE in descriptor) {
             // get the _serializableAttributeProperties property or creates it through the entire chain if missing.
             getAttributeProperties(obj, SERIALIZABLE)[prop] = descriptor.serializable;
         }
 
+        // TODO replace this with Object.clone from collections - @kriskowal
         //this is added to enable value properties with [] or Objects that are new for every instance
         if (descriptor.distinct === true && typeof descriptor.value === "object") {
             (function(prop,internalProperty, value, obj) {
@@ -416,7 +406,7 @@ Object.defineProperty(Montage, "defineProperties", {value: function(obj, propert
 var _defaultAccessorProperty = {
     enumerable: true,
     configurable: true,
-    serializable: "reference"
+    serializable: true
 };
 var _defaultObjectValueProperty = {
     writable: true,
@@ -431,53 +421,6 @@ var _defaultFunctionValueProperty = {
     serializable: false
 };
 
-/**
-    Adds a dependent property to another property's collection of dependencies.
-    When the value of a dependent property changes, it generates a <code>change@independentProperty</code> event.
-    @function module:montage/core/core.Montage.addDependencyToProperty
-    @param {Object} obj The object containing the dependent and independent properties.
-    @param {String} independentProperty The name of the object's independent property.
-    @param {String} dependentProperty The name of the object's dependent property.
-*/
-Montage.defineProperty(Montage, "addDependencyToProperty", { value: function(obj, independentProperty, dependentProperty) {
-
-    // TODO optimize this so we don't keep checking over and over again
-    if (!obj._dependenciesForProperty) {
-        Montage.defineProperty(obj, "_dependenciesForProperty", {
-            value: {}
-        });
-    }
-
-    if (!obj._dependenciesForProperty[dependentProperty]) {
-        obj._dependenciesForProperty[dependentProperty] = [];
-    }
-
-    obj._dependenciesForProperty[dependentProperty].push(independentProperty);
-}});
-
-
-/**
-    Removes a dependent property from another property's collection of dependent properties.
-    When the value of a dependent property changes, it generates a <code>change@independentProperty</code> event.
-    @function module:montage/core/core.Montage.removeDependencyFromProperty
-    @param {Object} obj The object containing the dependent and independent properties.
-    @param {String} independentProperty The name of the object's independent property.
-    @param {String} dependentProperty The name of the object's dependent property that you want to remove.
-*/
-Montage.defineProperty(Montage, "removeDependencyFromProperty", {value: function(obj, independentProperty, dependentProperty) {
-    if (!obj._dependenciesForProperty) {
-        return;
-    }
-
-    var dependencies = obj._dependenciesForProperty[dependentProperty];
-    if (dependencies) {
-        dependencies = dependencies.filter(function(element) {
-            return (element !== independentProperty);
-        });
-    }
-
-}});
-
 function getAttributeProperties(proto, attributeName) {
     var attributePropertyName = UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES;
 
@@ -490,6 +433,10 @@ function getAttributeProperties(proto, attributeName) {
         })[attributePropertyName];
     }
 }
+
+Montage.defineProperty(Montage, "didCreate", {
+    value: Function.noop
+});
 
 /**
     Returns the names of serializable properties belonging to Montage object.
@@ -598,38 +545,9 @@ Montage.defineProperty(Montage, "getInfoForObject", {
     }
 });
 
-/**
-    @function module:montage/core/core.Montage.doNothing
-    @default function
-*/
-Object.defineProperty(Montage, "doNothing", {
-    value: function() {
-    }
-});
-
-/**
-    @function module:montage/core/core.Montage.self
-    @default function
-    @returns itself
-*/
-Object.defineProperty(Montage, "self", {
-    value: function() {
-        return this;
-    }
-});
-
-/**
-    @private
-*/
-Object.defineProperty(Montage, "__OBJECT_COUNT", {
-    value: 0,
-    writable: true
-});
-
-
 // TODO figure out why this code only works in this module.  Attempts to move
 // it to core/extras/object resulted in _uuid becoming enumerable and tests
-// breaking.
+// breaking. - @kriskowal
 
 var UUID = require("core/uuid");
 
@@ -717,14 +635,24 @@ Montage.defineProperty(Montage, "identifier", {
     serializable: true
 });
 
+// TODO @mczepiel Is the level of indirection of parentProperty necessary?  Why
+// not just use `parent` instead of `[this.parentProperty]` throughout?
+// - @kriskowal
+Montage.defineProperty(Montage, "parentProperty", {
+    value: null
+});
+
 /**
     Returns true if two objects are equal, otherwise returns false.
     @function module:montage/core/core.Montage.equals
     @param {Object} anObject The object to compare for equality.
-    @returns {Boolean} Returns <code>true</code> if the calling object and <code>anObject</code> are identical and their <code>uuid</code> properties are also equal. Otherwise, returns <code>false</code>.
+    @returns {Boolean} Returns <code>true</code> if the calling object and
+    <code>anObject</code> are identical and their <code>uuid</code> properties
+    are also equal. Otherwise, returns <code>false</code>.
 */
 Object.defineProperty(Montage, "equals", {
     value: function(anObject) {
+        if (!anObject) return false;
         return this === anObject || this.uuid === anObject.uuid;
     }
 });
@@ -755,6 +683,17 @@ Object.defineProperty(Montage, "callDelegateMethod", {
         }
     }
 });
+
+var PropertyChanges = require("collections/listen/property-changes");
+
+Object.addEach(Montage, PropertyChanges.prototype);
+
+// have to come last since they use the Montage.defineProperties to augment Object.prototype
+require("core/bindings");
+require("core/paths");
+// has to come last since serializer and deserializer depend on logger, which
+// in turn depends on montage running to completion
+require("core/serialization/bindings");
 
 /*
  * Defines the module Id for blueprints. This is externalized so that it can be subclassed.
@@ -802,7 +741,7 @@ exports._blueprintDescriptor = {
                 enumerable: false,
                 value: exports._blueprintDescriptor.BlueprintModulePromise.then(function (Blueprint) {
                     var info = Montage.getInfoForObject(self);
-                    return Blueprint.getBlueprintWithModuleId(blueprintModuleId, info.require).then(null, function () {
+                    return Blueprint.getBlueprintWithModuleId(blueprintModuleId, info.require).fail(function () {
                         var blueprint = Blueprint.createDefaultBlueprintForObject(self);
                         blueprint.blueprintInstanceModuleId = blueprintModuleId;
                         return blueprint;

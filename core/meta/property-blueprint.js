@@ -21,7 +21,7 @@ var Defaults = {
     readOnly:false,
     denyDelete:false,
     valueType:"string",
-    colectionValueType:"list",
+    collectionValueType:"list",
     valueObjectPrototypeName:"",
     valueObjectModuleId:"",
     enumValues:[],
@@ -63,7 +63,7 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
             this._setPropertyWithDefaults(serializer, "readOnly", this.readOnly);
             this._setPropertyWithDefaults(serializer, "denyDelete", this.denyDelete);
             this._setPropertyWithDefaults(serializer, "valueType", this.valueType);
-            this._setPropertyWithDefaults(serializer, "colectionValueType", this.colectionValueType);
+            this._setPropertyWithDefaults(serializer, "collectionValueType", this.collectionValueType);
             this._setPropertyWithDefaults(serializer, "valueObjectPrototypeName", this.valueObjectPrototypeName);
             this._setPropertyWithDefaults(serializer, "valueObjectModuleId", this.valueObjectModuleId);
             if (this.enumValues.length > 0) {
@@ -85,7 +85,7 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
             this.readOnly = this._getPropertyWithDefaults(deserializer, "readOnly");
             this.denyDelete = this._getPropertyWithDefaults(deserializer, "denyDelete");
             this.valueType = this._getPropertyWithDefaults(deserializer, "valueType");
-            this.colectionValueType = this._getPropertyWithDefaults(deserializer, "colectionValueType");
+            this.collectionValueType = this._getPropertyWithDefaults(deserializer, "collectionValueType");
             this.valueObjectPrototypeName = this._getPropertyWithDefaults(deserializer, "valueObjectPrototypeName");
             this.valueObjectModuleId = this._getPropertyWithDefaults(deserializer, "valueObjectModuleId");
             this.enumValues = this._getPropertyWithDefaults(deserializer, "enumValues");
@@ -219,13 +219,13 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
     },
 
     /**
-     Description TODO
+     Returns true if the cardinality is more than one.
      @type {Property}
      @default {Boolean} false
      */
     isToMany:{
         get:function () {
-            return this.cardinality > 1;
+            return this.cardinality === Infinity || this.cardinality > 1;
         }
     },
 
@@ -254,8 +254,8 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
      @type {Property}
      @default {String} "string"
      */
-    colectionValueType:{
-        value:Defaults["colectionValueType"]
+    collectionValueType:{
+        value:Defaults["collectionValueType"]
     },
 
     /**

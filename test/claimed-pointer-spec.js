@@ -30,17 +30,18 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
-var TestPageLoader = require("support/testpageloader").TestPageLoader;
+var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-var testPage = TestPageLoader.queueTest("claimed-pointer-test", function() {
+TestPageLoader.queueTest("claimed-pointer-test/claimed-pointer-test", function(testPage) {
+    var test;
+    beforeEach(function() {
+        test = testPage.test;
+    });
+
     describe("claimed-pointer-spec", function() {
         var componentA,
             componentB,
             eventManager;
-
-        it("should load", function() {
-            expect(testPage.loaded).toBeTruthy();
-        });
 
         beforeEach(function() {
             var testDocument = testPage.iframe.contentDocument;

@@ -1,0 +1,10 @@
+
+.matte-Scroller {
+    position: relative;
+    display: block;
+    overflow: hidden;
+}
+.matte-Scroller .matte-Scroller-content {
+    float: left;
+    width: 100%;
+}

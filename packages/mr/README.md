@@ -308,6 +308,17 @@ module has not yet been loaded.
 -   **inject(id, exports)**: adds a module for a given identifier with
     the given exports, and sets its `module.injected` to true.  This
     prevents the module system from attempting to load the module.
+-   **injectMapping(mapping, prefix)**: Adds a mapping-style dependency
+    to a package.  The mapping object describes the dependent package in
+    the same fashion as the value from the `mappings` property of a
+    package.json.  If the mapping does not provide a module name-space
+    prefix, you can provide one as the second argument.
+-   **injectDependency(name, version)**: Adds an NPM-style dependency to
+    a package.  The name and version should be as in an NPM `dependency`
+    property in a `package.json`.  The version is presently ignored but
+    may in the future detect incompatibilities with another package
+    installed with the same name.  Mr will not support multiple versions
+    of the same package.
 -   **injectPackageDescription(location, description)**: informs the
     module system of the parsed contents of the `package.json` for the
     package at the given location.  This may be a lie.  This prevents

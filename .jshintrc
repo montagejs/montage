@@ -1,0 +1,25 @@
+{
+    "bitwise": true,
+    "camelcase": true,
+    "curly": true,
+    "eqeqeq": true,
+    "forin": true,
+    "noarg": true,
+    "noempty": true,
+    "nonew": true,
+    "undef": true,
+    "unused": "paramsignore",
+    "trailing": true,
+    "indent": 4,
+    "boss": true,
+    "eqnull": true,
+    "es5": true,
+    "browser": true,
+    "predef": [
+        "CustomEvent",
+        "WebSocket",
+
+        "require",
+        "exports"
+    ]
+}

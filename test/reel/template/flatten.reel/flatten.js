@@ -32,7 +32,7 @@ exports = typeof exports !== "undefined" ? exports : {};
 
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
-var Template = require("montage/ui/template").Template;
+var Template = require("montage/core/template").Template;
 
 var Flatten = exports.Flatten = Montage.create(Component, {
     hasTemplate: {
