@@ -1,33 +1,33 @@
 /* <copyright>
-Copyright (c) 2012, Motorola Mobility LLC.
-All Rights Reserved.
+ Copyright (c) 2012, Motorola Mobility LLC.
+ All Rights Reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
 
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
+ * Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
+ * Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
 
-* Neither the name of Motorola Mobility LLC nor the names of its
-  contributors may be used to endorse or promote products derived from this
-  software without specific prior written permission.
+ * Neither the name of Motorola Mobility LLC nor the names of its
+ contributors may be used to endorse or promote products derived from this
+ software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-</copyright> */
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+ </copyright> */
 /*global BUNDLE */
 if (typeof window !== "undefined") {
 
@@ -38,13 +38,13 @@ if (typeof window !== "undefined") {
     // Applications that use our loader will interact with this timeout
     // and class name to coordinate a nice loading experience. Applications that do not will
     // just go about business as usual and draw their content as soon as possible.
-    window.addEventListener("DOMContentLoaded", function() {
+    window.addEventListener("DOMContentLoaded", function () {
         var bootstrappingDelay = 1000;
-        document._montageStartBootstrappingTimeout = setTimeout(function() {
+        document._montageStartBootstrappingTimeout = setTimeout(function () {
             document._montageStartBootstrappingTimeout = null;
 
             var root = document.documentElement;
-            if(!!root.classList) {
+            if (!!root.classList) {
                 root.classList.add("montage-app-bootstrapping");
             } else {
                 root.className = root.className + " montage-app-bootstrapping";
@@ -107,7 +107,7 @@ if (typeof window !== "undefined") {
                 );
             };
 
-            var location = URL.resolve(config.location, params["package"] || ".");
+            var location = URL.resolve(config.location, params.package || ".");
             var applicationHash = params.applicationHash;
 
             if (typeof BUNDLE === "object") {
@@ -143,79 +143,146 @@ if (typeof window !== "undefined") {
                 location: montageLocation,
                 hash: params.montageHash
             }, config)
-            .then(function (montageRequire) {
-                // load the promise package so we can inject the bootstrapped
-                // promise library back into it
+                .then(function (montageRequire) {
+                    // load the promise package so we can inject the bootstrapped
+                    // promise library back into it
 
-                var promiseLocation;
-                if (params.promiseLocation) {
-                    promiseLocation = URL.resolve(Require.getLocation(), params.promiseLocation);
-                } else {
-                    promiseLocation = URL.resolve(montageLocation, "packages/mr/packages/q");
-                }
+                    var promiseLocation;
+                    if (params.promiseLocation) {
+                        promiseLocation = URL.resolve(Require.getLocation(), params.promiseLocation);
+                    } else {
+                        promiseLocation = URL.resolve(montageLocation, "packages/mr/packages/q");
+                    }
 
-                return [
-                    montageRequire,
-                    montageRequire.loadPackage({
-                        location: promiseLocation,
-                        hash: params.promiseHash
-                    })
-                ];
-            })
-            .spread(function (montageRequire, promiseRequire) {
-                montageRequire.inject("core/mini-url", URL);
-                montageRequire.inject("core/promise", {Promise: Promise});
-                promiseRequire.inject("q", Promise);
+                    return [
+                        montageRequire,
+                        montageRequire.loadPackage({
+                            location: promiseLocation,
+                            hash: params.promiseHash
+                        })
+                    ];
+                })
+                .spread(function (montageRequire, promiseRequire) {
+                    montageRequire.inject("core/mini-url", URL);
+                    montageRequire.inject("core/promise", {Promise: Promise});
+                    promiseRequire.inject("q", Promise);
 
-                // install the linter, which loads on the first error
-                config.lint = function (module) {
-                    montageRequire.async("core/jshint")
-                    .then(function (JSHINT) {
-                        if (!JSHINT.JSHINT(module.text)) {
-                            console.warn("JSHint Error: "+module.location);
-                            JSHINT.JSHINT.errors.forEach(function(error) {
-                                if (error) {
-                                    console.warn("Problem at line "+error.line+" character "+error.character+": "+error.reason);
-                                    if (error.evidence) {
-                                        console.warn("    " + error.evidence);
-                                    }
+                    // install the linter, which loads on the first error
+                    config.lint = function (module) {
+                        montageRequire.async("core/jshint")
+                            .then(function (JSHINT) {
+                                if (!JSHINT.JSHINT(module.text)) {
+                                    console.warn("JSHint Error: " + module.location);
+                                    JSHINT.JSHINT.errors.forEach(function (error) {
+                                        if (error) {
+                                            console.warn("Problem at line " + error.line + " character " + error.character + ": " + error.reason);
+                                            if (error.evidence) {
+                                                console.warn("    " + error.evidence);
+                                            }
+                                        }
+                                    });
+                                }
+                            })
+                            .done();
+                    };
+
+                    var promiseForLoadedPackage;
+
+                    if (!("remoteTrigger" in params)) {
+                        if ("autoPackage" in params) {
+                            montageRequire.injectPackageDescription(location, {
+                                dependencies: {
+                                    montage: "*"
                                 }
                             });
+                        } else {
+                            // handle explicit package.json location
+                            if (location.slice(location.length - 5) === ".json") {
+                                var packageDescriptionLocation = location;
+                                location = URL.resolve(location, ".");
+                                montageRequire.injectPackageDescriptionLocation(
+                                    location,
+                                    packageDescriptionLocation
+                                );
+                            }
                         }
-                    })
-                    .done();
-                };
-
-                if ("autoPackage" in params) {
-                    montageRequire.injectPackageDescription(location, {
-                        dependencies: {
-                            montage: "*"
+                        promiseForLoadedPackage = montageRequire.loadPackage({
+                            location: location,
+                            hash: applicationHash
+                        });
+                    } else {
+                        // allows the bootstrapping to be remote controlled by the
+                        // parent window, with a dynamically generated package
+                        // description
+                        var trigger = Promise.defer();
+                        window.postMessage({
+                            type: "montageReady"
+                        }, "*");
+                        var messageCallback = function (event) {
+                            if (params.remoteTrigger === event.origin &&
+                                (event.source === window || event.source === window.parent) &&
+                                event.data.type === "montageInit") {
+                                trigger.resolve([event.data.location, event.data.injections]);
+                                window.removeEventListener("message", messageCallback);
+                            }
+                        };
+                        window.addEventListener("message", messageCallback);
+                        var injectIntoRequire = function (targetRequire, location, injections, type) {
+                            if (!injections) {
+                                return;
+                            }
+                            location = URL.resolve(location, ".");
+                            var packageDescriptions = injections.packageDescriptions;
+                            if (Array.isArray(packageDescriptions) && packageDescriptions.length > 0) {
+                                for (var index in packageDescriptions) {
+                                    if (packageDescriptions[index][type]) {
+                                        targetRequire.injectPackageDescription(location, packageDescriptions[index].description);
+                                    }
+                                }
+                            }
+                            var packageDescriptionLocations = injections.packageDescriptionLocations;
+                            if (Array.isArray(packageDescriptionLocations) && packageDescriptionLocations.length > 0) {
+                                for (var index in packageDescriptionLocations) {
+                                    if (packageDescriptionLocations[index][type]) {
+                                        targetRequire.injectPackageDescriptionLocation(location, packageDescriptionLocations[index].descriptionLocation);
+                                    }
+                                }
+                            }
+                            var mappings = injections.mappings;
+                            if (Array.isArray(mappings) && mappings.length > 0) {
+                                for (var index in mappings) {
+                                    if (mappings[index][type]) {
+                                        targetRequire.injectMapping(mappings[index].dependency, mappings[index].name);
+                                    }
+                                }
+                            }
+                            var dependencies = injections.dependencies;
+                            if (Array.isArray(dependencies) && dependencies.length > 0) {
+                                for (var index in dependencies) {
+                                    if (dependencies[index][type]) {
+                                        targetRequire.injectDependency(dependencies[index].name);
+                                    }
+                                }
+                            }
                         }
+                        promiseForLoadedPackage = trigger.promise.spread(function (location, injections) {
+                            injectIntoRequire.call(this, montageRequire, location, injections, "montage")
+                            return montageRequire.loadPackage({
+                                location: location,
+                                hash: applicationHash
+                            }).then(function (applicationRequire) {
+                                    injectIntoRequire.call(this, applicationRequire, location, injections, "application")
+                                    return Promise.resolve(applicationRequire);
+                                });
+                        })
+                    }
+                    return promiseForLoadedPackage.then(function (applicationRequire) {
+                        global.require = applicationRequire;
+                        global.montageRequire = montageRequire;
+                        platform.initMontage(montageRequire, applicationRequire, params);
                     });
-                }
-
-                // handle explicit package.json location
-                if (location.slice(location.length - 5) === ".json") {
-                    var packageDescriptionLocation = location;
-                    location = URL.resolve(location, ".");
-                    montageRequire.injectPackageDescriptionLocation(
-                        location,
-                        packageDescriptionLocation
-                    );
-                }
-
-                return montageRequire.loadPackage({
-                    location: location,
-                    hash: applicationHash
                 })
-                .then(function (applicationRequire) {
-
-                    global.require = applicationRequire;
-                    global.montageRequire = montageRequire;
-                    platform.initMontage(montageRequire, applicationRequire, params);
-                })
-            })
-            .done();
+                .done();
 
         });
 
@@ -229,20 +296,23 @@ if (typeof window !== "undefined") {
      @param compiler
      */
     var reverseReelExpression = /((.*)\.reel)\/\2$/;
-    var reverseReelFunction = function ($0, $1) { return $1 };
-    exports.SerializationCompiler = function(config, compile) {
-        return function(module) {
+    var reverseReelFunction = function ($0, $1) {
+        return $1
+    };
+    exports.SerializationCompiler = function (config, compile) {
+        return function (module) {
             compile(module);
-            if (!module.factory)
+            if (!module.factory) {
                 return;
+            }
             var defaultFactory = module.factory;
-            module.factory = function(require, exports, module) {
+            module.factory = function (require, exports, module) {
                 defaultFactory.call(this, require, exports, module);
                 for (var name in exports) {
                     var object = exports[name];
                     // avoid attempting to initialize a non-object
                     if (!(object instanceof Object)) {
-                    // avoid attempting to reinitialize an aliased property
+                        // avoid attempting to reinitialize an aliased property
                     } else if (object.hasOwnProperty("_montage_metadata") && !object._montage_metadata.isInstance) {
                         object._montage_metadata.aliases.push(name);
                         object._montage_metadata.objectName = name;
@@ -299,10 +369,11 @@ if (typeof window !== "undefined") {
      @param config
      @param compiler
      */
-    exports.TemplateCompiler = function(config, compile) {
-        return function(module) {
-            if (!module.location)
+    exports.TemplateCompiler = function (config, compile) {
+        return function (module) {
+            if (!module.location) {
                 return;
+            }
             var match = module.location.match(/(.*\/)?(?=[^\/]+\.html(?:\.load\.js)?$)/);
             if (match) {
                 module.dependencies = module.dependencies || [];
@@ -380,13 +451,13 @@ if (typeof window !== "undefined") {
             document.getElementsByTagName("head")[0].appendChild(script);
         },
 
-        getConfig: function() {
+        getConfig: function () {
             return {
                 location: "" + window.location
             };
         },
 
-        getParams: function() {
+        getParams: function () {
             var i, j,
                 match,
                 script,
@@ -497,6 +568,7 @@ if (typeof window !== "undefined") {
 
             // miniature module system
             var bootModules = {};
+
             function bootRequire(id) {
                 if (!bootModules[id] && definitions[id]) {
                     var exports = bootModules[id] = {};
@@ -532,49 +604,49 @@ if (typeof window !== "undefined") {
             var Promise = montageRequire("core/promise").Promise;
 
             return Promise.all(dependencies.map(montageRequire.deepLoad))
-            .then(function () {
+                .then(function () {
 
-                dependencies.forEach(montageRequire);
+                    dependencies.forEach(montageRequire);
 
-                var EventManager = montageRequire("core/event/event-manager").EventManager;
-                var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
-                var defaultEventManager, application;
+                    var EventManager = montageRequire("core/event/event-manager").EventManager;
+                    var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
+                    var defaultEventManager, application;
 
-                // Load the event-manager
-                defaultEventManager = EventManager.create().initWithWindow(window);
+                    // Load the event-manager
+                    defaultEventManager = EventManager.create().initWithWindow(window);
 
-                // montageWillLoad is mostly for testing purposes
-                if (typeof global.montageWillLoad === "function") {
-                    global.montageWillLoad();
-                }
+                    // montageWillLoad is mostly for testing purposes
+                    if (typeof global.montageWillLoad === "function") {
+                        global.montageWillLoad();
+                    }
 
-                // Load the application
+                    // Load the application
 
-                var appProto = applicationRequire.packageDescription.applicationPrototype,
-                    applicationLocation, appModulePromise;
-                if (appProto) {
-                    applicationLocation = MontageReviver.parseObjectLocationId(appProto);
-                    appModulePromise = applicationRequire.async(applicationLocation.moduleId);
-                } else {
-                    appModulePromise = montageRequire.async("core/application");
-                }
+                    var appProto = applicationRequire.packageDescription.applicationPrototype,
+                        applicationLocation, appModulePromise;
+                    if (appProto) {
+                        applicationLocation = MontageReviver.parseObjectLocationId(appProto);
+                        appModulePromise = applicationRequire.async(applicationLocation.moduleId);
+                    } else {
+                        appModulePromise = montageRequire.async("core/application");
+                    }
 
-                return appModulePromise.then(function(exports) {
-                    application = exports[(applicationLocation ? applicationLocation.objectName : "Application")].create();
-                    window.document.application = application;
-                    defaultEventManager.application = application;
-                    application.eventManager = defaultEventManager;
-                    application._load(applicationRequire, function() {
-                        if (params.module) {
-                            // If a module was specified in the config then we initialize it now
-                            applicationRequire.async(params.module)
-                            .done();
-                        }
-                    });
+                    return appModulePromise.then(function (exports) {
+                        application = exports[(applicationLocation ? applicationLocation.objectName : "Application")].create();
+                        window.document.application = application;
+                        defaultEventManager.application = application;
+                        application.eventManager = defaultEventManager;
+                        application._load(applicationRequire, function () {
+                            if (params.module) {
+                                // If a module was specified in the config then we initialize it now
+                                applicationRequire.async(params.module)
+                                    .done();
+                            }
+                        });
+                    })
+
                 })
-
-            })
-            .done();
+                .done();
 
         }
     };
