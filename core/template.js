@@ -287,15 +287,14 @@ var Template = Montage.create(Montage, {
 
             return this._instantiateObjects(templateObjects, fragment)
             .then(function(objects) {
+                var resources;
+
                 part.stopActingAsTopComponent();
                 part.objects = objects;
                 self._invokeDelegates(part, instances);
 
-                var resources = self.getResources();
-
-                if (resources.resourcesLoaded()) {
-                    return part;
-                } else if (resources.hasResources()) {
+                resources = self.getResources();
+                if (!resources.resourcesLoaded() && resources.hasResources()) {
                     return resources.loadResources(targetDocument)
                     .then(function() {
                         return part;
