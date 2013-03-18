@@ -54,7 +54,9 @@ var testPage = TestPageLoader.queueTest("template", function() {
 
         it("should load", function() {
             expect(testPage.loaded).toBeTruthy();
-            application = testPage.window.document.application;
+
+            var testWindow = testPage.iframe.contentWindow;
+            application = testWindow.montageRequire("ui/application").application;
             eventManager = application.eventManager;
         });
 

@@ -168,9 +168,10 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                                 theTestPage.drawHappened++;
                                 if(firstDraw) {
                                     theTestPage.loaded = true;
+                                    var testWindow = theTestPage.window;
                                     // assign the application delegate to test so that the convenience methods work
-                                    if (! theTestPage.window.test && theTestPage.window.document.application) {
-                                        theTestPage.window.test = theTestPage.window.document.application.delegate;
+                                    if (! testWindow.test && testWindow.montageRequire("ui/application").application) {
+                                        testWindow.test = testWindow.montageRequire("ui/application").application.delegate;
                                     }
                                     if (typeof testCallback === "function") {
                                         if (test.firstDraw) {

@@ -66,7 +66,9 @@ var testPage = TestPageLoader.queueTest("application-test", {src: "ui/applicatio
         describe("Application", function() {
             describe("delegate", function() {
                 it("should have willFinishLoading method called", function() {
-                    expect(test.testedComponent.application.delegate.willFinishLoadingCalled).toBeTruthy();
+                    var testWindow = testPage.iframe.contentWindow;
+                    var testApplication = testWindow.montageRequire("ui/application").application;
+                    expect(testApplication.delegate.willFinishLoadingCalled).toBeTruthy();
                 });
 
             });
@@ -86,7 +88,9 @@ var testPage = TestPageLoader.queueTest("application-test-subtype", {src: "ui/ap
 
             describe("subtyping", function() {
                 it("should use defined subtype", function() {
-                    expect(test.testedComponent.application.testProperty).toBeTruthy();
+                    var testWindow = testPage.iframe.contentWindow;
+                    var testApplication = testWindow.montageRequire("ui/application").application;
+                    expect(testApplication.testProperty).toBeTruthy();
                 });
 
             });
