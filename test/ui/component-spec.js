@@ -33,12 +33,18 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Serializer = require("montage/core/serialization").Serializer,
     Template = require("montage/core/template").Template;
+var Bindings = require("montage/core/bindings").Bindings;
 
 TestPageLoader.queueTest("draw/draw", function(testPage) {
+    var test;
 
     var querySelector = function(s) {
         return testPage.querySelector(s);
     };
+
+    beforeEach(function () {
+        test = testPage.test;
+    });
 
     describe("ui/component-spec", function() {
         describe("draw test", function() {
@@ -924,6 +930,120 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                     expect(one).toBeDefined();
                 });
             });
+        });
+
+        describe("using classList", function() {
+            describe("with bindings", function() {
+                it("should correctly initialize from a template", function() {
+                    expect(test.componentClassList.element.classList.contains("class1")).toBeTruthy();
+                    expect(test.componentClassList.element.classList.contains("class2")).toBeFalsy();
+                });
+                it("should reflect changes to the classList's properties", function() {
+                    test.class1 = false;
+                    test.class2 = true;
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassList.element.classList.contains("class1")).toBeFalsy();
+                        expect(test.componentClassList.element.classList.contains("class2")).toBeTruthy();
+                    })
+                });
+                it("should be possible to bind to a new class", function() {
+                    test.class3 = true;
+                    Bindings.defineBinding(test.componentClassList, "classList.has('newClass')", {
+                        source: test,
+                        "<-": "class3"
+                    });
+                    expect(test.componentClassList.classList.contains("newClass")).toBeTruthy();
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassList.element.classList.contains("newClass")).toBeTruthy();
+                    })
+                });
+            });
+            describe("with programmatic API", function() {
+                it("should correctly add a class", function() {
+                    test.componentClassList.classList.add("myclass");
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassList.element.classList.contains("myclass")).toBeTruthy();
+                    })
+                });
+                it("should correctly remove a class", function() {
+                    test.componentClassList.classList.remove("myclass");
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassList.element.classList.contains("myclass")).toBeFalsy();
+                    })
+                });
+                it("should correctly toggle a class", function() {
+                    test.componentClassList.classList.toggle("myclass");
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassList.element.classList.contains("myclass")).toBeTruthy();
+                    })
+                });
+                it("should correctly report contains state of a class", function() {
+                    expect(test.componentClassList.classList.contains("myclass")).toBeTruthy();
+                });
+            });
+            describe("with classes in original element", function() {
+                it("should correctly add a class based on markup", function() {
+                    expect(test.componentClassInMarkup.classList.contains("markupClass1")).toBeTruthy();
+                    expect(test.componentClassInMarkup.classList.contains("markupClass2")).toBeTruthy();
+                    expect(test.componentClassInMarkup.element.classList.contains("markupClass1")).toBeTruthy();
+                    expect(test.componentClassInMarkup.element.classList.contains("markupClass2")).toBeTruthy();
+                });
+                it("should be able to change those classes as if they were added via the component", function() {
+                    test.componentClassInMarkup.classList.toggle("markupClass1");
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassInMarkup.element.classList.contains("markupClass1")).toBeFalsy();
+                    })
+                });
+            });
+            describe("with classes in original element and in template", function() {
+                describe("element", function () {
+                    it("should correctly preserve the class based on markup", function() {
+                        expect(test.componentClassInTemplate.element.classList.contains("markupClass3")).toBeTruthy();
+                    });
+                    it("should correctly add a class from the template's markup", function() {
+                        expect(test.componentClassInTemplate.element.classList.contains("ClassListTemplate")).toBeTruthy();
+                    });
+                });
+                it("should correctly add a class to the component based on markup", function() {
+                    expect(test.componentClassInTemplate.classList.contains("markupClass3")).toBeTruthy();
+                });
+                it("should correctly add a class from the template's markup to the component", function() {
+                    expect(test.componentClassInTemplate.classList.contains("ClassListTemplate")).toBeTruthy();
+                });
+                it("should be able to change those classes as if they were added via the component", function() {
+                    test.componentClassInTemplate.classList.toggle("ClassListTemplate");
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassInTemplate.element.classList.contains("ClassListTemplate")).toBeFalsy();
+                    })
+                });
+            });
+            describe("with classes in element, template, and bindings", function() {
+                describe("element", function () {
+                    it("should correctly preserve the class based on markup", function() {
+                        expect(test.componentClassInTemplateAndBindings.element.classList.contains("markupClass3")).toBeTruthy();
+                    });
+                    it("should correctly add a class from the template's markup", function() {
+                        expect(test.componentClassInTemplateAndBindings.element.classList.contains("ClassListTemplate")).toBeTruthy();
+                    });
+                    it("should correctly have the classes from the bindings", function() {
+                        expect(test.componentClassInTemplateAndBindings.element.classList.contains("class1")).toBeTruthy();
+                        expect(test.componentClassInTemplateAndBindings.element.classList.contains("class2")).toBeFalsy();
+                    });
+                });
+                it("should correctly add a class to the component based on markup", function() {
+                    expect(test.componentClassInTemplateAndBindings.classList.contains("markupClass3")).toBeTruthy();
+                });
+                it("should correctly add a class from the template's markup to the component", function() {
+                    expect(test.componentClassInTemplateAndBindings.classList.contains("ClassListTemplate")).toBeTruthy();
+                });
+                it("should be able to change those classes as if they were added via the component", function() {
+                    test.componentClassInTemplateAndBindings.classList.toggle("ClassListTemplate");
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassInTemplateAndBindings.element.classList.contains("ClassListTemplate")).toBeFalsy();
+                    })
+                });
+            });
+
         });
     });
 });

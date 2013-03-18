@@ -74,7 +74,12 @@ POSSIBILITY OF SUCH DAMAGE.
             "componentBindingParamsLeft2": {"@": "componentBindingParamsLeft2"},
             "componentBindingParamsRight2": {"@": "componentBindingParamsRight2"},
             "templateObjects": {"@": "templateObjects"},
-            "owner": {"@": "owner"}
+            "owner": {"@": "owner"},
+            "componentClassList": {"@": "componentClassList"},
+            "componentClassInMarkup": {"@": "componentClassInMarkup"},
+            "componentClassInTemplate": {"@": "componentClassInTemplate"},
+            "componentClassInTemplateAndBindings": {"@": "componentClassInTemplateAndBindings"}
+
         }
     },
     "owner": {
@@ -347,7 +352,43 @@ POSSIBILITY OF SUCH DAMAGE.
         "properties": {
             "element": {"#": "templateObjects"}
         }
+    },
+
+    "componentClassList": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "componentClassList"},
+            "hasTemplate": false
+        },
+        "bindings": {
+            "classList.has('class1')": {"<-": "@test.class1"},
+            "classList.has('class2')": {"<-": "@test.class2"}
+        }
+    },
+    "componentClassInMarkup": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "componentClassInMarkup"},
+            "hasTemplate": false
+        }
+    },
+    "componentClassInTemplate": {
+        "prototype": "ui/draw/class-list-template.reel",
+        "properties": {
+            "element": {"#": "componentClassInTemplate"}
+        }
+    },
+    "componentClassInTemplateAndBindings": {
+        "prototype": "ui/draw/class-list-template.reel",
+        "properties": {
+            "element": {"#": "componentClassInTemplateAndBindings"}
+        },
+        "bindings": {
+            "classList.has('class1')": {"<-": "@test.classListTemplate1"},
+            "classList.has('class2')": {"<-": "@test.classListTemplate2"}
+        }
     }
+
 }
     </script>
 
@@ -458,6 +499,11 @@ POSSIBILITY OF SUCH DAMAGE.
 </div>
 
 <div data-montage-id="templateObjects"></div>
+
+<div data-montage-id="componentClassList"></div>
+<div data-montage-id="componentClassInMarkup" class="markupClass1 markupClass2"></div>
+    <div data-montage-id="componentClassInTemplate" class="markupClass3"></div>
+    <div data-montage-id="componentClassInTemplateAndBindings" class="markupClass3"></div>
 
 </body>
 </html>
