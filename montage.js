@@ -525,6 +525,7 @@ if (typeof window !== "undefined") {
         initMontage: function (montageRequire, applicationRequire, params) {
 
             var dependencies = [
+                "core/core",
                 "core/event/event-manager",
                 "core/serialization/deserializer/montage-reviver"
             ];
@@ -536,6 +537,7 @@ if (typeof window !== "undefined") {
 
                 dependencies.forEach(montageRequire);
 
+                var Montage = montageRequire("core/core").Montage;
                 var EventManager = montageRequire("core/event/event-manager").EventManager;
                 var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                 var defaultEventManager, application;
@@ -560,8 +562,17 @@ if (typeof window !== "undefined") {
                 }
 
                 return appModulePromise.then(function(exports) {
-                    application = exports[(applicationLocation ? applicationLocation.objectName : "Application")].create();
-                    window.document.application = application;
+                    var Application = exports[(applicationDescription ? applicationDescription.name : "Application")];
+                    application = Application.create();
+                    Object.defineProperty(window.document, "application", {
+                        get: Montage.deprecate(
+                            null,
+                            function () {
+                                return exports.application
+                            },
+                            "document.application is deprecated, use require(\"montage/ui/application\").application instead."
+                            )
+                    });
                     defaultEventManager.application = application;
                     application.eventManager = defaultEventManager;
                     application._load(applicationRequire, function() {

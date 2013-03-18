@@ -76,6 +76,24 @@ var Object_prototype = Object.prototype;
  */
 var Montage = exports.Montage = {};
 
+Montage.deprecate = function deprecate(scope, callback, name, alternative) {
+    return function () {
+        var depth = Error.stackTraceLimit;
+        Error.stackTraceLimit = 2;
+        if (typeof console !== "undefined" && typeof console.warn === "function") {
+            if(alternative) {
+                console.warn(name + " is deprecated, use " + alternative + " instead.", new Error("").stack);
+            } else {
+                //name is a complete message
+                console.warn(name, new Error("").stack);
+            }
+
+        }
+        Error.stackTraceLimit = depth;
+        return callback.apply(scope ? scope : callback, arguments);
+    };
+}
+
 /**
     Creates a new Montage object.
     @function module:montage/core/core.Montage.create
