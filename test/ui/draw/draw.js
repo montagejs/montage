@@ -99,5 +99,21 @@ var Draw = exports.Draw = Montage.create(TestController, {
     },
     componentC1: {
         value: null
+    },
+
+    class1: {
+        value: true
+    },
+
+    class2: {
+        value: false
+    },
+
+    classListTemplate1: {
+        value: true
+    },
+
+    classListTemplate2: {
+        value: false
     }
 });
