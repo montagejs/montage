@@ -34,28 +34,23 @@ describe("trigger-test", function() {
 
 
             console.log("load when message is posted");
-            return require.async("trigger/package.json").then(function(packageJSON) {
+            return require.async("trigger/to-be-defined-package.json").then(function(packageJSON) {
                 var injections = {};
 
                 //packageDescriptions
-//                packageJSON.mappings["injected-description"] = {
-//                    name: "injected-description",
-//                    location: "somewhere",
-//                    version: "*"
-//                };
-//                injections.packageDescriptions = [
-//                    {
-//                        name: "injected-description",
-//                        location: URL.resolve(options.directory, "injected-description"),
-//                        description: packageJSON
-//                    }
-//                ];
+                injections.packageDescriptions = [
+                    {
+                        name: "to-be-defined",
+                        location: URL.resolve(options.directory, "node_modules/to-be-defined/"),
+                        description: packageJSON
+                    }
+                ];
 
                 //packageDescriptionLocations
                 injections.packageDescriptionLocations = [
                     {
                         name: "inject-description-location",
-                        location: URL.resolve(options.directory, "node_modules/inject-description-location/package.json"),
+                        location: URL.resolve(options.directory, "node_modules/inject-description-location/"),
                         descriptionLocation: URL.resolve(options.directory, "inject-description-location.json")
                     }
                 ];
@@ -78,7 +73,7 @@ describe("trigger-test", function() {
                         name: "injected-dependency"
                     },
                     {
-                        name: "inject-description-location"
+                        name: "to-be-defined"
                     }
                 ];
 
@@ -95,7 +90,7 @@ describe("trigger-test", function() {
 
         it("should be able to inject a packaged description", function() {
             // the inject-description-location.json is supposed to define the main modules as inject.js
-            var injectModule = TestPageLoader.testPage.window.require.async("injected-description/inject");
+            var injectModule = TestPageLoader.testPage.window.require.async("to-be-defined/inject");
 
             return injectModule.then(function(inject) {
                 expect(inject.injected).toBeTruthy();
@@ -123,6 +118,15 @@ describe("trigger-test", function() {
         it("should be able to inject a dependency", function() {
 
             var injectModule = TestPageLoader.testPage.window.require.async("injected-dependency/inject");
+
+            return injectModule.then(function(inject) {
+                expect(inject.injected).toBeTruthy();
+            });
+
+        });
+        it("should be able to still use an existing dependency", function() {
+
+            var injectModule = TestPageLoader.testPage.window.require.async("existing/inject");
 
             return injectModule.then(function(inject) {
                 expect(inject.injected).toBeTruthy();

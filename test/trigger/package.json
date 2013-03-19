@@ -5,7 +5,8 @@
         "montage": "../../",
         "montage-testing": "../../node_modules/montage-testing"
     },
-    "dependecies": {
-        "inject-description-location": "*"
+    "dependencies": {
+        "inject-description-location": "*",
+        "existing": "*"
     }
 }
