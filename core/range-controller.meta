@@ -113,7 +113,7 @@
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "RangeController",
-            "blueprintModuleId": "core/range-controller-blueprint.json",
+            "blueprintModuleId": "core/range-controller.meta",
             "prototypeName": "RangeController",
             "customPrototype": false,
             "propertyBlueprints": [

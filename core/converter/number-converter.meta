@@ -65,7 +65,7 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "Converter",
-                "blueprintModuleId": "core/converter/converter-blueprint.json",
+                "blueprintModuleId": "core/converter/converter.meta",
                 "prototypeName": "Converter"
             }
         }
@@ -75,7 +75,7 @@
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "NumberConverter",
-            "blueprintModuleId": "core/converter/number-converter-blueprint.json",
+            "blueprintModuleId": "core/converter/number-converter.meta",
             "prototypeName": "NumberConverter",
             "customPrototype": false,
             "parent": {

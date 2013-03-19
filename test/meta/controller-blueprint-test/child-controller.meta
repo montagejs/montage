@@ -22,7 +22,7 @@
         "properties":{
             "valueReference":{
                 "blueprintName":"ParentController",
-                "blueprintModuleId":"meta/controller-blueprint-test/parent-controller-blueprint.json",
+                "blueprintModuleId":"meta/controller-blueprint-test/parent-controller.meta",
                 "prototypeName":"ParentController"
             }
         }
@@ -32,7 +32,7 @@
         "prototype":"montage/core/meta/blueprint",
         "properties":{
             "name":"ChildController",
-            "blueprintModuleId":"meta/controller-blueprint-test/child-controller-blueprint.json",
+            "blueprintModuleId":"meta/controller-blueprint-test/child-controller.meta",
             "prototypeName":"ChildController",
             "customPrototype":false,
             "parent":{

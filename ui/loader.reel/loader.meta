@@ -94,7 +94,7 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "Component",
-                "blueprintModuleId": "ui/component-blueprint.json",
+                "blueprintModuleId": "ui/component.meta",
                 "prototypeName": "Component"
             }
         }
@@ -103,7 +103,7 @@
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "Loader",
-            "blueprintModuleId": "ui/loader.reel/loader-blueprint.json",
+            "blueprintModuleId": "ui/loader.reel/loader.meta",
             "prototypeName": "Loader",
             "parent": {
                 "@": "blueprint_component_reference"

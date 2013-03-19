@@ -29,7 +29,7 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "Converter",
-                "blueprintModuleId": "core/converter/converter-blueprint.json",
+                "blueprintModuleId": "core/converter/converter.meta",
                 "prototypeName": "Converter"
             }
         }
@@ -39,7 +39,7 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "Component",
-                "blueprintModuleId": "ui/component-blueprint.json",
+                "blueprintModuleId": "ui/component.meta",
                 "prototypeName": "Component"
             }
         }
@@ -48,7 +48,7 @@
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "Text",
-            "blueprintModuleId": "ui/text.reel/text-blueprint.json",
+            "blueprintModuleId": "ui/text.reel/text.meta",
             "prototypeName": "Text",
             "customPrototype": false,
             "parent": {

@@ -27,11 +27,30 @@
         }
     },
 
+    "blueprint_component_classList":{
+        "prototype":"core/meta/property-blueprint",
+        "properties":{
+            "name":"classList",
+            "blueprint":{
+                "@":"root"
+            },
+            "cardinality":-1,
+            "mandatory":false,
+            "denyDelete":false,
+            "readOnly":false,
+            "valueType":"string",
+            "collectionValueType":"set",
+            "enumValues":[
+            ],
+            "helpKey":""
+        }
+    },
+
     "root":{
         "prototype":"core/meta/blueprint",
         "properties":{
             "name":"Component",
-            "blueprintModuleId":"ui/component-blueprint.json",
+            "blueprintModuleId":"ui/component.meta",
             "prototypeName":"Component",
             "customPrototype":false,
             "propertyBlueprints":[
@@ -40,6 +59,9 @@
                 },
                 {
                     "@":"blueprint_component_element"
+                },
+                {
+                    "@":"blueprint_component_classList"
                 }
             ],
             "propertyBlueprintGroups":{
@@ -49,6 +71,9 @@
                     },
                     {
                         "@":"blueprint_component_element"
+                    },
+                    {
+                        "@":"blueprint_component_classList"
                     }
                 ]
             },

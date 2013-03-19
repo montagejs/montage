@@ -1,24 +1,24 @@
 {
 
-    "bytesConverter_decimals": {
+    "currenyConverter_currency": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
-            "name": "decimals",
+            "name": "currency",
             "blueprint": {
                 "@": "root"
             },
-            "valueType": "number",
+            "valueType": "string",
             "helpKey": ""
         }
     },
 
-    "converter_blueprint_reference": {
+    "number_converter_blueprint_reference": {
         "prototype": "core/meta/blueprint-reference",
         "properties": {
             "valueReference": {
-                "blueprintName": "Converter",
-                "blueprintModuleId": "core/converter/converter-blueprint.json",
-                "prototypeName": "Converter"
+                "blueprintName": "NumberConverter",
+                "blueprintModuleId": "core/converter/number-converter.meta",
+                "prototypeName": "NumberConverter"
             }
         }
     },
@@ -26,22 +26,22 @@
     "root": {
         "prototype": "core/meta/blueprint",
         "properties": {
-            "name": "BytesConverter",
-            "blueprintModuleId": "core/converter/bytes-converter-blueprint.json",
-            "prototypeName": "BytesConverter",
+            "name": "CurrencyConverter",
+            "blueprintModuleId": "core/converter/currency-converter.meta",
+            "prototypeName": "CurrencyConverter",
             "customPrototype": false,
             "parent": {
-                "@": "converter_blueprint_reference"
+                "@": "number_converter_blueprint_reference"
             },
             "propertyBlueprints": [
                 {
-                    "@": "bytesConverter_decimals"
+                    "@": "currenyConverter_currency"
                 }
             ],
             "propertyBlueprintGroups": {
-                "bytesConverter": [
+                "currencyConverter": [
                     {
-                        "@": "bytesConverter_decimals"
+                        "@": "currenyConverter_currency"
                     }
                 ]
             },

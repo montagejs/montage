@@ -17,7 +17,7 @@
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "Converter",
-            "blueprintModuleId": "core/converter/converter-blueprint.json",
+            "blueprintModuleId": "core/converter/converter.meta",
             "prototypeName": "Converter",
             "customPrototype": false,
             "propertyBlueprints": [

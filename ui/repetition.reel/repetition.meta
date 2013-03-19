@@ -67,7 +67,7 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "Component",
-                "blueprintModuleId": "ui/component-blueprint.json",
+                "blueprintModuleId": "ui/component.meta",
                 "prototypeName": "Component"
             }
         }
@@ -76,7 +76,7 @@
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "Repetition",
-            "blueprintModuleId": "ui/repetition.reel/repetition-blueprint.json",
+            "blueprintModuleId": "ui/repetition.reel/repetition.meta",
             "prototypeName": "Repetition",
             "parent": {
                 "@": "blueprint_component_reference"

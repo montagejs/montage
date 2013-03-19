@@ -5,7 +5,7 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "Converter",
-                "blueprintModuleId": "core/converter/converter-blueprint.json",
+                "blueprintModuleId": "core/converter/converter.meta",
                 "prototypeName": "Converter"
             }
         }
@@ -14,9 +14,9 @@
     "root": {
         "prototype": "core/meta/blueprint",
         "properties": {
-            "name": "LowerCaseConverter",
-            "blueprintModuleId": "core/converter/lower-case-converter-blueprint.json",
-            "prototypeName": "LowerCaseConverter",
+            "name": "UpperCaseConverter",
+            "blueprintModuleId": "core/converter/upper-case-converter.meta",
+            "prototypeName": "UpperCaseConverter",
             "customPrototype": false,
             "parent": {
                 "@": "converter_blueprint_reference"

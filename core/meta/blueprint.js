@@ -35,7 +35,7 @@ var Defaults = {
 var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint# */ {
 
     FileExtension: {
-        value: "-blueprint.json"
+        value: ".meta"
     },
 
     /**

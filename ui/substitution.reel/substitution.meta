@@ -33,7 +33,7 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "Component",
-                "blueprintModuleId": "ui/component-blueprint.json",
+                "blueprintModuleId": "ui/component.meta",
                 "prototypeName": "Component"
             }
         }
@@ -42,7 +42,7 @@
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "Substitution",
-            "blueprintModuleId": "ui/substitution.reel/substitution-blueprint.json",
+            "blueprintModuleId": "ui/substitution.reel/substitution.meta",
             "prototypeName": "Substitution",
             "parent": {
                 "@": "blueprint_component_reference"

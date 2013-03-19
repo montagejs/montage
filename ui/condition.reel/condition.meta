@@ -1,22 +1,26 @@
 {
-    "blueprint_slot_delegate": {
+    "blueprint_condition_condition": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
-            "name": "delegate",
+            "name": "condition",
             "blueprint": {
                 "@": "root"
             },
-            "valueType": "object"
+            "valyeType": "boolean"
         }
     },
-    "blueprint_slot_content": {
+    "blueprint_condition_removalStrategy": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
-            "name": "content",
+            "name": "removalStrategy",
             "blueprint": {
                 "@": "root"
             },
-            "valueType": "object"
+            "valueType":"enum",
+            "enumValues": [
+                "hide",
+                "remove"
+            ]
         }
     },
     "blueprint_component_reference": {
@@ -24,7 +28,7 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "Component",
-                "blueprintModuleId": "ui/component-blueprint.json",
+                "blueprintModuleId": "ui/component.meta",
                 "prototypeName": "Component"
             }
         }
@@ -32,27 +36,27 @@
     "root": {
         "prototype": "core/meta/blueprint",
         "properties": {
-            "name": "Slot",
-            "blueprintModuleId": "ui/slot.reel/slot-blueprint.json",
-            "prototypeName": "Slot",
+            "name": "Condition",
+            "blueprintModuleId": "ui/condition.reel/condition.meta",
+            "prototypeName": "Condition",
             "parent": {
                 "@": "blueprint_component_reference"
             },
             "propertyBlueprints": [
                 {
-                    "@": "blueprint_slot_delegate"
+                    "@": "blueprint_condition_condition"
                 },
                 {
-                    "@": "blueprint_slot_content"
+                    "@": "blueprint_condition_removalStrategy"
                 }
             ],
             "propertyBlueprintGroups": {
-                "Slot": [
+                "Condition": [
                     {
-                        "@": "blueprint_slot_delegate"
+                        "@": "blueprint_condition_condition"
                     },
                     {
-                        "@": "blueprint_slot_content"
+                        "@": "blueprint_condition_removalStrategy"
                     }
                 ]
             }

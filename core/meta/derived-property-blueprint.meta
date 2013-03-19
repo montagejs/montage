@@ -59,7 +59,7 @@
         "properties":{
             "valueReference":{
                 "blueprintName":"PropertyBlueprint",
-                "blueprintModuleId":"core/meta/property-blueprint-blueprint.json",
+                "blueprintModuleId":"core/meta/property-blueprint.meta",
                 "prototypeName":"PropertyBlueprint"
             }
         }
@@ -69,7 +69,7 @@
         "prototype":"core/meta/blueprint",
         "properties":{
             "name":"DerivedPropertyBlueprint",
-            "blueprintModuleId":"core/meta/derived-property-blueprint-blueprint.json",
+            "blueprintModuleId":"core/meta/derived-property-blueprint.meta",
             "prototypeName":"DerivedPropertyBlueprint",
             "customPrototype":false,
             "parent":{
