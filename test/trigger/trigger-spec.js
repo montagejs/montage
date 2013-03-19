@@ -2,6 +2,7 @@
 var Montage = require("montage").Montage;
 var Promise = require("montage/core/promise").Promise;
 var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
+var URL = require("montage/core/url");
 
 var options = TestPageLoader.options("trigger-test", {timeoutLength: 10000}, function() {console.log("trigger-test callback");});
 describe("trigger-test", function() {
@@ -10,7 +11,6 @@ describe("trigger-test", function() {
             promiseForFrameLoad;
         it("should receive a montageReady event", function() {
             console.group("trigger-test");
-            console.log("should wait for the trigger");
 
             promiseForFrameLoad = TestPageLoader.testPage.loadFrame(options);
             return promiseForFrameLoad.then(function(iWindow) {
@@ -31,43 +31,39 @@ describe("trigger-test", function() {
             });
         });
         it("load when message is posted", function() {
+
+
             console.log("load when message is posted");
             return require.async("trigger/package.json").then(function(packageJSON) {
+                var injections = {};
 
-                var injections = {}
-                injections.packageDescriptions = [];
-                injections.packageDescriptionLocations = [];
+                //packageDescriptions
+//                packageJSON.mappings["injected-description"] = {
+//                    name: "injected-description",
+//                    location: "somewhere",
+//                    version: "*"
+//                };
+//                injections.packageDescriptions = [
+//                    {
+//                        name: "injected-description",
+//                        location: URL.resolve(options.directory, "injected-description"),
+//                        description: packageJSON
+//                    }
+//                ];
+
+                //packageDescriptionLocations
+                injections.packageDescriptionLocations = [
+                    {
+                        name: "inject-description-location",
+                        location: URL.resolve(options.directory, "node_modules/inject-description-location/package.json"),
+                        descriptionLocation: URL.resolve(options.directory, "inject-description-location.json")
+                    }
+                ];
+
+                //mappings
                 injections.mappings = [
                     {
-                        name: "test",
-                        application: true,
-                        dependency: {
-                            name: "test",
-                            location: "../",
-                            version: "*"
-                        }
-                    },
-                    {
-                        name: "montage",
-                        application: true,
-                        dependency: {
-                            name: "montage",
-                            location: "../../",
-                            version: "*"
-                        }
-                    },
-                    {
-                        name: "montage-testing",
-                        application: true,
-                        dependency: {
-                            name: "montage-testing",
-                            location: "../../node_modules/montage-testing",
-                            version: "*"
-                        }
-                    },
-                    {
                         name: "__custom",
-                        application: true,
                         dependency: {
                             name: "__custom",
                             location: ".",
@@ -75,23 +71,58 @@ describe("trigger-test", function() {
                         }
                     }
                 ];
-                injections.dependencies = [];
+
+                //dependencies
+                injections.dependencies = [
+                    {
+                        name: "injected-dependency"
+                    },
+                    {
+                        name: "inject-description-location"
+                    }
+                ];
 
                 testWindow.postMessage({
                     type: "montageInit",
                     location: options.directory,
                     injections: injections
                 }, "*");
-            }).then(function() {
                 return TestPageLoader.testPage.loadTest(promiseForFrameLoad, options).then(function(testPage) {
                     expect(testPage.loaded).toBeTruthy();
                 });
-            }) ;
+            })
         });
-        it("should accept to load a custom mapping", function() {
-            console.log("should accept to load a custom mapping");
+
+        it("should be able to inject a packaged description", function() {
+            // the inject-description-location.json is supposed to define the main modules as inject.js
+            var injectModule = TestPageLoader.testPage.window.require.async("injected-description/inject");
+
+            return injectModule.then(function(inject) {
+                expect(inject.injected).toBeTruthy();
+            });
+
+        });
+        it("should be able to inject a packaged description location", function() {
+            // the inject-description-location.json is supposed to define the main modules as inject.js
+            var injectModule = TestPageLoader.testPage.window.require.async("inject-description-location");
+
+            return injectModule.then(function(inject) {
+                expect(inject.injected).toBeTruthy();
+            });
+
+        });
+        it("should be able to inject a mapping", function() {
 
             var injectModule = TestPageLoader.testPage.window.require.async("__custom/inject");
+
+            return injectModule.then(function(inject) {
+                expect(inject.injected).toBeTruthy();
+            });
+
+        });
+        it("should be able to inject a dependency", function() {
+
+            var injectModule = TestPageLoader.testPage.window.require.async("injected-dependency/inject");
 
             return injectModule.then(function(inject) {
                 expect(inject.injected).toBeTruthy();

@@ -227,54 +227,59 @@ if (typeof window !== "undefined") {
                         }
                     };
                     window.addEventListener("message", messageCallback);
-                    var injectIntoRequire = function (targetRequire, location, injections, type) {
-                        if (!injections) {
-                            return;
-                        }
-                        location = URL.resolve(location, ".");
-                        var packageDescriptions = injections.packageDescriptions;
-                        if (Array.isArray(packageDescriptions) && packageDescriptions.length > 0) {
-                            for (var index in packageDescriptions) {
-                                if (packageDescriptions[index][type]) {
-                                    targetRequire.injectPackageDescription(location, packageDescriptions[index].description);
-                                }
-                            }
-                        }
-                        var packageDescriptionLocations = injections.packageDescriptionLocations;
-                        if (Array.isArray(packageDescriptionLocations) && packageDescriptionLocations.length > 0) {
-                            for (var index in packageDescriptionLocations) {
-                                if (packageDescriptionLocations[index][type]) {
-                                    targetRequire.injectPackageDescriptionLocation(location, packageDescriptionLocations[index].descriptionLocation);
-                                }
-                            }
-                        }
-                        var mappings = injections.mappings;
-                        if (Array.isArray(mappings) && mappings.length > 0) {
-                            for (var index in mappings) {
-                                if (mappings[index][type]) {
-                                    targetRequire.injectMapping(mappings[index].dependency, mappings[index].name);
-                                }
-                            }
-                        }
-                        var dependencies = injections.dependencies;
-                        if (Array.isArray(dependencies) && dependencies.length > 0) {
-                            for (var index in dependencies) {
-                                if (dependencies[index][type]) {
-                                    targetRequire.injectDependency(dependencies[index].name);
-                                }
-                            }
-                        }
-                    }
+
                     promiseForLoadedPackage = trigger.promise.spread(function (location, injections) {
-                        injectIntoRequire.call(this, montageRequire, location, injections, "montage")
                         return montageRequire.loadPackage({
                             location: location,
-                            hash: applicationHash})
-                            .then(function (applicationRequire) {
-                                injectIntoRequire.call(this, applicationRequire, location, injections, "application")
+                            hash: applicationHash
+                        }).then(function (applicationRequire) {
+                                if (injections) {
+                                    location = URL.resolve(location, ".");
+                                    var packageDescriptions = injections.packageDescriptions,
+                                        packageDescriptionLocations = injections.packageDescriptionLocations,
+                                        mappings = injections.mappings,
+                                        dependencies = injections.dependencies,
+                                        index, injectionsLength;
+
+                                    if (packageDescriptions) {
+                                        injectionsLength = packageDescriptions.length;
+                                        for (index = 0; index < injectionsLength; index++) {
+                                            applicationRequire.injectPackageDescription(
+                                                packageDescriptions[index].location,
+                                                packageDescriptions[index].description);
+                                        }
+                                    }
+
+                                    if (packageDescriptionLocations) {
+                                        injectionsLength = packageDescriptionLocations.length;
+                                        for (index = 0; index < injectionsLength; index++) {
+                                            applicationRequire.injectPackageDescriptionLocation(
+                                                packageDescriptionLocations[index].location,
+                                                packageDescriptionLocations[index].descriptionLocation);
+                                        }
+                                    }
+
+                                    if (mappings) {
+                                        injectionsLength = mappings.length;
+                                        for (index = 0; index < injectionsLength; index++) {
+                                            applicationRequire.injectMapping(
+                                                mappings[index].dependency,
+                                                mappings[index].name);
+                                        }
+                                    }
+
+                                    if (dependencies) {
+                                        injectionsLength = dependencies.length;
+                                        for (index = 0; index < injectionsLength; index++) {
+                                            applicationRequire.injectDependency(
+                                                dependencies[index].name,
+                                                dependencies[index].version);
+                                        }
+                                    }
+                                }
                                 return Promise.resolve(applicationRequire);
                             });
-                    })
+                    });
                 }
                 return promiseForLoadedPackage.then(function (applicationRequire) {
                     global.require = applicationRequire;
