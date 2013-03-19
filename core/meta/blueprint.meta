@@ -5,7 +5,7 @@
         "properties":{
             "valueReference":{
                 "blueprintName":"Binder",
-                "blueprintModuleId":"core/meta/binder-blueprint.json",
+                "blueprintModuleId":"core/meta/binder.meta",
                 "prototypeName":"Binder"
             }
         }
@@ -16,7 +16,7 @@
         "properties":{
             "valueReference":{
                 "blueprintName":"PropertyBlueprint",
-                "blueprintModuleId":"core/meta/property-blueprint-blueprint.json",
+                "blueprintModuleId":"core/meta/property-blueprint.meta",
                 "prototypeName":"PropertyBlueprint"
             }
         }
@@ -27,7 +27,7 @@
         "properties":{
             "valueReference":{
                 "blueprintName":"PropertyValidationRule",
-                "blueprintModuleId":"core/meta/validation-rule-blueprint.json",
+                "blueprintModuleId":"core/meta/validation-rule.meta",
                 "prototypeName":"PropertyValidationRule"
             }
         }
@@ -157,7 +157,7 @@
         "prototype":"core/meta/blueprint",
         "properties":{
             "name":"Blueprint",
-            "blueprintModuleId":"core/meta/blueprint-blueprint.json",
+            "blueprintModuleId":"core/meta/blueprint.meta",
             "prototypeName":"Blueprint",
             "customPrototype":false,
             "propertyBlueprints":[

@@ -1,12 +1,13 @@
 {
-    "blueprint_parentcontroller_customerList":{
-        "prototype":"montage/core/meta/property-blueprint",
+
+    "blueprint_component_identifier":{
+        "prototype":"core/meta/property-blueprint",
         "properties":{
-            "name":"customerList",
+            "name":"identifier",
             "blueprint":{
                 "@":"root"
             },
-            "cardinality":-1,
+            "cardinality":1,
             "mandatory":false,
             "denyDelete":false,
             "readOnly":false,
@@ -17,14 +18,14 @@
         }
     },
 
-    "blueprint_parentcontroller_customerSelectionList":{
-        "prototype":"montage/core/meta/property-blueprint",
+    "blueprint_component_element":{
+        "prototype":"core/meta/property-blueprint",
         "properties":{
-            "name":"customerSelectionList",
+            "name":"form",
             "blueprint":{
                 "@":"root"
             },
-            "cardinality":-1,
+            "cardinality":1,
             "mandatory":false,
             "denyDelete":false,
             "readOnly":false,
@@ -36,21 +37,29 @@
     },
 
     "root":{
-        "prototype":"montage/core/meta/blueprint",
+        "prototype":"core/meta/blueprint",
         "properties":{
-            "name":"ParentController",
-            "blueprintModuleId":"meta/controller-blueprint-parent/parent-controller-blueprint.json",
-            "prototypeName":"ParentController",
+            "name":"Component",
+            "blueprintModuleId":"ui/component.meta",
+            "prototypeName":"Component",
             "customPrototype":false,
             "propertyBlueprints":[
                 {
-                    "@":"blueprint_parentcontroller_customerList"
+                    "@":"blueprint_component_identifier"
                 },
                 {
-                    "@":"blueprint_parentcontroller_customerSelectionList"
+                    "@":"blueprint_component_element"
                 }
             ],
             "propertyBlueprintGroups":{
+                "component":[
+                    {
+                        "@":"blueprint_component_identifier"
+                    },
+                    {
+                        "@":"blueprint_component_element"
+                    }
+                ]
             },
             "propertyValidationRules":{
             }
