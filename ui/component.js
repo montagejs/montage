@@ -46,7 +46,8 @@ var Montage = require("montage").Montage,
     Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("component"),
     drawLogger = require("core/logger").logger("drawing"),
-    defaultEventManager = require("core/event/event-manager").defaultEventManager;
+    defaultEventManager = require("core/event/event-manager").defaultEventManager,
+    Set = require("collections/set");
 
 /**
     @requires montage/ui/component-description
@@ -1447,6 +1448,15 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 template.setAttribute(attributeName, value);
             }
 
+            //if a classlist was initialized before the template was loaded then it didn't
+            if (this._classList) {
+                var className = template.className;
+                // classList
+                if (className.length !== 0) {
+                    this.classList.addEach(className.split(" "));
+                }
+            }
+
             if (element.parentNode) {
                 element.parentNode.replaceChild(template, element);
             } else {
@@ -2222,10 +2232,67 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     delete this._elementAttributeValues[attributeName];
                 }
             }
+            // classList
+            this._drawClassListIntoComponent();
+        }
+    },
+
+    _classList: {
+        value: null
+    },
+
+    _classListDirty: {
+        value: false
+    },
+
+    /**
+     The classList of the component's element, the purpose is to mimic the element's API but to also respect the draw.
+     It can also be bound to by binding each class as a property.
+     example to toggle the complete class: "classList.has('complete')" : { "<-" : "@owner.isCompete"}
+     @type {Property}
+     @default null
+     */
+    classList: {
+        get: function () {
+            if (this._classList === null) {
+                this._classList = new Set();
+                this._classList.addRangeChangeListener(this, "classList");
+                var className = this.element.className;
+                // classList
+                if (className.length !== 0) {
+                    this.classList.addEach(className.split(" "));
+                }
+            }
+            return this._classList;
+        }
+    },
+
+    handleClassListRangeChange: {
+        value: function (name) {
+            this._classListDirty = true;
+            this.needsDraw = true;
+        }
+    },
+
+    _drawClassListIntoComponent: {
+        value: function () {
+            if (this._classListDirty) {
+                var elementClassList = this.element.classList,
+                    classList = this._classList;
+
+                Array.prototype.forEach.call(elementClassList, function (cssClass) {
+                    if (!classList.has(cssClass)) {
+                        elementClassList.remove(cssClass);
+                    }
+                });
+                this._classList.forEach(function (cssClass) {
+                    elementClassList.add(cssClass);
+                });
+                this._classListDirty = false;
+            }
         }
     }
 });
-
 
 
 /* @extends montage/ui/component.Component */
