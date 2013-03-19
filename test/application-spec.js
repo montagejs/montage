@@ -68,7 +68,7 @@ TestPageLoader.queueTest("application-test", {src: "application-test/application
                 testWindow = testPage.iframe.contentWindow;
             });
             it("should be added to exports", function () {
-                return testWindow.montageRequire.async("ui/application")
+                return testWindow.montageRequire.async("core/application")
                     .then(function (exports) {
                         expect(exports.application).toBeDefined();
                     })
@@ -76,7 +76,7 @@ TestPageLoader.queueTest("application-test", {src: "application-test/application
 
             describe("delegate", function() {
                 it("should have willFinishLoading method called", function() {
-                    return testWindow.montageRequire.async("ui/application").get("application")
+                    return testWindow.montageRequire.async("core/application").get("application")
                         .then(function(testApplication) {
                             expect(testApplication.delegate.willFinishLoadingCalled).toBeTruthy();
                         })
@@ -100,7 +100,7 @@ TestPageLoader.queueTest("application-test-subtype", {src: "application-test/app
             describe("subtyping", function() {
                 it("should use defined subtype", function() {
                     var testWindow = testPage.iframe.contentWindow;
-                    var testApplication = testWindow.montageRequire("ui/application").application;
+                    var testApplication = testWindow.montageRequire("core/application").application;
                     expect(testApplication.testProperty).toBeTruthy();
                 });
 

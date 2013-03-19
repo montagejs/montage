@@ -51,7 +51,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
 
         beforeEach(function() {
             var testWindow = testPage.iframe.contentWindow;
-            eventManager = testWindow.montageRequire("ui/application").application.eventManager;
+            eventManager = testWindow.montageRequire("core/application").application.eventManager;
 
             testDocument = testPage.iframe.contentDocument;
 

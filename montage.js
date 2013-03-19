@@ -562,7 +562,7 @@ if (typeof window !== "undefined") {
                 }
 
                 return appModulePromise.then(function(exports) {
-                    var Application = exports[(applicationDescription ? applicationDescription.name : "Application")];
+                    var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
                     application = Application.create();
                     Object.defineProperty(window.document, "application", {
                         get: Montage.deprecate(
@@ -570,7 +570,7 @@ if (typeof window !== "undefined") {
                             function () {
                                 return exports.application
                             },
-                            "document.application is deprecated, use require(\"montage/ui/application\").application instead."
+                            "document.application is deprecated, use require(\"montage/core/application\").application instead."
                             )
                     });
                     defaultEventManager.application = application;

@@ -45,7 +45,7 @@ TestPageLoader.queueTest("claimed-pointer-test/claimed-pointer-test", function(t
 
         beforeEach(function() {
             var testWindow = testPage.iframe.contentWindow;
-            eventManager = testWindow.montageRequire("ui/application").application.eventManager;
+            eventManager = testWindow.montageRequire("core/application").application.eventManager;
             eventManager.reset();
 
             componentA = testPage.test.componentA;

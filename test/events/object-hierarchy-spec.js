@@ -41,7 +41,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
             var testWindow = testPage.iframe.contentWindow;
             var testDocument = testPage.iframe.contentDocument;
             testMontage = testWindow.montageRequire("montage").Montage,
-            testApplication = testWindow.montageRequire("ui/application").application;
+            testApplication = testWindow.montageRequire("core/application").application;
             eventManager = testApplication.eventManager;
             eventManager.reset();
         });

@@ -372,7 +372,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     application: {
         enumerable: false,
         get: function() {
-            return require("ui/application").application;
+            return require("core/application").application;
         }
     },
 /**
