@@ -725,7 +725,7 @@ exports._blueprintModuleIdDescriptor = {
             dotIndex = ( dotIndex < slashIndex ? moduleId.length : dotIndex );
             Montage.defineProperty(self, "_blueprintModuleId", {
                 enumerable: false,
-                value: moduleId.slice(0, dotIndex) + "-blueprint.json"
+                value: moduleId.slice(0, dotIndex) + ".meta"
             });
         }
         return self._blueprintModuleId;

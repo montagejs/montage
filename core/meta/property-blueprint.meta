@@ -5,7 +5,7 @@
         "properties":{
             "valueReference":{
                 "blueprintName":"Blueprint",
-                "blueprintModuleId":"core/meta/blueprint-blueprint.json",
+                "blueprintModuleId":"core/meta/blueprint.meta",
                 "prototypeName":"Blueprint"
             }
         }
@@ -238,7 +238,7 @@
         "prototype":"core/meta/blueprint",
         "properties":{
             "name":"PropertyBlueprint",
-            "blueprintModuleId":"core/meta/property-blueprint-blueprint.json",
+            "blueprintModuleId":"core/meta/property-blueprint.meta",
             "prototypeName":"PropertyBlueprint",
             "customPrototype":false,
             "propertyBlueprints":[

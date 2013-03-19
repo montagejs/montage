@@ -25,7 +25,7 @@
         "properties":{
             "valueReference":{
                 "blueprintName":"PropertyBlueprint",
-                "blueprintModuleId":"core/meta/property-blueprint-blueprint.json",
+                "blueprintModuleId":"core/meta/property-blueprint.meta",
                 "prototypeName":"PropertyBlueprint"
             }
         }
@@ -35,7 +35,7 @@
         "prototype":"core/meta/blueprint",
         "properties":{
             "name":"AssociationBlueprint",
-            "blueprintModuleId":"core/meta/association-blueprint-blueprint.json",
+            "blueprintModuleId":"core/meta/association-blueprint.meta",
             "prototypeName":"AssociationBlueprint",
             "customPrototype":false,
             "parent":{

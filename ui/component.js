@@ -1283,10 +1283,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 var blueprintModuleId;
                 if ((dotIndex < moduleId.length) && ( moduleId.slice(dotIndex, moduleId.length) == ".reel")) {
                     // We are in a reel
-                    blueprintModuleId = moduleId + "/" + moduleId.slice(slashIndex, dotIndex) + "-blueprint.json";
+                    blueprintModuleId = moduleId + "/" + moduleId.slice(slashIndex, dotIndex) + ".meta";
                 } else {
                     // We look for the default
-                    blueprintModuleId = moduleId.slice(0, dotIndex) + "-blueprint.json";
+                    blueprintModuleId = moduleId.slice(0, dotIndex) + ".meta";
                 }
 
                 Montage.defineProperty(self, "_blueprintModuleId", {

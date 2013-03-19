@@ -5,7 +5,7 @@
         "properties":{
             "valueReference":{
                 "blueprintName":"Blueprint",
-                "blueprintModuleId":"core/meta/blueprint-blueprint.json",
+                "blueprintModuleId":"core/meta/blueprint.meta",
                 "prototypeName":"Blueprint"
             }
         }
@@ -73,7 +73,7 @@
         "prototype":"core/meta/blueprint",
         "properties":{
             "name":"Binder",
-            "blueprintModuleId":"core/meta/binder-blueprint.json",
+            "blueprintModuleId":"core/meta/binder.meta",
             "prototypeName":"Binder",
             "customPrototype":false,
             "propertyBlueprints":[

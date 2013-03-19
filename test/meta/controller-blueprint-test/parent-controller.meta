@@ -39,7 +39,7 @@
         "prototype":"montage/core/meta/blueprint",
         "properties":{
             "name":"ParentController",
-            "blueprintModuleId":"meta/controller-blueprint-parent/parent-controller-blueprint.json",
+            "blueprintModuleId":"meta/controller-blueprint-parent/parent-controller.meta",
             "prototypeName":"ParentController",
             "customPrototype":false,
             "propertyBlueprints":[
