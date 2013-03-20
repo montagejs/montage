@@ -58,6 +58,8 @@ require("montage-testing").run(require,[
         "serialization/serialization-inspector-spec",
         "serialization/serialization-merger-spec",
 
+        "trigger/trigger-spec",
+
         "ui/component-spec",
         "ui/condition-spec",
         "ui/firstdraw-spec",
