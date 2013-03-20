@@ -127,14 +127,18 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
     @returns itself
     */
     init: {
-        value: function(name, dontStoreState) {
+        value: function(name, onStateChange, dontStoreState) {
             this.name = name;
+            this._onStateChange = onStateChange;
             this._storeState = !dontStoreState;
             if (this._storeState && localStorage) {
                 var storedState = localStorage.getItem("_montage_logger_" + name);
                 if (storedState) {
                     this.isDebug = storedState === "true";
                 }
+            }
+            if (onStateChange) {
+                this._onStateChange(storedState === "true");
             }
             this.isError = true;
             return this;
@@ -233,16 +237,20 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
 */
     _storeState: {
         value: null
+    },
+
+    _onStateChange: {
+        value: null
     }
 });
 
 /**
     @function module:montage/core/logger.#logger
     */
-exports.logger = function(loggerName, dontStoreState) {
+exports.logger = function(loggerName, onStateChange, dontStoreState) {
     var logger;
     if ((logger = loggers[loggerName]) == null) {
-        logger = Montage.create(Logger).init(loggerName, dontStoreState);
+        logger = Montage.create(Logger).init(loggerName, onStateChange, dontStoreState);
         Montage.defineProperty(loggers, loggerName, {
             value: logger
         });
@@ -362,6 +370,9 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
                 name = event.target.value,
                 logger = loggers[name];
             logger.isDebug = value;
+            if (logger._onStateChange) {
+                logger._onStateChange(value);
+            }
             if (logger._storeState && localStorage) {
                 localStorage.setItem("_montage_logger_" + name, value);
             }
