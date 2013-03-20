@@ -186,7 +186,7 @@ if (typeof window !== "undefined") {
                     .done();
                 };
 
-                var promiseForLoadedPackage;
+                var montageRequirePromise;
 
                 if (!("remoteTrigger" in params)) {
                     if ("autoPackage" in params) {
@@ -206,7 +206,7 @@ if (typeof window !== "undefined") {
                             );
                         }
                     }
-                    promiseForLoadedPackage = montageRequire.loadPackage({
+                    montageRequirePromise = montageRequire.loadPackage({
                         location: location,
                         hash: applicationHash
                     });
@@ -219,69 +219,75 @@ if (typeof window !== "undefined") {
                         type: "montageReady"
                     }, "*");
                     var messageCallback = function (event) {
-                        if (params.remoteTrigger === event.origin &&
+                        if (
+                            params.remoteTrigger === event.origin &&
                             (event.source === window || event.source === window.parent) &&
-                            event.data.type === "montageInit") {
-                            trigger.resolve([event.data.location, event.data.injections]);
+                            event.data.type === "montageInit"
+                        ) {
                             window.removeEventListener("message", messageCallback);
+                            trigger.resolve([event.data.location, event.data.injections]);
                         }
                     };
                     window.addEventListener("message", messageCallback);
 
-                    promiseForLoadedPackage = trigger.promise.spread(function (location, injections) {
-                        return montageRequire.loadPackage({
+                    montageRequirePromise = trigger.promise.spread(function (location, injections) {
+                        var promise = montageRequire.loadPackage({
                             location: location,
                             hash: applicationHash
-                        }).then(function (applicationRequire) {
-                                if (injections) {
-                                    location = URL.resolve(location, ".");
-                                    var packageDescriptions = injections.packageDescriptions,
-                                        packageDescriptionLocations = injections.packageDescriptionLocations,
-                                        mappings = injections.mappings,
-                                        dependencies = injections.dependencies,
-                                        index, injectionsLength;
+                        });
+                        if (injections) {
+                            promise = promise.then(function (applicationRequire) {
+                                location = URL.resolve(location, ".");
+                                var packageDescriptions = injections.packageDescriptions,
+                                    packageDescriptionLocations = injections.packageDescriptionLocations,
+                                    mappings = injections.mappings,
+                                    dependencies = injections.dependencies,
+                                    index, injectionsLength;
 
-                                    if (packageDescriptions) {
-                                        injectionsLength = packageDescriptions.length;
-                                        for (index = 0; index < injectionsLength; index++) {
-                                            applicationRequire.injectPackageDescription(
-                                                packageDescriptions[index].location,
-                                                packageDescriptions[index].description);
-                                        }
-                                    }
-
-                                    if (packageDescriptionLocations) {
-                                        injectionsLength = packageDescriptionLocations.length;
-                                        for (index = 0; index < injectionsLength; index++) {
-                                            applicationRequire.injectPackageDescriptionLocation(
-                                                packageDescriptionLocations[index].location,
-                                                packageDescriptionLocations[index].descriptionLocation);
-                                        }
-                                    }
-
-                                    if (mappings) {
-                                        injectionsLength = mappings.length;
-                                        for (index = 0; index < injectionsLength; index++) {
-                                            applicationRequire.injectMapping(
-                                                mappings[index].dependency,
-                                                mappings[index].name);
-                                        }
-                                    }
-
-                                    if (dependencies) {
-                                        injectionsLength = dependencies.length;
-                                        for (index = 0; index < injectionsLength; index++) {
-                                            applicationRequire.injectDependency(
-                                                dependencies[index].name,
-                                                dependencies[index].version);
-                                        }
+                                if (packageDescriptions) {
+                                    injectionsLength = packageDescriptions.length;
+                                    for (index = 0; index < injectionsLength; index++) {
+                                        applicationRequire.injectPackageDescription(
+                                            packageDescriptions[index].location,
+                                            packageDescriptions[index].description);
                                     }
                                 }
-                                return Promise.resolve(applicationRequire);
+
+                                if (packageDescriptionLocations) {
+                                    injectionsLength = packageDescriptionLocations.length;
+                                    for (index = 0; index < injectionsLength; index++) {
+                                        applicationRequire.injectPackageDescriptionLocation(
+                                            packageDescriptionLocations[index].location,
+                                            packageDescriptionLocations[index].descriptionLocation);
+                                    }
+                                }
+
+                                if (mappings) {
+                                    injectionsLength = mappings.length;
+                                    for (index = 0; index < injectionsLength; index++) {
+                                        applicationRequire.injectMapping(
+                                            mappings[index].dependency,
+                                            mappings[index].name);
+                                    }
+                                }
+
+                                if (dependencies) {
+                                    injectionsLength = dependencies.length;
+                                    for (index = 0; index < injectionsLength; index++) {
+                                        applicationRequire.injectDependency(
+                                            dependencies[index].name,
+                                            dependencies[index].version);
+                                    }
+                                }
+
+                                return applicationRequire;
                             });
+                        }
+
+                        return promise;
                     });
                 }
-                return promiseForLoadedPackage.then(function (applicationRequire) {
+                return montageRequirePromise.then(function (applicationRequire) {
                     global.require = applicationRequire;
                     global.montageRequire = montageRequire;
                     platform.initMontage(montageRequire, applicationRequire, params);
