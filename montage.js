@@ -527,7 +527,8 @@ if (typeof window !== "undefined") {
             var dependencies = [
                 "core/core",
                 "core/event/event-manager",
-                "core/serialization/deserializer/montage-reviver"
+                "core/serialization/deserializer/montage-reviver",
+                "core/logger"
             ];
 
             var Promise = montageRequire("core/promise").Promise;
@@ -540,7 +541,14 @@ if (typeof window !== "undefined") {
                 var Montage = montageRequire("core/core").Montage;
                 var EventManager = montageRequire("core/event/event-manager").EventManager;
                 var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
+                var logger = montageRequire("core/logger").logger
+
                 var defaultEventManager, application;
+
+                // Setup Promise's longStackTrace support option
+                logger("Promise stacktrace support", function(state) {
+                    Promise.longStackJumpLimit = state ? 1 : 0;
+                });
 
                 // Load the event-manager
                 defaultEventManager = EventManager.create().initWithWindow(window);
