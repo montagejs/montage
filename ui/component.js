@@ -45,6 +45,7 @@ var Montage = require("montage").Montage,
     Gate = require("core/gate").Gate,
     Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("component"),
+    drawPerformanceLogger = require("core/logger").logger("Drawing performance"),
     drawLogger = require("core/logger").logger("drawing"),
     defaultEventManager = require("core/event/event-manager").defaultEventManager,
     Set = require("collections/set");
@@ -2659,6 +2660,10 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                         self.drawTree();
                         return;
                     }
+
+                    if (drawPerformanceLogger.isDebug) {
+                        var drawPerformanceStartTime = window.performance.now();
+                    }
                     self._frameTime = (timestamp ? timestamp : Date.now());
                     if (self._clearNeedsDrawTimeOut) {
                         self._clearNeedsDrawList();
@@ -2687,6 +2692,13 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                     }
 
                     self.drawIfNeeded();
+
+                    if (drawPerformanceLogger.isDebug) {
+                        var drawPerformanceEndTime = window.performance.now();
+                        console.log("Draw Cycle Time: ",
+                            drawPerformanceEndTime-drawPerformanceStartTime,
+                            ", Components: ", self._lastDrawComponentsCount);
+                    }
 
                     if (drawLogger.isDebug) {
                         console.groupEnd();
@@ -2757,6 +2769,9 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     },
 
 
+    _lastDrawComponentsCount: {
+        value: null
+    },
     /**
         @function
         @returns !!needsDrawList.length
@@ -2834,6 +2849,11 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                     drawLogger.debug(component._montage_metadata.objectName, " didDraw treeLevel ",component._treeLevel);
                 }
             }
+
+            if (drawPerformanceLogger.isDebug) {
+                this._lastDrawComponentsCount = needsDrawList.length;
+            }
+
             return !!needsDrawList.length;
         }
     },
