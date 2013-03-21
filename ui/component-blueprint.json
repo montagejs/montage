@@ -8,12 +8,7 @@
                 "@":"root"
             },
             "cardinality":1,
-            "mandatory":false,
-            "denyDelete":false,
-            "readOnly":false,
             "valueType":"string",
-            "enumValues":[
-            ],
             "helpKey":""
         }
     },
@@ -26,31 +21,8 @@
                 "@":"root"
             },
             "cardinality":1,
-            "mandatory":false,
-            "denyDelete":false,
-            "readOnly":false,
+            "readOnly":true,
             "valueType":"string",
-            "enumValues":[
-            ],
-            "helpKey":""
-        }
-    },
-
-    "blueprint_component_classList":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"classList",
-            "blueprint":{
-                "@":"root"
-            },
-            "cardinality":-1,
-            "mandatory":false,
-            "denyDelete":false,
-            "readOnly":false,
-            "valueType":"string",
-            "collectionValueType":"set",
-            "enumValues":[
-            ],
             "helpKey":""
         }
     },
@@ -68,9 +40,6 @@
                 },
                 {
                     "@":"blueprint_component_element"
-                },
-                {
-                    "@":"blueprint_component_classList"
                 }
             ],
             "propertyBlueprintGroups":{
@@ -80,9 +49,6 @@
                     },
                     {
                         "@":"blueprint_component_element"
-                    },
-                    {
-                        "@":"blueprint_component_classList"
                     }
                 ]
             },
