@@ -34,7 +34,11 @@ var ModuleLoader = Montage.create(Montage, {
 
     getExports: {
         value: function(_require, moduleId) {
-            var module = _require.getModuleDescriptor(moduleId);
+            var module;
+
+            // Transforms relative module ids into absolute module ids
+            moduleId = _require.resolve(moduleId);
+            module = _require.getModuleDescriptor(moduleId);
 
             while (module.redirect !== void 0) {
                 module = _require.getModuleDescriptor(module.redirect);
