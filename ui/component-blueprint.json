@@ -8,12 +8,7 @@
                 "@":"root"
             },
             "cardinality":1,
-            "mandatory":false,
-            "denyDelete":false,
-            "readOnly":false,
             "valueType":"string",
-            "enumValues":[
-            ],
             "helpKey":""
         }
     },
@@ -21,17 +16,13 @@
     "blueprint_component_element":{
         "prototype":"core/meta/property-blueprint",
         "properties":{
-            "name":"form",
+            "name":"element",
             "blueprint":{
                 "@":"root"
             },
             "cardinality":1,
-            "mandatory":false,
-            "denyDelete":false,
-            "readOnly":false,
+            "readOnly":true,
             "valueType":"string",
-            "enumValues":[
-            ],
             "helpKey":""
         }
     },
@@ -65,4 +56,4 @@
             }
         }
     }
-} 
+}

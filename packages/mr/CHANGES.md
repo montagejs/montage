@@ -1,3 +1,10 @@
+## 0.12.11
+
+ - Add injectDependency and injectMapping
+ - Update case sensitivity test to capture errors on first require, for case
+   sensitive file systems
+ - Add support for running tests under PhantomJS and Travis
+
 ## 0.12.10
 
  - Update Q from v0.9.0 to v0.9.2

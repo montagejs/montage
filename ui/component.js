@@ -42,11 +42,14 @@ var Montage = require("montage").Montage,
     Target = require("core/target").Target,
     Bindings = require("core/bindings").Bindings,
     Template = require("core/template").Template,
+    DocumentResources = require("core/document-resources").DocumentResources,
     Gate = require("core/gate").Gate,
     Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("component"),
+    drawPerformanceLogger = require("core/logger").logger("Drawing performance"),
     drawLogger = require("core/logger").logger("drawing"),
-    defaultEventManager = require("core/event/event-manager").defaultEventManager;
+    defaultEventManager = require("core/event/event-manager").defaultEventManager,
+    Set = require("collections/set");
 
 /**
     @requires montage/ui/component-description
@@ -391,7 +394,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     application: {
         enumerable: false,
         get: function() {
-            return document.application;
+            return require("core/application").application;
         }
     },
 /**
@@ -1084,6 +1087,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 if (this.hasTemplate) {
                     this._instantiateTemplate().then(function() {
                         self._isComponentExpanded = true;
+                        self._addTemplateStyles();
                         self.needsDraw = true;
                         deferred.resolve();
                     }, deferred.reject);
@@ -1265,6 +1269,10 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 } else {
                     this.ownerComponent = this.rootComponent;
                 }
+            }
+
+            if (this._needsDrawInDeserialization) {
+                this.needsDraw = true;
             }
         }
     },
@@ -1451,6 +1459,15 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 template.setAttribute(attributeName, value);
             }
 
+            //if a classlist was initialized before the template was loaded then it didn't
+            if (this._classList) {
+                var className = template.className;
+                // classList
+                if (className.length !== 0) {
+                    this.classList.addEach(className.split(" "));
+                }
+            }
+
             if (element.parentNode) {
                 element.parentNode.replaceChild(template, element);
             } else {
@@ -1490,7 +1507,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 styles = resources.createStylesForDocument(_document);
 
                 for (var i = 0, style; (style = styles[i]); i++) {
-                    documentHead.insertBefore(style, documentHead.firstChild);
+                    this.rootComponent.addStylesheet(style);
                 }
             }
         }
@@ -1507,20 +1524,9 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
             }
 
             this._initDomArguments();
-            if (this._template) {
-                this._addTemplateStyles();
-            }
             if (this._templateElement) {
                 this._bindTemplateParametersToArguments();
                 this._replaceElementWithTemplate();
-            }
-            // This will schedule a second draw for any component that has children
-            var childComponents = this.childComponents;
-            for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
-                if (drawLogger.isDebug) {
-                    drawLogger.debug(this, "needsDraw = true for: " + childComponent._montage_metadata.exportedSymbol);
-                }
-                childComponent.needsDraw = true;
             }
         },
         enumerable: false
@@ -1735,7 +1741,10 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
        @private
      */
     _needsDraw: {
-        enumerable: false,
+        value: false
+    },
+
+    _needsDrawInDeserialization: {
         value: false
     },
 
@@ -1759,6 +1768,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
         set: function(value) {
             if (this.isDeserializing) {
                 // Ignore needsDraw(s) which happen during deserialization
+                this._needsDrawInDeserialization = true;
                 return;
             }
             if (this._needsDraw !== value) {
@@ -2233,10 +2243,67 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                     delete this._elementAttributeValues[attributeName];
                 }
             }
+            // classList
+            this._drawClassListIntoComponent();
+        }
+    },
+
+    _classList: {
+        value: null
+    },
+
+    _classListDirty: {
+        value: false
+    },
+
+    /**
+     The classList of the component's element, the purpose is to mimic the element's API but to also respect the draw.
+     It can also be bound to by binding each class as a property.
+     example to toggle the complete class: "classList.has('complete')" : { "<-" : "@owner.isCompete"}
+     @type {Property}
+     @default null
+     */
+    classList: {
+        get: function () {
+            if (this._classList === null) {
+                this._classList = new Set();
+                this._classList.addRangeChangeListener(this, "classList");
+                var className = this.element.className;
+                // classList
+                if (className.length !== 0) {
+                    this.classList.addEach(className.split(" "));
+                }
+            }
+            return this._classList;
+        }
+    },
+
+    handleClassListRangeChange: {
+        value: function (name) {
+            this._classListDirty = true;
+            this.needsDraw = true;
+        }
+    },
+
+    _drawClassListIntoComponent: {
+        value: function () {
+            if (this._classListDirty) {
+                var elementClassList = this.element.classList,
+                    classList = this._classList;
+
+                Array.prototype.forEach.call(elementClassList, function (cssClass) {
+                    if (!classList.has(cssClass)) {
+                        elementClassList.remove(cssClass);
+                    }
+                });
+                this._classList.forEach(function (cssClass) {
+                    elementClassList.add(cssClass);
+                });
+                this._classListDirty = false;
+            }
         }
     }
 });
-
 
 
 /* @extends montage/ui/component.Component */
@@ -2554,6 +2621,35 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         value: 0
     },
 
+
+    _documentResources: {
+        value: null
+    },
+    _needsStylesheetsDraw: {
+        value: false
+    },
+    _stylesheets: {
+        value: []
+    },
+    addStylesheet: {
+        value: function(style) {
+            this._stylesheets.push(style);
+            this._needsStylesheetsDraw = true;
+        }
+    },
+    drawStylesheets: {
+        value: function() {
+            var documentResources = this._documentResources,
+                stylesheets = this._stylesheets,
+                stylesheet;
+
+            while ((stylesheet = stylesheets.shift())) {
+                documentResources.addStyle(stylesheet);
+            }
+            this._needsStylesheetsDraw = false;
+        }
+    },
+
     drawTree: {
         value: function drawTree() {
             if (this.requestedAnimationFrame === null) { // 0 is a valid requestedAnimationFrame value
@@ -2562,6 +2658,22 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                 }
                 var self = this, requestAnimationFrame = this.requestAnimationFrame;
                 var _drawTree = function(timestamp) {
+                    // Before initiating a draw cycle through the components we
+                    // need to have a draw cycle just to add all the stylesheets
+                    // if any is requested to draw.
+                    // We need to do this because adding the stylesheets at the
+                    // same time the components draw won't make the styles
+                    // available at that first draw.
+                    if (self._needsStylesheetsDraw) {
+                        self.drawStylesheets();
+                        self.requestedAnimationFrame = null;
+                        self.drawTree();
+                        return;
+                    }
+
+                    if (drawPerformanceLogger.isDebug) {
+                        var drawPerformanceStartTime = window.performance.now();
+                    }
                     self._frameTime = (timestamp ? timestamp : Date.now());
                     if (self._clearNeedsDrawTimeOut) {
                         self._clearNeedsDrawList();
@@ -2590,6 +2702,13 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                     }
 
                     self.drawIfNeeded();
+
+                    if (drawPerformanceLogger.isDebug) {
+                        var drawPerformanceEndTime = window.performance.now();
+                        console.log("Draw Cycle Time: ",
+                            drawPerformanceEndTime-drawPerformanceStartTime,
+                            ", Components: ", self._lastDrawComponentsCount);
+                    }
 
                     if (drawLogger.isDebug) {
                         console.groupEnd();
@@ -2660,6 +2779,9 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     },
 
 
+    _lastDrawComponentsCount: {
+        value: null
+    },
     /**
         @function
         @returns !!needsDrawList.length
@@ -2737,6 +2859,11 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                     drawLogger.debug(component._montage_metadata.objectName, " didDraw treeLevel ",component._treeLevel);
                 }
             }
+
+            if (drawPerformanceLogger.isDebug) {
+                this._lastDrawComponentsCount = needsDrawList.length;
+            }
+
             return !!needsDrawList.length;
         }
     },
@@ -2752,6 +2879,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         set:function(value) {
             defaultEventManager.registerEventHandlerForElement(this, value);
             this._element = value;
+            this._documentResources = DocumentResources.getInstanceForDocument(value);
         }
     }
 });

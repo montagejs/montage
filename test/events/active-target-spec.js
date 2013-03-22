@@ -1,13 +1,9 @@
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
-var TestPageLoader = require("support/testpageloader").TestPageLoader;
+var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-var testPage = TestPageLoader.queueTest("active-target-test", function () {
+TestPageLoader.queueTest("active-target-test/active-target-test", function(testPage) {
     describe("events/active-target-spec", function () {
-
-        it("should load", function () {
-            expect(testPage.loaded).toBeTruthy();
-        });
 
         var testDocument;
 

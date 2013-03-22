@@ -30,9 +30,9 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /*global require,exports,describe,it,expect */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader;
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-var testPage = TestPageLoader.queueTest("application-as-application", {src: "application/as-application.html"}, function() {
+TestPageLoader.queueTest("application-as-application", {src: "application/as-application.html"}, function(testPage) {
     describe("application-spec", function() {
         describe("Application used in application label", function() {
             it("should draw correctly", function() {
@@ -45,7 +45,7 @@ var testPage = TestPageLoader.queueTest("application-as-application", {src: "app
    });
 });
 
-var testPage = TestPageLoader.queueTest("application-as-owner", {src: "application/as-owner.html"}, function() {
+TestPageLoader.queueTest("application-as-owner", {src: "application/as-owner.html"}, function(testPage) {
     describe("application-spec", function() {
         describe("Application used in owner label", function() {
             it("should draw correctly", function() {
@@ -55,18 +55,32 @@ var testPage = TestPageLoader.queueTest("application-as-owner", {src: "applicati
    });
 });
 
-var testPage = TestPageLoader.queueTest("application-test", {src: "application-test/application-test.html"}, function() {
-    var test = testPage.test;
+TestPageLoader.queueTest("application-test", {src: "application-test/application-test.html"}, function(testPage) {
+    var test;
+    beforeEach(function() {
+        test = testPage.test;
+    });
 
     describe("application-spec", function() {
-        it("should load", function() {
-            expect(testPage.loaded).toBe(true);
-        });
-
         describe("Application", function() {
+            var testWindow;
+            beforeEach(function () {
+                testWindow = testPage.iframe.contentWindow;
+            });
+            it("should be added to exports", function () {
+                return testWindow.montageRequire.async("core/application")
+                    .then(function (exports) {
+                        expect(exports.application).toBeDefined();
+                    })
+            });
+
             describe("delegate", function() {
                 it("should have willFinishLoading method called", function() {
-                    expect(test.testedComponent.application.delegate.willFinishLoadingCalled).toBeTruthy();
+                    return testWindow.montageRequire.async("core/application").get("application")
+                        .then(function(testApplication) {
+                            expect(testApplication.delegate.willFinishLoadingCalled).toBeTruthy();
+                        })
+
                 });
 
             });
@@ -74,19 +88,20 @@ var testPage = TestPageLoader.queueTest("application-test", {src: "application-t
     });
 });
 
-var testPage = TestPageLoader.queueTest("application-test-subtype", {src: "application-test/application-test-subtype.html"}, function() {
-    var test = testPage.test;
+TestPageLoader.queueTest("application-test-subtype", {src: "application-test/application-test-subtype.html"}, function(testPage) {
+    var test;
+    beforeEach(function() {
+        test = testPage.test;
+    });
 
     describe("application-spec", function() {
-        it("should load", function() {
-            expect(testPage.loaded).toBe(true);
-        });
-
         describe("Application", function() {
 
             describe("subtyping", function() {
                 it("should use defined subtype", function() {
-                    expect(test.testedComponent.application.testProperty).toBeTruthy();
+                    var testWindow = testPage.iframe.contentWindow;
+                    var testApplication = testWindow.montageRequire("core/application").application;
+                    expect(testApplication.testProperty).toBeTruthy();
                 });
 
             });

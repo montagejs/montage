@@ -1,8 +1,8 @@
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader,
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Promise = require("montage/core/promise").Promise;
 
-var testPage = TestPageLoader.queueTest("repetition/selection-test/selection-test", function() {
+TestPageLoader.queueTest("repetition/selection-test/selection-test", function(testPage) {
     describe("ui/repetition-selection-spec", function() {
 
         var application, eventManager, delegate, nameController;
@@ -19,7 +19,7 @@ var testPage = TestPageLoader.queueTest("repetition/selection-test/selection-tes
             application = testPage.window.document.application;
             eventManager = application.eventManager;
             delegate = application.delegate;
-            nameController = delegate.nameController;
+            nameController = testPage.test.nameController;
         });
 
         describe("making a selection through the repetition using the mouse", function () {

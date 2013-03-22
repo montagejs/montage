@@ -3,12 +3,14 @@ Copyright (c) 2013, António Afonso
 All Rights Reserved.
 </copyright> */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader,
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Template = require("montage/core/template").Template,
     TemplateResources = require("montage/core/template").TemplateResources,
     Component = require("montage/ui/component").Component,
     Promise = require("montage/q"),
     objects = require("serialization/testobjects-v2").objects;
+
+var DelegateMethods = require("reel/template/delegate-methods").DelegateMethods;
 
 function createPage(url) {
     var iframe = document.createElement("iframe"),
@@ -514,6 +516,46 @@ describe("reel/template-spec", function() {
                     expect(objects.owner.templateDidLoadCount).toBe(1);
                     expect(objects.one.templateDidLoadCount).toBe(0);
                     expect(objects.two.templateDidLoadCount).toBe(0);
+                });
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should not call templateDidLoad on external objects", function() {
+            var html = require("reel/template/delegate-methods-template-external.html").content;
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                var instances = {
+                    owner: DelegateMethods.create(),
+                    one: DelegateMethods.create()
+                }
+                return template.instantiateWithInstances(instances, document)
+                .then(function(documentPart) {
+                    var objects = documentPart.objects;
+
+                    expect(objects.owner.templateDidLoadCount).toBe(0);
+                });
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should not call deserializedFromTemplate on external objects", function() {
+            var html = require("reel/template/delegate-methods-template-external.html").content;
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                var instances = {
+                    owner: DelegateMethods.create(),
+                    one: DelegateMethods.create()
+                }
+                return template.instantiateWithInstances(instances, document)
+                .then(function(documentPart) {
+                    var objects = documentPart.objects;
+
+                    expect(objects.one.deserializedFromTemplateCount).toBe(0);
                 });
             }).fail(function() {
                 expect("test").toBe("executed");

@@ -28,6 +28,9 @@ var Template = Montage.create(Montage, {
         },
         set: function(value) {
             this._objectsString = value;
+            if (this._serialization) {
+                this._serialization.initWithString(value);
+            }
             // Invalidate the deserializer cache since there's a new
             // serialization in town.
             this.__deserializer = null;
@@ -64,9 +67,19 @@ var Template = Montage.create(Montage, {
         }
     },
 
+    _serialization: {
+        value: null
+    },
     getSerialization: {
         value: function() {
-            return Serialization.create().initWithString(this.objectsString);
+            var serialiation = this._serialization;
+
+            if (!serialiation) {
+                serialiation = this._serialization = Serialization.create();
+                serialiation.initWithString(this.objectsString);
+            }
+
+            return serialiation;
         }
     },
 
@@ -274,15 +287,56 @@ var Template = Montage.create(Montage, {
 
             return this._instantiateObjects(templateObjects, fragment)
             .then(function(objects) {
+                var resources;
+
                 part.stopActingAsTopComponent();
                 part.objects = objects;
                 self._invokeDelegates(part, instances);
 
-                return self.getResources().loadResources(targetDocument)
-                .then(function() {
+                resources = self.getResources();
+                if (!resources.resourcesLoaded() && resources.hasResources()) {
+                    return resources.loadResources(targetDocument)
+                    .then(function() {
+                        return part;
+                    });
+                } else {
                     return part;
-                });
+                }
             });
+        }
+    },
+
+    _objectsInstantiationOptimized: {
+        value: false
+    },
+    _optimizeObjectsInstantiationPromise: {
+        value: null
+    },
+    /**
+     * @return {undefined|Promise} A promise if there are objects to optimize,
+     *         nothing otherwise.
+     */
+    _optimizeObjectsInstantiation: {
+        value: function() {
+            var self = this,
+                promise;
+
+            if (!this._objectsInstantiationOptimized) {
+                if (!this._optimizeObjectsInstantiationPromise) {
+                    promise = this._deserializer.preloadModules();
+
+                    if (promise) {
+                        this._optimizeObjectsInstantiationPromise = promise
+                        .then(function() {
+                            self._objectsInstantiationOptimized = true;
+                        });
+                    } else {
+                        this._objectsInstantiationOptimized = true;
+                    }
+                }
+
+                return this._optimizeObjectsInstantiationPromise;
+            }
         }
     },
 
@@ -333,37 +387,21 @@ var Template = Montage.create(Montage, {
         }
     },
 
-    /**
-     * Receives two objects with labels as property names and returns an array
-     * with labels that existed in the first object but not on the second one.
-     *
-     * @function
-     * @param {Object} objects The objects of the deserialization.
-     * @param {Object} instances The instances given by the user.
-     * @returns {Array} The array with the labels that were filtered.
-     */
-    _filterObjectLabels: {
-        value: function(objects, instances) {
-            var labels;
-
-            if (instances) {
-                labels = [];
-                for (var label in objects) {
-                    if (!(label in instances)) {
-                        labels.push(label);
-                    }
-                }
-            } else {
-                labels = Object.keys(objects);
-            }
-
-            return labels;
-        }
-    },
-
     _instantiateObjects: {
         value: function(instances, fragment) {
-            return this._deserializer.deserialize(instances, fragment);
+            var self = this,
+                deserializer = this._deserializer,
+                optimizationPromise;
+
+            optimizationPromise = this._optimizeObjectsInstantiation();
+
+            if (optimizationPromise) {
+                return optimizationPromise.then(function() {
+                    return deserializer.deserialize(instances, fragment);
+                });
+            } else {
+                return deserializer.deserialize(instances, fragment);
+            }
         }
     },
 
@@ -434,15 +472,15 @@ var Template = Montage.create(Montage, {
         value: function(documentPart, instances) {
             var objects = documentPart.objects,
                 object,
-                labels,
                 owner = objects.owner;
 
-            // array with the object labels that were created during the
-            // deserialization and not passed in the instances object, only
-            // those will have deserializedFromTemplate called.
-            labels = this._filterObjectLabels(objects, instances);
+            for (var label in objects) {
+                // Don't call delegate methods on objects that were passed to
+                // the instantiation.
+                if (instances && label in instances) {
+                    continue;
+                }
 
-            for (var i = 0, label; (label = labels[i]); i++) {
                 object = objects[label];
 
                 if (object) {
@@ -456,11 +494,16 @@ var Template = Montage.create(Montage, {
             }
 
             if (owner) {
-                if (typeof owner._templateDidLoad === "function") {
-                    owner._templateDidLoad(documentPart);
-                }
-                if (typeof owner.templateDidLoad === "function") {
-                    owner.templateDidLoad(documentPart);
+                var serialization = this.getSerialization();
+
+                // Don't call delegate methods on external objects
+                if (!serialization.isExternalObject("owner")) {
+                    if (typeof owner._templateDidLoad === "function") {
+                        owner._templateDidLoad(documentPart);
+                    }
+                    if (typeof owner.templateDidLoad === "function") {
+                        owner.templateDidLoad(documentPart);
+                    }
                 }
             }
         }
@@ -710,6 +753,9 @@ var Template = Montage.create(Montage, {
         }
     },
 
+    _templateFromElementContentsCache: {
+        value: null
+    },
     createTemplateFromElementContents: {
         value: function(elementId) {
             var element,
@@ -720,7 +766,21 @@ var Template = Montage.create(Montage, {
                 template,
                 range,
                 serialization = Serialization.create(),
-                extractedSerialization;
+                extractedSerialization,
+                cache = this._templateFromElementContentsCache;
+
+            if (!cache) {
+                cache = Object.create(null);
+                this._templateFromElementContentsCache = cache;
+            }
+
+            if (elementId in cache) {
+                // We always return an extension of the cached object, this
+                // is because the template can be assigned with instances.
+                // An alternate idea would be to clone it but it's much more
+                // expensive.
+                return Object.create(cache[elementId]);
+            }
 
             // Find all elements of interest to the serialization.
             element = this.getElementById(elementId);
@@ -748,7 +808,13 @@ var Template = Montage.create(Montage, {
                 .getSerializationString();
             template._resources = this.getResources();
 
-            return template;
+            cache[elementId] = template;
+
+            // We always return an extension of the cached object, this
+            // is because the template is mutable.
+            // An alternate idea would be to clone it but it's much more
+            // expensive.
+            return Object.create(template);
         }
     },
 
@@ -796,7 +862,7 @@ var Template = Montage.create(Montage, {
                 objectsCollisionTable,
                 parameterElement,
                 argumentElement,
-                serialization = Serialization.create(),
+                serialization = this.getSerialization(),
                 argumentsSerialization,
                 result = {};
 
@@ -832,8 +898,6 @@ var Template = Montage.create(Montage, {
             for (var elementId in argumentElementsCollisionTable) {
                 argumentsSerialization.renameElementReference(elementId, argumentElementsCollisionTable[elementId]);
             }
-
-            serialization.initWithString(this.objectsString);
 
             objectsCollisionTable = serialization.mergeSerialization(
                 argumentsSerialization);
@@ -999,6 +1063,7 @@ var Template = Montage.create(Montage, {
 
 var TemplateResources = Montage.create(Montage, {
     _resources: {value: null},
+    _resourcesLoaded: {value: false},
     template: {value: null},
     rootUrl: {value: ""},
 
@@ -1014,8 +1079,22 @@ var TemplateResources = Montage.create(Montage, {
         }
     },
 
+    hasResources: {
+        value: function() {
+            return this.getStyles().length > 0 || this.getScripts().length > 0;
+        }
+    },
+
+    resourcesLoaded: {
+        value: function() {
+            return this._resourcesLoaded;
+        }
+    },
+
     loadResources: {
         value: function(targetDocument) {
+            this._resourcesLoaded = true;
+
             return Promise.all([
                 this.loadScripts(targetDocument),
                 this.loadStyles(targetDocument)

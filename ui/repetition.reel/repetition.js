@@ -190,6 +190,7 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
     initWithRepetition: {
         value: function (repetition) {
             this.repetition = repetition;
+            return this;
         }
     },
 
@@ -219,6 +220,9 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
      */
     injectIntoDocument: {
         value: function (index) {
+            if (this._drawnIndex !== null) {
+                this.retractFromDocument();
+            }
             var self = this;
             var repetition = this.repetition;
             var element = repetition.element;
@@ -261,7 +265,6 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
                 childComponent.needsDraw = true;
             }
 
-            this._drawnIndex = index;
             repetition._drawnIterations.splice(index, 0, this);
             repetition._updateDrawnIndexes(index);
             repetition._dirtyClassListIterations.add(this);
@@ -943,7 +946,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     _createIteration: {
         value: function () {
             var self = this,
-                iteration = this.Iteration.create();
+                iteration = this.Iteration.create().initWithRepetition(this);
 
             this._iterationCreationPromise = this._iterationCreationPromise
             .then(function() {
@@ -983,7 +986,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
     // _createIteration.
     didCreateIteration: {
         value: function (iteration) {
-            iteration.initWithRepetition(this);
             this._createdIterations++;
 
             if (this._createdIterations >= this._requestedIterations) {
@@ -1266,6 +1268,11 @@ var Repetition = exports.Repetition = Montage.create(Component, {
      */
     draw: {
         value: function () {
+            // TODO This is a work-around for a problem that iterations seem to
+            // be created between when the draw cycle calls canDraw() and when
+            // it gets around to calling draw().
+            if (!this.canDraw())
+                return;
 
             if (!this._initialContentDrawn) {
                 this._drawInitialContent();
@@ -1305,7 +1312,7 @@ var Repetition = exports.Repetition = Montage.create(Component, {
 
             // Retract iterations that should no longer be visible
             for (var index = this._drawnIterations.length - 1; index >= 0; index--) {
-                if (this._drawnIterations[index].index == null) {
+                if (this._drawnIterations[index].index === null) {
                     this._drawnIterations[index].retractFromDocument();
                 }
             }

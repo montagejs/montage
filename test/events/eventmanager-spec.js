@@ -33,14 +33,14 @@ var Montage = require("montage").Montage,
     ActionEventListener = require("montage/core/event/action-event-listener").ActionEventListener,
     Serializer = require("montage/core/serialization").Serializer,
     Deserializer = require("montage/core/serialization").Deserializer,
-    TestPageLoader = require("support/testpageloader").TestPageLoader,
-    EventInfo = require("support/testpageloader").EventInfo,
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
+    EventInfo = require("montage-testing/testpageloader").EventInfo,
     MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver,
     UUID = require("montage/core/uuid");
 
 var global = typeof global !== "undefined" ? global : window;
 
-var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
+TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage) {
     describe("events/eventmanager-spec", function() {
 
         var NONE = Event.NONE,
@@ -48,15 +48,14 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
             AT_TARGET = Event.AT_TARGET,
             BUBBLING_PHASE = Event.BUBBLING_PHASE;
 
-        it("should load", function() {
-            expect(testPage.loaded).toBeTruthy();
-        });
-
         var testDocument, eventManager;
 
         beforeEach(function() {
+            var testWindow = testPage.iframe.contentWindow;
+            eventManager = testWindow.montageRequire("core/application").application.eventManager;
+
             testDocument = testPage.iframe.contentDocument;
-            eventManager = testDocument.application.eventManager;
+
             eventManager.reset();
         });
 
@@ -948,8 +947,10 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
         });
 
         describe("elements' event handler support", function() {
-            var element = testPage.querySelector("#element");
-
+            var element;
+            beforeEach(function () {
+                element = testPage.querySelector("#element");
+            });
             afterEach(function() {
                 eventManager.unregisterEventHandlerForElement(element);
             });

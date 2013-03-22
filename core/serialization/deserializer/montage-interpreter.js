@@ -6,6 +6,7 @@ var Montage = require("core/core").Montage,
 
 var MontageInterpreter = Montage.create(Interpreter.prototype, {
     _require: {value: null},
+    _reviver: {value: null},
 
     create: {
         value: function() {
@@ -34,6 +35,36 @@ var MontageInterpreter = Montage.create(Interpreter.prototype, {
                 .init(serialization, this._reviver, objects, element);
 
             return context.getObjects();
+        }
+    },
+
+    preloadModules: {
+        value: function(serialization) {
+            var reviver = this._reviver,
+                moduleLoader = reviver.moduleLoader,
+                object,
+                locationId,
+                locationDesc,
+                module,
+                promises = [];
+
+            for (var label in serialization) {
+                object = serialization[label];
+
+                locationId = object.prototype || object.object;
+                if (locationId) {
+                    locationDesc = reviver.parseObjectLocationId(locationId);
+                    module = moduleLoader.getModule(
+                        locationDesc.moduleId, label);
+                    if (Promise.isPromise(module)) {
+                        promises.push(module);
+                    }
+                }
+            }
+
+            if (promises.length > 0) {
+                return Promise.all(promises);
+            }
         }
     }
 });

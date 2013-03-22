@@ -29,23 +29,25 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader,
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Component = require("montage/ui/component").Component,
     Serializer = require("montage/core/serialization").Serializer,
     Template = require("montage/core/template").Template;
+var Bindings = require("montage/core/bindings").Bindings;
 
-var testPage = TestPageLoader.queueTest("draw", function() {
+TestPageLoader.queueTest("draw/draw", function(testPage) {
+    var test;
 
     var querySelector = function(s) {
         return testPage.querySelector(s);
     };
 
+    beforeEach(function () {
+        test = testPage.test;
+    });
+
     describe("ui/component-spec", function() {
         describe("draw test", function() {
-            it("should load", function() {
-                expect(testPage.loaded).toBeTruthy();
-            });
-
             it("should use the label as identifier if no identifier is given", function() {
                 expect(testPage.test.componentWithoutIdentifier.identifier).toBe("componentWithoutIdentifier");
                 expect(testPage.test.componentWithIdentifier.identifier).toBe("anIdentifier");
@@ -65,23 +67,25 @@ var testPage = TestPageLoader.queueTest("draw", function() {
 
             describe("domContent", function() {
                 it("should contain the current content of the component markup", function() {
-                    var content = testPage.test.repetition.domContent;
+                    var content = testPage.test.componentC.domContent;
 
-                    expect(content.length).toBe(10);
+                    expect(content.length).toBe(3);
                 });
 
-                it("should change the content of the component for markup", function() {
+                it("should change the content of the component for markup part1", function() {
                     var componentC = testPage.test.componentC,
                         content = componentC.domContent,
                         newContent = componentC._element.ownerDocument.createElement("div");
 
-                    expect(content.length).toBe(3);
                     newContent.setAttribute("class", "markup");
                     testPage.test.componentC.domContent = newContent;
                     // should only draw at draw cycle.
                     expect(componentC.domContent).toEqual(content);
+               });
 
-                    testPage.waitForDraw();
+                it("should change the content of the component for markup part2", function() {
+                    var componentC = testPage.test.componentC;
+                    testPage.waitForComponentDraw(componentC);
 
                     runs(function() {
                         expect(componentC.domContent.length).toBe(1);
@@ -89,7 +93,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     });
                 });
 
-                it("should change the content of the component for another component", function() {
+                it("should change the content of the component for another component part1", function() {
                     var componentC = testPage.test.componentC,
                         componentC1 = testPage.test.componentC1,
                         content = componentC.domContent,
@@ -98,7 +102,12 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     testPage.test.componentC.domContent = newContent;
                     // should only draw at draw cycle.
                     expect(componentC.domContent).toEqual(content);
-                    testPage.waitForDraw();
+                });
+
+                it("should change the content of the component for another component part2", function() {
+                    var componentC = testPage.test.componentC,
+                        componentC1 = testPage.test.componentC1;
+                    testPage.waitForComponentDraw(componentC);
 
                     runs(function() {
                         expect(componentC.domContent.length).toBe(1);
@@ -497,7 +506,6 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     var branch = componentOwner.branch;
                     var branchLeaf1 = branch.leaf1;
                     var branchLeaf2 = branch.leaf2;
-
                     expect(leaf1.ownerComponent).toBe(componentOwner);
                     expect(leaf2.ownerComponent).toBe(componentOwner);
                     expect(branch.ownerComponent).toBe(componentOwner);
@@ -524,8 +532,32 @@ var testPage = TestPageLoader.queueTest("draw", function() {
             expect(testPage.test.text1.element).toBe(oldElement);
         });
 
-        it("should have templateObjects object", function() {
-            expect(testPage.test.componentOwner.templateObjects).not.toBeNull();
+        describe("template objects", function() {
+            var templateObjectsComponent;
+            beforeEach(function () {
+                templateObjectsComponent = testPage.test.templateObjects;
+            });
+            it("should have templateObjects object", function() {
+                expect(templateObjectsComponent.templateObjects).not.toBeNull();
+            });
+
+            it("should have templateObjects ready at templateDidLoad", function() {
+                expect(templateObjectsComponent.templateObjectsPresent).toBeTruthy();
+            });
+
+            it("should have a reference to owner", function() {
+                expect(templateObjectsComponent.templateObjects.owner).toBe(templateObjectsComponent);
+            });
+
+            it("should have a reference to an object", function() {
+                expect(templateObjectsComponent.templateObjects.object).toEqual({});
+            });
+
+            it("should have a reference to a component", function() {
+                var text = templateObjectsComponent.element.querySelector(".text").component;
+
+                expect(templateObjectsComponent.templateObjects.text).toBe(text);
+            });
         });
 
         it("should maintain the placeholder data-montage-id and not the one from the template", function() {
@@ -538,12 +570,6 @@ var testPage = TestPageLoader.queueTest("draw", function() {
            var element = testPage.test.componentList.element;
 
            expect(element.getAttribute("id")).toBe("componentList");
-        });
-
-        it("should have templateObjects ready at templateDidLoad", function() {
-            var component = testPage.test.templateObjects;
-
-            expect(component.templateObjectsPresent).toBeTruthy();
         });
 
         describe("_makeTemplateObjectGetter", function () {
@@ -904,6 +930,120 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     expect(one).toBeDefined();
                 });
             });
+        });
+
+        describe("using classList", function() {
+            describe("with bindings", function() {
+                it("should correctly initialize from a template", function() {
+                    expect(test.componentClassList.element.classList.contains("class1")).toBeTruthy();
+                    expect(test.componentClassList.element.classList.contains("class2")).toBeFalsy();
+                });
+                it("should reflect changes to the classList's properties", function() {
+                    test.class1 = false;
+                    test.class2 = true;
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassList.element.classList.contains("class1")).toBeFalsy();
+                        expect(test.componentClassList.element.classList.contains("class2")).toBeTruthy();
+                    })
+                });
+                it("should be possible to bind to a new class", function() {
+                    test.class3 = true;
+                    Bindings.defineBinding(test.componentClassList, "classList.has('newClass')", {
+                        source: test,
+                        "<-": "class3"
+                    });
+                    expect(test.componentClassList.classList.contains("newClass")).toBeTruthy();
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassList.element.classList.contains("newClass")).toBeTruthy();
+                    })
+                });
+            });
+            describe("with programmatic API", function() {
+                it("should correctly add a class", function() {
+                    test.componentClassList.classList.add("myclass");
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassList.element.classList.contains("myclass")).toBeTruthy();
+                    })
+                });
+                it("should correctly remove a class", function() {
+                    test.componentClassList.classList.remove("myclass");
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassList.element.classList.contains("myclass")).toBeFalsy();
+                    })
+                });
+                it("should correctly toggle a class", function() {
+                    test.componentClassList.classList.toggle("myclass");
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassList.element.classList.contains("myclass")).toBeTruthy();
+                    })
+                });
+                it("should correctly report contains state of a class", function() {
+                    expect(test.componentClassList.classList.contains("myclass")).toBeTruthy();
+                });
+            });
+            describe("with classes in original element", function() {
+                it("should correctly add a class based on markup", function() {
+                    expect(test.componentClassInMarkup.classList.contains("markupClass1")).toBeTruthy();
+                    expect(test.componentClassInMarkup.classList.contains("markupClass2")).toBeTruthy();
+                    expect(test.componentClassInMarkup.element.classList.contains("markupClass1")).toBeTruthy();
+                    expect(test.componentClassInMarkup.element.classList.contains("markupClass2")).toBeTruthy();
+                });
+                it("should be able to change those classes as if they were added via the component", function() {
+                    test.componentClassInMarkup.classList.toggle("markupClass1");
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassInMarkup.element.classList.contains("markupClass1")).toBeFalsy();
+                    })
+                });
+            });
+            describe("with classes in original element and in template", function() {
+                describe("element", function () {
+                    it("should correctly preserve the class based on markup", function() {
+                        expect(test.componentClassInTemplate.element.classList.contains("markupClass3")).toBeTruthy();
+                    });
+                    it("should correctly add a class from the template's markup", function() {
+                        expect(test.componentClassInTemplate.element.classList.contains("ClassListTemplate")).toBeTruthy();
+                    });
+                });
+                it("should correctly add a class to the component based on markup", function() {
+                    expect(test.componentClassInTemplate.classList.contains("markupClass3")).toBeTruthy();
+                });
+                it("should correctly add a class from the template's markup to the component", function() {
+                    expect(test.componentClassInTemplate.classList.contains("ClassListTemplate")).toBeTruthy();
+                });
+                it("should be able to change those classes as if they were added via the component", function() {
+                    test.componentClassInTemplate.classList.toggle("ClassListTemplate");
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassInTemplate.element.classList.contains("ClassListTemplate")).toBeFalsy();
+                    })
+                });
+            });
+            describe("with classes in element, template, and bindings", function() {
+                describe("element", function () {
+                    it("should correctly preserve the class based on markup", function() {
+                        expect(test.componentClassInTemplateAndBindings.element.classList.contains("markupClass3")).toBeTruthy();
+                    });
+                    it("should correctly add a class from the template's markup", function() {
+                        expect(test.componentClassInTemplateAndBindings.element.classList.contains("ClassListTemplate")).toBeTruthy();
+                    });
+                    it("should correctly have the classes from the bindings", function() {
+                        expect(test.componentClassInTemplateAndBindings.element.classList.contains("class1")).toBeTruthy();
+                        expect(test.componentClassInTemplateAndBindings.element.classList.contains("class2")).toBeFalsy();
+                    });
+                });
+                it("should correctly add a class to the component based on markup", function() {
+                    expect(test.componentClassInTemplateAndBindings.classList.contains("markupClass3")).toBeTruthy();
+                });
+                it("should correctly add a class from the template's markup to the component", function() {
+                    expect(test.componentClassInTemplateAndBindings.classList.contains("ClassListTemplate")).toBeTruthy();
+                });
+                it("should be able to change those classes as if they were added via the component", function() {
+                    test.componentClassInTemplateAndBindings.classList.toggle("ClassListTemplate");
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassInTemplateAndBindings.element.classList.contains("ClassListTemplate")).toBeFalsy();
+                    })
+                });
+            });
+
         });
     });
 });

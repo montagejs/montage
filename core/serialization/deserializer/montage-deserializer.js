@@ -65,6 +65,14 @@ var MontageDeserializer = Montage.create(Deserializer.prototype, {
         }
     },
 
+    preloadModules: {
+        value: function() {
+            var serialization = JSON.parse(this._serializationString);
+
+            return this._interpreter.preloadModules(serialization);
+        }
+    },
+
     defineDeserializationUnit: {
         value: function(name, funktion) {
             MontageReviver.defineUnitReviver(name, funktion);

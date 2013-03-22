@@ -1,14 +1,14 @@
 /*global require,exports,describe,it,expect */
 var Montage = require("montage").Montage;
-var TestPageLoader = require("support/testpageloader").TestPageLoader;
+var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-var testPage = TestPageLoader.queueTest("text-test", {src:"ui/text/text-test.html"}, function() {
+TestPageLoader.queueTest("text-test", function(testPage) {
     var test;
     beforeEach(function() {
         test = testPage.test;
     });
 
-    describe("tui/text/text-spec", function() {
+    describe("ui/text/text-spec", function() {
 
         describe("Text", function() {
             it("wipes out it's content in initialization", function() {

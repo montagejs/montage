@@ -186,34 +186,112 @@ if (typeof window !== "undefined") {
                     .done();
                 };
 
-                if ("autoPackage" in params) {
-                    montageRequire.injectPackageDescription(location, {
-                        dependencies: {
-                            montage: "*"
+                var montageRequirePromise;
+
+                if (!("remoteTrigger" in params)) {
+                    if ("autoPackage" in params) {
+                        montageRequire.injectPackageDescription(location, {
+                            dependencies: {
+                                montage: "*"
+                            }
+                        });
+                    } else {
+                        // handle explicit package.json location
+                        if (location.slice(location.length - 5) === ".json") {
+                            var packageDescriptionLocation = location;
+                            location = URL.resolve(location, ".");
+                            montageRequire.injectPackageDescriptionLocation(
+                                location,
+                                packageDescriptionLocation
+                            );
                         }
+                    }
+                    montageRequirePromise = montageRequire.loadPackage({
+                        location: location,
+                        hash: applicationHash
+                    });
+                } else {
+                    // allows the bootstrapping to be remote controlled by the
+                    // parent window, with a dynamically generated package
+                    // description
+                    var trigger = Promise.defer();
+                    window.postMessage({
+                        type: "montageReady"
+                    }, "*");
+                    var messageCallback = function (event) {
+                        if (
+                            params.remoteTrigger === event.origin &&
+                            (event.source === window || event.source === window.parent) &&
+                            event.data.type === "montageInit"
+                        ) {
+                            window.removeEventListener("message", messageCallback);
+                            trigger.resolve([event.data.location, event.data.injections]);
+                        }
+                    };
+                    window.addEventListener("message", messageCallback);
+
+                    montageRequirePromise = trigger.promise.spread(function (location, injections) {
+                        var promise = montageRequire.loadPackage({
+                            location: location,
+                            hash: applicationHash
+                        });
+                        if (injections) {
+                            promise = promise.then(function (applicationRequire) {
+                                location = URL.resolve(location, ".");
+                                var packageDescriptions = injections.packageDescriptions,
+                                    packageDescriptionLocations = injections.packageDescriptionLocations,
+                                    mappings = injections.mappings,
+                                    dependencies = injections.dependencies,
+                                    index, injectionsLength;
+
+                                if (packageDescriptions) {
+                                    injectionsLength = packageDescriptions.length;
+                                    for (index = 0; index < injectionsLength; index++) {
+                                        applicationRequire.injectPackageDescription(
+                                            packageDescriptions[index].location,
+                                            packageDescriptions[index].description);
+                                    }
+                                }
+
+                                if (packageDescriptionLocations) {
+                                    injectionsLength = packageDescriptionLocations.length;
+                                    for (index = 0; index < injectionsLength; index++) {
+                                        applicationRequire.injectPackageDescriptionLocation(
+                                            packageDescriptionLocations[index].location,
+                                            packageDescriptionLocations[index].descriptionLocation);
+                                    }
+                                }
+
+                                if (mappings) {
+                                    injectionsLength = mappings.length;
+                                    for (index = 0; index < injectionsLength; index++) {
+                                        applicationRequire.injectMapping(
+                                            mappings[index].dependency,
+                                            mappings[index].name);
+                                    }
+                                }
+
+                                if (dependencies) {
+                                    injectionsLength = dependencies.length;
+                                    for (index = 0; index < injectionsLength; index++) {
+                                        applicationRequire.injectDependency(
+                                            dependencies[index].name,
+                                            dependencies[index].version);
+                                    }
+                                }
+
+                                return applicationRequire;
+                            });
+                        }
+
+                        return promise;
                     });
                 }
-
-                // handle explicit package.json location
-                if (location.slice(location.length - 5) === ".json") {
-                    var packageDescriptionLocation = location;
-                    location = URL.resolve(location, ".");
-                    montageRequire.injectPackageDescriptionLocation(
-                        location,
-                        packageDescriptionLocation
-                    );
-                }
-
-                return montageRequire.loadPackage({
-                    location: location,
-                    hash: applicationHash
-                })
-                .then(function (applicationRequire) {
-
+                return montageRequirePromise.then(function (applicationRequire) {
                     global.require = applicationRequire;
                     global.montageRequire = montageRequire;
                     platform.initMontage(montageRequire, applicationRequire, params);
-                })
+                });
             })
             .done();
 
@@ -525,8 +603,10 @@ if (typeof window !== "undefined") {
         initMontage: function (montageRequire, applicationRequire, params) {
 
             var dependencies = [
+                "core/core",
                 "core/event/event-manager",
-                "core/serialization/deserializer/montage-reviver"
+                "core/serialization/deserializer/montage-reviver",
+                "core/logger"
             ];
 
             var Promise = montageRequire("core/promise").Promise;
@@ -536,9 +616,17 @@ if (typeof window !== "undefined") {
 
                 dependencies.forEach(montageRequire);
 
+                var Montage = montageRequire("core/core").Montage;
                 var EventManager = montageRequire("core/event/event-manager").EventManager;
                 var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
+                var logger = montageRequire("core/logger").logger
+
                 var defaultEventManager, application;
+
+                // Setup Promise's longStackTrace support option
+                logger("Promise stacktrace support", function(state) {
+                    Promise.longStackJumpLimit = state ? 1 : 0;
+                });
 
                 // Load the event-manager
                 defaultEventManager = EventManager.create().initWithWindow(window);
@@ -560,8 +648,17 @@ if (typeof window !== "undefined") {
                 }
 
                 return appModulePromise.then(function(exports) {
-                    application = exports[(applicationLocation ? applicationLocation.objectName : "Application")].create();
-                    window.document.application = application;
+                    var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
+                    application = Application.create();
+                    Object.defineProperty(window.document, "application", {
+                        get: Montage.deprecate(
+                            null,
+                            function () {
+                                return exports.application
+                            },
+                            "document.application is deprecated, use require(\"montage/core/application\").application instead."
+                            )
+                    });
                     defaultEventManager.application = application;
                     application.eventManager = defaultEventManager;
                     application._load(applicationRequire, function() {

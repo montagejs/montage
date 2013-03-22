@@ -31,10 +31,11 @@
   },
   "dependencies": {
     "collections": "~0.1.17",
-    "frb": "~0.1.25",
+    "frb": "~0.1.26",
     "mousse": "~0.1.0"
   },
   "devDependencies": {
+    "montage-testing": "0.2.0-alpha",
     "mr": "~0.12.6",
     "q": "~0.8.12",
     "q-io": "~1.3.2",

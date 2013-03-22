@@ -37,8 +37,8 @@ function() {
     function() {
         it("shoud be the same logger for the same name",
         function() {
-            var loggerA = loggerRequire.logger("testMyName", true);
-            var loggerB = loggerRequire.logger("testMyName", true);
+            var loggerA = loggerRequire.logger("testMyName", null, true);
+            var loggerB = loggerRequire.logger("testMyName", null, true);
             expect(loggerA).toBe(loggerB);
         });
     });
@@ -46,7 +46,7 @@ function() {
     function() {
         it("should be disabled by default",
         function() {
-            var loggerA = loggerRequire.logger("testLogger", true);
+            var loggerA = loggerRequire.logger("testLogger", null, true);
             expect(loggerA.isDebug).toBeFalsy();
             expect(loggerA.isError).toBeTruthy();
         });
@@ -55,7 +55,7 @@ function() {
     function() {
         it("should activated by assigning truthy value",
         function() {
-            var loggerA = loggerRequire.logger("testLogger2", true);
+            var loggerA = loggerRequire.logger("testLogger2", null, true);
             expect(loggerA.isDebug).toBeFalsy();
             loggerA.isDebug = true;
             expect(loggerA.debug).toEqual(loggerA.error);

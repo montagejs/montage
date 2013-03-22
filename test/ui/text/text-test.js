@@ -1,5 +1,5 @@
 var Montage = require("montage").Montage;
-var TestController = require("support/test-controller").TestController;
+var TestController = require("montage-testing/test-controller").TestController;
 
 exports.TextTest = Montage.create(TestController, {
 

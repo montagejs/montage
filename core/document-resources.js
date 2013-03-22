@@ -154,7 +154,8 @@ var DocumentResources = Montage.create(Montage, {
     addStyle: {
         value: function(element) {
             var self = this,
-                url = element.getAttribute("href");
+                url = element.getAttribute("href"),
+                documentHead;
 
             url = this.normalizeUrl(url);
 
@@ -166,7 +167,9 @@ var DocumentResources = Montage.create(Montage, {
                 }
             }
 
-            this._document.head.appendChild(element);
+            documentHead = this._document.head;
+
+            documentHead.insertBefore(element, documentHead.firstChild);
         }
     },
 

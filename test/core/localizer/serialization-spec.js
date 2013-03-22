@@ -34,7 +34,7 @@ var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
     Serializer = require("montage/core/serialization").Serializer,
     Deserializer = require("montage/core/serialization").Deserializer,
-    TestPageLoader = require("support/testpageloader").TestPageLoader,
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Map = require("montage/collections/map"),
     Bindings = require("montage/core/bindings").Bindings,
     FrbBindings = require("montage/frb/bindings");
@@ -43,8 +43,11 @@ var stripPP = function stripPrettyPrintting(str) {
     return str.replace(/\n\s*/g, "");
 };
 
-var testPage = TestPageLoader.queueTest("fallback", {directory: module.directory}, function() {
-    var test = testPage.test;
+TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, function(testPage) {
+    var test;
+    beforeEach(function() {
+        test = testPage.test;
+    });
 
     function testDeserializer(object, callback) {
         var deserializer = Deserializer.create(),

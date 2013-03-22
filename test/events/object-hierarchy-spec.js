@@ -30,21 +30,18 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
-var TestPageLoader = require("support/testpageloader").TestPageLoader;
+var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
+TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function(testPage) {
     describe("events/object-hierarchy-spec", function() {
-
-        it("should load", function() {
-            expect(testPage.loaded).toBeTruthy();
-        });
 
         var eventManager, parent, testApplication, testTarget;
 
         beforeEach(function() {
+            var testWindow = testPage.iframe.contentWindow;
             var testDocument = testPage.iframe.contentDocument;
             testTarget = testDocument.defaultView.montageRequire("core/target").Target;
-            testApplication = testDocument.application;
+            testApplication = testWindow.montageRequire("core/application").application;
             eventManager = testApplication.eventManager;
             eventManager.reset();
         });
