@@ -90,6 +90,8 @@ var Template = Montage.create(Montage, {
     },
     _getTemplateCacheKey: {
         value: function(moduleId, _require) {
+            // Transforms relative module ids into absolute module ids
+            moduleId = _require.resolve(moduleId);
             return _require.location + "#" + moduleId;
         }
     },
