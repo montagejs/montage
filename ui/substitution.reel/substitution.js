@@ -37,6 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     Slot = require("ui/slot.reel").Slot,
+    Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("substitution");
 /**
  @class module:"montage/ui/substitution.reel".Substitution
@@ -48,14 +49,32 @@ exports.Substitution = Montage.create(Slot, /** @lends module:"montage/ui/substi
         value: false
     },
 
-    /**
-        Description TODO
-        @type {Property}
-        @default {}
-    */
+    didCreate: {
+        value: function() {
+            this._switchElements = Object.create(null);
+            this._switchComponentTreeLoaded = Object.create(null);
+        }
+    },
+
+    _allChildComponents: {
+        value: null
+    },
+
+    deserializedFromTemplate: {
+        value: function() {
+            this._allChildComponents = this.childComponents.slice(0);
+
+            if (this.switchValue) {
+                this._loadSwitchComponentTree(this.switchValue);
+            }
+        }
+    },
+
     _switchElements: {
-        distinct: true,
-        value: {}
+        value: null
+    },
+    _switchComponentTreeLoaded: {
+        value: null
     },
 
     addSwitchElement: {
@@ -65,22 +84,33 @@ exports.Substitution = Montage.create(Slot, /** @lends module:"montage/ui/substi
             }
 
             this._switchElements[key] = element;
+            this._findFringeComponents(element, this._allChildComponents);
         }
     },
 
-    /**
-      Description TODO
-      @private
-    */
+    _findFringeComponents: {
+        value: function(element, components) {
+            var nodes;
+
+            components = components || [];
+
+            if (element.component) {
+                components.push(element.component);
+            } else {
+                nodes = element.children;
+                for (var i = 0, node; node = nodes[i]; i++) {
+                    this._findFringeComponents(node, components);
+                }
+            }
+
+            return components;
+        }
+    },
+
     _switchValue: {
         value: null
     },
 
-    /**
-        Description TODO
-        @type {Function}
-        @default null
-    */
     switchValue: {
         get: function() {
             return this._switchValue;
@@ -99,8 +129,8 @@ exports.Substitution = Montage.create(Slot, /** @lends module:"montage/ui/substi
 
             this._switchValue = value;
 
-            if (this._switchElements) {
-                this.content = this._switchElements[this.switchValue];
+            if (this._switchElements && !this.isDeserializing) {
+                this._loadContent(value);
             }
         }
     },
@@ -116,15 +146,71 @@ exports.Substitution = Montage.create(Slot, /** @lends module:"montage/ui/substi
                 this._switchElements[name] = this.extractDomArgument(name);
             }
 
-            this.content = this._switchElements[this.switchValue];
+            this._loadContent(this.switchValue);
         }
     },
 
-    /**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+    _loadContent: {
+        value: function(value) {
+            this.content = this._switchElements[value];
+
+            if (!this._switchComponentTreeLoaded[value]) {
+                this._loadSwitchComponentTree(value);
+            }
+        }
+    },
+
+    _loadSwitchComponentTree: {
+        value: function(value) {
+            var self = this,
+                childComponents = this._allChildComponents,
+                element = this._switchElements[value],
+                substitutionElement = this.element,
+                canDrawGate = this.canDrawGate,
+                component,
+                currentElement,
+                promises = [];
+
+            if (!element) {
+                element = this._getDomArgument(substitutionElement, value);
+            }
+
+            for (var i = 0; i < childComponents.length; i++) {
+                component = childComponents[i];
+                currentElement = component.element;
+
+                // Search the DOM tree up until we find the switch element or
+                // the substitution element
+                while (currentElement !== element &&
+                       currentElement !== substitutionElement &&
+                       currentElement.parentNode) {
+                    currentElement = currentElement.parentNode;
+                }
+                // If we found the switch element before finding the
+                // substitution element it means this component is inside the
+                // selected switch value.
+                if (currentElement === element) {
+                    promises.push(component.loadComponentTree());
+                }
+            }
+
+            if (promises.length > 0) {
+                canDrawGate.setField(value + "ComponentTreeLoaded", false);
+
+                Promise.all(promises).then(function() {
+                    self._switchComponentTreeLoaded[value] = true;
+                    canDrawGate.setField(value + "ComponentTreeLoaded", true);
+                    self._canDraw = true;
+                    self.needsDraw = true;
+                }).done();
+            }
+        }
+    },
+
+    shouldLoadComponentTree: {
+        value: false
+    },
+
     transition: {
         value: null
     }
