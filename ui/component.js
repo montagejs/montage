@@ -2385,6 +2385,9 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     componentCanDraw: {
         value: function(component, value) {
             if (value) {
+                if (!this._cannotDrawList) {
+                    return;
+                }
                 delete this._cannotDrawList[component.uuid];
                 this._needsDrawList.push(component);
                 if (Object.keys(this._cannotDrawList).length === 0 && this._needsDrawList.length > 0) {
