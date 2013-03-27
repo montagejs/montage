@@ -293,6 +293,8 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
                                     blueprint._parentReference.promise(targetRequire).then(function(parentBlueprint) {
                                             blueprint._parent = parentBlueprint;
                                             deferredBlueprint.resolve(blueprint);
+                                        }, function(error) {
+                                            deferredBlueprint.reject(new Error("Cannot resolve parent blueprint ", blueprint._parentReference, error))
                                         }
                                     );
                                 } else {

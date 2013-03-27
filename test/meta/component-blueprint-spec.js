@@ -110,5 +110,37 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
         });
 
 
+        describe("test converter blueprint", function () {
+            var component = Montage.create(Component);
+
+            it("should exist", function () {
+                var blueprintPromise = component.blueprint;
+                return blueprintPromise.then(function (blueprint) {
+                    expect(blueprint).toBeTruthy();
+                });
+            });
+
+            it("should have element property blueprint", function () {
+                var blueprintPromise = component.blueprint;
+                return blueprintPromise.then(function (blueprint) {
+                    var propertyBlueprint = blueprint.propertyBlueprintForName("element");
+                    expect(propertyBlueprint).toBeTruthy();
+                    expect(propertyBlueprint.valueType).toBe("string");
+                    expect(propertyBlueprint.readOnly).toBe(true);
+                });
+            });
+
+            it("should have identifier property blueprint", function () {
+                var blueprintPromise = component.blueprint;
+                return blueprintPromise.then(function (blueprint) {
+                    var propertyBlueprint = blueprint.propertyBlueprintForName("identifier");
+                    expect(propertyBlueprint).toBeTruthy();
+                    expect(propertyBlueprint.valueType).toBe("string");
+                });
+            });
+
+        });
+
     });
+
 });

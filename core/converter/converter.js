@@ -118,6 +118,11 @@ var Converter = exports.Converter = Montage.create(Montage, /** @lends module:mo
     revert: {
         enumerable: false,
         value: null
-    }
+    },
+
+    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+
+    blueprint:require("montage")._blueprintDescriptor
+
 });
 
