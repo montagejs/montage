@@ -169,7 +169,7 @@ var SerializationExtractor = Montage.create(Montage, {
 
     _collectLabelsInLocalizationBinding: {
         value: function(binding, labels) {
-            sourcePath = binding["<-"] || binding["<->"];
+            var sourcePath = binding["<-"] || binding["<->"];
 
             if (sourcePath) {
                 this._collectLabelsInBindingPath(sourcePath, labels);

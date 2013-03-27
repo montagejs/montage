@@ -805,7 +805,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
      */
     propertyValidationRuleForName: {
         value: function(name) {
-            var propertyValidationRule = his._propertyValidationRules[name];
+            var propertyValidationRule = this._propertyValidationRules[name];
             if ((! propertyValidationRule) && (this.parent)) {
                 propertyValidationRule = this.parent.propertyValidationRuleForName(name);
             }

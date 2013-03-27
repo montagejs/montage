@@ -15,7 +15,7 @@ Serializer.defineSerializationUnit("bindings", function (serializer, object) {
         serialization: serializer
     };
 
-    for (targetPath in inputs) {
+    for (var targetPath in inputs) {
         var input = inputs[targetPath];
 
         var output = {};

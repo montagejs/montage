@@ -90,6 +90,8 @@ var Template = Montage.create(Montage, {
     },
     _getTemplateCacheKey: {
         value: function(moduleId, _require) {
+            // Transforms relative module ids into absolute module ids
+            moduleId = _require.resolve(moduleId);
             return _require.location + "#" + moduleId;
         }
     },
@@ -441,7 +443,7 @@ var Template = Montage.create(Montage, {
 
             for (var i = 0; i < elementsCount; i++) {
                 element = elements[i];
-                parameterName = this.getParameterName(element);
+                var parameterName = this.getParameterName(element);
 
                 if (parameterName in parameters) {
                     throw new Error('The parameter "' + parameterName + '" is' +

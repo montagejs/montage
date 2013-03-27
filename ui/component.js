@@ -975,12 +975,11 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     _isComponentTreeLoaded: {
         value: null
     },
-/**
-    Description TODO
-    @function
-    @param {Object} callback Callback object
-    @returns itself
-    */
+
+    shouldLoadComponentTree: {
+        value: true
+    },
+
     _loadComponentTreeDeferred: {value: null},
     loadComponentTree: {
         value: function loadComponentTree() {
@@ -1003,20 +1002,22 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 }
 
                 this.expandComponent().then(function() {
-                    var promises = [],
-                        childComponents = self.childComponents,
-                        childComponent;
+                    if (self.shouldLoadComponentTree) {
+                        var promises = [],
+                            childComponents = self.childComponents,
+                            childComponent;
 
-                    for (var i = 0; (childComponent = childComponents[i]); i++) {
-                        promises.push(childComponent.loadComponentTree());
+                        for (var i = 0; (childComponent = childComponents[i]); i++) {
+                            promises.push(childComponent.loadComponentTree());
+                        }
+
+                        return Promise.all(promises);
                     }
-
-                    return Promise.all(promises);
                 }).then(function() {
                     self._isComponentTreeLoaded = true;
                     canDrawGate.setField("componentTreeLoaded", true);
                     deferred.resolve();
-                }, deferred.reject);
+                }, deferred.reject).done();
             }
 
             return deferred.promise;
@@ -2395,6 +2396,9 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     componentCanDraw: {
         value: function(component, value) {
             if (value) {
+                if (!this._cannotDrawList) {
+                    return;
+                }
                 delete this._cannotDrawList[component.uuid];
                 this._needsDrawList.push(component);
                 if (Object.keys(this._cannotDrawList).length === 0 && this._needsDrawList.length > 0) {

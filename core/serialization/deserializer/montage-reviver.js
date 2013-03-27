@@ -247,7 +247,7 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
             substituteObject = object.deserializeSelf(selfDeserializer);
 
             if (Promise.isPromise(substituteObject)) {
-                return value.then(function() {
+                return substituteObject.then(function(substituteObject) {
                     context.setObjectLabel(substituteObject, label);
                     return substituteObject;
                 });

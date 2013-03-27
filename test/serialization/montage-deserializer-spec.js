@@ -34,6 +34,7 @@ var Montage = require("montage").Montage,
     Deserializer = require("montage/core/serialization").Deserializer,
     Bindings = require("montage/frb"),
     defaultEventManager = require("montage/core/event/event-manager").defaultEventManager,
+    Promise = require("montage/core/promise").Promise,
     objects = require("serialization/testobjects-v2").objects;
 
 logger.isError = true;
@@ -935,6 +936,25 @@ describe("serialization/montage-deserializer-spec", function() {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
+        });
+
+        it("should deserialize into another object in an asynchronous way", function() {
+            var serializationString = JSON.stringify(serialization),
+                newRoot = {};
+
+            deserializer.init(serializationString, require);
+
+            customDeserialization.deserializeSelf = function(deserializer) {
+                return Promise.resolve(newRoot);
+            };
+
+            return deserializer.deserializeObject()
+                .then(function(root) {
+                    expect(root).toBe(newRoot);
+                }).fail(function(reason) {
+                    console.log(reason.stack);
+                    expect("test").toBe("executed");
+                });
         });
     });
 

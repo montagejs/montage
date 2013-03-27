@@ -13,7 +13,7 @@ TestPageLoader.queueTest("substitution-test/substitution-test", function(testPag
             it("should not have dom content when switchValue is not defined", function() {
                 var substitution = templateObjects.substitution1;
 
-                expect(substitution.element.childNodes.length).toBe(0);
+                expect(substitution.element.children.length).toBe(0);
             });
 
             it("should have its switchElements configured", function() {
