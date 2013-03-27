@@ -443,7 +443,7 @@ var Template = Montage.create(Montage, {
 
             for (var i = 0; i < elementsCount; i++) {
                 element = elements[i];
-                parameterName = this.getParameterName(element);
+                var parameterName = this.getParameterName(element);
 
                 if (parameterName in parameters) {
                     throw new Error('The parameter "' + parameterName + '" is' +

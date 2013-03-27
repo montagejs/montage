@@ -22,6 +22,7 @@
 //          suitable for substitutions that provide alternative view for
 //          determinate and indeterminate progress.
 
+var Montage = require("montage").Montage;
 var Promise = require("core/promise").Promise;
 
 var PromiseController = exports.PromiseController = Montage.create(Montage, {

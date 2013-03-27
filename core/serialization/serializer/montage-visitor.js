@@ -302,7 +302,7 @@ var MontageVisitor = Montage.create(Visitor.prototype, {
 
             if (type === "reference" && this.hackIsReferenceAllowedForValue(value)) {
                 label = this.labeler.getObjectLabel(value);
-                reference = this.builder.createObjectReference(label);
+                var reference = this.builder.createObjectReference(label);
                 this.builder.top.setProperty(propertyName, reference);
             } else {
                 malker.visit(value, propertyName);

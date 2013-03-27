@@ -37,7 +37,7 @@ var PropertiesSerializer = Montage.create(Object.prototype, {
                 labeler = this._visitor.labeler,
                 label = labeler.getObjectLabel(object);
 
-            reference = Object.create(ObjectReference);
+            var reference = Object.create(ObjectReference);
             reference.reference = builder.createReference(label);
 
             return reference;
