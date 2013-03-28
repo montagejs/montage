@@ -1198,6 +1198,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 return template.instantiateWithInstances(instances, _document)
                 .then(function(documentPart) {
                     self._templateDocumentPart = documentPart;
+                    documentPart.fragment = null;
                 })
                 .fail(function(reason) {
                     var message = reason.stack || reason;
