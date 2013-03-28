@@ -310,6 +310,15 @@
             padding: 2em;
         }
 
+        #targetInfo {
+            position: fixed;
+            top: 0;
+            right: 0;
+            background-color: hsla(0,0%,100%, 0.96);
+            padding: 1em;
+            pointer-events: none;
+        }
+
     </style>
 
 </head>
@@ -322,7 +331,7 @@
         <button data-montage-id="fooMenu">Foo</button>
         <button data-montage-id="barMenu">Bar</button>
 
-        <div>
+        <div id="targetInfo">
             <h2>Information about the activeTarget</h2>
             <table>
                 <tr>
