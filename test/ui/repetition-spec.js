@@ -773,8 +773,11 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
         });
 
         describe("manual objects changes", function() {
-            var list13 = querySelector(".list13").component;
-            var object = {array: [1, 2, 3]};
+            var list13, object;
+            beforeEach(function () {
+                list13 = querySelector(".list13").component;
+                object = {array: [1, 2, 3]};
+            });
 
             it("should add an iteration when an object is pushed", function() {
                 list13.content.push(4);
