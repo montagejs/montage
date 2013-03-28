@@ -36,6 +36,7 @@ require("montage-testing").run(require,[
         "core/extras/function",
         "core/extras/string",
 
+        "events/active-target-spec",
         "events/eventmanager-spec",
         "events/mutable-event-spec",
         "events/object-hierarchy-spec",

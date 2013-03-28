@@ -39,6 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
     @requires montage/core/event/event-manager
  */
 var Montage = require("montage").Montage,
+    Target = require("core/target").Target,
     Bindings = require("core/bindings").Bindings,
     Template = require("core/template").Template,
     DocumentResources = require("core/document-resources").DocumentResources,
@@ -58,7 +59,7 @@ var Montage = require("montage").Montage,
  * @classdesc Base class for all Montage components.
    @extends module:montage/core/core.Montage
  */
-var Component = exports.Component = Montage.create(Montage,/** @lends module:montage/ui/component.Component# */ {
+var Component = exports.Component = Montage.create(Target,/** @lends module:montage/ui/component.Component# */ {
     DOM_ARG_ATTRIBUTE: {value: "data-arg"},
 
     didCreate: {
@@ -85,8 +86,27 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: null
     },
 
-    parentProperty: {
-        value: "parentComponent"
+    _nextTarget: {
+        value: null
+    },
+
+    /**
+     * The next Target to consider in the event target chain
+     *
+     * Currently, components themselves do not allow this chain to be broken;
+     * setting a component's nextTarget to a falsy value will cause nextTarget
+     * to resolve as the parentComponent.
+     *
+     * To interrupt the propagation path a Target that accepts a falsy
+     * nextTarget needs to be set at a component's nextTarget.
+     */
+    nextTarget: {
+        get: function () {
+            return this._nextTarget || this.parentComponent;
+        },
+        set: function (value) {
+            this._nextTarget = value;
+        }
     },
 
     _ownerDocumentPart: {
@@ -399,17 +419,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             return rootComponent;
         }
     },
-/**
-    Description TODO
-    @function
-    @returns {Boolean} false
-    */
-    acceptsDirectFocus: {
-        enumerable: false,
-        value: function() {
-            return false;
-        }
-    },
+
 /**
     Description TODO
     @function

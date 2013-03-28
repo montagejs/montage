@@ -40,6 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 var Montage = require("core/core").Montage,
+    Target = require("core/target").Target,
     MontageWindow = require("window-loader/montage-window").MontageWindow,
     Slot;
 
@@ -63,7 +64,7 @@ var Montage = require("core/core").Montage,
  @class module:montage/core/application.Application
  @extends module:montage/core/core.Montage
  */
-var Application = exports.Application = Montage.create(Montage, /** @lends montage/core/application.Application# */ {
+var Application = exports.Application = Montage.create(Target, /** @lends montage/core/application.Application# */ {
 
     /**
      Provides a reference to the Montage event manager used in the application.
@@ -262,6 +263,12 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
      */
     delegate: {
         value: null
+    },
+
+    nextTarget: {
+        get: function () {
+            return this.delegate;
+        }
     },
 
     /**

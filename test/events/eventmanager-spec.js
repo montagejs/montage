@@ -29,6 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
+    Target = require("montage/core/target").Target,
     ActionEventListener = require("montage/core/event/action-event-listener").ActionEventListener,
     Serializer = require("montage/core/serialization").Serializer,
     Deserializer = require("montage/core/serialization").Deserializer,
@@ -994,7 +995,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
 
         describe("serialization", function() {
             it("should call \"listeners\" deserialization unit", function() {
-                var sourceObject = Montage.create(),
+                var sourceObject = Target.create(),
                     handlerObject = Montage.create(),
                     serializer = Serializer.create().initWithRequire(require),
                     deserializer = Deserializer.create(),

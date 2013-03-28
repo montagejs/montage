@@ -26,8 +26,7 @@ describe("serialization/bindings-spec", function () {
                 "prototype": "serialization/bindings-spec[Type]",
                 "properties": {
                     "foo": 10,
-                    "identifier": null,
-                    "parentProperty": null
+                    "identifier": null
                 },
                 "bindings": {
                     "bar": {
@@ -62,8 +61,7 @@ describe("serialization/bindings-spec", function () {
                 "prototype": "serialization/bindings-spec[Type]",
                 "properties": {
                     "foo": 10,
-                    "identifier": null,
-                    "parentProperty": null
+                    "identifier": null
                 },
                 "bindings": {
                     "bar": {

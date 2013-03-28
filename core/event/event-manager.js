@@ -100,63 +100,6 @@ Montage.defineProperty(Element.prototype, "component", {
     enumerable: false
 });
 
-/**
-    Adds an event listener to the object.
-    @function external:Object#addEventListener
-    @param {string} type The event type to listen for.
-    @param {object | function} listener The listener object or function.
-    @param {boolean} useCapture Specifies whether to listen for the event during the bubble or capture phases.
-*/
-Montage.defineProperty(Object.prototype, "addEventListener", {
-    value: function addEventListener(type, listener, useCapture) {
-        if (listener) {
-            defaultEventManager.registerEventListener(this, type, listener, useCapture);
-        }
-    }
-});
-
-/**
-    Removes an event listener from the object.
-    @function external:Object#removeEventListener
-    @param {string} type The event type.
-    @param {object | function} listener The listener object or function.
-    @param {boolean} useCapture The phase of the event listener.
-*/
-Montage.defineProperty(Object.prototype, "removeEventListener", {
-    value: function removeEventListener(type, listener, useCapture) {
-        if (listener) {
-            defaultEventManager.unregisterEventListener(this, type, listener, useCapture);
-        }
-    }
-});
-
-/**
- @function external:Object#dispatchEvent
- */
-Montage.defineProperty(Object.prototype, "dispatchEvent", {
-    value: function(event) {
-        var targettedEvent = event;
-
-        if (!MutableEvent.isPrototypeOf(event)) {
-             targettedEvent = MutableEvent.fromEvent(event);
-        }
-
-        targettedEvent.target = this;
-        defaultEventManager.handleEvent(targettedEvent);
-    },
-    enumerable: false
-});
-
-/**
- @function external:Object#dispatchEventNamed
- */
-Montage.defineProperty(Object.prototype, "dispatchEventNamed", {
-    value: function(type, canBubble, cancelable, detail) {
-        var event = MutableEvent.fromType(type, canBubble, cancelable, detail);
-        event.target = this;
-        defaultEventManager.handleEvent(event);
-    }
-});
 
 var EventListenerDescriptor = Montage.create(Montage, {
     type: {
@@ -943,11 +886,21 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 this._activationHandler = function(evt) {
                     var eventType = evt.type;
 
-                    // Don't double call handleEvent if we're already handling it becasue we have a registered listener
-                    if (!eventManager.registeredEventListeners[eventType]) {
-                        eventManager.handleEvent(evt);
+                    // Prepare any components associated with elements that may receive this event
+                    // They need to registered there listeners before the next step, which is to find the components that
+                    // observing for this type of event
+                    if ("focus" === eventType || "mousedown" === eventType || "touchstart" === eventType) {
+                        if (evt.changedTouches) {
+                            touchCount = evt.changedTouches.length;
+                            for (i = 0; i < touchCount; i++) {
+                                eventManager._prepareComponentsForActivation(evt.changedTouches[i].target);
+                            }
+                        } else {
+                            eventManager._prepareComponentsForActivation(evt.target);
+                        }
                     }
-                }
+
+                };
             }
 
             // The EventManager needs to handle "gateway/pointer/activation events" that we
@@ -962,6 +915,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 aWindow.document.nativeAddEventListener("mousedown", this._activationHandler, true);
                 //TODO also should accommodate mouseenter/mouseover possibly
             }
+            aWindow.document.nativeAddEventListener("focus", this._activationHandler, true);
 
             if (this.application) {
 
@@ -1760,21 +1714,11 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 mutableEvent = event;
             }
 
-            // Prepare any components associated with elements that may receive this event
-            // They need to registered there listeners before the next step, which is to find the components that
-            // observing for this type of event
-            if ("mousedown" === eventType || "touchstart" === eventType) {
-                if (mutableEvent.changedTouches) {
-                    touchCount = mutableEvent.changedTouches.length;
-                    for (i = 0; i < touchCount; i++) {
-                        this._prepareComponentsForActivationEventTarget(mutableEvent.changedTouches[i].target);
-                    }
-                } else {
-                    this._prepareComponentsForActivationEventTarget(mutableEvent.target);
-                }
+            if (Element.isElement(mutableEvent.target)) {
+                eventPath = this._eventPathForDomTarget(mutableEvent.target);
+            } else {
+                eventPath = this._eventPathForTarget(mutableEvent.target);
             }
-
-            eventPath = this._eventPathForTarget(mutableEvent.target);
 
             // use most specific handler method available, possibly based upon the identifier of the event target
             if (mutableEvent.target.identifier) {
@@ -1926,29 +1870,33 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
  /**
   @private
 */
-    _prepareComponentsForActivationEventTarget: {
+    _prepareComponentsForActivation: {
         value: function(eventTarget) {
 
             var target = eventTarget,
                 previousTarget,
                 targetView = target && target.defaultView ? target.defaultView : window,
                 targetDocument = targetView.document ? targetView.document : document,
-                associatedComponent;
+                associatedComponent,
+                lookedForActiveTarget = false,
+                activeTarget = null;
 
             do {
 
                 if (target) {
                     associatedComponent = this.eventHandlerForElement(target);
                     if (associatedComponent) {
-                        if (!associatedComponent._preparedForActivationEvents) {
 
+                        // Once we've found a component starting point,
+                        // find the closest Target that accepts focus
+                        if (!lookedForActiveTarget) {
+                            lookedForActiveTarget = true;
+                            activeTarget = this._findActiveTarget(associatedComponent);
+                        }
+
+                        if (!associatedComponent._preparedForActivationEvents) {
                             associatedComponent._prepareForActivationEvents();
                             associatedComponent._preparedForActivationEvents = true;
-
-                        } else if (associatedComponent._preparedForActivationEvents) {
-                            //TODO can we safely stop if we find the currentTarget has already been activated?
-                            // I want to say no as the tree above may have changed, but I'm going to give it a try
-                            return;
                         }
                     }
                 }
@@ -1975,12 +1923,88 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
             } while (target && previousTarget !== target);
 
+            activeTarget = activeTarget || this.application;
+
+            if (activeTarget !== this.activeTarget) {
+                if (this.activeTarget) {
+                    this.activeTarget.willSurrenderActiveTarget(activeTarget);
+                }
+                activeTarget.willBecomeActiveTarget(this.activeTarget);
+
+                this.activeTarget = activeTarget;
+
+                activeTarget.didBecomeActiveTarget();
+            }
         }
     },
-/**
-  @private
-*/
+
+    /**
+     *
+     @private
+     */
+    _findActiveTarget: {
+        value: function(target) {
+
+            var foundTarget = null,
+                previousTarget;
+
+            while (!foundTarget && target && previousTarget !== target) {
+
+                //TODO complain if a non-Target is considered
+
+                if (target.acceptsActiveTarget) {
+                    foundTarget = target;
+                } else {
+                    previousTarget = target;
+                    target = target.nextTarget;
+                }
+            }
+
+            return foundTarget;
+        }
+    },
+
+    /**
+     * Build the event target chain for the the specified Target
+     * @private
+     */
     _eventPathForTarget: {
+        enumerable: false,
+        value: function(target) {
+
+            if (!target) {
+                return [];
+            }
+
+            var targetCandidate  = target,
+                application = this.application,
+                eventPath = [],
+                discoveredTargets = {};
+
+            do {
+                // Don't include the target itself as the root of the path
+                if (targetCandidate !== target) {
+                    eventPath.push(targetCandidate);
+                    discoveredTargets[targetCandidate.uuid] = targetCandidate;
+                }
+
+                targetCandidate = targetCandidate.nextTarget;
+
+                if (!targetCandidate && application !== targetCandidate) {
+                    targetCandidate = application;
+                }
+            }
+            while (targetCandidate && !(targetCandidate.uuid in discoveredTargets));
+
+            return eventPath;
+        }
+    },
+
+    /**
+     * Build the event target chain for the the specified DOM target
+     * @private
+     */
+    _eventPathForDomTarget: {
         enumerable: false,
         value: function(target) {
 
@@ -1996,7 +2020,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 eventPath = [];
 
             do {
-                // Don't include the target itself in the event path
+                // Don't include the target itself as the root of the event path
                 if (targetCandidate !== target) {
                     eventPath.push(targetCandidate);
                 }
@@ -2021,7 +2045,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                         targetCandidate = targetDocument;
                         break;
                     default:
-                        targetCandidate = targetCandidate.parentProperty ? targetCandidate[targetCandidate.parentProperty] : targetCandidate.parentNode;
+                        targetCandidate = targetCandidate.parentNode;
 
                         // Run out of hierarchy candidates? go up to the application
                         if (!targetCandidate) {
@@ -2080,6 +2104,34 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         enumerable: false,
         value: function(anElement) {
             return this._elementEventHandlerByUUID[anElement.eventHandlerUUID];
+        }
+    },
+
+    _activeTarget: {
+        value: null
+    },
+
+    /**
+     * The logical component that has focus within the application
+     *
+     * This can be used as the proximal target for dispatching in
+     * situations where it logically makes sense that and event, while
+     * created by some other component, should appear to originate from
+     * where the user is currently focused.
+     *
+     * This is particularly useful for things such as keyboard shortcuts or
+     * menuAction events.
+     */
+    activeTarget: {
+        get: function () {
+            return this._activeTarget || this.application;
+        },
+        set: function (value) {
+            if (value === this._activeTarget) {
+                return;
+            }
+
+            this._activeTarget = value;
         }
     }
 

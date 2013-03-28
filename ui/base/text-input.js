@@ -52,6 +52,10 @@ var Montage = require("montage").Montage,
 */
 var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends module:montage/ui/base/text-input.TextInput# */ {
 
+    acceptsActiveTarget: {
+        value: true
+    },
+
     _hasFocus: {
         enumerable: false,
         value: false
