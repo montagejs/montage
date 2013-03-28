@@ -7,6 +7,12 @@ exports.ActionCounter = Montage.create(Component, {
         value: false
     },
 
+    didCreate: {
+        value: function () {
+            this.needsDraw = true;
+        }
+    },
+
     prepareForDraw: {
         value: function () {
             this.addEventListener("menuAction", this);
