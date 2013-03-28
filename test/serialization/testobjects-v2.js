@@ -31,6 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 exports = typeof exports !== "undefined" ? exports : {};
 
 var Montage = require("montage").Montage,
+    Target = require("montage/core/target").Target,
     Uuid = require("montage/core/uuid").Uuid;
 
 exports.Empty = Montage.create(Montage, {});
@@ -42,7 +43,7 @@ exports.Simple = Montage.create(Montage, {
     foo: {value: null, serializable: false}
 });
 
-exports.OneProp = Montage.create(Montage, {
+exports.OneProp = Montage.create(Target, {
     prop: {value: null, serializable: true},
 
     deserializedFromSerializationCount: {value: 0, serializable: false},
@@ -55,7 +56,7 @@ exports.OneReferenceProp = Montage.create(Montage, {
     referenceProp: {value: null, serializable: "reference"}
 });
 
-exports.TwoProps = Montage.create(Montage, {
+exports.TwoProps = Montage.create(Target, {
     prop1: {value: null, serializable: true},
     prop2: {value: null, serializable: true}
 });

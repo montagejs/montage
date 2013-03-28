@@ -19,6 +19,7 @@ exports.Target = Montage.create(Montage, {
      * By default a target does not accept this responsibility.
      */
     acceptsActiveTarget: {
+        serializable: false,
         value: false
     },
 
@@ -59,6 +60,7 @@ exports.Target = Montage.create(Montage, {
      * graph of targets.
      */
     nextTarget: {
+        serializable: false,
         value: null
     },
 
