@@ -351,10 +351,12 @@
         <p>All of the control-like-UI components below should become activeTarget when focused</p>
 
         <div data-montage-id="C0" class="container">
+            C0
             <p>This component cannot become the activeTarget</p>
             <p>Handled MenuAction Count <span data-montage-id="C0Count"></span></p>
 
             <div data-montage-id="C0C0" class="container">
+                C0C0
                 <p>The component can become the activeTarget</p>
                 <p>Handled MenuAction Count <span data-montage-id="C0C0Count"></span></p>
 
@@ -372,6 +374,7 @@
             </div>
 
             <div data-montage-id="C0C1" class="container">
+                C0C1
                 <p>This component cannot become the activeTarget</p>
                 <p>Handled MenuAction Count <span data-montage-id="C0C1Count"></span></p>
 
@@ -382,6 +385,7 @@
             </div>
 
             <div data-montage-id="C0C2" class="container">
+                C0C2
                 This container accepts focus but has its nextTarget set as a Target other than the natural DOM based component hierarchy
                 The next Target is not a visual component, but does specify that it's next target is a component in this document,
                 but in a different part of the hierarchy. Just for fun.
@@ -389,6 +393,7 @@
         </div>
 
         <div data-montage-id="C1" class="container">
+            C1
             And here's that component with no children that happens to be along the event target chain of another component (C0C2)
             <p>Handled MenuAction Count <span data-montage-id="C1Count"></span></p>
         </div>
