@@ -99,31 +99,6 @@ exports.Target = Montage.create(Montage, {
     },
 
     /**
-     * Dispatches the specified event with the activeTarget as the event's proximal target
-     * @param {Event} event The event object to dispatch
-     */
-    dispatchFocusedEvent: {
-        value: function (event) {
-            defaultEventManager.activeTarget.dispatchEvent(event);
-        }
-    },
-
-    /**
-     * Creates and dispatches an event with the specified properties with the
-     * defaultEventManager's activeTarget as the proximal target
-     *
-     * @param {string} type The type of the event to dispatch
-     * @param {boolean} canBubble Whether or not the event can bubble
-     * @param {boolean} cancelable Whether or not the event can be cancelled
-     * @param {Object} detail The optional detail object of the event
-     */
-    dispatchFocusedEventNamed: {
-        value: function (type, canBubble, cancelable, detail) {
-            defaultEventManager.activeTarget.dispatchEventNamed(type, canBubble, cancelable, detail);
-        }
-    },
-
-    /**
      * Adds an event listener to the object.
      * @param {string} type The event type to listen for.
      * @param {object | function} listener The listener object or function.

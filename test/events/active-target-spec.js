@@ -109,17 +109,18 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function(testP
 
         describe("dispatching focused events", function () {
 
-            var testTarget, proximalComponent;
+            var testTarget, proximalComponent, eventManager;
 
             beforeEach(function () {
                 testTarget = testDocument.defaultView.montageRequire("core/target").Target;
                 var proximalElement = testDocument.querySelector("[data-montage-id=C0C0B0]");
                 proximalComponent = proximalElement.component;
 
-                proximalComponent.eventManager.activeTarget = proximalComponent;
+                eventManager = proximalComponent.eventManager;
+                eventManager.activeTarget = proximalComponent;
             });
 
-            describe("using dispatchFocusedEvent", function () {
+            describe("using dispatchEvent", function () {
 
                 it("must have the activeTarget as the target of the event", function () {
                     var listener = {
@@ -133,13 +134,13 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function(testP
 
                     var MutableEvent = testDocument.defaultView.montageRequire("core/event/mutable-event").MutableEvent;
 
-                    testTarget.create().dispatchFocusedEvent(MutableEvent.fromType("foo", true, true));
+                    eventManager.activeTarget.dispatchEvent(MutableEvent.fromType("foo", true, true));
                     expect(listener.handleFoo).toHaveBeenCalled();
                 });
 
             });
 
-            describe("using dispatchFocusedEventName", function () {
+            describe("using dispatchEventNamed", function () {
 
                 it("must have the activeTarget as the target of the event", function () {
                     var listener = {
@@ -151,7 +152,7 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function(testP
                     spyOn(listener, "handleFoo").andCallThrough();
                     proximalComponent.addEventListener("foo", listener);
 
-                    testTarget.create().dispatchFocusedEventNamed("foo", true, true);
+                    eventManager.activeTarget.dispatchEventNamed("foo", true, true);
                     expect(listener.handleFoo).toHaveBeenCalled();
                 });
 
