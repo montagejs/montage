@@ -1946,16 +1946,18 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         value: function(target) {
 
             var foundTarget = null,
-                previousTarget;
+                uuidCheckedTargetMap = {};
 
-            while (!foundTarget && target && previousTarget !== target) {
+            //TODO report if a cycle is detected?
+            while (!foundTarget && target && !(target.uuid in uuidCheckedTargetMap)) {
 
-                //TODO complain if a non-Target is considered
+                //TODO complain if a non-Target-alike is considered
+
+                uuidCheckedTargetMap[target.uuid] = target;
 
                 if (target.acceptsActiveTarget) {
                     foundTarget = target;
                 } else {
-                    previousTarget = target;
                     target = target.nextTarget;
                 }
             }

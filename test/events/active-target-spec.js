@@ -105,6 +105,33 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function(testP
 
             });
 
+            describe("when a cycle is encountered while determining the activeTarget", function () {
+
+                var eventManager;
+
+                beforeEach(function () {
+                    var proximalElement = testDocument.querySelector("[data-montage-id=C0C0B0]");
+                    proximalComponent = proximalElement.component;
+
+                    eventManager = proximalComponent.eventManager;
+                });
+
+                it("should return no activeTarget when encountering a self-referential cycle", function () {
+                    var foo = Montage.create();
+                    foo.nextTarget = foo;
+                    expect(eventManager._findActiveTarget(foo)).toBeNull();
+                });
+
+                it("should return no activeTarget when encountering a distant cycle", function () {
+                    var foo = Montage.create();
+                    var bar = Montage.create();
+                    foo.nextTarget = bar;
+                    bar.nextTarget = foo;
+                    expect(eventManager._findActiveTarget(foo)).toBeNull();
+                });
+
+            });
+
         });
 
         describe("dispatching focused events", function () {
