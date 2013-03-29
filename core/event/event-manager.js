@@ -1983,20 +1983,26 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 eventPath = [],
                 discoveredTargets = {};
 
+            // Consider the target "discovered" for less specialized detection of cycles
+            discoveredTargets[target.uuid] = target;
+
             do {
-                // Don't include the target itself as the root of the path
-                if (targetCandidate !== target) {
+                if (!(targetCandidate.uuid in discoveredTargets)) {
                     eventPath.push(targetCandidate);
                     discoveredTargets[targetCandidate.uuid] = targetCandidate;
                 }
 
                 targetCandidate = targetCandidate.nextTarget;
 
-                if (!targetCandidate && application !== targetCandidate) {
+                if (!targetCandidate || targetCandidate.uuid in discoveredTargets) {
                     targetCandidate = application;
                 }
+
+                if (targetCandidate && (targetCandidate.uuid in discoveredTargets)) {
+                    targetCandidate = null;
+                }
             }
-            while (targetCandidate && !(targetCandidate.uuid in discoveredTargets));
+            while (targetCandidate);
 
             return eventPath;
         }

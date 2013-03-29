@@ -626,5 +626,33 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
         });
 
+        describe("determining the event target chain", function () {
+
+            it("should always include the application when the nextTarget is a dead-end", function () {
+                var foo = Montage.create();
+                foo.nextTarget = null;
+
+                var path = eventManager._eventPathForTarget(foo);
+                expect(path[0]).toBe(testApplication);
+            });
+
+            it("should not include the target itself in the chain", function () {
+                var foo = Montage.create();
+                foo.nextTarget = foo;
+
+                var path = eventManager._eventPathForTarget(foo);
+                expect(path.indexOf(foo)).toBe(-1);
+            });
+
+            it("should always include the application when the chain ends due to a detected cycle", function () {
+                var foo = Montage.create();
+                foo.nextTarget = foo;
+
+                var path = eventManager._eventPathForTarget(foo);
+                expect(path[0]).toBe(testApplication);
+            });
+
+        });
+
     });
 });
