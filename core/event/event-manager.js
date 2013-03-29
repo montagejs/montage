@@ -1714,7 +1714,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 mutableEvent = event;
             }
 
-            if (Element.isElement(mutableEvent.target)) {
+            if (Element.isElement(mutableEvent.target) || mutableEvent.target instanceof Document ||  mutableEvent.target instanceof Window) {
                 eventPath = this._eventPathForDomTarget(mutableEvent.target);
             } else {
                 eventPath = this._eventPathForTarget(mutableEvent.target);

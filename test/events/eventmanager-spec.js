@@ -896,6 +896,116 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                 });
             });
 
+            describe("dispatched from the document", function () {
+
+                it("should distribute the event to listeners of the proximal target", function () {
+                    var captureCalled = false,
+                        bubbleCalled = false;
+
+                    var fooCaptureSpy = {
+                        captureFoo: function() {
+                            expect(bubbleCalled).toBe(false);
+                            captureCalled = true;
+                        }
+                    };
+
+                    var fooBubbleSpy = {
+                        handleFoo: function() {
+                            expect(captureCalled).toBe(true);
+                            bubbleCalled = true;
+                        }
+                    };
+
+                    spyOn(fooCaptureSpy, 'captureFoo').andCallThrough();
+                    spyOn(fooBubbleSpy, 'handleFoo').andCallThrough();
+
+                    testDocument.addEventListener("foo", fooCaptureSpy, true);
+                    testDocument.addEventListener("foo", fooBubbleSpy, false);
+
+                    var event = testDocument.createEvent("CustomEvent");
+                    event.initEvent("foo", true, true);
+                    testDocument.dispatchEvent(event);
+
+                    testDocument.removeEventListener("foo", fooCaptureSpy, true);
+                    testDocument.removeEventListener("foo", fooBubbleSpy, false);
+
+                    expect(fooCaptureSpy.captureFoo).toHaveBeenCalled();
+                    expect(fooBubbleSpy.handleFoo).toHaveBeenCalled();
+                });
+
+                it("should distribute the event to listeners along the distribution chain", function () {
+                    var captureCalled = false,
+                        bubbleCalled = false;
+
+                    var fooCaptureSpy = {
+                        captureFoo: function() {
+                            expect(bubbleCalled).toBe(false);
+                            captureCalled = true;
+                        }
+                    };
+
+                    var fooBubbleSpy = {
+                        handleFoo: function() {
+                            expect(captureCalled).toBe(true);
+                            bubbleCalled = true;
+                        }
+                    };
+
+                    spyOn(fooCaptureSpy, 'captureFoo').andCallThrough();
+                    spyOn(fooBubbleSpy, 'handleFoo').andCallThrough();
+
+                    testDocument.defaultView.addEventListener("foo", fooCaptureSpy, true);
+                    testDocument.defaultView.addEventListener("foo", fooBubbleSpy, false);
+
+                    var event = testDocument.createEvent("CustomEvent");
+                    event.initEvent("foo", true, true);
+                    testDocument.dispatchEvent(event);
+
+                    testDocument.defaultView.removeEventListener("foo", fooCaptureSpy, true);
+                    testDocument.defaultView.removeEventListener("foo", fooBubbleSpy, false);
+
+                    expect(fooCaptureSpy.captureFoo).toHaveBeenCalled();
+                    expect(fooBubbleSpy.handleFoo).toHaveBeenCalled();
+                });
+            });
+
+            describe("dispatched from the window", function () {
+                it("should distribute the event to listeners of the proximal target", function () {
+                    var captureCalled = false,
+                        bubbleCalled = false;
+
+                    var fooCaptureSpy = {
+                        captureFoo: function() {
+                            expect(bubbleCalled).toBe(false);
+                            captureCalled = true;
+                        }
+                    };
+
+                    var fooBubbleSpy = {
+                        handleFoo: function() {
+                            expect(captureCalled).toBe(true);
+                            bubbleCalled = true;
+                        }
+                    };
+
+                    spyOn(fooCaptureSpy, 'captureFoo').andCallThrough();
+                    spyOn(fooBubbleSpy, 'handleFoo').andCallThrough();
+
+                    testDocument.defaultView.addEventListener("foo", fooCaptureSpy, true);
+                    testDocument.defaultView.addEventListener("foo", fooBubbleSpy, false);
+
+                    var event = testDocument.createEvent("CustomEvent");
+                    event.initEvent("foo", true, true);
+                    testDocument.defaultView.dispatchEvent(event);
+
+                    testDocument.defaultView.removeEventListener("foo", fooCaptureSpy, true);
+                    testDocument.defaultView.removeEventListener("foo", fooBubbleSpy, false);
+
+                    expect(fooCaptureSpy.captureFoo).toHaveBeenCalled();
+                    expect(fooBubbleSpy.handleFoo).toHaveBeenCalled();
+                });
+            });
+
         });
 
         // TODO verify the desired behavior in edge cases
