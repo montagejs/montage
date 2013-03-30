@@ -133,6 +133,13 @@ describe('core/undo-manager-spec', function () {
 
     describe("registering operations", function () {
 
+        it("must not register operations when registration is disabled", function () {
+            undoManager.registrationEnabled = false;
+            roster.addMember("Alice");
+
+            expect(undoManager.undoCount).toBe(0);
+        });
+
         it("should add to the undo stack when not undoing or redoing", function () {
             roster.addMember("Alice");
 

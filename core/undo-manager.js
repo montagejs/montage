@@ -258,6 +258,17 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
         }
     },
 
+    /**
+     * Whether or not to accept registration of undo/redo operations
+     *
+     * This is typically used to disable registration of operations
+     * temporarily while undoable actions should be performed without
+     * being undoable.
+     */
+    registrationEnabled: {
+        value: true
+    },
+
 /**
     Adds a new operation to the either the undo or redo stack as appropriate.
 
@@ -288,7 +299,7 @@ undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
                 throw new Error("UndoManager expected a promise");
             }
 
-            if (0 === this._maxUndoCount) {
+            if (0 === this._maxUndoCount || !this.registrationEnabled) {
                 return Promise.resolve(null);
             }
 
