@@ -52,9 +52,18 @@
             },
 
             "clearSelectionButton": {
+                "prototype": "montage/ui/component",
+                "properties": {
+                    "hasTemplate": false,
+                    "element": {"#": "clearSelectionButton"}
+                }
+            },
+
+            "clearSelectionPressComposer": {
                 "prototype": "montage/composer/press-composer",
                 "properties": {
-                    "element": {"#": "clearSelectionButton"}
+                    "identifier": "clearSelectionButton",
+                    "component": {"@": "clearSelectionButton"}
                 },
                 "listeners": [
                     {
@@ -65,9 +74,18 @@
             },
 
             "selectIndex0Button": {
+                "prototype": "montage/ui/component",
+                "properties": {
+                    "hasTemplate": false,
+                    "element": {"#": "selectIndex0Button"}
+                }
+            },
+
+            "selectIndex0PressComposer": {
                 "prototype": "montage/composer/press-composer",
                 "properties": {
-                    "element": {"#": "selectIndex0Button"}
+                    "identifier": "selectIndex0Button",
+                    "component": {"@": "selectIndex0Button"}
                 },
                 "listeners": [
                     {
@@ -78,9 +96,18 @@
             },
 
             "selectIndex2Button": {
+                "prototype": "montage/ui/component",
+                "properties": {
+                    "hasTemplate": false,
+                    "element": {"#": "selectIndex2Button"}
+                }
+            },
+
+            "selectIndex2PressComposer": {
                 "prototype": "montage/composer/press-composer",
                 "properties": {
-                    "element": {"#": "selectIndex2Button"}
+                    "identifier": "selectIndex2Button",
+                    "component": {"@": "selectIndex2Button"}
                 },
                 "listeners": [
                     {
@@ -91,9 +118,18 @@
             },
 
             "selectIndex4Button": {
+                "prototype": "montage/ui/component",
+                "properties": {
+                    "hasTemplate": false,
+                    "element": {"#": "selectIndex4Button"}
+                }
+            },
+
+            "selectIndex4PressComposer": {
                 "prototype": "montage/composer/press-composer",
                 "properties": {
-                    "element": {"#": "selectIndex4Button"}
+                    "identifier": "selectIndex4Button",
+                    "component": {"@": "selectIndex4Button"}
                 },
                 "listeners": [
                     {
@@ -137,3 +173,4 @@
     <button data-montage-id="selectIndex4Button">Select Index 4</button>
 </body>
 </html>
+
