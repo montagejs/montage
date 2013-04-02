@@ -86,7 +86,6 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
                 runs(function () {
                     var addedIndex = nameController.content.length - 1;
                     var selectedListElement = querySelectorAll("ul>li")[addedIndex];
-                    debugger
                     expect(selectedListElement.classList.contains("selected")).toBeTruthy();
                 });
             });
