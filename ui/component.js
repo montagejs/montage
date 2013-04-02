@@ -883,6 +883,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 elementId,
                 serialization,
                 externalObjectLabels,
+                ownerTemplateObjects,
                 externalObjects;
 
             if (!innerTemplate) {
