@@ -1,5 +1,6 @@
 var Montage = require("montage").Montage;
 var TestController = require("montage-testing/test-controller").TestController;
+var UUID = require("montage/core/uuid");
 
 exports.SelectionTest = Montage.create(TestController, {
 
@@ -42,6 +43,12 @@ exports.SelectionTest = Montage.create(TestController, {
         }
     },
 
+    handleAddAndSelectButtonPress: {
+        value: function (evt) {
+            this.addAndSelect();
+        }
+    },
+
     clearSelection: {
         value: function () {
             this.nameController.selection = [];
@@ -51,6 +58,14 @@ exports.SelectionTest = Montage.create(TestController, {
     selectIndex: {
         value: function (index) {
             this.nameController.selection = [this.content[index]];
+        }
+    },
+
+    addAndSelect: {
+        value:function () {
+            var value = "Person " + UUID.generate();
+            this.nameController.add(value);
+            this.nameController.select(value);
         }
     }
 });

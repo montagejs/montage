@@ -137,6 +137,28 @@
                         "listener": {"@": "test"}
                     }
                 ]
+            },
+
+            "addAndSelectButton": {
+                "prototype": "montage/ui/component",
+                "properties": {
+                    "hasTemplate": false,
+                    "element": {"#": "addAndSelectButton"}
+                }
+            },
+
+            "addAndSelectPressComposer": {
+                "prototype": "montage/composer/press-composer",
+                "properties": {
+                    "identifier": "addAndSelectButton",
+                    "component": {"@": "addAndSelectButton"}
+                },
+                "listeners": [
+                    {
+                        "type": "press",
+                        "listener": {"@": "test"}
+                    }
+                ]
             }
         }
     </script>
@@ -171,6 +193,7 @@
     <button data-montage-id="selectIndex0Button">Select Index 0</button>
     <button data-montage-id="selectIndex2Button">Select Index 2</button>
     <button data-montage-id="selectIndex4Button">Select Index 4</button>
+    <button data-montage-id="addAndSelectButton">Add and Select</button>
 </body>
 </html>
 

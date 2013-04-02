@@ -79,6 +79,18 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
                 });
             });
 
+            it("should mark a newly added and newly selected object as selected", function () {
+                testPage.test.addAndSelect();
+                testPage.waitForDraw();
+
+                runs(function () {
+                    var addedIndex = nameController.content.length - 1;
+                    var selectedListElement = querySelectorAll("ul>li")[addedIndex];
+                    debugger
+                    expect(selectedListElement.classList.contains("selected")).toBeTruthy();
+                });
+            });
+
         });
 
     });
