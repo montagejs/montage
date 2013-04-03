@@ -697,7 +697,7 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                 });
             });
 
-            it("should draw the repetition of the 'component repetition'", function() {
+            it("TODO should draw the repetition of the 'component repetition'", function() {
                 delegate.list6Objects = [{elements1: [{text: "rep0-comp1-0"}, {text: "rep0-comp1-1"}], elements2: [{text: "rep0-comp2-0"}, {text: "rep0-comp2-1"}]}, {elements1: [{text: "rep1-comp1-0"}, {text: "rep1-comp1-1"}], elements2: [{text: "rep1-comp2-0"}, {text: "rep1-comp2-1"}]}]
 
                 testPage.waitForComponentDraw(delegate.repetition9);
