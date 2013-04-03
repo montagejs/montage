@@ -1035,7 +1035,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 }
 
                 this.expandComponent().then(function() {
-                    if (self.shouldLoadComponentTree) {
+                    if (self.hasTemplate || self.shouldLoadComponentTree) {
                         var promises = [],
                             childComponents = self.childComponents,
                             childComponent;
