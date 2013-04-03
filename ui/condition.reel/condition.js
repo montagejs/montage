@@ -77,7 +77,18 @@ exports.Condition = Montage.create(Component, /** @lends Condition# */ {
             this._condition = value;
             this.needsDraw = true;
             // If it is being deserialized element might not been set yet
-            if (this.removalStrategy === "remove"  && !this.isDeserializing) {
+            if (!this.isDeserializing) {
+                this._updateDomContent(value);
+            }
+        },
+        get: function() {
+            return this._condition;
+        }
+    },
+
+    _updateDomContent: {
+        value: function(value) {
+            if (this.removalStrategy === "remove") {
                 if (value) {
                     this.domContent = this._contents;
                 } else {
@@ -85,9 +96,12 @@ exports.Condition = Montage.create(Component, /** @lends Condition# */ {
                     this.domContent = null;
                 }
             }
-        },
-        get: function() {
-            return this._condition;
+        }
+    },
+
+    deserializedFromTemplate: {
+        value: function() {
+            this._updateDomContent(this._condition);
         }
     },
 
@@ -117,15 +131,6 @@ exports.Condition = Montage.create(Component, /** @lends Condition# */ {
             }
             this._removalStrategy = value;
             this.needsDraw = true;
-        }
-    },
-
-    prepareForDraw: {
-        value: function() {
-            if (this.removalStrategy === "remove" && !this.condition) {
-                this._contents = this.domContent;
-                this.domContent = null;
-            }
         }
     },
 
