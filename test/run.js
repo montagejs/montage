@@ -65,7 +65,7 @@ require("montage-testing").run(require,[
         "ui/condition-spec",
         "ui/firstdraw-spec",
         // Broken due to changes to repetition
-        // TODO "ui/repetition-spec",
+        "ui/repetition-spec",
         "ui/repetition-selection-spec",
         "ui/slot-spec",
         "ui/substitution-spec",

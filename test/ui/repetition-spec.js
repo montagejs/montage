@@ -697,7 +697,7 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                 });
             });
 
-            it("should draw the repetition of the 'component repetition'", function() {
+            it("TODO should draw the repetition of the 'component repetition'", function() {
                 delegate.list6Objects = [{elements1: [{text: "rep0-comp1-0"}, {text: "rep0-comp1-1"}], elements2: [{text: "rep0-comp2-0"}, {text: "rep0-comp2-1"}]}, {elements1: [{text: "rep1-comp1-0"}, {text: "rep1-comp1-1"}], elements2: [{text: "rep1-comp2-0"}, {text: "rep1-comp2-1"}]}]
 
                 testPage.waitForComponentDraw(delegate.repetition9);
@@ -744,27 +744,26 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
         });
 
         describe("Repetition content change", function() {
-            it("TODO should rebuild the repetition", function() {
-                var list11 = querySelector(".list11").component,
-                    content = querySelectorAll(".list11 > li"),
-                    newTemplate = Template.create();
+            it("should rebuild the repetition", function() {
+                var list11 = querySelector(".list11").component;
 
-                expect(content.length).toBe(3);
-                for (var i = 0; i < content.length; i++) {
-                    expect(content[i].textContent).toBe("X");
-                }
+                runs(function () {
+                    var content = list11.element.children;
+                    expect(content.length).toBe(3);
+                    for (var i = 0; i < content.length; i++) {
+                        expect(content[i].textContent).toBe("X");
+                    }
 
-                newTemplate.initWithRequire(require);
-                var newContent = newTemplate.document.createElement("div");
-                newContent.textContent = "Y";
-                newTemplate.document.body.appendChild(newContent);
+                    var newTemplate = list11.innerTemplate.clone();
 
-                list11.innerTemplate = newTemplate;
+                    newTemplate.document.querySelector("li").textContent = "Y";
 
+                    list11.innerTemplate = newTemplate;
+                });
                 testPage.waitForComponentDraw(list11);
-
-                runs(function() {
-                    var content = list11.domContent;
+                runs(function () {
+                    var content = list11.element.children;
+                    expect(content.length).toBe(3);
                     for (var i = 0; i < content.length; i++) {
                         expect(content[i].textContent).toBe("Y");
                     }
@@ -773,8 +772,11 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
         });
 
         describe("manual objects changes", function() {
-            var list13 = querySelector(".list13").component;
-            var object = {array: [1, 2, 3]};
+            var list13, object;
+            beforeEach(function () {
+                list13 = querySelector(".list13").component;
+                object = {array: [1, 2, 3]};
+            });
 
             it("should add an iteration when an object is pushed", function() {
                 list13.content.push(4);
