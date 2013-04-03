@@ -1316,7 +1316,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     },
 
     _deserializedFromTemplate: {
-        value: function(owner, documentPart) {
+        value: function(owner, label, documentPart) {
             this._ownerDocumentPart = documentPart;
 
             if (!this.ownerComponent) {

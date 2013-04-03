@@ -487,10 +487,10 @@ var Template = Montage.create(Montage, {
 
                 if (object) {
                     if (typeof object._deserializedFromTemplate === "function") {
-                        object._deserializedFromTemplate(owner, documentPart);
+                        object._deserializedFromTemplate(owner, label, documentPart);
                     }
                     if (typeof object.deserializedFromTemplate === "function") {
-                        object.deserializedFromTemplate(owner, documentPart);
+                        object.deserializedFromTemplate(owner, label, documentPart);
                     }
                 }
             }
