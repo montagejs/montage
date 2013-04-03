@@ -203,6 +203,9 @@ exports.Substitution = Montage.create(Slot, /** @lends Substitution# */ {
                     self._canDraw = true;
                     self.needsDraw = true;
                 }).done();
+            } else {
+                this._switchComponentTreeLoaded[value] = true;
+                this.needsDraw = true;
             }
         }
     },
