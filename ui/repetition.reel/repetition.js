@@ -855,7 +855,6 @@ var Repetition = exports.Repetition = Montage.create(Component, {
             this._requestedIterations = 0;
             this._createdIterations = 0;
             this._canDrawInitialContent = false;
-            this._initialContentDrawn = false;
             this._selectionPointer = null;
             this.activeIterations.clear();
             this._dirtyClassListIterations.clear();

@@ -744,27 +744,26 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
         });
 
         describe("Repetition content change", function() {
-            it("TODO should rebuild the repetition", function() {
-                var list11 = querySelector(".list11").component,
-                    content = querySelectorAll(".list11 > li"),
-                    newTemplate = Template.create();
+            it("should rebuild the repetition", function() {
+                var list11 = querySelector(".list11").component;
 
-                expect(content.length).toBe(3);
-                for (var i = 0; i < content.length; i++) {
-                    expect(content[i].textContent).toBe("X");
-                }
+                runs(function () {
+                    var content = list11.element.children;
+                    expect(content.length).toBe(3);
+                    for (var i = 0; i < content.length; i++) {
+                        expect(content[i].textContent).toBe("X");
+                    }
 
-                newTemplate.initWithRequire(require);
-                var newContent = newTemplate.document.createElement("div");
-                newContent.textContent = "Y";
-                newTemplate.document.body.appendChild(newContent);
+                    var newTemplate = list11.innerTemplate.clone();
 
-                list11.innerTemplate = newTemplate;
+                    newTemplate.document.querySelector("li").textContent = "Y";
 
+                    list11.innerTemplate = newTemplate;
+                });
                 testPage.waitForComponentDraw(list11);
-
-                runs(function() {
-                    var content = list11.domContent;
+                runs(function () {
+                    var content = list11.element.children;
+                    expect(content.length).toBe(3);
                     for (var i = 0; i < content.length; i++) {
                         expect(content[i].textContent).toBe("Y");
                     }
