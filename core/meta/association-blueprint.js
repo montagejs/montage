@@ -12,9 +12,9 @@ var PropertyBlueprint = require("core/meta/property-blueprint").PropertyBlueprin
 var logger = require("core/logger").logger("blueprint");
 
 /**
- @class module:montage/core/meta/association-reference.AssociationBlueprint
+ @class AssociationBlueprint
  */
-exports.AssociationBlueprint = Montage.create(PropertyBlueprint, /** @lends module:montage/core/meta/association-reference.AssociationBlueprint# */ {
+exports.AssociationBlueprint = Montage.create(PropertyBlueprint, /** @lends AssociationBlueprint# */ {
 
     serializeSelf: {
         value: function(serializer) {
@@ -54,7 +54,6 @@ exports.AssociationBlueprint = Montage.create(PropertyBlueprint, /** @lends modu
     },
 
     /**
-     Description TODO
      @type {Property}
      @default {Boolean} false
      */

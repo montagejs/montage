@@ -48,11 +48,11 @@ var Montage = require("core/core").Montage,
     LOADED = 3;
 
 /**
- @class module:montage/ui/loader.Loader
- @extends module:montage/ui/component.Component
+ @class Loader
+ @extends Component
  */
 
-exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.Loader# */ {
+exports.Loader = Montage.create(Component, /** @lends Loader# */ {
 
     // Configuration Properties
 

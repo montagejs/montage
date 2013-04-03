@@ -36,10 +36,10 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 /**
- @class module:"montage/ui/slot.reel".Slot
- @extends module:montage/ui/component.Component
+ @class Slot
+ @extends Component
  */
-exports.Slot = Montage.create(Component, /** @lends module:"montage/ui/slot.reel".Slot# */ {
+exports.Slot = Montage.create(Component, /** @lends Slot# */ {
 
     hasTemplate: {
         enumerable: false,
@@ -54,7 +54,6 @@ exports.Slot = Montage.create(Component, /** @lends module:"montage/ui/slot.reel
     },
 
 /**
-        Description TODO
         @type {Property}
         @default null
     */
@@ -73,7 +72,6 @@ exports.Slot = Montage.create(Component, /** @lends module:"montage/ui/slot.reel
     },
 
     /**
-        Description TODO
         @type {Function}
         @default null
     */
@@ -108,7 +106,6 @@ exports.Slot = Montage.create(Component, /** @lends module:"montage/ui/slot.reel
     },
 
 /**
-        Description TODO
         @type {Function}
         @default null
     */

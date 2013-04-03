@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
     Defines extensions to intrinsic <code>Object</code>.
-    @see [Object class]{@link external:Object}
+    @see {external:Object}
     @module montage/core/extras/object
 */
 var M = require("core/core"); // lazy bound because of dependency cycle

@@ -1,4 +1,4 @@
-/* <copyright>
+ /* <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
 
@@ -36,10 +36,10 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     logger = require("core/logger").logger("gate");
 /**
- @class module:montage/core/gate.Gate
- @extends module:montage/core/core.Montage
+ @class Gate
+ @extends Montage
  */
-var Gate = exports.Gate = Montage.create(Montage,/** @lends module:montage/core/gate.Gate# */ {
+var Gate = exports.Gate = Montage.create(Montage,/** @lends Gate# */ {
 /**
     @function
     @returns {Gate} A new Gate instance.

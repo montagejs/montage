@@ -40,11 +40,11 @@ var Montage = require("montage").Montage;
 
 /**
  The BitField object compactly stores multiple values as a short series of bits. This implementation is limited to 32 fields.
- @class module:montage/core/bitfield.BitField
+ @class BitField
  @classdesc Compactly stores multiple values as a short series of bits.
- @extends module:montage/core/core.Montage
+ @extends Montage
  */
-var BitField = exports.BitField = Montage.create(Montage, /** @lends module:montage/core/bitfield.BitField# */ {
+var BitField = exports.BitField = Montage.create(Montage, /** @lends BitField */ {
 
     /**
      Creates a new BitField object containing the fields provided in the propertyDescriptor parameter.
@@ -112,9 +112,6 @@ var BitField = exports.BitField = Montage.create(Montage, /** @lends module:mont
         }
     },
 
-    /**
-     @private
-     */
     _constantsToReuse: {
         enumerable: false,
         value: []

@@ -47,7 +47,7 @@ var Montage = require("core/core").Montage,
     require("core/dom");
 
 /**
- This module defines the {@link module:core/application.Application} prototype.
+ This module defines the {Application} prototype.
  @module core/application
  @requires event/event-manager
  @requires template
@@ -60,15 +60,18 @@ var Montage = require("core/core").Montage,
  */
 
 /**
- The Application object is responsible for loading its component tree. TODO finish description
- @class module:montage/core/application.Application
- @extends module:montage/core/core.Montage
+ * The application is a singleton, it initially loads and oversees the running program.
+ * It is also responsible for window management.
+ * The behavior of the application can be modified by implementing a delegate {Application#delegate}
+ * It is also possible to subclass the application by specifying an ```applicationPrototype"``` in ```the package.json```
+ * @class Application
+ * @extends Target
  */
-var Application = exports.Application = Montage.create(Target, /** @lends montage/core/application.Application# */ {
+var Application = exports.Application = Montage.create(Target, /** @lends Application# */ {
 
     /**
      Provides a reference to the Montage event manager used in the application.
-     @type {module:montage/core/event/event-manager.EventManager}
+     @type {EventManager}
      */
     eventManager: {
         value: null
@@ -76,7 +79,7 @@ var Application = exports.Application = Montage.create(Target, /** @lends montag
 
     /**
      Provides a reference to the parent application.
-     @type {module:montage/core/application.Application}
+     @type {Application}
      @default null
      */
     parentApplication: {
@@ -85,7 +88,7 @@ var Application = exports.Application = Montage.create(Target, /** @lends montag
 
     /**
      Provides a reference to the main application.
-     @type {module:montage/core/application.Application}
+     @type {Application}
      @default this
      */
     mainApplication: {
@@ -108,7 +111,7 @@ var Application = exports.Application = Montage.create(Target, /** @lends montag
      Determines the sort order for the Application.windows array.
      Possible values are: z-order, reverse-z-order, open-order, reverse-open-order
      @type {String}
-     @default {String} {"reverse-z-order"}
+     @default "reverse-z-order"
      */
     windowsSortOrder: {
         get: function() {
@@ -133,8 +136,7 @@ var Application = exports.Application = Montage.create(Target, /** @lends montag
     /**
      Provides a reference to all the windows opened by the main application or any of its descendents, including the main
      window itself The list is kept sorted, the sort order is determined by the Application.windowsSortOrder property
-     @type {array}
-     @type {Array}
+     @type {Array<MontageWindow>}
      */
     windows: {
         get: function() {
@@ -163,7 +165,7 @@ var Application = exports.Application = Montage.create(Target, /** @lends montag
 
     /**
      Provides a reference to the MontageWindow associated with the application.
-     @type {module:montage/window-loader/montage-window.MontageWindow}
+     @type {MontageWindow}
      */
     window: {
         get: function() {
@@ -185,7 +187,7 @@ var Application = exports.Application = Montage.create(Target, /** @lends montag
 
     /**
      An array of the child windows attached to the application.
-     @type {Array}
+     @type {Array<MontageWindow>}
      @default {Array} []
      */
     attachedWindows: {
@@ -195,7 +197,7 @@ var Application = exports.Application = Montage.create(Target, /** @lends montag
     /**
      Returns the event manager for the specified window object.
      @function
-     @param {Property} aWindow The browser window whose event manager object should be returned.
+     @param {Window} aWindow The browser window whose event manager object should be returned.
      @returns aWindow.defaultEventMananger
      */
     eventManagerForWindow: {
@@ -205,9 +207,9 @@ var Application = exports.Application = Montage.create(Target, /** @lends montag
     },
 
     /**
-     Return the top most window of any of the Montage Windows.
-     @type {Property}
-     @default document.defaultView
+     * Return the top most window of any of the Montage Windows.
+     * @type {MontageWindow}
+     * @default document.defaultView
      */
     focusWindow: {
         get: function() {
@@ -229,12 +231,12 @@ var Application = exports.Application = Montage.create(Target, /** @lends montag
     },
 
     /**
-     Registers an event listener on the application instance.
-     @function
-     @param {Property} type The event type to listen for.
-     @param {Object} listener A listener object that defines an event handler function, or a function to handle the event.
-     @param {Function} useCapture If <code>true</code>, the listener will only be notified during the event's capture phase.<br>
-     If <code>false</code> (the default) the listener will be notified during the event's bubble phase.
+     * Registers an event listener on the application instance.
+     * @function
+     * @param {String} type The event type to listen for.
+     * @param {Object} listener A listener object that defines an event handler function, or a function to handle the event.
+     * @param {Function} useCapture If <code>true</code>, the listener will only be notified during the event's capture phase.<br>
+     * If <code>false</code> (the default) the listener will be notified during the event's bubble phase.
      */
     addEventListener: {
         value: function(type, listener, useCapture) {
@@ -243,11 +245,11 @@ var Application = exports.Application = Montage.create(Target, /** @lends montag
     },
 
     /**
-     Removes a previously registered event listener on the application instance.
-     @function
-     @param {Property} type The event type that was originally registered.
-     @param {Object} listener The listener object or function that was registered to handle the event.
-     @param {Function} useCapture TODO
+     * Removes a previously registered event listener on the application instance.
+     * @function
+     * @param {String} type The event type that was originally registered.
+     * @param {Object} listener The listener object or function that was registered to handle the event.
+     * @param {Function} useCapture TODO
      */
     removeEventListener: {
         value: function(type, listener, useCapture) {
@@ -256,10 +258,10 @@ var Application = exports.Application = Montage.create(Target, /** @lends montag
     },
 
     /**
-     The application's delegate object.<br>
-     The application delegate is notified of events during the application's life cycle.
-     @type {Object}
-     @default null
+     * The application's delegate object, it can implement a ```willFinishLoading``` method that will be called right
+     * after the index.html is loaded
+     * @type {Object}
+     * @default null
      */
     delegate: {
         value: null
@@ -272,15 +274,15 @@ var Application = exports.Application = Montage.create(Target, /** @lends montag
     },
 
     /**
-     Opens a component in a new browser window, and registers the window with the Montage event manager.<br>
-     The component URL must be in the same domain as the calling script. Can be relative to the main application
-     @function
-     @param {PATH} component, the path to the reel component to open in the new window.
-     @param {STRING} name, the component main class name.
-     @param {OBJECT} parameters, the new window parameters (accept same parameters than window.open).
-     @example
-     var app = document.application;
-     app.openWindow("docs/help.reel", "Help", "{width:300, height:500}");
+     * Opens a component in a new browser window, and registers the window with the Montage event manager.<br>
+     * The component URL must be in the same domain as the calling script. Can be relative to the main application
+     * @function
+     * @param {String} component, the path to the reel component to open in the new window.
+     * @param {String} name, the component main class name.
+     * @param {Object} parameters, the new window parameters (accept same parameters than window.open).
+     * @example
+     * var app = document.application;
+     * app.openWindow("docs/help.reel", "Help", "{width:300, height:500}");
      */
     openWindow: {
         value: function(component, name, parameters) {
@@ -376,10 +378,10 @@ var Application = exports.Application = Montage.create(Target, /** @lends montag
     },
 
     /**
-     Attach a window to a parent application. When a window open, it's automatically attach to the Application used to
-     create the window.
-     @function
-     @param {module:montage/window-loader/montage-window/MontageWindow} window to detach.
+     * Attach a window to a parent application. When a window open, it is automatically attached to the Application used to
+     * create the window.
+     * @function
+     * @param {MontageWindow} window to detach.
      */
     attachWindow: {
         value: function(montageWindow) {
@@ -407,10 +409,10 @@ var Application = exports.Application = Montage.create(Target, /** @lends montag
     },
 
     /**
-     Detach the window from its parent application. If no montageWindow is specified, the current application's windows
-     will be detached
-     @function
-     @param {module:montage/window-loader/montage-window.MontageWindow} window to detach.
+     * Detach the window from its parent application. If no montageWindow is specified, the current application's windows
+     * will be detached
+     * @function
+     * @param {MontageWindow} window to detach.
      */
     detachWindow: {
         value: function(montageWindow) {

@@ -36,11 +36,11 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage;
 var Point = require("core/geometry/point").Point;
 /**
- @class module:montage/core/geometry/cubic-bezier.CubicBezier
- @extends module:montage/core/core.Montage
+ @class CubicBezier
+ @extends Montage
  */
 
-var CubicBezier = exports.CubicBezier = Montage.create(Montage, /** @lends module:montage/core/geometry/cubic-bezier.CubicBezier# */{
+var CubicBezier = exports.CubicBezier = Montage.create(Montage, /** @lends CubicBezier# */{
 /**
     @function
     @param {Array} controlPoints Control points.

@@ -43,126 +43,126 @@ var UNDO_OPERATION = 0,
     REDO_OPERATION = 1;
 
 /**
-     Applications that allow end-user operations can use an UndoManager to record
-     information on how to undo those operations.
-
-     Undoable Operations
-     ===================
-     To make an operation undoable an application simply adds the inverse of that
-     operation to an UndoManager instance using the ```add``` method:
-
-     ```undoManager.register(label, operationPromise)```
-
-     This means that every undo-able user operation has to have an inverse
-     operation available. For example a calculator might provide a ```subtract```
-     method as the inverse of the ```add``` method.
-
-     An simple example would look something like this:
-
-     ```
-     add: {
-            value: function (number) {
-                this.undoManager.register("Add", Promise.resolve([this.subtract, this, number]));
-                var result = this.total += number;
-                return result;
-            }
-        },
-
-     subtract: {
-            value: function (number) {
-                this.undoManager.register("Subtract", Promise.resolve([this.add, this, number]));
-                var result = this.total -= number;
-                return result;
-            }
-        }
-     ```
-
-     Of immediate interest is the actual promise added to the undoManager.
-     ```Promise.resolve(["Add", this.subtract, this, number])```
-
-     The promise provides the final label (optionally), a reference to the function to call,
-     the context for the function to be executed in, and any number of arguments
-     to be passed along when calling the function.
-
-     In simple cases such as this the promise for the inverse operation
-     can be resolved immediately; this is not necessarily always possible in cases
-     where the operation itself is asynchronous.
-
-     Basic Undoing and Redoing
-     =========================
-     After performing ```calculator.add(42)``` the undoManager will have an entry
-     on how to undo that addition operation. Each operation added to the
-     undoManager is added on top of a stack. Calling the undoManager's ```undo```
-     method will perform the operation on the top of that stack if
-     original operationPromise has been resolved.
-
-     While performing an undo operation any additions to the undoManager will
-     instead be placed on the redo stack. Conversely, any additions made while
-     performing a redo operation will be placed on the undo stack.
-
-     When not actively undoing or redoing, the redo stack is cleared whenever a
-     new operation is added; the only way operations end up on the redo stack is
-     through undoing an operation.
-
-     Asynchronous Considerations
-     ===========================
-     It is possible for a user invoked operation to take some time to complete or
-     details of how to undo the operation may not be known until the operation
-     has completed.
-
-     In these cases it is important to remember that the undo stack captures user
-     intent, which is considered synchronous. This is why the undoManager accepts
-     promises for the operations but places them on the stack synchronously.
-
-     Consider the following example:
-     ```
-     addRandomNumber: {
-            var deferredUndo,
-                self = this;
-
-            this.undoManager.register("Add Random", deferredUndo.promise);
-
-            return this.randomNumberGeneratorService.next().then(function(rand) {
-                deferredUndo.resolve(["Add " + rand, self.subtract, self, rand];
-                var result = self.total = self.total + number;
-                return result
-            });
-        }
-     ```
-
-     Here we see that the undo operation for addRandomNumber is added to the
-     UndoManager before we even know how to undo the operation, indeed it's added
-     before the operation has even happened.
-
-     It is worth noting that the undoManager does not block anything. Users are
-     still free to call ```add```, ```subtract```, ```addRandomNumber``` or any
-     other APIs exposed by the calculator, whether the ```addRandomNumber``` has
-     resolved or not. It's the responsibility of an API provider to handle this
-     scenario as necessary.
-
-     At this point two things can happen:
-     1) A user could invoke ```undo``` after the operation promise's resolution.
-     2) A user could invoke ```undo``` prior to the operation promise's resolution.
-
-     In the first scenario, things move along much like they did in the first case
-     we described above.
-
-     In the second scenario, the undoManager puts the unresolved promise into a
-     queue of operations to be performed when possible. Subsequent undo and redo
-     requests are added to this queue.
-
-     Whenever a promise is resolved the undoManager runs through this queue in
-     order, oldest to newest, and attempts to perform the operation specified,
-     stopping when it encounters an unfulfilled operation promise.
-
-     This guarantees that promised operations are added in the order as they were
-     performed by the user and are executed, not in the order they are fulfilled,
-     but in the order they are undone or redone.
-
-    @class module:montage/core/undo-manager.UndoManager
-    @extends module:montage/core/core.Montage
+ *    Applications that allow end-user operations can use an UndoManager to record
+ *    information on how to undo those operations.
+ *
+ *    ## Undoable Operations
+ *
+ *    To make an operation undoable an application simply adds the inverse of that
+ *    operation to an UndoManager instance using the ```add``` method:
+ *
+ *    ```undoManager.register(label, operationPromise)```
+ *
+ *    This means that every undo-able user operation has to have an inverse
+ *    operation available. For example a calculator might provide a ```subtract```
+ *    method as the inverse of the ```add``` method.
+ *
+ *    An simple example would look something like this:
+ *
+ *```javascript
+ *add: {
+ *       value: function (number) {
+ *           this.undoManager.register("Add", Promise.resolve([this.subtract, this, number]));
+ *           var result = this.total += number;
+ *           return result;
+ *       }
+ *   },
+ *
+ *subtract: {
+ *       value: function (number) {
+ *           this.undoManager.register("Subtract", Promise.resolve([this.add, this, number]));
+ *           var result = this.total -= number;
+ *           return result;
+ *       }
+ *   }
+ *```
+ *
+ *    Of immediate interest is the actual promise added to the undoManager.
+ *    ```Promise.resolve(["Add", this.subtract, this, number])```
+ *
+ *    The promise provides the final label (optionally), a reference to the function to call,
+ *    the context for the function to be executed in, and any number of arguments
+ *    to be passed along when calling the function.
+ *
+ *    In simple cases such as this the promise for the inverse operation
+ *    can be resolved immediately; this is not necessarily always possible in cases
+ *    where the operation itself is asynchronous.
+ *
+ *    ## Basic Undoing and Redoing
+ *
+ *    After performing ```calculator.add(42)``` the undoManager will have an entry
+ *    on how to undo that addition operation. Each operation added to the
+ *    undoManager is added on top of a stack. Calling the undoManager's ```undo```
+ *    method will perform the operation on the top of that stack if
+ *    original operationPromise has been resolved.
+ *
+ *    While performing an undo operation any additions to the undoManager will
+ *    instead be placed on the redo stack. Conversely, any additions made while
+ *    performing a redo operation will be placed on the undo stack.
+ *
+ *    When not actively undoing or redoing, the redo stack is cleared whenever a
+ *    new operation is added; the only way operations end up on the redo stack is
+ *    through undoing an operation.
+ *
+ *    ## Asynchronous Considerations
+ *
+ *    It is possible for a user invoked operation to take some time to complete or
+ *    details of how to undo the operation may not be known until the operation
+ *    has completed.
+ *
+ *    In these cases it is important to remember that the undo stack captures user
+ *    intent, which is considered synchronous. This is why the undoManager accepts
+ *    promises for the operations but places them on the stack synchronously.
+ *
+ *    Consider the following example:
+ *```javascript
+ *addRandomNumber: {
+ *       var deferredUndo,
+ *           self = this;
+ *
+ *       this.undoManager.register("Add Random", deferredUndo.promise);
+ *
+ *       return this.randomNumberGeneratorService.next().then(function(rand) {
+ *           deferredUndo.resolve(["Add " + rand, self.subtract, self, rand];
+ *           var result = self.total = self.total + number;
+ *           return result
+ *       });
+ *   }
+ *```
+ *
+ *    Here we see that the undo operation for addRandomNumber is added to the
+ *    UndoManager before we even know how to undo the operation, indeed it's added
+ *    before the operation has even happened.
+ *
+ *    It is worth noting that the undoManager does not block anything. Users are
+ *    still free to call ```add```, ```subtract```, ```addRandomNumber``` or any
+ *    other APIs exposed by the calculator, whether the ```addRandomNumber``` has
+ *    resolved or not. It's the responsibility of an API provider to handle this
+ *    scenario as necessary.
+ *
+ *    At this point two things can happen:
+ *    1) A user could invoke ```undo``` after the operation promise's resolution.
+ *    2) A user could invoke ```undo``` prior to the operation promise's resolution.
+ *
+ *    In the first scenario, things move along much like they did in the first case
+ *    we described above.
+ *
+ *    In the second scenario, the undoManager puts the unresolved promise into a
+ *    queue of operations to be performed when possible. Subsequent undo and redo
+ *    requests are added to this queue.
+ *
+ *    Whenever a promise is resolved the undoManager runs through this queue in
+ *    order, oldest to newest, and attempts to perform the operation specified,
+ *    stopping when it encounters an unfulfilled operation promise.
+ *
+ *    This guarantees that promised operations are added in the order as they were
+ *    performed by the user and are executed, not in the order they are fulfilled,
+ *    but in the order they are undone or redone.
+ *
+ *   @class UndoManager
+ *   @extends Montage
 */
-var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends module:montage/core/undo-manager.UndoManager# */ {
+var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends UndoManager# */ {
 
     _operationQueue: {
         value: null
@@ -270,28 +270,35 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends modul
     },
 
 /**
-    Adds a new operation to the either the undo or redo stack as appropriate.
-
-    The operationPromise should be resolved with an array containing:
-        - A label string for the operation (optional)
-        - The function to execute when performing this operation
-        - The object to use as the context when performing the function
-        - Any number of arguments to apply when performing the function
-
-    @param {string} label A label to associate with this undo entry.
-    @param {promise} operationPromise A promise for an undoable operation
-    @returns a promise for the resolution of the operationPromise
-    @function
-    @example
-<caption>Registering an undo operation with no arguments</caption>
-undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
-
- <caption>Registering an undo operation with arguments</caption>
- undoManager.register("Add", Promise.resolve([calculator.subtract, calculator, number]));
-
- <caption>Registering an undo operation with a label and arguments</caption>
- undoManager.register("Add", Promise.resolve(["Add 5", calculator.subtract, calculator, 5]));
-*/
+ *    Adds a new operation to the either the undo or redo stack as appropriate.
+ *
+ *    The operationPromise should be resolved with an array containing:
+ *        - A label string for the operation (optional)
+ *        - The function to execute when performing this operation
+ *        - The object to use as the context when performing the function
+ *        - Any number of arguments to apply when performing the function
+ *
+ *    ### Examples
+ *    Registering an undo operation with no arguments
+ *```javascript
+ *undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
+ * ```
+ *
+ *   Registering an undo operation with arguments
+ *```javascript
+ *undoManager.register("Add", Promise.resolve([calculator.subtract, calculator, number]));
+ *```
+  *
+ *    Registering an undo operation with a label and arguments
+ *```javascript
+ *    undoManager.register("Add", Promise.resolve(["Add 5", calculator.subtract, calculator, 5]));
+ *```
+ *
+ *    @param {string} label A label to associate with this undo entry.
+ *    @param {promise} operationPromise A promise for an undoable operation
+ *    @returns a promise for the resolution of the operationPromise
+ *    @function
+ */
     register: {
         value: function (label, operationPromise) {
 

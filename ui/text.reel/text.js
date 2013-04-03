@@ -1,16 +1,16 @@
 /**
-	module:"montage/ui/text.reel"
-    @requires montage/core/core
+    @module montage/ui/text.reel
+    @requires montage
     @requires montage/ui/component
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 
 /**
- @class module:"montage/ui/text.reel".Text
- @extends module:montage/ui/component.Component
+ @class Text
+ @extends Component
  */
-exports.Text = Montage.create(Component, /** @lends module:"montage/ui/text.reel".Text# */ {
+exports.Text = Montage.create(Component, /** @lends Text# */ {
 
     hasTemplate: {
         value: false

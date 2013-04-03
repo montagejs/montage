@@ -40,17 +40,17 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage;
 
 /**
- This module defines the {@link module:ui/window.MontageWindow} prototype.
+ This module defines the {MontageWindow} prototype.
  @module ui/window
  @requires montage/core/core
  */
 
 /**
  The Window object is responsible for managing a DOM window.
- @class module:montage/ui/window.MontageWindow
- @extends module:montage/core/core.Montage
+ @class MontageWindow
+ @extends Montage
  */
-var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends montage/ui/window.MontageWindow# */ {
+var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends MontageWindow# */ {
 
     /**
      @private
@@ -61,7 +61,7 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
 
     /**
      Provides the Application associated with the window.
-     @type {module:montage/core/application.Application}
+     @type {Application}
      */
     application: {
         get: function() { return this._application },
@@ -84,7 +84,7 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
 
     /**
      Provides a reference to the native window.
-     @type {Window object}
+     @type {Window}
      */
     window: {
         get: function() { return this._window },
@@ -109,7 +109,7 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
 
     /**
      Provides a reference to the DOM document.
-     @type {document object}
+     @type {document}
      */
     document: {
         get: function() { return this._window.document }

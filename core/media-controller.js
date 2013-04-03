@@ -38,41 +38,36 @@ var Montage = require("montage").Montage;
 var Component = require("ui/component").Component;
 var logger = require("core/logger").logger("mediacontroller");
 /**
- @class module:montage/ui/controller/media-controller.MediaController
+ @class MediaController
  @classdesc Controls an audio/video media player.
- @extends module:montage/core/core.Montage
+ @extends Montage
 
  */
-var MediaController = exports.MediaController = Montage.create(Montage, /** @lends module:montage/ui/controller/media-controller.MediaController# */ {
+var MediaController = exports.MediaController = Montage.create(Montage, /** @lends MediaController# */ {
     /*-----------------------------------------------------------------------------
      MARK:   Constants
      -----------------------------------------------------------------------------*/
     /**
-        Description TODO
         @type {Property}
         @default {Number} 0
     */
     STOPPED: { enumerable: true, value: 0, writable: false },
     /**
-        Description TODO
         @type {Property}
         @default {Number} 1
     */
     PLAYING: { enumerable: true, value: 1, writable: false },
     /**
-        Description TODO
         @type {Property}
         @default {Number} 2
     */
     PAUSED:  { enumerable: true, value: 2, writable: false },
     /**
-        Description TODO
         @type {Property}
         @default {Number} 3
     */
     EMPTY:   { enumerable: true, value: 3, writable: false },
 /**
-  Description TODO
   @private
 */
     _TIMEUPDATE_FREQUENCY: { value: 0.25   },  // Don't refresh too often.
@@ -80,7 +75,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
      MARK:   Properties
      -----------------------------------------------------------------------------*/
 /**
-  Description TODO
   @private
 */
     _mediaElement: {
@@ -88,7 +82,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         enumerable: false
     },
  /**
-        Description TODO
         @type {Function}
         @default null
     */
@@ -102,7 +95,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         enumerable: false
     },
 /**
-  Description TODO
   @private
 */
     _mediaSrc: {
@@ -110,7 +102,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         enumerable: false
     },
 /**
-        Description TODO
         @type {Function}
         @default null
     */
@@ -126,7 +117,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
      MARK:   Status & Attributes
      -----------------------------------------------------------------------------*/
 /**
-  Description TODO
   @private
 */
     _status: {
@@ -134,7 +124,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         value: 3
     },
  /**
-        Description TODO
         @type {Function}
         @default {Number} 3
     */
@@ -151,13 +140,11 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-  Description TODO
   @private
 */
     _position: { value:null, enumerable:false },
 
 /**
-        Description TODO
         @type {Function}
         @default null
     */
@@ -173,12 +160,10 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-  Description TODO
   @private
 */
     _duration: { value: null, enumerable:false },
 /**
-        Description TODO
         @type {Function}
         @default null
     */
@@ -203,7 +188,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
      MARK:   Media Player Commands
      -----------------------------------------------------------------------------*/
 /**
-        Description TODO
         @type {Property}
         @default {Boolean} true
     */
@@ -212,7 +196,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         value: true
     },
 /**
-    Description TODO
     @function
     */
     play: {
@@ -224,7 +207,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     */
     pause: {
@@ -236,7 +218,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     @returns {Boolean} !playing (true if it is now playing)
     */
@@ -257,7 +238,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-  Description TODO
   @private
 */
     _playbackRate: {
@@ -265,7 +245,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         enumerable: false
     },
 /**
-        Description TODO
         @type {Function}
         @default {Number} 1
     */
@@ -281,7 +260,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-  Description TODO
   @private
 */
     _currentTime: {
@@ -289,7 +267,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         enumerable: false
     },
 /**
-  Description TODO
   @private
 */
     _updateCurrentTime: {
@@ -297,7 +274,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         enumerable: false
     },
 /**
-        Description TODO
         @type {Function}
         @default {Number} 0
     */
@@ -323,7 +299,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     */
     rewind: {
@@ -337,7 +312,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     */
     fastForward: {
@@ -351,7 +325,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     */
     stop: {
@@ -373,7 +346,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     */
     reset: {
@@ -390,7 +362,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     */
     loadMedia: {
@@ -404,7 +375,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     */
     toggleRepeat: {
@@ -413,7 +383,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-  Description TODO
   @private
 */
     _repeat: {
@@ -421,7 +390,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         enumerable: false
     },
 /**
-        Description TODO
         @type {Function}
         @default {Boolean} false
     */
@@ -446,7 +414,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
      MARK:   Volume Commands
      -----------------------------------------------------------------------------*/
 /**
-        Description TODO
         @type {Function}
         @returns {Number} this.mediaElement.volume * 100
     */
@@ -471,7 +438,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     */
     volumeIncrease: {
@@ -480,7 +446,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     */
     volumeDecrease: {
@@ -489,7 +454,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     */
     toggleMute: {
@@ -498,7 +462,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-        Description TODO
         @type {Function}
     */
     mute: {
@@ -516,7 +479,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
      MARK:   Event Handlers
      -----------------------------------------------------------------------------*/
 /**
-    Description TODO
     @function
     @returns itself
     */
@@ -540,14 +502,12 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-  Description TODO
   @private
 */
     _lastCurrentTime: {
         value: 0
     },
 /**
-    Description TODO
     @function
     */
     handleTimeupdate: {
@@ -563,7 +523,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
     },
 
 /**
-    Description TODO
     @function
     */
     handlePlay: {
@@ -575,7 +534,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     */
     handlePlaying: {
@@ -587,7 +545,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     */
     handlePause: {
@@ -606,7 +563,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     */
     handleEnded: {
@@ -621,7 +577,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     */
     handleAbort: {
@@ -633,7 +588,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     @param {Event} event TODO
     */
@@ -674,7 +628,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-    Description TODO
     @function
     */
     handleEmptied: {
@@ -686,7 +639,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-  Description TODO
   @private
 */
     _dispatchStateChangeEvent: {
@@ -697,7 +649,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         }
     },
 /**
-  Description TODO
   @private
 */
     _installControlEventHandlers: {

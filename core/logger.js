@@ -29,9 +29,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
-	@module montage/core/logger
-	@requires montage/core/core
-*/
+ * @module montage/core/logger
+ * @requires montage/core/core
+ */
 var Montage = require("montage").Montage,
     Logger,
     loggers,
@@ -46,10 +46,7 @@ var Montage = require("montage").Montage,
 loggers = exports.loggers = {};
 
 /**
- @function
- @param {Object} montageObject TODO
- @returns aFunctionName
- @private
+ * @private
  */
 getFunctionName = function(montageObject) {
     var aCaller = getFunctionName.caller.caller,
@@ -62,11 +59,8 @@ getFunctionName = function(montageObject) {
 };
 
 /**
-	@function
-    @param {Date} date TODO
-    @returns length hours, minutes, seconds, date.getMilliseconds()
-    @private
-*/
+ * @private
+ */
 toTimeString = function(date) {
     if (date.getHours) {
         var hours = date.getHours(),
@@ -75,23 +69,23 @@ toTimeString = function(date) {
         return (hours.length === 1 ? "0" + hours : hours) + ":" + (mins.length === 1 ? "0" + mins : mins) + ":" + (secs.length === 1 ? "0" + secs : secs) + "." + date.getMilliseconds();
     }
 };
+
 /**
-	@function
-    @private
-*/
+ * @private
+ */
 emptyLoggerFunction = function() {
 };
+
 /**
-	@function
-    @private
-*/
+ * @private
+ */
 consoleLog = function() {
     console.log(arguments);
 };
+
 /**
-	@function
-    @private
-*/
+ * @private
+ */
 consoleLogMontage = function() {
     var firstArgument = arguments[0],
         metadata = firstArgument._montage_metadata,
@@ -116,14 +110,14 @@ consoleLogMontage = function() {
 };
 
 /**
- @class module:montage/core/logger.Logger
- @extends module:montage/core/core.Montage
+ * @class Logger
+ * @extends Montage
  */
-Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/logger.Logger# */ {
+Logger = exports.Logger = Montage.create(Montage,/** @lends Logger# */ {
    /**
     @function
-    @param {String} name The name to be logged.
-    @param {State} dontStoreState The state in which the name is to be stored.
+    @param {String} name The name of the logger.
+    @param {State} [dontStoreState=false] If true, don't store the isDebug state of the logger in localStorage .
     @returns itself
     */
     init: {
@@ -144,31 +138,36 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
             return this;
         }
     },
-/**
-        @type {Property}
-        @default {String} null
-    */
+
+    /**
+     * @type {String}
+     * @default {String} null
+     */
     name: {
         value: null
     },
-/**
-        @type {Property}
-        @default {Array} []
-    */
+
+    /**
+     * @private
+     * @type {Array}
+     * @default {Array} []
+     */
     buffer: {
         value: [],
         distinct: true
     },
-/**
-        @type {Property}
-        @default {Boolean} false
-    */
+
+    /**
+     * @type {Property}
+     * @default {Boolean} false
+     */
     buffered: {
         value: false
     },
-/**
-    @function
-    */
+
+    /**
+     * Log all the contents the logger's buffer.
+     */
     flush: {
         value: function() {
             var buffer = this.buffer,
@@ -180,9 +179,10 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
             this.buffer.length = 0;
         }
     },
-/**
-        @type {Function}
-    */
+
+    /**
+     * @type {Boolean}
+     */
     isDebug: {
         get: function() {
             return this.debug !== emptyLoggerFunction;
@@ -196,9 +196,10 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
         }
 
     },
-/**
-        @type {Function}
-    */
+
+    /**
+     * @type {Boolean}
+     */
     isError: {
         get: function() {
             return this.error !== emptyLoggerFunction;
@@ -211,30 +212,36 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
             }
         }
     },
-/**
-        @type {Property}
-        @default {Function} emptyLoggerFunction
-    */
+
+    /**
+     * @method Logger#debug
+     * @param {Function|String} object If the first argument is a function the logger with print its name
+     * @param {String} [...]
+     */
     debug: {
         value: emptyLoggerFunction
     },
-/**
-        @type {Property}
-        @default {Function} emptyLoggerFunction
-    */
+
+    /**
+     * @method Logger#error
+     * @param {Function|String} object If the first argument is a function the logger with print its name
+     * @param {String} [...]
+     */
     error: {
         value: emptyLoggerFunction
     },
-/**
-        @type {Property}
-        @default {Function} toTimeString
-    */
+
+    /**
+     * @method Logger#toTimeString
+     * @description Prints the current time in format HH:MM:SS.000
+     */
     toTimeString: {
         value: toTimeString
     },
-/**
-  @private
-*/
+
+    /**
+     * @private
+     */
     _storeState: {
         value: null
     },
@@ -245,7 +252,7 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
 });
 
 /**
-    @function module:montage/core/logger.#logger
+    @function module:montage/core/logger#logger
     */
 exports.logger = function(loggerName, onStateChange, dontStoreState) {
     var logger;
@@ -258,14 +265,8 @@ exports.logger = function(loggerName, onStateChange, dontStoreState) {
     return logger;
 };
 
-/**
-    @class module:montage/core/logger.LoggerUI
-*/
-LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerUI# */{
-    /**
-    @function
-    @returns itself
-    */
+LoggerUI = Montage.create(Montage, /** @lends LoggerUI# */{
+
     init: {
         value: function() {
             if (document.nativeAddEventListener) {
@@ -278,53 +279,31 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
             return this;
         }
     },
-/**
-        @type {Property}
-        @default {Function} null
-    */
+
     inspectorElement: {
         value: null
     },
-/**
-        @type {Property}
-        @default {Function} null
-    */
+
     m_dontRemove: {
         value: null
     },
-/**
-        @type {Property}
-        @default {String} null
-    */
+
     titleHeader: {
         value: null
     },
-/**
-        @type {Property}
-        @default {Boolean} false
-    */
+
     shown: {
         value: false
     },
-/**
-        @type {Property}
-        @default {Boolean} false
-    */
+
     isCtrl: {
         value: false
     },
-/**
-        @type {Property}
-        @default {Boolean} false
-    */
+
     isAlt: {
         value: false
     },
 
-/**
-    @function
-    @param {Event} event TODO
-    */
     keyup: {
         value: function(event) {
             if (event.which == 17) {
@@ -336,11 +315,6 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
         }
     },
 
-/**
-    @function
-    @param {Event} event TODO
-    @returns {Boolean} false
-    */
     keydown: {
         value: function(event) {
             if (event.which == 17) {
@@ -360,10 +334,6 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
         }
     },
 
-/**
-    @function
-    @param {Event} event TODO
-    */
     change: {
         value: function(event) {
             var value = event.target.checked,
@@ -378,18 +348,13 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
             }
         }
     },
-/**
-    @function
-    @param {Event} event TODO
-    */
+
     mouseup: {
         value: function(event) {
             this.hideInspector();
         }
     },
-/**
-    @function
-    */
+
     showInspector: {
         value: function() {
             if (! this.inspectorElement) {
@@ -486,9 +451,7 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
 
         }
     },
-/**
-    @function
-    */
+
     hideInspector: {
         value: function() {
             if (document.getElementById("_montage_logger_inspector")) {
@@ -499,10 +462,7 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
             }
         }
     },
-/**
-    @function
-    @param {Event} event TODO
-    */
+
     handleEvent: {
         enumerable: false,
         value: function(event) {
@@ -513,16 +473,9 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
     }
 });
 
-/**
-    @function module:montage/core/logger.#setupUI
-*/
 var setupUI = function() {
     LoggerUI.create().init();
 }
-/**
-        @type {Statement}
-        @default window
-    */
 if (typeof window !== "undefined") {
     // assigning to a local allows us to feature-test without typeof
     localStorage = window.localStorage;

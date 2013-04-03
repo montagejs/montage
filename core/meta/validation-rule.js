@@ -13,10 +13,10 @@ var PropertyValidationSemantics = require("core/meta/validation-semantics").Prop
 var logger = require("core/logger").logger("blueprint");
 
 /**
- @class module:montage/core/meta/validation-rule.PropertyValidationRule
- @extends module:montage/core/core.Montage
+ @class PropertyValidationRule
+ @extends Montage
  */
-var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Montage, /** @lends module:montage/core/meta/validation-rule.PropertyValidationRule# */ {
+var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Montage, /** @lends PropertyValidationRule# */ {
 
     /**
      Initialize a newly allocated blueprint validation rule.

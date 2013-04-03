@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /*global Element */
 /**
- @module montage/core/core
+ @module montage
  @requires core/shim/object
  @requires core/shim/array
  @requires core/shim/string
@@ -61,18 +61,12 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     SERIALIZABLE = "serializable",
     MODIFY = "modify";
 
-/**
- @private
- */
 var Array_prototype = Array.prototype;
 
-/**
- @private
- */
 var Object_prototype = Object.prototype;
 
 /**
- @class module:montage/core/core.Montage
+ @class Montage
  */
 var Montage = exports.Montage = {};
 
@@ -96,7 +90,7 @@ Montage.deprecate = function deprecate(scope, callback, name, alternative) {
 
 /**
     Creates a new Montage object.
-    @function module:montage/core/core.Montage.create
+    @function Montage.create
     @param {Object} aPrototype The prototype object to create the new object from. If not specified, the prototype is the Montage prototype.
     @param {Object} [propertyDescriptor] An object that contains the initial properties and values for the new object.
     @returns The new object
@@ -153,7 +147,7 @@ extendedPropertyAttributes.forEach(function(name) {
 
 /**
     Defines a property on a Montage object.
-    @function module:montage/core/core.Montage.defineProperty
+    @function Montage.defineProperty
     @param {Object} obj The object on which to define the property.
     @param {String} prop The name of the property to define, or modify.
     @param {Object} descriptor A descriptor object that defines the properties being defined or modified.
@@ -405,7 +399,7 @@ Object.defineProperty(Montage, "defineProperty", {
 
 /**
     Description Defines one or more new properties to an object, or modifies existing properties on the object.
-    @function module:montage/core/core.Montage.defineProperties
+    @function Montage.defineProperties
     @param {Object} obj The object to which the properties are added.
     @param {Object} properties An object that contains one or more property descriptor objects.
 */
@@ -458,7 +452,7 @@ Montage.defineProperty(Montage, "didCreate", {
 
 /**
     Returns the names of serializable properties belonging to Montage object.
-    @function module:montage/core/core.Montage.getSerializablePropertyNames
+    @function Montage.getSerializablePropertyNames
     @param {Object} anObject A Montage object.
     @returns {Array} An array containing the names of the serializable properties belonging to <code>anObject</code>.
 */
@@ -480,7 +474,7 @@ Montage.defineProperty(Montage, "getSerializablePropertyNames", {value: function
 
 /**
     Returns the attribute of a property belonging to an object.
-    @function module:montage/core/core.Montage.getPropertyAttribute
+    @function Montage.getPropertyAttribute
     @param {Object} anObject A object.
     @param {String} propertyName The name of a property belonging to <code>anObject</code>.
     @param {String} attributeName The name of a property's attribute.
@@ -497,7 +491,7 @@ Montage.defineProperty(Montage, "getPropertyAttribute", {value: function(anObjec
 }});
 
 /**
-    @function module:montage/core/core.Montage.getPropertyAttributes
+    @function Montage.getPropertyAttributes
     @param {Object} anObject An object.
     @param {String} attributeName The attribute name.
     @returns {Object} TODO getPropertyAttributes returns description
@@ -529,7 +523,7 @@ var _functionInstanceMetadataDescriptor = {
 
 /**
     Get the metadata Montage has on the given object
-    @function module:montage/core/core.Montage.getInfoForObject
+    @function Montage.getInfoForObject
     @param {Object} object An object.
     @returns {Object} object._montage_metadata
 */
@@ -647,7 +641,7 @@ Montage.defineProperty(Montage, "identifier", {
 
 /**
     Returns true if two objects are equal, otherwise returns false.
-    @function module:montage/core/core.Montage.equals
+    @function Montage.equals
     @param {Object} anObject The object to compare for equality.
     @returns {Boolean} Returns <code>true</code> if the calling object and
     <code>anObject</code> are identical and their <code>uuid</code> properties
@@ -664,7 +658,7 @@ Object.defineProperty(Montage, "equals", {
     This method calls the method named with the identifier prefix if it exists.
     Example: If the name parameter is "shouldDoSomething" and the caller's identifier is "bob", then
     this method will try and call "bobShouldDoSomething"
-    @function module:montage/core/core.Montage.callDelegateMethod
+    @function Montage.callDelegateMethod
     @param {string} name
 */
 Object.defineProperty(Montage, "callDelegateMethod", {

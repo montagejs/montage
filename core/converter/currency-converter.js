@@ -40,7 +40,8 @@ var numericValueToString = require("core/converter/number-converter").numericVal
 var NumberConverter = require("core/converter/number-converter").NumberConverter;
 /**
  Formats a number as a human-readable currency value.
- @function module:montage/core/converter/currency-converter.#formatCurrency
+ @private
+ @function #formatCurrency
  @param {Property} value
  @param {String} currency
  @param {Number} decimals
@@ -58,14 +59,14 @@ var formatCurrency = function(value, currency, decimals, useParensForNegative) {
     return stringValue;
 };
 /**
- @class module:montage/core/converter/currency-converter.CurrencyConverter
+ @class CurrencyConverter
  @classdesc Formats a value as a currency.
- @extends module:montage/core/converter/number-converter.NumberConverter
+ @extends NumberConverter
  */
-exports.CurrencyConverter = Montage.create(NumberConverter, /** @lends module:montage/core/converter.CurrencyConverter# */ {
+exports.CurrencyConverter = Montage.create(NumberConverter, /** @lends CurrencyConverter# */ {
 
     /**
-        @type {Property}
+        @type {String}
         @default {String} '$'
     */
     currency: {
@@ -73,7 +74,7 @@ exports.CurrencyConverter = Montage.create(NumberConverter, /** @lends module:mo
     },
 
     /**
-        @type {Property}
+        @type {Number}
         @default {Number} 2
     */
     decimals: {
@@ -81,7 +82,7 @@ exports.CurrencyConverter = Montage.create(NumberConverter, /** @lends module:mo
     },
 
     /**
-        @type {Property}
+        @type {Boolean}
         @default {Boolean} false
     */
     useParensForNegative: {
@@ -90,12 +91,12 @@ exports.CurrencyConverter = Montage.create(NumberConverter, /** @lends module:mo
 
     /**
      @function
-     @param {String} v
-     @returns {string} The formatted currency value.
+     @param {Number} amount
+     @returns {String} The formatted currency value.
      */
     convert: {
-        value: function(v) {
-            return formatCurrency(v, this.currency, this.decimals, this.useParensForNegative);
+        value: function(amount) {
+            return formatCurrency(amount, this.currency, this.decimals, this.useParensForNegative);
         }
     }
 

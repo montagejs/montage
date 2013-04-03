@@ -29,9 +29,9 @@ var Defaults = {
 };
 
 /**
- @class module:montage/core/meta/property-blueprint.PropertyBlueprint
+ @class PropertyBlueprint
  */
-exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/core/meta/property-blueprint.PropertyBlueprint# */ {
+exports.PropertyBlueprint = Montage.create(Montage, /** @lends PropertyBlueprint# */ {
 
     /**
      Initialize a newly allocated property blueprint.
@@ -160,7 +160,6 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
     },
 
     /**
-     Description TODO
      @private
      */
     _cardinality:{
@@ -181,7 +180,6 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
     },
 
     /**
-     Description TODO
      @type {Property}
      @default {Boolean} false
      */
@@ -190,7 +188,6 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
     },
 
     /**
-     Description TODO
      @type {Property}
      @default {Boolean} false
      */
@@ -199,7 +196,6 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
     },
 
     /**
-     Description TODO
      @type {Property}
      @default {Boolean} false
      */
@@ -208,7 +204,6 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
     },
 
     /**
-     Description TODO
      @type {Property}
      @default {Boolean} false
      */
@@ -230,7 +225,6 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
     },
 
     /**
-     Description TODO
      @type {Property}
      @default {Boolean} false
      */
@@ -241,7 +235,6 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
     },
 
     /**
-     Description TODO
      @type {Property}
      @default {String} "string"
      */
@@ -250,7 +243,6 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
     },
 
     /**
-     Description TODO
      @type {Property}
      @default {String} "string"
      */
@@ -259,7 +251,6 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
     },
 
     /**
-     Description TODO
      @type {Property}
      @default {Object} null
      */
@@ -268,7 +259,6 @@ exports.PropertyBlueprint = Montage.create(Montage, /** @lends module:montage/co
     },
 
     /**
-     Description TODO
      @type {Property}
      @default {Object} null
      */

@@ -34,11 +34,11 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 var Montage = require("montage").Montage;
 /**
- @class module:montage/core/geometry/point.Point
- @extends module:montage/core/core.Montage
+ @class Point
+ @extends Montage
  */
 
-exports.Point = Montage.create(Montage, /** @lends module:montage/core/geometry/point.Point# */ {
+exports.Point = Montage.create(Montage, /** @lends Point# */ {
     init: {
         enumerable: false,
         value: function(x, y) {

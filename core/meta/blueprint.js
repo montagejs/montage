@@ -29,16 +29,15 @@ var Defaults = {
 };
 
 /**
- @class module:montage/core/meta/blueprint.Blueprint
+ @class Blueprint
  */
-var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:montage/core/meta/blueprint.Blueprint# */ {
+var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint# */ {
 
     FileExtension: {
         value: "-blueprint.json"
     },
 
     /**
-     Description TODO
      @function
      @param {String} name TODO
      @returns this.initWithNameAndModuleId(name, null)
@@ -50,7 +49,6 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
     },
 
     /**
-     Description TODO
      @function
      @param {String} name TODO
      @param {String} moduleId TODO
@@ -374,7 +372,6 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
     },
 
     /**
-     Description TODO
      @type {Property}
      @default null
      */
@@ -428,7 +425,6 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
     },
 
     /**
-     Description TODO
      @type {Property}
      @default null
      */
@@ -437,7 +433,6 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
     },
 
     /**
-     Description TODO
      @type {Property}
      @default null
      */
@@ -456,7 +451,6 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
     },
 
     /**
-     Description TODO
      @type {Property}
      @default {Array} new Array()
      */
@@ -466,7 +460,6 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
     },
 
     /**
-     Description TODO
      @type {Property}
      @default {Array} new Array()
      */
@@ -482,7 +475,6 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
     },
 
     /**
-     Description TODO
      @private
      */
     _propertyBlueprintsTable: {
@@ -632,7 +624,6 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
     },
 
     /**
-     Description TODO
      @function
      @param {String} name TODO
      @returns property blueprint

@@ -39,11 +39,11 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     logger = require("core/logger").logger("condition");
 /**
- @class module:"montage/ui/condition.reel".Condition
- @extends module:montage/ui/component.Component
+ @class Condition
+ @extends Component
  */
 
-exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/condition.reel".Condition# */ {
+exports.Condition = Montage.create(Component, /** @lends Condition# */ {
 
 /**
     The Condition component does not have an HTML template, so this value is set to false.
@@ -54,7 +54,6 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
         value: false
     },
 /**
-  Description TODO
   @private
 */
     _condition: {
@@ -65,7 +64,6 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
         value: null
     },
 /**
-        Description TODO
         @type {Function}
         @default null
     */
@@ -132,7 +130,6 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
     },
 
     /**
-    Description TODO
     @function
     */
     draw: {

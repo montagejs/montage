@@ -36,10 +36,10 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     logger = require("core/logger").logger("enum");
 /**
- @class module:montage/core/enum.Enum
- @extends module:montage/core/core.Montage
+ @class Enum
+ @extends Montage
  */
-exports.Enum = Montage.create(Montage, /** @lends module:montage/core/enum.Enum# */ {
+exports.Enum = Montage.create(Montage, /** @lends Enum# */ {
 /**
   @private
 */

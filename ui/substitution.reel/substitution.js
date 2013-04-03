@@ -40,9 +40,9 @@ var Montage = require("montage").Montage,
     Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("substitution");
 /**
- @class module:"montage/ui/substitution.reel".Substitution
+ @class Substitution
  */
-exports.Substitution = Montage.create(Slot, /** @lends module:"montage/ui/substitution.reel".Substitution# */ {
+exports.Substitution = Montage.create(Slot, /** @lends Substitution# */ {
 
     hasTemplate: {
         enumerable: false,

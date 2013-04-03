@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /**
     Defines extensions to the intrinsic <code>String</code> object.
-    @see [String class]{@link external:String}
+    @see {external:String}
 	@module montage/core/extras/string
 */
 

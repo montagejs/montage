@@ -37,10 +37,10 @@ var Montage = require("montage").Montage;
 var Converter = require("core/converter/converter").Converter;
 
 /**
- @class module:montage/core/converter/lower-case-converter.LowerCaseConverter
+ @class LowerCaseConverter
  @classdesc Converts a string to lowercase.
  */
-exports.LowerCaseConverter = Montage.create(Converter, /** @lends module:montage/core/converter/lower-case-converter.LowerCaseConverter# */{
+exports.LowerCaseConverter = Montage.create(Converter, /** @lends LowerCaseConverter# */{
 
     _convert: {
         value: function(v) {

@@ -61,9 +61,9 @@ var wrapProperty = function(obj, key) {
     });
 };
 /**
-    @class module:montage/core/event/mutable-event.MutableEvent
+    @class MutableEvent
 */
-var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends module:montage/core/event/mutable-event.MutableEvent# */ {
+var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends MutableEvent# */ {
     /**
      @function
      @param {Event} event The original event.

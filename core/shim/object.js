@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
     Defines standardized shims for the intrinsic <code>Object</code>.
-    @see [Object class]{@link external:Object}
+    @see {external:Object}
     @module montage/core/shim/object
 */
 /**

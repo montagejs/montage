@@ -391,8 +391,10 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
  * document, prefering to inject or retract iterations between ones that remain
  * in their respective order, or even just rebind existing iterations to
  * alternate content instead of injecting and retracting in the same position.
+ * @class Repetition
+ * @extends Component
  */
-var Repetition = exports.Repetition = Montage.create(Component, {
+var Repetition = exports.Repetition = Montage.create(Component, /** @lends Repetition# */{
 
     // For the creator:
     // ----

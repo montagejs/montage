@@ -41,8 +41,8 @@ var Montage = require("montage").Montage,
 
 /**
     The base class for all text-based input components. You typically won't create instances of this prototype.
-    @class module:montage/ui/base/text-input.TextInput
-    @extends module:montage/ui/native-control.NativeControl
+    @class TextInput
+    @extends NativeControl
     @see {module:"matte/ui/input-date.reel".DateInput}
     @see module:"matte/ui/input-text.reel".InputText
     @see module:"matte/ui/input-number.reel".InputNumber
@@ -50,7 +50,7 @@ var Montage = require("montage").Montage,
     @see module:"matte/ui/textarea.reel".TextArea
 
 */
-var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends module:montage/ui/base/text-input.TextInput# */ {
+var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends TextInput# */ {
 
     acceptsActiveTarget: {
         value: true
@@ -135,7 +135,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
     A reference to a Converter object whose <code>revert()</code> function is invoked when a new value is assigned to the TextInput object's <code>value</code> property. The revert() function attempts to transform the newly assigned value into a "typed" data property. For instance, a DateInput component could assign a DateConverter object to this property to convert a user-supplied date string into a standard date format.
     @type {Converter}
     @default null
-    @see {@link module:montage/core/converter.Converter}
+    //@see {@link Converter}
 */
     converter:{
         value: null
@@ -274,9 +274,8 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
         }
     },
 /**
-    Description TODO
     @function
-    @param {Event Handler} event TODO
+    @param {Event} event TODO
     */
     handleChange: {
         enumerable: false,
@@ -286,9 +285,8 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
         }
     },
 /**
-    Description TODO
     @function
-    @param {Event Handler} event TODO
+    @param {Event} event TODO
     */
     handleBlur: {
         enumerable: false,
@@ -297,9 +295,8 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
         }
     },
 /**
-    Description TODO
     @function
-    @param {Event Handler} event TODO
+    @param {Event} event TODO
     */
     handleFocus: {
         enumerable: false,

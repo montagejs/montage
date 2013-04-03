@@ -83,7 +83,7 @@ if (typeof window.Touch === "undefined" && "ontouchstart" in window) {
  HTML element event handler UUID
  @member external:Element#eventHandlerUUID
  */
-Montage.defineProperty(Element.prototype, "eventHandlerUUID", /** @lends module:montage/core/event/event-manager.defineProperty */ {
+Montage.defineProperty(Element.prototype, "eventHandlerUUID", /** @lends defineProperty */ {
     value: undefined,
     enumerable: false
 });
@@ -157,9 +157,9 @@ var NONE = Event.NONE,
     FUNCTION_TYPE = "function";
 
 /**
- @class module:montage/core/event/event-manager.EventManager
+ @class EventManager
  */
-var EventManager = exports.EventManager = Montage.create(Montage,/** @lends module:montage/core/event/event-manager.EventManager# */ {
+var EventManager = exports.EventManager = Montage.create(Montage,/** @lends EventManager# */ {
 
     // Utility
     eventDefinitions: {

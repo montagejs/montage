@@ -8,22 +8,20 @@ var Montage = require("montage").Montage,
 
 
 /**
- @module montage/composer/key-composer
+ * @module montage/composer/key-composer
  */
-
-
-/* Event type dispatched by KeyComposer */
+// Event type dispatched by KeyComposer
 var KEYPRESS_EVENT_TYPE = "keyPress",
     LONGKEYPRESS_EVENT_TYPE = "longKeyPress",
     KEYRELEASE_EVENT_TYPE = "keyRelease";
 
 
 /**
- @class module:montage/composer/key-composer.KeyComposer
- @classdesc Create a virtual key composed of none or several key modifiers (shift, control, alt and meta) and one native key.
- @extends module:montage/composer/composer.Composer
+ * @class KeyComposer
+ * @classdesc Create a virtual key composed of none or several key modifiers (shift, control, alt and meta) and one native key.
+ * @extends Composer
  */
-var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends module:montage/composer/key-composer.KeyComposer# */ {
+var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends KeyComposer# */ {
 
     /**
     * @private
@@ -282,10 +280,10 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
 
 
 /**
- @class module:montage/composer/key-composer.KeyManagerProxy
- @classdesc Provide a proxy for lazy load of module:montage/core/event/key-manager.KeyManager.
- @extends module:montage/core/core.Montage
- @private
+ * @class KeyManagerProxy
+ * @classdesc Provide a proxy for lazy load of KeyManager.
+ * @extends Montage
+ * @private
  */
 var _keyManagerProxy= null;
 

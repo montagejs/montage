@@ -223,11 +223,11 @@ var numericValueToString = exports.numericValueToString = function(val, opt_deci
 
 
 /**
- @class module:montage/core/converter/number-converter.NumberValidator
+ @class NumberValidator
  @classdesc Validates that a string can be represented as a numeric value, and returns the numeric value.
- @extends module:montage/core/converter.Validator
+ @extends Validator
  */
-var NumberValidator = exports.NumberValidator = Montage.create(Validator, /** @lends montage/core/converter/number-converter.NumberValidator# */ {
+var NumberValidator = exports.NumberValidator = Montage.create(Validator, /** @lends NumberValidator# */ {
 
     /**
      Indicates whether floating point values are allowed.<br>
@@ -279,10 +279,10 @@ var NumberValidator = exports.NumberValidator = Montage.create(Validator, /** @l
 
 
 /**
- @class module:montage/core/converter/number-converter.NumberConverter
+ @class NumberConverter
  @classdesc Formats a number for easier readability.
  */
-var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @lends montage/core/converter/number-converter.NumberConverter# */ {
+var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @lends NumberConverter# */ {
 
     /**
         @type {Property}

@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
     Defines extensions to intrinsic <code>Function</code> object.
-    @see [Function class]{@link external:Function}
+    @see {external:Function}
     @module montage/core/extras/function
 */
 

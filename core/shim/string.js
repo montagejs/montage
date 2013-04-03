@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /**
     Defines standardized shims for the intrinsic String object.
-    @see [String class]{@link external:String}
+    @see {external:String}
     @module montage/core/shim/string
 */
 

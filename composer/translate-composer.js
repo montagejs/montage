@@ -8,15 +8,16 @@
 var Montage = require("montage").Montage,
     Composer = require("composer/composer").Composer,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
-/**
-    Provides translateX and translateY properties that are updated when the
-    user clicks/touches and drags on the given element. Should be used wherever
-    a user interacts with an element by dragging it.
 
-    @class module:montage/composer/translate-composer.TranslateComposer
-    @extends module:montage/composer/composer.Composer
-*/
-var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/composer/translate-composer.TranslateComposer# */ {
+/**
+ * Provides translateX and translateY properties that are updated when the
+ * user clicks/touches and drags on the given element. Should be used wherever
+ * a user interacts with an element by dragging it.
+ *
+ * @class TranslateComposer
+ * @extends Composer
+ */
+var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** @lends TranslateComposer# */ {
 
     /**
     These elements perform some native action when clicked/touched and so we

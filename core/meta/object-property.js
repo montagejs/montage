@@ -14,12 +14,11 @@ var Binder = require("core/meta/blueprint").Binder;
 var logger = require("core/logger").logger("object-property");
 
 /**
- @class module:montage/core/meta/object-property.ObjectProperty
- @extends module:montage/core/core.Montage
+ @class ObjectProperty
+ @extends Montage
  */
-var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends module:montage/core/meta/object-property.ObjectProperty# */ {
+var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends ObjectProperty# */ {
     /**
-     Description TODO
      @function
      @returns itself
      */
@@ -117,7 +116,6 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
         }
     },
     /**
-     Description TODO
      @function
      @param {Property} prototype TODO
      @param {Object} attribute TODO
@@ -151,7 +149,6 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
     },
 
     /**
-     Description TODO
      @function
      @param {Property} prototype TODO
      @param {Object} attribute TODO
@@ -220,7 +217,6 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
     },
 
     /**
-     Description TODO
      @function
      @param {Property} prototype TODO
      @param {Object} attribute TODO
@@ -269,7 +265,6 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
 
 
     /**
-     Description TODO
      @function
      @param {Property} prototype TODO
      @param {Object} attribute TODO
@@ -285,7 +280,6 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
     },
 
     /**
-     Description TODO
      @function
      @param {Property} prototype TODO
      @param {Object} attribute TODO
@@ -327,7 +321,6 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
     },
 
     /**
-     Description TODO
      @function
      @param {Property} prototype TODO
      @param {Object} attribute TODO

@@ -9,21 +9,21 @@ var Montage = require("montage").Montage,
     Composer = require("composer/composer").Composer,
     MutableEvent = require("core/event/mutable-event").MutableEvent;
 /**
-    @class module:montage/composer/press-composer.PressComposer
-    @extends module:montage/composer/composer.Composer
-    @fires pressStart
-    @fires press
-    @fires longPress
-    @fires pressCancel
-*/
-var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends module:montage/composer/press-composer.PressComposer# */ {
+ * @class PressComposer
+ * @extends Composer
+ * @fires pressStart
+ * @fires press
+ * @fires longPress
+ * @fires pressCancel
+ */
+var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends PressComposer# */ {
 
     /**
         Dispatched when a press begins. It is ended by either a {@link press} or
         {@link pressCancel} event.
 
         @event pressStart
-        @memberof module:montage/composer/press-composer.PressComposer
+        @memberof PressComposer
         @param {PressEvent} event
     */
 
@@ -31,7 +31,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
         Dispatched when a press is complete.
 
         @event press
-        @memberof module:montage/composer/press-composer.PressComposer
+        @memberof PressComposer
         @param {PressEvent} event
     */
 
@@ -39,7 +39,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
         Dispatched when a press lasts for longer than (@link longPressThreshold}
 
         @event longPress
-        @memberof module:montage/composer/press-composer.PressComposer
+        @memberof PressComposer
         @param {PressEvent} event
     */
 
@@ -49,7 +49,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
         came in.
 
         @event pressCancel
-        @memberof module:montage/composer/press-composer.PressComposer
+        @memberof PressComposer
         @param {PressEvent} event
     */
 
@@ -301,7 +301,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
 
     @function
     @private
-    @returns {Number,Boolean} The index of the matching touch, or false
+    @returns {Number|Boolean} The index of the matching touch, or false
     */
     _changedTouchisObserved: {
         value: function(changedTouches) {

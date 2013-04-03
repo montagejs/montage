@@ -1,22 +1,19 @@
 /**
-	@module montage/composer/swipe-composer
+    @module montage/composer/swipe-composer
     @requires montage
     @requires montage/composer/composer
 */
 var Montage = require("montage").Montage,
     Composer = require("composer/composer").Composer;
-/**
- @module montage/composer/swipe-composer
- */
-/**
- @class module:montage/composer/swipe-composer.SwipeComposer
- @classdesc Detects a swipe gesture.
- @extends module:montage/composer/composer.Composer
- */
-exports.SwipeComposer = Montage.create(Composer, /** @lends module:montage/composer/swipe-composer.SwipeComposer# */ {
 
 /**
-    Description TODO
+ * @class SwipeComposer
+ * @classdesc Detects a swipe gesture.
+ * @extends Composer
+ */
+exports.SwipeComposer = Montage.create(Composer, /** @lends SwipeComposer# */ {
+
+/**
     @function
     @param {Element}
     */
@@ -27,7 +24,6 @@ exports.SwipeComposer = Montage.create(Composer, /** @lends module:montage/compo
     },
 
 /**
-    Description TODO
     @function
     */
     unload: {

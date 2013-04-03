@@ -35,10 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage;
 
 /**
-    @class module:montage/core/state-chart.State
-    @extends module:montage/core/core.Montage
+    @class State
+    @extends Montage
 */
-var State = exports.State = Montage.create(Montage, /** @lends module:montage/core/state-chart.State# */{
+var State = exports.State = Montage.create(Montage, /** @lends State# */{
 
     _stateChart: {
         enumerable: false,
@@ -245,9 +245,9 @@ var State = exports.State = Montage.create(Montage, /** @lends module:montage/co
 
 });
 /**
-    @class module:montage/core/state-chart.StateChart
+    @class StateChart
 */
-var StateChart = exports.StateChart = Montage.create(Montage,/** @lends module:montage/core/state-chart.StateChart# */ {
+var StateChart = exports.StateChart = Montage.create(Montage,/** @lends StateChart# */ {
 /**
         @type {Property}
         @default {String} null

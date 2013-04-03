@@ -52,7 +52,7 @@ var trim = exports.trim = function(str) {
     return str.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
 };
 /**
-    @class module:montage/core/converter/trim-converter.TrimConverter
+    @class TrimConverter
     @classdesc Trims a string of white space.
     @example
     <caption>Removes leading and trailing white space from a string.</caption>
@@ -63,7 +63,7 @@ var trim = exports.trim = function(str) {
     console.log("After trim: " + trimConverter.convert(str));
     // After trim: Hello World
 */
-exports.TrimConverter = Montage.create(Converter, /** @lends module:montage/core/converter/trim-converter.TrimConverter# */ {
+exports.TrimConverter = Montage.create(Converter, /** @lends TrimConverter# */ {
     /**
      @private
      */

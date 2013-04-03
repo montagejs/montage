@@ -39,8 +39,8 @@ var Converter = require('core/converter/converter').Converter;
 /**
     Inverts the value of a boolean value.
 
-    @class module:montage/core/converter/invert-converter.InvertConverter
-    @extends module:montage/core/converter.Converter
+    @class InvertConverter
+    @extends Converter
 */
 var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
     convert: {

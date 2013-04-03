@@ -42,14 +42,13 @@ var EMPTY_STRING_FUNCTION = function() { return ""; };
 var reLanguageTagValidator = /^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/;
 
 /**
-    @class module:montage/core/localizer.Localizer
-    @extends module:montage/core/core.Montage
+    @class Localizer
+    @extends Montage
 */
-var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:montage/core/localizer.Localizer# */ {
+var Localizer = exports.Localizer = Montage.create(Montage, /** @lends Localizer# */ {
 
     /**
         Initialize the localizer.
-
         @function
         @param {String} [locale] The RFC-5646 language tag this localizer should use. Defaults to defaultLocalizer.locale
         @returns {Localizer} The Localizer object it was called on.
@@ -64,13 +63,11 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
 
     /**
         Initialize the object
-
         @function
         @param {String} locale The RFC-5646 language tag this localizer should use.
         @param {Object} messages A map from keys to messages. Each message should either be a string or an object with a "message" property.
         @returns {Localizer} The Localizer object it was called on.
     */
-
     initWithMessages: {
         value: function(locale, messages) {
             this.locale = locale;
@@ -82,7 +79,6 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
 
     /**
         The MessageFormat object to use.
-
         @type {MessageFormat}
         @default null
     */
@@ -128,12 +124,11 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
     _locale: {
         value: null
     },
+
     /**
         A RFC-5646 language-tag specifying the locale of this localizer.
-
-        Setting the locale will create a new {@link messageFormat} object
+        Setting the locale will create a new {@link MessageFormat} object
         with the new locale.
-
         @type {String}
         @default null
     */
@@ -155,6 +150,7 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
     _availableLocales: {
         value: null
     },
+
     /**
         A promise for the locales available in this package. Resolves to an
         array of strings, each containing a locale tag.
@@ -176,14 +172,13 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
     _require: {
         value: (typeof global !== "undefined") ? global.require : (typeof window !== "undefined") ? window.require : null
     },
+
     /**
         The require function to use in {@link loadMessages}.
-
         By default this is set to the global require, meaning that messages
         will be loaded from the root of the application. To load messages
         from the root of your package set this to the require function from
         any class in the package.
-
         @type Function
         @default global require | null
     */
@@ -203,6 +198,7 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
     __manifest: {
         value: null
     },
+
     /**
         Promise for the manifest
         @private
@@ -352,7 +348,7 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
         precedence over later ones.
         @private
         @function
-        @param {Array[Object]} localesMessages
+        @param {Array<Object>} localesMessages
         @returns {Object} An object mapping messages keys to the messages
         @example
         [{hi: "Good-day"}, {hi: "Hello", bye: "Bye"}]
@@ -520,10 +516,10 @@ defaultLocalizer.localize("hello", "Hello").then(function (hi) {
 });
 
 /**
-    @class module:montage/core/localizer.DefaultLocalizer
-    @extends module:montage/core/localizer.Localizer
+    @class DefaultLocalizer
+    @extends Localizer
 */
-var DefaultLocalizer = Montage.create(Localizer, /** @lends module:montage/core/localizer.DefaultLocalizer# */ {
+var DefaultLocalizer = Montage.create(Localizer, /** @lends DefaultLocalizer# */ {
     init: {
         value: function() {
             var defaultLocale = this.callDelegateMethod("getDefaultLocale");
@@ -550,7 +546,6 @@ var DefaultLocalizer = Montage.create(Localizer, /** @lends module:montage/core/
 
     /**
         Delegate to get the default locale.
-
         Should implement a <code>getDefaultLocale</code> method that returns
         a language-tag string that can be passed to {@link locale}
         @type Object
@@ -604,22 +599,16 @@ var DefaultLocalizer = Montage.create(Localizer, /** @lends module:montage/core/
 });
 
 /**
-    The default localizer.
-
-    <p>The locale of the defaultLocalizer is determined by following these steps:</p>
-
-    <ol>
-        <li>If localStorage exists, use the value stored in "montage_locale" (LOCALE_STORAGE_KEY)</li>
-        <li>Otherwise use the value of navigator.userLanguage (Internet Explorer)</li>
-        <li>Otherwise use the value of navigator.language (other browsers)</li>
-        <li>Otherwise fall back to "en"</li>
-    </ol>
-
-    <p>defaultLocalizer.locale can be set and if localStorage exists then the value will be saved in
-    "montage_locale" (LOCALE_STORAGE_KEY).</p>
-
-    @type {module:montage/core/localizer.DefaultLocalizer}
-    @static
+ * The default localizer.
+ * The locale of the defaultLocalizer is determined by following these steps:
+ * - If localStorage exists, use the value stored in "montage_locale" (LOCALE_STORAGE_KEY)
+ * - Otherwise use the value of navigator.userLanguage (Internet Explorer)
+ * - Otherwise use the value of navigator.language (other browsers)
+ * - Otherwise fall back to "en"
+ * defaultLocalizer.locale can be set and if localStorage exists then the value will be saved in
+ * "montage_locale" (LOCALE_STORAGE_KEY).
+ * @type {DefaultLocalizer}
+ * @static
 */
 var defaultLocalizer = exports.defaultLocalizer = DefaultLocalizer.create().init();
 
@@ -627,7 +616,7 @@ var defaultLocalizer = exports.defaultLocalizer = DefaultLocalizer.create().init
     The localize function from {@link defaultLocalizer} provided for convenience.
 
     @function
-    @see module:montage/core/localizer.Localizer#localize
+    @see Localizer#localize
 */
 exports.localize = defaultLocalizer.localize.bind(defaultLocalizer);
 
@@ -635,10 +624,10 @@ exports.localize = defaultLocalizer.localize.bind(defaultLocalizer);
     Tracks a message function and its data for changes in order to generate a
     localized message.
 
-    @class module:montage/core/localizer.MessageLocalizer
-    @extends module:montage/core/core.Montage
+    @class MessageLocalizer
+    @extends Montage
 */
-var Message = exports.Message = Montage.create(Montage, /** @lends module:montage/core/localizer.MessageLocalizer# */ {
+var Message = exports.Message = Montage.create(Montage, /** @lends MessageLocalizer# */ {
 
     didCreate: {
         value: function() {

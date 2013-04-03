@@ -41,9 +41,9 @@ var Point = require("core/geometry/point").Point,
 
 /**
     @function external:Element#set
-    @param {type-TODO} string
-    @param {type-TODO} string
-    @param {type-TODO} string
+    @param {string} string
+    @param {string} string
+    @param {number} string
 */
 Object.defineProperty(ElementPrototype, "set", {
     value: function(aPropertyPath, value, currentIndex) {

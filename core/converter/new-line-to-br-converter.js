@@ -49,10 +49,10 @@ var newLineToBr = function(str) {
 };
 
 /**
- @class module:montage/core/converter/new-line-to-br-converter.NewLineToBrConverter
+ @class NewLineToBrConverter
  @classdesc Converts a newline to a &lt;br&gt; tag.
  */
-exports.NewLineToBrConverter = Montage.create(Converter, /** @lends module:montage/core/converter/new-line-to-br-converter.NewLineToBrConverter# */{
+exports.NewLineToBrConverter = Montage.create(Converter, /** @lends NewLineToBrConverter# */{
 
     /**
      @private

@@ -20,11 +20,11 @@ var logger = require("core/logger").logger("blueprint");
 var _binderManager = null;
 
 /**
- @class module:montage/core/meta/binder.Binder
+ @class Binder
  @classdesc A blueprint binder is a collection of of blueprints for a specific access type. It also includes the connection information.
- @extends module:montage/core/core.Montage
+ @extends Montage
  */
-var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/core/meta/binder.Binder# */ {
+var Binder = exports.Binder = Montage.create(Montage, /** @lends Binder# */ {
 
     /**
       didCreate method
@@ -42,7 +42,6 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
     },
 
     /**
-     Description TODO
      @function
      @param {String} name TODO
      @returns itself
@@ -111,7 +110,6 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
     },
 
     /**
-     Description TODO
      @private
      */
     _blueprintForPrototypeTable: {
@@ -201,7 +199,6 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
     },
 
     /**
-     Description TODO
      @function
      @param {Array} blueprint TODO
      @returns blueprint
@@ -226,7 +223,6 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
     },
 
     /**
-     Description TODO
      @function
      @param {Array} blueprint TODO
      @returns blueprint
@@ -248,7 +244,6 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends module:montage/
     },
 
     /**
-     Description TODO
      @function
      @param {String} name TODO
      @param {String} moduleID TODO

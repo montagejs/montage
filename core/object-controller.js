@@ -34,13 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 var Montage = require("montage").Montage;
 /**
- @class module:montage/core/object-controller.ObjectController
+ @class ObjectController
  @classdesc Generic object controller.
- @extends module:montage/core/core.Montage
+ @extends Montage
  */
-var ObjectController = exports.ObjectController = Montage.create(Montage, /** @lends module:montage/core/object-controller.ObjectController# */ {
+var ObjectController = exports.ObjectController = Montage.create(Montage, /** @lends ObjectController# */ {
 /**
-        Description TODO
         @type {Property}
         @default null
     */
@@ -49,7 +48,6 @@ var ObjectController = exports.ObjectController = Montage.create(Montage, /** @l
         value: null
     },
  /**
-    Description TODO
     @function
     @returns this.objectPrototype.create()
     */
@@ -61,7 +59,6 @@ var ObjectController = exports.ObjectController = Montage.create(Montage, /** @l
     },
 
    /**
-    Description TODO
     @function
     @param {Property} content TODO
     @returns itself
@@ -73,7 +70,6 @@ var ObjectController = exports.ObjectController = Montage.create(Montage, /** @l
         }
     },
     /**
-        Description TODO
         @type {Property}
         @default null
     */

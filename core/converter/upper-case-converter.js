@@ -38,10 +38,10 @@ var Converter = require('core/converter/converter').Converter;
 
 // uppercase formatter
 /**
- @class module:montage/core/converter/upper-case-converter.UpperCaseConverter
+ @class UpperCaseConverter
  @classdesc Converts a string to upper-case.
  */
-exports.UpperCaseConverter = Montage.create(Converter, /** @lends module:montage/core/converter/upper-case-converter.UpperCaseConverter# */ {
+exports.UpperCaseConverter = Montage.create(Converter, /** @lends UpperCaseConverter# */ {
     /**
      @private
      */
