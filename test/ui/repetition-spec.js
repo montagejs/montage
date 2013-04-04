@@ -743,29 +743,58 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
             });
         });
 
-        describe("Repetition content change", function() {
+        describe("Repetition innerTemplate change", function() {
             it("should rebuild the repetition", function() {
-                var list11 = querySelector(".list11").component;
+                var repetition = querySelector(".list11").component;
 
                 runs(function () {
-                    var content = list11.element.children;
+                    var content = repetition.element.children;
                     expect(content.length).toBe(3);
                     for (var i = 0; i < content.length; i++) {
                         expect(content[i].textContent).toBe("X");
                     }
 
-                    var newTemplate = list11.innerTemplate.clone();
+                    var newTemplate = repetition.innerTemplate.clone();
 
                     newTemplate.document.querySelector("li").textContent = "Y";
 
-                    list11.innerTemplate = newTemplate;
+                    repetition.innerTemplate = newTemplate;
                 });
-                testPage.waitForComponentDraw(list11);
+                testPage.waitForComponentDraw(repetition);
                 runs(function () {
-                    var content = list11.element.children;
+                    var content = repetition.element.children;
                     expect(content.length).toBe(3);
                     for (var i = 0; i < content.length; i++) {
                         expect(content[i].textContent).toBe("Y");
+                    }
+                });
+            });
+
+            it("should rebuild the repetition when set twice in succession", function() {
+                var repetition = querySelector(".list11a").component;
+
+                runs(function () {
+                    var content = repetition.element.children;
+                    expect(content.length).toBe(3);
+                    for (var i = 0; i < content.length; i++) {
+                        expect(content[i].textContent).toBe("X");
+                    }
+
+                    var newTemplateA = repetition.innerTemplate.clone();
+                    var newTemplateB = repetition.innerTemplate.clone();
+
+                    newTemplateA.document.querySelector("li").textContent = "Y";
+                    newTemplateB.document.querySelector("li").textContent = "Z";
+
+                    repetition.innerTemplate = newTemplateA;
+                    repetition.innerTemplate = newTemplateB;
+                });
+                testPage.waitForComponentDraw(repetition);
+                runs(function () {
+                    var content = repetition.element.children;
+                    expect(content.length).toBe(3);
+                    for (var i = 0; i < content.length; i++) {
+                        expect(content[i].textContent).toBe("Z");
                     }
                 });
             });
