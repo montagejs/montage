@@ -1894,7 +1894,7 @@ describe("events/change-notification-spec", function() {
                 object.foo = 1;
                 expect(true).toBe(false);
             } catch(ex) {
-                expect(ex.type).toBe("stack_overflow");
+                expect(ex.constructor).toBe(RangeError);
             }
         });
 
