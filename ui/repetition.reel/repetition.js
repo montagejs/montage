@@ -797,10 +797,13 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends Repet
             // children will be purged on first draw.  We use the innerTemplate
             // as the iteration template and replicate it for each iteration
             // instead of using the initial DOM and components.
+            var childComponents = this.childComponents;
             var childComponent;
+            var ix = childComponents.length - 1;
             // pop() each component instead of shift() to avoid bubbling the
             // indexes of each child component on every iteration.
-            while ((childComponent = this.childComponents.pop())) {
+            while ((childComponent = childComponents[ix--])) {
+                childComponent.detachFromParentComponent();
                 childComponent.needsDraw = false;
                 childComponent.cleanupDeletedComponentTree(true); // cancel bindings, permanent
             }
@@ -869,7 +872,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends Repet
                 owner = this,
                 argumentsTemplate,
                 collisionTable,
-                reverseCollisionTable,
                 externalLabels,
                 objects,
                 instances,
