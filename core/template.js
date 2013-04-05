@@ -291,9 +291,9 @@ var Template = Montage.create(Montage, {
             .then(function(objects) {
                 var resources;
 
-                part.stopActingAsTopComponent();
                 part.objects = objects;
                 self._invokeDelegates(part, instances);
+                part.stopActingAsTopComponent();
 
                 resources = self.getResources();
                 if (!resources.resourcesLoaded() && resources.hasResources()) {
