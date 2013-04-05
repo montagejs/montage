@@ -49,7 +49,7 @@ Require.read = function (url) {
     }
 
     function onerror() {
-        response.reject("Can't XHR " + JSON.stringify(url));
+        response.reject(new Error("Can't XHR " + JSON.stringify(url)));
     }
 
     try {
@@ -174,7 +174,7 @@ Require.ScriptLoader = function (config) {
 
             Require.loadScript(location);
 
-            return getDefinition(hash, module.id).promise
+            return getDefinition(hash, module.id).promise;
         })
         .then(function (definition) {
             delete definitions[hash][module.id];
@@ -191,23 +191,23 @@ Require.ScriptLoader = function (config) {
 var loadPackageDescription = Require.loadPackageDescription;
 Require.loadPackageDescription = function (dependency, config) {
     if (dependency.hash) { // use script injection
+        var definition = getDefinition(dependency.hash, "package.json").promise;
         // the package.json might come in a preloading bundle.  if so, we do not
         // want to issue a script injection.  however, if by the time preloading
         // has finished the package.json has not arrived, we will need to kick off
         // a request for the package.json.load.js script.
         if (!config.preloaded.isResolved()) {
-            config.preloaded.then(function (result) {
-                if (!result.isResolved()) {
+            config.preloaded
+            .then(function (result) {
+                if (!definition.isResolved()) {
                     var location = URL.resolve(dependency.location, "package.json.load.js");
                     Require.loadScript(location);
                 }
-            });
+            })
+            .done();
         }
 
-        return getDefinition(dependency.hash, 'package.json')
-        .promise.then(function (module) {
-            return module.exports;
-        })
+        return definition.get("exports");
     } else {
         // fall back to normal means
         return loadPackageDescription(dependency, config);

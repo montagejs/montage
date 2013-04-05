@@ -37,6 +37,7 @@
         var Promise = (require)("q");
         var URL = (require)("url");
         definition(exports, Promise, URL);
+        (require)("./node");
     } else {
         throw new Error("Can't support require on this platform");
     }
@@ -153,6 +154,8 @@
                     dependees[topId] = true;
                     return deepLoad(depId, topId, loading);
                 }));
+            }, function (error) {
+                module.error = error;
             });
         }
 
@@ -164,9 +167,20 @@
             // check for consistent case convention
             if (module.id !== topId) {
                 throw new Error(
-                    "Can't require " + JSON.stringify(module.id) +
+                    "Can't require module " + JSON.stringify(module.id) +
                     " by alternate spelling " + JSON.stringify(topId)
                 );
+            }
+
+            // check for load error
+            if (module.error) {
+                var error = new Error(
+                    "Can't require module " + JSON.stringify(module.id) +
+                    " via " + JSON.stringify(viaId) +
+                    " because " + module.error.message
+                );
+                error.cause = module.error;
+                throw error;
             }
 
             // handle redirects
@@ -261,14 +275,7 @@
                 var topId = resolve(id, viaId);
                 var module = getModuleDescriptor(id);
                 return deepLoad(topId, viaId)
-                // conconditionally require the module, but if there's an
-                // error, throw it in a separate turn so it gets logged
                 .then(function () {
-                    return require(topId);
-                }, function (error) {
-                    Promise.nextTick(function () {
-                        throw error;
-                    });
                     return require(topId);
                 });
             };
@@ -308,6 +315,16 @@
 
             require.injectPackageDescriptionLocation = function (location, descriptionLocation) {
                 Require.injectPackageDescriptionLocation(location, descriptionLocation, config);
+            };
+
+            require.injectMapping = function (dependency, name) {
+                dependency = normalizeDependency(dependency, config, name);
+                name = name || dependency.name;
+                config.mappings[name] = dependency;
+            };
+
+            require.injectDependency = function (name) {
+                require.injectMapping({name: name}, name);
             };
 
             require.identify = identify;
@@ -754,12 +771,12 @@
         config.mappings = config.mappings || {};
         config.name = config.name;
 
-        var mappings = config.mappings;
-        var prefixes = Object.keys(mappings);
-        var length = prefixes.length;
-
         // finds a mapping to follow, if any
         return function (id, module) {
+            var mappings = config.mappings;
+            var prefixes = Object.keys(mappings);
+            var length = prefixes.length;
+
             if (Require.isAbsolute(id)) {
                 return load(id, module);
             }

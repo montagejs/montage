@@ -1,6 +1,6 @@
 var test = require("test");
-require("a");
 try {
+    require("a");
     require("A");
     test.assert(false, "should fail to require alternate spelling");
 } catch (error) {
