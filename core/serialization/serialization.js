@@ -108,13 +108,36 @@ var Serialization = Montage.create(Montage, {
 
     renameElementReference: {
         value: function(oldId, newId) {
-            var inspector = SerializationInspector.create(),
-                labels = [];
+            var inspector = SerializationInspector.create();
 
             inspector.initWithSerialization(this);
             inspector.visitSerialization(function(node) {
                 if (node.type === "Element" && node.data === oldId) {
                     node.data = newId;
+                }
+            });
+        }
+    },
+
+    renameSerializationLabels: {
+        value: function(labelsTable) {
+            var inspector = SerializationInspector.create();
+
+            inspector.initWithSerialization(this);
+            inspector.visitSerialization(function(node) {
+                if (node.label) {
+                    var label = node.label;
+
+                    if (label in labelsTable) {
+                        node.label = labelsTable[label];
+                    }
+                }
+                if (node.type === "reference") {
+                    var reference = node.data;
+
+                    if (reference in labelsTable) {
+                        node.data = labelsTable[reference];
+                    }
                 }
             });
         }
@@ -168,7 +191,7 @@ var SerializationMerger = Object.create(Montage, {
                 serialization2 = Serialization.create()
                     .initWithString(serializationString2);
 
-                this._replaceLabels(collisionTable, serialization2);
+                serialization2.renameSerializationLabels(collisionTable);
                 labels2 = serialization2.getSerializationLabels();
             }
 
@@ -208,31 +231,6 @@ var SerializationMerger = Object.create(Montage, {
             if (hasCollision) {
                 return collisionTable;
             }
-        }
-    },
-
-    _replaceLabels: {
-        value: function(collisionTable, serialization) {
-            var inspector = SerializationInspector.create(),
-                serializationString = serialization.getSerializationString();
-
-            inspector.initWithSerialization(serialization);
-            inspector.visitSerialization(function(node) {
-                if (node.label) {
-                    var label = node.label;
-
-                    if (label in collisionTable) {
-                        node.label = collisionTable[label];
-                    }
-                }
-                if (node.type === "reference") {
-                    var reference = node.data;
-
-                    if (reference in collisionTable) {
-                        node.data = collisionTable[reference];
-                    }
-                }
-            });
         }
     }
 });
