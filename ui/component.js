@@ -1728,6 +1728,12 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
             var parameterNames = Object.keys(templateParameters),
                 argumentNames;
 
+            // If the template does not have parameters it is up to the
+            // component to use its arguments.
+            if (parameterNames.length === 0) {
+                return;
+            }
+
             if (templateArguments == null) {
                 if (parameterNames.length > 0) {
                     return new Error('No arguments provided for ' +
