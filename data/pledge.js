@@ -35,14 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
  @requires montage/core/logger
  */
 var Montage = require("montage").Montage;
-var Promise = require("core/promise").Promise;
 var logger = require("core/logger").logger("pledge");
 /**
  * A pledge is the promise result of a query. It will eventually resolve into an object or an array of objects from the backing store.
  @class module:montage/data/pledge.Pledge
- @extends module:montage/core/promise.Promise
  */
-var Pledge = exports.Pledge = Montage.create(Promise, /** @lends module:montage/data/pledge.Pledge# */ {
+var Pledge = exports.Pledge = Montage.create(Montage, /** @lends module:montage/data/pledge.Pledge# */ {
 
     /**
      Description TODO
