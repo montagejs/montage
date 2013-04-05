@@ -63,14 +63,16 @@ exports.Text = Montage.create(Component, /** @lends Text# */ {
         value: document.createRange()
     },
 
-    prepareForDraw: {
-        value: function() {
-            var range = this._RANGE;
-            range.selectNodeContents(this.element);
-            range.deleteContents();
-            this._valueNode = document.createTextNode("");
-            range.insertNode(this._valueNode);
-            this.element.classList.add("montage-Text");
+    enterDocument: {
+        value: function(firstTime) {
+            if (firstTime) {
+                var range = this._RANGE;
+                range.selectNodeContents(this.element);
+                range.deleteContents();
+                this._valueNode = document.createTextNode("");
+                range.insertNode(this._valueNode);
+                this.element.classList.add("montage-Text");
+            }
         }
     },
 

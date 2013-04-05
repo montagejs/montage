@@ -135,18 +135,25 @@ exports.Substitution = Montage.create(Slot, /** @lends Substitution# */ {
         }
     },
 
-    prepareForDraw: {
-        value: function() {
+    enterDocument: {
+        value: function(firstTime) {
             var argumentNames;
 
-            Slot.prepareForDraw.apply(this, arguments);
+            Slot.enterDocument.apply(this, arguments);
 
-            argumentNames = this.getDomArgumentNames();
-            for (var i = 0, name; (name = argumentNames[i]); i++) {
-                this._switchElements[name] = this.extractDomArgument(name);
+            if (firstTime) {
+                argumentNames = this.getDomArgumentNames();
+                for (var i = 0, name; (name = argumentNames[i]); i++) {
+                    this._switchElements[name] = this.extractDomArgument(name);
+                }
+
+                this._loadContent(this.switchValue);
+                // TODO: Force the component to update its DOM now because the
+                // updateComponentDom already happened for this draw cycle.
+                // In the future the DrawManager will handle adding and
+                // removing nodes from the DOM at any time before draw().
+                this._updateComponentDom();
             }
-
-            this._loadContent(this.switchValue);
         }
     },
 

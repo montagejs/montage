@@ -70,15 +70,17 @@ exports.Double = Montage.create(Component, {
         value: document.createRange()
     },
 
-    prepareForDraw: {
-        value: function() {
-            var range = this._RANGE;
-            range.selectNodeContents(this.element);
-            range.deleteContents();
-            this._valueNode = document.createTextNode("");
-            range.insertNode(this._valueNode);
-            this._secondValueNode = document.createTextNode("");
-            range.insertNode(this._secondValueNode);
+    enterDocument: {
+        value: function(firstTime) {
+            if (firstTime) {
+                var range = this._RANGE;
+                range.selectNodeContents(this.element);
+                range.deleteContents();
+                this._valueNode = document.createTextNode("");
+                range.insertNode(this._valueNode);
+                this._secondValueNode = document.createTextNode("");
+                range.insertNode(this._secondValueNode);
+            }
         }
     },
 

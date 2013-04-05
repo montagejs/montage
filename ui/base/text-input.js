@@ -205,14 +205,16 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends Te
 
     // Callbacks
 
-    prepareForDraw: {
+    enterDocument: {
         enumerable: false,
-        value: function() {
-            var el = this.element;
-            el.addEventListener("focus", this);
-            el.addEventListener('input', this);
-            el.addEventListener('change', this);
-            el.addEventListener('blur', this);
+        value: function(firstTime) {
+            if (firstTime) {
+                var el = this.element;
+                el.addEventListener("focus", this);
+                el.addEventListener('input', this);
+                el.addEventListener('change', this);
+                el.addEventListener('blur', this);
+            }
         }
     },
 

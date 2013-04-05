@@ -65,9 +65,11 @@ exports.Slot = Montage.create(Component, /** @lends Slot# */ {
         value: null
     },
 
-    prepareForDraw:{
-        value:function () {
-            this.element.classList.add("montage-Slot");
+    enterDocument:{
+        value:function (firstTime) {
+            if (firstTime) {
+                this.element.classList.add("montage-Slot");
+            }
         }
     },
 

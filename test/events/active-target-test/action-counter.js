@@ -13,9 +13,11 @@ exports.ActionCounter = Montage.create(Component, {
         }
     },
 
-    prepareForDraw: {
-        value: function () {
-            this.addEventListener("menuAction", this);
+    enterDocument: {
+        value: function (firstTime) {
+            if (firstTime) {
+                this.addEventListener("menuAction", this);
+            }
         }
     },
 

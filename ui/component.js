@@ -658,6 +658,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
         value: function (childComponent) {
             if (this.childComponents.indexOf(childComponent) == -1) {
                 this.childComponents.push(childComponent);
+                childComponent._enterDocument();
                 childComponent._cachedParentComponent = this;
 
                 if (childComponent.needsDraw) {
@@ -710,19 +711,20 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     removeChildComponent: {
         value: function(childComponent) {
             var childComponents = this.childComponents,
-                element = childComponent._element,
                 ix = childComponents.indexOf(childComponent);
 
             if (ix > -1) {
                 childComponents.splice(ix, 1);
                 childComponent._cachedParentComponent = null;
                 childComponent._alternateParentComponent = null;
-            }
 
-            if (childComponent._addedToDrawList) {
-                childComponent._addedToDrawList = false;
-                ix = this._drawList.indexOf(childComponent);
-                this._drawList.splice(ix, 1);
+                childComponent._leaveDocument();
+
+                if (childComponent._addedToDrawList) {
+                    childComponent._addedToDrawList = false;
+                    ix = this._drawList.indexOf(childComponent);
+                    this._drawList.splice(ix, 1);
+                }
             }
         }
     },
@@ -739,11 +741,66 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
         value: []
     },
 
+    _needsEnterDocument: {
+        value: false
+    },
+
+    _inDocument: {
+        value: false
+    },
+
+    __leaveDocument: {
+        value: function() {
+            if (this._inDocument && typeof this.leaveDocument === "function") {
+                this.leaveDocument();
+                this._inDocument = false;
+            }
+        }
+    },
+
+    _leaveDocument: {
+        value: function() {
+            if (this._needsEnterDocument) {
+                this._needsEnterDocument = false;
+            } else {
+                this.__leaveDocument();
+
+                this.traverseComponentTree(function(component) {
+                    component.__leaveDocument();
+                });
+            }
+        }
+    },
+
+    /**
+     * This method just prepares the component to enterDocument the next time
+     * it draws. Unlike the _leaveDocument counterpart, enterDocument is *not*
+     * called at this point in time.
+     */
+    _enterDocument: {
+        value: function() {
+            this._needsEnterDocument = true;
+
+            // On their first draw components will have their needsDraw = true
+            // when they loadComponentTree.
+            if (!this._firstDraw) {
+                this.needsDraw = true;
+                this.traverseComponentTree(function(component) {
+                    if (component._needsEnterDocument) {
+                        return false;
+                    }
+                    component._needsEnterDocument = true;
+                    component.needsDraw = true;
+                });
+            }
+        }
+    },
+
     /**
      * The owner component is the owner of the template form which this component was instantiated.
      * @type {Component}
      * @default null
-    */
+     */
     ownerComponent: {
         enumerable: false,
         value: null
@@ -1048,6 +1105,15 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                     }
                 }).then(function() {
                     self._isComponentTreeLoaded = true;
+                    // When the component tree is loaded we need to draw if the
+                    // component needs to have its enterDocument() called.
+                    // This is because we explicitly avoid drawing when we set
+                    // _needsEnterDocument before the first draw because we
+                    // don't want to trigger the draw before its component tree
+                    // is loaded.
+                    if (self._needsEnterDocument) {
+                        self.needsDraw = true;
+                    }
                     canDrawGate.setField("componentTreeLoaded", true);
                     deferred.resolve();
                 }, deferred.reject).done();
@@ -1315,9 +1381,20 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
         }
     },
 
+    deserializedFromSerialization: {
+        value: function() {
+            this.attachToParentComponent();
+        }
+    },
+
     _deserializedFromTemplate: {
         value: function(owner, label, documentPart) {
+            Montage.getInfoForObject(this).label = label;
             this._ownerDocumentPart = documentPart;
+
+            if (! this.hasOwnProperty("identifier")) {
+                this.identifier = label;
+            }
 
             if (!this.ownerComponent) {
                 if (Component.isPrototypeOf(owner)) {
@@ -1416,11 +1493,25 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
         enumerable: false,
         value: function _drawIfNeeded(level) {
             var childComponent,
-                oldDrawList, i, childComponentListLength;
+                oldDrawList, i, childComponentListLength,
+                firstDraw = this._firstDraw;
+
             this._treeLevel = level;
-            if (this.needsDraw && !this._addedToDrawCycle) {
+            if (this.needsDraw) {
                 rootComponent.addToDrawCycle(this);
             }
+            if (firstDraw && this.prepareForDraw) {
+                Montage.callDeprecatedFunction(this, this.prepareForDraw, "prepareForDraw", "enterDocument(firstTime)");
+                this.prepareForDraw();
+            }
+            if (this._needsEnterDocument) {
+                this._needsEnterDocument = false;
+                this._inDocument = true;
+                if (typeof this.enterDocument === "function") {
+                    this.enterDocument(firstDraw);
+                }
+            }
+
             if (drawLogger.isDebug) {
                 drawLogger.debug(this, "drawList: " + (this._drawList || []).length + " of " + this.childComponents.length);
             }
@@ -1460,10 +1551,6 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 }
 
                 this._prepareForDraw();
-
-                if (this.prepareForDraw) {
-                    this.prepareForDraw();
-                }
 
                 // Load any non lazyLoad composers that have been added
                 length = this.composerList.length;

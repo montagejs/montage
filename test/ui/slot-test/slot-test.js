@@ -195,18 +195,20 @@ var SlotTest = exports.SlotTest = Montage.create(Component, {
         value: null
     },
 
-    prepareForDraw: {
+    enterDocument: {
         enumerable: false,
-        value: function() {
-            this.componentWithNoElementButton.addEventListener("action", this);
-            this.componentInPageWithElementButton.addEventListener("action", this);
-            this.barButton.addEventListener("action", this);
-            this.bazButton.addEventListener("action", this);
-            this.quxButton.addEventListener("action", this);
-            this.emptyButton.addEventListener("action", this);
+        value: function(firstTime) {
+            if (firstTime) {
+                this.componentWithNoElementButton.addEventListener("action", this);
+                this.componentInPageWithElementButton.addEventListener("action", this);
+                this.barButton.addEventListener("action", this);
+                this.bazButton.addEventListener("action", this);
+                this.quxButton.addEventListener("action", this);
+                this.emptyButton.addEventListener("action", this);
 
-            this.videoButton.addEventListener("action", this);
-            this.photoButton.addEventListener("action", this);
+                this.videoButton.addEventListener("action", this);
+                this.photoButton.addEventListener("action", this);
+            }
         }
     },
 
