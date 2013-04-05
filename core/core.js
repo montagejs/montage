@@ -88,6 +88,28 @@ Montage.deprecate = function deprecate(scope, callback, name, alternative) {
     };
 }
 
+Montage.callDeprecatedFunction = function callDeprecatedFunction(scope, callback, name, alternative/*, ...args */) {
+    var depth = Error.stackTraceLimit,
+        scopeName,
+        args;
+
+    Error.stackTraceLimit = 2;
+    if (typeof console !== "undefined" && typeof console.warn === "function") {
+        scopeName = Montage.getInfoForObject(scope).objectName;
+
+        if(alternative) {
+            console.warn(name + " is deprecated, use " + alternative + " instead.", scopeName);
+        } else {
+            //name is a complete message
+            console.warn(name, scopeName);
+        }
+
+    }
+    Error.stackTraceLimit = depth;
+    args = Array_prototype.slice.call(arguments, 4);
+    return callback.apply(scope ? scope : callback, args);
+};
+
 /**
     Creates a new Montage object.
     @function Montage.create
