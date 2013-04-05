@@ -27,7 +27,7 @@
   "dependencies": {
     "collections": "~0.1.17",
     "frb": "~0.1.26",
-    "mousse": "~0.1.0"
+    "mousse": "~0.1.2"
   },
   "devDependencies": {
     "montage-testing": "0.2.0-alpha",
