@@ -106,14 +106,14 @@ var Serialization = Montage.create(Montage, {
         }
     },
 
-    renameElementReference: {
-        value: function(oldId, newId) {
+    renameElementReferences: {
+        value: function(elementsTable) {
             var inspector = SerializationInspector.create();
 
             inspector.initWithSerialization(this);
             inspector.visitSerialization(function(node) {
-                if (node.type === "Element" && node.data === oldId) {
-                    node.data = newId;
+                if (node.type === "Element" && node.data in elementsTable) {
+                    node.data = elementsTable[node.data];
                 }
             });
         }

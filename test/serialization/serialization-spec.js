@@ -61,14 +61,15 @@ describe("reel/serialization/serialization-spec", function() {
                     }
                 }
             },
-            oldId = "oneId",
-            newId = "newId";
+            elementIdsTable = {
+                "oneId": "newId"
+            };
 
         serialization.initWithObject(objects);
-        serialization.renameElementReference(oldId, newId);
+        serialization.renameElementReferences(elementIdsTable);
 
-        expect(objects.one.properties.element["#"]).toBe(newId);
-        expect(objects.two.properties.details.oneElement["#"]).toBe(newId);
+        expect(objects.one.properties.element["#"]).toBe("newId");
+        expect(objects.two.properties.details.oneElement["#"]).toBe("newId");
         expect(objects.two.properties.element["#"]).toBe("twoId");
     });
 

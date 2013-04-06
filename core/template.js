@@ -897,9 +897,8 @@ var Template = Montage.create(Montage, {
             argumentsSerialization = template
                 ._createSerializationWithElementIds(argumentsElementIds);
 
-            for (var elementId in argumentElementsCollisionTable) {
-                argumentsSerialization.renameElementReference(elementId, argumentElementsCollisionTable[elementId]);
-            }
+            argumentsSerialization.renameElementReferences(
+                argumentElementsCollisionTable);
 
             objectsCollisionTable = serialization.mergeSerialization(
                 argumentsSerialization);
