@@ -1502,7 +1502,6 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
             }
             if (firstDraw && this.prepareForDraw) {
                 Montage.callDeprecatedFunction(this, this.prepareForDraw, "prepareForDraw", "enterDocument(firstTime)");
-                this.prepareForDraw();
             }
             if (this._needsEnterDocument) {
                 this._needsEnterDocument = false;
