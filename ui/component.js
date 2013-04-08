@@ -1007,22 +1007,6 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     },
 
     /**
-     * @function
-     */
-    // this is a handler that gets called by the deserializer, called on each
-    // object created, after didCreate, then deserializedFromSerialization if it exists
-    deserializedFromSerialization: {
-        value: function(label) {
-            Montage.getInfoForObject(this).label = label;
-
-            this.attachToParentComponent();
-            if (! this.hasOwnProperty("identifier")) {
-                this.identifier = label;
-            }
-        }
-    },
-
-    /**
      * This method is called right before draw is called.
      * If ```canDraw()``` returns false, then the component is re-added to the parent's draw list and draw isn't called.
      * @function
