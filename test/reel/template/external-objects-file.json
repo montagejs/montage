@@ -1,0 +1,9 @@
+{
+    "text": {
+        "prototype": "montage/ui/text.reel",
+        "properties": {
+            "element": {"#": "text"},
+            "value": "Hello, World!"
+        }
+    }
+}

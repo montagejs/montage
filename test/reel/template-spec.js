@@ -220,6 +220,27 @@ describe("reel/template-spec", function() {
                 expect("test").toBe("executed");
             });
         });
+
+        it("should read the objects from an external file", function() {
+            var moduleId = "reel/template/external-objects-file.html",
+                expectedSerialization = {
+                    "text": {
+                        "prototype": "montage/ui/text.reel",
+                        "properties": {
+                            "element": {"#": "text"},
+                            "value": "Hello, World!"
+                        }
+                    }
+                };
+
+            return Template.getTemplateWithModuleId(moduleId, require)
+            .then(function(template) {
+                var serialization = template.getSerialization()
+                    .getSerializationObject();
+
+                expect(serialization).toEqual(expectedSerialization);
+            });
+        });
     });
 
     describe("markup", function() {

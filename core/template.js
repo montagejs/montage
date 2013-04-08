@@ -664,7 +664,7 @@ var Template = Montage.create(Montage, {
             if (link) {
                 req = new XMLHttpRequest();
                 url = link.getAttribute("href");
-                rootUrl = this._documentRootUrl || "";
+                rootUrl = this.getBaseUrl() || "";
 
                 if (! /^https?:\/\/|^\//.test(url)) {
                     url = rootUrl + url;
