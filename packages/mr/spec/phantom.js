@@ -26,7 +26,7 @@ var testPageUrl = "http://127.0.0.1:" + testPagePort + "/spec/run.html";
 console.log("Test page at " + testPageUrl);
 
 // wait for Ghost Driver to start running
-Q.delay(1000)
+Q.delay(2000)
 .then(function () {
     return browser.init();
 })

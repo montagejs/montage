@@ -1,6 +1,6 @@
 {
   "name": "mr",
-  "version": "0.12.12",
+  "version": "0.12.13",
   "description": "A refresh-only CommonJS module system for browsers, used in Montage",
   "main": "require",
   "scripts": {

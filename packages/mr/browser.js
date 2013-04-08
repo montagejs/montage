@@ -196,10 +196,10 @@ Require.loadPackageDescription = function (dependency, config) {
         // want to issue a script injection.  however, if by the time preloading
         // has finished the package.json has not arrived, we will need to kick off
         // a request for the package.json.load.js script.
-        if (!config.preloaded.isResolved()) {
+        if (config.preloaded.isPending()) {
             config.preloaded
             .then(function (result) {
-                if (!definition.isResolved()) {
+                if (definition.isPending()) {
                     var location = URL.resolve(dependency.location, "package.json.load.js");
                     Require.loadScript(location);
                 }
