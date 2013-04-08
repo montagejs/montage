@@ -1,3 +1,13 @@
+## 0.12.13
+
+ - Fix bug in preloading, where isResolved was replaced with isPending in Q 0.9
+
+## 0.12.12
+
+ - Fix preloading. Fixes some logic in figuring out whether to issue a script
+   request for a package.json in production
+ - Test runner updates
+
 ## 0.12.11
 
  - Add injectDependency and injectMapping

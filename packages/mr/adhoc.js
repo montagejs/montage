@@ -27,6 +27,6 @@ function run(packageLocation, moduleId) {
         console.log("Exports:", exports);
         console.log("Packages:", require.packages);
     })
-    .end();
+    .done();
 }
 

@@ -1,0 +1,8 @@
+{
+    "dependencies": {
+        "dependency": "*"
+    },
+    "mappings": {
+        "q": "../../packages/q"
+    }
+}
