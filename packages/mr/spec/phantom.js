@@ -4,7 +4,7 @@ var util = require("util");
 
 var Q = require("q");
 var wd = require("wd");
-var connct = require("connect");
+var joey = require("joey");
 
 var POLL_TIME = 250;
 
@@ -14,24 +14,24 @@ var phantom = spawn("phantomjs", ["--webdriver=127.0.0.1:8910"], {
 
 var browser = wd.promiseRemote("127.0.0.1", 8910);
 
-var connect = require("connect");
+var server = joey
+.error()
+.fileTree(PATH.resolve(__dirname, ".."))
+.server();
 
-// Big enough range that collisions with existing test servers are unlikely
-var httpServerPort = Math.floor(Math.random() * 65000 - 2000) + 2000;
-var testPageUrl = "http://127.0.0.1:" + httpServerPort + "/spec/run.html";
-var server = connect()
-  .use(connect.static(PATH.resolve(__dirname, ".."), { maxAge: 24*60*60*1000 }))
-  .listen(httpServerPort);
+server.listen(0).done();
 
+var testPagePort = server.node.address().port;
+var testPageUrl = "http://127.0.0.1:" + testPagePort + "/spec/run.html";
 console.log("Test page at " + testPageUrl);
 
 // wait for Ghost Driver to start running
-Q.delay(1000)
+Q.delay(2000)
 .then(function () {
     return browser.init();
 })
 .then(function () {
-    return browser.get("http://127.0.0.1:" + httpServerPort + "/spec/run.html");
+    return browser.get(testPageUrl);
 })
 .then(function () {
     var done = Q.defer();
@@ -65,15 +65,15 @@ Q.delay(1000)
     }
 })
 .finally(function () {
-    server.close();
-    return browser.quit().finally(function () {
-        phantom.kill();
-    });
+    server.stop();
 })
-.catch(function (err) {
-    console.error(err.stack || err);
-    process.exit(1);
-});
+.finally(function () {
+    return browser.quit();
+})
+.finally(function () {
+    phantom.kill();
+})
+.done();
 
 function log(suites, results, name, failures) {
     name = name || "";
@@ -103,3 +103,4 @@ function log(suites, results, name, failures) {
 
     return failures;
 }
+
