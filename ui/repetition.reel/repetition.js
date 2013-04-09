@@ -782,7 +782,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends Repet
             // lose them forever.
             // TODO @aadsm: this is part of the chicken-and-egg problem the
             // draw cycle current has, the DrawManager will solve this.
-            if (this._newDomContent || this._shouldClearDomContentOnNextDraw) {
+            if (this._newDomContent ||
+                this._shouldClearDomContentOnNextDraw ||
+                !this.innerTemplate
+            ) {
                 return;
             }
 
