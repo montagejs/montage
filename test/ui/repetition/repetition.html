@@ -380,6 +380,27 @@ POSSIBILITY OF SUCH DAMAGE.
                     "content": [1, 2, 3]
                 }
             },
+            "repetition14b": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "list11b"},
+                    "content": [1, 2, 3]
+                }
+            },
+            "repetition14btemplate": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "list11btemplate"},
+                    "content": [1, 2, 3]
+                }
+            },
+            "text11b": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "text11b"},
+                    "value": "Y"
+                }
+            },
             "repetition15": {
                 "prototype": "montage/ui/repetition.reel",
                 "properties": {
@@ -600,13 +621,20 @@ POSSIBILITY OF SUCH DAMAGE.
         <li data-montage-id="repetitionControllerText" class="repetitionControllerText"></li>
     </ul>
 
-    <h2>Repetition with content change</h2>
+    <h2>Repetition with innerTemplate change</h2>
     <ul data-montage-id="list11" class="list11">
         <li>X</li>
     </ul>
 
     <ul data-montage-id="list11a" class="list11a">
         <li>X</li>
+    </ul>
+
+    <ul data-montage-id="list11b" class="list11b">
+        <li>X</li>
+    </ul>
+    <ul data-montage-id="list11btemplate" class="list11btemplate">
+        <li data-montage-id="text11b"></li>
     </ul>
 
     <h2>Repetition created programmatically</h2>

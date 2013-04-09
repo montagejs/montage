@@ -798,6 +798,33 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                     }
                 });
             });
+
+            it("should rebuild the repetition with components", function() {
+                var repetition = querySelector(".list11b").component;
+                var templateRepetition = querySelector(".list11btemplate").component;
+
+                runs(function () {
+                    var content = repetition.element.children;
+                    expect(content.length).toBe(3);
+                    for (var i = 0; i < content.length; i++) {
+                        expect(content[i].textContent).toBe("X");
+                    }
+
+                    var newTemplate = templateRepetition.innerTemplate;
+
+                    repetition.innerTemplate = newTemplate;
+                });
+                testPage.waitForComponentDraw(repetition);
+                runs(function () {
+                    var content = repetition.element.children;
+                    expect(content.length).toBe(3);
+                    for (var i = 0; i < content.length; i++) {
+                        expect(content[i].textContent).toBe("Y");
+                        expect(content[i].component.value).toBe("Y");
+                    }
+                });
+            });
+
         });
 
         describe("manual objects changes", function() {
