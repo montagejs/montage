@@ -159,7 +159,7 @@ exports.Substitution = Montage.create(Slot, /** @lends Substitution# */ {
 
     _loadContent: {
         value: function(value) {
-            this.content = this._switchElements[value];
+            this.content = this._switchElements[value] || null;
 
             if (!this._switchComponentTreeLoaded[value]) {
                 this._loadSwitchComponentTree(value);

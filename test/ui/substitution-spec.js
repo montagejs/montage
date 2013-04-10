@@ -72,6 +72,19 @@ TestPageLoader.queueTest("substitution-test/substitution-test", function(testPag
                     expect(title).toBeDefined();
                 });
             });
+
+            it("should remove all content when switchValue is null", function() {
+                var substitution = templateObjects.substitution1;
+
+                substitution.switchValue = null;
+
+                testPage.waitForComponentDraw(substitution);
+                runs(function() {
+                    var children = substitution.element.children;
+
+                    expect(children.length).toBe(0);
+                });
+            });
         });
 
         describe("arguments with components", function() {
