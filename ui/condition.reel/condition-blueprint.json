@@ -16,9 +16,10 @@
             "blueprint": {
                 "@": "root"
             },
-            "valyeType": "enum",
-            "enum": [
-                "hide", "remove"
+            "valueType":"enum",
+            "enumValues": [
+                "hide",
+                "remove"
             ]
         }
     },
@@ -37,7 +38,6 @@
         "properties": {
             "name": "Condition",
             "blueprintModuleId": "ui/condition.reel/condition-blueprint.json",
-            "moduleId": "ui/condition.reel",
             "prototypeName": "Condition",
             "parent": {
                 "@": "blueprint_component_reference"

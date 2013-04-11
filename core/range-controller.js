@@ -523,6 +523,10 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
         }
     },
 
+    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+
+    blueprint:require("montage")._blueprintDescriptor
+
 });
 
 // TODO @kriskowal scrollIndex, scrollDelegate -> scrollDelegate.scrollBy(offset)

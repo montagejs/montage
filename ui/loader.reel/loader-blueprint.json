@@ -104,7 +104,6 @@
         "properties": {
             "name": "Loader",
             "blueprintModuleId": "ui/loader.reel/loader-blueprint.json",
-            "moduleId": "ui/loader.reel",
             "prototypeName": "Loader",
             "parent": {
                 "@": "blueprint_component_reference"

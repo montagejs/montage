@@ -77,7 +77,6 @@
         "properties": {
             "name": "Repetition",
             "blueprintModuleId": "ui/repetition.reel/repetition-blueprint.json",
-            "moduleId": "ui/repetition.reel",
             "prototypeName": "Repetition",
             "parent": {
                 "@": "blueprint_component_reference"

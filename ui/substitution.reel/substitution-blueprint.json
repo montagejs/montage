@@ -43,7 +43,6 @@
         "properties": {
             "name": "Substitution",
             "blueprintModuleId": "ui/substitution.reel/substitution-blueprint.json",
-            "moduleId": "ui/substitution.reel",
             "prototypeName": "Substitution",
             "parent": {
                 "@": "blueprint_component_reference"
