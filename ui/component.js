@@ -268,6 +268,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                     this.blockDrawGate.setField("element", true);
                 }
             }
+            this._initializeClassListFromElement(value);
         }
     },
 
@@ -1585,14 +1586,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 template.setAttribute(attributeName, value);
             }
 
-            //if a classlist was initialized before the template was loaded then it didn't
-            if (this._classList) {
-                var className = template.className;
-                // classList
-                if (className.length !== 0) {
-                    this.classList.addEach(className.split(" "));
-                }
-            }
+            this._initializeClassListFromElement(template);
 
             if (element.parentNode) {
                 element.parentNode.replaceChild(template, element);
@@ -2427,14 +2421,39 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
         get: function () {
             if (this._classList === null) {
                 this._classList = new Set();
-                this._classList.addRangeChangeListener(this, "classList");
-                var className = this.element.className;
-                // classList
-                if (className.length !== 0) {
-                    this.classList.addEach(className.split(" "));
-                }
+                this._subscribeToToClassListChanges();
+                this._initializeClassListFromElement(this.element);
             }
             return this._classList;
+        }
+    },
+
+    _initializeClassListFromElement: {
+        value: function(element) {
+            var className;
+            if (element && element.className && (className = element.className.trim())) {
+                // classList
+                if (className.length !== 0) {
+                    // important to initializae the classList first, so that the listener doesn't get installed.
+                    var classList = this.classList
+                    if (this._unsubscribeToClassListChanges) {
+                        this._unsubscribeToClassListChanges();
+                    };
+                    classList.addEach(className.split(/\s+/));
+                    this._subscribeToToClassListChanges();
+                }
+            }
+
+        }
+    },
+
+    _unsubscribeToClassListChanges: {
+        value: null
+    },
+
+    _subscribeToToClassListChanges: {
+        value: function() {
+            this._unsubscribeToClassListChanges = this._classList.addRangeChangeListener(this, "classList");
         }
     },
 

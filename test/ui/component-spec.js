@@ -34,6 +34,7 @@ var Montage = require("montage").Montage,
     Serializer = require("montage/core/serialization").Serializer,
     Template = require("montage/core/template").Template;
 var Bindings = require("montage/core/bindings").Bindings;
+var MockDOM = require("mocks/dom");
 
 TestPageLoader.queueTest("draw/draw", function(testPage) {
     var test;
@@ -994,6 +995,14 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                         expect(test.componentClassInMarkup.element.classList.contains("markupClass1")).toBeFalsy();
                     })
                 });
+                it("should handle leading and trailing spaces in element's className", function() {
+                    var aComponent = Montage.create(Component, {hasTemplate: {value: false}});
+                    aComponent.element = {className: "  foo  "};
+                    var funk = jasmine.createSpy("classListForEach");
+                    aComponent.classList.forEach(funk);
+                    expect(funk.callCount).toEqual(1);
+                    expect(funk.argsForCall[0][0]).toEqual("foo");
+                });
             });
             describe("with classes in original element and in template", function() {
                 describe("element", function () {
@@ -1041,6 +1050,30 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                     return testPage.nextDraw().then(function() {
                         expect(test.componentClassInTemplateAndBindings.element.classList.contains("ClassListTemplate")).toBeFalsy();
                     })
+                });
+            });
+            describe("using classList before the element is set", function () {
+                var aComponent;
+                it("should update the classList when the element is set", function () {
+                    aComponent = Montage.create(Component, {hasTemplate: { value: false}}).create();
+                    var anElement = MockDOM.element();
+                    anElement.className = "foo";
+                    expect(aComponent.classList.contains("foo")).toBeFalsy();
+                    aComponent.element = anElement;
+                    expect(aComponent.classList.contains("foo")).toBeTruthy();
+                });
+                it("should not fail when classList is used in didCreate", function () {
+                    expect(function() {
+                        aComponent = Montage.create(Component, {
+                            hasTemplate: { value: false },
+                            didCreate: {
+                                value: function() {
+                                    this.classList.contains("foo");
+                                }
+                            }
+                        }).create();
+                    }).not.toThrow();
+
                 });
             });
 
