@@ -758,13 +758,18 @@ var Template = Montage.create(Montage, {
     _templateFromElementContentsCache: {
         value: null
     },
+    clearTemplateFromElementContentsCache: {
+        value: function () {
+            this._templateFromElementContentsCache = null;
+        }
+    },
+
     createTemplateFromElementContents: {
         value: function(elementId) {
             var element,
                 elementIds,
                 labels,
                 fragment,
-                objectsString,
                 template,
                 range,
                 serialization = Serialization.create(),
