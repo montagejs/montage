@@ -7,8 +7,10 @@ exports.element = function () {
             contains: function () {}
         },
         className: "",
+        style: {},
         removeAttribute: function () {},
         setAttribute: function () {},
+        getAttribute: function () {},
         focus: function () {},
         blur: function () {},
         tagName: "MOCK"

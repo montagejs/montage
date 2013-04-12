@@ -1,12 +1,23 @@
 require("montage-testing").run(require,[
         // Please keep in alphabetical order
+        "application-spec",
+        "bitfield-spec",
+        "claimed-pointer-spec",
+        "converter-spec",
+        "enum-spec",
+        "gate-spec",
+        "logger-spec",
+        "paths-spec",
+        "require-spec",
+        "state-chart-spec",
+        "string-spec",
+
         "base/abstract-button-spec",
+        "base/abstract-input-range-spec",
 
         // packages
         "collections-spec",
         "frb-spec",
-
-        "base/abstract-button-spec",
 
         "bindings/spec",
         "bindings/converter-spec",
