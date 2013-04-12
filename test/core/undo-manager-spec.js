@@ -1,7 +1,8 @@
 var Montage = require("montage").Montage,
     Set = require("montage/collections/set"),
     UndoManager = require("montage/core/undo-manager").UndoManager,
-    Promise = require("montage/core/promise").Promise;
+    Promise = require("montage/core/promise").Promise,
+    WAITS_FOR_TIMEOUT = 2500;
 
 var Roster = Montage.create(Montage, {
 
@@ -304,6 +305,24 @@ describe('core/undo-manager-spec', function () {
             }).then(function () {
                 expect(roster.members.length).toBe(0);
             });
+        });
+
+        it("should correctly reject an exceptional undo operation", function () {
+            var error = new Error("Undo Operation Exception");
+            var deferredAdditionUndo = roster.testableAddMember("Alice"),
+                spyObject = {
+                    removeMember: function (member) {
+                        throw error;
+                    }
+                };
+
+            spyOn(spyObject, "removeMember").andCallThrough();
+            deferredAdditionUndo.resolve(["Test Label", spyObject.removeMember, spyObject, "Alice"]);
+
+            return undoManager.undo().fail(function (failure) {
+                expect(spyObject.removeMember).toHaveBeenCalled();
+                expect(failure).toBe(error);
+            }).timeout(WAITS_FOR_TIMEOUT);
         });
 
     });

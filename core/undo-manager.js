@@ -423,18 +423,27 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends UndoM
                 this.redoEntry = entry;
             }
 
-            var opResult = entry.undoFunction.apply(entry.context, entry.args);
+            var opResult;
+            try {
+                opResult = entry.undoFunction.apply(entry.context, entry.args);
+            } catch (e) {
+                entry.deferredOperation.reject(e);
+                throw e;
+            }
 
             //TODO do we need to wait for the promise to resolve before moving to the next operation?
-            // If the operation return a promise, end it to not hide exceptions
             if (Promise.isPromiseAlike(opResult)) {
-                opResult.done();
+                opResult.then(function (success) {
+                    entry.deferredOperation.resolve(success);
+                }, function (failure) {
+                    entry.deferredOperation.reject(failure);
+                }).done();
+            } else {
+                entry.deferredOperation.resolve(opResult);
             }
 
             this.undoEntry = null;
             this.redoEntry = null;
-
-            entry.deferredOperation.resolve(true);
         }
     },
 
