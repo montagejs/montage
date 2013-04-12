@@ -886,8 +886,10 @@ var Template = Montage.create(Montage, {
                 // element ids collision table because we need to correct the
                 // serialization that is created from the stored element ids.
                 collisionTable = this.replaceNode(argumentElement, parameterElement);
-                for (var key in collisionTable) {
-                    argumentElementsCollisionTable[key] = collisionTable[key];
+                if (collisionTable) {
+                    for (var key in collisionTable) {
+                        argumentElementsCollisionTable[key] = collisionTable[key];
+                    }
                 }
             }
             result.elementIds = argumentsElementIds;
@@ -917,7 +919,7 @@ var Template = Montage.create(Montage, {
      */
     _resolveElementIdCollisions: {
         value: function(node) {
-            var collisionTable = {},
+            var collisionTable,
                 nodeElements,
                 elementIds,
                 element,
@@ -937,6 +939,9 @@ var Template = Montage.create(Montage, {
                     element = nodeElements[elementId];
                     newId = labeler.getObjectLabel(element);
                     this.setElementId(element, newId);
+                    if (!collisionTable) {
+                        collisionTable = Object.create(null);
+                    }
                     collisionTable[elementId] = newId;
                 }
             }

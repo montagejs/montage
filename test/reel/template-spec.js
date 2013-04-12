@@ -303,7 +303,6 @@ describe("reel/template-spec", function() {
             var html = require("reel/template/modification.html").content,
                 htmlModification = require("reel/template/modification-elements.html").content,
                 htmlDocument = document.implementation.createHTMLDocument(""),
-                children,
                 collisionTable;
 
             template.initWithHtml(html, require);
@@ -314,7 +313,7 @@ describe("reel/template-spec", function() {
 
             collisionTable = template.insertNodeBefore(node, reference);
 
-            expect(collisionTable).toEqual({});
+            expect(collisionTable).toBeUndefined();
             expect(reference.previousSibling).toBe(node);
         });
 
