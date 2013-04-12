@@ -1872,9 +1872,9 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                     }
                 } else {
                     parentComponent._addToDrawList(this);
-                }
-                if (drawLogger.isDebug) {
-                    drawLogger.debug("drawList -- childComponent",this._montage_metadata.objectName," added to ",parentComponent._montage_metadata.objectName);
+                    if (drawLogger.isDebug) {
+                        drawLogger.debug("drawList -- childComponent",this._montage_metadata.objectName," added to ",parentComponent._montage_metadata.objectName);
+                    }
                 }
             }
         }
