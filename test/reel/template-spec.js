@@ -342,6 +342,23 @@ describe("reel/template-spec", function() {
 
             expect(collisionTable).toEqual(expectedCollisionTable);
         });
+
+        it("should append a node to the template", function() {
+            var html = require("reel/template/modification.html").content,
+                htmlModification = require("reel/template/modification-elements.html").content,
+                htmlDocument = document.implementation.createHTMLDocument("");
+
+            template.initWithHtml(html, require);
+            htmlDocument.documentElement.innerHTML = htmlModification;
+
+            node = htmlDocument.getElementById("noCollision");
+            reference = template.getElementById("title").parentNode;
+
+            template.appendNode(node, reference);
+
+            expect(reference.children.length).toBe(2);
+            expect(reference.lastChild).toBe(node);
+        });
     });
 
     describe("instantiation", function() {

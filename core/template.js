@@ -967,6 +967,17 @@ var Template = Montage.create(Montage, {
         }
     },
 
+    appendNode: {
+        value: function(node, parentNode) {
+            var collisionTable;
+
+            collisionTable = this._resolveElementIdCollisions(node);
+            parentNode.appendChild(node);
+
+            return collisionTable;
+        }
+    },
+
     getElementId: {
         value: function(element) {
             if (element.getAttribute) {
