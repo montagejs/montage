@@ -1,7 +1,7 @@
  /*global require, exports*/
 
 /**
-    @module "montage/ui/base/abstract-button.reel"
+    @module montage/ui/base/abstract-button.reel
     @requires montage/core/core
     @requires montage/ui/component
     @requires montage/ui/native-control
@@ -13,7 +13,6 @@ var Montage = require("montage").Montage,
     Dict = require("collections/dict");
 
 /**
- * Wraps a native ```<button>``` or ```<input[type="button"]>>``` HTML element. The element's standard attributes are exposed as bindable properties.
  * @class AbstractButton
  * @extends Component
  * @fires action
