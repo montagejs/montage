@@ -823,6 +823,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends KeyManag
                             longPressEvent = document.createEvent("CustomEvent");
                             longPressEvent.initCustomEvent(LONGKEYPRESS_EVENT_TYPE, true, true, null);
                             longPressEvent.activeElement = event.target;
+                            longPressEvent.identifier = keyComposer.identifier;
                             longPressEvent = MutableEvent.fromEvent(longPressEvent);
                             defaultEventManager.activeTarget.dispatchEvent(longPressEvent);
                             delete thisRef._longPressKeys[keyComposer.uuid];
@@ -836,6 +837,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends KeyManag
                 keyComposerEvent = document.createEvent("CustomEvent");
                 keyComposerEvent.initCustomEvent(eventType, true, true, null);
                 keyComposerEvent.activeElement = event.target;
+                keyComposerEvent.identifier = keyComposer.identifier;
                 keyComposerEvent = MutableEvent.fromEvent(keyComposerEvent);
                 if (this._opera) {
                     keyComposerEvent.type = eventType; // Opera modifes the capitalization of custom event's type when that one is similar to a native event's type
