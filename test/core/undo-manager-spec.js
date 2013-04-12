@@ -35,7 +35,7 @@ var Roster = Montage.create(Montage, {
 
     members: {
         get: function () {
-            return this._members
+            return this._members;
         }
     },
 
@@ -172,7 +172,7 @@ describe('core/undo-manager-spec', function () {
 
         it("must reject adding non-promises", function () {
             expect(function () {
-                expectundoManager.register("Something", function () {});
+                undoManager.register("Something", function () {});
             }).toThrow();
         });
 
