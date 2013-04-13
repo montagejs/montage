@@ -474,7 +474,8 @@ var Template = Montage.create(Montage, {
         value: function(documentPart, instances) {
             var objects = documentPart.objects,
                 object,
-                owner = objects.owner;
+                owner = objects.owner,
+                objectOwner;
 
             for (var label in objects) {
                 // Don't call delegate methods on objects that were passed to
@@ -484,13 +485,20 @@ var Template = Montage.create(Montage, {
                 }
 
                 object = objects[label];
+                // getObjectOwner will take into account metadata that might
+                // have been set for this object. Objects in the serialization
+                // of the template might have different owners. This is true
+                // when an object in the serialization is the result of a
+                // data-param that was expanded using arguments from an external
+                // template.
+                objectOwner = this._getObjectOwner(label, owner)
 
                 if (object) {
                     if (typeof object._deserializedFromTemplate === "function") {
-                        object._deserializedFromTemplate(owner, label, documentPart);
+                        object._deserializedFromTemplate(objectOwner, label, documentPart);
                     }
                     if (typeof object.deserializedFromTemplate === "function") {
-                        object.deserializedFromTemplate(owner, label, documentPart);
+                        object.deserializedFromTemplate(objectOwner, label, documentPart);
                     }
                 }
             }
@@ -581,6 +589,21 @@ var Template = Montage.create(Montage, {
                     "label": label
                 }
             }
+        }
+    },
+
+    _getObjectOwner: {
+        value: function(label, defaultOwner) {
+            var objectOwner,
+                metadata = this._metadata;
+
+            if (metadata && label in metadata) {
+                objectOwner = metadata[label].owner;
+            } else {
+                objectOwner = defaultOwner;
+            }
+
+            return objectOwner;
         }
     },
 
