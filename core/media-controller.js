@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
     @requires montage/core/logger
 */
 var Montage = require("montage").Montage;
-var Component = require("ui/component").Component;
+var Target = require("core/target").Target;
 var logger = require("core/logger").logger("mediacontroller");
 /**
  @class MediaController
@@ -43,7 +43,7 @@ var logger = require("core/logger").logger("mediacontroller");
  @extends Montage
 
  */
-var MediaController = exports.MediaController = Montage.create(Montage, /** @lends MediaController# */ {
+var MediaController = exports.MediaController = Montage.create(Target, /** @lends MediaController# */ {
     /*-----------------------------------------------------------------------------
      MARK:   Constants
      -----------------------------------------------------------------------------*/
@@ -113,6 +113,26 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
             this._mediaSrc = mediaSrc;
         }
     },
+
+    /**
+      @private
+    */
+    _posterSrc: {
+        value: null
+    },
+    /**
+     * @type {String}
+     * @default null
+     */
+    posterSrc: {
+        get: function() {
+            return this._posterSrc;
+        },
+        set: function(posterSrc) {
+            this._posterSrc = posterSrc;
+        }
+    },
+
     /*-----------------------------------------------------------------------------
      MARK:   Status & Attributes
      -----------------------------------------------------------------------------*/
@@ -345,6 +365,20 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
             this.status = this.STOPPED;
         }
     },
+
+    fullscreen: {
+        value: function() {
+            if (this.mediaElement.webkitEnterFullScreen) {
+                this.mediaElement.webkitEnterFullScreen();
+            } else if (this.mediaElement.webkitRequestFullScreen) {
+                this.mediaElement.webkitRequestFullScreen();
+            }
+
+        }
+    },
+
+
+
 /**
     @function
     */
@@ -361,6 +395,17 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
             this.mediaElement.removeAttribute('src');
         }
     },
+
+
+    showPoster: {
+        value: function() {
+            if (this.posterSrc) {
+                this.mediaElement.poster = this.posterSrc;
+            }
+        }
+    },
+
+
 /**
     @function
     */
@@ -371,6 +416,7 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
             }
 
             this.mediaElement.src = this.mediaSrc;
+            this._installControlEventHandlers();
             this.mediaElement.load();
         }
     },
@@ -514,10 +560,10 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
         value: function() {
             if (this.status !== this.STOPPED) { // A last 'timeupdate' is sent after stop() which is unwanted because it restores the last position.
                 var currentTime = this.mediaElement.currentTime;
-                if (Math.abs(this._lastCurrentTime - currentTime) >= this._TIMEUPDATE_FREQUENCY) {
-                    this._lastCurrentTime = currentTime;
+                //if (Math.abs(this._lastCurrentTime - currentTime) >= this._TIMEUPDATE_FREQUENCY) {
+                //    this._lastCurrentTime = currentTime;
                     Object.getPropertyDescriptor(this, "position").set.call(this, currentTime, true);
-                }
+                //}
             }
         }
     },
@@ -662,8 +708,7 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
             this.mediaElement.addEventListener('error', this, false);
             this.mediaElement.addEventListener('emptied', this, false);
             this.mediaElement.addEventListener('ended', this, false);
-        },
-        enumerable: false
+        }
     }
     /*-----------------------------------------------------------------------------
      MARK:   Configuration
