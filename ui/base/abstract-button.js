@@ -362,9 +362,11 @@ var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @len
         }
     },
 
-    prepareForDraw: {
-        value: function() {
-            this._element.addEventListener("keyup", this, false);
+    enterDocument: {
+        value: function(firstDraw) {
+            if(firstDraw) {
+                this._element.addEventListener("keyup", this, false);
+            }
         }
     },
 
