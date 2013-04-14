@@ -94,7 +94,7 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
 
     draw: {
         value: function () {
-            this._thumbSliderElement.style[this._transform] = "translate3d(" + this._valuePercentage + "%, 0, 0)";
+            this._thumbSliderElement.style[this._transform] = "translateX(" + this._valuePercentage + "%)";
         }
     },
 
