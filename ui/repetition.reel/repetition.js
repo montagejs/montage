@@ -1285,6 +1285,27 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends Repet
                 this._initialContentDrawn = true;
             }
 
+            // Synchronize iterations and _drawnIterations
+
+            // Retract iterations that should no longer be visible
+            for (var index = this._drawnIterations.length - 1; index >= 0; index--) {
+                if (this._drawnIterations[index].index === null) {
+                    this._drawnIterations[index].retractFromDocument();
+                }
+            }
+
+            // Inject iterations if they are not already in the right location
+            for (
+                var index = 0;
+                index < this.iterations.length;
+                index++
+            ) {
+                var iteration = this.iterations[index];
+                if (iteration._drawnIndex !== iteration.index) {
+                    iteration.injectIntoDocument(index);
+                }
+            }
+
             // Update class lists
             var iterations = this._dirtyClassListIterations.toArray();
             // Note that the iterations list must be cleared first because we
@@ -1313,28 +1334,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends Repet
                     element.classList.remove("no-transition");
                 }, this);
             }, this);
-
-            // Synchronize iterations and _drawnIterations
-
-            // Retract iterations that should no longer be visible
-            for (var index = this._drawnIterations.length - 1; index >= 0; index--) {
-                if (this._drawnIterations[index].index === null) {
-                    this._drawnIterations[index].retractFromDocument();
-                }
-            }
-
-            // Inject iterations if they are not already in the right location
-            for (
-                var index = 0;
-                index < this.iterations.length;
-                index++
-            ) {
-                var iteration = this.iterations[index];
-                if (iteration._drawnIndex !== iteration.index) {
-                    iteration.injectIntoDocument(index);
-                }
-            }
-
         }
     },
 
