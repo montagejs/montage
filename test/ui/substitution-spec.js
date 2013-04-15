@@ -85,6 +85,21 @@ TestPageLoader.queueTest("substitution-test/substitution-test", function(testPag
                     expect(children.length).toBe(0);
                 });
             });
+
+            it("should draw the correct element after changing the switchValue twice before it draws", function() {
+                var substitution = templateObjects.substitution5;
+
+                substitution.switchValue = "two";
+                substitution.switchValue = "one";
+                substitution.switchValue = "two";
+
+                testPage.waitForComponentDraw(substitution);
+                runs(function() {
+                    var children = substitution.element.children;
+
+                    expect(children[0].className).toBe("two");
+                });
+            });
         });
 
         describe("arguments with components", function() {
@@ -117,6 +132,17 @@ TestPageLoader.queueTest("substitution-test/substitution-test", function(testPag
                     runs(function() {
                         expect(one.element.textContent).toBe("Title 1b");
                     });
+                });
+            });
+
+            it("should update the switchElements if the component is changed while in the substitution content", function() {
+                var substitution = templateObjects.substitution6;
+
+                substitution.switchValue = "two";
+
+                testPage.waitForComponentDraw(substitution);
+                runs(function() {
+                    expect(substitution._switchElements.one.className).toBe("Foo");
                 });
             });
         });

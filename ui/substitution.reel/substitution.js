@@ -107,6 +107,10 @@ exports.Substitution = Montage.create(Slot, /** @lends Substitution# */ {
         }
     },
 
+    _drawnSwitchValue: {
+        value: null
+    },
+
     _switchValue: {
         value: null
     },
@@ -119,12 +123,6 @@ exports.Substitution = Montage.create(Slot, /** @lends Substitution# */ {
 
             if (this._switchValue === value || this._isSwitchingContent) {
                 return;
-            }
-
-            if (this._switchValue) {
-                // We need to update the switchElements dictionary because
-                // the element might have changed during draw.
-                this._switchElements[this._switchValue] = this.element.children[0];
             }
 
             this._switchValue = value;
@@ -164,6 +162,15 @@ exports.Substitution = Montage.create(Slot, /** @lends Substitution# */ {
             if (!this._switchComponentTreeLoaded[value]) {
                 this._loadSwitchComponentTree(value);
             }
+        }
+    },
+
+    contentDidChange: {
+        value: function(newContent, oldContent) {
+            if (this._drawnSwitchValue) {
+                this._switchElements[this._drawnSwitchValue] = oldContent;
+            }
+            this._drawnSwitchValue = this._switchValue;
         }
     },
 
