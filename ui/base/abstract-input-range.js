@@ -10,6 +10,7 @@
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     TranslateComposer = require("composer/translate-composer").TranslateComposer,
+    PressComposer = require("composer/press-composer").PressComposer,
     Dict = require("collections/dict");
 
 /**
@@ -54,9 +55,10 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
         value: function (firstTime) {
             if (firstTime) {
                 this._translateComposer = TranslateComposer.create();
+                this._translateComposer.identifier = "thumb"
                 this._translateComposer.axis = "horizontal";
                 this._translateComposer.hasMomentum = false;
-                this.addComposerForElement(this._translateComposer, this._handleElement);
+                this.addComposerForElement(this._translateComposer, this._thumbSliderElement);
 
                 // check for transform support
                 if("webkitTransform" in this.element.style) {
@@ -83,6 +85,9 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
             this._translateComposer.addEventListener('translateStart', this, false);
             this._translateComposer.addEventListener('translate', this, false);
             this._translateComposer.addEventListener('translateEnd', this, false);
+            // needs to be fixed for pointer handling
+            this._thumbSliderElement.addEventListener("touchstart", this, false);
+            document.addEventListener("touchend", this, false);
         }
     },
 
@@ -100,22 +105,36 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
 
     // Event Handlers
 
-    handleTranslateStart: {
+    handleTouchstart: {
+        value: function (e) {
+            this.classList.add("montage-InputRange--active");
+        }
+    },
+
+    handleTouchend: {
+        value: function (e) {
+            this.classList.remove("montage-InputRange--active");
+        }
+    },
+
+
+    handleThumbTranslateStart: {
         value: function (e) {
             this._startTranslate = e.translateX;
             this._startValue = this.value;
         }
     },
 
-    handleTranslate: {
+    handleThumbTranslate: {
         value: function (event) {
             this.value = this._startValue + ((event.translateX - this._startTranslate) / this._sliderWidth) * (this._max - this._min);
 
         }
     },
 
-    handleTranslateEnd: {
+    handleThumbTranslateEnd: {
         value: function (e) {
+            this.classList.remove("montage-InputRange--active");
         }
     },
 
