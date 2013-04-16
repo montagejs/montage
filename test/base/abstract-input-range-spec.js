@@ -238,7 +238,7 @@ describe("test/base/abstract-input-range-spec", function () {
             it("should listen for translateStart only after prepareForActivationEvents", function() {
                 var listeners,
                     em = anInputRange.eventManager;
-                anInputRange._handleElement = anElement;
+                anInputRange._thumbSliderElement = anElement;
 
                 anInputRange.enterDocument(true);
 
@@ -253,7 +253,7 @@ describe("test/base/abstract-input-range-spec", function () {
             it("should listen for translate only after prepareForActivationEvents", function() {
                 var listeners,
                     em = anInputRange.eventManager;
-                anInputRange._handleElement = anElement;
+                anInputRange._thumbSliderElement = anElement;
 
                 anInputRange.enterDocument(true);
 
@@ -268,7 +268,7 @@ describe("test/base/abstract-input-range-spec", function () {
             it("should listen for translateEnd only after prepareForActivationEvents", function() {
                 var listeners,
                     em = anInputRange.eventManager;
-                anInputRange._handleElement = anElement;
+                anInputRange._thumbSliderElement = anElement;
 
                 anInputRange.enterDocument(true);
 

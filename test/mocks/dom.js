@@ -13,6 +13,8 @@ exports.element = function () {
         getAttribute: function () {},
         focus: function () {},
         blur: function () {},
+        addEventListener: function () {},
+        removeEventListener: function () {},
         tagName: "MOCK"
     };
 }
