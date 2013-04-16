@@ -903,7 +903,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
 
             if (value instanceof Element) {
                 this._findAndDetachComponents(value, componentsToAdd);
-            } else if (value) {
+            } else if (value && value[0]) {
                 for (var i = 0; i < value.length; i++) {
                     this._findAndDetachComponents(value[i], componentsToAdd);
                 }
