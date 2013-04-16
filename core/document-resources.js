@@ -74,7 +74,7 @@ var DocumentResources = Montage.create(Montage, {
 
     addScript: {
         value: function(script) {
-            var url = script.src;
+            var url = this.normalizeUrl(script.src);
 
             if (url) {
                 if (this.isResourcePreloaded(url)) {
