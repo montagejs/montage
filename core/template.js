@@ -797,13 +797,8 @@ var Template = Montage.create(Montage, {
     createTemplateFromElementContents: {
         value: function(elementId) {
             var element,
-                elementIds,
-                labels,
-                fragment,
                 template,
                 range,
-                serialization = Serialization.create(),
-                extractedSerialization,
                 cache = this._templateFromElementContentsCache;
 
             if (!cache) {
@@ -819,9 +814,54 @@ var Template = Montage.create(Montage, {
                 return Object.create(cache[elementId]);
             }
 
-            // Find all elements of interest to the serialization.
             element = this.getElementById(elementId);
-            elementIds = this._getChildrenElementIds(element);
+
+            // Clone the element contents
+            range = this.document.createRange();
+            range.selectNodeContents(element);
+
+            // Create the new template with the extracted serialization and
+            // markup.
+            template = this.createTemplateFromRange(range);
+
+            cache[elementId] = template;
+
+            // We always return an extension of the cached object, this
+            // is because the template is mutable.
+            // An alternate idea would be to clone it but it's much more
+            // expensive.
+            return Object.create(template);
+        }
+    },
+
+    createTemplateFromElement: {
+        value: function(elementId) {
+            var element,
+                range;
+
+            element = this.getElementById(elementId);
+
+            // Clone the element contents
+            range = this.document.createRange();
+            range.selectNode(element);
+
+            return this.createTemplateFromRange(range);
+        }
+    },
+
+    createTemplateFromRange: {
+        value: function (range) {
+            var fragment,
+                elementIds,
+                labels,
+                template,
+                serialization = Serialization.create(),
+                extractedSerialization;
+
+            fragment = range.cloneContents();
+
+            // Find all elements of interest to the serialization.
+            elementIds = this._getChildrenElementIds(fragment);
 
             // Create a new serialization with the components found in the
             // element.
@@ -830,11 +870,6 @@ var Template = Montage.create(Montage, {
                 elementIds);
             extractedSerialization = serialization.extractSerialization(
                 labels, ["owner"]);
-
-            // Clone the element contents
-            range = this.document.createRange();
-            range.selectNodeContents(element);
-            fragment = range.cloneContents();
 
             // Create the new template with the extracted serialization and
             // markup.
@@ -845,13 +880,7 @@ var Template = Montage.create(Montage, {
                 .getSerializationString();
             template._resources = this.getResources();
 
-            cache[elementId] = template;
-
-            // We always return an extension of the cached object, this
-            // is because the template is mutable.
-            // An alternate idea would be to clone it but it's much more
-            // expensive.
-            return Object.create(template);
+            return template;
         }
     },
 

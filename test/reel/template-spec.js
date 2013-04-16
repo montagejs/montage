@@ -842,6 +842,39 @@ describe("reel/template-spec", function() {
             });
         });
 
+        it("should create a sub template from a leaf element", function() {
+            var moduleId = "reel/template/sub-template.html",
+                expectedObjects = {
+                    "list": {
+                        "prototype": "montage/ui/repetition.reel",
+                        "properties": {
+                            "element": {"#": "list"}
+                        }
+                    },
+                    "item": {
+                        "prototype": "montage/ui/text.reel",
+                        "properties": {
+                            "element": {"#": "item"}
+                        }
+                    },
+
+                    "owner": {}
+                },
+                subTemplate,
+                objects;
+
+            return template.initWithModuleId(moduleId, require)
+            .then(function() {
+                subTemplate = template.createTemplateFromElement("list");
+                objects = JSON.parse(subTemplate.objectsString);
+
+                expect(objects).toEqual(expectedObjects);
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+
         it("should create a sub template with composed components", function() {
             var moduleId = "reel/template/sub-template.html",
                 expectedObjects = {
