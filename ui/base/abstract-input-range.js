@@ -41,11 +41,13 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
      */
     didCreate: {
         value: function () {
-            this.addOwnPropertyChangeListener("_sliderWidth", this);
+            this.addOwnPropertyChangeListener("_sliderMagnitude", this);
             this.addOwnPropertyChangeListener("_min", this);
             this.addOwnPropertyChangeListener("_max", this);
             this.addOwnPropertyChangeListener("_value", this);
             this.addOwnPropertyChangeListener("_step", this);
+            this.addOwnPropertyChangeListener("axis", this);
+            this.axis = "horizontal";
 
             this.defineBinding("enabled ", {"<->": "!disabled", source: this});
         }
@@ -56,7 +58,7 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
             if (firstTime) {
                 this._translateComposer = TranslateComposer.create();
                 this._translateComposer.identifier = "thumb"
-                this._translateComposer.axis = "horizontal";
+                this._translateComposer.axis = this.axis;
                 this._translateComposer.hasMomentum = false;
                 this.addComposerForElement(this._translateComposer, this._thumbSliderElement);
 
@@ -88,18 +90,25 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
             // needs to be fixed for pointer handling
             this._thumbSliderElement.addEventListener("touchstart", this, false);
             document.addEventListener("touchend", this, false);
+            this._thumbSliderElement.addEventListener("mousedown", this, false);
+            document.addEventListener("mouseup", this, false);
         }
     },
 
     willDraw: {
         value: function () {
-            this._sliderWidth = this._thumbSliderElement.offsetWidth;
+            this._sliderMagnitude = this.calculateSliderMagnitude();
         }
     },
 
+
     draw: {
         value: function () {
-            this._thumbSliderElement.style[this._transform] = "translateX(" + this._valuePercentage + "%)";
+            if(this.axis === "vertical") {
+                this._thumbSliderElement.style[this._transform] = "translateY(" + this._valuePercentage + "%)";
+            } else {
+                this._thumbSliderElement.style[this._transform] = "translateX(" + this._valuePercentage + "%)";
+            }
         }
     },
 
@@ -117,17 +126,37 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
         }
     },
 
+    handleMousedown: {
+        value: function (e) {
+            this.classList.add("montage-InputRange--active");
+        }
+    },
+
+    handleMouseup: {
+        value: function (e) {
+            this.classList.remove("montage-InputRange--active");
+        }
+    },
+
 
     handleThumbTranslateStart: {
         value: function (e) {
-            this._startTranslate = e.translateX;
+            if(this.axis === "vertical") {
+                this._startTranslate = e.translateY;
+            } else {
+                this._startTranslate = e.translateX;
+            }
             this._startValue = this.value;
         }
     },
 
     handleThumbTranslate: {
         value: function (event) {
-            this.value = this._startValue + ((event.translateX - this._startTranslate) / this._sliderWidth) * (this._max - this._min);
+            if(this.axis === "vertical") {
+                this.value = this._startValue + ((this._startTranslate - event.translateY) / this._sliderMagnitude) * (this._max - this._min);
+            } else {
+                this.value = this._startValue + ((event.translateX - this._startTranslate) / this._sliderMagnitude) * (this._max - this._min);
+            }
 
         }
     },
@@ -240,6 +269,10 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
         }
     },
 
+    axis: {
+        value: null
+    },
+
     // Machinery
 
     _inputRangeThumbElement: {
@@ -262,7 +295,7 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
         value: null
     },
 
-    _sliderWidth: {
+    _sliderMagnitude: {
         value: null
     },
 
@@ -278,9 +311,34 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
         value: null
     },
 
+    calculateSliderMagnitude: {
+        value: function() {
+            if(this.axis === "vertical") {
+                return this._thumbSliderElement.offsetHeight;
+            } else {
+                return this._thumbSliderElement.offsetWidth;
+            }
+        }
+    },
+
+    handleAxisChange: {
+        value: function() {
+            if (this._translateComposer) {
+                this._translateComposer.axis = this.axis;
+            }
+            if(this.axis === "vertical") {
+                this.classList.add("montage-InputRange--vertical");
+                this.classList.remove("montage-InputRange--horizontal");
+            } else {
+                this.classList.remove("montage-InputRange--vertical");
+                this.classList.add("montage-InputRange--horizontal");
+            }
+        }
+    },
+
     handlePropertyChange: {
         value: function(changeValue, key, object) {
-            if(key.match(/_sliderWidth|_min|_max|_value|_step/) !== null) {
+            if(key.match(/_sliderMagnitude|_min|_max|_value|_step/) !== null) {
 
                 //adjust the value
                 if (this.value <= this.min) {
@@ -310,7 +368,7 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
 
                 // ~~ is vastly faster then Math.floor
                 // http://jsperf.com/math-floor-vs-math-round-vs-parseint/8
-                this._valuePercentage = (~~(((this.value - this._min) * this._sliderWidth) / (this._max - this._min)) * 100 / this._sliderWidth);
+                this._valuePercentage = (~~(((this.value - this._min) * this._sliderMagnitude) / (this._max - this._min)) * 100 / this._sliderMagnitude);
                 this.needsDraw = true;
             }
         }
