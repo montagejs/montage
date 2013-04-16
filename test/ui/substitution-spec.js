@@ -145,6 +145,18 @@ TestPageLoader.queueTest("substitution-test/substitution-test", function(testPag
                     expect(substitution._switchElements.one.className).toBe("Foo");
                 });
             });
+
+            it("should not use switchElements to draw a switchValue that is currently drawn because it hasn't been updated", function() {
+                var substitution = templateObjects.substitution7;
+
+                substitution.switchValue = "two";
+                substitution.switchValue = "one";
+
+                testPage.waitForComponentDraw(substitution);
+                runs(function() {
+                    expect(substitution.element.children[0].className).toBe("Foo");
+                });
+            });
         });
 
         describe("programmatic api", function() {

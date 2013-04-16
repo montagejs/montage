@@ -127,7 +127,11 @@ exports.Substitution = Montage.create(Slot, /** @lends Substitution# */ {
 
             this._switchValue = value;
 
-            if (this._switchElements && !this.isDeserializing) {
+            // switchElements is only ready after the first draw
+            // At first draw the substitution automatically draws what is in
+            // the switchValue so we defer any content loading until the first
+            // draw.
+            if (!this._firstDraw && !this.isDeserializing) {
                 this._loadContent(value);
             }
         }
@@ -157,7 +161,15 @@ exports.Substitution = Montage.create(Slot, /** @lends Substitution# */ {
 
     _loadContent: {
         value: function(value) {
-            this.content = this._switchElements[value] || null;
+            // If the value being loaded is already in the document then use it
+            // instead of the element in the switchElements. The element in the
+            // document could be a diferent one (if it is a component that had
+            // its element replaced by its template).
+            if (value === this._drawnSwitchValue) {
+                this.content = this.element.children[0];
+            } else {
+                this.content = this._switchElements[value] || null;
+            }
 
             if (!this._switchComponentTreeLoaded[value]) {
                 this._loadSwitchComponentTree(value);

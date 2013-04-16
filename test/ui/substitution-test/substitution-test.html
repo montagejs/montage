@@ -81,6 +81,21 @@
             "properties": {
                 "element": {"#": "foo1"}
             }
+        },
+
+        "substitution7": {
+            "prototype": "montage/ui/substitution.reel",
+            "properties": {
+                "element": {"#": "substitution7"},
+                "switchValue": "one"
+            }
+        },
+
+        "foo2": {
+            "prototype": "ui/substitution-test/foo.reel",
+            "properties": {
+                "element": {"#": "foo2"}
+            }
         }
     }</script>
 </head>
@@ -120,6 +135,11 @@
     <div data-montage-id="substitution6">
         <div data-arg="one" data-montage-id="foo1"></div>
         <div data-arg="two" class="two"></div>
+    </div>
+
+    <div data-montage-id="substitution7">
+        <div data-arg="one" data-montage-id="foo2"></div>
+        <div data-arg="two"></div>
     </div>
 </body>
 </html>
