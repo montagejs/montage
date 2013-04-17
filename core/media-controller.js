@@ -363,6 +363,7 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
 
             // Reset the status
             this.status = this.STOPPED;
+            this.position = 0;
         }
     },
 
