@@ -46,6 +46,19 @@ var DocumentPart = Montage.create(Montage, {
         }
     },
 
+    removeChildComponent: {
+        value: function(childComponent) {
+            var childComponents = this.childComponents,
+                ix = childComponents.indexOf(childComponent);
+
+            if (ix > -1) {
+                childComponents.splice(ix, 1);
+                childComponent._cachedParentComponent = null;
+                childComponent._alternateParentComponent = null;
+            }
+        }
+    },
+
     _addToDrawList: {
         value: function() {}
     },
