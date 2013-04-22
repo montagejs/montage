@@ -495,6 +495,20 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                     expect(componentE1.childComponents.length).toBe(1);
                     expect(componentE1.childComponents[0]).toBe(testPage.test.componentE11);
                 });
+
+                it("should remove a component from its previous parent component childComponent's when it is reattached in another part of the component tree", function() {
+                    var componentF = testPage.test.componentF,
+                        componentF1 = testPage.test.componentF1,
+                        componentG = testPage.test.componentG,
+                        element = componentF1.element;
+
+                    element.parentNode.removeChild(element);
+                    componentG.element.appendChild(element);
+
+                    componentF1.attachToParentComponent();
+
+                    expect(componentF.childComponents).not.toContain(componentF1);
+                });
             });
 
             describe("the owner component property", function() {

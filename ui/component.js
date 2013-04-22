@@ -674,6 +674,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
      */
     attachToParentComponent: {
         value: function() {
+            this.detachFromParentComponent();
             this._cachedParentComponent = null;
 
             var parentComponent = this.parentComponent,
