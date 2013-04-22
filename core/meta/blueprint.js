@@ -16,6 +16,7 @@ var BlueprintReference = require("core/meta/blueprint-reference").BlueprintRefer
 var PropertyBlueprint = require("core/meta/property-blueprint").PropertyBlueprint;
 var AssociationBlueprint = require("core/meta/association-blueprint").AssociationBlueprint;
 var DerivedPropertyBlueprint = require("core/meta/derived-property-blueprint").DerivedPropertyBlueprint;
+var EventBlueprint = require("core/meta/event-blueprint").EventBlueprint;
 var PropertyValidationRule = require("core/meta/validation-rule").PropertyValidationRule;
 
 var logger = require("core/logger").logger("blueprint");
@@ -88,6 +89,9 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
             if (Object.getOwnPropertyNames(this._propertyBlueprintGroups).length > 0) {
                 serializer.setProperty("propertyBlueprintGroups", this._propertyBlueprintGroups);
             }
+            if (this._eventBlueprints.length > 0) {
+                serializer.setProperty("eventBlueprints", this._eventBlueprints);
+            }
             if (this._propertyValidationRules.length > 0) {
                 serializer.setProperty("propertyValidationRules", this._propertyValidationRules);
             }
@@ -119,6 +123,10 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
             value = deserializer.getProperty("propertyBlueprintGroups");
             if (value) {
                 this._propertyBlueprintGroups = value;
+            }
+            value = deserializer.getProperty("eventBlueprints");
+            if (value) {
+                this._eventBlueprints = value;
             }
             value = deserializer.getProperty("propertyValidationRules");
             if (value) {
@@ -767,6 +775,140 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
         }
     },
 
+
+    /**
+     @type {Property}
+     @default {Array} new Array()
+     */
+    _eventBlueprints: {
+        value: [],
+        distinct: true
+    },
+
+    /**
+     @type {Property}
+     @default {Array} new Array()
+     */
+    eventBlueprints: {
+        get: function() {
+            var eventBlueprints = [];
+            eventBlueprints = propertyBlueprints.concat(this._eventBlueprints);
+            if (this.parent) {
+                eventBlueprints = eventBlueprints.concat(this.parent.eventBlueprints);
+            }
+            return eventBlueprints;
+        }
+    },
+
+    /**
+     @private
+     */
+    _eventBlueprintsTable: {
+        value: {},
+        distinct: true,
+        writable: false
+    },
+
+
+    /**
+     Add a new property blueprint to this blueprint.<br>
+     If that property blueprint was associated with another blueprint it will be removed first.
+     @function
+     @param {String} property blueprint The property blueprint to be added.
+     @returns property blueprint
+     */
+    addEventBlueprint: {
+        value: function(eventBlueprint) {
+            if (eventBlueprint !== null && eventBlueprint.name !== null) {
+                var index = this._eventBlueprints.indexOf(eventBlueprint);
+                if (index < 0) {
+                    if ((eventBlueprint.owner !== null) && (eventBlueprint.owner !== this)) {
+                        eventBlueprint.owner.removeEventBlueprint(eventBlueprint);
+                    }
+                    this._eventBlueprints.push(eventBlueprint);
+                    this._eventBlueprintsTable[eventBlueprint.name] = eventBlueprint;
+                    eventBlueprint._owner = this;
+                }
+            }
+            return eventBlueprint;
+        }
+    },
+
+    /**
+     Removes an property blueprint from the property blueprint list of this blueprint.
+     @function
+     @param {Object} property blueprint The property blueprint to be removed.
+     @returns property blueprint
+     */
+    removeEventBlueprint: {
+        value: function(eventBlueprint) {
+            if (eventBlueprint !== null && eventBlueprint.name !== null) {
+                var index = this._eventBlueprints.indexOf(eventBlueprint);
+                if (index >= 0) {
+                    this._eventBlueprints.splice(index, 1);
+                    delete this._eventBlueprintsTable[eventBlueprint.name];
+                    eventBlueprint._owner = null;
+                }
+            }
+            return eventBlueprint;
+        }
+    },
+
+    /**
+     * Return a new event blueprint.<br/>
+     * <b>Note: </b> This is the canonical way of creating new event blueprint in order to enable subclassing.
+     * @param {String} name name of the event blueprint to create
+     */
+    newEventBlueprint: {
+        value: function(name) {
+            return EventBlueprint.create().initWithNameAndBlueprint(name, this);
+        }
+    },
+
+
+    /**
+     Convenience to add an event blueprint.
+     @function
+     @param {String} name TODO
+     @returns relationship
+     */
+    addEventBlueprintNamed: {
+        value: function(name, inverse) {
+            return this.addEventBlueprint(this.newEventBlueprint(name));
+        }
+    },
+
+    /**
+     @function
+     @param {String} name TODO
+     @returns event blueprint
+     */
+    eventBlueprintForName: {
+        value: function(name) {
+            var eventBlueprint = this._eventBlueprintsTable[name];
+            if (typeof eventBlueprint === "undefined") {
+                eventBlueprint = UnknownEventBlueprint;
+                var anEventBlueprint, index;
+                for (index = 0; typeof (anEventBlueprint = this._eventBlueprints[index]) !== "undefined"; index++) {
+                    if (anEventBlueprint.name === name) {
+                        eventBlueprint = anEventBlueprint;
+                        break;
+                    }
+                }
+                this._eventBlueprintsTable[name] = eventBlueprint;
+            }
+            if (eventBlueprint === UnknownEventBlueprint) {
+                eventBlueprint = null;
+            }
+            if ((! eventBlueprint) && (this.parent)) {
+                eventBlueprint = this.parent.eventBlueprintForName(name);
+            }
+            return eventBlueprint;
+        }
+
+    },
+
+
     /**
      * @private
      */
@@ -866,4 +1008,5 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
 var UnknownBlueprint = Object.freeze(Blueprint.create().initWithName("Unknown"));
 
 var UnknownPropertyBlueprint = Object.freeze(PropertyBlueprint.create().initWithNameBlueprintAndCardinality("Unknown", null, 1));
+var UnknownEventBlueprint = Object.freeze(EventBlueprint.create().initWithNameAndBlueprint("Unknown", null));
 

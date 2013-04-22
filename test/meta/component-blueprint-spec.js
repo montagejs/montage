@@ -38,7 +38,22 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
             component1.blueprint = newBlueprint;
             var blueprintPromise = component1.blueprint;
             return blueprintPromise.then(function (blueprint) {
-                expect(blueprint).not.toBeNull();
+                expect(blueprint).toBeTruthy();
+            });
+        });
+
+        it("can create new event blueprint", function () {
+            var newBlueprint = Blueprint.create().initWithName(component1.identifier);
+            expect(newBlueprint).toBeTruthy();
+            var newEventBlueprint = newBlueprint.addEventBlueprintNamed("action");
+            newEventBlueprint.detailKeys = ["one", "two", "three"]
+            component1.blueprint = newBlueprint;
+            var blueprintPromise = component1.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).toBeTruthy();
+                var eventBlueprint = blueprint.eventBlueprintForName("action");
+                expect(eventBlueprint).toBeTruthy();
+                expect(eventBlueprint.detailKeys.length).toBe(3);
             });
         });
 
@@ -54,6 +69,8 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
             newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty4");
             newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty5");
             //
+            newBlueprint.addEventBlueprintNamed("action");
+            //
             newBlueprint.addPropertyBlueprintToGroupNamed(newBlueprint.addToOnePropertyBlueprintNamed("requiredBindableProperty1"), "required");
             newBlueprint.addPropertyBlueprintToGroupNamed(newBlueprint.addToOnePropertyBlueprintNamed("requiredBindableProperty2"), "required");
             newBlueprint.addPropertyBlueprintToGroupNamed(newBlueprint.addToOnePropertyBlueprintNamed("requiredBindableProperty3"), "required");
@@ -64,7 +81,7 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
                 expect(blueprint).toBeTruthy();
                 var serializedDescription = serializer.serializeObject(blueprint);
                 expect(serializedDescription).toBeTruthy();
-                //console.log(serializedDescription);
+                console.log(serializedDescription);
             });
         });
 
