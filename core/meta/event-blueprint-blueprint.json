@@ -43,7 +43,7 @@
     "event_blueprint_detailKeys": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
-            "name": "enumValues",
+            "name": "detailKeys",
             "blueprint": {
                 "@": "root"
             },
