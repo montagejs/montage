@@ -208,6 +208,10 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
         value: false
     },
 
+    originalElement: {
+        value: null
+    },
+
     /**
      * @private
      */
@@ -1483,6 +1487,9 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 firstDraw = this._firstDraw;
 
             this._treeLevel = level;
+            if (firstDraw) {
+                this.originalElement = this.element;
+            }
             if (this.needsDraw) {
                 rootComponent.addToDrawCycle(this);
             }
@@ -1495,6 +1502,9 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 if (typeof this.enterDocument === "function") {
                     this.enterDocument(firstDraw);
                 }
+            }
+            if (firstDraw) {
+                this.originalElement = null;
             }
 
             if (drawLogger.isDebug) {
