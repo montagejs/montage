@@ -9,6 +9,7 @@ exports.Swipe = Montage.create(Montage, {
             var dummyComponent = Montage.create(Component);
             dummyComponent.hasTemplate = false;
             dummyComponent.element = document.body;
+            dummyComponent.attachToParentComponent();
             dummyComponent.needsDraw = true;
             this.swipeComposer = SwipeComposer.create();
             dummyComponent.addComposer(this.swipeComposer);

@@ -46,21 +46,42 @@ var Draw = exports.Draw = Montage.create(TestController, {
     loadComponents: {
         enumerable: false,
         value: function() {
+            if (this.componentA) {
+                this.componentA.detachFromParentComponent();
+            }
+            if (this.componentA1) {
+                this.componentA1.detachFromParentComponent();
+            }
+            if (this.componentB) {
+                this.componentB.detachFromParentComponent();
+            }
+            if (this.componentB1) {
+                this.componentB1.detachFromParentComponent();
+            }
+            if (this.componentB2) {
+                this.componentB2.detachFromParentComponent();
+            }
+
             this.componentA = Montage.create(Component);
             this.componentA.hasTemplate = false;
             this.componentA.element = document.getElementsByClassName("componentA")[0];
+            this.componentA.attachToParentComponent();
             this.componentA1 = Montage.create(Component);
             this.componentA1.hasTemplate = false;
             this.componentA1.element = document.getElementsByClassName("componentA1")[0];
+            this.componentA1.attachToParentComponent();
             this.componentB = Montage.create(FirstDrawListenerComponent);
             this.componentB.hasTemplate = false;
             this.componentB.element = document.getElementsByClassName("componentB")[0];
+            this.componentB.attachToParentComponent();
             this.componentB1 = Montage.create(FirstDrawListenerComponent);
             this.componentB1.hasTemplate = false;
             this.componentB1.element = document.getElementsByClassName("componentB1")[0];
+            this.componentB1.attachToParentComponent();
             this.componentB2 = Montage.create(Component);
             this.componentB2.hasTemplate = false;
             this.componentB2.element = document.getElementsByClassName("componentB2")[0];
+            this.componentB2.attachToParentComponent();
             return this;
         }
     },

@@ -497,6 +497,7 @@ var Application = exports.Application = Montage.create(Target, /** @lends Applic
 
         var popupSlot = Slot.create();
         popupSlot.element = slotEl;
+        popupSlot.attachToParentComponent();
         return popupSlot;
     }},
 
