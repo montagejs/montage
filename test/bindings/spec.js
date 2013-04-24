@@ -674,7 +674,7 @@ describe("bindings/spec", function() {
 
             Bindings.defineBinding(target, "foo", {
                 source: source,
-                "<->": "bar.*"
+                "<->": "bar.rangeContent()"
             });
 
             var changeListener = {
