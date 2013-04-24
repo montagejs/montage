@@ -1878,7 +1878,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                     if (drawLogger.isDebug) {
                         drawLogger.debug(this, "parentComponent is null");
                     }
-                } else if (parentComponent.childComponents.indexOf(this) >= 0) {
+                } else {
                     parentComponent._addToDrawList(this);
                     if (drawLogger.isDebug) {
                         drawLogger.debug("drawList -- childComponent",this._montage_metadata.objectName," added to ",parentComponent._montage_metadata.objectName);
