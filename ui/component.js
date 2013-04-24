@@ -476,10 +476,6 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     parentComponent: {
         enumerable: false,
         get: function() {
-            var cachedParentComponent = this._cachedParentComponent;
-            if (cachedParentComponent == null) {
-                this._cachedParentComponent = this.findParentComponent();
-            }
             return this._cachedParentComponent;
         }
     },
@@ -681,7 +677,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
             this.detachFromParentComponent();
             this._cachedParentComponent = null;
 
-            var parentComponent = this.parentComponent,
+            var parentComponent = this.findParentComponent(),
                 childComponents,
                 childComponent;
 
