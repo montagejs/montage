@@ -53,7 +53,7 @@ var DocumentPart = Montage.create(Montage, {
 
             if (ix > -1) {
                 childComponents.splice(ix, 1);
-                childComponent._cachedParentComponent = null;
+                childComponent._parentComponent = null;
                 childComponent._alternateParentComponent = null;
             }
         }

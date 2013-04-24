@@ -461,7 +461,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     /**
      * @private
      */
-    _cachedParentComponent: {
+    _parentComponent: {
         value: null
     },
 
@@ -476,7 +476,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     parentComponent: {
         enumerable: false,
         get: function() {
-            return this._cachedParentComponent;
+            return this._parentComponent;
         }
     },
 
@@ -660,7 +660,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
             if (this.childComponents.indexOf(childComponent) == -1) {
                 this.childComponents.push(childComponent);
                 childComponent._enterDocument();
-                childComponent._cachedParentComponent = this;
+                childComponent._parentComponent = this;
 
                 if (childComponent.needsDraw) {
                     childComponent._addToParentsDrawList();
@@ -675,7 +675,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     attachToParentComponent: {
         value: function() {
             this.detachFromParentComponent();
-            this._cachedParentComponent = null;
+            this._parentComponent = null;
 
             var parentComponent = this.findParentComponent(),
                 childComponents,
@@ -717,7 +717,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
 
             if (ix > -1) {
                 childComponents.splice(ix, 1);
-                childComponent._cachedParentComponent = null;
+                childComponent._parentComponent = null;
                 childComponent._alternateParentComponent = null;
 
                 childComponent._leaveDocument();
@@ -911,7 +911,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 }
             }
 
-            // not sure if I can rely on _cachedParentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
+            // not sure if I can rely on _parentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
             for (var i = 0, component; (component = componentsToAdd[i]); i++) {
                 this.addChildComponent(component);
             }
