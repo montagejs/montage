@@ -60,13 +60,13 @@ var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @len
             this.addComposer(this._pressComposer);
             this._pressComposer.defineBinding("longPressThreshold ", {"<-": "holdThreshold", source: this});
 
-            this.defineBinding("enabled ", {"<->": "!disabled", source: this});
+            this.defineBinding("enabled ", {"<->": "!disabled"});
 
             this.addOwnPropertyChangeListener("converter", this);
 
             //classList management
-            this.defineBinding("classList.has('montage--disabled')", {"<-": "disabled", source: this});
-            this.defineBinding("classList.has('montage--active')", {"<-": "active", source: this});
+            this.defineBinding("classList.has('montage--disabled')", {"<-": "disabled"});
+            this.defineBinding("classList.has('montage--active')", {"<-": "active"});
 
         }
     },
