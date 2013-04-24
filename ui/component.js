@@ -461,8 +461,18 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     /**
      * @private
      */
-    _parentComponent: {
+    __parentComponent: {
         value: null
+    },
+
+    _parentComponent: {
+        set: function(value) {
+            this.__parentComponent = value;
+            this.dispatchOwnPropertyChange("parentComponent", value);
+        },
+        get: function() {
+            return this.__parentComponent;
+        }
     },
 
     /**
