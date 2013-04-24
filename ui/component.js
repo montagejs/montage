@@ -731,6 +731,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                     ix = this._drawList.indexOf(childComponent);
                     this._drawList.splice(ix, 1);
                 }
+                this.rootComponent.removeFromCannotDrawList(childComponent);
             }
         }
     },
@@ -2635,8 +2636,9 @@ var rootComponent = Montage.create(Component, /** @lends RootComponent# */{
      * @param {Component} componentId The component ID
      */
     removeFromCannotDrawList: {
-        value: function(componentId) {
-            delete this._cannotDrawList[componentId];
+        value: function(component) {
+            delete this._cannotDrawList[component.uuid];
+
             if (Object.keys(this._cannotDrawList).length === 0 && this._needsDrawList.length > 0) {
                 if (!this._clearNeedsDrawTimeOut) {
                     var self = this;
