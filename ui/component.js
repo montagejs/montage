@@ -1539,10 +1539,6 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
             var component, composer, length, i;
             if (this._firstDraw) {
 
-                if (this.parentComponent && typeof this.parentComponent.childComponentWillPrepareForDraw === "function") {
-                    this.parentComponent.childComponentWillPrepareForDraw(this);
-                }
-
                 this._prepareForDraw();
 
                 // Load any non lazyLoad composers that have been added
