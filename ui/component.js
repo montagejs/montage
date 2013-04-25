@@ -669,7 +669,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
         value: function (childComponent) {
             if (this.childComponents.indexOf(childComponent) == -1) {
                 this.childComponents.push(childComponent);
-                childComponent._enterDocument();
+                childComponent._prepareForEnterDocument();
                 childComponent._parentComponent = this;
 
                 if (childComponent.needsDraw) {
@@ -785,12 +785,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
         }
     },
 
-    /**
-     * This method just prepares the component to enterDocument the next time
-     * it draws. Unlike the _leaveDocument counterpart, enterDocument is *not*
-     * called at this point in time.
-     */
-    _enterDocument: {
+    _prepareForEnterDocument: {
         value: function() {
             this._needsEnterDocument = true;
 
@@ -1509,6 +1504,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 if (typeof this.enterDocument === "function") {
                     this.enterDocument(firstDraw);
                 }
+                this._enterDocument(firstDraw);
             }
             if (firstDraw) {
                 this.originalElement = null;
@@ -1547,7 +1543,6 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                     this.parentComponent.childComponentWillPrepareForDraw(this);
                 }
 
-                this._willPrepareForDraw();
                 this._prepareForDraw();
 
                 // Load any non lazyLoad composers that have been added
@@ -2315,57 +2310,63 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     /**
      * @private
      */
-    _willPrepareForDraw: {
-        value: function() {
-            // The element is now ready, so we can read the attributes that
-            // have been set on it.
-            var attributes, i, length, name, value, attributeName, descriptor;
-            attributes = this.element.attributes;
-            if (attributes) {
-                length = attributes.length
-                for(i=0; i < length; i++) {
-                    name = attributes[i].name;
-                    value = attributes[i].value;
+    _enterDocument: {
+        value: function(firstTime) {
+            var originalElement;
 
-                    descriptor = this._getElementAttributeDescriptor(name, this);
-                    // check if this attribute from the markup is a well-defined attribute of the component
-                    if(descriptor || (typeof this[name] !== 'undefined')) {
-                        // at this point we know that we will need it so create it.
-                        if(this._elementAttributeValues === null) {
-                            this._elementAttributeValues = {};
-                        }
-                        // only set the value if a value has not already been set by binding
-                        if(typeof this._elementAttributeValues[name] === 'undefined') {
-                            this._elementAttributeValues[name] = value;
-                            if( (typeof this[name] == 'undefined') || this[name] == null) {
-                                this[name] = value;
+            if (firstTime) {
+// The element is now ready, so we can read the attributes that
+                // have been set on it.
+                originalElement = this.originalElement;
+
+                var attributes, i, length, name, value, attributeName, descriptor;
+                attributes = originalElement.attributes;
+                if (attributes) {
+                    length = attributes.length;
+                    for(i=0; i < length; i++) {
+                        name = attributes[i].name;
+                        value = attributes[i].value;
+
+                        descriptor = this._getElementAttributeDescriptor(name, this);
+                        // check if this attribute from the markup is a well-defined attribute of the component
+                        if(descriptor || (typeof this[name] !== 'undefined')) {
+                            // at this point we know that we will need it so create it.
+                            if(this._elementAttributeValues === null) {
+                                this._elementAttributeValues = {};
+                            }
+                            // only set the value if a value has not already been set by binding
+                            if(typeof this._elementAttributeValues[name] === 'undefined') {
+                                this._elementAttributeValues[name] = value;
+                                if( (typeof this[name] == 'undefined') || this[name] == null) {
+                                    this[name] = value;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            // textContent is a special case since it isn't an attribute
-            descriptor = this._getElementAttributeDescriptor('textContent', this);
-            if(descriptor) {
-                // check if this element has textContent
-                var textContent = this.element.textContent;
-                if(typeof this._elementAttributeValues.textContent === 'undefined') {
-                    this._elementAttributeValues.textContent = textContent;
-                    if( this.textContent == null) {
-                        this.textContent = textContent;
+                // textContent is a special case since it isn't an attribute
+                descriptor = this._getElementAttributeDescriptor('textContent', this);
+                if(descriptor) {
+                    // check if this element has textContent
+                    var textContent = originalElement.textContent;
+                    if(typeof this._elementAttributeValues.textContent === 'undefined') {
+                        this._elementAttributeValues.textContent = textContent;
+                        if( this.textContent == null) {
+                            this.textContent = textContent;
+                        }
                     }
                 }
-            }
 
-            // Set defaults for any properties that weren't serialised or set
-            // as attributes on the element.
-            if (this._elementAttributeDescriptors) {
-                for (attributeName in this._elementAttributeDescriptors) {
-                    descriptor = this._elementAttributeDescriptors[attributeName];
-                    var _name = "_"+attributeName;
-                    if (this[_name] === null && descriptor !== null && "value" in descriptor) {
-                        this[_name] = this._elementAttributeDescriptors[attributeName].value;
+                // Set defaults for any properties that weren't serialised or set
+                // as attributes on the element.
+                if (this._elementAttributeDescriptors) {
+                    for (attributeName in this._elementAttributeDescriptors) {
+                        descriptor = this._elementAttributeDescriptors[attributeName];
+                        var _name = "_"+attributeName;
+                        if (this[_name] === null && descriptor !== null && "value" in descriptor) {
+                            this[_name] = this._elementAttributeDescriptors[attributeName].value;
+                        }
                     }
                 }
             }
