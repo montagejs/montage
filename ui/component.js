@@ -2492,6 +2492,19 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 this._classListDirty = false;
             }
         }
+    },
+
+    dispose: {
+        value: function() {
+            this.cancelBindings();
+            this.detachFromParentComponent();
+            defaultEventManager.unregisterEventHandlerForElement(this, this._element);
+            this._element = value;
+
+            this.childComponents.forEach(function(component) {
+                component.dispose();
+            });
+        }
     }
 });
 
