@@ -2499,7 +2499,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
             this.cancelBindings();
             this.detachFromParentComponent();
             defaultEventManager.unregisterEventHandlerForElement(this, this._element);
-            this._element = value;
+            this._element = null;
 
             this.childComponents.forEach(function(component) {
                 component.dispose();
