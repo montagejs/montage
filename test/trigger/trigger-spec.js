@@ -17,6 +17,9 @@ describe("trigger-test", function() {
                 var deferForMontageReady = Promise.defer();
                 testWindow = iWindow;
 
+                testWindow.postMessage({
+                    type: "isMontageReady",
+                }, "*");
                 testWindow.addEventListener("message", function(event) {
                     if(event.source === testWindow) {
                         deferForMontageReady.resolve(event);
