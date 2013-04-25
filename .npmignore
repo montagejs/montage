@@ -1,3 +1,11 @@
+.npmignore
+.tmp
+.idea
+.DS_Store
+lcov.info
+lcov-report/
+node_modules
+adhoc.html
+adhoc.js
 spec
 demo
-node_modules
