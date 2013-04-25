@@ -192,19 +192,24 @@ var loadPackageDescription = Require.loadPackageDescription;
 Require.loadPackageDescription = function (dependency, config) {
     if (dependency.hash) { // use script injection
         var definition = getDefinition(dependency.hash, "package.json").promise;
-        // the package.json might come in a preloading bundle.  if so, we do not
-        // want to issue a script injection.  however, if by the time preloading
+        var location = URL.resolve(dependency.location, "package.json.load.js");
+
+        // The package.json might come in a preloading bundle. If so, we do not
+        // want to issue a script injection. However, if by the time preloading
         // has finished the package.json has not arrived, we will need to kick off
         // a request for the package.json.load.js script.
-        if (config.preloaded.isPending()) {
+        if (config.preloaded && config.preloaded.isPending()) {
             config.preloaded
-            .then(function (result) {
+            .then(function () {
                 if (definition.isPending()) {
-                    var location = URL.resolve(dependency.location, "package.json.load.js");
                     Require.loadScript(location);
                 }
             })
             .done();
+        } else if (definition.isPending()) {
+            // otherwise preloading has already completed and we don't have the
+            // package description, so load it
+            Require.loadScript(location);
         }
 
         return definition.get("exports");
