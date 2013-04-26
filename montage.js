@@ -139,155 +139,166 @@ if (typeof window !== "undefined") {
                 }));
             }
 
-            Require.loadPackage({
-                location: montageLocation,
-                hash: params.montageHash
-            }, config)
-            .then(function (montageRequire) {
-                // load the promise package so we can inject the bootstrapped
-                // promise library back into it
+            var applicationRequirePromise;
 
-                var promiseLocation;
-                if (params.promiseLocation) {
-                    promiseLocation = URL.resolve(Require.getLocation(), params.promiseLocation);
+            if (!("remoteTrigger" in params)) {
+                if ("autoPackage" in params) {
+                    Require.injectPackageDescription(location, {
+                        dependencies: {
+                            montage: "*"
+                        }
+                    }, config);
                 } else {
-                    promiseLocation = URL.resolve(montageLocation, "packages/mr/packages/q");
-                }
-
-                return [
-                    montageRequire,
-                    montageRequire.loadPackage({
-                        location: promiseLocation,
-                        hash: params.promiseHash
-                    })
-                ];
-            })
-            .spread(function (montageRequire, promiseRequire) {
-                montageRequire.inject("core/mini-url", URL);
-                montageRequire.inject("core/promise", {Promise: Promise});
-                promiseRequire.inject("q", Promise);
-
-                // install the linter, which loads on the first error
-                config.lint = function (module) {
-                    montageRequire.async("core/jshint")
-                    .then(function (JSHINT) {
-                        if (!JSHINT.JSHINT(module.text)) {
-                            console.warn("JSHint Error: "+module.location);
-                            JSHINT.JSHINT.errors.forEach(function(error) {
-                                if (error) {
-                                    console.warn("Problem at line "+error.line+" character "+error.character+": "+error.reason);
-                                    if (error.evidence) {
-                                        console.warn("    " + error.evidence);
-                                    }
-                                }
-                            });
-                        }
-                    })
-                    .done();
-                };
-
-                var montageRequirePromise;
-
-                if (!("remoteTrigger" in params)) {
-                    if ("autoPackage" in params) {
-                        montageRequire.injectPackageDescription(location, {
-                            dependencies: {
-                                montage: "*"
-                            }
-                        });
-                    } else {
-                        // handle explicit package.json location
-                        if (location.slice(location.length - 5) === ".json") {
-                            var packageDescriptionLocation = location;
-                            location = URL.resolve(location, ".");
-                            montageRequire.injectPackageDescriptionLocation(
-                                location,
-                                packageDescriptionLocation
-                            );
-                        }
+                    // handle explicit package.json location
+                    if (location.slice(location.length - 5) === ".json") {
+                        var packageDescriptionLocation = location;
+                        location = URL.resolve(location, ".");
+                        Require.injectPackageDescriptionLocation(
+                            location,
+                            packageDescriptionLocation,
+                            config
+                        );
                     }
-                    montageRequirePromise = montageRequire.loadPackage({
-                        location: location,
-                        hash: applicationHash
-                    });
-                } else {
-                    // allows the bootstrapping to be remote controlled by the
-                    // parent window, with a dynamically generated package
-                    // description
-                    var trigger = Promise.defer();
-                    window.postMessage({
-                        type: "montageReady"
-                    }, "*");
-                    var messageCallback = function (event) {
-                        if (
-                            params.remoteTrigger === event.origin &&
-                            (event.source === window || event.source === window.parent) &&
-                            event.data.type === "montageInit"
-                        ) {
+                }
+                applicationRequirePromise = Require.loadPackage({
+                    location: location,
+                    hash: applicationHash
+                }, config);
+            } else {
+                // allows the bootstrapping to be remote controlled by the
+                // parent window, with a dynamically generated package
+                // description
+                var trigger = Promise.defer();
+                window.postMessage({
+                    type: "montageReady"
+                }, "*");
+                var messageCallback = function (event) {
+                    if (
+                        params.remoteTrigger === event.origin &&
+                        (event.source === window || event.source === window.parent)
+                    ) {
+                        switch (event.data.type) {
+                        case "montageInit":
                             window.removeEventListener("message", messageCallback);
                             trigger.resolve([event.data.location, event.data.injections]);
+                            break;
+                        case "isMontageReady":
+                            // allow the injector to query the state in case
+                            // they missed the first message
+                            window.postMessage({
+                                type: "montageReady"
+                            }, "*");
                         }
-                    };
-                    window.addEventListener("message", messageCallback);
+                    }
+                };
+                window.addEventListener("message", messageCallback);
 
-                    montageRequirePromise = trigger.promise.spread(function (location, injections) {
-                        var promise = montageRequire.loadPackage({
-                            location: location,
-                            hash: applicationHash
+                applicationRequirePromise = trigger.promise.spread(function (location, injections) {
+                    var promise = Require.loadPackage({
+                        location: location,
+                        hash: applicationHash
+                    }, config);
+                    if (injections) {
+                        promise = promise.then(function (applicationRequire) {
+                            location = URL.resolve(location, ".");
+                            var packageDescriptions = injections.packageDescriptions,
+                                packageDescriptionLocations = injections.packageDescriptionLocations,
+                                mappings = injections.mappings,
+                                dependencies = injections.dependencies,
+                                index, injectionsLength;
+
+                            if (packageDescriptions) {
+                                injectionsLength = packageDescriptions.length;
+                                for (index = 0; index < injectionsLength; index++) {
+                                    applicationRequire.injectPackageDescription(
+                                        packageDescriptions[index].location,
+                                        packageDescriptions[index].description);
+                                }
+                            }
+
+                            if (packageDescriptionLocations) {
+                                injectionsLength = packageDescriptionLocations.length;
+                                for (index = 0; index < injectionsLength; index++) {
+                                    applicationRequire.injectPackageDescriptionLocation(
+                                        packageDescriptionLocations[index].location,
+                                        packageDescriptionLocations[index].descriptionLocation);
+                                }
+                            }
+
+                            if (mappings) {
+                                injectionsLength = mappings.length;
+                                for (index = 0; index < injectionsLength; index++) {
+                                    applicationRequire.injectMapping(
+                                        mappings[index].dependency,
+                                        mappings[index].name);
+                                }
+                            }
+
+                            if (dependencies) {
+                                injectionsLength = dependencies.length;
+                                for (index = 0; index < injectionsLength; index++) {
+                                    applicationRequire.injectDependency(
+                                        dependencies[index].name,
+                                        dependencies[index].version);
+                                }
+                            }
+
+                            return applicationRequire;
                         });
-                        if (injections) {
-                            promise = promise.then(function (applicationRequire) {
-                                location = URL.resolve(location, ".");
-                                var packageDescriptions = injections.packageDescriptions,
-                                    packageDescriptionLocations = injections.packageDescriptionLocations,
-                                    mappings = injections.mappings,
-                                    dependencies = injections.dependencies,
-                                    index, injectionsLength;
+                    }
 
-                                if (packageDescriptions) {
-                                    injectionsLength = packageDescriptions.length;
-                                    for (index = 0; index < injectionsLength; index++) {
-                                        applicationRequire.injectPackageDescription(
-                                            packageDescriptions[index].location,
-                                            packageDescriptions[index].description);
+                    return promise;
+                });
+            }
+
+            applicationRequirePromise
+            .then(function (applicationRequire) {
+                applicationRequire.loadPackage({
+                    location: montageLocation,
+                    hash: params.montageHash
+                })
+                .then(function (montageRequire) {
+                    // load the promise package so we can inject the bootstrapped
+                    // promise library back into it
+                    var promiseLocation;
+                    if (params.promiseLocation) {
+                        promiseLocation = URL.resolve(Require.getLocation(), params.promiseLocation);
+                    } else {
+                        promiseLocation = URL.resolve(montageLocation, "packages/mr/packages/q");
+                    }
+
+                    return [
+                        montageRequire,
+                        montageRequire.loadPackage({
+                            location: promiseLocation,
+                            hash: params.promiseHash
+                        })
+                    ];
+                })
+                .spread(function (montageRequire, promiseRequire) {
+                    montageRequire.inject("core/mini-url", URL);
+                    montageRequire.inject("core/promise", {Promise: Promise});
+                    promiseRequire.inject("q", Promise);
+
+                    // install the linter, which loads on the first error
+                    config.lint = function (module) {
+                        montageRequire.async("core/jshint")
+                        .then(function (JSHINT) {
+                            if (!JSHINT.JSHINT(module.text)) {
+                                console.warn("JSHint Error: "+module.location);
+                                JSHINT.JSHINT.errors.forEach(function(error) {
+                                    if (error) {
+                                        console.warn("Problem at line "+error.line+" character "+error.character+": "+error.reason);
+                                        if (error.evidence) {
+                                            console.warn("    " + error.evidence);
+                                        }
                                     }
-                                }
+                                });
+                            }
+                        })
+                        .done();
+                    };
 
-                                if (packageDescriptionLocations) {
-                                    injectionsLength = packageDescriptionLocations.length;
-                                    for (index = 0; index < injectionsLength; index++) {
-                                        applicationRequire.injectPackageDescriptionLocation(
-                                            packageDescriptionLocations[index].location,
-                                            packageDescriptionLocations[index].descriptionLocation);
-                                    }
-                                }
-
-                                if (mappings) {
-                                    injectionsLength = mappings.length;
-                                    for (index = 0; index < injectionsLength; index++) {
-                                        applicationRequire.injectMapping(
-                                            mappings[index].dependency,
-                                            mappings[index].name);
-                                    }
-                                }
-
-                                if (dependencies) {
-                                    injectionsLength = dependencies.length;
-                                    for (index = 0; index < injectionsLength; index++) {
-                                        applicationRequire.injectDependency(
-                                            dependencies[index].name,
-                                            dependencies[index].version);
-                                    }
-                                }
-
-                                return applicationRequire;
-                            });
-                        }
-
-                        return promise;
-                    });
-                }
-                return montageRequirePromise.then(function (applicationRequire) {
                     global.require = applicationRequire;
                     global.montageRequire = montageRequire;
                     platform.initMontage(montageRequire, applicationRequire, params);
