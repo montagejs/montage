@@ -3,10 +3,10 @@ Set = require("montage/collections/set");
 exports.element = function () {
     return {
         classList: {
-            add: function () {
+            add: function (className) {
                 this.__classList__.add.apply(this.__classList__, arguments);
             },
-            remove: function () {
+            remove: function (className) {
                 this.__classList__.remove.apply(this.__classList__, arguments);
             },
             toggle: function (className) {
@@ -16,7 +16,7 @@ exports.element = function () {
                     this.__classList__.add(className);
                 }
             },
-            contains: function () {
+            contains: function (className) {
                 return this.__classList__.has(className);
             }
         },
@@ -30,6 +30,9 @@ exports.element = function () {
         },
         getAttribute: function (attribute) {
             return this.__attributes__[attribute] || "";
+        },
+        hasAttribute: function (attribute) {
+            return attribute in this.__attributes__;
         },
         focus: function () {},
         blur: function () {},
