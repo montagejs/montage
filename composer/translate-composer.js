@@ -861,6 +861,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             this._isSelfUpdate=true;
             this.translateX=tmpX;
             this.translateY=tmpY;
+            this._dispatchTranslate();
             this._isSelfUpdate=false;
             this.isAnimating = this.animateMomentum || animateStride;
             if (this.isAnimating) {

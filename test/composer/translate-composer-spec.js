@@ -171,13 +171,29 @@ TestPageLoader.queueTest("translate-composer-test/translate-composer-test", func
                     test.translate_composer.hasMomentum = true;
                     test.translate_composer.translateX = 0;
                     test.translate_composer.translateY = 0;
-
                     testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
                         waits(100);
                         runs(function(){
                             expect(test.translate_composer.translateX).toBeGreaterThan(55);
                             expect(test.translate_composer.translateY).toBeGreaterThan(55);
                             test.translate_composer.hasMomentum = false;
+                        });
+                    });
+                });
+                it("dispatches the translate event", function() {
+                    test.translate_composer.hasMomentum = true;
+                    test.translate_composer.translateX = 0;
+                    test.translate_composer.translateY = 0;
+
+                    var listener = jasmine.createSpy("handleTranslateEvent");
+                    test.translate_composer.addEventListener("translate", listener);
+
+                    testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
+                        waits(100);
+                        runs(function(){
+                            expect(listener).toHaveBeenCalled();
+                            test.translate_composer.hasMomentum = false;
+                            test.translate_composer.removeEventListener("translate", listener);
                         });
                     });
                 });
