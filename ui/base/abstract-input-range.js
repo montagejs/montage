@@ -1,3 +1,4 @@
+"use strict";
 /*global require, exports, window*/
 
 /**
@@ -41,6 +42,8 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
      */
     didCreate: {
         value: function () {
+            //this is so that when we read properties from the dom they are not overwritten
+            this._propertyNamesUsed = {};
             this.addOwnPropertyChangeListener("_sliderMagnitude", this);
             this.addOwnPropertyChangeListener("_min", this);
             this.addOwnPropertyChangeListener("_max", this);
@@ -57,10 +60,10 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
         value: function (firstTime) {
             if (firstTime) {
                 this._translateComposer = TranslateComposer.create();
-                this._translateComposer.identifier = "thumb"
+                this._translateComposer.identifier = "thumb";
                 this._translateComposer.axis = this.axis;
                 this._translateComposer.hasMomentum = false;
-                this.addComposerForElement(this._translateComposer, this._thumbSliderElement);
+                this.addComposerForElement(this._translateComposer, this._inputRangeThumbSliderElement);
 
                 // check for transform support
                 if("webkitTransform" in this.element.style) {
@@ -73,10 +76,20 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
                     this._transform = "transform";
                 }
                 // read initial values from the input type=range
-                this.min = this.element.getAttribute('min') || this.min;
-                this.max = this.element.getAttribute('max') || this.max;
-                this.step = this.element.getAttribute('step') || this.step;
-                this.value = this.element.getAttribute('value') || this.value;
+                var used = this._propertyNamesUsed;
+                if (!used._min) {
+                    this.min = this.element.getAttribute('min') || this._min;
+                }
+                if (!used._max) {
+                    this.max = this.element.getAttribute('max') || this._max;
+                }
+                if (!used._step) {
+                    this.step = this.element.getAttribute('step') || this._step;
+                }
+                if (!used._value) {
+                    this.value = this.element.getAttribute('value') || this._value;
+                }
+                delete this._propertyNamesUsed;
             }
         }
     },
@@ -88,16 +101,17 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
             this._translateComposer.addEventListener('translate', this, false);
             this._translateComposer.addEventListener('translateEnd', this, false);
             // needs to be fixed for pointer handling
-            this._thumbSliderElement.addEventListener("touchstart", this, false);
+            this._inputRangeThumbSliderElement.addEventListener("touchstart", this, false);
             document.addEventListener("touchend", this, false);
-            this._thumbSliderElement.addEventListener("mousedown", this, false);
+            this._inputRangeThumbSliderElement.addEventListener("mousedown", this, false);
             document.addEventListener("mouseup", this, false);
         }
     },
 
     willDraw: {
         value: function () {
-            this._sliderMagnitude = this.calculateSliderMagnitude();
+
+            this._sliderMagnitude = this._calculateSliderMagnitude();
         }
     },
 
@@ -105,9 +119,9 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
     draw: {
         value: function () {
             if(this.axis === "vertical") {
-                this._thumbSliderElement.style[this._transform] = "translateY(" + this._valuePercentage + "%)";
+                this._inputRangeThumbSliderElement.style[this._transform] = "translateY(" + this._valuePercentage + "%)";
             } else {
-                this._thumbSliderElement.style[this._transform] = "translateX(" + this._valuePercentage + "%)";
+                this._inputRangeThumbSliderElement.style[this._transform] = "translateX(" + this._valuePercentage + "%)";
             }
         }
     },
@@ -279,7 +293,7 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
         value: null
     },
 
-    _thumbSliderElement: {
+    _inputRangeThumbSliderElement: {
         value: null
     },
 
@@ -311,12 +325,12 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
         value: null
     },
 
-    calculateSliderMagnitude: {
+    _calculateSliderMagnitude: {
         value: function() {
             if(this.axis === "vertical") {
-                return this._thumbSliderElement.offsetHeight;
+                return this._inputRangeThumbSliderElement.offsetHeight;
             } else {
-                return this._thumbSliderElement.offsetWidth;
+                return this._inputRangeThumbSliderElement.offsetWidth;
             }
         }
     },
@@ -336,9 +350,15 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
         }
     },
 
+    _propertyRegex: {
+        value: /_sliderMagnitude|_min|_max|_value|_step/
+    },
+
     handlePropertyChange: {
         value: function(changeValue, key, object) {
-            if(key.match(/_sliderMagnitude|_min|_max|_value|_step/) !== null) {
+            if(key.match(this._propertyRegex) !== null) {
+
+                this._propertyNamesUsed[key] = true;
 
                 //adjust the value
                 if (this.value <= this.min) {

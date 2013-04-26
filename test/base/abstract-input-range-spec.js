@@ -199,6 +199,65 @@ describe("test/base/abstract-input-range-spec", function () {
                 });
             });
         });
+        describe("enterDocument value initialization", function () {
+            var InputRange = Montage.create(AbstractInputRange, {}),
+                anInputRange, anElement;
+            beforeEach(function () {
+                anInputRange = InputRange.create();
+                anElement = MockDOM.element();
+                anInputRange.element = anElement;
+            });
+            describe("when the properties are not set", function () {
+                beforeEach(function () {
+                    anElement.setAttribute("value", 80);
+                    anElement.setAttribute("min", -100);
+                    anElement.setAttribute("max", 999);
+                    anElement.setAttribute("step", 10);
+                    anInputRange.enterDocument(true);
+                });
+                it("should get the value from the placeholder element", function () {
+                    expect(anInputRange.value).toEqual(80);
+                });
+                it("should get the min from the placeholder element", function () {
+                    expect(anInputRange.min).toEqual(-100);
+                });
+                it("should get the max from the placeholder element", function () {
+                    expect(anInputRange.max).toEqual(999);
+                });
+                it("should get the step from the placeholder element", function () {
+                    expect(anInputRange.step).toEqual(10);
+                });
+            });
+            describe("when the properties are set beforehand", function () {
+                beforeEach(function () {
+                    anElement.setAttribute("value", 80);
+                    anElement.setAttribute("min", -100);
+                    anElement.setAttribute("max", 999);
+                    anElement.setAttribute("step", 10);
+                    anInputRange.value = 85;
+                    anInputRange.min = -105;
+                    anInputRange.max = 888;
+                    anInputRange.step = 5;
+                    anInputRange.enterDocument(true);
+                });
+                it("should not get the value from the placeholder element", function () {
+                    expect(anInputRange.value).toEqual(85);
+                });
+                it("should not get the min from the placeholder element", function () {
+                    expect(anInputRange.min).toEqual(-105);
+                });
+                it("should not get the max from the placeholder element", function () {
+                    expect(anInputRange.max).toEqual(888);
+                });
+                it("should not get the step from the placeholder element", function () {
+                    expect(anInputRange.step).toEqual(5);
+                });
+                it("should delete _propertyNamesUsed after enterDocument", function () {
+                    expect(anInputRange._propertyNamesUsed).not.toBeDefined();
+                });
+            });
+
+        });
         describe("draw", function () {
             var InputRange = Montage.create(AbstractInputRange, {}),
                 anInputRange;
@@ -238,7 +297,7 @@ describe("test/base/abstract-input-range-spec", function () {
             it("should listen for translateStart only after prepareForActivationEvents", function() {
                 var listeners,
                     em = anInputRange.eventManager;
-                anInputRange._thumbSliderElement = anElement;
+                anInputRange._inputRangeThumbSliderElement = anElement;
 
                 anInputRange.enterDocument(true);
 
@@ -253,7 +312,7 @@ describe("test/base/abstract-input-range-spec", function () {
             it("should listen for translate only after prepareForActivationEvents", function() {
                 var listeners,
                     em = anInputRange.eventManager;
-                anInputRange._thumbSliderElement = anElement;
+                anInputRange._inputRangeThumbSliderElement = anElement;
 
                 anInputRange.enterDocument(true);
 
@@ -268,7 +327,7 @@ describe("test/base/abstract-input-range-spec", function () {
             it("should listen for translateEnd only after prepareForActivationEvents", function() {
                 var listeners,
                     em = anInputRange.eventManager;
-                anInputRange._thumbSliderElement = anElement;
+                anInputRange._inputRangeThumbSliderElement = anElement;
 
                 anInputRange.enterDocument(true);
 
