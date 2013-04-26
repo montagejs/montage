@@ -357,9 +357,9 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
     handlePropertyChange: {
         value: function(changeValue, key, object) {
             if(key.match(this._propertyRegex) !== null) {
-
-                this._propertyNamesUsed[key] = true;
-
+                if(this._propertyNamesUsed) {
+                    this._propertyNamesUsed[key] = true;
+                }
                 //adjust the value
                 if (this.value <= this.min) {
                     //first the simple case
