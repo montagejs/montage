@@ -433,7 +433,7 @@ exports.Loader = Montage.create(Component, /** @lends Loader# */ {
                         if (logger.isDebug) {
                             logger.debug(this, "ok, shown loader long enough");
                         }
-                        self._revealMainComponent();;
+                        self._revealMainComponent();
                     }, remainingLoadingDelay);
                 } else {
                     // or we showed loading long enough, go ahead and show mainComponent
@@ -444,7 +444,9 @@ exports.Loader = Montage.create(Component, /** @lends Loader# */ {
             var mainComponent = this._mainComponent;
 
             mainComponent.enterDocument = this._mainComponentEnterDocument;
-            return mainComponent.enterDocument.apply(mainComponent, arguments);
+            if (mainComponent.enterDocument) {
+                return mainComponent.enterDocument.apply(mainComponent, arguments);
+            }
         }
     },
 
