@@ -309,7 +309,12 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
      */
     add: {
         value: function (value) {
-            var result = this.content.add(value);
+            var result;
+
+            if (!this.content) {
+                this.content = [];
+            }
+            result = this.content.add(value);
             if (result) {
                 this.handleAdd(value);
             }
