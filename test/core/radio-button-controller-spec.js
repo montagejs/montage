@@ -1,0 +1,61 @@
+
+var Montage = require("montage").Montage,
+    RadioButtonController = require("montage/core/radio-button-controller").RadioButtonController,
+    AbstractRadioButton = require("montage/ui/base/abstract-radio-button").AbstractRadioButton;
+
+describe("core/radio-button-controller-spec", function () {
+    var InputRadio = Montage.create(AbstractRadioButton, {}),
+        inputRadios = new Array(3),
+        controller;
+
+    beforeEach(function () {
+        controller = RadioButtonController.create();
+        controller.content = ["Germany", "Canada", "Spain"];
+
+        controller.content.forEach(function(country, index) {
+            inputRadios[index] = InputRadio.create();
+            inputRadios[index].value = country;
+        });
+    });
+
+    it("should reflect the value of the controller in the checked property of all checkboxes sharing the same controller", function() {
+        for (var i = 0; i < inputRadios.length; i++) {
+            inputRadios[i].radioButtonController = controller;
+            inputRadios[i].checked = false;
+        }
+        inputRadios[0].checked = true;
+
+        controller.value = inputRadios[1].value;
+
+        expect(inputRadios[0].checked).toBe(false);
+        expect(inputRadios[1].checked).toBe(true);
+        expect(inputRadios[2].checked).toBe(false);
+    });
+
+    it("should change the controller value when checked radio button changes", function() {
+        for (var i = 0; i < inputRadios.length; i++) {
+            inputRadios[i].radioButtonController = controller;
+            inputRadios[i].checked = false;
+        }
+        inputRadios[0].checked = true;
+
+        inputRadios[1].checked = true;
+
+        expect(controller.value).toBe(inputRadios[1].value);
+    });
+
+    it("should change the checked property of all checkboxes sharing the same controller when one checkbox's checked property is set to true", function() {
+        for (var i = 0; i < inputRadios.length; i++) {
+            inputRadios[i].radioButtonController = controller;
+            inputRadios[i].checked = false;
+        }
+        inputRadios[0].checked = true;
+
+        inputRadios[1].checked = true;
+
+        expect(inputRadios[0].checked).toBe(false);
+        expect(inputRadios[1].checked).toBe(true);
+        expect(inputRadios[2].checked).toBe(false);
+    });
+
+});

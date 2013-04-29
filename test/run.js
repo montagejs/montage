@@ -13,6 +13,7 @@ require("montage-testing").run(require,[
         "string-spec",
 
         "base/abstract-button-spec",
+        "base/abstract-radio-button-spec",
         "base/abstract-input-range-spec",
 
         // packages
@@ -31,6 +32,7 @@ require("montage-testing").run(require,[
         "core/dom-spec",
         "core/localizer-spec",
         "core/localizer/serialization-spec",
+        "core/radio-button-controller-spec",
         "core/selector-spec",
         "core/undo-manager-spec",
 
