@@ -2,7 +2,7 @@ var Montage = require("montage").Montage,
     AbstractCheckbox = require("montage/ui/base/abstract-checkbox").AbstractCheckbox,
     MockDOM = require("mocks/dom");
 
-describe("test/base/abstract-radio-button-spec", function () {
+describe("test/base/abstract-checkbox-spec", function () {
 
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
