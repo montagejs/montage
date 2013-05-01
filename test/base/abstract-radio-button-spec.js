@@ -209,7 +209,7 @@ describe("test/base/abstract-radio-button-spec", function () {
                 expect(callback).not.toHaveBeenCalled();
             });
 
-            it("should not fire an 'action' event when the PressComposer fires a pressStart + pressCancel and already checked", function() {
+            it("should not fire an 'action' event when the PressComposer fires a pressStart + press and already checked", function() {
                 var callback = jasmine.createSpy().andCallFake(function(event) {
                     expect(event.type).toEqual("action");
                 });
