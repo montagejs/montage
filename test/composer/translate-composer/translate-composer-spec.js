@@ -2,7 +2,7 @@
 var Montage = require("montage").Montage;
 var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-TestPageLoader.queueTest("translate-composer-test/translate-composer-test", function(testPage) {
+TestPageLoader.queueTest("translate-composer-test", function(testPage) {
     var test;
     beforeEach(function() {
         test = testPage.test;
@@ -231,6 +231,129 @@ TestPageLoader.queueTest("translate-composer-test/translate-composer-test", func
                     });
                 });
             });
+            describe("nested composer", function() {
+                var inner, outer, outerComposer, innerComposer,outerListener,innerListener;
+                beforeEach(function () {
+
+                    inner = test.innermover;
+                    innerComposer = test.innermover_composer;
+                    innerListener = jasmine.createSpy("handleTranslateEvent");
+                    innerComposer.addEventListener("translate", innerListener);
+
+                    outer = test.outermover;
+                    outerComposer = test.outermover_composer;
+                    outerListener = jasmine.createSpy("handleTranslateEvent");
+                    outerComposer.addEventListener("translate", outerListener);
+
+                });
+
+                afterEach(function () {
+                    innerListener.reset();
+                    innerComposer.removeEventListener("translate", innerListener);
+                    outerListener.reset();
+                    outerComposer.removeEventListener("translate", outerListener);
+                });
+                it ("should dispatch a translate if outer is interacted with", function() {
+                    testPage.dragElementOffsetTo(outer.element, 50, 50, null, null, function() {
+                        expect(outerListener).toHaveBeenCalled();
+                    });
+                });
+                it ("should dispatch a translate if inner is interacted with", function() {
+                    testPage.dragElementOffsetTo(inner.element, 50, 50, null, null, function() {
+                        expect(innerListener).toHaveBeenCalled();
+                    });
+                });
+                it ("should not dispatch a translate on the outer if inner is interacted with", function() {
+                    testPage.dragElementOffsetTo(inner.element, 50, 50, null, null, function() {
+                        expect(outerListener).not.toHaveBeenCalled();
+                    });
+                });
+                it ("should not dispatch a translate on the outer even if the inner is on a different axis", function() {
+                    innerComposer.axis = "horizontal";
+                    outerComposer.axis = "vertical";
+
+                    testPage.dragElementOffsetTo(inner.element, 0, -50, null, null, function() {
+                        expect(outerListener).not.toHaveBeenCalled();
+                    });
+                });
+            });
+
         });
     });
+});
+var touchOptions = TestPageLoader.options("translate-composer-test", {timeoutLength: 10000}, function() {console.log("translate-composer-test touch callback");});
+describe("translate-composer-test touch", function () {
+    var testPage = TestPageLoader.init();
+    it("should load", function() {
+        console.group("translate-composer-touch-test");
+        var frameLoaded = TestPageLoader.init().loadFrame(touchOptions).then(function(theTestPage) {
+            testPage.window.Touch = function() {};
+        })
+       return testPage.loadTest(frameLoaded, touchOptions).then(function(theTestPage) {
+           expect(theTestPage.loaded).toBe(true);
+       });
+    });
+
+    describe("nested composer", function() {
+        var test;
+        beforeEach(function() {
+            test = testPage.test;
+        });
+
+        var inner, outer, outerComposer, innerComposer,outerListener,innerListener;
+        beforeEach(function () {
+
+            inner = test.innermover;
+            innerComposer = test.innermover_composer;
+            innerListener = jasmine.createSpy(" innerHandleTranslateEvent");
+            innerComposer.addEventListener("translate", innerListener);
+
+            outer = test.outermover;
+            outerComposer = test.outermover_composer;
+            outerListener = jasmine.createSpy("outerHandleTranslateEvent");
+            outerComposer.addEventListener("translate", outerListener);
+
+        });
+
+        afterEach(function () {
+            innerListener.reset();
+            innerComposer.removeEventListener("translate", innerListener);
+            outerListener.reset();
+            outerComposer.removeEventListener("translate", outerListener);
+        });
+        it ("should dispatch a translate on the outer if inner is on a different axis", function() {
+            innerComposer.axis = "horizontal";
+            outerComposer.axis = "vertical";
+
+            var timeline = [{
+                type: "touch", target: inner.element, identifier: 1,
+                steps: [
+                    { time: 0, touchstart: null },
+                    { time: 1, touchmove: { dx: 25, dy: 0} },
+                    { time: 2, touchmove: { dx: 25, dy: 0} },
+                    { time: 4,  touchend: null }
+                ]}, {
+                type: "touch", target: outer.element, identifier: 2,
+                steps: [
+                    { time: 1, touchstart: null },
+                    { time: 2, touchmove: { dx: 0, dy: 25} },
+                    { time: 3, touchmove: { dx: 0, dy: 25} },
+                    { time: 4, touchend: null }
+                ]}];
+
+            testPage.fireEventsOnTimeline(timeline, function(time) {
+                if(time === 4) {
+                    expect(outerListener).toHaveBeenCalled();
+                    expect(innerListener).toHaveBeenCalled();
+                }
+            });
+        });
+
+    });
+
+    it("should unload", function() {
+        TestPageLoader.testPage.unloadTest();
+        console.groupEnd();
+    });
+
 });

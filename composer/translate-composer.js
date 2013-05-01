@@ -1,3 +1,4 @@
+"use strict";
 /*global require,exports */
 /**
     @module montage/composer/translate-composer
@@ -41,6 +42,10 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     isAnimating: {
+        value: false
+    },
+
+    isMoving: {
         value: false
     },
 
@@ -440,10 +445,10 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             this._pointerY = y;
             if (window.Touch) {
                 document.addEventListener("touchend", this, true);
-                document.addEventListener("touchmove", this, true);
+                this._element.addEventListener("touchmove", this, false);
             } else {
                 document.addEventListener("mouseup", this, true);
-                document.addEventListener("mousemove", this, true);
+                this._element.addEventListener("mousemove", this, false);
             }
             this.isAnimating = false;
             this._isFirstMove = true;
@@ -500,23 +505,37 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
+    // this is the mouse move on the element itself, we need to do this to determine wether or not to claim the pointer
+    // initially
+    handleMousemove: {
+        value: function(event) {
+            if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                event.preventDefault();
+                this._firstMove();
+            } else {
+                if (this.axis === "both" || this._analyzeMovement(event)) {
+                    if (this._stealPointer()) {
+                        event.preventDefault();
+                        this._firstMove();
+                    }
+                }
+            }
+        }
+    },
+
     captureMousemove: {
         value: function(event) {
-
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 event.preventDefault();
                 this._move(event.clientX, event.clientY);
             } else {
-                if (this.axis !== "both") {
-                    this._analyzeMovement(event);
-                } else {
+                if (this.axis === "both" || this._analyzeMovement(event)) {
                     if (this._stealPointer()) {
                         event.preventDefault();
                         this._move(event.clientX, event.clientY);
                     }
                 }
             }
-
         }
     },
 
@@ -531,10 +550,20 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
             if (window.Touch) {
                 document.removeEventListener("touchend", this, true);
-                document.removeEventListener("touchmove", this, true);
+                if (this._isFirstMove) {
+                    //if we receive an end without ever getting a move
+                    this._element.removeEventListener("touchmove", this, false);
+                } else {
+                    document.removeEventListener("touchmove", this, true);
+                }
             } else {
                 document.removeEventListener("mouseup", this, true);
-                document.removeEventListener("mousemove", this, true);
+                if (this._isFirstMove) {
+                    //if we receive an end without ever getting a move
+                    this._element.removeEventListener("mousemove", this, false);
+                } else {
+                    document.removeEventListener("mousemove", this, true);
+                }
             }
 
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
@@ -555,7 +584,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 return;
             }
 
-            if (event.targetTouches.length === 1) {
+            if (event.targetTouches && event.targetTouches.length === 1) {
                 this._observedPointer = event.targetTouches[0].identifier;
                 this._start(event.targetTouches[0].clientX, event.targetTouches[0].clientY, event.targetTouches[0].target);
             }
@@ -565,15 +594,33 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     handleTouchstart: {
         value: function(event) {
             if (!this.eventManager.componentClaimingPointer(this._observedPointer)) {
-
-                if (event.targetTouches.length === 1) {
+                if (event.targetTouches && event.targetTouches.length === 1) {
                     if (this._shouldPreventDefault(event)) {
                         event.preventDefault();
                     }
 
-                    this.eventManager.claimPointer(this._observedPointer, this);
+                    var success = this.eventManager.claimPointer(this._observedPointer, this);
                 }
             }
+        }
+    },
+
+    // this is the mouse move on the element itself, we need to do this to determine wether or not to claim the pointer
+    // initially
+    handleTouchmove: {
+        value: function(event) {
+            if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                event.preventDefault();
+                this._firstMove();
+            } else {
+                if (this.axis === "both" || this._analyzeMovement(event)) {
+                    if (this._stealPointer()) {
+                        event.preventDefault();
+                        this._firstMove();
+                    }
+                }
+            }
+
         }
     },
 
@@ -642,7 +689,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 isLeft = (angle >= lowerLeft || angle <= upperLeft);
 
                 if (isRight || isLeft) {
-                    this._stealPointer();
+                    return this._stealPointer();
                 }
 
             } else if ("vertical" === this.axis) {
@@ -651,16 +698,16 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 isDown = (angle >= lowerRight && angle <= lowerLeft);
 
                 if (isUp || isDown) {
-                    this._stealPointer();
+                    return this._stealPointer();
                 }
 
             } else if (speed >= this.startTranslateSpeed) {
-                this._stealPointer();
+                return this._stealPointer();
             } else {
                 dX = this.pointerStartEventPosition.pageX - event.pageX;
                 dY = this.pointerStartEventPosition.pageY - event.pageY;
                 if (dX * dX + dY * dY > this.startTranslateRadius * this.startTranslateRadius) {
-                    this._stealPointer();
+                    return this._stealPointer();
                 }
             }
 
@@ -711,14 +758,28 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
-    _move: {
-        value: function(x, y) {
-            var pointerDelta;
-
+    _firstMove: {
+        value: function() {
             if (this._isFirstMove) {
                 this._dispatchTranslateStart(this._translateX, this._translateY);
                 this._isFirstMove = false;
+                this.isMoving = true;
+                //listen to the document for the rest of the move events
+                if (window.Touch) {
+                    document.addEventListener("touchmove", this, true);
+                    this._element.removeEventListener("touchmove", this, false);
+                } else {
+                    document.addEventListener("mousemove", this, true);
+                    this._element.removeEventListener("mousemove", this, false);
+                }
+
             }
+        }
+    },
+
+    _move: {
+        value: function(x, y) {
+            var pointerDelta;
 
             this._isSelfUpdate = true;
             if (this._axis != "vertical") {
@@ -861,7 +922,9 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             this._isSelfUpdate=true;
             this.translateX=tmpX;
             this.translateY=tmpY;
-            this._dispatchTranslate();
+            if (this._shouldDispatchTranslate) {
+                this._dispatchTranslate();
+            }
             this._isSelfUpdate=false;
             this.isAnimating = this.animateMomentum || animateStride;
             if (this.isAnimating) {
@@ -904,6 +967,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             if (this.animateMomentum) {
                 this._animationInterval();
             } else if (!this._isFirstMove) {
+                this.isMoving = false;
                 // Only dispatch a translateEnd if a translate start has occured
                 this._dispatchTranslateEnd();
             }
@@ -913,7 +977,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
     surrenderPointer: {
         value: function(pointer, demandingComponent) {
-            return true;
+            return ! this.isMoving;
         }
     },
 

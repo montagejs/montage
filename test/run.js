@@ -25,7 +25,7 @@ require("montage-testing").run(require,[
 
         "composer/composer-spec",
         "composer/press-composer-spec",
-        "composer/translate-composer-spec",
+        "composer/translate-composer/translate-composer-spec",
 
         "core/core-spec",
         "core/dom-spec",

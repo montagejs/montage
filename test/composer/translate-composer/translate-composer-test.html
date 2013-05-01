@@ -54,16 +54,64 @@ POSSIBILITY OF SUCH DAMAGE.
             "value": "hi"
         }
     },
+    "outermover": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "outermover"},
+            "hasTemplate": false
+        }
+    },
+    "outermover_composer": {
+        "prototype": "montage/composer/translate-composer",
+        "properties": {
+            "component": {"@": "outermover"},
+            "maxTranslateX": 200,
+            "maxTranslateY": 200,
+            "minTranslateX": 0,
+            "minTranslateY": 0,
+            "hasMomentum": false,
+                        "axis": "vertical"
+        }
+    },
+    "innermover": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "innermover"},
+            "hasTemplate": false
+        }
+
+    },
+    "innermover_composer": {
+        "prototype": "montage/composer/translate-composer",
+        "properties": {
+            "component": {"@": "innermover"},
+            "maxTranslateX": 150,
+            "maxTranslateY": 150,
+            "minTranslateX": 0,
+            "minTranslateY": 0,
+            "hasMomentum": false,
+            "axis": "horizontal"
+        }
+    },
 
     "test": {
-        "prototype": "composer/translate-composer-test/translate-composer-test",
+        "prototype": "composer/translate-composer/translate-composer-test",
         "properties": {
             "translate_composer": {"@": "translate_composer"},
-            "example": {"@": "example"}
+            "example": {"@": "example"},
+            "innermover": {"@": "innermover"},
+            "innermover_composer": {"@": "innermover_composer"},
+            "outermover": {"@": "outermover"},
+            "outermover_composer": {"@": "outermover_composer"}
+
         },
         "bindings": {
             "x": {"<-": "@translate_composer.translateX"},
-            "y": {"<-": "@translate_composer.translateY"}
+            "y": {"<-": "@translate_composer.translateY"},
+            "inner_x": {"<-": "@innermover_composer.translateX"},
+            "inner_y": {"<-": "@innermover_composer.translateY"},
+            "outer_x": {"<-": "@outermover_composer.translateX"},
+            "outer_y": {"<-": "@outermover_composer.translateY"}
         }
     },
     "application": {
@@ -82,6 +130,12 @@ POSSIBILITY OF SUCH DAMAGE.
         width: 400px;
         height: 400px;
         overflow: hidden;
+    }
+    .outermover {
+        background: #CC0;
+        position: absolute;
+        width: 200px;
+        height: 200px;
     }
     .mover {
         background: #C00;
@@ -102,6 +156,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
     <div class="wrap">
         <div class="mover" data-montage-id="example">something</div>
+    </div>
+    <p>
+    Nested example, they can be handle simultaniously in a multi touch environment.
+    </p>
+    <div class="wrap">
+        <div class="outermover" data-montage-id="outermover"><div class="mover" data-montage-id="innermover">nested</div></div>
     </div>
 </body>
 </html>
