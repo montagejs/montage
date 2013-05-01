@@ -884,7 +884,8 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
             if (!this._activationHandler) {
                 var eventManager = this;
                 this._activationHandler = function(evt) {
-                    var eventType = evt.type;
+                    var eventType = evt.type,
+                        touchCount;
 
                     // Prepare any components associated with elements that may receive this event
                     // They need to registered there listeners before the next step, which is to find the components that
