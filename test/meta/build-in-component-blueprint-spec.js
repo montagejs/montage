@@ -6,7 +6,6 @@
  @requires montage/core/logger
  */
 var Montage = require("montage").Montage;
-//var TextInput = require("montage/ui/base/text-input").TextInput;
 var Condition = require("montage/ui/condition.reel").Condition;
 var Loader = require("montage/ui/loader.reel").Loader;
 var Repetition = require("montage/ui/repetition.reel").Repetition;

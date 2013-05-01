@@ -18,7 +18,7 @@ describe("trigger-test", function() {
                 testWindow = iWindow;
 
                 testWindow.postMessage({
-                    type: "isMontageReady",
+                    type: "isMontageReady"
                 }, "*");
                 testWindow.addEventListener("message", function(event) {
                     if(event.source === testWindow) {
