@@ -14,19 +14,38 @@ TestPageLoader.queueTest("loader/loader-test", function(testPage) {
     });
 
     describe("ui/loader/loader-spec", function() {
+        it("should be in the BOOTSTRAPPING stage or after", function() {
+            var loader = test.templateObjects.owner;
+
+            if (loader.currentStage === BOOTSTRAPPING) {
+                waitsFor(function() {
+                    return loader.currentStage > BOOTSTRAPPING;
+                }, "BOOTSTRAPPING is over", 2000);
+            }
+        });
+
+        it("should be in the LOADING stage or after", function() {
+            var loader = test.templateObjects.owner;
+
+            if (loader.currentStage === LOADING) {
+                waitsFor(function() {
+                    return loader.currentStage > LOADING;
+                }, "LOADING is over", 2000);
+            }
+        });
+
         it("should be in the LOADED stage", function() {
-            var loader = test.templateObjects.loader;
+            var loader = test.templateObjects.owner;
 
             expect(loader.currentStage).toBe(LOADED);
         });
 
         it("should load the main component", function() {
-            var loader = test.templateObjects.loader,
+            var loader = test.templateObjects.owner,
                 main = loader._mainComponent;
 
             expect(main.element.textContent).toBe(main.text);
         });
 
     });
-
 });
