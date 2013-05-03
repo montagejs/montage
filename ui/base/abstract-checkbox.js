@@ -13,6 +13,14 @@ var CLASS_PREFIX = "montage-Checkbox";
 var AbstractCheckbox = exports.AbstractCheckbox = Montage.create(Component,
     /* @lends AbstractCheckbox# */
     {
+        /**
+         * Dispatched when the checkbox is activated through a mouse click,
+         * finger tap, or when focused and the spacebar is pressed.
+         * @event action
+         * @memberof AbstractCheckbox
+         * @param {Event} event
+         */
+
         create: {
             value: function() {
                 if(this === AbstractCheckbox) {
