@@ -13,6 +13,14 @@ var CLASS_PREFIX = "montage-InputRadio";
 var AbstractRadioButton = exports.AbstractRadioButton = Montage.create(Component,
     /* @lends AbstractRadioButton# */
 {
+    /**
+     * Dispatched when the radio button is activated through a mouse click,
+     * finger tap, or when focused and the spacebar is pressed.
+     * @event action
+     * @memberof AbstractRadioButton
+     * @param {Event} event
+     */
+
     create: {
         value: function() {
             if(this === AbstractRadioButton) {
