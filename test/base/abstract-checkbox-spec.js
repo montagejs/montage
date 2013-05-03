@@ -227,9 +227,9 @@ describe("test/base/abstract-checkbox-spec", function () {
                 anCheckbox.detail.set("foo", "bar");
 
                 anCheckbox._pressComposer.dispatchEventNamed("pressStart");
-                anCheckbox._pressComposer.dispatchEventNamed("pressCancel");
+                anCheckbox._pressComposer.dispatchEventNamed("press");
 
-                expect(callback).not.toHaveBeenCalled();
+                expect(callback).toHaveBeenCalled();
             });
         });
     });

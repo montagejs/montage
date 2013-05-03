@@ -230,9 +230,9 @@ describe("test/base/abstract-radio-button-spec", function () {
                 anInputRadio.detail.set("foo", "bar");
 
                 anInputRadio._pressComposer.dispatchEventNamed("pressStart");
-                anInputRadio._pressComposer.dispatchEventNamed("pressCancel");
+                anInputRadio._pressComposer.dispatchEventNamed("press");
 
-                expect(callback).not.toHaveBeenCalled();
+                expect(callback).toHaveBeenCalled();
             });
         });
     });

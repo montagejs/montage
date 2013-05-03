@@ -238,9 +238,9 @@ describe("test/base/abstract-button-spec", function () {
                     aButton.detail.set("foo", "bar");
 
                     aButton._pressComposer.dispatchEventNamed("pressStart");
-                    aButton._pressComposer.dispatchEventNamed("pressCancel");
+                    aButton._pressComposer.dispatchEventNamed("press");
 
-                    expect(callback).not.toHaveBeenCalled();
+                    expect(callback).toHaveBeenCalled();
                  });
              });
         });
