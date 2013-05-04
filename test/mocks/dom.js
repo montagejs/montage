@@ -1,4 +1,5 @@
-Set = require("montage/collections/set");
+var Set = require("montage/collections/set"),
+    defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager;
 
 exports.element = function () {
     var eventListeners = {};
@@ -86,4 +87,39 @@ exports.element = function () {
         },
         tagName: "MOCK"
     };
+}
+
+exports.keyPressEvent = function(keys, target) {
+    var modifiersAndKeyCode =
+        defaultKeyManager._convertKeysToModifiersAndKeyCode(
+            defaultKeyManager._normalizeKeySequence(keys)
+        );
+
+    var MODIFIERS = {
+        metaKey: 1,
+        altKey: 2,
+        ctrlKey: 4,
+        shiftKey: 8
+    };
+
+    var event = document.createEvent("KeyboardEvent");
+    event.initKeyboardEvent("keypress", true, true, window,
+        0, 0, 0, 0,
+        0, modifiersAndKeyCode.keyCode);
+
+    // Clone the event so we can set a target and modifiers on it.
+    var customEvent = {};
+    for (var key in event) {
+        customEvent[key] = event[key];
+    }
+    customEvent.charCode = modifiersAndKeyCode.keyCode;
+    customEvent.target = target;
+
+    for (var key in MODIFIERS) {
+        if (modifiersAndKeyCode.modifiers & MODIFIERS[key]) {
+            customEvent[key] = true;
+        }
+    }
+
+    return customEvent;
 }
