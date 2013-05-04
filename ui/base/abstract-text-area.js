@@ -116,7 +116,6 @@ var AbstractTextArea = exports.AbstractTextArea = Montage.create(Component,
 
     _updateValueFromDom: {
         value: function() {
-            console.log(this._value, this.element.value);
             if (this._value !== this.element.value) {
                 this._value = this.element.value;
                 this.dispatchOwnPropertyChange("value", this._value);
