@@ -85,6 +85,10 @@ exports.element = function () {
                 }
             }
         },
+        hasEventListener: function(eventType, listener) {
+            return !!(eventListeners[eventType] &&
+                      eventListeners[eventType].indexOf(listener) >= 0);
+        },
         tagName: "MOCK"
     };
 }
