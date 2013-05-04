@@ -2,7 +2,7 @@
 /*global require, exports, window*/
 
 /**
- @module montage/ui/base/abstract-button.reel
+ @module montage/ui/base/abstract-slider.reel
  @requires montage/core/core
  @requires montage/ui/component
  @requires montage/ui/native-control
@@ -11,16 +11,13 @@
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     TranslateComposer = require("composer/translate-composer").TranslateComposer,
-    PressComposer = require("composer/press-composer").PressComposer,
     Dict = require("collections/dict");
 
 /**
- * @class AbstractInputRange
+ * @class AbstractSlider
  * @extends Component
- * @fires action
- * @fires hold
  */
-var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, /** @lends AbstractInputRange# */ {
+var AbstractSlider = exports.AbstractSlider = Montage.create(Component, /** @lends AbstractSlider# */ {
 
     // Lifecycle
 
@@ -29,8 +26,8 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
      */
     create: {
         value: function () {
-            if (this === AbstractInputRange) {
-                throw new Error("AbstractInputRange cannot be instantiated.");
+            if (this === AbstractSlider) {
+                throw new Error("AbstractSlider cannot be instantiated.");
             } else {
                 return Component.create.apply(this, arguments);
             }
@@ -63,7 +60,7 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
                 this._translateComposer.identifier = "thumb";
                 this._translateComposer.axis = this.axis;
                 this._translateComposer.hasMomentum = false;
-                this.addComposerForElement(this._translateComposer, this._inputRangeThumbSliderElement);
+                this.addComposerForElement(this._translateComposer, this._sliderThumbTrackElement);
 
                 // check for transform support
                 if("webkitTransform" in this.element.style) {
@@ -101,9 +98,9 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
             this._translateComposer.addEventListener('translate', this, false);
             this._translateComposer.addEventListener('translateEnd', this, false);
             // needs to be fixed for pointer handling
-            this._inputRangeThumbSliderElement.addEventListener("touchstart", this, false);
+            this._sliderThumbTrackElement.addEventListener("touchstart", this, false);
             document.addEventListener("touchend", this, false);
-            this._inputRangeThumbSliderElement.addEventListener("mousedown", this, false);
+            this._sliderThumbTrackElement.addEventListener("mousedown", this, false);
             document.addEventListener("mouseup", this, false);
         }
     },
@@ -119,9 +116,9 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
     draw: {
         value: function () {
             if(this.axis === "vertical") {
-                this._inputRangeThumbSliderElement.style[this._transform] = "translateY(" + this._valuePercentage + "%)";
+                this._sliderThumbTrackElement.style[this._transform] = "translateY(" + this._valuePercentage + "%)";
             } else {
-                this._inputRangeThumbSliderElement.style[this._transform] = "translateX(" + this._valuePercentage + "%)";
+                this._sliderThumbTrackElement.style[this._transform] = "translateX(" + this._valuePercentage + "%)";
             }
         }
     },
@@ -130,25 +127,25 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
 
     handleTouchstart: {
         value: function (e) {
-            this.classList.add("montage-InputRange--active");
+            this.classList.add("montage-Slider--active");
         }
     },
 
     handleTouchend: {
         value: function (e) {
-            this.classList.remove("montage-InputRange--active");
+            this.classList.remove("montage-Slider--active");
         }
     },
 
     handleMousedown: {
         value: function (e) {
-            this.classList.add("montage-InputRange--active");
+            this.classList.add("montage-Slider--active");
         }
     },
 
     handleMouseup: {
         value: function (e) {
-            this.classList.remove("montage-InputRange--active");
+            this.classList.remove("montage-Slider--active");
         }
     },
 
@@ -177,7 +174,7 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
 
     handleThumbTranslateEnd: {
         value: function (e) {
-            this.classList.remove("montage-InputRange--active");
+            this.classList.remove("montage-Slider--active");
         }
     },
 
@@ -289,11 +286,11 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
 
     // Machinery
 
-    _inputRangeThumbElement: {
+    _sliderThumbElement: {
         value: null
     },
 
-    _inputRangeThumbSliderElement: {
+    _sliderThumbTrackElement: {
         value: null
     },
 
@@ -328,9 +325,9 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
     _calculateSliderMagnitude: {
         value: function() {
             if(this.axis === "vertical") {
-                return this._inputRangeThumbSliderElement.offsetHeight;
+                return this._sliderThumbTrackElement.offsetHeight;
             } else {
-                return this._inputRangeThumbSliderElement.offsetWidth;
+                return this._sliderThumbTrackElement.offsetWidth;
             }
         }
     },
@@ -341,11 +338,11 @@ var AbstractInputRange = exports.AbstractInputRange = Montage.create(Component, 
                 this._translateComposer.axis = this.axis;
             }
             if(this.axis === "vertical") {
-                this.classList.add("montage-InputRange--vertical");
-                this.classList.remove("montage-InputRange--horizontal");
+                this.classList.add("montage-Slider--vertical");
+                this.classList.remove("montage-Slider--horizontal");
             } else {
-                this.classList.remove("montage-InputRange--vertical");
-                this.classList.add("montage-InputRange--horizontal");
+                this.classList.remove("montage-Slider--vertical");
+                this.classList.add("montage-Slider--horizontal");
             }
         }
     },
