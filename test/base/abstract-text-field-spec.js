@@ -63,10 +63,6 @@ describe("test/base/abstract-text-field-spec", function () {
                 aTextField = TextField.create();
                 aTextField.element = MockDOM.element();
                 aTextField.prepareForActivationEvents();
-                // Composers are loaded at prepareForDraw or after firstDraw,
-                // both of each don't happen in this unit test, so we load it
-                // manually.
-                aTextField._keyComposer._load();
             });
 
             it("should not dispatch an action event when enabled is false and KeyComposer fires a keyPress", function() {
@@ -131,7 +127,21 @@ describe("test/base/abstract-text-field-spec", function () {
             };
         });
 
-        it("should listen for keyPress only after enterDocument", function() {
+        it("should listen for element input after enterDocument", function() {
+            aTextField.element = anElement;
+            aTextField.enterDocument(true);
+
+            expect(aTextField.element.hasEventListener("input", aTextField)).toBe(true);
+        });
+
+        it("should listen for element change after enterDocument", function() {
+            aTextField.element = anElement;
+            aTextField.enterDocument(true);
+
+            expect(aTextField.element.hasEventListener("change", aTextField)).toBe(true);
+        });
+
+        it("should listen for keyPress only after prepareForActivationEvents", function() {
             var listeners,
                 em = aTextField.eventManager;
 
