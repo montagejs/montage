@@ -13,196 +13,198 @@ describe("test/base/abstract-checkbox-spec", function () {
 
         it("can be instantiated as a subtype", function () {
             var CheckboxSubtype = Montage.create(AbstractCheckbox, {});
-            var anCheckboxSubtype = null;
+            var aCheckboxSubtype = null;
             expect(function () {
-                anCheckboxSubtype = CheckboxSubtype.create();
+                aCheckboxSubtype = CheckboxSubtype.create();
             }).not.toThrow();
-            expect(anCheckboxSubtype).toBeDefined();
+            expect(aCheckboxSubtype).toBeDefined();
         });
     });
 
     describe("properties", function () {
         var Checkbox = Montage.create(AbstractCheckbox, {}),
-            anCheckbox;
+            aCheckbox;
 
         beforeEach(function () {
-            anCheckbox = Checkbox.create();
-            anCheckbox.element = MockDOM.element();
+            aCheckbox = Checkbox.create();
+            aCheckbox.element = MockDOM.element();
         });
 
         describe("checked", function () {
             beforeEach(function () {
-                anCheckbox = Checkbox.create();
-                anCheckbox.element = MockDOM.element();
-                anCheckbox.checked = false;
-                anCheckbox.prepareForActivationEvents();
+                aCheckbox = Checkbox.create();
+                aCheckbox.element = MockDOM.element();
+                aCheckbox.checked = false;
+                aCheckbox.prepareForActivationEvents();
             });
 
             it("should be true when the PressComposer fires a pressStart + press", function() {
-                anCheckbox._pressComposer.dispatchEventNamed("pressStart");
-                anCheckbox._pressComposer.dispatchEventNamed("press");
+                aCheckbox._pressComposer.dispatchEventNamed("pressStart");
+                aCheckbox._pressComposer.dispatchEventNamed("press");
 
-                expect(anCheckbox.checked).toBe(true);
+                expect(aCheckbox.checked).toBe(true);
             });
 
             it("should be false when the PressComposer fires a pressStart + pressCancel", function() {
-                anCheckbox._pressComposer.dispatchEventNamed("pressStart");
-                anCheckbox._pressComposer.dispatchEventNamed("pressCancel");
+                aCheckbox._pressComposer.dispatchEventNamed("pressStart");
+                aCheckbox._pressComposer.dispatchEventNamed("pressCancel");
 
-                expect(anCheckbox.checked).toBe(false);
+                expect(aCheckbox.checked).toBe(false);
             });
 
             it("should toggle when the PressComposer fires a pressStart + press twice", function() {
-                anCheckbox._pressComposer.dispatchEventNamed("pressStart");
-                anCheckbox._pressComposer.dispatchEventNamed("press");
-                expect(anCheckbox.checked).toBe(true);
+                aCheckbox._pressComposer.dispatchEventNamed("pressStart");
+                aCheckbox._pressComposer.dispatchEventNamed("press");
+                expect(aCheckbox.checked).toBe(true);
 
-                anCheckbox._pressComposer.dispatchEventNamed("pressStart");
-                anCheckbox._pressComposer.dispatchEventNamed("press");
-                expect(anCheckbox.checked).toBe(false);
+                aCheckbox._pressComposer.dispatchEventNamed("pressStart");
+                aCheckbox._pressComposer.dispatchEventNamed("press");
+                expect(aCheckbox.checked).toBe(false);
             });
 
             it("should add the corresponding class name to classList when checked", function() {
-                anCheckbox.checked = true;
+                aCheckbox.checked = true;
 
-                expect(anCheckbox.classList.contains("montage-Checkbox--checked")).toBe(true);
+                expect(aCheckbox.classList.contains("montage-Checkbox--checked")).toBe(true);
             });
         });
 
         describe("enabled", function () {
             beforeEach(function () {
-                anCheckbox = Checkbox.create();
-                anCheckbox.element = MockDOM.element();
-                anCheckbox.checked = false;
-                anCheckbox.prepareForActivationEvents();
+                aCheckbox = Checkbox.create();
+                aCheckbox.element = MockDOM.element();
+                aCheckbox.checked = false;
+                aCheckbox.prepareForActivationEvents();
             });
 
             it("should not get checked when enabled is false and PressComposer fires a press", function() {
-                anCheckbox.enabled = false;
+                aCheckbox.enabled = false;
 
-                anCheckbox._pressComposer.dispatchEventNamed("pressStart");
-                anCheckbox._pressComposer.dispatchEventNamed("press");
+                aCheckbox._pressComposer.dispatchEventNamed("pressStart");
+                aCheckbox._pressComposer.dispatchEventNamed("press");
 
-                expect(anCheckbox.checked).toBe(false);
+                expect(aCheckbox.checked).toBe(false);
             });
 
             it("should not dispatch an action event when enabled is false and PressComposer fires a press", function() {
                 var callback = jasmine.createSpy().andCallFake(function(event) {
                     expect(event.type).toEqual("action");
                 });
-                anCheckbox.addEventListener("action", callback, false);
-                anCheckbox.enabled = false;
+                aCheckbox.addEventListener("action", callback, false);
+                aCheckbox.enabled = false;
 
-                anCheckbox._pressComposer.dispatchEventNamed("pressStart");
-                anCheckbox._pressComposer.dispatchEventNamed("press");
+                aCheckbox._pressComposer.dispatchEventNamed("pressStart");
+                aCheckbox._pressComposer.dispatchEventNamed("press");
 
                 expect(callback).not.toHaveBeenCalled();
             });
 
             it("should add the corresponding class name to classList when enabled is false", function() {
-                anCheckbox.enabled = false;
+                aCheckbox.enabled = false;
 
-                expect(anCheckbox.classList.contains("montage--disabled")).toBe(true);
+                expect(aCheckbox.classList.contains("montage--disabled")).toBe(true);
             });
         });
 
         describe("active", function () {
             beforeEach(function () {
-                anCheckbox = Checkbox.create();
-                anCheckbox.element = MockDOM.element();
-                anCheckbox.checked = false;
-                anCheckbox.prepareForActivationEvents();
+                aCheckbox = Checkbox.create();
+                aCheckbox.element = MockDOM.element();
+                aCheckbox.checked = false;
+                aCheckbox.prepareForActivationEvents();
             });
 
             it("should be true when the PressComposer fires a pressStart", function() {
-                anCheckbox._pressComposer.dispatchEventNamed("pressStart");
-                expect(anCheckbox.active).toBe(true);
+                aCheckbox._pressComposer.dispatchEventNamed("pressStart");
+                expect(aCheckbox.active).toBe(true);
             });
 
             it("should be false when the PressComposer fires a pressStart + press", function() {
-                anCheckbox._pressComposer.dispatchEventNamed("pressStart");
-                anCheckbox._pressComposer.dispatchEventNamed("press");
-                expect(anCheckbox.active).toBe(false);
+                aCheckbox._pressComposer.dispatchEventNamed("pressStart");
+                aCheckbox._pressComposer.dispatchEventNamed("press");
+                expect(aCheckbox.active).toBe(false);
             });
 
             it("should be false when the PressComposer fires a pressStart + press while checked", function() {
-                anCheckbox.checked = true;
+                aCheckbox.checked = true;
 
-                anCheckbox._pressComposer.dispatchEventNamed("pressStart");
-                anCheckbox._pressComposer.dispatchEventNamed("press");
+                aCheckbox._pressComposer.dispatchEventNamed("pressStart");
+                aCheckbox._pressComposer.dispatchEventNamed("press");
 
-                expect(anCheckbox.active).toBe(false);
+                expect(aCheckbox.active).toBe(false);
             });
 
             it("should be false when the PressComposer fires a pressStart + pressCancel", function() {
-                anCheckbox._pressComposer.dispatchEventNamed("pressStart");
-                anCheckbox._pressComposer.dispatchEventNamed("pressCancel");
-                expect(anCheckbox.active).toBe(false);
+                aCheckbox._pressComposer.dispatchEventNamed("pressStart");
+                aCheckbox._pressComposer.dispatchEventNamed("pressCancel");
+                expect(aCheckbox.active).toBe(false);
             });
 
             it("should add the corresponding class name to classList when active", function() {
-                anCheckbox.active = true;
+                aCheckbox.active = true;
 
-                expect(anCheckbox.classList.contains("montage--active")).toBe(true);
+                expect(aCheckbox.classList.contains("montage--active")).toBe(true);
             });
         });
     });
 
     describe("draw", function () {
         var Checkbox = Montage.create(AbstractCheckbox, {}),
-            anCheckbox;
+            aCheckbox;
 
         beforeEach(function () {
-            anCheckbox = Checkbox.create();
-            anCheckbox.element = MockDOM.element();
+            aCheckbox = Checkbox.create();
+            aCheckbox.element = MockDOM.element();
         });
 
         it("should be requested after enabled state is changed", function () {
-            anCheckbox.enabled = ! anCheckbox.enabled;
-            expect(anCheckbox.needsDraw).toBeTruthy();
+            aCheckbox.enabled = ! aCheckbox.enabled;
+            expect(aCheckbox.needsDraw).toBeTruthy();
         });
         it("should be requested after active is changed", function () {
-            anCheckbox.active = true;
-            expect(anCheckbox.needsDraw).toBeTruthy();
+            aCheckbox.active = true;
+            expect(aCheckbox.needsDraw).toBeTruthy();
         });
     });
 
     describe("events", function () {
         var Checkbox = Montage.create(AbstractCheckbox, {}),
-            anCheckbox, anElement, listener;
+            aCheckbox, anElement, listener;
 
         beforeEach(function () {
-            anCheckbox = Checkbox.create();
+            aCheckbox = Checkbox.create();
             anElement = MockDOM.element();
             listener = {
                 handleEvent: function() {}
             };
         });
+
         it("should listen for press only after prepareForActivationEvents", function() {
             var listeners,
-                em = anCheckbox.eventManager;
+                em = aCheckbox.eventManager;
 
-            listeners = em.registeredEventListenersForEventType_onTarget_("press", anCheckbox);
+            listeners = em.registeredEventListenersForEventType_onTarget_("press", aCheckbox);
 
             expect(listeners).toBeNull();
 
-            anCheckbox.prepareForActivationEvents();
+            aCheckbox.prepareForActivationEvents();
 
-            listeners = em.registeredEventListenersForEventType_onTarget_("press", anCheckbox._pressComposer);
-            expect(listeners[anCheckbox.uuid].listener).toBe(anCheckbox);
+            listeners = em.registeredEventListenersForEventType_onTarget_("press", aCheckbox._pressComposer);
+            expect(listeners[aCheckbox.uuid].listener).toBe(aCheckbox);
         });
+
         describe("once prepareForActivationEvents is called", function () {
             beforeEach(function () {
-                anCheckbox.prepareForActivationEvents();
+                aCheckbox.prepareForActivationEvents();
             });
             it("should fire an 'action' event when the PressComposer fires a pressStart + press", function() {
                 var callback = jasmine.createSpy().andCallFake(function(event) {
                     expect(event.type).toEqual("action");
                 });
-                anCheckbox.addEventListener("action", callback, false);
+                aCheckbox.addEventListener("action", callback, false);
 
-                anCheckbox._pressComposer.dispatchEventNamed("pressStart");
-                anCheckbox._pressComposer.dispatchEventNamed("press");
+                aCheckbox._pressComposer.dispatchEventNamed("pressStart");
+                aCheckbox._pressComposer.dispatchEventNamed("press");
 
                 expect(callback).toHaveBeenCalled();
             });
@@ -211,10 +213,10 @@ describe("test/base/abstract-checkbox-spec", function () {
                 var callback = jasmine.createSpy().andCallFake(function(event) {
                     expect(event.type).toEqual("action");
                 });
-                anCheckbox.addEventListener("action", callback, false);
+                aCheckbox.addEventListener("action", callback, false);
 
-                anCheckbox._pressComposer.dispatchEventNamed("pressStart");
-                anCheckbox._pressComposer.dispatchEventNamed("pressCancel");
+                aCheckbox._pressComposer.dispatchEventNamed("pressStart");
+                aCheckbox._pressComposer.dispatchEventNamed("pressCancel");
 
                 expect(callback).not.toHaveBeenCalled();
             });
@@ -223,11 +225,11 @@ describe("test/base/abstract-checkbox-spec", function () {
                 var callback = jasmine.createSpy().andCallFake(function(event) {
                     expect(event.detail.get("foo")).toEqual("bar");
                 });
-                anCheckbox.addEventListener("action", callback, false);
-                anCheckbox.detail.set("foo", "bar");
+                aCheckbox.addEventListener("action", callback, false);
+                aCheckbox.detail.set("foo", "bar");
 
-                anCheckbox._pressComposer.dispatchEventNamed("pressStart");
-                anCheckbox._pressComposer.dispatchEventNamed("press");
+                aCheckbox._pressComposer.dispatchEventNamed("pressStart");
+                aCheckbox._pressComposer.dispatchEventNamed("press");
 
                 expect(callback).toHaveBeenCalled();
             });
