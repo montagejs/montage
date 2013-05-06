@@ -692,6 +692,10 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 childComponent;
 
             if (parentComponent) {
+                // This component's children may have been attached to the
+                // parent before we were initialized, and so we now need to
+                // check if any of our parent's children should actually be
+                // ours.
                 childComponents = parentComponent.childComponents;
                 for (var i = 0; (childComponent = childComponents[i]); i++) {
                     var newParentComponent = childComponent.findParentComponent();
