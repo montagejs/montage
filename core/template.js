@@ -249,7 +249,7 @@ var Template = Montage.create(Montage, {
             clonedTemplate._require = this._require;
             clonedTemplate.setDocument(this.document);
             clonedTemplate.objectsString = this.objectsString;
-            clonedTemplate._instances = Object.clone(this._instances, 0);
+            clonedTemplate._instances = Object.clone(this._instances, 1);
 
             return clonedTemplate;
         }
