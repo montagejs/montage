@@ -191,14 +191,14 @@ describe("test/base/abstract-button-spec", function () {
                 listeners = em.registeredEventListenersForEventType_onTarget_("longPress", aButton._pressComposer);
                 expect(listeners).toBeNull();
 
-                aButton.addEventListener("hold", listener, false);
+                aButton.addEventListener("longAction", listener, false);
 
                 listeners = em.registeredEventListenersForEventType_onTarget_("longPress", aButton._pressComposer);
                 expect(listeners[aButton.uuid].listener).toBe(aButton);
             });
-            it("should fires a 'hold' event when the PressComposer fires a longPress", function() {
+            it("should fires a 'longAction' event when the PressComposer fires a longPress", function() {
                 var callback = jasmine.createSpy();
-                aButton.addEventListener("hold", callback, false);
+                aButton.addEventListener("longAction", callback, false);
                 aButton._pressComposer.dispatchEventNamed("longPress");
                 expect(callback).toHaveBeenCalled();
             });

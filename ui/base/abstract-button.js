@@ -16,7 +16,7 @@ var Montage = require("montage").Montage,
  * @class AbstractButton
  * @extends Component
  * @fires action
- * @fires hold
+ * @fires longAction
  */
 var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @lends AbstractButton# */ {
 
@@ -31,7 +31,7 @@ var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @len
     /**
      * Dispatched when the button is pressed for a period of time, set by
      * {@link holdThreshold}.
-     * @event hold
+     * @event longAction
      * @memberof AbstractButton
      * @param {Event} event
      */
@@ -196,7 +196,7 @@ var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @len
     },
 
     /**
-        The amount of time in milliseconds the user must press and hold the button a ```hold``` event is dispatched. The default is 1 second.
+        The amount of time in milliseconds the user must press and hold the button a `longAction` event is dispatched. The default is 1 second.
         @type {number}
         @default 1000
     */
@@ -239,7 +239,7 @@ var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @len
     addEventListener: {
         value: function(type, listener, useCapture) {
             Component.addEventListener.call(this, type, listener, useCapture);
-            if (type === "hold") {
+            if (type === "longAction") {
                 this._pressComposer.addEventListener("longPress", this, false);
             }
         }
@@ -289,13 +289,13 @@ var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @len
 
     handleLongPress: {
         value: function(event) {
-            // When we fire the "hold" event we don't want to fire the
+            // When we fire the "longAction" event we don't want to fire the
             // "action" event as well.
             this._pressComposer.cancelPress();
 
-            var holdEvent = document.createEvent("CustomEvent");
-            holdEvent.initCustomEvent("hold", true, true, null);
-            this.dispatchEvent(holdEvent);
+            var longActionEvent = document.createEvent("CustomEvent");
+            longActionEvent.initCustomEvent("longAction", true, true, null);
+            this.dispatchEvent(longActionEvent);
         }
     },
 
