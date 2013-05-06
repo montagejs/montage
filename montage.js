@@ -538,8 +538,9 @@ if (typeof window !== "undefined") {
                 callbackIfReady();
             }
 
-            // this permits montage.js to be injected after domready
-            if (document.readyState === "interactive") {
+            // this permits montage.js to be injected after DOMContentLoaded
+            // http://jsperf.com/readystate-boolean-vs-regex/2
+            if (/interactive|complete/.test(document.readyState)) {
                 domLoad();
             } else {
                 document.addEventListener("DOMContentLoaded", domLoad, true);
