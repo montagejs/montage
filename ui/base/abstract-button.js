@@ -62,8 +62,6 @@ var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @len
 
             this.defineBinding("enabled ", {"<->": "!disabled"});
 
-            this.addOwnPropertyChangeListener("converter", this);
-
             //classList management
             this.defineBinding("classList.has('montage--disabled')", {"<-": "disabled"});
             this.defineBinding("classList.has('montage--active')", {"<-": "active"});
@@ -125,22 +123,6 @@ var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @len
     willBecomeActiveTarget: {
         value: function(previousActiveTarget) {
 
-        }
-    },
-
-
-    /**
-     * A Montage converter object used to convert or format the label displayed by the Button instance. When a new value is assigned to ```label```, the converter object's ```convert()``` method is invoked, passing it the newly assigned label value.
-     * @type {Converter}
-     * @default null
-     */
-    converter: {
-        value: null
-    },
-    
-    handleConverterChange: {
-        value: function() {
-            this.label = this.label;
         }
     },
 

@@ -55,58 +55,6 @@ describe("test/base/abstract-button-spec", function () {
                 aButton.label = "hello";
                 expect(aButton.value).toEqual( "hello");
             });
-            describe("converter", function () {
-                var mockConverter;
-                beforeEach(function () {
-                    mockConverter = {
-                        convert: function () {
-                            return "converted"
-                        }
-                    };
-                    spyOn(mockConverter, "convert").andCallThrough();
-                });
-                it("is convertible", function () {
-                    aButton.converter = mockConverter;
-                    aButton.label = "hello";
-                    expect(aButton.label).toEqual( "converted");
-                });
-                it("is convertible after the fact", function () {
-                    aButton.label = "hello";
-                    expect(aButton.label).toEqual( "hello");
-                    aButton.converter = mockConverter;
-                    expect(aButton.label).toEqual( "converted");
-                });
-                it("should try and convert numbers", function () {
-                    aButton.converter = mockConverter;
-                    aButton.label = 123;
-                    expect(mockConverter.convert).toHaveBeenCalled();
-                });
-                it("should try and convert booleans", function () {
-                    aButton.converter = mockConverter;
-                    aButton.label = false;
-                    expect(mockConverter.convert).toHaveBeenCalled();
-                });
-                it("should try and convert empty string", function () {
-                    aButton.converter = mockConverter;
-                    aButton.label = "";
-                    expect(mockConverter.convert).toHaveBeenCalled();
-                });
-                it("should try and convert null", function () {
-                    aButton.converter = mockConverter;
-                    aButton.label = null;
-                    expect(mockConverter.convert).toHaveBeenCalled();
-                });
-                it("should correctly report convertion errors", function () {
-                    var error = new Error("convert error");
-                    aButton.converter = {
-                        convert: function () {
-                            throw error;
-                        }
-                    };
-                    aButton.label = "boo";
-                    expect(aButton.error).toBe(error);
-                });
-            });
         });
         describe("draw", function () {
             var Button = Montage.create(AbstractButton, {}),
