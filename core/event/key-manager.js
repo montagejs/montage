@@ -810,6 +810,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends KeyManag
                     if (keyDown) {
                         // Reset trigger
                         delete this._triggeredKeys[keyComposer.uuid];
+                        event.preventDefault();
                     } else if (this._triggeredKeys[keyComposer.uuid]) {
                         // that key has already been triggered, let's ignore it...
                         continue;

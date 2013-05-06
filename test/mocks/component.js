@@ -1,8 +1,7 @@
-var Set = require("montage/collections/set"),
-    defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager,
-    Event = require("mocks/event");
+var Set = require("montage/collections/set");
+var Event = require("mocks/event");
 
-exports.element = function () {
+exports.component = function () {
     var eventListeners = {};
 
     return {
@@ -25,19 +24,6 @@ exports.element = function () {
             }
         },
         __classList__: new Set(),
-        className: "",
-        style: {},
-        removeAttribute: function () {},
-        __attributes__: {},
-        setAttribute: function (attribute, value) {
-            this.__attributes__[attribute] = value;
-        },
-        getAttribute: function (attribute) {
-            return this.__attributes__[attribute] || "";
-        },
-        hasAttribute: function (attribute) {
-            return attribute in this.__attributes__;
-        },
         focus: function () {},
         blur: function () {},
         addEventListener: function (eventType, listener, useCapture) {
@@ -86,42 +72,6 @@ exports.element = function () {
         hasEventListener: function(eventType, listener) {
             return !!(eventListeners[eventType] &&
                       eventListeners[eventType].indexOf(listener) >= 0);
-        },
-        tagName: "MOCK"
-    };
-}
-
-exports.keyPressEvent = function(keys, target) {
-    var modifiersAndKeyCode =
-        defaultKeyManager._convertKeysToModifiersAndKeyCode(
-            defaultKeyManager._normalizeKeySequence(keys)
-        );
-
-    var MODIFIERS = {
-        metaKey: 1,
-        altKey: 2,
-        ctrlKey: 4,
-        shiftKey: 8
-    };
-
-    var event = document.createEvent("KeyboardEvent");
-    event.initKeyboardEvent("keypress", true, true, window,
-        0, 0, 0, 0,
-        0, modifiersAndKeyCode.keyCode);
-
-    // Clone the event so we can set a target and modifiers on it.
-    var customEvent = {};
-    for (var key in event) {
-        customEvent[key] = event[key];
-    }
-    customEvent.charCode = modifiersAndKeyCode.keyCode;
-    customEvent.target = target;
-
-    for (var key in MODIFIERS) {
-        if (modifiersAndKeyCode.modifiers & MODIFIERS[key]) {
-            customEvent[key] = true;
         }
-    }
-
-    return customEvent;
+    };
 }
