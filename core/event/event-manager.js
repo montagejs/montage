@@ -52,7 +52,7 @@ var Montage = require("montage").Montage,
 
 // XXX Does not presently function server-side
 if (typeof window !== "undefined") { // client-side
-
+//jshint -W015
 /* This is to handle browsers that have TouchEvents but don't have the global constructor function Touch */
 if (typeof window.Touch === "undefined" && "ontouchstart" in window) {
     window.Touch = function() {
