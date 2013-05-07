@@ -14,25 +14,25 @@ describe("test/base/abstract-slider-spec", function () {
         });
         it("can be instantiated as a subtype", function () {
             var SliderSubtype = Montage.create(AbstractSlider, {});
-            var anSliderSubtype = null;
+            var aSliderSubtype = null;
             expect(function () {
-                anSliderSubtype = SliderSubtype.create();
+                aSliderSubtype = SliderSubtype.create();
             }).not.toThrow();
-            expect(anSliderSubtype).toBeDefined();
+            expect(aSliderSubtype).toBeDefined();
         });
     });
     describe("properties", function () {
         var Slider = Montage.create(AbstractSlider, {}),
-            anSlider;
+            aSlider;
         beforeEach(function () {
-            anSlider = Slider.create();
-            anSlider.element = MockDOM.element();
+            aSlider = Slider.create();
+            aSlider.element = MockDOM.element();
         });
         it("should maintain disabled as the opposite of enabled", function () {
-            anSlider.enabled = true;
-            expect(anSlider.disabled).toBeFalsy();
-            anSlider.disabled = true;
-            expect(anSlider.enabled).toBeFalsy();
+            aSlider.enabled = true;
+            expect(aSlider.disabled).toBeFalsy();
+            aSlider.disabled = true;
+            expect(aSlider.enabled).toBeFalsy();
         });
 
         // Inspired by
@@ -41,181 +41,181 @@ describe("test/base/abstract-slider-spec", function () {
         describe("value", function() {
             it("should have correct default", function() {
                 // is the minimum plus half the difference between the minimum and the maximum
-                expect(anSlider.value).toEqual(50);
+                expect(aSlider.value).toEqual(50);
             });
             it("should have correct default for non integer min value", function() {
-                anSlider.min = 60.2;
-                expect(anSlider.value).toEqual(anSlider.min);
+                aSlider.min = 60.2;
+                expect(aSlider.value).toEqual(aSlider.min);
             });
             it("can be set", function() {
-                anSlider.value = 5;
-                expect(anSlider.value).toEqual(5);
+                aSlider.value = 5;
+                expect(aSlider.value).toEqual(5);
             });
             it("can be negative", function() {
-                anSlider.min = -10;
-                anSlider.value = -2;
-                expect(anSlider.value).toEqual(-2);
+                aSlider.min = -10;
+                aSlider.value = -2;
+                expect(aSlider.value).toEqual(-2);
             });
             it("can be set with a string", function() {
-                anSlider.value = "5";
-                expect(anSlider.value).toEqual(5);
+                aSlider.value = "5";
+                expect(aSlider.value).toEqual(5);
             });
             it("can't be set with letters", function() {
-                var previousValue = anSlider.value;
-                anSlider.value = "hello";
-                expect(anSlider.value).not.toEqual("hello");
-                expect(anSlider.value).toEqual(previousValue);
+                var previousValue = aSlider.value;
+                aSlider.value = "hello";
+                expect(aSlider.value).not.toEqual("hello");
+                expect(aSlider.value).toEqual(previousValue);
             });
             describe("behavior", function() {
                 it("value should take min into account", function() {
-                    anSlider.min = 10;
-                    anSlider.value = 0;
-                    expect(anSlider.value).toEqual(10);
+                    aSlider.min = 10;
+                    aSlider.value = 0;
+                    expect(aSlider.value).toEqual(10);
                 });
                 it("value should take max into account", function() {
-                    anSlider.max = 20;
-                    anSlider.value = 25;
-                    expect(anSlider.value).toEqual(20);
+                    aSlider.max = 20;
+                    aSlider.value = 25;
+                    expect(aSlider.value).toEqual(20);
                 });
-           });
+            });
         });
         describe("step", function() {
             it("should have correct default", function() {
-                expect(anSlider.step).toEqual("any");
+                expect(aSlider.step).toEqual("any");
             });
             it("can be set", function() {
-                anSlider.step = 2;
-                expect(anSlider.step).toEqual(2);
+                aSlider.step = 2;
+                expect(aSlider.step).toEqual(2);
             });
             it("cannot be negative", function() {
-                var previousValue = anSlider.step;
-                anSlider.step = -2;
-                expect(anSlider.step).toEqual(previousValue);
+                var previousValue = aSlider.step;
+                aSlider.step = -2;
+                expect(aSlider.step).toEqual(previousValue);
             });
             it("can be set with a string", function() {
-                anSlider.step = "2";
-                expect(anSlider.step).toEqual(2);
+                aSlider.step = "2";
+                expect(aSlider.step).toEqual(2);
             });
             it("can't be set with letters", function() {
-                var previousValue = anSlider.step;
-                anSlider.step = "hello";
-                expect(anSlider.step).not.toEqual("hello");
-                expect(anSlider.step).toEqual(previousValue);
+                var previousValue = aSlider.step;
+                aSlider.step = "hello";
+                expect(aSlider.step).not.toEqual("hello");
+                expect(aSlider.step).toEqual(previousValue);
             });
             describe("effect on value", function () {
                 it("should be immediate if necessary", function () {
-                    anSlider.value = 2.2;
-                    anSlider.step = 1;
-                    expect(anSlider.value).toEqual(2);
+                    aSlider.value = 2.2;
+                    aSlider.step = 1;
+                    expect(aSlider.value).toEqual(2);
                 });
                 it("should result in increments from min", function () {
-                    anSlider.min = 1.4;
-                    anSlider.value = 3;
-                    anSlider.step = 2;
-                    expect(anSlider.value).toEqual(3.4);
+                    aSlider.min = 1.4;
+                    aSlider.value = 3;
+                    aSlider.step = 2;
+                    expect(aSlider.value).toEqual(3.4);
                 });
                 it("should resolve two larger value if two values are possible", function () {
-                    anSlider.min = 0;
-                    anSlider.max = 100;
-                    anSlider.value = 50;
-                    anSlider.step = 20;
-                    expect(anSlider.value).toEqual(60);
+                    aSlider.min = 0;
+                    aSlider.max = 100;
+                    aSlider.value = 50;
+                    aSlider.step = 20;
+                    expect(aSlider.value).toEqual(60);
                 });
             });
         });
         describe("min", function() {
             it("should have correct default", function() {
-                expect(anSlider.min).toEqual(0);
+                expect(aSlider.min).toEqual(0);
             });
             it("can be set", function() {
-                anSlider.min = 2;
-                expect(anSlider.min).toEqual(2);
+                aSlider.min = 2;
+                expect(aSlider.min).toEqual(2);
             });
             it("can be negative", function() {
-                anSlider.min = -2;
-                expect(anSlider.min).toEqual(-2);
+                aSlider.min = -2;
+                expect(aSlider.min).toEqual(-2);
             });
             it("can be set with a string", function() {
-                anSlider.min = "2";
-                expect(anSlider.min).toEqual(2);
+                aSlider.min = "2";
+                expect(aSlider.min).toEqual(2);
             });
             it("can't be set with letters", function() {
-                var previousValue = anSlider.min;
-                anSlider.min = "hello";
-                expect(anSlider.min).not.toEqual("hello");
-                expect(anSlider.min).toEqual(previousValue);
+                var previousValue = aSlider.min;
+                aSlider.min = "hello";
+                expect(aSlider.min).not.toEqual("hello");
+                expect(aSlider.min).toEqual(previousValue);
             });
             describe("behavior", function() {
                 it("value should be unchanged if value already a greater than min", function() {
-                    anSlider.value = 6;
-                    anSlider.min = 2;
-                    expect(anSlider.value).toEqual(6);
+                    aSlider.value = 6;
+                    aSlider.min = 2;
+                    expect(aSlider.value).toEqual(6);
                 });
                 it("value should be changed if value isn't greater than min", function() {
-                    anSlider.value = 1;
-                    anSlider.min = 2;
-                    expect(anSlider.value).toEqual(2);
+                    aSlider.value = 1;
+                    aSlider.min = 2;
+                    expect(aSlider.value).toEqual(2);
                 });
                 it("value should be changed if value isn't greater than min if min is negative", function() {
-                    anSlider.min = -10;
-                    anSlider.value = -3;
-                    anSlider.min = -2;
-                    expect(anSlider.value).toEqual(-2);
+                    aSlider.min = -10;
+                    aSlider.value = -3;
+                    aSlider.min = -2;
+                    expect(aSlider.value).toEqual(-2);
                 });
             });
         });
         describe("max", function() {
             it("should have correct default", function() {
-                expect(anSlider.max).toEqual(100);
+                expect(aSlider.max).toEqual(100);
             });
             it("can be set", function() {
-                anSlider.max = 2;
-                expect(anSlider.max).toEqual(2);
+                aSlider.max = 2;
+                expect(aSlider.max).toEqual(2);
             });
             it("can be negative", function() {
-                anSlider.max = -2;
-                expect(anSlider.max).toEqual(-2);
+                aSlider.max = -2;
+                expect(aSlider.max).toEqual(-2);
             });
             it("can be set with a string", function() {
-                anSlider.max = "2";
-                expect(anSlider.max).toEqual(2);
+                aSlider.max = "2";
+                expect(aSlider.max).toEqual(2);
             });
             it("can't be set with letters", function() {
-                var previousValue = anSlider.max;
-                anSlider.max = "hello";
-                expect(anSlider.max).not.toEqual("hello");
-                expect(anSlider.max).toEqual(previousValue);
+                var previousValue = aSlider.max;
+                aSlider.max = "hello";
+                expect(aSlider.max).not.toEqual("hello");
+                expect(aSlider.max).toEqual(previousValue);
             });
             describe("behavior", function() {
                 it("value should be unchanged if value is already less than max", function() {
-                    anSlider.value = 2;
-                    anSlider.max = 6;
-                    expect(anSlider.value).toEqual(2);
+                    aSlider.value = 2;
+                    aSlider.max = 6;
+                    expect(aSlider.value).toEqual(2);
                 });
                 it("value should be changed if value isn't less than max", function() {
-                    anSlider.value = 10;
-                    anSlider.max = 9;
-                    expect(anSlider.value).toEqual(9);
+                    aSlider.value = 10;
+                    aSlider.max = 9;
+                    expect(aSlider.value).toEqual(9);
                 });
             });
         });
         describe("after enterDocument", function () {
             var Slider = Montage.create(AbstractSlider, {}),
-                anSlider, anElement;
+                aSlider, anElement;
             beforeEach(function () {
-                anSlider = Slider.create();
+                aSlider = Slider.create();
                 anElement = MockDOM.element();
-                anSlider.element = anElement;
+                aSlider.element = anElement;
             });
             describe("it should continue to work", function () {
                 beforeEach(function () {
-                     anSlider.enterDocument(true);
+                    aSlider.enterDocument(true);
                 });
                 it("should allow value to change", function () {
                     expect(function() {
-                        anSlider.value = 30;
+                        aSlider.value = 30;
                     }).not.toThrow();
-                    expect(anSlider.value).toEqual(30);
+                    expect(aSlider.value).toEqual(30);
                 });
             });
             describe("it should correctly initialize defaults from the placeholder element", function () {
@@ -225,19 +225,19 @@ describe("test/base/abstract-slider-spec", function () {
                         anElement.setAttribute("min", -100);
                         anElement.setAttribute("max", 999);
                         anElement.setAttribute("step", 10);
-                        anSlider.enterDocument(true);
+                        aSlider.enterDocument(true);
                     });
                     it("should get the value from the placeholder element", function () {
-                        expect(anSlider.value).toEqual(80);
+                        expect(aSlider.value).toEqual(80);
                     });
                     it("should get the min from the placeholder element", function () {
-                        expect(anSlider.min).toEqual(-100);
+                        expect(aSlider.min).toEqual(-100);
                     });
                     it("should get the max from the placeholder element", function () {
-                        expect(anSlider.max).toEqual(999);
+                        expect(aSlider.max).toEqual(999);
                     });
                     it("should get the step from the placeholder element", function () {
-                        expect(anSlider.step).toEqual(10);
+                        expect(aSlider.step).toEqual(10);
                     });
                 });
                 describe("when the properties are set beforehand", function () {
@@ -246,26 +246,26 @@ describe("test/base/abstract-slider-spec", function () {
                         anElement.setAttribute("min", -100);
                         anElement.setAttribute("max", 999);
                         anElement.setAttribute("step", 10);
-                        anSlider.value = 85;
-                        anSlider.min = -105;
-                        anSlider.max = 888;
-                        anSlider.step = 5;
-                        anSlider.enterDocument(true);
+                        aSlider.value = 85;
+                        aSlider.min = -105;
+                        aSlider.max = 888;
+                        aSlider.step = 5;
+                        aSlider.enterDocument(true);
                     });
                     it("should not get the value from the placeholder element", function () {
-                        expect(anSlider.value).toEqual(85);
+                        expect(aSlider.value).toEqual(85);
                     });
                     it("should not get the min from the placeholder element", function () {
-                        expect(anSlider.min).toEqual(-105);
+                        expect(aSlider.min).toEqual(-105);
                     });
                     it("should not get the max from the placeholder element", function () {
-                        expect(anSlider.max).toEqual(888);
+                        expect(aSlider.max).toEqual(888);
                     });
                     it("should not get the step from the placeholder element", function () {
-                        expect(anSlider.step).toEqual(5);
+                        expect(aSlider.step).toEqual(5);
                     });
                     it("should delete _propertyNamesUsed after enterDocument", function () {
-                        expect(anSlider._propertyNamesUsed).not.toBeDefined();
+                        expect(aSlider._propertyNamesUsed).not.toBeDefined();
                     });
                 });
             });
@@ -273,84 +273,84 @@ describe("test/base/abstract-slider-spec", function () {
         });
         describe("draw", function () {
             var Slider = Montage.create(AbstractSlider, {}),
-                anSlider;
+                aSlider;
             beforeEach(function () {
-                anSlider = Slider.create();
-                anSlider.element = MockDOM.element();
+                aSlider = Slider.create();
+                aSlider.element = MockDOM.element();
             });
 
             it("should be requested after enabled state is changed", function () {
-                anSlider.enabled = ! anSlider.enabled;
-                expect(anSlider.needsDraw).toBeTruthy();
+                aSlider.enabled = ! aSlider.enabled;
+                expect(aSlider.needsDraw).toBeTruthy();
             });
             it("should be requested after value is changed", function () {
-                anSlider.value = "random";
-                expect(anSlider.needsDraw).toBeTruthy();
+                aSlider.value = "random";
+                expect(aSlider.needsDraw).toBeTruthy();
             });
             it("should be requested after min is changed", function () {
-                anSlider.min = true;
-                expect(anSlider.needsDraw).toBeTruthy();
+                aSlider.min = true;
+                expect(aSlider.needsDraw).toBeTruthy();
             });
             it("should be requested after max is changed", function () {
-                anSlider.max = true;
-                expect(anSlider.needsDraw).toBeTruthy();
+                aSlider.max = true;
+                expect(aSlider.needsDraw).toBeTruthy();
             });
         });
         describe("events", function () {
             var Slider = Montage.create(AbstractSlider, {}),
-                anSlider, anElement, listener;
+                aSlider, anElement, listener;
             beforeEach(function () {
-                anSlider = Slider.create();
+                aSlider = Slider.create();
                 anElement = MockDOM.element();
-                anSlider.element = anElement;
+                aSlider.element = anElement;
                 listener = {
                     handleEvent: function() {}
-                }
+                };
             });
             it("should listen for translateStart only after prepareForActivationEvents", function() {
                 var listeners,
-                    em = anSlider.eventManager;
-                anSlider._inputRangeThumbSliderElement = anElement;
+                    em = aSlider.eventManager;
 
-                anSlider.enterDocument(true);
+                aSlider._inputRangeThumbSliderElement = anElement;
+                aSlider.enterDocument(true);
 
-                listeners = em.registeredEventListenersForEventType_onTarget_("translateStart", anSlider._translateComposer);
+                listeners = em.registeredEventListenersForEventType_onTarget_("translateStart", aSlider._translateComposer);
                 expect(listeners).toBeNull();
 
-                anSlider.prepareForActivationEvents();
+                aSlider.prepareForActivationEvents();
 
-                listeners = em.registeredEventListenersForEventType_onTarget_("translateStart", anSlider._translateComposer);
-                expect(listeners[anSlider.uuid].listener).toBe(anSlider);
+                listeners = em.registeredEventListenersForEventType_onTarget_("translateStart", aSlider._translateComposer);
+                expect(listeners[aSlider.uuid].listener).toBe(aSlider);
             });
             it("should listen for translate only after prepareForActivationEvents", function() {
                 var listeners,
-                    em = anSlider.eventManager;
-                anSlider._inputRangeThumbSliderElement = anElement;
+                    em = aSlider.eventManager;
+                aSlider._inputRangeThumbSliderElement = anElement;
 
-                anSlider.enterDocument(true);
+                aSlider.enterDocument(true);
 
-                listeners = em.registeredEventListenersForEventType_onTarget_("translate", anSlider._translateComposer);
+                listeners = em.registeredEventListenersForEventType_onTarget_("translate", aSlider._translateComposer);
                 expect(listeners).toBeNull();
 
-                anSlider.prepareForActivationEvents();
+                aSlider.prepareForActivationEvents();
 
-                listeners = em.registeredEventListenersForEventType_onTarget_("translate", anSlider._translateComposer);
-                expect(listeners[anSlider.uuid].listener).toBe(anSlider);
+                listeners = em.registeredEventListenersForEventType_onTarget_("translate", aSlider._translateComposer);
+                expect(listeners[aSlider.uuid].listener).toBe(aSlider);
             });
             it("should listen for translateEnd only after prepareForActivationEvents", function() {
                 var listeners,
-                    em = anSlider.eventManager;
-                anSlider._inputRangeThumbSliderElement = anElement;
+                    em = aSlider.eventManager;
+                aSlider._inputRangeThumbSliderElement = anElement;
 
-                anSlider.enterDocument(true);
+                aSlider.enterDocument(true);
 
-                listeners = em.registeredEventListenersForEventType_onTarget_("translateEnd", anSlider._translateComposer);
+                listeners = em.registeredEventListenersForEventType_onTarget_("translateEnd", aSlider._translateComposer);
                 expect(listeners).toBeNull();
 
-                anSlider.prepareForActivationEvents();
+                aSlider.prepareForActivationEvents();
 
-                listeners = em.registeredEventListenersForEventType_onTarget_("translateEnd", anSlider._translateComposer);
-                expect(listeners[anSlider.uuid].listener).toBe(anSlider);
+                listeners = em.registeredEventListenersForEventType_onTarget_("translateEnd", aSlider._translateComposer);
+                expect(listeners[aSlider.uuid].listener).toBe(aSlider);
             });
         });
     });
