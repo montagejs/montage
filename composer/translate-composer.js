@@ -476,11 +476,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             if (event.button !== 0) {
                 return;
             }
-
-            if (this._shouldPreventDefault(event)) {
-                event.preventDefault();
-            }
-
             // Register some interest in the mouse pointer internally, we may end up claiming it but let's see if
             // anybody else cares first
             this._observedPointer = "mouse";
@@ -575,10 +570,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
     captureTouchstart: {
         value: function(event) {
-            if (this._shouldPreventDefault(event)) {
-                event.preventDefault();
-            }
-
             // If already scrolling, ignore any new touchstarts
             if (this._observedPointer !== null && this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 return;
