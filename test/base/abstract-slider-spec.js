@@ -1,38 +1,38 @@
 /*global describe, it, expect */
 var Montage = require("montage").Montage;
-var AbstractInputRange = require("montage/ui/base/abstract-input-range").AbstractInputRange;
+var AbstractSlider = require("montage/ui/base/abstract-slider").AbstractSlider;
 var MockDOM = require("mocks/dom");
 
-AbstractInputRange.hasTemplate = false;
+AbstractSlider.hasTemplate = false;
 
-describe("test/base/abstract-input-range-spec", function () {
+describe("test/base/abstract-slider-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractInputRange.create();
+                AbstractSlider.create();
             }).toThrow();
         });
         it("can be instantiated as a subtype", function () {
-            var InputRangeSubtype = Montage.create(AbstractInputRange, {});
-            var anInputRangeSubtype = null;
+            var SliderSubtype = Montage.create(AbstractSlider, {});
+            var anSliderSubtype = null;
             expect(function () {
-                anInputRangeSubtype = InputRangeSubtype.create();
+                anSliderSubtype = SliderSubtype.create();
             }).not.toThrow();
-            expect(anInputRangeSubtype).toBeDefined();
+            expect(anSliderSubtype).toBeDefined();
         });
     });
     describe("properties", function () {
-        var InputRange = Montage.create(AbstractInputRange, {}),
-            anInputRange;
+        var Slider = Montage.create(AbstractSlider, {}),
+            anSlider;
         beforeEach(function () {
-            anInputRange = InputRange.create();
-            anInputRange.element = MockDOM.element();
+            anSlider = Slider.create();
+            anSlider.element = MockDOM.element();
         });
         it("should maintain disabled as the opposite of enabled", function () {
-            anInputRange.enabled = true;
-            expect(anInputRange.disabled).toBeFalsy();
-            anInputRange.disabled = true;
-            expect(anInputRange.enabled).toBeFalsy();
+            anSlider.enabled = true;
+            expect(anSlider.disabled).toBeFalsy();
+            anSlider.disabled = true;
+            expect(anSlider.enabled).toBeFalsy();
         });
 
         // Inspired by
@@ -41,181 +41,181 @@ describe("test/base/abstract-input-range-spec", function () {
         describe("value", function() {
             it("should have correct default", function() {
                 // is the minimum plus half the difference between the minimum and the maximum
-                expect(anInputRange.value).toEqual(50);
+                expect(anSlider.value).toEqual(50);
             });
             it("should have correct default for non integer min value", function() {
-                anInputRange.min = 60.2;
-                expect(anInputRange.value).toEqual(anInputRange.min);
+                anSlider.min = 60.2;
+                expect(anSlider.value).toEqual(anSlider.min);
             });
             it("can be set", function() {
-                anInputRange.value = 5;
-                expect(anInputRange.value).toEqual(5);
+                anSlider.value = 5;
+                expect(anSlider.value).toEqual(5);
             });
             it("can be negative", function() {
-                anInputRange.min = -10;
-                anInputRange.value = -2;
-                expect(anInputRange.value).toEqual(-2);
+                anSlider.min = -10;
+                anSlider.value = -2;
+                expect(anSlider.value).toEqual(-2);
             });
             it("can be set with a string", function() {
-                anInputRange.value = "5";
-                expect(anInputRange.value).toEqual(5);
+                anSlider.value = "5";
+                expect(anSlider.value).toEqual(5);
             });
             it("can't be set with letters", function() {
-                var previousValue = anInputRange.value;
-                anInputRange.value = "hello";
-                expect(anInputRange.value).not.toEqual("hello");
-                expect(anInputRange.value).toEqual(previousValue);
+                var previousValue = anSlider.value;
+                anSlider.value = "hello";
+                expect(anSlider.value).not.toEqual("hello");
+                expect(anSlider.value).toEqual(previousValue);
             });
             describe("behavior", function() {
                 it("value should take min into account", function() {
-                    anInputRange.min = 10;
-                    anInputRange.value = 0;
-                    expect(anInputRange.value).toEqual(10);
+                    anSlider.min = 10;
+                    anSlider.value = 0;
+                    expect(anSlider.value).toEqual(10);
                 });
                 it("value should take max into account", function() {
-                    anInputRange.max = 20;
-                    anInputRange.value = 25;
-                    expect(anInputRange.value).toEqual(20);
+                    anSlider.max = 20;
+                    anSlider.value = 25;
+                    expect(anSlider.value).toEqual(20);
                 });
            });
         });
         describe("step", function() {
             it("should have correct default", function() {
-                expect(anInputRange.step).toEqual("any");
+                expect(anSlider.step).toEqual("any");
             });
             it("can be set", function() {
-                anInputRange.step = 2;
-                expect(anInputRange.step).toEqual(2);
+                anSlider.step = 2;
+                expect(anSlider.step).toEqual(2);
             });
             it("cannot be negative", function() {
-                var previousValue = anInputRange.step;
-                anInputRange.step = -2;
-                expect(anInputRange.step).toEqual(previousValue);
+                var previousValue = anSlider.step;
+                anSlider.step = -2;
+                expect(anSlider.step).toEqual(previousValue);
             });
             it("can be set with a string", function() {
-                anInputRange.step = "2";
-                expect(anInputRange.step).toEqual(2);
+                anSlider.step = "2";
+                expect(anSlider.step).toEqual(2);
             });
             it("can't be set with letters", function() {
-                var previousValue = anInputRange.step;
-                anInputRange.step = "hello";
-                expect(anInputRange.step).not.toEqual("hello");
-                expect(anInputRange.step).toEqual(previousValue);
+                var previousValue = anSlider.step;
+                anSlider.step = "hello";
+                expect(anSlider.step).not.toEqual("hello");
+                expect(anSlider.step).toEqual(previousValue);
             });
             describe("effect on value", function () {
                 it("should be immediate if necessary", function () {
-                    anInputRange.value = 2.2;
-                    anInputRange.step = 1;
-                    expect(anInputRange.value).toEqual(2);
+                    anSlider.value = 2.2;
+                    anSlider.step = 1;
+                    expect(anSlider.value).toEqual(2);
                 });
                 it("should result in increments from min", function () {
-                    anInputRange.min = 1.4;
-                    anInputRange.value = 3;
-                    anInputRange.step = 2;
-                    expect(anInputRange.value).toEqual(3.4);
+                    anSlider.min = 1.4;
+                    anSlider.value = 3;
+                    anSlider.step = 2;
+                    expect(anSlider.value).toEqual(3.4);
                 });
                 it("should resolve two larger value if two values are possible", function () {
-                    anInputRange.min = 0;
-                    anInputRange.max = 100;
-                    anInputRange.value = 50;
-                    anInputRange.step = 20;
-                    expect(anInputRange.value).toEqual(60);
+                    anSlider.min = 0;
+                    anSlider.max = 100;
+                    anSlider.value = 50;
+                    anSlider.step = 20;
+                    expect(anSlider.value).toEqual(60);
                 });
             });
         });
         describe("min", function() {
             it("should have correct default", function() {
-                expect(anInputRange.min).toEqual(0);
+                expect(anSlider.min).toEqual(0);
             });
             it("can be set", function() {
-                anInputRange.min = 2;
-                expect(anInputRange.min).toEqual(2);
+                anSlider.min = 2;
+                expect(anSlider.min).toEqual(2);
             });
             it("can be negative", function() {
-                anInputRange.min = -2;
-                expect(anInputRange.min).toEqual(-2);
+                anSlider.min = -2;
+                expect(anSlider.min).toEqual(-2);
             });
             it("can be set with a string", function() {
-                anInputRange.min = "2";
-                expect(anInputRange.min).toEqual(2);
+                anSlider.min = "2";
+                expect(anSlider.min).toEqual(2);
             });
             it("can't be set with letters", function() {
-                var previousValue = anInputRange.min;
-                anInputRange.min = "hello";
-                expect(anInputRange.min).not.toEqual("hello");
-                expect(anInputRange.min).toEqual(previousValue);
+                var previousValue = anSlider.min;
+                anSlider.min = "hello";
+                expect(anSlider.min).not.toEqual("hello");
+                expect(anSlider.min).toEqual(previousValue);
             });
             describe("behavior", function() {
                 it("value should be unchanged if value already a greater than min", function() {
-                    anInputRange.value = 6;
-                    anInputRange.min = 2;
-                    expect(anInputRange.value).toEqual(6);
+                    anSlider.value = 6;
+                    anSlider.min = 2;
+                    expect(anSlider.value).toEqual(6);
                 });
                 it("value should be changed if value isn't greater than min", function() {
-                    anInputRange.value = 1;
-                    anInputRange.min = 2;
-                    expect(anInputRange.value).toEqual(2);
+                    anSlider.value = 1;
+                    anSlider.min = 2;
+                    expect(anSlider.value).toEqual(2);
                 });
                 it("value should be changed if value isn't greater than min if min is negative", function() {
-                    anInputRange.min = -10;
-                    anInputRange.value = -3;
-                    anInputRange.min = -2;
-                    expect(anInputRange.value).toEqual(-2);
+                    anSlider.min = -10;
+                    anSlider.value = -3;
+                    anSlider.min = -2;
+                    expect(anSlider.value).toEqual(-2);
                 });
             });
         });
         describe("max", function() {
             it("should have correct default", function() {
-                expect(anInputRange.max).toEqual(100);
+                expect(anSlider.max).toEqual(100);
             });
             it("can be set", function() {
-                anInputRange.max = 2;
-                expect(anInputRange.max).toEqual(2);
+                anSlider.max = 2;
+                expect(anSlider.max).toEqual(2);
             });
             it("can be negative", function() {
-                anInputRange.max = -2;
-                expect(anInputRange.max).toEqual(-2);
+                anSlider.max = -2;
+                expect(anSlider.max).toEqual(-2);
             });
             it("can be set with a string", function() {
-                anInputRange.max = "2";
-                expect(anInputRange.max).toEqual(2);
+                anSlider.max = "2";
+                expect(anSlider.max).toEqual(2);
             });
             it("can't be set with letters", function() {
-                var previousValue = anInputRange.max;
-                anInputRange.max = "hello";
-                expect(anInputRange.max).not.toEqual("hello");
-                expect(anInputRange.max).toEqual(previousValue);
+                var previousValue = anSlider.max;
+                anSlider.max = "hello";
+                expect(anSlider.max).not.toEqual("hello");
+                expect(anSlider.max).toEqual(previousValue);
             });
             describe("behavior", function() {
                 it("value should be unchanged if value is already less than max", function() {
-                    anInputRange.value = 2;
-                    anInputRange.max = 6;
-                    expect(anInputRange.value).toEqual(2);
+                    anSlider.value = 2;
+                    anSlider.max = 6;
+                    expect(anSlider.value).toEqual(2);
                 });
                 it("value should be changed if value isn't less than max", function() {
-                    anInputRange.value = 10;
-                    anInputRange.max = 9;
-                    expect(anInputRange.value).toEqual(9);
+                    anSlider.value = 10;
+                    anSlider.max = 9;
+                    expect(anSlider.value).toEqual(9);
                 });
             });
         });
         describe("after enterDocument", function () {
-            var InputRange = Montage.create(AbstractInputRange, {}),
-                anInputRange, anElement;
+            var Slider = Montage.create(AbstractSlider, {}),
+                anSlider, anElement;
             beforeEach(function () {
-                anInputRange = InputRange.create();
+                anSlider = Slider.create();
                 anElement = MockDOM.element();
-                anInputRange.element = anElement;
+                anSlider.element = anElement;
             });
             describe("it should continue to work", function () {
                 beforeEach(function () {
-                     anInputRange.enterDocument(true);
+                     anSlider.enterDocument(true);
                 });
                 it("should allow value to change", function () {
                     expect(function() {
-                        anInputRange.value = 30;
+                        anSlider.value = 30;
                     }).not.toThrow();
-                    expect(anInputRange.value).toEqual(30);
+                    expect(anSlider.value).toEqual(30);
                 });
             });
             describe("it should correctly initialize defaults from the placeholder element", function () {
@@ -225,19 +225,19 @@ describe("test/base/abstract-input-range-spec", function () {
                         anElement.setAttribute("min", -100);
                         anElement.setAttribute("max", 999);
                         anElement.setAttribute("step", 10);
-                        anInputRange.enterDocument(true);
+                        anSlider.enterDocument(true);
                     });
                     it("should get the value from the placeholder element", function () {
-                        expect(anInputRange.value).toEqual(80);
+                        expect(anSlider.value).toEqual(80);
                     });
                     it("should get the min from the placeholder element", function () {
-                        expect(anInputRange.min).toEqual(-100);
+                        expect(anSlider.min).toEqual(-100);
                     });
                     it("should get the max from the placeholder element", function () {
-                        expect(anInputRange.max).toEqual(999);
+                        expect(anSlider.max).toEqual(999);
                     });
                     it("should get the step from the placeholder element", function () {
-                        expect(anInputRange.step).toEqual(10);
+                        expect(anSlider.step).toEqual(10);
                     });
                 });
                 describe("when the properties are set beforehand", function () {
@@ -246,118 +246,118 @@ describe("test/base/abstract-input-range-spec", function () {
                         anElement.setAttribute("min", -100);
                         anElement.setAttribute("max", 999);
                         anElement.setAttribute("step", 10);
-                        anInputRange.value = 85;
-                        anInputRange.min = -105;
-                        anInputRange.max = 888;
-                        anInputRange.step = 5;
-                        anInputRange.enterDocument(true);
+                        anSlider.value = 85;
+                        anSlider.min = -105;
+                        anSlider.max = 888;
+                        anSlider.step = 5;
+                        anSlider.enterDocument(true);
                     });
                     it("should not get the value from the placeholder element", function () {
-                        expect(anInputRange.value).toEqual(85);
+                        expect(anSlider.value).toEqual(85);
                     });
                     it("should not get the min from the placeholder element", function () {
-                        expect(anInputRange.min).toEqual(-105);
+                        expect(anSlider.min).toEqual(-105);
                     });
                     it("should not get the max from the placeholder element", function () {
-                        expect(anInputRange.max).toEqual(888);
+                        expect(anSlider.max).toEqual(888);
                     });
                     it("should not get the step from the placeholder element", function () {
-                        expect(anInputRange.step).toEqual(5);
+                        expect(anSlider.step).toEqual(5);
                     });
                     it("should delete _propertyNamesUsed after enterDocument", function () {
-                        expect(anInputRange._propertyNamesUsed).not.toBeDefined();
+                        expect(anSlider._propertyNamesUsed).not.toBeDefined();
                     });
                 });
             });
 
         });
         describe("draw", function () {
-            var InputRange = Montage.create(AbstractInputRange, {}),
-                anInputRange;
+            var Slider = Montage.create(AbstractSlider, {}),
+                anSlider;
             beforeEach(function () {
-                anInputRange = InputRange.create();
-                anInputRange.element = MockDOM.element();
+                anSlider = Slider.create();
+                anSlider.element = MockDOM.element();
             });
 
             it("should be requested after enabled state is changed", function () {
-                anInputRange.enabled = ! anInputRange.enabled;
-                expect(anInputRange.needsDraw).toBeTruthy();
+                anSlider.enabled = ! anSlider.enabled;
+                expect(anSlider.needsDraw).toBeTruthy();
             });
             it("should be requested after value is changed", function () {
-                anInputRange.value = "random";
-                expect(anInputRange.needsDraw).toBeTruthy();
+                anSlider.value = "random";
+                expect(anSlider.needsDraw).toBeTruthy();
             });
             it("should be requested after min is changed", function () {
-                anInputRange.min = true;
-                expect(anInputRange.needsDraw).toBeTruthy();
+                anSlider.min = true;
+                expect(anSlider.needsDraw).toBeTruthy();
             });
             it("should be requested after max is changed", function () {
-                anInputRange.max = true;
-                expect(anInputRange.needsDraw).toBeTruthy();
+                anSlider.max = true;
+                expect(anSlider.needsDraw).toBeTruthy();
             });
         });
         describe("events", function () {
-            var InputRange = Montage.create(AbstractInputRange, {}),
-                anInputRange, anElement, listener;
+            var Slider = Montage.create(AbstractSlider, {}),
+                anSlider, anElement, listener;
             beforeEach(function () {
-                anInputRange = InputRange.create();
+                anSlider = Slider.create();
                 anElement = MockDOM.element();
-                anInputRange.element = anElement;
+                anSlider.element = anElement;
                 listener = {
                     handleEvent: function() {}
                 }
             });
             it("should listen for translateStart only after prepareForActivationEvents", function() {
                 var listeners,
-                    em = anInputRange.eventManager;
-                anInputRange._inputRangeThumbSliderElement = anElement;
+                    em = anSlider.eventManager;
+                anSlider._inputRangeThumbSliderElement = anElement;
 
-                anInputRange.enterDocument(true);
+                anSlider.enterDocument(true);
 
-                listeners = em.registeredEventListenersForEventType_onTarget_("translateStart", anInputRange._translateComposer);
+                listeners = em.registeredEventListenersForEventType_onTarget_("translateStart", anSlider._translateComposer);
                 expect(listeners).toBeNull();
 
-                anInputRange.prepareForActivationEvents();
+                anSlider.prepareForActivationEvents();
 
-                listeners = em.registeredEventListenersForEventType_onTarget_("translateStart", anInputRange._translateComposer);
-                expect(listeners[anInputRange.uuid].listener).toBe(anInputRange);
+                listeners = em.registeredEventListenersForEventType_onTarget_("translateStart", anSlider._translateComposer);
+                expect(listeners[anSlider.uuid].listener).toBe(anSlider);
             });
             it("should listen for translate only after prepareForActivationEvents", function() {
                 var listeners,
-                    em = anInputRange.eventManager;
-                anInputRange._inputRangeThumbSliderElement = anElement;
+                    em = anSlider.eventManager;
+                anSlider._inputRangeThumbSliderElement = anElement;
 
-                anInputRange.enterDocument(true);
+                anSlider.enterDocument(true);
 
-                listeners = em.registeredEventListenersForEventType_onTarget_("translate", anInputRange._translateComposer);
+                listeners = em.registeredEventListenersForEventType_onTarget_("translate", anSlider._translateComposer);
                 expect(listeners).toBeNull();
 
-                anInputRange.prepareForActivationEvents();
+                anSlider.prepareForActivationEvents();
 
-                listeners = em.registeredEventListenersForEventType_onTarget_("translate", anInputRange._translateComposer);
-                expect(listeners[anInputRange.uuid].listener).toBe(anInputRange);
+                listeners = em.registeredEventListenersForEventType_onTarget_("translate", anSlider._translateComposer);
+                expect(listeners[anSlider.uuid].listener).toBe(anSlider);
             });
             it("should listen for translateEnd only after prepareForActivationEvents", function() {
                 var listeners,
-                    em = anInputRange.eventManager;
-                anInputRange._inputRangeThumbSliderElement = anElement;
+                    em = anSlider.eventManager;
+                anSlider._inputRangeThumbSliderElement = anElement;
 
-                anInputRange.enterDocument(true);
+                anSlider.enterDocument(true);
 
-                listeners = em.registeredEventListenersForEventType_onTarget_("translateEnd", anInputRange._translateComposer);
+                listeners = em.registeredEventListenersForEventType_onTarget_("translateEnd", anSlider._translateComposer);
                 expect(listeners).toBeNull();
 
-                anInputRange.prepareForActivationEvents();
+                anSlider.prepareForActivationEvents();
 
-                listeners = em.registeredEventListenersForEventType_onTarget_("translateEnd", anInputRange._translateComposer);
-                expect(listeners[anInputRange.uuid].listener).toBe(anInputRange);
+                listeners = em.registeredEventListenersForEventType_onTarget_("translateEnd", anSlider._translateComposer);
+                expect(listeners[anSlider.uuid].listener).toBe(anSlider);
             });
         });
     });
 });
 
 
-//TestPageLoader.queueTest("InputRange-test", function(testPage) {
+//TestPageLoader.queueTest("Slider-test", function(testPage) {
 //    var test;
 //    beforeEach(function() {
 //        test = testPage.test;
@@ -371,30 +371,30 @@ describe("test/base/abstract-input-range-spec", function () {
 //        // Return this so that it can be checked in tha calling function.
 //        return listener;
 //    };
-//    var testInputRange = function(component, value) {
+//    var testSlider = function(component, value) {
 //        expect(component).toBeDefined();
 //        expect(click(component)).toHaveBeenCalled();
 //        expect(component.label).toBe(value);
 //    };
 //
-//    describe("test/InputRange/InputRange-spec", function() {
+//    describe("test/Slider/Slider-spec", function() {
 //
-//        describe("InputRange", function(){
+//        describe("Slider", function(){
 //
 //            it("can be created from a div element", function(){
-//                testInputRange(test.divInputRange, "div InputRange");
+//                testSlider(test.divSlider, "div Slider");
 //            });
 //            it("can be created from an input element", function(){
-//                testInputRange(test.inputInputRange, "input InputRange");
+//                testSlider(test.inputSlider, "input Slider");
 //            });
-//            it("can be created from a InputRange element", function(){
-//                testInputRange(test.InputRangeInputRange, "InputRange InputRange");
+//            it("can be created from a Slider element", function(){
+//                testSlider(test.SliderSlider, "Slider Slider");
 //            });
 //
-//            it("fires a 'hold' event when the InputRange is pressed for a long time", function() {
-//                var el = test.inputInputRange.element;
-//                var holdListener = testPage.addListener(test.inputInputRange, null, "hold");
-//                var actionListener = testPage.addListener(test.inputInputRange, null, "action");
+//            it("fires a 'hold' event when the Slider is pressed for a long time", function() {
+//                var el = test.inputSlider.element;
+//                var holdListener = testPage.addListener(test.inputSlider, null, "hold");
+//                var actionListener = testPage.addListener(test.inputSlider, null, "action");
 //
 //                testPage.mouseEvent({target: el}, "mousedown");
 //
@@ -410,26 +410,26 @@ describe("test/base/abstract-input-range-spec", function () {
 //
 //            describe("disabled property", function(){
 //                it("is taken from the element's disabled attribute", function() {
-//                    expect(test.disabledInputRange.disabled).toBe(true);
-//                    expect(click(test.disabledInputRange)).not.toHaveBeenCalled();
+//                    expect(test.disabledSlider.disabled).toBe(true);
+//                    expect(click(test.disabledSlider)).not.toHaveBeenCalled();
 //                    expect(test.disabledinput.disabled).toBe(true);
 //                    expect(click(test.disabledinput)).not.toHaveBeenCalled();
-//                    expect(test.inputInputRange.disabled).toBe(false);
+//                    expect(test.inputSlider.disabled).toBe(false);
 //                });
 //                it("can be set", function(){
-//                    expect(test.disabledInputRange.disabled).toBe(true);
-//                    test.disabledInputRange.disabled = false;
-//                    expect(test.disabledInputRange.disabled).toBe(false);
-//                    // TODO click the InputRange and check that it wasn't pressed
+//                    expect(test.disabledSlider.disabled).toBe(true);
+//                    test.disabledSlider.disabled = false;
+//                    expect(test.disabledSlider.disabled).toBe(false);
+//                    // TODO click the Slider and check that it wasn't pressed
 //
 //                    expect(test.disabledinput.disabled).toBe(true);
 //                    test.disabledinput.disabled = false;
 //                    expect(test.disabledinput.disabled).toBe(false);
-//                    // TODO click the InputRange and check that it wasn't pressed
+//                    // TODO click the Slider and check that it wasn't pressed
 //                });
 //                it("can can be set in the serialization", function(){
 //                    expect(test.disabledinputszn.disabled).toBe(true);
-//                    // TODO check InputRange pressibility
+//                    // TODO check Slider pressibility
 //                });
 //                it("is the inverse of the enabled property", function(){
 //                    expect(test.enabledinputszn.disabled).toBe(false);
@@ -437,16 +437,16 @@ describe("test/base/abstract-input-range-spec", function () {
 //                    test.enabledinputszn.enabled = false;
 //                    expect(test.enabledinputszn.disabled).toBe(true);
 //                    expect(test.enabledinputszn.enabled).toBe(false);
-//                    // TODO click the InputRange and check that it wasn't pressed
+//                    // TODO click the Slider and check that it wasn't pressed
 //                });
 //            });
 //
 //            describe("label property", function() {
-//                it("is set from the serialization on a InputRange", function() {
-//                    expect(test.InputRangelabelszn.label).toBe("pass");
+//                it("is set from the serialization on a Slider", function() {
+//                    expect(test.Sliderlabelszn.label).toBe("pass");
 //                    testPage.waitForDraw();
 //                    runs(function(){
-//                        expect(test.InputRangelabelszn.element.firstChild.data).toBe("pass");
+//                        expect(test.Sliderlabelszn.element.firstChild.data).toBe("pass");
 //                    });
 //                });
 //                it("is set from the serialization on an input", function() {
@@ -454,49 +454,49 @@ describe("test/base/abstract-input-range-spec", function () {
 //                    expect(test.inputlabelszn.element.value).toBe("pass");
 //                });
 //                it("sets the value on an input", function() {
-//                    expect(test.inputInputRange.label).toBe("input InputRange");
-//                    test.inputInputRange.label = "label pass";
-//                    expect(test.inputInputRange.label).toBe("label pass");
-//                    expect(test.inputInputRange.value).toBe("label pass");
-//                    test.inputInputRange.label = "input InputRange";
+//                    expect(test.inputSlider.label).toBe("input Slider");
+//                    test.inputSlider.label = "label pass";
+//                    expect(test.inputSlider.label).toBe("label pass");
+//                    expect(test.inputSlider.value).toBe("label pass");
+//                    test.inputSlider.label = "input Slider";
 //                });
 //                it("sets the first child on a non-input element", function() {
-//                    expect(test.InputRangeInputRange.label).toBe("InputRange InputRange");
-//                    test.InputRangeInputRange.label = "label pass";
-//                    expect(test.InputRangeInputRange.label).toBe("label pass");
+//                    expect(test.SliderSlider.label).toBe("Slider Slider");
+//                    test.SliderSlider.label = "label pass";
+//                    expect(test.SliderSlider.label).toBe("label pass");
 //
 //                    testPage.waitForDraw();
 //                    runs(function(){
-//                        expect(test.InputRangeInputRange.element.firstChild.data).toBe("label pass");
-//                        test.InputRangeInputRange.label = "InputRange InputRange";
+//                        expect(test.SliderSlider.element.firstChild.data).toBe("label pass");
+//                        test.SliderSlider.label = "Slider Slider";
 //                    });
 //                });
 //            });
 //
 //            describe("value property", function() {
 //                it("is set from the value on an input", function() {
-//                    expect(test.inputInputRange.element.value).toBe("input InputRange");
-//                    expect(test.inputInputRange.value).toBe("input InputRange");
+//                    expect(test.inputSlider.element.value).toBe("input Slider");
+//                    expect(test.inputSlider.value).toBe("input Slider");
 //                });
 //                it("is set by the label property in the serialization", function() {
 //                    expect(test.inputlabelszn.label).toBe("pass");
 //                    //expect(test.inputlabelszn.value).toBe("pass");
 //                });
 //                it("sets the label property when using an input element", function() {
-//                    expect(test.inputInputRange.label).toBe("input InputRange");
-//                    test.inputInputRange.value = "value pass";
-//                    expect(test.inputInputRange.value).toBe("value pass");
-//                    expect(test.inputInputRange.label).toBe("value pass");
-//                    test.inputInputRange.value = "input InputRange";
+//                    expect(test.inputSlider.label).toBe("input Slider");
+//                    test.inputSlider.value = "value pass";
+//                    expect(test.inputSlider.value).toBe("value pass");
+//                    expect(test.inputSlider.label).toBe("value pass");
+//                    test.inputSlider.value = "input Slider";
 //                });
 //                it("doesn't set the label property when using a non-input element", function() {
-//                    expect(test.InputRangeInputRange.label).toBe("InputRange InputRange");
-//                    test.InputRangeInputRange.value = "value fail";
-//                    expect(test.InputRangeInputRange.label).toBe("InputRange InputRange");
+//                    expect(test.SliderSlider.label).toBe("Slider Slider");
+//                    test.SliderSlider.value = "value fail";
+//                    expect(test.SliderSlider.label).toBe("Slider Slider");
 //                    testPage.waitForDraw();
 //                    runs(function(){
-//                        expect(test.InputRangeInputRange.element.firstChild.data).toBe("InputRange InputRange");
-//                        test.InputRangeInputRange.value = "InputRange InputRange";
+//                        expect(test.SliderSlider.element.firstChild.data).toBe("Slider Slider");
+//                        test.SliderSlider.value = "Slider Slider";
 //                    });
 //                });
 //
@@ -504,9 +504,9 @@ describe("test/base/abstract-input-range-spec", function () {
 //
 //
 //            describe("action event detail property", function() {
-//                var detailInputRange, testHandler;
+//                var detailSlider, testHandler;
 //                beforeEach(function() {
-//                    detailInputRange = test.detailInputRange;
+//                    detailSlider = test.detailSlider;
 //                    testHandler = {
 //                        handler: function(event) {
 //                            testHandler.event = event;
@@ -517,32 +517,32 @@ describe("test/base/abstract-input-range-spec", function () {
 //                });
 //                it("is undefined if not used", function() {
 //                    spyOn(testHandler, 'handler').andCallThrough();
-//                    detailInputRange.addEventListener("action", testHandler.handler, false);
+//                    detailSlider.addEventListener("action", testHandler.handler, false);
 //
-//                    testPage.clickOrTouch({target: detailInputRange.element});
+//                    testPage.clickOrTouch({target: detailSlider.element});
 //                    expect(testHandler.handler).toHaveBeenCalled();
 //                    expect(testHandler.event.detail).toBeNull();
 //                });
 //                it("is is populated if used in a binding", function() {
 //                    spyOn(testHandler, 'handler').andCallThrough();
-//                    detailInputRange.addEventListener("action", testHandler.handler, false);
-//                    Bindings.defineBinding(detailInputRange, "detail.get('prop')", {
+//                    detailSlider.addEventListener("action", testHandler.handler, false);
+//                    Bindings.defineBinding(detailSlider, "detail.get('prop')", {
 //                        "<->": "valueToBeBound",
 //                        "source": testHandler
 //                    });
 //
-//                    testPage.clickOrTouch({target: detailInputRange.element});
+//                    testPage.clickOrTouch({target: detailSlider.element});
 //                    expect(testHandler.handler).toHaveBeenCalled();
 //                    expect(testHandler.event.detail.get("prop")).toEqual(testHandler.valueToBeBound);
 //                    //cleanup
-//                    Bindings.cancelBindings(detailInputRange);
+//                    Bindings.cancelBindings(detailSlider);
 //                });
 //                it("is is populated if used programatically", function() {
 //                    spyOn(testHandler, 'handler').andCallThrough();
-//                    detailInputRange.addEventListener("action", testHandler.handler, false);
-//                    detailInputRange.detail.set("prop2", "anotherValue");
+//                    detailSlider.addEventListener("action", testHandler.handler, false);
+//                    detailSlider.detail.set("prop2", "anotherValue");
 //
-//                    testPage.clickOrTouch({target: detailInputRange.element});
+//                    testPage.clickOrTouch({target: detailSlider.element});
 //                    expect(testHandler.handler).toHaveBeenCalled();
 //                    expect(testHandler.event.detail.get("prop2")).toEqual("anotherValue");
 //                });
@@ -550,27 +550,27 @@ describe("test/base/abstract-input-range-spec", function () {
 //
 //
 //            it("responds when child elements are clicked on", function(){
-//                expect(click(test.InputRangenested, test.InputRangenested.element.firstChild)).toHaveBeenCalled();
+//                expect(click(test.Slidernested, test.Slidernested.element.firstChild)).toHaveBeenCalled();
 //            });
 //
 //            it("supports converters for label", function(){
-//                test.converterInputRange.label = "pass";
-//                expect(test.converterInputRange.label).toBe("PASS");
+//                test.converterSlider.label = "pass";
+//                expect(test.converterSlider.label).toBe("PASS");
 //                testPage.waitForDraw();
 //                runs(function(){
-//                    expect(test.converterInputRange.element.value).toBe("PASS");
+//                    expect(test.converterSlider.element.value).toBe("PASS");
 //                });
 //            });
 //
 //            // TODO should be transplanted to the press-composer-spec
 //            // it("correctly releases the pointer", function() {
-//            //     var l = testPage.addListener(test.scroll_InputRange);
+//            //     var l = testPage.addListener(test.scroll_Slider);
 //
-//            //     testpage.mouseEvent({target: test.scroll_InputRange.element}, "mousedown");;
-//            //     expect(test.scroll_InputRange.active).toBe(true);
-//            //     test.scroll_InputRange.surrenderPointer(test.scroll_InputRange._observedPointer, null);
-//            //     expect(test.scroll_InputRange.active).toBe(false);
-//            //     testPage.mouseEvent({target: test.scroll_InputRange.element}, "mouseup");;
+//            //     testpage.mouseEvent({target: test.scroll_Slider.element}, "mousedown");;
+//            //     expect(test.scroll_Slider.active).toBe(true);
+//            //     test.scroll_Slider.surrenderPointer(test.scroll_Slider._observedPointer, null);
+//            //     expect(test.scroll_Slider.active).toBe(false);
+//            //     testPage.mouseEvent({target: test.scroll_Slider.element}, "mouseup");;
 //
 //            //     expect(l).not.toHaveBeenCalled();
 //
@@ -580,7 +580,7 @@ describe("test/base/abstract-input-range-spec", function () {
 //
 //                describe("when supporting touch events", function() {
 //
-//                    it("should dispatch an action event when a touchend follows a touchstart on a InputRange", function() {
+//                    it("should dispatch an action event when a touchend follows a touchstart on a Slider", function() {
 //
 //                    });
 //
@@ -590,30 +590,30 @@ describe("test/base/abstract-input-range-spec", function () {
 //
 //                describe("when supporting mouse events", function() {
 //                    it("dispatches an action event when a mouseup follows a mousedown", function() {
-//                        expect(click(test.inputInputRange)).toHaveBeenCalled();
+//                        expect(click(test.inputSlider)).toHaveBeenCalled();
 //                    });
 //
 //                    it("does not dispatch an action event when a mouseup occurs after not previously receiving a mousedown", function() {
 //                        // reset interaction
-//                        // test.inputInputRange._endInteraction();
-//                        var l = testPage.addListener(test.inputInputRange);
-//                        testPage.mouseEvent({target: test.inputInputRange.element}, "mouseup");;
+//                        // test.inputSlider._endInteraction();
+//                        var l = testPage.addListener(test.inputSlider);
+//                        testPage.mouseEvent({target: test.inputSlider.element}, "mouseup");;
 //                        expect(l).not.toHaveBeenCalled();
 //                    });
 //
-//                    it("does not dispatch an action event when a mouseup occurs away from the InputRange after a mousedown on a InputRange", function() {
-//                        var l = testPage.addListener(test.inputInputRange);
+//                    it("does not dispatch an action event when a mouseup occurs away from the Slider after a mousedown on a Slider", function() {
+//                        var l = testPage.addListener(test.inputSlider);
 //
-//                        testpage.mouseEvent({target: test.inputInputRange.element}, "mousedown");;
+//                        testpage.mouseEvent({target: test.inputSlider.element}, "mousedown");;
 //                        // Mouse up somewhere else
-//                        testPage.mouseEvent({target: test.divInputRange.element}, "mouseup");;
+//                        testPage.mouseEvent({target: test.divSlider.element}, "mouseup");;
 //
 //                        expect(l).not.toHaveBeenCalled();
 //                    });
 //                });
 //            }
 //
-//            var testInputRange = function(component, value) {
+//            var testSlider = function(component, value) {
 //                expect(component).toBeDefined();
 //                expect(click(component)).toHaveBeenCalled();
 //                expect(component.label).toBe(value);
@@ -621,21 +621,21 @@ describe("test/base/abstract-input-range-spec", function () {
 //
 //            describe("inside a scroll view", function() {
 //                it("fires an action event when clicked", function() {
-//                    testInputRange(test.scroll_InputRange, "scroll InputRange");
+//                    testSlider(test.scroll_Slider, "scroll Slider");
 //                });
 //                it("doesn't fire an action event when scroller is dragged", function() {
-//                    var el = test.scroll_InputRange.element;
+//                    var el = test.scroll_Slider.element;
 //                    var scroll_el = test.scroll.element;
 //
-//                    var listener = testPage.addListener(test.scroll_InputRange);
+//                    var listener = testPage.addListener(test.scroll_Slider);
 //
-//                    var press_composer = test.scroll_InputRange.composerList[0];
+//                    var press_composer = test.scroll_Slider.composerList[0];
 //
 //                    // mousedown
 //                    testPage.mouseEvent({target: el}, "mousedown");
 //
-//                    expect(test.scroll_InputRange.active).toBe(true);
-//                    expect(test.scroll_InputRange.eventManager.isPointerClaimedByComponent(press_composer._observedPointer, press_composer)).toBe(true);
+//                    expect(test.scroll_Slider.active).toBe(true);
+//                    expect(test.scroll_Slider.eventManager.isPointerClaimedByComponent(press_composer._observedPointer, press_composer)).toBe(true);
 //
 //                    // Mouse move doesn't happen instantly
 //                    waits(10);
@@ -643,7 +643,7 @@ describe("test/base/abstract-input-range-spec", function () {
 //                        // mouse move up
 //                        var moveEvent = document.createEvent("MouseEvent");
 //                        // Dispatch to scroll view, but use the coordinates from the
-//                        // InputRange
+//                        // Slider
 //                        moveEvent.initMouseEvent("mousemove", true, true, scroll_el.view, null,
 //                                el.offsetLeft, el.offsetTop - 100,
 //                                el.offsetLeft, el.offsetTop - 100,
@@ -651,8 +651,8 @@ describe("test/base/abstract-input-range-spec", function () {
 //                                0, null);
 //                        scroll_el.dispatchEvent(moveEvent);
 //
-//                        expect(test.scroll_InputRange.active).toBe(false);
-//                        expect(test.scroll_InputRange.eventManager.isPointerClaimedByComponent(press_composer._observedPointer, press_composer)).toBe(false);
+//                        expect(test.scroll_Slider.active).toBe(false);
+//                        expect(test.scroll_Slider.eventManager.isPointerClaimedByComponent(press_composer._observedPointer, press_composer)).toBe(false);
 //
 //                        // mouse up
 //                        testPage.mouseEvent({target: el}, "mouseup");;
