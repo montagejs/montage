@@ -4,7 +4,7 @@ var Montage = require("montage").Montage,
     PressComposer = require("composer/press-composer").PressComposer,
     Dict = require("collections/dict");
 
-var CLASS_PREFIX = "montage-InputRadio";
+var CLASS_PREFIX = "montage-RadioButton";
 
 /**
  * @class AbstractRadioButton
@@ -45,7 +45,7 @@ var AbstractRadioButton = exports.AbstractRadioButton = Montage.create(Component
                 "classList.has('montage--active')": {
                     "<-": "active"
                 },
-                "classList.has('montage-InputRadio--checked')": {
+                "classList.has('montage-RadioButton--checked')": {
                     "<-": "checked"
                 }
             });
