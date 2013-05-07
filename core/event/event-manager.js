@@ -649,13 +649,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
                 returnResult = false;
 
             if (typeof target.uuid === "undefined") {
-                // TODO WebKit's CanvasPixelArray has a null prototype
-                // and never receives a uuid. It's not really observable anyway so if you get to this
-                // point just, stop. Arguably we could stop even earlier.
-                if (Array.isCanvasPixelArray(target)) {
-                    return;
-                }
-                throw "EventManager cannot observe a target without a uuid";
+                throw new Error("EventManager cannot observe a target without a uuid: " + (target.outerHTML || target));
             }
 
             if (!eventTypeRegistration) {
