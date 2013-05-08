@@ -346,12 +346,14 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
             // Setup the window as much as possible now without knowing whether
             // the DOM is ready or not
 
+            // Keep a reference to the original listener functions
+
             // Note I think it may be implementation specific how these are implemented
             // so I'd rather preserve any native optimizations a browser has for
             // adding listeners to the document versus and element etc.
             aWindow.Element.prototype.nativeAddEventListener = aWindow.Element.prototype.addEventListener;
             Object.defineProperty(aWindow, "nativeAddEventListener", {
-                enumerable: false,
+                configurable: true,
                 value: aWindow.addEventListener
             });
             Object.getPrototypeOf(aWindow.document).nativeAddEventListener = aWindow.document.addEventListener;
@@ -362,7 +364,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
 
             aWindow.Element.prototype.nativeRemoveEventListener = aWindow.Element.prototype.removeEventListener;
             Object.defineProperty(aWindow, "nativeRemoveEventListener", {
-                enumerable: false,
+                configurable: true,
                 value: aWindow.removeEventListener
             });
             Object.getPrototypeOf(aWindow.document).nativeRemoveEventListener = aWindow.document.removeEventListener;
@@ -371,8 +373,10 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
                 aWindow.Worker.prototype.nativeRemoveEventListener = aWindow.Worker.prototype.removeEventListener;
             }
 
+            // Redefine listener functions
+
             Object.defineProperty(aWindow, "addEventListener", {
-                enumerable: false,
+                configurable: true,
                 value: (aWindow.XMLHttpRequest.prototype.addEventListener =
                         aWindow.Element.prototype.addEventListener =
                             Object.getPrototypeOf(aWindow.document).addEventListener =
@@ -386,7 +390,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
             }
 
             Object.defineProperty(aWindow, "removeEventListener", {
-                enumerable: false,
+                configurable: true,
                 value: (aWindow.XMLHttpRequest.prototype.removeEventListener =
                         aWindow.Element.prototype.removeEventListener =
                             Object.getPrototypeOf(aWindow.document).removeEventListener =
