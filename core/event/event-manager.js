@@ -75,32 +75,6 @@ if (typeof window.Touch === "undefined" && "ontouchstart" in window) {
     })();
 }
 
-/**
- @external Element
- */
-
-/**
- HTML element event handler UUID
- @member external:Element#eventHandlerUUID
- */
-Montage.defineProperty(Element.prototype, "eventHandlerUUID", /** @lends defineProperty */ {
-    value: undefined,
-    enumerable: false
-});
-
-
-/**
- The component instance directly associated with the specified element.
- @member external:Element#component
- */
-Montage.defineProperty(Element.prototype, "component", {
-    get: function() {
-        return defaultEventManager._elementEventHandlerByUUID[this.eventHandlerUUID];
-    },
-    enumerable: false
-});
-
-
 var EventListenerDescriptor = Montage.create(Montage, {
     type: {
         value: null
@@ -449,6 +423,26 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
                     }
                 }
             }
+
+            /**
+             HTML element event handler UUID
+             @member external:Element#eventHandlerUUID
+             */
+            Montage.defineProperty(aWindow.Element.prototype, "eventHandlerUUID", /** @lends defineProperty */ {
+                value: undefined,
+                enumerable: false
+            });
+
+            /**
+             The component instance directly associated with the specified element.
+             @member external:Element#component
+             */
+            Montage.defineProperty(aWindow.Element.prototype, "component", {
+                get: function() {
+                    return defaultEventManager._elementEventHandlerByUUID[this.eventHandlerUUID];
+                },
+                enumerable: false
+            });
 
             defaultEventManager = aWindow.defaultEventManager = exports.defaultEventManager = this;
             this._registeredWindows.push(aWindow);
