@@ -345,9 +345,10 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
                 }
                 var parentObject = Object.getPrototypeOf(target);
                 if ("blueprint" in parentObject) {
-                    parentObject.blueprint.then(function (blueprint) {
+                    return parentObject.blueprint.then(function (blueprint) {
                         newBlueprint.parent = blueprint;
-                    })
+                        return newBlueprint;
+                    });
                 }
                 return newBlueprint;
             } else {
