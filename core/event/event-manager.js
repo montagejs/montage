@@ -403,7 +403,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
                 aWindow.Worker.prototype.removeEventListener = aWindow.removeEventListener;
             }
 
-            // In some browsers each element has their own addEventLister/removeEventListener
+            // In some browsers (Firefox) each element has their own addEventLister/removeEventListener
             // Methodology to find all elements found in Chainvas
             if(aWindow.HTMLDivElement.prototype.addEventListener !== aWindow.Element.prototype.nativeAddEventListener) {
                 if (aWindow.HTMLElement &&
@@ -486,15 +486,87 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
     unregisterWindow: {
         enumerable: false,
         value: function(aWindow) {
-
             if (this._registeredWindows.indexOf(aWindow) < 0) {
                 throw "EventManager cannot unregister an unregistered window";
             }
 
-            var removeWindow = function(element) {
+            this._registeredWindows = this._registeredWindows.filter(function (element) {
                 return (aWindow !== element);
-            };
-            this._registeredWindows = this._registeredWindows.filter(removeWindow);
+            });
+
+            delete aWindow.defaultEventManager;
+
+            // Restore existing listener functions
+
+            aWindow.Element.prototype.addEventListener = aWindow.Element.prototype.nativeAddEventListener;
+            Object.defineProperty(aWindow, "addEventListener", {
+                configurable: true,
+                value: aWindow.nativeAddEventListener
+            });
+            Object.getPrototypeOf(aWindow.document).addEventListener = aWindow.document.nativeAddEventListener;
+            aWindow.XMLHttpRequest.prototype.addEventListener = aWindow.XMLHttpRequest.prototype.nativeAddEventListener;
+            if (aWindow.Worker) {
+                aWindow.Worker.prototype.addEventListener = aWindow.Worker.prototype.nativeAddEventListener;
+            }
+
+            aWindow.Element.prototype.removeEventListener = aWindow.Element.prototype.nativeRemoveEventListener;
+            Object.defineProperty(aWindow, "removeEventListener", {
+                configurable: true,
+                value: aWindow.nativeRemoveEventListener
+            });
+            Object.getPrototypeOf(aWindow.document).removeEventListener = aWindow.document.nativeRemoveEventListener;
+            aWindow.XMLHttpRequest.prototype.removeEventListener = aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener;
+            if (aWindow.Worker) {
+                aWindow.Worker.prototype.removeEventListener = aWindow.Worker.prototype.nativeRemoveEventListener;
+            }
+
+            // In some browsers (Firefox) each element has their own addEventLister/removeEventListener
+            // Methodology to find all elements found in Chainvas
+            if(aWindow.HTMLDivElement.prototype.nativeAddEventListener !== aWindow.Element.prototype.addEventListener) {
+                if (aWindow.HTMLElement &&
+                    'addEventListener' in aWindow.HTMLElement.prototype &&
+                    aWindow.Components &&
+                    aWindow.Components.interfaces
+                ) {
+                    var candidate, candidatePrototype;
+
+                    for(candidate in Components.interfaces) {
+                        if(candidate.match(/^nsIDOMHTML\w*Element$/)) {
+                            candidate = candidate.replace(/^nsIDOM/, '');
+                            if(candidate = window[candidate]) {
+                                candidatePrototype = candidate.prototype;
+                                candidatePrototype.addEventListener = candidatePrototype.nativeAddEventListener;
+                                delete candidatePrototype.nativeAddEventListener;
+                                candidatePrototype.removeEventListener = candidatePrototype.nativeRemoveEventListener;
+                                delete candidatePrototype.nativeRemoveEventListener;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Delete our references
+
+            delete aWindow.Element.prototype.nativeAddEventListener;
+            delete aWindow.nativeAddEventListener;
+
+            delete Object.getPrototypeOf(aWindow.document).nativeAddEventListener;
+            delete aWindow.XMLHttpRequest.prototype.nativeAddEventListener;
+            if (aWindow.Worker) {
+                delete aWindow.Worker.prototype.nativeAddEventListener;
+            }
+
+            delete aWindow.Element.prototype.nativeRemoveEventListener;
+            delete aWindow.nativeRemoveEventListener;
+
+            delete Object.getPrototypeOf(aWindow.document).nativeRemoveEventListener;
+            delete aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener;
+            if (aWindow.Worker) {
+                delete aWindow.Worker.prototype.nativeRemoveEventListener;
+            }
+
+            delete aWindow.Element.prototype.eventHandlerUUID;
+            delete aWindow.Element.prototype.component;
 
             this._stopListeningToWindow(aWindow);
         }
