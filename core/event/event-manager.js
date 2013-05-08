@@ -75,32 +75,6 @@ if (typeof window.Touch === "undefined" && "ontouchstart" in window) {
     })();
 }
 
-/**
- @external Element
- */
-
-/**
- HTML element event handler UUID
- @member external:Element#eventHandlerUUID
- */
-Montage.defineProperty(Element.prototype, "eventHandlerUUID", /** @lends defineProperty */ {
-    value: undefined,
-    enumerable: false
-});
-
-
-/**
- The component instance directly associated with the specified element.
- @member external:Element#component
- */
-Montage.defineProperty(Element.prototype, "component", {
-    get: function() {
-        return defaultEventManager._elementEventHandlerByUUID[this.eventHandlerUUID];
-    },
-    enumerable: false
-});
-
-
 var EventListenerDescriptor = Montage.create(Montage, {
     type: {
         value: null
@@ -372,12 +346,14 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
             // Setup the window as much as possible now without knowing whether
             // the DOM is ready or not
 
+            // Keep a reference to the original listener functions
+
             // Note I think it may be implementation specific how these are implemented
             // so I'd rather preserve any native optimizations a browser has for
             // adding listeners to the document versus and element etc.
             aWindow.Element.prototype.nativeAddEventListener = aWindow.Element.prototype.addEventListener;
             Object.defineProperty(aWindow, "nativeAddEventListener", {
-                enumerable: false,
+                configurable: true,
                 value: aWindow.addEventListener
             });
             Object.getPrototypeOf(aWindow.document).nativeAddEventListener = aWindow.document.addEventListener;
@@ -388,7 +364,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
 
             aWindow.Element.prototype.nativeRemoveEventListener = aWindow.Element.prototype.removeEventListener;
             Object.defineProperty(aWindow, "nativeRemoveEventListener", {
-                enumerable: false,
+                configurable: true,
                 value: aWindow.removeEventListener
             });
             Object.getPrototypeOf(aWindow.document).nativeRemoveEventListener = aWindow.document.removeEventListener;
@@ -397,8 +373,10 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
                 aWindow.Worker.prototype.nativeRemoveEventListener = aWindow.Worker.prototype.removeEventListener;
             }
 
+            // Redefine listener functions
+
             Object.defineProperty(aWindow, "addEventListener", {
-                enumerable: false,
+                configurable: true,
                 value: (aWindow.XMLHttpRequest.prototype.addEventListener =
                         aWindow.Element.prototype.addEventListener =
                             Object.getPrototypeOf(aWindow.document).addEventListener =
@@ -412,7 +390,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
             }
 
             Object.defineProperty(aWindow, "removeEventListener", {
-                enumerable: false,
+                configurable: true,
                 value: (aWindow.XMLHttpRequest.prototype.removeEventListener =
                         aWindow.Element.prototype.removeEventListener =
                             Object.getPrototypeOf(aWindow.document).removeEventListener =
@@ -425,7 +403,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
                 aWindow.Worker.prototype.removeEventListener = aWindow.removeEventListener;
             }
 
-            // In some browsers each element has their own addEventLister/removeEventListener
+            // In some browsers (Firefox) each element has their own addEventLister/removeEventListener
             // Methodology to find all elements found in Chainvas
             if(aWindow.HTMLDivElement.prototype.addEventListener !== aWindow.Element.prototype.nativeAddEventListener) {
                 if (aWindow.HTMLElement &&
@@ -449,6 +427,26 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
                     }
                 }
             }
+
+            /**
+             HTML element event handler UUID
+             @member external:Element#eventHandlerUUID
+             */
+            Montage.defineProperty(aWindow.Element.prototype, "eventHandlerUUID", /** @lends defineProperty */ {
+                value: undefined,
+                enumerable: false
+            });
+
+            /**
+             The component instance directly associated with the specified element.
+             @member external:Element#component
+             */
+            Montage.defineProperty(aWindow.Element.prototype, "component", {
+                get: function() {
+                    return defaultEventManager._elementEventHandlerByUUID[this.eventHandlerUUID];
+                },
+                enumerable: false
+            });
 
             defaultEventManager = aWindow.defaultEventManager = exports.defaultEventManager = this;
             this._registeredWindows.push(aWindow);
@@ -488,15 +486,87 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
     unregisterWindow: {
         enumerable: false,
         value: function(aWindow) {
-
             if (this._registeredWindows.indexOf(aWindow) < 0) {
                 throw "EventManager cannot unregister an unregistered window";
             }
 
-            var removeWindow = function(element) {
+            this._registeredWindows = this._registeredWindows.filter(function (element) {
                 return (aWindow !== element);
-            };
-            this._registeredWindows = this._registeredWindows.filter(removeWindow);
+            });
+
+            delete aWindow.defaultEventManager;
+
+            // Restore existing listener functions
+
+            aWindow.Element.prototype.addEventListener = aWindow.Element.prototype.nativeAddEventListener;
+            Object.defineProperty(aWindow, "addEventListener", {
+                configurable: true,
+                value: aWindow.nativeAddEventListener
+            });
+            Object.getPrototypeOf(aWindow.document).addEventListener = aWindow.document.nativeAddEventListener;
+            aWindow.XMLHttpRequest.prototype.addEventListener = aWindow.XMLHttpRequest.prototype.nativeAddEventListener;
+            if (aWindow.Worker) {
+                aWindow.Worker.prototype.addEventListener = aWindow.Worker.prototype.nativeAddEventListener;
+            }
+
+            aWindow.Element.prototype.removeEventListener = aWindow.Element.prototype.nativeRemoveEventListener;
+            Object.defineProperty(aWindow, "removeEventListener", {
+                configurable: true,
+                value: aWindow.nativeRemoveEventListener
+            });
+            Object.getPrototypeOf(aWindow.document).removeEventListener = aWindow.document.nativeRemoveEventListener;
+            aWindow.XMLHttpRequest.prototype.removeEventListener = aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener;
+            if (aWindow.Worker) {
+                aWindow.Worker.prototype.removeEventListener = aWindow.Worker.prototype.nativeRemoveEventListener;
+            }
+
+            // In some browsers (Firefox) each element has their own addEventLister/removeEventListener
+            // Methodology to find all elements found in Chainvas
+            if(aWindow.HTMLDivElement.prototype.nativeAddEventListener !== aWindow.Element.prototype.addEventListener) {
+                if (aWindow.HTMLElement &&
+                    'addEventListener' in aWindow.HTMLElement.prototype &&
+                    aWindow.Components &&
+                    aWindow.Components.interfaces
+                ) {
+                    var candidate, candidatePrototype;
+
+                    for(candidate in Components.interfaces) {
+                        if(candidate.match(/^nsIDOMHTML\w*Element$/)) {
+                            candidate = candidate.replace(/^nsIDOM/, '');
+                            if(candidate = window[candidate]) {
+                                candidatePrototype = candidate.prototype;
+                                candidatePrototype.addEventListener = candidatePrototype.nativeAddEventListener;
+                                delete candidatePrototype.nativeAddEventListener;
+                                candidatePrototype.removeEventListener = candidatePrototype.nativeRemoveEventListener;
+                                delete candidatePrototype.nativeRemoveEventListener;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Delete our references
+
+            delete aWindow.Element.prototype.nativeAddEventListener;
+            delete aWindow.nativeAddEventListener;
+
+            delete Object.getPrototypeOf(aWindow.document).nativeAddEventListener;
+            delete aWindow.XMLHttpRequest.prototype.nativeAddEventListener;
+            if (aWindow.Worker) {
+                delete aWindow.Worker.prototype.nativeAddEventListener;
+            }
+
+            delete aWindow.Element.prototype.nativeRemoveEventListener;
+            delete aWindow.nativeRemoveEventListener;
+
+            delete Object.getPrototypeOf(aWindow.document).nativeRemoveEventListener;
+            delete aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener;
+            if (aWindow.Worker) {
+                delete aWindow.Worker.prototype.nativeRemoveEventListener;
+            }
+
+            delete aWindow.Element.prototype.eventHandlerUUID;
+            delete aWindow.Element.prototype.component;
 
             this._stopListeningToWindow(aWindow);
         }
@@ -649,13 +719,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
                 returnResult = false;
 
             if (typeof target.uuid === "undefined") {
-                // TODO WebKit's CanvasPixelArray has a null prototype
-                // and never receives a uuid. It's not really observable anyway so if you get to this
-                // point just, stop. Arguably we could stop even earlier.
-                if (Array.isCanvasPixelArray(target)) {
-                    return;
-                }
-                throw "EventManager cannot observe a target without a uuid";
+                throw new Error("EventManager cannot observe a target without a uuid: " + (target.outerHTML || target));
             }
 
             if (!eventTypeRegistration) {

@@ -679,6 +679,9 @@ if (typeof window !== "undefined") {
                             applicationRequire.async(params.module)
                             .done();
                         }
+                        if (typeof global.montageDidLoad === "function") {
+                            global.montageDidLoad();
+                        }
                     });
                 })
 

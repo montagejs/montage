@@ -155,6 +155,35 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
             }
         });
 
+        describe("when unregistering a window", function () {
+            var testWindow;
+
+            beforeEach(function () {
+                testWindow = testPage.iframe.contentWindow;
+            });
+
+            afterEach(function () {
+                // if there was an error in the test make sure that the window
+                // is still registered
+                if (!testWindow.defaultEventManager) {
+                    eventManager.registerWindow(testWindow);
+                }
+            });
+
+            it("removes the installed functions", function () {
+                eventManager.unregisterWindow(testWindow);
+
+                expect(testWindow.defaultEventManager).toBeUndefined();
+                expect(testWindow.document.body.nativeAddEventListener).toBeUndefined();
+                expect(testWindow.document.body.addEventListener).toBeDefined();
+
+                eventManager.registerWindow(testWindow);
+
+                expect(testWindow.defaultEventManager).toEqual(eventManager);
+                expect(testWindow.document.body.nativeAddEventListener).toBeDefined();
+            });
+        });
+
         describe("when adding event listeners", function() {
 
             it("should record that the listener cares about an event on the target", function() {
