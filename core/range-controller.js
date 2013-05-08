@@ -411,6 +411,16 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
         }
     },
 
+    has: {
+        value: function(value) {
+            if (this.content) {
+                return this.content.has(value);
+            } else {
+                return false;
+            }
+        }
+    },
+
     /**
      * Proxies adding each value into the underlying collection.
      */
