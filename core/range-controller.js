@@ -105,9 +105,9 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
             this.addRangeAtPathChangeListener("content", this, "handleContentRangeChange");
             this.addPathChangeListener("sortPath", this, "handleOrderChange");
             this.addPathChangeListener("reversed", this, "handleOrderChange");
+            this.addOwnPropertyChangeListener("multiSelect", this);
 
             this.iterations = [];
-
         }
     },
 
@@ -534,6 +534,16 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
                     this._selection.clear();
                 }
                 this._selection.add(value);
+            }
+        }
+    },
+
+    handleMultiSelectChange: {
+        value: function() {
+            var length = this._selection.length;
+
+            if (!this.multiSelect && length > 1) {
+                this._selection.splice(0, length - 1);
             }
         }
     },
