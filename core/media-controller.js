@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
-	@module montage/ui/controller/media-controller
+    @module montage/ui/controller/media-controller
     @requires montage/core/core
     @requires montage/ui/component
     @requires montage/core/logger
@@ -37,6 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage;
 var Target = require("core/target").Target;
 var logger = require("core/logger").logger("mediacontroller");
+
 /**
  @class MediaController
  @classdesc Controls an audio/video media player.
@@ -67,85 +68,54 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
         @default {Number} 3
     */
     EMPTY:   { enumerable: true, value: 3, writable: false },
-/**
-  @private
-*/
+    /**
+    @private
+    */
     _TIMEUPDATE_FREQUENCY: { value: 0.25   },  // Don't refresh too often.
     /*-----------------------------------------------------------------------------
      MARK:   Properties
      -----------------------------------------------------------------------------*/
-/**
-  @private
-*/
-    _mediaElement: {
+    /**
+    @private
+    */
+    _mediaController: {
         value: null,
         enumerable: false
     },
- /**
+    /**
         @type {Function}
         @default null
     */
-    mediaElement: {
+    mediaController: {
         get : function() {
-            return this._mediaElement;
+            return this._mediaController;
         },
-        set : function(elem) {
-            this._mediaElement = elem;
+        set : function(controller) {
+            if (this._mediaController !== controller) {
+                if (this._mediaController) {
+                    this._removeControlEventHandlers();
+                }
+                this._mediaController = controller;
+                this._installControlEventHandlers();
+            }
         },
         enumerable: false
-    },
-/**
-  @private
-*/
-    _mediaSrc: {
-        value: null,
-        enumerable: false
-    },
-/**
-        @type {Function}
-        @default null
-    */
-    mediaSrc: {
-        get: function() {
-            return this._mediaSrc;
-        },
-        set: function(mediaSrc) {
-            this._mediaSrc = mediaSrc;
-        }
     },
 
-    /**
-      @private
-    */
-    _posterSrc: {
-        value: null
-    },
-    /**
-     * @type {String}
-     * @default null
-     */
-    posterSrc: {
-        get: function() {
-            return this._posterSrc;
-        },
-        set: function(posterSrc) {
-            this._posterSrc = posterSrc;
-        }
-    },
 
     /*-----------------------------------------------------------------------------
      MARK:   Status & Attributes
      -----------------------------------------------------------------------------*/
-/**
-  @private
-*/
+    /**
+    @private
+    */
     _status: {
         enumerable: false,
         value: 3
     },
- /**
-        @type {Function}
-        @default {Number} 3
+    /**
+    @type {Function}
+    @default {Number} 3
     */
     status: {
         enumerable: false,
@@ -154,19 +124,21 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
         },
         set: function(status) {
             if (status !== this._status) {
+                if (logger.isDebug) {
+                    logger.debug("MediaController:status: " + status);
+                }
                 this._status = status;
                 this._dispatchStateChangeEvent();
             }
         }
     },
-/**
-  @private
-*/
+    /**
+    @private
+    */
     _position: { value:null, enumerable:false },
-
-/**
-        @type {Function}
-        @default null
+    /**
+    @type {Function}
+    @default null
     */
     position: {
         set: function(time, shouldNotUpdate) {
@@ -179,11 +151,11 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             return this._position;
         }
     },
-/**
-  @private
-*/
+    /**
+    @private
+    */
     _duration: { value: null, enumerable:false },
-/**
+    /**
         @type {Function}
         @default null
     */
@@ -207,15 +179,15 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
     /*-----------------------------------------------------------------------------
      MARK:   Media Player Commands
      -----------------------------------------------------------------------------*/
-/**
+    /**
         @type {Property}
         @default {Boolean} true
     */
     autoplay: {
         enumerable: false,
-        value: true
+        value: false
     },
-/**
+    /**
     @function
     */
     play: {
@@ -223,10 +195,11 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             if (logger.isDebug) {
                 logger.debug("MediaController:play()");
             }
-            this.mediaElement.play();
+            this.mediaController.currentTime = 0;
+            this.mediaController.play();
         }
     },
-/**
+    /**
     @function
     */
     pause: {
@@ -234,10 +207,21 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             if (logger.isDebug) {
                 logger.debug("MediaController:pause()");
             }
-            this.mediaElement.pause();
+            this.mediaController.pause();
         }
     },
-/**
+    /**
+    @function
+    */
+    unpause: {
+        value: function() {
+            if (logger.isDebug) {
+                logger.debug("MediaController:unpause()");
+            }
+            this.mediaController.unpause();
+        }
+    },
+    /**
     @function
     @returns {Boolean} !playing (true if it is now playing)
     */
@@ -248,7 +232,7 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             }
 
             var playing = (this.status === this.PLAYING);
-            this.playbackRate = this.mediaElement.defaultPlaybackRate;
+            this.playbackRate = this.mediaController.defaultPlaybackRate;
             if (playing) {
                 this.pause();
             } else {
@@ -257,16 +241,16 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             return !playing;    // true if it is now playing
         }
     },
-/**
-  @private
-*/
+    /**
+    @private
+    */
     _playbackRate: {
         value: 1,
         enumerable: false
     },
-/**
-        @type {Function}
-        @default {Number} 1
+    /**
+    @type {Function}
+    @default {Number} 1
     */
     playbackRate: {
         get: function() {
@@ -275,50 +259,49 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
         set: function(playbackRate) {
             if (this._playbackRate !== playbackRate) {
                 this._playbackRate = playbackRate;
-                this.mediaElement.playbackRate = this._playbackRate;
+                this.mediaController.playbackRate = this._playbackRate;
             }
         }
     },
-/**
-  @private
-*/
+    /**
+    @private
+    */
     _currentTime: {
         value: 0,
         enumerable: false
     },
-/**
-  @private
-*/
+    /**
+    @private
+    */
     _updateCurrentTime: {
         value: false,
         enumerable: false
     },
-/**
+    /**
         @type {Function}
         @default {Number} 0
     */
     currentTime: {
         get: function() {
-            return this.mediaElement.currentTime;
+            return this.mediaController.currentTime;
         },
-
         set: function(currentTime) {
             try {
-                if (isNaN(this.mediaElement.duration)) {
+                if (isNaN(this.mediaController.duration)) {
                     logger.error("MediaController:set currentTime: duration is not valid");
                     return;
                 }
                 if (logger.isDebug) {
-                    logger.debug("current time:" + this.mediaElement.currentTime + " new time is" + currentTime);
+                    logger.debug("current time: " + this.mediaController.currentTime + ", new time: " + currentTime);
                 }
-                this.mediaElement.currentTime = currentTime;
+                this.mediaController.currentTime = currentTime;
             }
             catch(err) {
-                logger.error("MediaController:Exception in set currentTime" + this.mediaElement.currentTime);
+                logger.error("MediaController:Exception in set currentTime" + this.mediaController.currentTime);
             }
         }
     },
-/**
+    /**
     @function
     */
     rewind: {
@@ -331,7 +314,7 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             }
         }
     },
-/**
+    /**
     @function
     */
     fastForward: {
@@ -344,7 +327,7 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             }
         }
     },
-/**
+    /**
     @function
     */
     stop: {
@@ -367,20 +350,8 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
         }
     },
 
-    fullscreen: {
-        value: function() {
-            if (this.mediaElement.webkitEnterFullScreen) {
-                this.mediaElement.webkitEnterFullScreen();
-            } else if (this.mediaElement.webkitRequestFullScreen) {
-                this.mediaElement.webkitRequestFullScreen();
-            }
 
-        }
-    },
-
-
-
-/**
+    /**
     @function
     */
     reset: {
@@ -391,9 +362,6 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             if (this.status !== this.STOPPED) {
                 this.stop();
             }
-
-            // Clear the movie
-            this.mediaElement.removeAttribute('src');
         }
     },
 
@@ -412,33 +380,19 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
 /**
     @function
     */
-    loadMedia: {
-        value: function() {
-            if (logger.isDebug) {
-                logger.debug("MediaController:loadMedia");
-            }
-
-            this.mediaElement.src = this.mediaSrc;
-            this._installControlEventHandlers();
-            this.mediaElement.load();
-        }
-    },
-/**
-    @function
-    */
     toggleRepeat: {
         value: function() {
             this.repeat = !this.repeat;
         }
     },
-/**
-  @private
-*/
+    /**
+    @private
+    */
     _repeat: {
         value: false,
         enumerable: false
     },
-/**
+    /**
         @type {Function}
         @default {Boolean} false
     */
@@ -462,13 +416,13 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
     /*-----------------------------------------------------------------------------
      MARK:   Volume Commands
      -----------------------------------------------------------------------------*/
-/**
+    /**
         @type {Function}
-        @returns {Number} this.mediaElement.volume * 100
+        @returns {Number} this.mediaController.volume * 100
     */
     volume: {
         get: function() {
-            return this.mediaElement.volume * 100;
+            return this.mediaController.volume * 100;
         },
 
         set: function(vol) {
@@ -482,11 +436,12 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             else if (volume < 0) {
                 volume = 0;
             }
-            this.mediaElement.volume = volume / 100.0;
+            this.mediaController.volume = volume / 100.0;
             this._dispatchStateChangeEvent();
         }
     },
-/**
+
+    /**
     @function
     */
     volumeIncrease: {
@@ -494,7 +449,8 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             this.volume += 10;
         }
     },
-/**
+
+    /**
     @function
     */
     volumeDecrease: {
@@ -502,7 +458,8 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             this.volume -= 10;
         }
     },
-/**
+
+    /**
     @function
     */
     toggleMute: {
@@ -510,17 +467,16 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             this.mute = !this.mute;
         }
     },
-/**
-        @type {Function}
+    /**
+    @type {Function}
     */
     mute: {
         get: function() {
-            return this.mediaElement.muted;
+            return this.mediaController.muted;
         },
-
         set: function(muted) {
-            if (muted !== this.mediaElement.muted) {
-                this.mediaElement.muted = muted;
+            if (muted !== this.mediaController.muted) {
+                this.mediaController.muted = muted;
             }
         }
     },
@@ -534,35 +490,38 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
     handleLoadedmetadata: {
         value: function() {
             if (logger.isDebug) {
-                logger.debug("MediaController:handleLoadedmetadata: PLAYING=" + (this.status === this.PLAYING) + " duration=" + this.mediaElement.duration);
+                logger.debug("MediaController:handleLoadedmetadata: PLAYING=" + (this.status === this.PLAYING) + " duration=" + this.mediaController.duration);
             }
-            if (isNaN(this.mediaElement.duration)) {
+            if (isNaN(this.mediaController.duration)) {
                 if (logger.isDebug) {
                     logger.debug("MediaController:handleLoadedmetadata: duration is not valid");
                 }
                 return;
             }
-            this.duration = this.mediaElement.duration;
+            this.duration = this.mediaController.duration;
             if (this.autoplay) {
+                if (logger.isDebug) {
+                    logger.debug("MediaController:handleLoadedmetadata: autoplay");
+                }
                 this.play();
             } else {
-                this.status = this.PAUSED;
+                this.status = this.STOPPED;
             }
         }
     },
-/**
-  @private
-*/
+    /**
+    @private
+    */
     _lastCurrentTime: {
         value: 0
     },
-/**
+    /**
     @function
     */
     handleTimeupdate: {
         value: function() {
             if (this.status !== this.STOPPED) { // A last 'timeupdate' is sent after stop() which is unwanted because it restores the last position.
-                var currentTime = this.mediaElement.currentTime;
+                var currentTime = this.mediaController.currentTime;
                 //if (Math.abs(this._lastCurrentTime - currentTime) >= this._TIMEUPDATE_FREQUENCY) {
                 //    this._lastCurrentTime = currentTime;
                     Object.getPropertyDescriptor(this, "position").set.call(this, currentTime, true);
@@ -571,18 +530,18 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
         }
     },
 
-/**
+    /**
     @function
     */
     handlePlay: {
         value: function() {
             if (logger.isDebug) {
-                logger.debug("MediaController:Play");
+                logger.debug("MediaController:handlePlay");
             }
             this.status = this.PLAYING;
         }
     },
-/**
+    /**
     @function
     */
     handlePlaying: {
@@ -593,7 +552,7 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             this.status = this.PLAYING;
         }
     },
-/**
+    /**
     @function
     */
     handlePause: {
@@ -611,7 +570,7 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             }
         }
     },
-/**
+    /**
     @function
     */
     handleEnded: {
@@ -619,13 +578,13 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             if (logger.isDebug) {
                 logger.debug("MediaController:handleEnded");
             }
-            this.status = this.STOPPED;
             // If the mediaElement is not in the paused=true state
             // then it won't fire a play event when you start playing again
-            this.mediaElement.pause();
+            this.mediaController.pause();
+            this.status = this.STOPPED;
         }
     },
-/**
+    /**
     @function
     */
     handleAbort: {
@@ -636,7 +595,7 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             this.status = this.STOPPED;
         }
     },
-/**
+    /**
     @function
     @param {Event} event TODO
     */
@@ -673,10 +632,9 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
                         break;
                 }
             }
-            this._isFullScreen = false;
         }
     },
-/**
+    /**
     @function
     */
     handleEmptied: {
@@ -687,9 +645,10 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             this.status = this.STOPPED;
         }
     },
-/**
-  @private
-*/
+    
+    /**
+    @private
+    */
     _dispatchStateChangeEvent: {
         value: function() {
             var stateEvent = window.document.createEvent("CustomEvent");
@@ -697,25 +656,52 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
             this.dispatchEvent(stateEvent);
         }
     },
-/**
-  @private
-*/
+    
+    /**
+    @private
+    */
     _installControlEventHandlers: {
         value: function() {
-            this.mediaElement.addEventListener('loadedmetadata', this, false);
-            this.mediaElement.addEventListener('timeupdate', this, false);
-            this.mediaElement.addEventListener('play', this, false);
-            this.mediaElement.addEventListener('playing', this, false);
-            this.mediaElement.addEventListener('pause', this, false);
-            this.mediaElement.addEventListener('abort', this, false);
-            this.mediaElement.addEventListener('error', this, false);
-            this.mediaElement.addEventListener('emptied', this, false);
-            this.mediaElement.addEventListener('ended', this, false);
+            var handleLoadedmetadata    = this.handleLoadedmetadata.bind(this),
+                handleTimeupdate        = this.handleTimeupdate.bind(this),
+                handlePlay              = this.handlePlay.bind(this),
+                handlePlaying           = this.handlePlaying.bind(this),
+                handlePause             = this.handlePause.bind(this),
+                handleAbort             = this.handleAbort.bind(this),
+                handleError             = this.handleError.bind(this),
+                handleEmptied           = this.handleEmptied.bind(this),
+                handleEnded             = this.handleEnded.bind(this);
+                
+            this.mediaController.addEventListener('loadedmetadata', handleLoadedmetadata, false);
+            this.mediaController.addEventListener('timeupdate', handleTimeupdate, false);
+            this.mediaController.addEventListener('play', handlePlay, false);
+            this.mediaController.addEventListener('playing', handlePlaying, false);
+            this.mediaController.addEventListener('pause', handlePause, false);
+            this.mediaController.addEventListener('abort', handleAbort, false);
+            this.mediaController.addEventListener('error', handleError, false);
+            this.mediaController.addEventListener('emptied', handleEmptied, false);
+            this.mediaController.addEventListener('ended', handleEnded, false);
+            
+            this._removeControlEventHandlers = function() {
+                this.mediaController.removeEventListener('loadedmetadata', handleLoadedmetadata);
+                this.mediaController.removeEventListener('timeupdate', handleTimeupdate);
+                this.mediaController.removeEventListener('play', handlePlay);
+                this.mediaController.removeEventListener('playing', handlePlaying);
+                this.mediaController.removeEventListener('pause', handlePause);
+                this.mediaController.removeEventListener('abort', handleAbort);
+                this.mediaController.removeEventListener('error', handleError);
+                this.mediaController.removeEventListener('emptied', handleEmptied);
+                this.mediaController.removeEventListener('ended', handleEnded);
+            }
+        }
+    },
+    
+    _removeControlEventHandlers: {
+        value: function() {
         }
     }
     /*-----------------------------------------------------------------------------
      MARK:   Configuration
      -----------------------------------------------------------------------------*/
-
 
 });
