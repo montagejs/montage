@@ -1,9 +1,12 @@
+.DS_Store
+.gitignore
 .idea
+.jshintignore
+.jshintrc
+atlassian-ide-plugin.xml
+etc
 node_modules
 npm-debug.log
-.DS_Store
-atlassian-ide-plugin.xml
-TEST-*.xml
-etc
+spec
 test
-
+TEST-*.xml
