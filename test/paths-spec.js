@@ -273,7 +273,25 @@ describe("paths-spec", function () {
 
         object.array = [];
         expect(spy).toHaveBeenCalledWith([], ['a', 'b'], 0);
+    });
 
+    describe("addRangeAtPathChangeListener II", function() {
+        it("should not pass a direct reference of the object at the path to the listener's plus/minus parameters", function() {
+            var object = Montage.create();
+            var spy = jasmine.createSpy();
+            var array1 = [1];
+            var array2 = [2];
+
+            object.array = array1;
+            object.addRangeAtPathChangeListener("array", function (plus, minus, index) {
+                spy(plus, minus, index);
+            });
+
+            object.array = array2;
+
+            expect(spy.mostRecentCall.args[0]).not.toBe(array2);
+            expect(spy.mostRecentCall.args[1]).not.toBe(array1);
+        })
     });
 
     describe("addRangeAtPathChangeListener with handler", function () {

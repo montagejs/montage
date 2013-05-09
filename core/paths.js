@@ -53,7 +53,8 @@ Montage.defineProperties(Montage, {
             var minus = [];
             return this.addPathChangeListener(path, function (plus) {
                 plus = plus || [];
-                dispatch(plus, minus, 0);
+                // Give copies to avoid modification by the listener.
+                dispatch(plus.slice(), minus.slice(), 0);
                 minus = plus;
                 return plus.addRangeChangeListener(dispatch);
             });
