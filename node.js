@@ -29,6 +29,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
+/*jshint node:true, browser:false */
+
 var FS = require("q-io/fs");
 
 var MontageBoot = require("./montage");
@@ -47,9 +49,6 @@ exports.bootstrap = function () {
     var args = process.argv.slice(2);
     var program = args.shift();
     return FS.canonical(program).then(function (program) {
-        if (error) {
-            throw new Error(error);
-        }
         return findPackage(program)
         .fail(function (error) {
             if (error.message === "Can't find package") {
@@ -61,7 +60,7 @@ exports.bootstrap = function () {
         .then(function (directory) {
             return loadPackagedModule(directory, program, command, args);
         });
-    })
+    });
 };
 
 var findPackage = function (path) {

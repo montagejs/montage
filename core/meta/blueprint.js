@@ -793,7 +793,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
     eventBlueprints: {
         get: function() {
             var eventBlueprints = [];
-            eventBlueprints = propertyBlueprints.concat(this._eventBlueprints);
+            eventBlueprints = eventBlueprints.concat(this._eventBlueprints);
             if (this.parent) {
                 eventBlueprints = eventBlueprints.concat(this.parent.eventBlueprints);
             }

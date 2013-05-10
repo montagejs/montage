@@ -13,13 +13,15 @@
     "indent": 4,
     "boss": true,
     "eqnull": true,
-    "es5": true,
     "browser": true,
-    "predef": [
-        "CustomEvent",
-        "WebSocket",
+    "globals": {
+        "CustomEvent": true,
+        "WebSocket": false,
 
-        "require",
-        "exports"
-    ]
+        "require": false,
+        "exports": false,
+        "global": false,
+
+        "console": false
+    }
 }
