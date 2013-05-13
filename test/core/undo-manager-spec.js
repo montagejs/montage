@@ -284,7 +284,7 @@ describe('core/undo-manager-spec', function () {
 
             return Promise.all([undoManager.undo(), undoManager.undo(), undoManager.undo()]).then(function () {
                 expect(roster.members.length).toBe(0);
-               return  undoManager.redo()
+                return undoManager.redo();
             }).then(function () {
                 expect(roster.members.length).toBe(1);
                 expect(roster.members.has("Alice")).toBe(true);
@@ -300,7 +300,7 @@ describe('core/undo-manager-spec', function () {
                     .then(function () {
                         expect(roster.members.length).toBe(1);
                         expect(roster.members.has("Alice")).toBe(true);
-                        return undoManager.undo()
+                        return undoManager.undo();
                     });
             }).then(function () {
                 expect(roster.members.length).toBe(0);
