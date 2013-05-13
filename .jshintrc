@@ -22,6 +22,10 @@
         "exports": false,
         "global": false,
 
+        "WeakMap": true,
+        "Map": true,
+        "Set": true,
+
         "console": false
     }
 }

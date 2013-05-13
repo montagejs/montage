@@ -294,7 +294,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 node,
                 element = this.element;
 
-            candidates = element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "]")
+            candidates = element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "]");
 
             // Need to make sure that we filter dom args that are for nested
             // components and not for this component.
@@ -403,7 +403,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     setElementWithParentComponent: {
         value: function(element, parent) {
             this._alternateParentComponent = parent;
-            if (this.element != element) {
+            if (this.element !== element) {
                 this.element = element;
             }
         }
@@ -524,12 +524,14 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 operator = matches[2] || " ",
                 rightHandOperand = matches[3],
                 rest = matches[4],
-                found;
+                found,
+                i,
+                childComponent;
 
             if (leftHandOperand) {
                 rest = rightHandOperand ? "@"+rightHandOperand + rest : "";
 
-                for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
+                for (i = 0, childComponent; (childComponent = childComponents[i]); i++) {
                     if (leftHandOperand === Montage.getInfoForObject(childComponent).label) {
                         if (rest) {
                             return childComponent.querySelectorComponent(rest);
@@ -544,7 +546,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                     }
                 }
             } else {
-                for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
+                for (i = 0, childComponent; (childComponent = childComponents[i]); i++) {
                     if (rightHandOperand === Montage.getInfoForObject(childComponent).label) {
                         if (rest) {
                             return childComponent.querySelectorComponent(rest);
@@ -579,11 +581,13 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 operator = matches[2] || " ",
                 rightHandOperand = matches[3],
                 rest = matches[4],
-                found = [];
+                found = [],
+                i,
+                childComponent;
 
             if (leftHandOperand) {
                 rest = rightHandOperand ? "@"+rightHandOperand + rest : "";
-                for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
+                for (i = 0, childComponent; (childComponent = childComponents[i]); i++) {
                     if (leftHandOperand === Montage.getInfoForObject(childComponent).label && (!owner || owner === childComponent.ownerComponent)) {
                         if (rest) {
                             found = found.concat(childComponent.querySelectorAllComponent(rest));
@@ -595,7 +599,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                     }
                 }
             } else {
-                for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
+                for (i = 0, childComponent; (childComponent = childComponents[i]); i++) {
                     if (rightHandOperand === Montage.getInfoForObject(childComponent).label && (!owner || owner === childComponent.ownerComponent)) {
                         if (rest) {
                             found = found.concat(childComponent.querySelectorAllComponent(rest, owner));
@@ -667,7 +671,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
      */
     addChildComponent: {
         value: function (childComponent) {
-            if (this.childComponents.indexOf(childComponent) == -1) {
+            if (this.childComponents.indexOf(childComponent) === -1) {
                 this.childComponents.push(childComponent);
                 childComponent._prepareForEnterDocument();
                 childComponent._parentComponent = this;
@@ -893,7 +897,9 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
         },
         set: function(value) {
             var components,
-                componentsToAdd = [];
+                componentsToAdd = [],
+                i,
+                component;
 
             this._newDomContent = value;
             this.needsDraw = true;
@@ -908,20 +914,20 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
 
             // cleanup current content
             components = this.childComponents;
-            for (var i = 0, component; (component = components[i]); i++) {
+            for (i = 0, component; (component = components[i]); i++) {
                 component.detachFromParentComponent();
             }
 
             if (value instanceof Element) {
                 this._findAndDetachComponents(value, componentsToAdd);
             } else if (value && value[0]) {
-                for (var i = 0; i < value.length; i++) {
+                for (i = 0; i < value.length; i++) {
                     this._findAndDetachComponents(value[i], componentsToAdd);
                 }
             }
 
             // not sure if I can rely on _parentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
-            for (var i = 0, component; (component = componentsToAdd[i]); i++) {
+            for (i = 0, component; (component = componentsToAdd[i]); i++) {
                 this.addChildComponent(component);
             }
         }
@@ -1149,12 +1155,13 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 return;
             }
 
+            var visitorFunction = function() {
+                if (--childLeftCount === 0 && callback) {
+                    callback();
+                }
+            };
             for (var i = 0; (childComponent = childComponents[i]); i++) {
-                childComponent.traverseComponentTree(visitor, function() {
-                    if (--childLeftCount === 0 && callback) {
-                        callback();
-                    }
-                });
+                childComponent.traverseComponentTree(visitor, visitorFunction);
             }
         }
 
@@ -1278,7 +1285,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
 
                     isRepeated = true;
                     return components;
-                };
+                }
             };
         }
     },
@@ -1293,7 +1300,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
             return this._loadTemplate().then(function(template) {
                 if (!self._element) {
                     console.error("Cannot instantiate template without an element.", self);
-                    return Promise.reject(new Error("Cannot instantiate template without an element.", self))
+                    return Promise.reject(new Error("Cannot instantiate template without an element.", self));
                 }
                 var instances = self.templateObjects,
                     _document = self._element.ownerDocument;
@@ -1422,7 +1429,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 dotIndex = ( dotIndex < slashIndex ? moduleId.length : dotIndex );
 
                 var blueprintModuleId;
-                if ((dotIndex < moduleId.length) && ( moduleId.slice(dotIndex, moduleId.length) == ".reel")) {
+                if ((dotIndex < moduleId.length) && ( moduleId.slice(dotIndex, moduleId.length) === ".reel")) {
                     // We are in a reel
                     blueprintModuleId = moduleId + "/" + moduleId.slice(slashIndex, dotIndex) + "-blueprint.json";
                 } else {
@@ -1449,9 +1456,9 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     */
     gateDidBecomeTrue: {
         value: function(gate) {
-            if (gate == this._canDrawGate) {
+            if (gate === this._canDrawGate) {
                 this._canDraw = true;
-            } else if (gate == this._blockDrawGate) {
+            } else if (gate === this._blockDrawGate) {
                 rootComponent.componentBlockDraw(this);
                 this._prepareCanDraw();
             }
@@ -1629,7 +1636,6 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
             var part = this._templateDocumentPart,
                 resources,
                 styles,
-                style,
                 _document,
                 documentHead;
 
@@ -1673,12 +1679,14 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 argument,
                 validation,
                 contents,
-                components;
+                components,
+                range,
+                component;
 
             templateArguments = this._domArguments;
 
             if (!this._template.hasParameters() &&
-                templateArguments.length == 1) {
+                templateArguments.length === 1) {
                 return;
             }
 
@@ -1712,7 +1720,8 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     _validateTemplateArguments: {
         value: function(templateArguments, templateParameters) {
             var parameterNames = Object.keys(templateParameters),
-                argumentNames;
+                argumentNames,
+                param;
 
             // If the template does not have parameters it is up to the
             // component to use its arguments.
@@ -1736,7 +1745,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                     }
                 } else {
                     // All template parameters need to be satisfied.
-                    for (var param in templateParameters) {
+                    for (param in templateParameters) {
                         if (!(param in templateArguments)) {
                             return new Error('"' + param + '" argument not ' +
                             'given in ' + this.templateModuleId);
@@ -1744,7 +1753,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                     }
                     // Arguments for non-existant parameters are not allowed.
                     // Only the star argument is allowed.
-                    for (var param in templateArguments) {
+                    for (param in templateArguments) {
                         if (param !== "*" && !(param in templateParameters)) {
                             return new Error('"' + param + '" parameter does ' +
                             'not exist in ' + this.templateModuleId);
@@ -1935,8 +1944,6 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                     } else {
                         this.blockDrawGate.setField("drawRequested", true);
                     }
-                } else {
-
                 }
             }
         }
@@ -2200,7 +2207,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
      * @private
      */
     _elementAttributeDescriptors: {
-       value: null
+        value: null
     },
 
 
@@ -2234,8 +2241,8 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
 
 
             var newDescriptor = {
-                configurable: (typeof descriptor.configurable == 'undefined') ? true: descriptor.configurable,
-                enumerable: (typeof descriptor.enumerable == 'undefined') ?  true: descriptor.enumerable,
+                configurable: (typeof descriptor.configurable === 'undefined') ? true: descriptor.configurable,
+                enumerable: (typeof descriptor.enumerable === 'undefined') ?  true: descriptor.enumerable,
                 set: (function(name, attributeName) {
                     return function(value) {
                         var descriptor = this._getElementAttributeDescriptor(name, this);
@@ -2337,7 +2344,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                             // only set the value if a value has not already been set by binding
                             if(typeof this._elementAttributeValues[name] === 'undefined') {
                                 this._elementAttributeValues[name] = value;
-                                if( (typeof this[name] == 'undefined') || this[name] == null) {
+                                if( (typeof this[name] === 'undefined') || this[name] == null) {
                                     this[name] = value;
                                 }
                             }
@@ -2450,10 +2457,10 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 // classList
                 if (className.length !== 0) {
                     // important to initializae the classList first, so that the listener doesn't get installed.
-                    var classList = this.classList
+                    var classList = this.classList;
                     if (this._unsubscribeToClassListChanges) {
                         this._unsubscribeToClassListChanges();
-                    };
+                    }
                     classList.addEach(className.split(/\s+/));
                     this._subscribeToToClassListChanges();
                 }
@@ -2793,40 +2800,48 @@ var rootComponent = Montage.create(Component, /** @lends RootComponent# */{
             var ns = {};
             var os = {};
 
-            for ( var i = 0; i < n.length; i++ ) {
-              if ( ns[ n[i] ] == null )
-                ns[ n[i] ] = { rows: [], o: null };
-              ns[ n[i] ].rows.push( i );
+            //jshint -W116
+            for (var i = 0; i < n.length; i++ ) {
+                if (ns[ n[i] ] == null ) {
+                    ns[ n[i] ] = { rows: [], o: null };
+                }
+                ns[ n[i] ].rows.push( i );
             }
 
             for (i = 0; i < o.length; i++ ) {
-              if ( os[ o[i] ] == null )
-                os[ o[i] ] = { rows: [], n: null };
-              os[ o[i] ].rows.push( i );
+                if (os[ o[i] ] == null ) {
+                    os[ o[i] ] = { rows: [], n: null };
+                }
+                os[ o[i] ].rows.push( i );
             }
 
             for (i in ns ) {
-              if ( ns[i].rows.length == 1 && typeof(os[i]) != "undefined" && os[i].rows.length == 1 ) {
-                n[ ns[i].rows[0] ] = { text: n[ ns[i].rows[0] ], row: os[i].rows[0] };
-                o[ os[i].rows[0] ] = { text: o[ os[i].rows[0] ], row: ns[i].rows[0] };
-              }
+                if (ns[i].rows.length === 1 && typeof(os[i]) !== "undefined" && os[i].rows.length === 1 ) {
+                    n[ ns[i].rows[0] ] = { text: n[ ns[i].rows[0] ], row: os[i].rows[0] };
+                    o[ os[i].rows[0] ] = { text: o[ os[i].rows[0] ], row: ns[i].rows[0] };
+                }
             }
 
             for (i = 0; i < n.length - 1; i++ ) {
-              if ( n[i].text != null && n[i+1].text == null && n[i].row + 1 < o.length && o[ n[i].row + 1 ].text == null &&
-                   n[i+1] == o[ n[i].row + 1 ] ) {
-                n[i+1] = { text: n[i+1], row: n[i].row + 1 };
-                o[n[i].row+1] = { text: o[n[i].row+1], row: i + 1 };
-              }
+                if (n[i].text != null && n[i+1].text == null &&
+                    n[i].row + 1 < o.length && o[ n[i].row + 1 ].text == null &&
+                    n[i+1] == o[ n[i].row + 1 ]
+                ) {
+                    n[i+1] = { text: n[i+1], row: n[i].row + 1 };
+                    o[n[i].row+1] = { text: o[n[i].row+1], row: i + 1 };
+                }
             }
 
             for (i = n.length - 1; i > 0; i-- ) {
-              if ( n[i].text != null && n[i-1].text == null && n[i].row > 0 && o[ n[i].row - 1 ].text == null &&
-                   n[i-1] == o[ n[i].row - 1 ] ) {
-                n[i-1] = { text: n[i-1], row: n[i].row - 1 };
-                o[n[i].row-1] = { text: o[n[i].row-1], row: i - 1 };
-              }
+                if (n[i].text != null && n[i-1].text == null &&
+                    n[i].row > 0 && o[ n[i].row - 1 ].text == null &&
+                    n[i-1] == o[ n[i].row - 1 ]
+                ) {
+                    n[i-1] = { text: n[i-1], row: n[i].row - 1 };
+                    o[n[i].row-1] = { text: o[n[i].row-1], row: i - 1 };
+                }
             }
+            //jshint +W116
 
             return { o: o, n: n };
         }
@@ -2898,6 +2913,8 @@ var rootComponent = Montage.create(Component, /** @lends RootComponent# */{
                 }
                 var self = this, requestAnimationFrame = this.requestAnimationFrame;
                 var _drawTree = function(timestamp) {
+                    var drawPerformanceStartTime;
+
                     // Before initiating a draw cycle through the components we
                     // need to have a draw cycle just to add all the stylesheets
                     // if any is requested to draw.
@@ -2912,7 +2929,7 @@ var rootComponent = Montage.create(Component, /** @lends RootComponent# */{
                     }
 
                     if (drawPerformanceLogger.isDebug) {
-                        var drawPerformanceStartTime = window.performance.now();
+                        drawPerformanceStartTime = window.performance.now();
                     }
                     self._frameTime = (timestamp ? timestamp : Date.now());
                     if (self._clearNeedsDrawTimeOut) {
@@ -2946,7 +2963,7 @@ var rootComponent = Montage.create(Component, /** @lends RootComponent# */{
                     if (drawPerformanceLogger.isDebug) {
                         var drawPerformanceEndTime = window.performance.now();
                         console.log("Draw Cycle Time: ",
-                            drawPerformanceEndTime-drawPerformanceStartTime,
+                            drawPerformanceEndTime - drawPerformanceStartTime,
                             ", Components: ", self._lastDrawComponentsCount);
                     }
 
@@ -3069,7 +3086,7 @@ var rootComponent = Montage.create(Component, /** @lends RootComponent# */{
             // Sort the needsDraw list so that any newly added items are drawn in the correct order re: parent-child
             var sortByLevel = function(component1, component2) {
                 return component1._treeLevel - component2._treeLevel;
-            }
+            };
             needsDrawList.sort(sortByLevel);
 
             for (i = 0; i < j; i++) {
