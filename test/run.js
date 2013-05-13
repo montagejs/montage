@@ -14,6 +14,7 @@ require("montage-testing").run(require,[
 
         "base/abstract-button-spec",
         "base/abstract-checkbox-spec",
+        "base/abstract-image-spec",
         "base/abstract-radio-button-spec",
         "base/abstract-select-spec",
         "base/abstract-slider-spec",
