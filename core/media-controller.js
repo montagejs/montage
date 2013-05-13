@@ -366,17 +366,6 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
     },
 
 
-    showPoster: {
-        value: function() {
-            if (this.posterSrc) {
-                this.mediaElement.poster = this.posterSrc;
-            } else {
-                this.mediaElement.poster = null;
-            }
-        }
-    },
-
-
 /**
     @function
     */
