@@ -209,7 +209,7 @@ var AbstractNumberField = exports.AbstractNumberField = Montage.create(Component
             return this._min;
         },
         set: function (value) {
-            if (value === "any" && isNaN(value = parseFloat(value))) {
+            if (value !== "any" && isNaN(value = parseFloat(value))) {
                 return false;
             }
             if (this._min !== value) {
