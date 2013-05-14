@@ -11,6 +11,7 @@
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     TranslateComposer = require("composer/translate-composer").TranslateComposer,
+    KeyComposer = require("composer/key-composer").KeyComposer,
     Dict = require("collections/dict");
 
 /**
@@ -49,7 +50,7 @@ var AbstractSlider = exports.AbstractSlider = Montage.create(Component, /** @len
             this.addOwnPropertyChangeListener("axis", this);
             this.axis = "horizontal";
 
-            this.defineBinding("enabled ", {"<->": "!disabled", source: this});
+            this.defineBinding( "classList.has('montage--disabled')", { "<-": "!enabled" });
         }
     },
 
@@ -87,6 +88,14 @@ var AbstractSlider = exports.AbstractSlider = Montage.create(Component, /** @len
                     this.value = this.element.getAttribute('value') || this._value;
                 }
                 delete this._propertyNamesUsed;
+
+                this.element.setAttribute("role", "slider");
+                this.element.tabIndex = "-1";
+
+                this._upKeyComposer = KeyComposer.createKey(this, "up", "increase");
+                this._downKeyComposer = KeyComposer.createKey(this, "down", "decrease");
+                this._rightKeyComposer = KeyComposer.createKey(this, "right", "increase");
+                this._leftKeyComposer = KeyComposer.createKey(this, "left", "decrease");
             }
         }
     },
@@ -97,11 +106,23 @@ var AbstractSlider = exports.AbstractSlider = Montage.create(Component, /** @len
             this._translateComposer.addEventListener('translateStart', this, false);
             this._translateComposer.addEventListener('translate', this, false);
             this._translateComposer.addEventListener('translateEnd', this, false);
+
             // needs to be fixed for pointer handling
             this._sliderThumbTrackElement.addEventListener("touchstart", this, false);
             document.addEventListener("touchend", this, false);
             this._sliderThumbTrackElement.addEventListener("mousedown", this, false);
             document.addEventListener("mouseup", this, false);
+
+            // Due to a current issue with how the key manager works we need
+            // to listen on both the component and the key composer.
+            // The key composer dispatches the event on the activeTarget
+            // (the component), and we need to listen on the key composer so
+            // that the listeners are installed.
+            this.addEventListener("keyPress", this, false);
+            this._upKeyComposer.addEventListener("keyPress", null, false);
+            this._downKeyComposer.addEventListener("keyPress", null, false);
+            this._leftKeyComposer.addEventListener("keyPress", null, false);
+            this._rightKeyComposer.addEventListener("keyPress", null, false);
         }
     },
 
@@ -120,14 +141,22 @@ var AbstractSlider = exports.AbstractSlider = Montage.create(Component, /** @len
             } else {
                 this._sliderThumbTrackElement.style[this._transform] = "translateX(" + this._valuePercentage + "%)";
             }
+            this.element.setAttribute("aria-valuemax", this.max);
+            this.element.setAttribute("aria-valuemin", this.min);
+            this.element.setAttribute("aria-valuenow", this.value);
         }
     },
 
     // Event Handlers
 
+    acceptsActiveTarget: {
+        value: true
+    },
+
     handleTouchstart: {
         value: function (e) {
             this.classList.add("montage-Slider--active");
+            this.element.focus();
         }
     },
 
@@ -139,7 +168,9 @@ var AbstractSlider = exports.AbstractSlider = Montage.create(Component, /** @len
 
     handleMousedown: {
         value: function (e) {
+            var self = this;
             this.classList.add("montage-Slider--active");
+            this.element.focus();
         }
     },
 
@@ -148,7 +179,6 @@ var AbstractSlider = exports.AbstractSlider = Montage.create(Component, /** @len
             this.classList.remove("montage-Slider--active");
         }
     },
-
 
     handleThumbTranslateStart: {
         value: function (e) {
@@ -178,6 +208,56 @@ var AbstractSlider = exports.AbstractSlider = Montage.create(Component, /** @len
         }
     },
 
+    _increase: {
+        value: function () {
+            var stepBase = (typeof this.min == "number") ? this.min : 0;
+            var value = this.value - stepBase;
+            var step =  this.step | (this.max-this.min)/100
+            if (value % step) {
+                if (value < 0) {
+                    value -= value % step;
+                } else {
+                    value += step - (value % step);
+                }
+            } else {
+                value += step;
+            }
+            this.value = value + stepBase;
+        }
+    },
+
+    _decrease: {
+        value: function () {
+            var stepBase = (typeof this.min == "number") ? this.min : 0;
+            var value = this.value - stepBase;
+            var step =  this.step | (this.max-this.min)/100
+            if (value % step) {
+                if (value > 0) {
+                    value -= value % step;
+                } else {
+                    value -= step + (value % step);
+                }
+            } else {
+                value -= step;
+            }
+            this.value = value + stepBase;
+        }
+    },
+
+    handleKeyPress: {
+        value: function(event) {
+            if (!this.enabled) {
+                return;
+            }
+            if(event.identifier === "increase") {
+                this._increase();
+            } else if (event.identifier === "decrease") {
+                this._decrease();
+            }
+
+        }
+    },
+
     surrenderPointer: {
         value: function (pointer, composer) {
             // If the user is sliding us then we do not want anyone using
@@ -202,10 +282,6 @@ var AbstractSlider = exports.AbstractSlider = Montage.create(Component, /** @len
 
     _step: {
         value: "any"
-    },
-
-    _disabled: {
-        value: false
     },
 
     min: {
@@ -268,16 +344,6 @@ var AbstractSlider = exports.AbstractSlider = Montage.create(Component, /** @len
      */
     enabled: {
         value: true
-    },
-
-    disabled: {
-        get: function () {
-            return this._disabled;
-        },
-        set: function (value) {
-            this._disabled = value;
-            this.needsDraw = true;
-        }
     },
 
     axis: {
