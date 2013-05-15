@@ -34,8 +34,10 @@
     "mr": "~0.12.6",
     "q": "~0.8.12",
     "q-io": "~1.3.2",
-    "jsdom": "~0.2.19",
     "jshint": "~2.0.1"
+  },
+  "optionalDependencies": {
+    "jsdom": "~0.2.19"
   },
   "exclude": [
     "bin",
