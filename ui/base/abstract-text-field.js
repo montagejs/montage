@@ -1,6 +1,6 @@
 /*global require, exports, document, Error*/
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
+    AbstractControl = require("ui/base/abstract-control").AbstractControl,
     KeyComposer = require("composer/key-composer").KeyComposer,
     Dict = require("collections/dict");
 
@@ -8,9 +8,9 @@ var CLASS_PREFIX = "montage-TextField";
 
 /**
  * @class AbstractTextField
- * @extends Component
+ * @extends AbstractControl
  */
-var AbstractTextField = exports.AbstractTextField = Montage.create(Component,
+var AbstractTextField = exports.AbstractTextField = Montage.create(AbstractControl,
     /* @lends AbstractTextField# */
 {
     /**
@@ -25,14 +25,14 @@ var AbstractTextField = exports.AbstractTextField = Montage.create(Component,
             if(this === AbstractTextField) {
                 throw new Error("AbstractTextField cannot be instantiated.");
             } else {
-                return Component.create.apply(this, arguments);
+                return AbstractControl.create.apply(this, arguments);
             }
         }
     },
 
     didCreate: {
         value: function() {
-            Component.didCreate.call(this); // super
+            AbstractControl.didCreate.call(this); // super
 
             this._keyComposer = KeyComposer.create();
             this._keyComposer.component = this;
@@ -98,7 +98,7 @@ var AbstractTextField = exports.AbstractTextField = Montage.create(Component,
                 return;
             }
 
-            this._dispatchActionEvent();
+            this.dispatchActionEvent();
         }
     },
 
@@ -111,32 +111,6 @@ var AbstractTextField = exports.AbstractTextField = Montage.create(Component,
             // that the listeners are installed.
             this.addEventListener("keyPress", this, false);
             this._keyComposer.addEventListener("keyPress", null, false);
-        }
-    },
-
-    /**
-     * The data property of the action event.
-     * example to toggle the complete class: "detail.get('selectedItem')" : { "<-" : "@repetition.objectAtCurrentIteration"}
-     * @type {Dict}
-     * @default null
-     */
-    detail: {
-        get: function() {
-            if (this._detail == null) {
-                this._detail = new Dict();
-            }
-            return this._detail;
-        }
-    },
-
-    createActionEvent: {
-        value: function() {
-            var actionEvent = document.createEvent("CustomEvent"),
-                eventDetail;
-
-            eventDetail = this._detail;
-            actionEvent.initCustomEvent("action", true, true, eventDetail);
-            return actionEvent;
         }
     },
 

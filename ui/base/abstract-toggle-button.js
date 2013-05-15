@@ -4,18 +4,17 @@
  @module montage/ui/base/abstract-toggle-button.reel
  */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
+    AbstractControl = require("ui/base/abstract-control").AbstractControl,
     PressComposer = require("composer/press-composer").PressComposer,
-    KeyComposer = require("composer/key-composer").KeyComposer,
-    Dict = require("collections/dict");
+    KeyComposer = require("composer/key-composer").KeyComposer;
 
 /**
  * @class AbstractToggleButton
- * @extends Component
+ * @extends AbstractControl
  * @fires action
  * @fires longAction
  */
-var AbstractToggleButton = exports.AbstractToggleButton = Montage.create(Component, /** @lends AbstractToggleButton# */ {
+var AbstractToggleButton = exports.AbstractToggleButton = Montage.create(AbstractControl, /** @lends AbstractToggleButton# */ {
 
     /**
      * Dispatched when the toggle button is activated through a mouse click,
@@ -41,7 +40,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = Montage.create(Compone
             if(this === AbstractToggleButton) {
                 throw new Error("AbstractToggleButton cannot be instantiated.");
             } else {
-                return Component.create.apply(this, arguments);
+                return AbstractControl.create.apply(this, arguments);
             }
         }
     },
@@ -51,7 +50,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = Montage.create(Compone
      */
     didCreate: {
         value: function() {
-            Component.didCreate.call(this); // super
+            AbstractControl.didCreate.call(this); // super
             this._pressComposer = PressComposer.create();
             this._pressComposer.defineBinding("longPressThreshold ", {
                 "<-": "holdThreshold",
@@ -218,7 +217,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = Montage.create(Compone
     // Optimisation
     addEventListener: {
         value: function(type, listener, useCapture) {
-            Component.addEventListener.call(this, type, listener, useCapture);
+            AbstractControl.addEventListener.call(this, type, listener, useCapture);
             if (type === "longAction") {
                 this._pressComposer.addEventListener("longPress", this, false);
             }
@@ -254,7 +253,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = Montage.create(Compone
             }
 
             this.pressed = !this.pressed;
-            this._dispatchActionEvent();
+            this.dispatchActionEvent();
             document.removeEventListener("touchmove", this, false);
         }
     },
@@ -268,7 +267,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = Montage.create(Compone
             }
 
             this.pressed = !this.pressed;
-            this._dispatchActionEvent();
+            this.dispatchActionEvent();
         }
     },
 
@@ -357,36 +356,6 @@ var AbstractToggleButton = exports.AbstractToggleButton = Montage.create(Compone
             }
 
             this.element.setAttribute("aria-pressed", this.pressed);
-        }
-    },
-
-    _detail: {
-        value: null
-    },
-
-    /**
-     * The data property of the action event.
-     * example to toggle the complete class: "detail.selectedItem" : { "<-" : "@repetition.objectAtCurrentIteration"}
-     * @type {Dict}
-     * @default null
-     */
-    detail: {
-        get: function() {
-            if (this._detail === null) {
-                this._detail = new Dict();
-            }
-            return this._detail;
-        }
-    },
-
-    createActionEvent: {
-        value: function() {
-            var actionEvent = document.createEvent("CustomEvent"),
-                eventDetail;
-
-            eventDetail = this._detail;
-            actionEvent.initCustomEvent("action", true, true, eventDetail);
-            return actionEvent;
         }
     }
 });

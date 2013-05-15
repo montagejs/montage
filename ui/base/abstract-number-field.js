@@ -1,7 +1,7 @@
 "use strict";
 /*global require, exports, document, Error*/
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
+    AbstractControl = require("ui/base/abstract-control").AbstractControl,
     KeyComposer = require("composer/key-composer").KeyComposer,
     Dict = require("collections/dict");
 
@@ -9,9 +9,9 @@ var CLASS_PREFIX = "montage-NumberField";
 
 /**
  * @class AbstractNumberField
- * @extends Component
+ * @extends AbstractControl
  */
-var AbstractNumberField = exports.AbstractNumberField = Montage.create(Component,
+var AbstractNumberField = exports.AbstractNumberField = Montage.create(AbstractControl,
     /* @lends AbstractNumberField# */
 {
 
@@ -22,14 +22,14 @@ var AbstractNumberField = exports.AbstractNumberField = Montage.create(Component
             if (this === AbstractNumberField) {
                 throw new Error("AbstractNumberField cannot be instantiated.");
             } else {
-                return Component.create.apply(this, arguments);
+                return AbstractControl.create.apply(this, arguments);
             }
         }
     },
 
     didCreate: {
         value: function() {
-            Component.didCreate.call(this); // super
+            AbstractControl.didCreate.call(this); // super
             this._propertyNamesUsed = {};
             this.defineBinding( "classList.has('montage--disabled')", { "<-": "!enabled" });
         }
@@ -164,11 +164,11 @@ var AbstractNumberField = exports.AbstractNumberField = Montage.create(Component
 
     handleAction: {
         value: function(event) {
-            if (event.target === this._numberFieldTextFieldComponent ||
-                event.target === this._numberFieldMinusComponent ||
-                event.target === this._numberFieldPlusComponent) {
+            if (event.target === this._numberFieldTextFieldAbstractControl ||
+                event.target === this._numberFieldMinusAbstractControl ||
+                event.target === this._numberFieldPlusAbstractControl) {
                 event.stopPropagation();
-                this._dispatchActionEvent();
+                this.dispatchActionEvent();
             }
         }
     },
@@ -193,10 +193,6 @@ var AbstractNumberField = exports.AbstractNumberField = Montage.create(Component
 
     _step: {
         value: 1
-    },
-
-    _detail: {
-        value: null
     },
 
     /**
@@ -322,21 +318,6 @@ var AbstractNumberField = exports.AbstractNumberField = Montage.create(Component
         value: true
     },
 
-    /**
-     * The data property of the action event.
-     * example to toggle the complete class: "detail.get('selectedItem')" : { "<-" : "@repetition.objectAtCurrentIteration"}
-     * @type {Dict}
-     * @default null
-     */
-    detail: {
-        get: function() {
-            if (this._detail == null) {
-                this._detail = new Dict();
-            }
-            return this._detail;
-        }
-    },
-
     // Machinery
 
     _numberFieldTextFieldComponent: {
@@ -349,17 +330,6 @@ var AbstractNumberField = exports.AbstractNumberField = Montage.create(Component
 
     _numberFieldPlusComponent: {
         value: null
-    },
-
-    createActionEvent: {
-        value: function() {
-            var actionEvent = document.createEvent("CustomEvent"),
-                eventDetail;
-
-            eventDetail = this._detail;
-            actionEvent.initCustomEvent("action", true, true, eventDetail);
-            return actionEvent;
-        }
     }
 
 });

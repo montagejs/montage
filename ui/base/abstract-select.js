@@ -4,18 +4,18 @@
  @module montage/ui/base/abstract-select.reel
  */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
+    AbstractControl = require("ui/base/abstract-control").AbstractControl,
     PressComposer = require("composer/press-composer").PressComposer,
     RangeController = require("core/range-controller").RangeController,
     Dict = require("collections/dict");
 
 /**
  * @class AbstractSelect
- * @extends Component
+ * @extends AbstractControl
  * @fires action
  * @fires longAction
  */
-var AbstractSelect = exports.AbstractSelect = Montage.create(Component, /** @lends AbstractSelect# */ {
+var AbstractSelect = exports.AbstractSelect = Montage.create(AbstractControl, /** @lends AbstractSelect# */ {
 
     /**
      * Dispatched when the select is changed through a mouse click or finger tap.
@@ -32,7 +32,7 @@ var AbstractSelect = exports.AbstractSelect = Montage.create(Component, /** @len
             if(this === AbstractSelect) {
                 throw new Error("AbstractSelect cannot be instantiated.");
             } else {
-                return Component.create.apply(this, arguments);
+                return AbstractControl.create.apply(this, arguments);
             }
         }
     },
@@ -42,7 +42,7 @@ var AbstractSelect = exports.AbstractSelect = Montage.create(Component, /** @len
      */
     didCreate: {
         value: function() {
-            Component.didCreate.call(this); // super
+            AbstractControl.didCreate.call(this); // super
             this._pressComposer = PressComposer.create();
             this.addComposer(this._pressComposer);
             this.contentController = RangeController.create();
@@ -195,7 +195,7 @@ var AbstractSelect = exports.AbstractSelect = Montage.create(Component, /** @len
                 return;
             }
 
-            this._dispatchActionEvent();
+            this.dispatchActionEvent();
             document.removeEventListener("touchmove", this, false);
         }
     },
@@ -234,36 +234,6 @@ var AbstractSelect = exports.AbstractSelect = Montage.create(Component, /** @len
             if(firstDraw) {
                 this.element.setAttribute("role", "listbox");
             }
-        }
-    },
-
-    _detail: {
-        value: null
-    },
-
-    /**
-     * The data property of the action event.
-     * example to toggle the complete class: "detail.selectedItem" : { "<-" : "@repetition.objectAtCurrentIteration"}
-     * @type {Dict}
-     * @default null
-     */
-    detail: {
-        get: function() {
-            if (this._detail === null) {
-                this._detail = new Dict();
-            }
-            return this._detail;
-        }
-    },
-
-    createActionEvent: {
-        value: function() {
-            var actionEvent = document.createEvent("CustomEvent"),
-                eventDetail;
-
-            eventDetail = this._detail;
-            actionEvent.initCustomEvent("action", true, true, eventDetail);
-            return actionEvent;
         }
     }
 });

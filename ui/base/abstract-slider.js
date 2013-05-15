@@ -9,16 +9,16 @@
  @requires montage/composer/press-composer
  */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
+    AbstractControl = require("ui/base/abstract-control").AbstractControl,
     TranslateComposer = require("composer/translate-composer").TranslateComposer,
     KeyComposer = require("composer/key-composer").KeyComposer,
     Dict = require("collections/dict");
 
 /**
  * @class AbstractSlider
- * @extends Component
+ * @extends AbstractControl
  */
-var AbstractSlider = exports.AbstractSlider = Montage.create(Component, /** @lends AbstractSlider# */ {
+var AbstractSlider = exports.AbstractSlider = Montage.create(AbstractControl, /** @lends AbstractSlider# */ {
 
     // Lifecycle
 
@@ -30,7 +30,7 @@ var AbstractSlider = exports.AbstractSlider = Montage.create(Component, /** @len
             if (this === AbstractSlider) {
                 throw new Error("AbstractSlider cannot be instantiated.");
             } else {
-                return Component.create.apply(this, arguments);
+                return AbstractControl.create.apply(this, arguments);
             }
         }
     },
