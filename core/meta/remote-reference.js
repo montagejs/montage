@@ -104,6 +104,10 @@ exports.RemoteReference = Montage.create(Montage, {
         value: function(value) {
             return {};
         }
-    }
+    },
+
+    blueprintModuleId: require("montage")._blueprintModuleIdDescriptor,
+
+    blueprint: require("montage")._blueprintDescriptor
 
 });

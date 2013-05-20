@@ -7,15 +7,10 @@
             "blueprint":{
                 "@":"root"
             },
-            "cardinality":1,
             "mandatory":true,
-            "denyDelete":false,
-            "readOnly":true,
             "valueType":"object",
             "valueObjectPrototypeName":"Blueprint",
-            "valueObjectModuleId":"core/meta/property-blueprint",
-            "enumValues":[
-            ],
+            "valueObjectModuleId":"core/meta/blueprint",
             "helpKey":""
         }
     },
