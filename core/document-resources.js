@@ -1,23 +1,11 @@
 var Montage = require("montage").Montage,
     Promise = require("core/promise").Promise;
 
-var DocumentResources = Montage.create(Montage, {
+var DocumentResources = Montage.extend({
     _SCRIPT_TIMEOUT: {value: 5000},
     _document: {value: null},
     _resources: {value: null},
     _preloaded: {value: null},
-
-    getInstanceForDocument: {
-        value: function(_document) {
-            var documentResources = _document.__montage_resources__;
-
-            if (!documentResources) {
-                documentResources = _document.__montage_resources__ = DocumentResources.create().initWithDocument(_document);
-            }
-
-            return documentResources;
-        }
-    },
 
     initWithDocument: {
         value: function(_document) {
@@ -246,6 +234,18 @@ var DocumentResources = Montage.create(Montage, {
             this.setResourcePreloadedPromise(url, deferred.promise);
 
             return deferred.promise;
+        }
+    }
+}, {
+    getInstanceForDocument: {
+        value: function(_document) {
+            var documentResources = _document.__montage_resources__;
+
+            if (!documentResources) {
+                documentResources = _document.__montage_resources__ = DocumentResources.create().initWithDocument(_document);
+            }
+
+            return documentResources;
         }
     }
 });

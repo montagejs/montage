@@ -521,7 +521,6 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
 
             describe("the owner component property", function() {
                 it("should be the component that loaded the template", function() {
-                    var Component = testPage.window.require("montage/ui/component").Component;
                     var componentOwner = testPage.test.componentOwner;
 
                     var leaf1 = componentOwner.leaf1;

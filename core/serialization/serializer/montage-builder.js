@@ -7,14 +7,10 @@ var MontageAst = require("./montage-ast");
  *
  * @extends Value
  */
-var MontageBuilder = Montage.create(Builder.prototype, {
-    create: {
-        value: function() {
-            var self = Object.create(this);
-
-            Builder.call(self);
-
-            return self;
+var MontageBuilder = Montage.extend.call(Builder, {
+    constructor: {
+        value: function MontageBuilder() {
+            Builder.call(this);
         }
     },
 

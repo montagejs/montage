@@ -1031,7 +1031,7 @@ Serializer.defineSerializationUnit("localizations", function(serializer, object)
         var result;
         for (var prop in bindingDescriptors) {
             var desc = bindingDescriptors[prop];
-            if (Message.isPrototypeOf(desc.source)) {
+            if (Message.prototype.isPrototypeOf(desc.source)) {
                 if (!result) {
                     result = {};
                 }

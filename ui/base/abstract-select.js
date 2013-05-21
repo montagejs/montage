@@ -27,21 +27,11 @@ var AbstractSelect = exports.AbstractSelect = Montage.create(AbstractControl, /*
     /**
      * @private
      */
-    create: {
-        value: function() {
-            if(this === AbstractSelect) {
+    constructor: {
+        value: function AbstractSelect() {
+            if(this.constructor === AbstractSelect) {
                 throw new Error("AbstractSelect cannot be instantiated.");
-            } else {
-                return AbstractControl.create.apply(this, arguments);
             }
-        }
-    },
-
-    /**
-     * @private
-     */
-    didCreate: {
-        value: function() {
             AbstractControl.didCreate.call(this); // super
             this._pressComposer = PressComposer.create();
             this.addComposer(this._pressComposer);

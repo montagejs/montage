@@ -1234,7 +1234,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 var object = objects[label];
 
                 if (typeof object === "object" && object != null) {
-                    if (!Component.isPrototypeOf(object) || object === this ||
+                    if (!Component.prototype.isPrototypeOf(object) || object === this ||
                         object.parentComponent === this) {
                         templateObjects[label] = object;
                     } else {
@@ -1400,7 +1400,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
             }
 
             if (!this.ownerComponent) {
-                if (Component.isPrototypeOf(owner)) {
+                if (Component.prototype.isPrototypeOf(owner)) {
                     this.ownerComponent = owner;
                 } else {
                     this.ownerComponent = this.rootComponent;
@@ -2528,7 +2528,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
  * @class RootComponent
  * @extends Component
  */
-var rootComponent = Montage.create(Component, /** @lends RootComponent# */{
+var RootComponent = Component.extend( /** @lends RootComponent# */{
     /**
      * @private
      * @function
@@ -3147,7 +3147,7 @@ var rootComponent = Montage.create(Component, /** @lends RootComponent# */{
     }
 });
 
-rootComponent.init();
+var rootComponent = new RootComponent().init();
 //if(window.parent && window.parent.jasmine) {
 exports.__root__ = rootComponent;
 //}

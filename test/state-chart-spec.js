@@ -75,7 +75,6 @@ describe("state-chart-spec", function() {
             D: stateD,
             B: stateB
         });
-
         stateChart = StateChart.create().initWithState(rootState);
     });
 

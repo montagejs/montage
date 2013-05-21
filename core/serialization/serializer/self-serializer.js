@@ -1,14 +1,12 @@
 var Montage = require("montage").Montage;
 
-var SelfSerializer = Montage.create(Object.prototype, {
+var SelfSerializer = Montage.extend.call(Object, {
     _malker: {value: null},
     _visitor: {value: null},
     _object: {value: null},
 
-    create: {
-        value: function() {
-            return Object.create(this);
-        }
+    constructor: {
+        value: function SelfSerializer() {}
     },
 
     initWithMalkerAndVisitorAndObject: {

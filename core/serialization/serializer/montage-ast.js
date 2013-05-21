@@ -6,17 +6,15 @@ var Value = require("mousse/serialization/ast").Value;
  *
  * @extends Value
  */
-var ElementReference = Montage.create(Value.prototype, {
-    create: {
-        value: function() {
-            return Object.create(ElementReference);
-        }
+var ElementReference = Montage.extend.call(Value, {
+
+    constructor: {
+        value: function ElementReference() {}
     },
 
     initWithRootAndId: {
         value: function(root, id) {
             Value.call(this, root, id);
-
             return this;
         }
     },
