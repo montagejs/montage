@@ -20,18 +20,11 @@ var AbstractCheckbox = exports.AbstractCheckbox = Montage.create(AbstractControl
          * @param {Event} event
          */
 
-        create: {
-            value: function() {
-                if(this === AbstractCheckbox) {
+        constructor: {
+            value: function AbstractCheckbox() {
+                if(this.constructor === AbstractCheckbox) {
                     throw new Error("AbstractCheckbox cannot be instantiated.");
-                } else {
-                    return AbstractControl.create.apply(this, arguments);
                 }
-            }
-        },
-
-        didCreate: {
-            value: function() {
                 AbstractControl.didCreate.call(this); // super
                 this._pressComposer = PressComposer.create();
                 this.addComposer(this._pressComposer);

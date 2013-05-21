@@ -8,16 +8,10 @@ var JSHINT = require("core/jshint").JSHINT;
 
 var logger = require("core/logger").logger("montage-deserializer");
 
-var MontageDeserializer = Montage.create(Deserializer.prototype, {
+var MontageDeserializer = Montage.extend.call(Deserializer, {
     _interpreter: {value: null},
     _serializationString: {value: null},
     _serialization: {value: null},
-
-    create: {
-        value: function() {
-            return Montage.create(this);
-        }
-    },
 
     init: {
         value: function(serializationString, _require, objectRequires, origin) {

@@ -20,18 +20,11 @@ var AbstractTextField = exports.AbstractTextField = Montage.create(AbstractContr
      * @param {Event} event
      */
 
-    create: {
-        value: function() {
-            if(this === AbstractTextField) {
+    constructor: {
+        value: function AbstractTextField() {
+            if(this.constructor === AbstractTextField) {
                 throw new Error("AbstractTextField cannot be instantiated.");
-            } else {
-                return AbstractControl.create.apply(this, arguments);
             }
-        }
-    },
-
-    didCreate: {
-        value: function() {
             AbstractControl.didCreate.call(this); // super
 
             this._keyComposer = KeyComposer.create();

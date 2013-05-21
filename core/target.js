@@ -74,7 +74,7 @@ exports.Target = Montage.create(Montage, {
         value: function(event) {
             var targettedEvent = event;
 
-            if (!MutableEvent.isPrototypeOf(event)) {
+            if (!MutableEvent.prototype.isPrototypeOf(event)) {
                 targettedEvent = MutableEvent.fromEvent(event);
             }
 

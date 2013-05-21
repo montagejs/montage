@@ -67,7 +67,7 @@ exports.element = function () {
                 typedEvent.currentTarget = this;
 
                 for (var i = 0, listener; listener = listeners[i]; i++) {
-                    if (typeof listener === "function") {
+                    if (typeof listener === "function" && !listener.__isConstructor__) {
                         listener(typedEvent);
                     } else {
                         names = ["handle" + type[0].toUpperCase() + type.slice(1),

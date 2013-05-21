@@ -25,21 +25,12 @@ var AbstractSlider = exports.AbstractSlider = Montage.create(AbstractControl, /*
     /**
      * @private
      */
-    create: {
-        value: function () {
-            if (this === AbstractSlider) {
+    constructor: {
+        value: function AbstractSlider() {
+            if (this.constructor === AbstractSlider) {
                 throw new Error("AbstractSlider cannot be instantiated.");
-            } else {
-                return AbstractControl.create.apply(this, arguments);
             }
-        }
-    },
-
-    /**
-     * @private
-     */
-    didCreate: {
-        value: function () {
+            AbstractControl.didCreate.call(this); // super
             //this is so that when we read properties from the dom they are not overwritten
             this._propertyNamesUsed = {};
             this.addOwnPropertyChangeListener("_sliderMagnitude", this);

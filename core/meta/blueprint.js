@@ -178,15 +178,15 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
      */
     create: {
         value: function(aPrototype, propertyDescriptor) {
-            if ((typeof aPrototype === "undefined") || (Blueprint.isPrototypeOf(aPrototype))) {
+            if ((typeof aPrototype === "undefined") || (Blueprint.prototype.isPrototypeOf(aPrototype))) {
                 var parentCreate = Object.getPrototypeOf(Blueprint).create;
                 return parentCreate.call(this, (typeof aPrototype === "undefined" ? this : aPrototype), propertyDescriptor);
             }
-            var newPrototype = Montage.create(aPrototype, propertyDescriptor);
-            this.ObjectProperty.applyWithBlueprint(newPrototype, this);
+            var newConstructor = Montage.create(aPrototype, propertyDescriptor);
+            this.ObjectProperty.applyWithBlueprint(newConstructor.prototype, this);
             // We have just created a custom prototype lets use it.
             this.customPrototype = true;
-            return newPrototype;
+            return newConstructor;
         }
     },
 
@@ -225,7 +225,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
             } else {
                 if (typeof exports[self.prototypeName] === "undefined") {
                     var parentInstancePrototype = (this.parent ? this.parent.newInstancePrototype() : Montage );
-                    var newPrototype = Montage.create(parentInstancePrototype, {
+                    var newConstructor = Montage.create(parentInstancePrototype, {
                         // Token class
                         init: {
                             value: function() {
@@ -233,11 +233,11 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
                             }
                         }
                     });
-                    this.ObjectProperty.applyWithBlueprint(newPrototype, this);
-                    exports[self.prototypeName] = newPrototype;
+                    this.ObjectProperty.applyWithBlueprint(newConstructor.prototype, this);
+                    exports[self.prototypeName] = newConstructor;
                 }
-                var prototype = exports[self.prototypeName];
-                return (prototype ? prototype : null);
+                var constructor = exports[self.prototypeName];
+                return (constructor ? constructor : null);
             }
         }
     },

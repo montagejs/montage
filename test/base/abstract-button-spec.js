@@ -2,7 +2,7 @@ var Montage = require("montage").Montage;
 var AbstractButton = require("montage/ui/base/abstract-button").AbstractButton;
 var MockDOM = require("mocks/dom");
 
-AbstractButton.hasTemplate = false;
+AbstractButton.prototype.hasTemplate = false;
 
 describe("test/base/abstract-button-spec", function () {
     describe("creation", function () {

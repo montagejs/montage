@@ -2,7 +2,7 @@ var Montage = require("montage").Montage;
 var AbstractImage = require("montage/ui/base/abstract-image").AbstractImage;
 var MockDOM = require("mocks/dom");
 
-AbstractImage.hasTemplate = false;
+AbstractImage.prototype.hasTemplate = false;
 
 var src1 = "data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
 
