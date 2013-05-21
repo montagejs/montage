@@ -164,9 +164,9 @@ var AbstractNumberField = exports.AbstractNumberField = Montage.create(AbstractC
 
     handleAction: {
         value: function(event) {
-            if (event.target === this._numberFieldTextFieldAbstractControl ||
-                event.target === this._numberFieldMinusAbstractControl ||
-                event.target === this._numberFieldPlusAbstractControl) {
+            if (event.target === this._numberFieldTextFieldComponent ||
+                event.target === this._numberFieldMinusComponent ||
+                event.target === this._numberFieldPlusComponent) {
                 event.stopPropagation();
                 this.dispatchActionEvent();
             }

@@ -43,7 +43,7 @@ var AbstractButton = exports.AbstractButton = Montage.create(AbstractControl, /*
             if(this === AbstractButton) {
                 throw new Error("AbstractControl cannot be instantiated.");
             } else {
-                return AbstractButton.create.apply(this, arguments);
+                return AbstractControl.create.apply(this, arguments);
             }
         }
     },
