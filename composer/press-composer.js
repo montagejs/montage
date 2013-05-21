@@ -181,7 +181,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends P
         enumerable: false,
         value: function(event) {
             if (
-                ("disabled" in this.component && this.component.disabled) ||
+                ("enabled" in this.component && !this.component.enabled) ||
                 this._observedPointer !== null
             ) {
                 return false;
