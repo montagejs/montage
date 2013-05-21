@@ -6,15 +6,13 @@ function UnitSerializer(visitor, malker, object) {
     this._object = object;
 };
 
-var UnitSerializer = Montage.create(Object.prototype, {
+var UnitSerializer = Montage.extend.call(Object, {
     _malker: {value: null},
     _visitor: {value: null},
     _object: {value: null},
 
-    create: {
-        value: function() {
-            return Object.create(this);
-        }
+    constructor: {
+        value: function UnitSerializer() {}
     },
 
     initWithMalkerAndVisitorAndObject: {

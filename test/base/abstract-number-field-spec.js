@@ -6,7 +6,7 @@ var Montage = require("montage").Montage,
     MockComponent = require("mocks/component"),
     MockEvent = require("mocks/event");
 
-AbstractNumberField.hasTemplate = false;
+AbstractNumberField.prototype.hasTemplate = false;
 
 describe("test/base/abstract-number-field-spec", function () {
 
@@ -18,7 +18,7 @@ describe("test/base/abstract-number-field-spec", function () {
         });
 
         it("can be instantiated as a subtype", function () {
-            var NumberFieldSubtype = Montage.create(AbstractNumberField, {});
+            var NumberFieldSubtype = Montage.create(AbstractNumberField, {constructor: function NumberFieldSubtype() {}});
             var aNumberFieldSubtype = null;
             expect(function () {
                 aNumberFieldSubtype = NumberFieldSubtype.create();
@@ -28,7 +28,7 @@ describe("test/base/abstract-number-field-spec", function () {
     });
 
     describe("properties", function () {
-        var NumberField = Montage.create(AbstractNumberField, {}),
+        var NumberField = Montage.create(AbstractNumberField, {constructor: function NumberField() {}}),
             aNumberField;
 
         beforeEach(function () {
@@ -206,7 +206,7 @@ describe("test/base/abstract-number-field-spec", function () {
 
     });
     describe("interaction", function () {
-        var NumberField = Montage.create(AbstractNumberField, {}),
+        var NumberField = Montage.create(AbstractNumberField, {constructor: function NumberField() {}}),
             aNumberField;
 
         beforeEach(function () {
@@ -308,7 +308,7 @@ describe("test/base/abstract-number-field-spec", function () {
     });
 
     describe("events", function () {
-        var NumberField = Montage.create(AbstractNumberField, {}),
+        var NumberField = Montage.create(AbstractNumberField, {constructor: function NumberField() {}}),
             aNumberField;
 
         beforeEach(function () {

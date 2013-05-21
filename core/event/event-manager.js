@@ -1836,7 +1836,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
                         jListener[captureMethodName](mutableEvent);
                     } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
                         jListener.handleEvent(mutableEvent);
-                    } else if (typeof jListener === FUNCTION_TYPE) {
+                    } else if (typeof jListener === FUNCTION_TYPE && !jListener.__isConstructor__) {
                         jListener.call(iTarget, mutableEvent);
                     }
                 }

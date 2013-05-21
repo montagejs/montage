@@ -21,18 +21,11 @@ var AbstractRadioButton = exports.AbstractRadioButton = Montage.create(AbstractC
      * @param {Event} event
      */
 
-    create: {
-        value: function() {
-            if(this === AbstractRadioButton) {
+    constructor: {
+        value: function AbstractRadioButton() {
+            if(this.constructor === AbstractRadioButton) {
                 throw new Error("AbstractRadioButton cannot be instantiated.");
-            } else {
-                return AbstractControl.create.apply(this, arguments);
             }
-        }
-    },
-
-    didCreate: {
-        value: function() {
             AbstractControl.didCreate.call(this); // super
             this._pressComposer = PressComposer.create();
             this.addComposer(this._pressComposer);
@@ -49,6 +42,11 @@ var AbstractRadioButton = exports.AbstractRadioButton = Montage.create(AbstractC
                     "<-": "checked"
                 }
             });
+        }
+    },
+
+    didCreate: {
+        value: function() {
         }
     },
 

@@ -1,14 +1,12 @@
 var Montage = require("montage").Montage;
 
-var PropertiesSerializer = Montage.create(Object.prototype, {
+var PropertiesSerializer = Montage.extend.call(Object, {
     _malker: {value: null},
     _visitor: {value: null},
     _object: {value: null},
 
-    create: {
-        value: function() {
-            return Object.create(this);
-        }
+    constructor: {
+        value: function PropertiesSerializer() {}
     },
 
     initWithMalkerAndVisitorAndObject: {

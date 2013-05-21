@@ -15,7 +15,7 @@ var autoCancelPrevious = Observers.autoCancelPrevious;
 
 var pathChangeDescriptors = new WeakMap();
 
-Montage.defineProperties(Montage, {
+var pathPropertyDescriptors = {
 
     getPath: {
         value: function (path, parameters) {
@@ -197,5 +197,6 @@ Montage.defineProperties(Montage, {
         }
     }
 
-});
-
+};
+Montage.defineProperties(Montage, pathPropertyDescriptors);
+Montage.defineProperties(Montage.prototype, pathPropertyDescriptors);

@@ -17,18 +17,11 @@ var AbstractNumberField = exports.AbstractNumberField = Montage.create(AbstractC
 
     // Lifecycle
 
-    create: {
-        value: function () {
-            if (this === AbstractNumberField) {
+    constructor: {
+        value: function AbstractNumberField() {
+            if (this.constructor === AbstractNumberField) {
                 throw new Error("AbstractNumberField cannot be instantiated.");
-            } else {
-                return AbstractControl.create.apply(this, arguments);
             }
-        }
-    },
-
-    didCreate: {
-        value: function() {
             AbstractControl.didCreate.call(this); // super
             this._propertyNamesUsed = {};
             this.defineBinding( "classList.has('montage--disabled')", { "<-": "!enabled" });

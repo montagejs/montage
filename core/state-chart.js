@@ -65,8 +65,8 @@ var State = exports.State = Montage.create(Montage, /** @lends State# */{
             for (; (iKey = keys[i]); i++) {
 
                 iOption = options[iKey];
+                if (typeof iOption === "object" && State.prototype.isPrototypeOf(iOption)) {
 
-                if (iOption.prototype === State.prototype) {
                     iOption.name = iKey;
                     iOption.parentState = this;
                     this.substates[iKey] = iOption;
