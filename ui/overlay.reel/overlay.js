@@ -154,7 +154,7 @@ exports.Overlay = Montage.create(Component, /** @lends module:Overlay# */ {
      * Show the overlay. The overlay is displayed at the position determined by
      * the following conditions:
      *
-     * 1) If a delegate is provided and the willPositionPopup function is
+     * 1) If a delegate is provided and the willPositionOverlay function is
      *    implemented, the position is always determined by the delegate.
      * 2) If "position" is set, the overlay is always displayed at this
      *    location.
