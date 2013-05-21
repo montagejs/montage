@@ -79,6 +79,7 @@ require("montage-testing").run(require,[
         "ui/condition-spec",
         "ui/firstdraw-spec",
         "ui/loader-spec",
+        "ui/overlay-spec",
         // Broken due to changes to repetition
         "ui/repetition-spec",
         "ui/repetition-selection-spec",
