@@ -1,0 +1,183 @@
+{
+
+    "rangeController_content": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "content",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": -1,
+            "valueType": "object",
+            "helpKey": ""
+        }
+    },
+
+    "rangeController_sortPath": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "sortPath",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+
+    "rangeController_reversed": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "reversed",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+
+    "rangeController_filterPath": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "filterPath",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+
+    "rangeController_selectAddedContent": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "selectAddedContent",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+
+    "rangeController_deselectInvisibleContent": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "deselectInvisibleContent",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+
+    "rangeController_clearSelectionOnOrderChange": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "clearSelectionOnOrderChange",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+
+    "rangeController_avoidsEmptySelection": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "avoidsEmptySelection",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+
+    "rangeController_multiSelect": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "multiSelect",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "RangeController",
+            "blueprintModuleId": "core/range-controller.meta",
+            "prototypeName": "RangeController",
+            "customPrototype": false,
+            "propertyBlueprints": [
+                {
+                    "@": "rangeController_content"
+                },
+                {
+                    "@": "rangeController_sortPath"
+                },
+                {
+                    "@": "rangeController_reversed"
+                },
+                {
+                    "@": "rangeController_filterPath"
+                },
+                {
+                    "@": "rangeController_selectAddedContent"
+                },
+                {
+                    "@": "rangeController_deselectInvisibleContent"
+                },
+                {
+                    "@": "rangeController_clearSelectionOnOrderChange"
+                },
+                {
+                    "@": "rangeController_avoidsEmptySelection"
+                },
+                {
+                    "@": "rangeController_multiSelect"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "rangeController": [
+                    {
+                        "@": "rangeController_content"
+                    },
+                    {
+                        "@": "rangeController_sortPath"
+                    },
+                    {
+                        "@": "rangeController_reversed"
+                    },
+                    {
+                        "@": "rangeController_filterPath"
+                    },
+                    {
+                        "@": "rangeController_selectAddedContent"
+                    },
+                    {
+                        "@": "rangeController_deselectInvisibleContent"
+                    },
+                    {
+                        "@": "rangeController_clearSelectionOnOrderChange"
+                    },
+                    {
+                        "@": "rangeController_avoidsEmptySelection"
+                    },
+                    {
+                        "@": "rangeController_multiSelect"
+                    }
+                ]
+            },
+            "propertyValidationRules": {
+            }
+        }
+    }
+}

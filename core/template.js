@@ -247,6 +247,7 @@ var Template = Montage.create(Montage, {
             var clonedTemplate = Template.create();
 
             clonedTemplate._require = this._require;
+            clonedTemplate._baseUrl = this._baseUrl;
             clonedTemplate.setDocument(this.document);
             clonedTemplate.objectsString = this.objectsString;
             clonedTemplate._instances = Object.clone(this._instances, 1);
@@ -1137,7 +1138,19 @@ var Template = Montage.create(Montage, {
             this._removeObjects(_document);
             this._addObjects(_document, this.objectsString);
 
-            return _document.documentElement.outerHTML;
+            return this._getDoctypeString(_document.doctype) + "\n" +
+                _document.documentElement.outerHTML;
+        }
+    },
+
+    _getDoctypeString: {
+        value: function (doctype) {
+            return "<!DOCTYPE " +
+                doctype.name +
+                (doctype.publicId ? ' PUBLIC "' + doctype.publicId + '"' : '') +
+                (!doctype.publicId && doctype.systemId ? ' SYSTEM' : '') +
+                (doctype.systemId ? ' "' + doctype.systemId + '"' : '') +
+                '>';
         }
     }
 });

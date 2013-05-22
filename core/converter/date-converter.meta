@@ -1,0 +1,70 @@
+{
+
+    "dateConverter_validator": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "validator",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object",
+            "helpKey": ""
+        }
+    },
+
+    "dateConverter_pattern": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "pattern",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+
+    "converter_blueprint_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Converter",
+                "blueprintModuleId": "core/converter/converter.meta",
+                "prototypeName": "Converter"
+            }
+        }
+    },
+
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "DateConverter",
+            "blueprintModuleId": "core/converter/date-converter.meta",
+            "prototypeName": "DateConverter",
+            "customPrototype": false,
+            "parent": {
+                "@": "converter_blueprint_reference"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "dateConverter_validator"
+                },
+                {
+                    "@": "dateConverter_pattern"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "dateConverter": [
+                    {
+                        "@": "dateConverter_validator"
+                    },
+                    {
+                        "@": "dateConverter_pattern"
+                    }
+                ]
+            },
+            "propertyValidationRules": {
+            }
+        }
+    }
+}

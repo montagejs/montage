@@ -1,0 +1,78 @@
+{
+    "blueprint_text_value": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "value",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+    "blueprint_text_converter": {
+        "prototype": "core/meta/association-blueprint",
+        "properties": {
+            "name": "converter",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object",
+            "targetBlueprint": {
+                "@": "blueprint_converter_reference"
+            },
+            "helpKey": ""
+        }
+    },
+    "blueprint_converter_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Converter",
+                "blueprintModuleId": "core/converter/converter.meta",
+                "prototypeName": "Converter"
+            }
+        }
+    },
+    "blueprint_component_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Component",
+                "blueprintModuleId": "ui/component.meta",
+                "prototypeName": "Component"
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "Text",
+            "blueprintModuleId": "ui/text.reel/text.meta",
+            "prototypeName": "Text",
+            "customPrototype": false,
+            "parent": {
+                "@": "blueprint_component_reference"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "blueprint_text_value"
+                },
+                {
+                    "@": "blueprint_text_converter"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "text": [
+                    {
+                        "@": "blueprint_text_value"
+                    },
+                    {
+                        "@": "blueprint_text_converter"
+                    }
+                ]
+            },
+            "propertyValidationRules": {}
+        }
+    }
+}

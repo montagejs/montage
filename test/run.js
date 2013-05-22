@@ -14,8 +14,11 @@ require("montage-testing").run(require,[
 
         "base/abstract-button-spec",
         "base/abstract-checkbox-spec",
-        "base/abstract-slider-spec",
+        "base/abstract-image-spec",
+        "base/abstract-number-field-spec",
         "base/abstract-radio-button-spec",
+        "base/abstract-select-spec",
+        "base/abstract-slider-spec",
         "base/abstract-text-area-spec",
         "base/abstract-text-field-spec",
         "base/abstract-toggle-button-spec",
@@ -76,6 +79,7 @@ require("montage-testing").run(require,[
         "ui/condition-spec",
         "ui/firstdraw-spec",
         "ui/loader-spec",
+        "ui/overlay-spec",
         // Broken due to changes to repetition
         "ui/repetition-spec",
         "ui/repetition-selection-spec",

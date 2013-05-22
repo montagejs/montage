@@ -71,21 +71,6 @@ var AbstractTextArea = exports.AbstractTextArea = Montage.create(Component,
         }
     },
 
-    /**
-     * The data property of the action event.
-     * example to toggle the complete class: "detail.get('selectedItem')" : { "<-" : "@repetition.objectAtCurrentIteration"}
-     * @type {Dict}
-     * @default null
-     */
-    detail: {
-        get: function() {
-            if (this._detail == null) {
-                this._detail = new Dict();
-            }
-            return this._detail;
-        }
-    },
-
     enterDocument: {
         value: function(firstTime) {
             if (firstTime) {

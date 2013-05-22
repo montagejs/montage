@@ -98,11 +98,14 @@ if (typeof window !== "undefined") {
 
             // setup serialization compiler
             config.makeCompiler = function (config) {
-                return exports.SerializationCompiler(
+                return exports.MetaCompiler(
                     config,
-                    exports.TemplateCompiler(
+                    exports.SerializationCompiler(
                         config,
-                        Require.makeCompiler(config)
+                        exports.TemplateCompiler(
+                            config,
+                            Require.makeCompiler(config)
+                        )
                     )
                 );
             };
@@ -378,6 +381,25 @@ if (typeof window !== "undefined") {
                 return module;
             } else {
                 return load(id, module);
+            }
+        };
+    };
+
+    /**
+     * Allows the .meta files to be loaded as json
+     * @see Compiler middleware in require/require.js
+     * @param config
+     * @param compile
+     */
+    var metaExpression = /\.meta/;
+    exports.MetaCompiler = function (config, compile) {
+        return function (module) {
+            var json = (module.location || "").match(metaExpression);
+            if (json) {
+                module.exports = JSON.parse(module.text);
+                return module;
+            } else {
+                return compile(module);
             }
         };
     };

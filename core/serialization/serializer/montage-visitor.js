@@ -59,7 +59,7 @@ var MontageVisitor = Montage.create(Visitor.prototype, {
                 this.storeValue(elementReference, element, name);
                 this._elements.push(element);
             } else {
-                logger.error("Error: Not possible to serialize a DOM element with no " + this._MONTAGE_ID_ATTRIBUTE + " assigned: " + element.outerHTML);
+                throw new Error("Not possible to serialize a DOM element with no " + this._MONTAGE_ID_ATTRIBUTE + " assigned: " + element.outerHTML);
             }
         }
     },

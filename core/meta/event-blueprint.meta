@@ -1,0 +1,109 @@
+{
+
+    "blueprint_owner_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Blueprint",
+                "blueprintModuleId": "core/meta/blueprint.meta",
+                "prototypeName": "Blueprint"
+            }
+        }
+    },
+
+    "event_blueprint_name": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "name",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+
+    "event_owner_blueprint": {
+        "prototype": "core/meta/association-blueprint",
+        "properties": {
+            "name": "owner",
+            "blueprint": {
+                "@": "root"
+            },
+            "mandatory": true,
+            "readOnly": true,
+            "valueType": "object",
+            "helpKey": "",
+            "targetBlueprint": {
+                "@": "blueprint_owner_reference"
+            }
+        }
+    },
+
+    "event_blueprint_detailKeys": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "detailKeys",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": -1,
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+
+    "event_blueprint_helpKey": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "helpKey",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "EventBlueprint",
+            "blueprintModuleId": "core/meta/event-blueprint.meta",
+            "prototypeName": "EventBlueprint",
+            "customPrototype": false,
+            "propertyBlueprints": [
+                {
+                    "@": "event_blueprint_name"
+                },
+                {
+                    "@": "event_owner_blueprint"
+                },
+                {
+                    "@": "event_blueprint_detailKeys"
+                },
+                {
+                    "@": "event_blueprint_helpKey"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "event-blueprint": [
+                    {
+                        "@": "event_blueprint_name"
+                    },
+                    {
+                        "@": "event_owner_blueprint"
+                    },
+                    {
+                        "@": "event_blueprint_detailKeys"
+                    },
+                    {
+                        "@": "event_blueprint_helpKey"
+                    }
+                ]
+            },
+            "propertyValidationRules": {
+            }
+        }
+    }
+}

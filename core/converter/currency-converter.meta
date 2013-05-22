@@ -1,0 +1,52 @@
+{
+
+    "currenyConverter_currency": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "currency",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "string",
+            "helpKey": ""
+        }
+    },
+
+    "number_converter_blueprint_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "NumberConverter",
+                "blueprintModuleId": "core/converter/number-converter.meta",
+                "prototypeName": "NumberConverter"
+            }
+        }
+    },
+
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "CurrencyConverter",
+            "blueprintModuleId": "core/converter/currency-converter.meta",
+            "prototypeName": "CurrencyConverter",
+            "customPrototype": false,
+            "parent": {
+                "@": "number_converter_blueprint_reference"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "currenyConverter_currency"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "currencyConverter": [
+                    {
+                        "@": "currenyConverter_currency"
+                    }
+                ]
+            },
+            "propertyValidationRules": {
+            }
+        }
+    }
+}

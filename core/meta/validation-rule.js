@@ -169,8 +169,8 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Mon
         }
     },
 
-        blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId: require("montage")._blueprintModuleIdDescriptor,
 
-        blueprint:require("montage")._blueprintDescriptor
+    blueprint: require("montage")._blueprintDescriptor
 
 });

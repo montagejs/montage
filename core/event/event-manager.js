@@ -28,7 +28,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-/*global Element,Components,Touch */
+/*global Window,Document,Element,Event,Components,Touch */
 /**
  *
  * @author: Lea Verou
@@ -957,7 +957,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
                     if ("focus" === eventType || "mousedown" === eventType || "touchstart" === eventType) {
                         if (evt.changedTouches) {
                             touchCount = evt.changedTouches.length;
-                            for (i = 0; i < touchCount; i++) {
+                            for (var i = 0; i < touchCount; i++) {
                                 eventManager._prepareComponentsForActivation(evt.changedTouches[i].target);
                             }
                         } else {

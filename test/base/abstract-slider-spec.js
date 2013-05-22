@@ -28,12 +28,6 @@ describe("test/base/abstract-slider-spec", function () {
             aSlider = Slider.create();
             aSlider.element = MockDOM.element();
         });
-        it("should maintain disabled as the opposite of enabled", function () {
-            aSlider.enabled = true;
-            expect(aSlider.disabled).toBeFalsy();
-            aSlider.disabled = true;
-            expect(aSlider.enabled).toBeFalsy();
-        });
 
         // Inspired by
         // http://www.w3.org/html/wg/drafts/html/master/forms.html#range-state-(type=range)

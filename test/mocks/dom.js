@@ -1,29 +1,30 @@
 var Set = require("montage/collections/set"),
-    defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager;
+    defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager,
+    Event = require("mocks/event");
 
-exports.element = function () {
-    var eventListeners = {};
+exports.element = function (_document) {
+    var eventListeners = {},
+        classList = new Set();
 
     return {
         classList: {
             add: function (className) {
-                this.__classList__.add.apply(this.__classList__, arguments);
+                classList.add.apply(classList, arguments);
             },
             remove: function (className) {
-                this.__classList__.remove.apply(this.__classList__, arguments);
+                classList.remove.apply(classList, arguments);
             },
             toggle: function (className) {
-                if(this.__classList__.has(className)) {
-                    this.__classList__.remove(className);
+                if(classList.has(className)) {
+                    classList.remove(className);
                 } else {
-                    this.__classList__.add(className);
+                    classList.add(className);
                 }
             },
             contains: function (className) {
-                return this.__classList__.has(className);
+                return classList.has(className);
             }
         },
-        __classList__: new Set(),
         className: "",
         style: {},
         removeAttribute: function () {},
@@ -36,6 +37,33 @@ exports.element = function () {
         },
         hasAttribute: function (attribute) {
             return attribute in this.__attributes__;
+        },
+        childNodes: [],
+        appendChild: function(child) {
+            if (child.parentNode) {
+                child.parentNode.removeChild(child);
+            }
+            this.childNodes.push(child);
+            child.parentNode = this;
+        },
+        removeChild: function(child) {
+            var ix = this.childNodes.indexOf(child);
+
+            if (ix >= 0) {
+                this.childNodes.splice(ix, 1);
+            } else {
+                throw new Error("DOM: child not found");
+            }
+            child.parentNode = null;
+        },
+        contains: function(child) {
+            do {
+                if (child === this) {
+                    return true;
+                }
+            } while (child = /* assignment */ child.parentNode);
+
+            return false;
         },
         focus: function () {},
         blur: function () {},
@@ -61,10 +89,7 @@ exports.element = function () {
                 listeners = eventListeners[type];
 
                 // Clone the event so we can set a target on it.
-                typedEvent = {};
-                for (var key in event) {
-                    typedEvent[key] = event[key];
-                }
+                typedEvent = event instanceof Event.MockEvent ? event : Event.fromEvent(event);
                 typedEvent.target = this;
                 typedEvent.currentTarget = this;
 
@@ -89,9 +114,75 @@ exports.element = function () {
             return !!(eventListeners[eventType] &&
                       eventListeners[eventType].indexOf(listener) >= 0);
         },
+        ownerDocument: _document || exports.document(),
         tagName: "MOCK"
     };
-}
+};
+
+exports.window = function () {
+    var eventListeners = {};
+
+    return {
+        addEventListener: function (eventType, listener, useCapture) {
+            if (typeof listener !== "function" && typeof listener !== "object") {
+                throw new Error("Missing listener");
+            }
+
+            if (!eventListeners[eventType]) {
+                eventListeners[eventType] = [];
+            }
+
+            eventListeners[eventType].push(listener);
+        },
+        removeEventListener: function () {},
+        dispatchEvent: function(event) {
+            var type = event.type,
+                listeners,
+                names,
+                typedEvent;
+
+            if (eventListeners[type]) {
+                listeners = eventListeners[type];
+
+                // Clone the event so we can set a target on it.
+                typedEvent = event instanceof Event.MockEvent ? event : Event.fromEvent(event);
+                typedEvent.target = this;
+                typedEvent.currentTarget = this;
+
+                for (var i = 0, listener; listener = listeners[i]; i++) {
+                    if (typeof listener === "function") {
+                        listener(typedEvent);
+                    } else {
+                        names = ["handle" + type[0].toUpperCase() + type.slice(1),
+                            "handleEvent"];
+
+                        for (var j = 0, name; name = names[j]; j++) {
+                            if (typeof listener[name] === "function") {
+                                listener[name](typedEvent);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        hasEventListener: function(eventType, listener) {
+            return !!(eventListeners[eventType] &&
+                eventListeners[eventType].indexOf(listener) >= 0);
+        }
+    }
+};
+
+exports.document = function() {
+    var result = {
+        defaultView: exports.window(),
+        body: null
+    };
+
+    result.body = exports.element(result);
+
+    return result;
+};
 
 exports.keyPressEvent = function(keys, target) {
     var modifiersAndKeyCode =
@@ -126,4 +217,4 @@ exports.keyPressEvent = function(keys, target) {
     }
 
     return customEvent;
-}
+};

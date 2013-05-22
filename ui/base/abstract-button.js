@@ -8,17 +8,16 @@
     @requires montage/composer/press-composer
 */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
-    PressComposer = require("composer/press-composer").PressComposer,
-    Dict = require("collections/dict");
+    AbstractControl = require("ui/base/abstract-control").AbstractControl,
+    PressComposer = require("composer/press-composer").PressComposer;
 
 /**
  * @class AbstractButton
- * @extends Component
+ * @extends AbstractControl
  * @fires action
  * @fires longAction
  */
-var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @lends AbstractButton# */ {
+var AbstractButton = exports.AbstractButton = Montage.create(AbstractControl, /** @lends AbstractButton# */ {
 
     /**
      * Dispatched when the button is activated through a mouse click, finger tap,
@@ -42,9 +41,9 @@ var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @len
     create: {
         value: function() {
             if(this === AbstractButton) {
-                throw new Error("AbstractButton cannot be instantiated.");
+                throw new Error("AbstractControl cannot be instantiated.");
             } else {
-                return Component.create.apply(this, arguments);
+                return AbstractButton.create.apply(this, arguments);
             }
         }
     },
@@ -55,7 +54,7 @@ var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @len
      */
     didCreate: {
         value: function() {
-            Component.didCreate.call(this); // super
+            AbstractControl.didCreate.call(this); // super
             this._pressComposer = PressComposer.create();
             this.addComposer(this._pressComposer);
             this._pressComposer.defineBinding("longPressThreshold ", {"<-": "holdThreshold", source: this});
@@ -220,7 +219,7 @@ var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @len
     // Optimisation
     addEventListener: {
         value: function(type, listener, useCapture) {
-            Component.addEventListener.call(this, type, listener, useCapture);
+            AbstractControl.addEventListener.call(this, type, listener, useCapture);
             if (type === "longAction") {
                 this._pressComposer.addEventListener("longPress", this, false);
             }
@@ -254,7 +253,7 @@ var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @len
     handlePress: {
         value: function(event) {
             this.active = false;
-            this._dispatchActionEvent();
+            this.dispatchActionEvent();
             document.removeEventListener("touchmove", this, false);
         }
     },
@@ -264,7 +263,7 @@ var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @len
             // action event on spacebar
             if (event.keyCode === 32) {
                 this.active = false;
-                this._dispatchActionEvent();
+                this.dispatchActionEvent();
             }
         }
     },
@@ -382,37 +381,6 @@ var AbstractButton = exports.AbstractButton = Montage.create(Component, /** @len
     _elementNeedsTabIndex: {
         value: function() {
             return this.element.tagName.match(this._elementNeedsTabIndexRegex) === null;
-        }
-    },
-
-
-    _detail: {
-        value: null
-    },
-
-    /**
-     * The data property of the action event.
-     * example to toggle the complete class: "detail.selectedItem" : { "<-" : "@repetition.objectAtCurrentIteration"}
-     * @type {Dict}
-     * @default null
-     */
-    detail: {
-        get: function() {
-            if (this._detail === null) {
-                this._detail = new Dict();
-            }
-            return this._detail;
-        }
-    },
-
-    createActionEvent: {
-        value: function() {
-            var actionEvent = document.createEvent("CustomEvent"),
-                eventDetail;
-
-            eventDetail = this._detail;
-            actionEvent.initCustomEvent("action", true, true, eventDetail);
-            return actionEvent;
         }
     }
 });

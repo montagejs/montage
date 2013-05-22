@@ -21,12 +21,18 @@ var DocumentResources = Montage.create(Montage, {
 
     initWithDocument: {
         value: function(_document) {
+            this.clear();
             this._document = _document;
-            this._resources = Object.create(null);
-            this._preloaded = Object.create(null);
             this._link = _document.createElement("a");
 
             return this;
+        }
+    },
+
+    clear: {
+        value: function () {
+            this._resources = Object.create(null);
+            this._preloaded = Object.create(null);
         }
     },
 

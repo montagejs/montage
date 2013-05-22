@@ -1,16 +1,15 @@
 /*global require, exports, document, Error*/
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
-    PressComposer = require("composer/press-composer").PressComposer,
-    Dict = require("collections/dict");
+    AbstractControl = require("ui/base/abstract-control").AbstractControl,
+    PressComposer = require("composer/press-composer").PressComposer;
 
 var CLASS_PREFIX = "montage-Checkbox";
 
 /**
  * @class AbstractCheckbox
- * @extends Component
+ * @extends AbstractControl
  */
-var AbstractCheckbox = exports.AbstractCheckbox = Montage.create(Component,
+var AbstractCheckbox = exports.AbstractCheckbox = Montage.create(AbstractControl,
     /* @lends AbstractCheckbox# */
     {
         /**
@@ -26,14 +25,14 @@ var AbstractCheckbox = exports.AbstractCheckbox = Montage.create(Component,
                 if(this === AbstractCheckbox) {
                     throw new Error("AbstractCheckbox cannot be instantiated.");
                 } else {
-                    return Component.create.apply(this, arguments);
+                    return AbstractControl.create.apply(this, arguments);
                 }
             }
         },
 
         didCreate: {
             value: function() {
-                Component.didCreate.call(this); // super
+                AbstractControl.didCreate.call(this); // super
                 this._pressComposer = PressComposer.create();
                 this.addComposer(this._pressComposer);
 
@@ -104,7 +103,7 @@ var AbstractCheckbox = exports.AbstractCheckbox = Montage.create(Component,
                     return;
                 }
 
-                this._dispatchActionEvent();
+                this.dispatchActionEvent();
                 this.checked = !this.checked;
             }
         },
@@ -125,32 +124,6 @@ var AbstractCheckbox = exports.AbstractCheckbox = Montage.create(Component,
                 this._pressComposer.addEventListener("pressStart", this, false);
                 this._pressComposer.addEventListener("press", this, false);
                 this._pressComposer.addEventListener("pressCancel", this, false);
-            }
-        },
-
-        /**
-         * The data property of the action event.
-         * example to toggle the complete class: "detail.get('selectedItem')" : { "<-" : "@repetition.objectAtCurrentIteration"}
-         * @type {Dict}
-         * @default null
-         */
-        detail: {
-            get: function() {
-                if (this._detail == null) {
-                    this._detail = new Dict();
-                }
-                return this._detail;
-            }
-        },
-
-        createActionEvent: {
-            value: function() {
-                var actionEvent = document.createEvent("CustomEvent"),
-                    eventDetail;
-
-                eventDetail = this._detail;
-                actionEvent.initCustomEvent("action", true, true, eventDetail);
-                return actionEvent;
             }
         }
     });
