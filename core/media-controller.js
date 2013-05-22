@@ -88,6 +88,10 @@ var MediaController = exports.MediaController = Montage.create(Target, /** @lend
     */
     mediaController: {
         get : function() {
+            if (!this._mediaController) {
+                this._mediaController = new window.MediaController();
+                this._installControlEventHandlers();
+            }
             return this._mediaController;
         },
         set : function(controller) {
