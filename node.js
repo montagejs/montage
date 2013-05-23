@@ -65,8 +65,9 @@ exports.bootstrap = function () {
 
 var findPackage = function (path) {
     var directory = FS.directory(path);
-    if (directory === path)
+    if (directory === path) {
         throw new Error("Can't find package");
+    }
     var packageJson = FS.join(directory, "package.json");
     return FS.stat(path)
     .then(function (stat) {
@@ -76,7 +77,7 @@ var findPackage = function (path) {
             return findPackage(directory);
         }
     });
-}
+};
 
 var loadFreeModule = function (program, command, args) {
     throw new Error("Can't load module that is not in a package");
@@ -180,7 +181,7 @@ var parseHtmlDependencies = function (text, location) {
 
 var collectHtmlDependencies = function (document, dependencies) {
     visit(document, function (element) {
-        if (element.nodeType == Node.ELEMENT_NODE) {
+        if (element.nodeType === Node.ELEMENT_NODE) {
             if (element.tagName === "SCRIPT") {
                 if (element.getAttribute("type") === "text/montage-serialization") {
                     collectSerializationDependencies(getText(element), dependencies);
