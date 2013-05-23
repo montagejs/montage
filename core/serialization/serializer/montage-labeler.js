@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage;
 var Labeler = require("mousse/serialization/labeler").Labeler;
 
-exports.MontageLabeler = Montage.extend.call(Labeler, {
+exports.MontageLabeler = Montage.specialize.call(Labeler, {
     _labelRegexp: {value: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/},
 
     constructor: {

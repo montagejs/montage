@@ -2528,7 +2528,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
  * @class RootComponent
  * @extends Component
  */
-var RootComponent = Component.extend( /** @lends RootComponent# */{
+var RootComponent = Component.specialize( /** @lends RootComponent# */{
     /**
      * @private
      * @function

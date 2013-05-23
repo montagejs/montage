@@ -119,8 +119,8 @@ var EMPTY = {};
 var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;
 var FUNCTION_PROPERTIES = Object.getOwnPropertyNames(Function);
 
-Object.defineProperty(Montage, "extend", {
-    value: function extend(prototypeProperties, constructorProperties) {
+Object.defineProperty(Montage, "specialize", {
+    value: function specialize(prototypeProperties, constructorProperties) {
         var parent = this;
 
         prototypeProperties = prototypeProperties || EMPTY;
@@ -163,7 +163,7 @@ Object.defineProperty(Montage, "extend", {
             });
         }
         // check if this constructor has Montage capabilities
-        if(typeof this.extend === "undefined") {
+        if(typeof this.specialize === "undefined") {
             //if is doesn't then we give it all the properties of Montage
             var names = Object.getOwnPropertyNames(Montage);
             for (var i = 0; i < names.length; i++) {
@@ -290,7 +290,7 @@ Object.defineProperty(Montage, "create", {
             if (!propertyDescriptors) {
                 return new aPrototype();
             } else {
-                return aPrototype.extend(propertyDescriptors);
+                return aPrototype.specialize(propertyDescriptors);
             }
             // Otherwise behave like Object.create()
         } else {

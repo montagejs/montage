@@ -4,7 +4,7 @@ var Montage = require("core/core").Montage,
     MontageReviver = require("./montage-reviver").MontageReviver,
     Promise = require("core/promise").Promise;
 
-var MontageInterpreter = Montage.extend.call(Interpreter, {
+var MontageInterpreter = Montage.specialize.call(Interpreter, {
     _require: {value: null},
     _reviver: {value: null},
 
@@ -63,7 +63,7 @@ var MontageInterpreter = Montage.extend.call(Interpreter, {
     }
 });
 
-var MontageContext = Montage.extend.call(Context, {
+var MontageContext = Montage.specialize.call(Context, {
     _ELEMENT_ID_ATTRIBUTE: {value: "data-montage-id"},
     _unitsToDeserialize: {value: null},
     _element: {value: null},

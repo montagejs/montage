@@ -6,7 +6,7 @@ function UnitSerializer(visitor, malker, object) {
     this._object = object;
 };
 
-var UnitSerializer = Montage.extend.call(Object, {
+var UnitSerializer = Montage.specialize.call(Object, {
     _malker: {value: null},
     _visitor: {value: null},
     _object: {value: null},

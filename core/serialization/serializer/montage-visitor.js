@@ -5,7 +5,7 @@ var SelfSerializer = require("./self-serializer").SelfSerializer;
 var UnitSerializer = require("./unit-serializer").UnitSerializer;
 var Visitor = require("mousse/serialization/visitor").Visitor;
 
-var MontageVisitor = Montage.extend.call(Visitor, {
+var MontageVisitor = Montage.specialize.call(Visitor, {
     _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
     _require: {value: null},
     _units: {value: null},

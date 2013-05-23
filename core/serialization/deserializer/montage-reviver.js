@@ -75,7 +75,7 @@ var ModuleLoader = Montage.create(Montage, {
     }
 });
 
-var MontageReviver = exports.MontageReviver = Montage.extend.call(Reviver, {
+var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
     moduleLoader: {value: null},
     _unitRevivers: {value: Object.create(null)},
     _unitNames: {value: []},

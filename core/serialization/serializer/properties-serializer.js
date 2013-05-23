@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage;
 
-var PropertiesSerializer = Montage.extend.call(Object, {
+var PropertiesSerializer = Montage.specialize.call(Object, {
     _malker: {value: null},
     _visitor: {value: null},
     _object: {value: null},

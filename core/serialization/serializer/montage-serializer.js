@@ -7,7 +7,7 @@ var MontageVisitor = require("./montage-visitor").MontageVisitor;
 
 var logger = require("core/logger").logger("montage-serializer");
 
-var MontageSerializer = Montage.extend.call(Serializer, {
+var MontageSerializer = Montage.specialize.call(Serializer, {
     _require: {value: null},
     _visitor: {value: null},
     _units: {value: Object.create(null)},
