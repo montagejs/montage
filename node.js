@@ -44,6 +44,8 @@ var jsdom = require("jsdom").jsdom;
 var Node = require("jsdom").level(1).Node;
 var domToHtml = require("jsdom/lib/jsdom/browser/domtohtml").domToHtml;
 
+Require.overlays = ["node", "server", "montage"];
+
 exports.bootstrap = function () {
     var command = process.argv.slice(0, 3);
     var args = process.argv.slice(2);
@@ -222,11 +224,11 @@ var collectSerializationDependencies = function (text, dependencies) {
         if (description.lazy) {
             return;
         }
-        if (typeof description.module === "string") { // XXX deprecated
-            dependencies.push(description.module);
-        }
         if (typeof description.prototype === "string") {
             dependencies.push(parsePrototypeForModule(description.prototype));
+        }
+        if (typeof description.object === "string") {
+            dependencies.push(parsePrototypeForModule(description.object));
         }
     });
     return dependencies;
