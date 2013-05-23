@@ -65,7 +65,16 @@ var Array_prototype = Array.prototype;
 
 var Object_prototype = Object.prototype;
 
+// The CONSTRUCTOR_COMPATIBILITY flag marks areas that allow the migration from Montage.create to Constructor.specialize
+// The following is done:
+// - Any properties defined on the prototype that are used on the constructor fire a deperecation warning prompting the
+//   developer to move them to the second argument of specialize().
+// - Adds a create method to the constructor can be used as Proto.create().
+// - Adds support for 'didCreate' so that it can be used interchangeably with the 'constructor' property.
+// - When calling Montage.create with a function as the first argument we use the function as a constructor or call
+//   specialize on it to create a subtype.
 var CONSTRUCTOR_COMPATIBILITY = true;
+
 /**
  @class Montage
  */
@@ -188,7 +197,8 @@ Object.defineProperty(Montage, "specialize", {
             var constructorProperty = function(original, constructor, propertyName) {
                 var deprecationWrapper = function() {
                     if(this === constructor) {
-                        console.warn("Deprecated - " + Montage.getInfoForObject(constructor).objectName + "." + propertyName + " should be moved to constructorProperties");
+                        console.warn("Deprecated - " + Montage.getInfoForObject(constructor).objectName + "."
+                            + propertyName + " should be moved to constructorProperties");
                     }
                     return original.apply(this, arguments);
                 }
@@ -279,7 +289,8 @@ if (!PROTO_IS_SUPPORTED) {
 Object.defineProperty(Montage, "create", {
     configurable: true,
     value: function(aPrototype, propertyDescriptors) {
-        if (aPrototype !== undefined && (typeof aPrototype !== "object" && /* CONSTRUCTOR_COMPATIBILITY*/typeof aPrototype !== "function")) {
+        if (aPrototype !== undefined && (typeof aPrototype !== "object"
+                && /* CONSTRUCTOR_COMPATIBILITY*/typeof aPrototype !== "function")) {
             throw new TypeError("Object prototype may only be an Object or null, not '" + aPrototype + "'");
         }
         aPrototype = typeof aPrototype === "undefined" ? this : aPrototype;
