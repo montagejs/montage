@@ -847,11 +847,9 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends Repet
             // for garbage collection
             for (var i = 0; i < this._freeIterations.length; i++) {
                 var iteration = this._freeIterations[i];
-                if (iteration._childComponents) {
-                    for (var j = 0; j < iteration._childComponents.length; j++) {
-                        var childComponent = iteration._childComponents[j];
-                        childComponent.cleanupDeletedComponentTree(true); // true cancels bindings
-                    }
+                for (var j = 0; j < iteration._childComponents.length; j++) {
+                    var childComponent = iteration._childComponents[j];
+                    childComponent.cleanupDeletedComponentTree(true); // true cancels bindings
                 }
             }
 
