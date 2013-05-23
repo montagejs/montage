@@ -7,7 +7,7 @@ var MontageAst = require("./montage-ast");
  *
  * @extends Value
  */
-var MontageBuilder = Montage.extend.call(Builder, {
+var MontageBuilder = Montage.specialize.call(Builder, {
     constructor: {
         value: function MontageBuilder() {
             Builder.call(this);
