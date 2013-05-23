@@ -39,6 +39,9 @@
   "optionalDependencies": {
     "jsdom": "~0.2.19"
   },
+  "scripts": {
+    "test": "node test/node/node-spec.js"
+  },
   "exclude": [
     "bin",
     "etc",
