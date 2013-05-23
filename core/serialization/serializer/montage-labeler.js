@@ -1,16 +1,12 @@
 var Montage = require("montage").Montage;
 var Labeler = require("mousse/serialization/labeler").Labeler;
 
-exports.MontageLabeler = Montage.create(Labeler.prototype, {
+exports.MontageLabeler = Montage.specialize.call(Labeler, {
     _labelRegexp: {value: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/},
 
-    create: {
-        value: function() {
-            var self = Object.create(this);
-
-            Labeler.call(self);
-
-            return self;
+    constructor: {
+        value: function MontageLabeler() {
+            Labeler.call(this);
         }
     },
 
@@ -21,7 +17,7 @@ exports.MontageLabeler = Montage.create(Labeler.prototype, {
 
             if (identifier && this._labelRegexp.test(identifier)) {
                 objectName = object.identifier;
-            } else if ("getInfoForObject" in object) {
+            } else if ("getInfoForObject" in object || "getInfoForObject" in object.constructor ) {
                 objectName = Montage.getInfoForObject(object).objectName;
                 objectName = objectName.toLowerCase();
             } else {

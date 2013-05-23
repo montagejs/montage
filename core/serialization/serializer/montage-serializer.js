@@ -7,7 +7,7 @@ var MontageVisitor = require("./montage-visitor").MontageVisitor;
 
 var logger = require("core/logger").logger("montage-serializer");
 
-var MontageSerializer = Montage.create(Serializer.prototype, {
+var MontageSerializer = Montage.specialize.call(Serializer, {
     _require: {value: null},
     _visitor: {value: null},
     _units: {value: Object.create(null)},
@@ -16,10 +16,8 @@ var MontageSerializer = Montage.create(Serializer.prototype, {
     _toCamelCaseRegExp: {value: /(?:^|-)([^-])/g},
     _replaceToCamelCase: {value: function(_, g1){return g1.toUpperCase()}},
 
-    create: {
-        value: function() {
-            return Object.create(this);
-        }
+    constructor: {
+        value: function MontageSerializer() {}
     },
 
     initWithRequire: {

@@ -15,7 +15,7 @@ var BinderReference = require("core/meta/binder-reference").BinderReference;
 
 var logger = require("core/logger").logger("blueprint");
 
-exports.BlueprintReference = RemoteReference.create(RemoteReference, {
+exports.BlueprintReference = Montage.create(RemoteReference, {
 
     /**
      The identifier is the name of the binder and is used to make the serialization of binders more

@@ -41,6 +41,7 @@ require("montage-testing").run(require,[
         "core/localizer/serialization-spec",
         "core/radio-button-controller-spec",
         "core/selector-spec",
+        "core/super-spec",
         "core/undo-manager-spec",
 
         "core/tree-controller-spec",

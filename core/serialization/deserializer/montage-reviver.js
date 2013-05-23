@@ -75,16 +75,10 @@ var ModuleLoader = Montage.create(Montage, {
     }
 });
 
-var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, {
+var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
     moduleLoader: {value: null},
     _unitRevivers: {value: Object.create(null)},
     _unitNames: {value: []},
-
-    create: {
-        value: function() {
-            return Montage.create(this);
-        }
-    },
 
     /**
      * @param {Require} _require The require object to load modules
@@ -278,10 +272,13 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
                 }
                 // TODO: For now we need this because we need to set
                 // isDeserilizing before calling didCreate.
-                object = Object.create(module[objectName]);
+                object = Object.create(module[objectName].prototype);
+                object.constructor = module[objectName];
                 object.isDeserializing = true;
                 if (typeof object.didCreate === "function") {
                     object.didCreate();
+                } else if (typeof object.constructor === "function") {
+                    object.constructor();
                 }
                 return object;
                 //return module[objectName].create();

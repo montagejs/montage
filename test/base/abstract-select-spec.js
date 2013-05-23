@@ -3,7 +3,7 @@ var AbstractSelect = require("montage/ui/base/abstract-select").AbstractSelect;
 var RangeController = require("montage/core/range-controller").RangeController;
 var MockDOM = require("mocks/dom");
 
-AbstractSelect.hasTemplate = false;
+AbstractSelect.prototype.hasTemplate = false;
 
 describe("test/base/abstract-select-spec", function () {
 

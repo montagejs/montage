@@ -3,7 +3,7 @@ var Montage = require("montage").Montage;
 var AbstractSlider = require("montage/ui/base/abstract-slider").AbstractSlider;
 var MockDOM = require("mocks/dom");
 
-AbstractSlider.hasTemplate = false;
+AbstractSlider.prototype.hasTemplate = false;
 
 describe("test/base/abstract-slider-spec", function () {
     describe("creation", function () {

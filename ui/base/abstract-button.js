@@ -38,22 +38,11 @@ var AbstractButton = exports.AbstractButton = Montage.create(AbstractControl, /*
     /**
      * @private
      */
-    create: {
-        value: function() {
-            if(this === AbstractButton) {
+    constructor: {
+        value: function AbstractButton() {
+            if(this.constructor ===  AbstractButton) {
                 throw new Error("AbstractControl cannot be instantiated.");
-            } else {
-                return AbstractButton.create.apply(this, arguments);
             }
-        }
-    },
-
-
-    /**
-     * @private
-     */
-    didCreate: {
-        value: function() {
             AbstractControl.didCreate.call(this); // super
             this._pressComposer = PressComposer.create();
             this.addComposer(this._pressComposer);
@@ -64,7 +53,6 @@ var AbstractButton = exports.AbstractButton = Montage.create(AbstractControl, /*
             //classList management
             this.defineBinding("classList.has('montage--disabled')", {"<-": "disabled"});
             this.defineBinding("classList.has('montage--active')", {"<-": "active"});
-
         }
     },
 

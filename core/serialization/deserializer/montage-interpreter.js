@@ -4,15 +4,9 @@ var Montage = require("core/core").Montage,
     MontageReviver = require("./montage-reviver").MontageReviver,
     Promise = require("core/promise").Promise;
 
-var MontageInterpreter = Montage.create(Interpreter.prototype, {
+var MontageInterpreter = Montage.specialize.call(Interpreter, {
     _require: {value: null},
     _reviver: {value: null},
-
-    create: {
-        value: function() {
-            return Montage.create(this);
-        }
-    },
 
     init: {
         value: function(_require, objectRequires) {
@@ -69,16 +63,10 @@ var MontageInterpreter = Montage.create(Interpreter.prototype, {
     }
 });
 
-var MontageContext = Montage.create(Context.prototype, {
+var MontageContext = Montage.specialize.call(Context, {
     _ELEMENT_ID_ATTRIBUTE: {value: "data-montage-id"},
     _unitsToDeserialize: {value: null},
     _element: {value: null},
-
-    create: {
-        value: function() {
-            return Montage.create(this);
-        }
-    },
 
     didCreate: {
         value: function() {

@@ -35,21 +35,11 @@ var AbstractToggleButton = exports.AbstractToggleButton = Montage.create(Abstrac
     /**
      * @private
      */
-    create: {
+    constructor: {
         value: function() {
-            if(this === AbstractToggleButton) {
+            if(this.constructor === AbstractToggleButton) {
                 throw new Error("AbstractToggleButton cannot be instantiated.");
-            } else {
-                return AbstractControl.create.apply(this, arguments);
             }
-        }
-    },
-
-    /**
-     * @private
-     */
-    didCreate: {
-        value: function() {
             AbstractControl.didCreate.call(this); // super
             this._pressComposer = PressComposer.create();
             this._pressComposer.defineBinding("longPressThreshold ", {
@@ -77,7 +67,6 @@ var AbstractToggleButton = exports.AbstractToggleButton = Montage.create(Abstrac
                     "<-": "pressed"
                 }
             });
-
         }
     },
 

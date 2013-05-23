@@ -6,12 +6,6 @@ var PropertiesDeserializer = Montage.create(Montage, {
     _objectDescriptor: {value: null},
     _context: {value: null},
 
-    create: {
-        value: function() {
-            return Montage.create(this);
-        }
-    },
-
     initWithObjectAndObjectDescriptorAndContext: {
         value: function(object, objectDescriptor, context) {
             this._object = object;
