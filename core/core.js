@@ -115,7 +115,6 @@ Montage.callDeprecatedFunction = function callDeprecatedFunction(scope, callback
     return callback.apply(scope ? scope : this, args);
 };
 
-var EMPTY = {};
 var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;
 var FUNCTION_PROPERTIES = Object.getOwnPropertyNames(Function);
 
@@ -123,8 +122,8 @@ Object.defineProperty(Montage, "specialize", {
     value: function specialize(prototypeProperties, constructorProperties) {
         var parent = this;
 
-        prototypeProperties = prototypeProperties || EMPTY;
-        constructorProperties = constructorProperties || EMPTY;
+        prototypeProperties = prototypeProperties || Object.empty;
+        constructorProperties = constructorProperties || Object.empty;
 
         var constructor;
         if (prototypeProperties.constructor && prototypeProperties.constructor.value) {
