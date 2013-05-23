@@ -8,13 +8,13 @@ describe("test/core/super-spec", function () {
         calledSpy;
     beforeEach(function () {
         calledSpy = [];
-        Vehicle = Montage.extend( {
+        Vehicle = Montage.specialize( {
             constructor: {value: function Vehicle() {}}
         });
-        Car = Vehicle.extend( {
+        Car = Vehicle.specialize( {
             constructor: {value: function Car() {}}
         });
-        Beetle = Car.extend( {
+        Beetle = Car.specialize( {
             constructor: {value: function Beetle() {}}
         });
         vehicleSpy = function () {calledSpy.push("vehicleSpy")};
@@ -481,7 +481,7 @@ describe("test/core/super-spec", function () {
         describe("methods", function () {
             describe("with direct super", function () {
                 beforeEach(function () {
-                    Vehicle = Montage.extend( {
+                    Vehicle = Montage.specialize( {
                         constructor: {value: function Vehicle() {}}
                     }, {
                         forward: {
@@ -490,7 +490,7 @@ describe("test/core/super-spec", function () {
                             }
                         }
                     });
-                    Car = Vehicle.extend( {
+                    Car = Vehicle.specialize( {
                         constructor: {value: function Car() {}}
                     }, {
                         forward: {
@@ -500,7 +500,7 @@ describe("test/core/super-spec", function () {
                             }
                         }
                     });
-                    Beetle = Car.extend( {
+                    Beetle = Car.specialize( {
                         constructor: {value: function Beetle() {}}
                     });
                });
@@ -521,7 +521,7 @@ describe("test/core/super-spec", function () {
             });
             describe("with one hop", function () {
                 beforeEach(function () {
-                    Vehicle = Montage.extend( {
+                    Vehicle = Montage.specialize( {
                         constructor: {value: function Vehicle() {}}
                     }, {
                         forward: {
@@ -530,10 +530,10 @@ describe("test/core/super-spec", function () {
                             }
                         }
                     });
-                    Car = Vehicle.extend( {
+                    Car = Vehicle.specialize( {
                         constructor: {value: function Car() {}}
                     });
-                    Beetle = Car.extend( {
+                    Beetle = Car.specialize( {
                         constructor: {value: function Beetle() {}}
                     }, {
                         forward: {
@@ -562,7 +562,7 @@ describe("test/core/super-spec", function () {
             });
             describe("with three in a row", function () {
                 beforeEach(function () {
-                    Vehicle = Montage.extend( {
+                    Vehicle = Montage.specialize( {
                         constructor: {value: function Vehicle() {}}
                     }, {
                         forward: {
@@ -571,7 +571,7 @@ describe("test/core/super-spec", function () {
                             }
                         }
                     });
-                    Car = Vehicle.extend( {
+                    Car = Vehicle.specialize( {
                         constructor: {value: function Car() {}}
                     }, {
                         forward: {
@@ -581,7 +581,7 @@ describe("test/core/super-spec", function () {
                             }
                         }
                     });
-                    Beetle = Car.extend( {
+                    Beetle = Car.specialize( {
                         constructor: {value: function Beetle() {}}
                     }, {
                         forward: {

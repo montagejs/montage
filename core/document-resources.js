@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     Promise = require("core/promise").Promise;
 
-var DocumentResources = Montage.extend({
+var DocumentResources = Montage.specialize({
     _SCRIPT_TIMEOUT: {value: 5000},
     _document: {value: null},
     _resources: {value: null},

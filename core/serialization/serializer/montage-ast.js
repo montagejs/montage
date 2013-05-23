@@ -6,7 +6,7 @@ var Value = require("mousse/serialization/ast").Value;
  *
  * @extends Value
  */
-var ElementReference = Montage.extend.call(Value, {
+var ElementReference = Montage.specialize.call(Value, {
 
     constructor: {
         value: function ElementReference() {}
