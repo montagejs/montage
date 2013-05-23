@@ -38,6 +38,7 @@ require("montage-testing").run(require,[
         "core/localizer/serialization-spec",
         "core/radio-button-controller-spec",
         "core/selector-spec",
+        "core/super-spec",
         "core/undo-manager-spec",
 
         "core/tree-controller-spec",
@@ -54,7 +55,7 @@ require("montage-testing").run(require,[
         "geometry/point-spec",
 
         "meta/blueprint-spec",
-//        "meta/component-blueprint-spec",
+        "meta/component-blueprint-spec",
         "meta/controller-blueprint-spec",
         "meta/converter-blueprint-spec",
         "meta/build-in-component-blueprint-spec",

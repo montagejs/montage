@@ -72,8 +72,8 @@ var CONSTRUCTOR_COMPATIBILITY = true;
 var Montage = exports.Montage = function Montage() {};
 
 // to monkey patch a method on an object
-Montage.deprecate = function deprecate(scope, callback, name, alternative) {
-    return function () {
+Montage.deprecate = function deprecate(scope, deprecatedFunction, name, alternative) {
+    var deprecationWrapper = function () {
         var depth = Error.stackTraceLimit;
         Error.stackTraceLimit = 2;
         if (typeof console !== "undefined" && typeof console.warn === "function") {
@@ -86,8 +86,10 @@ Montage.deprecate = function deprecate(scope, callback, name, alternative) {
 
         }
         Error.stackTraceLimit = depth;
-        return callback.apply(scope ? scope : this, arguments);
+        return deprecatedFunction.apply(scope ? scope : this, arguments);
     };
+    deprecationWrapper.deprecatedFunction = deprecatedFunction;
+    return deprecationWrapper;
 }
 
 // too call a function immediately and log a deprecation warning
@@ -146,6 +148,19 @@ Object.defineProperty(Montage, "extend", {
                     Montage.defineProperty(constructor, name, Object.getOwnPropertyDescriptor(parent, name));
                 }
             }
+            constructor.__constructorProto__ = parent;
+            Montage.defineProperty(constructor, "isPrototypeOf", {
+                value: function(object) {
+                    while (object !== null) {
+                        if(Object.getPrototypeOf(object) === this) {
+                            return true;
+                        }
+                        object = Object.getPrototypeOf(object)
+                    }
+                    return false;
+                },
+                enumerable: false
+            });
         }
         // check if this constructor has Montage capabilities
         if(typeof this.extend === "undefined") {
@@ -172,12 +187,14 @@ Object.defineProperty(Montage, "extend", {
         if (CONSTRUCTOR_COMPATIBILITY) {
             // to catch class properties
             var constructorProperty = function(original, constructor, propertyName) {
-                return function() {
+                var deprecationWrapper = function() {
                     if(this === constructor) {
                         console.warn("Deprecated - " + Montage.getInfoForObject(constructor).objectName + "." + propertyName + " should be moved to constructorProperties");
                     }
                     return original.apply(this, arguments);
                 }
+                deprecationWrapper.deprecatedFunction = original;
+                return deprecationWrapper;
             };
             for (var propertyName in prototypeProperties) {
                 if(FUNCTION_PROPERTIES.has(propertyName)) {
@@ -201,12 +218,6 @@ Object.defineProperty(Montage, "extend", {
             Montage.defineProperty(constructor, "create", {
                 value: function() {
                     return new constructor();
-                },
-                enumerable: false
-            });
-            Montage.defineProperty(constructor, "isPrototypeOf", {
-                value: function() {
-                    return constructor.prototype.isPrototypeOf.apply(this,arguments);
                 },
                 enumerable: false
             });
@@ -236,6 +247,18 @@ Object.defineProperty(Montage, "extend", {
     configurable: true,
     enumerable: false
 });
+if (!PROTO_IS_SUPPORTED) {
+    // If the __proto__ property isn't supported than we need to patch up behavior for constructor functions
+    var originalGetPrototypeOf = Object.getPrototypeOf;
+    Object.getPrototypeOf = function getPrototypeOf(object) {
+        if (typeof object === "function" && object.__constructorProto__) {
+            // we have set the __constructorProto__ property of the function to be it's parent constructor
+            return object.__constructorProto__;
+        } else {
+            return originalGetPrototypeOf.apply(Object, arguments);
+        }
+    };
+}
 
 /**
     Creates a new Montage object.
@@ -598,6 +621,53 @@ function getAttributeProperties(proto, attributeName) {
 
 Montage.defineProperty(Montage, "didCreate", {
     value: Function.noop
+});
+
+var getSuper = function(object, method) {
+    var propertyNames, propertyName, property, i, propCount, func, superFunction, superProperty;
+    while (typeof superFunction === "undefined" && object !== null) {
+        propertyNames = Object.getOwnPropertyNames(object);
+        i = 0;
+        propCount = propertyNames.length;
+        for (i; i < propCount; i++) {
+            propertyName = propertyNames[i];
+            property = Object.getOwnPropertyDescriptor(object, propertyName);
+            if ((func = property.value) != null) {
+                if (func === method || (func.deprecatedFunction && func.deprecatedFunction === method)) {
+                    superProperty = Object.getPropertyDescriptor(Object.getPrototypeOf(object), propertyName)
+                    superFunction = superProperty ? superProperty.value : null;
+                    break;
+                }
+            } else if ((func = property.get) != null) {
+                if (func === method || (func.deprecatedFunction && func.deprecatedFunction === method)) {
+                    superProperty = Object.getPropertyDescriptor(Object.getPrototypeOf(object), propertyName)
+                    superFunction = superProperty ? superProperty.get : null;
+                    break;
+                }
+            } else if ((func = property.set) != null) {
+                if (func === method || (func.deprecatedFunction && func.deprecatedFunction === method)) {
+                    superProperty = Object.getPropertyDescriptor(Object.getPrototypeOf(object), propertyName)
+                    superFunction = superProperty ? superProperty.set : null;
+                    break;
+                }
+            }
+        }
+        object = Object.getPrototypeOf(object)
+    }
+    return superFunction;
+}
+
+
+var superImplementation = function super_() {
+    var superFunction = getSuper(this, superImplementation.caller);
+    return typeof superFunction === "function" ? getSuper(this, superImplementation.caller).bind(this) : Function.noop;
+};
+
+Montage.defineProperty(Montage, "super", {
+    get: superImplementation
+});
+Montage.defineProperty(Montage.prototype, "super", {
+    get: superImplementation
 });
 
 /**
