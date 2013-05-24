@@ -52,10 +52,6 @@ var AbstractRadioButton = exports.AbstractRadioButton = Montage.create(AbstractC
         }
     },
 
-    hasTemplate: {
-        value: false
-    },
-
     active: {
         value: false
     },

@@ -2,6 +2,8 @@ var Montage = require("montage").Montage,
     AbstractRadioButton = require("montage/ui/base/abstract-radio-button").AbstractRadioButton,
     MockDOM = require("mocks/dom");
 
+AbstractRadioButton.hasTemplate = false;
+
 describe("test/base/abstract-radio-button-spec", function () {
 
     describe("creation", function () {
