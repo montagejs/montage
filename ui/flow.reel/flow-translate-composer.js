@@ -117,6 +117,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
      */
     _start: {
         value: function(x, y) {
+            TranslateComposer._start.apply(this, arguments);
             //if (this._scrollingMode === "drag") {
                 // TODO: Review using getComputedStyle outside draw cycle
                 var computedStyle = window.getComputedStyle(this._element, null),
@@ -138,15 +139,6 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(Trans
             this._startScroll = this._scroll;
             this._previousScrollDelta = 0;
             this._scrollEnd = null;
-            this.isAnimating = false;
-            if (window.Touch) {
-                document.addEventListener("touchend", this, true);
-                document.addEventListener("touchmove", this, true);
-            } else {
-                document.addEventListener("mouseup", this, true);
-                document.addEventListener("mousemove", this, true);
-            }
-            this._isFirstMove = true;
         }
     },
 
