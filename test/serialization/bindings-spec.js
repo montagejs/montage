@@ -48,7 +48,7 @@ describe("serialization/bindings-spec", function () {
                 "<-": "@source.foo"
             }
         }, {
-           serialization: {
+           components: {
                getObjectByLabel: function(label) {
                    return externalObject;
                }

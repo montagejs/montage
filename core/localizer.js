@@ -19,7 +19,8 @@ var Montage = require("montage").Montage,
     FrbBindings = require("frb/bindings"),
     parse = require("frb/parse"),
     stringify = require("frb/stringify"),
-    expand = require("frb/expand");
+    expand = require("frb/expand"),
+    Scope = require("frb/scope");
 
 // Add all locales to MessageFormat object
 MessageFormat.locale = require("core/messageformat-locale");
@@ -950,12 +951,16 @@ var Message = exports.Message = Montage.create(Montage, /** @lends MessageLocali
 
             if (input.source !== object) {
                 var reference = serializer.addObjectReference(input.source);
-                var syntax = expand(parse(sourcePath), {
+                var scope = new Scope({
                     type: "component",
                     label: reference["@"]
-                }, parameters);
+                });
+                scope.components = serializer;
+                var syntax = expand(parse(sourcePath), scope);
             } else {
-                var syntax = expand(parse(sourcePath), null, parameters);
+                var scope = new Scope();
+                scope.components = serializer;
+                var syntax = expand(parse(sourcePath), scope);
             }
             sourcePath = stringify(syntax);
 
@@ -986,15 +991,15 @@ var createMessageBinding = function(object, prop, key, defaultMessage, data, des
         if (typeof data[d] === "string") {
             message.data.set(d, data[d]);
         } else {
-            Bindings.defineBinding(message.data, ".get('" + d + "')", data[d], {
-                serialization: deserializer
+            Bindings.defineBinding(message.data, ".get('"+ d + "')", data[d], {
+                components: deserializer
             });
         }
     }
 
     if (typeof key === "object") {
         Bindings.defineBinding(message, "key", key, {
-            serialization: deserializer
+            components: deserializer
         });
     } else {
         message.key = key;
@@ -1003,7 +1008,7 @@ var createMessageBinding = function(object, prop, key, defaultMessage, data, des
     if (typeof defaultMessage === "object") {
 //console.log("Define default binding: ", defaultMessage);
         Bindings.defineBinding(message, "defaultMessage", defaultMessage, {
-            serialization: deserializer
+            components: deserializer
         });
 //console.log(FrbBindings.getBindings(message).source, deserializer.getObjectByLabel("source"));
     } else {

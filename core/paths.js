@@ -9,10 +9,9 @@ var assign = require("frb/assign");
 var observe = require("frb/observe");
 var bind = require("frb/bind");
 var compileObserver = require("frb/compile-observer");
+var Scope = require("frb/scope");
 var Observers = require("frb/observers");
 var autoCancelPrevious = Observers.autoCancelPrevious;
-var observeProperty = Observers.observeProperty;
-var observeKey = Observers.observeKey;
 
 var pathChangeDescriptors = new WeakMap();
 
@@ -143,7 +142,7 @@ Montage.defineProperties(Montage, {
             }
 
             var observe = compileObserver(syntax);
-            var cancel = observe(autoCancelPrevious(emit), this);
+            var cancel = observe(autoCancelPrevious(emit), new Scope(this));
 
             descriptor.cancel = cancel;
 
