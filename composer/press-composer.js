@@ -407,6 +407,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends P
             pressEvent.event = event;
             pressEvent.type = name;
             pressEvent.pointer = this._observedPointer;
+            pressEvent.targetElement = event.target;
 
             if (event.changedTouches &&
                 (index = this._changedTouchisObserved(event.changedTouches)) !== false
@@ -491,7 +492,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends P
 var PressEvent = (function(){
     var value, eventProps, typeProps, eventPropDescriptor, typePropDescriptor, i;
 
-    value = Montage.create(Montage, {
+    value = MutableEvent.specialize({
         type: {
             value: "press"
         },

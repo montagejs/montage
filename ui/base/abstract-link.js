@@ -24,18 +24,14 @@ var AbstractLink = exports.AbstractLink = Montage.create(AbstractControl,
      * @param {Event} event
      */
 
-    create: {
-        value: function() {
-            if(this === AbstractLink) {
+    /**
+     * private
+     */
+    constructor: {
+        value: function AbstractLink() {
+            if(this.constructor ===  AbstractLink) {
                 throw new Error("AbstractLink cannot be instantiated.");
-            } else {
-                return AbstractControl.create.apply(this, arguments);
             }
-        }
-    },
-
-    didCreate: {
-        value: function() {
             AbstractControl.didCreate.call(this); // super
             this._pressComposer = PressComposer.create();
             this.addComposer(this._pressComposer);

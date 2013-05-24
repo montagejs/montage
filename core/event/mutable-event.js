@@ -75,7 +75,7 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends Muta
                 constructor = _eventConstructorsByType[type],
                 newEvent;
             if (!constructor) {
-                constructor = function() {
+                constructor = function MutableEvent() {
                 };
                 constructor.prototype = MutableEvent.create()._initPrototypeWithEvent(event);
                 _eventConstructorsByType[type] = constructor;
