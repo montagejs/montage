@@ -10,113 +10,109 @@ var CLASS_PREFIX = "montage-Checkbox";
  * @extends AbstractControl
  */
 var AbstractCheckbox = exports.AbstractCheckbox = Montage.create(AbstractControl,
-    /* @lends AbstractCheckbox# */
-    {
-        /**
-         * Dispatched when the checkbox is activated through a mouse click,
-         * finger tap, or when focused and the spacebar is pressed.
-         * @event action
-         * @memberof AbstractCheckbox
-         * @param {Event} event
-         */
+/* @lends AbstractCheckbox# */
+{
+    /**
+     * Dispatched when the checkbox is activated through a mouse click,
+     * finger tap, or when focused and the spacebar is pressed.
+     * @event action
+     * @memberof AbstractCheckbox
+     * @param {Event} event
+     */
 
-        constructor: {
-            value: function AbstractCheckbox() {
-                if(this.constructor === AbstractCheckbox) {
-                    throw new Error("AbstractCheckbox cannot be instantiated.");
+    constructor: {
+        value: function AbstractCheckbox() {
+            if(this.constructor === AbstractCheckbox) {
+                throw new Error("AbstractCheckbox cannot be instantiated.");
+            }
+            AbstractControl.didCreate.call(this); // super
+            this._pressComposer = PressComposer.create();
+            this.addComposer(this._pressComposer);
+
+            this.defineBindings({
+                // classList management
+                "classList.has('montage--disabled')": {
+                    "<-": "!enabled"
+                },
+                "classList.has('montage--active')": {
+                    "<-": "active"
+                },
+                "classList.has('montage-Checkbox--checked')": {
+                    "<-": "checked"
                 }
-                AbstractControl.didCreate.call(this); // super
-                this._pressComposer = PressComposer.create();
-                this.addComposer(this._pressComposer);
+            });
+        }
+    },
 
-                this.defineBindings({
-                    // classList management
-                    "classList.has('montage--disabled')": {
-                        "<-": "!enabled"
-                    },
-                    "classList.has('montage--active')": {
-                        "<-": "active"
-                    },
-                    "classList.has('montage-Checkbox--checked')": {
-                        "<-": "checked"
-                    }
-                });
-            }
+    active: {
+        value: false
+    },
+
+    _checked: {
+        value: false
+    },
+
+    checked: {
+        set: function(value) {
+            this._checked = value;
         },
+        get: function() {
+            return this._checked;
+        }
+    },
 
-        hasTemplate: {
-            value: false
-        },
+    enabled: {
+        value: true
+    },
 
-        active: {
-            value: false
-        },
+    _pressComposer: {
+        value: null
+    },
 
-        _checked: {
-            value: false
-        },
+    handlePressStart: {
+        value: function(event) {
+            this.active = true;
 
-        checked: {
-            set: function(value) {
-                this._checked = value;
-            },
-            get: function() {
-                return this._checked;
-            }
-        },
-
-        enabled: {
-            value: true
-        },
-
-        _pressComposer: {
-            value: null
-        },
-
-        handlePressStart: {
-            value: function(event) {
-                this.active = true;
-
-                if (event.touch) {
-                    // Prevent default on touchmove so that if we are inside a scroller,
-                    // it scrolls and not the webpage
-                    document.addEventListener("touchmove", this, false);
-                }
-            }
-        },
-
-        /**
-         Handle press event from press composer
-         */
-        handlePress: {
-            value: function(/* event */) {
-                this.active = false;
-
-                if (!this.enabled) {
-                    return;
-                }
-
-                this.dispatchActionEvent();
-                this.checked = !this.checked;
-            }
-        },
-
-        /**
-         Called when all interaction is over.
-         @private
-         */
-        handlePressCancel: {
-            value: function(/* event */) {
-                this.active = false;
-                document.removeEventListener("touchmove", this, false);
-            }
-        },
-
-        prepareForActivationEvents: {
-            value: function() {
-                this._pressComposer.addEventListener("pressStart", this, false);
-                this._pressComposer.addEventListener("press", this, false);
-                this._pressComposer.addEventListener("pressCancel", this, false);
+            if (event.touch) {
+                // Prevent default on touchmove so that if we are inside a scroller,
+                // it scrolls and not the webpage
+                document.addEventListener("touchmove", this, false);
             }
         }
-    });
+    },
+
+    /**
+     Handle press event from press composer
+     */
+    handlePress: {
+        value: function(/* event */) {
+            this.active = false;
+
+            if (!this.enabled) {
+                return;
+            }
+
+            this.dispatchActionEvent();
+            this.checked = !this.checked;
+        }
+    },
+
+    /**
+     Called when all interaction is over.
+     @private
+     */
+    handlePressCancel: {
+        value: function(/* event */) {
+            this.active = false;
+            document.removeEventListener("touchmove", this, false);
+        }
+    },
+
+    prepareForActivationEvents: {
+        value: function() {
+            this._pressComposer.addEventListener("pressStart", this, false);
+            this._pressComposer.addEventListener("press", this, false);
+            this._pressComposer.addEventListener("pressCancel", this, false);
+        }
+    }
+});

@@ -2,6 +2,8 @@ var Montage = require("montage").Montage,
     AbstractCheckbox = require("montage/ui/base/abstract-checkbox").AbstractCheckbox,
     MockDOM = require("mocks/dom");
 
+AbstractCheckbox.hasTemplate = false;
+
 describe("test/base/abstract-checkbox-spec", function () {
 
     describe("creation", function () {
