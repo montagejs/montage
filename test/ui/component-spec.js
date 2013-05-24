@@ -994,6 +994,22 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                         expect(test.componentClassList.element.classList.contains("myclass")).toBeFalsy();
                     })
                 });
+                it("should correctly add more than one class", function() {
+                    test.componentClassList.classList.add("myclass");
+                    test.componentClassList.classList.add("myclass2");
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassList.element.classList.contains("myclass")).toBeTruthy();
+                        expect(test.componentClassList.element.classList.contains("myclass2")).toBeTruthy();
+                    })
+                });
+                it("should correctly remove more than one class", function() {
+                    test.componentClassList.classList.remove("myclass");
+                    test.componentClassList.classList.remove("myclass2");
+                    return testPage.nextDraw().then(function() {
+                        expect(test.componentClassList.element.classList.contains("myclass")).toBeFalsy();
+                        expect(test.componentClassList.element.classList.contains("myclass2")).toBeFalsy();
+                    })
+                });
                 it("should correctly toggle a class", function() {
                     test.componentClassList.classList.toggle("myclass");
                     return testPage.nextDraw().then(function() {

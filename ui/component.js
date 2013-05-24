@@ -2480,7 +2480,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     },
 
     handleClassListRangeChange: {
-        value: function (name) {
+        value: function (plus, minus) {
             this._classListDirty = true;
             this.needsDraw = true;
         }
@@ -2492,11 +2492,15 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 var elementClassList = this.element.classList,
                     classList = this._classList;
 
-                Array.prototype.forEach.call(elementClassList, function (cssClass) {
-                    if (!classList.has(cssClass)) {
-                        elementClassList.remove(cssClass);
+                for (var i = 0, ii = elementClassList.length, className; i < ii; i++) {
+                    className = elementClassList.item(i);
+                    if (!classList.has(className)) {
+                        elementClassList.remove(className);
+                        i--;
+                        ii--;
                     }
-                });
+                }
+
                 this._classList.forEach(function (cssClass) {
                     elementClassList.add(cssClass);
                 });
