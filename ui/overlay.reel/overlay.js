@@ -194,7 +194,7 @@ exports.Overlay = Montage.create(Component, /** @lends module:Overlay# */ {
 
     handlePressStart: {
         value: function(event) {
-            var targetElement = event._event.target,
+            var targetElement = event.targetElement,
                 element = this.element;
 
             if (!element.contains(targetElement)) {
