@@ -44,6 +44,18 @@ describe("core/radio-button-controller-spec", function () {
         expect(controller.value).toBe(inputRadios[1].value);
     });
 
+    it("should reavaluate the checked checkbox when a new checkbox is registered", function() {
+        inputRadios[0].checked = false;
+        inputRadios[0].radioButtonController = controller;
+
+        controller.value = "Canada";
+
+        inputRadios[1].checked = false;
+        inputRadios[1].radioButtonController = controller;
+
+        expect(inputRadios[1].checked).toBe(true);
+    });
+
     it("should change the checked property of all checkboxes sharing the same controller when one checkbox's checked property is set to true", function() {
         for (var i = 0; i < inputRadios.length; i++) {
             inputRadios[i].radioButtonController = controller;
