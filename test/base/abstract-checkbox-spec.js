@@ -34,8 +34,11 @@ describe("test/base/abstract-checkbox-spec", function () {
             beforeEach(function () {
                 aCheckbox = Checkbox.create();
                 aCheckbox.element = MockDOM.element();
-                aCheckbox.checked = false;
                 aCheckbox.prepareForActivationEvents();
+            });
+
+            it("should be false by default", function() {
+                expect(aCheckbox.checked).toBe(false);
             });
 
             it("should be true when the PressComposer fires a pressStart + press", function() {
@@ -46,6 +49,8 @@ describe("test/base/abstract-checkbox-spec", function () {
             });
 
             it("should be false when the PressComposer fires a pressStart + pressCancel", function() {
+                aCheckbox.checked = false;
+
                 aCheckbox._pressComposer.dispatchEventNamed("pressStart");
                 aCheckbox._pressComposer.dispatchEventNamed("pressCancel");
 
