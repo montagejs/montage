@@ -53,8 +53,8 @@ describe("bindings/binding-converter-spec", function() {
     var target, source, bindingDescriptor;
 
     beforeEach(function() {
-        target = Montage.create();
-        source = Montage.create();
+        target = new Montage();
+        source = new Montage();
 
         bindingDescriptor = {
             "<->": "bar",

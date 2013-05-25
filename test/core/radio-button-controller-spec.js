@@ -9,11 +9,11 @@ describe("core/radio-button-controller-spec", function () {
         controller;
 
     beforeEach(function () {
-        controller = RadioButtonController.create();
+        controller = new RadioButtonController();
         controller.content = ["Germany", "Canada", "Spain"];
 
         controller.content.forEach(function(country, index) {
-            inputRadios[index] = InputRadio.create();
+            inputRadios[index] = new InputRadio();
             inputRadios[index].value = country;
         });
     });

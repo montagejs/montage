@@ -107,9 +107,9 @@ describe("bindings/spec", function() {
         describe('that is not one way', function() {
 
             it("must correctly observe a propertyPath where a get/set property follows a value property", function() {
-                var target = Alpha.create(),
-                    source = Alpha.create(),
-                    intermediateValue = Omega.create();
+                var target = new Alpha(),
+                    source = new Alpha(),
+                    intermediateValue = new Omega();
 
                 source.valueOnly = intermediateValue;
                 intermediateValue.bar = "original value";
@@ -127,8 +127,8 @@ describe("bindings/spec", function() {
             });
 
             it("should propagate a change from the source object's source property path to the bound object's bound property path, if the binding is not one way", function() {
-                var target = Alpha.create(),
-                source = Omega.create();
+                var target = new Alpha(),
+                source = new Omega();
 
                 Bindings.defineBinding(target, "foo", {
                     source: source,
@@ -151,8 +151,8 @@ describe("bindings/spec", function() {
             });
 
             it("must not give the specified converter a chance to modify the value being passed from the bound object to the source object", function() {
-                var target = Alpha.create(),
-                        source = Omega.create();
+                var target = new Alpha(),
+                        source = new Omega();
 
                 Bindings.defineBinding(target, "foo", {
                     source: source,
@@ -170,8 +170,8 @@ describe("bindings/spec", function() {
         });
 
         it("must not propagate a change from the source object's source property path to the bound object's bound property path", function() {
-            var target = Alpha.create(),
-            source = Omega.create();
+            var target = new Alpha(),
+            source = new Omega();
 
             Bindings.defineBinding(target, "foo", {
                 source: source,
@@ -189,8 +189,8 @@ describe("bindings/spec", function() {
         });
 
         it("should propagate a change from the bound object's bound property path to the source object's source property path", function() {
-            var target = Alpha.create(),
-            source = Omega.create();
+            var target = new Alpha(),
+            source = new Omega();
 
             Bindings.defineBinding(target, "foo", {
                 source: source,
@@ -203,8 +203,8 @@ describe("bindings/spec", function() {
         });
 
         it("should propagate the original value from the bound object's bound property path to the source object's source property path", function() {
-            var target = Alpha.create(),
-            source = Omega.create();
+            var target = new Alpha(),
+            source = new Omega();
 
             source.bar = "foo";
 
@@ -217,8 +217,8 @@ describe("bindings/spec", function() {
         });
 
         it("should properly install a binding on a property that has only a 'get' in its propertyDescriptor, without making the property 'set-able'", function() {
-            var target = Omega.create(),
-                source = Alpha.create();
+            var target = new Omega(),
+                source = new Alpha();
 
             Bindings.defineBinding(target, "bar", {
                 source: source,
@@ -233,8 +233,8 @@ describe("bindings/spec", function() {
         });
 
         it("should give the specified converter a chance to modify the value being passed from the source object to the bound object", function() {
-            var target = Alpha.create(),
-                    source = Omega.create();
+            var target = new Alpha(),
+                    source = new Omega();
 
             Bindings.defineBinding(target, "foo", {
                 source: source,
@@ -254,8 +254,8 @@ describe("bindings/spec", function() {
             // observe with the expectation that the property may exist later...
             // This makes a lot more sense on arrays than it does on objects, so I'd definitely understand
             // if we flip the desired functionality
-            var target = Alpha.create(),
-                source = Omega.create();
+            var target = new Alpha(),
+                source = new Omega();
 
             source.bar = 42;
 
@@ -268,8 +268,8 @@ describe("bindings/spec", function() {
         });
 
         it("should return undefined when defining a binding along a propertyPath that encounters an undefined property", function() {
-            var target = Alpha.create(),
-                source = Omega.create();
+            var target = new Alpha(),
+                source = new Omega();
 
             source.bar = 42;
 
@@ -282,10 +282,10 @@ describe("bindings/spec", function() {
         });
 
         it("should update a binding to undefined if the path is broken", function() {
-            var target = Alpha.create(),
-                source = Omega.create(),
-                validObjectInPath = Omega.create(),
-                deadEndObjectInPath = Alpha.create();
+            var target = new Alpha(),
+                source = new Omega(),
+                validObjectInPath = new Omega(),
+                deadEndObjectInPath = new Alpha();
 
             validObjectInPath.bar = "yay!";
             deadEndObjectInPath.foo = "well...this is foo here";
@@ -303,8 +303,8 @@ describe("bindings/spec", function() {
         });
 
         it("must throw an error when trying to use a property on a target as the source of a binding at a different path of the same source", function() {
-            var target = Alpha.create(),
-                source = Omega.create();
+            var target = new Alpha(),
+                source = new Omega();
 
             Bindings.defineBinding(target, "foo", {
                 source: source,
@@ -325,9 +325,9 @@ describe("bindings/spec", function() {
         });
 
         it("must throw an error when trying to use a property on a target as the source of a binding to another object", function() {
-            var target = Alpha.create(),
-                source = Omega.create(),
-                secondBoundObject = Omega.create();
+            var target = new Alpha(),
+                source = new Omega(),
+                secondBoundObject = new Omega();
 
             Bindings.defineBinding(target, "foo", {
                 source: source,
@@ -349,7 +349,7 @@ describe("bindings/spec", function() {
         describe("when bound to the same object", function() {
 
             it("should work as expected", function() {
-                var target = Alpha.create();
+                var target = new Alpha();
 
                 target.valueOnly = "startValue";
 
@@ -382,9 +382,9 @@ describe("bindings/spec", function() {
             FormatBar = Montage.specialize( {boldMode: {value: null}});
             DocumentController = Montage.specialize( {boldMode: {value: null}});
             TextItem = Montage.specialize( {boldMode: {value: null}});
-            formatBar = FormatBar.create();
-            documentController = DocumentController.create();
-            textItem = TextItem.create();
+            formatBar = new FormatBar();
+            documentController = new DocumentController();
+            textItem = new TextItem();
 
             // [formatBar] <====> [DocumentController] ----> [TextItem]
             Bindings.defineBinding(formatBar, "boldMode", {
@@ -427,7 +427,7 @@ describe("bindings/spec", function() {
     describe("involving strings", function() {
 
         it("should probably not bother observing an immutable string for a change at its length property", function() {
-            var target = Alpha.create(),
+            var target = new Alpha(),
                 source = "test";
 
                 Bindings.defineBinding(target, "foo", {
@@ -439,8 +439,8 @@ describe("bindings/spec", function() {
         });
 
         it("should propagate a change to a string found at a property when the string's length is being observed", function() {
-            var target = Alpha.create(),
-                source = Alpha.create();
+            var target = new Alpha(),
+                source = new Alpha();
 
                 source.bar = "test";
 
@@ -455,8 +455,8 @@ describe("bindings/spec", function() {
         });
 
         it("should correctly observe the length property of an object if the object at that property was previously a string", function() {
-            var target = Alpha.create(),
-                source = Alpha.create();
+            var target = new Alpha(),
+                source = new Alpha();
 
                 source.bar = "test";
 
@@ -484,9 +484,9 @@ describe("bindings/spec", function() {
                 FormatBar = Montage.specialize( {boldMode: {value: null}});
                 DocumentController = Montage.specialize( {boldMode: {value: null}});
                 TextItem = Montage.specialize( {boldMode: {value: null}});
-                formatBar = FormatBar.create();
-                documentController = DocumentController.create();
-                textItem = TextItem.create();
+                formatBar = new FormatBar();
+                documentController = new DocumentController();
+                textItem = new TextItem();
 
                 // [formatBar] <====> [DocumentController] ----> [TextItem]
                 Bindings.defineBinding(formatBar, "boldMode", {
@@ -529,8 +529,8 @@ describe("bindings/spec", function() {
 
         it("should not go out of its way to protect you from mutations to an object on the left making their way over to the right", function() {
 
-            var target = Alpha.create(),
-            source = Omega.create();
+            var target = new Alpha(),
+            source = new Omega();
 
             source.bar = ["a", "b", "c"];
 
@@ -557,8 +557,8 @@ describe("bindings/spec", function() {
 
         it("should propagate additions from the bound array to the source propertyPath", function() {
 
-            var target = Alpha.create(),
-            source = Omega.create();
+            var target = new Alpha(),
+            source = new Omega();
 
             source.bar = ["a", "b", "c"];
 
@@ -578,8 +578,8 @@ describe("bindings/spec", function() {
 
         it("should propagate deletions from the bound array to the source propertyPath", function() {
 
-            var target = Alpha.create(),
-            source = Omega.create();
+            var target = new Alpha(),
+            source = new Omega();
 
             source.bar = ["a", "b", "c"];
 
@@ -596,8 +596,8 @@ describe("bindings/spec", function() {
         });
 
         it("should propagate a change from the bound array index contents to the source propertyPath using splice", function() {
-            var target = Alpha.create(),
-            source = Omega.create();
+            var target = new Alpha(),
+            source = new Omega();
 
             source.bar = ["a", "b", "c"];
 
@@ -613,8 +613,8 @@ describe("bindings/spec", function() {
         });
 
         it("should propagate a change from the bound array index contents to the source propertyPath using set", function() {
-            var target = Alpha.create(),
-            source = Omega.create();
+            var target = new Alpha(),
+            source = new Omega();
 
             source.bar = ["a", "b", "c"];
 
@@ -628,8 +628,8 @@ describe("bindings/spec", function() {
         });
 
         it("should propagate a change from the bound array index contents to the source propertyPath using set when the array changes", function() {
-            var target = Alpha.create(),
-            source = Omega.create();
+            var target = new Alpha(),
+            source = new Omega();
 
             source.bar = ["a", "b", "c"];
 
@@ -643,9 +643,9 @@ describe("bindings/spec", function() {
         });
 
         it("should propagate changes to other objects bound ", function() {
-            var a = Alpha.create(),
-            b = Omega.create(),
-            c = Alpha.create();
+            var a = new Alpha(),
+            b = new Omega(),
+            c = new Alpha();
 
             a.foo = ["a", "b", "c"];
 
@@ -665,8 +665,8 @@ describe("bindings/spec", function() {
         });
 
         it ("should affect and emit changes on both sides of a two-way binding", function() {
-            var target = Alpha.create(),
-                source = Omega.create();
+            var target = new Alpha(),
+                source = new Omega();
 
             var myArray = ["a", "b", "c"];
 
@@ -701,8 +701,8 @@ describe("bindings/spec", function() {
         });
 
         it("should remove the last element on a pop, multiple times, when that array index content is bound", function() {
-            var target = Alpha.create(),
-            source = Omega.create();
+            var target = new Alpha(),
+            source = new Omega();
 
             source.bar = ["a", "b", "c"];
 
@@ -720,8 +720,8 @@ describe("bindings/spec", function() {
         });
 
         it("should propagate a change from the bound object when the property path includes an array index and that element is removed", function() {
-            var target = Alpha.create(),
-                    source = Omega.create();
+            var target = new Alpha(),
+                    source = new Omega();
 
             source.bar = [{x: 1}];
 
@@ -735,8 +735,8 @@ describe("bindings/spec", function() {
         });
 
         it("must not allow an outright replacement of the value on the target to affect the rightObject in a one wayy binding", function() {
-            var target = Alpha.create(),
-                source = Omega.create(),
+            var target = new Alpha(),
+                source = new Omega(),
                 originalObject = ["a", "b", "c"],
                 newObjectForSource = ["x", "y", "z"];
 
@@ -754,8 +754,8 @@ describe("bindings/spec", function() {
         });
 
         it("should correctly observe a nonexistent index", function() {
-            var target = Alpha.create(),
-                source = Omega.create();
+            var target = new Alpha(),
+                source = new Omega();
 
             source.bar = [];
 
@@ -773,8 +773,8 @@ describe("bindings/spec", function() {
 
             it("should propagate a change to the length when pushing onto to the array", function() {
 
-                var target = Alpha.create(),
-                source = Omega.create();
+                var target = new Alpha(),
+                source = new Omega();
 
                 source.bar = ["a", "b", "c"];
 
@@ -791,8 +791,8 @@ describe("bindings/spec", function() {
             });
 
             it("should propagate a change to the length when popping from the array", function() {
-                var target = Alpha.create(),
-                source = Omega.create();
+                var target = new Alpha(),
+                source = new Omega();
 
                 source.bar = ["a", "b", "c"];
 
@@ -809,8 +809,8 @@ describe("bindings/spec", function() {
             });
 
             it("should propagate a change to the length when shifting from the array", function() {
-                var target = Alpha.create(),
-                source = Omega.create();
+                var target = new Alpha(),
+                source = new Omega();
 
                 source.bar = ["a", "b", "c"];
 
@@ -827,8 +827,8 @@ describe("bindings/spec", function() {
             });
 
             it("should propagate a change to the length when unshifting to the array", function() {
-                var target = Alpha.create(),
-                source = Omega.create();
+                var target = new Alpha(),
+                source = new Omega();
 
                 source.bar = ["a", "b", "c"];
 
@@ -845,8 +845,8 @@ describe("bindings/spec", function() {
             });
 
             it("should propagate a change to the length when splicing to add to the array", function() {
-                var target = Alpha.create(),
-                source = Omega.create();
+                var target = new Alpha(),
+                source = new Omega();
 
                 source.bar = ["a", "b", "c"];
 
@@ -863,8 +863,8 @@ describe("bindings/spec", function() {
             });
 
             it("should propagate a change to the length when splicing to remove from the array", function() {
-                var target = Alpha.create(),
-                source = Omega.create();
+                var target = new Alpha(),
+                source = new Omega();
 
                 source.bar = ["a", "b", "c"];
 
@@ -887,8 +887,8 @@ describe("bindings/spec", function() {
             describe("with no propertyPath provided to the 'some' function", function() {
 
                 it("should propagate a change from false to true", function() {
-                    var target = Alpha.create(),
-                    source = Omega.create();
+                    var target = new Alpha(),
+                    source = new Omega();
 
                     source.bar = [0, false, null];
 
@@ -902,8 +902,8 @@ describe("bindings/spec", function() {
                 });
 
                 it("should propagate a change from true to false", function() {
-                    var target = Alpha.create(),
-                    source = Omega.create();
+                    var target = new Alpha(),
+                    source = new Omega();
 
                     source.bar = [0, false, true];
 
@@ -917,8 +917,8 @@ describe("bindings/spec", function() {
                 });
 
                 it("should propagate the addition of a true value to an otherwise false array", function() {
-                    var target = Alpha.create(),
-                    source = Omega.create();
+                    var target = new Alpha(),
+                    source = new Omega();
 
                     source.bar = [0, false, null];
 
@@ -932,8 +932,8 @@ describe("bindings/spec", function() {
                 });
 
                 it("should propagate the removal of a true value from an otherwise false array", function() {
-                    var target = Alpha.create(),
-                    source = Omega.create();
+                    var target = new Alpha(),
+                    source = new Omega();
 
                     source.bar = [0, false, null, true];
 
@@ -951,8 +951,8 @@ describe("bindings/spec", function() {
             describe("with a propertyPath provided to the 'some' function", function() {
 
                 it("should propagate a change from false to true when a false object is pushed to a path after establishing the binding, and then changed to true", function() {
-                    var target = Alpha.create(),
-                    source = Omega.create();
+                    var target = new Alpha(),
+                    source = new Omega();
 
                     var myObj = {a: 0};
                     source.bar = [{a: false}, {a: null}];
@@ -968,8 +968,8 @@ describe("bindings/spec", function() {
                 });
 
                 it("should propagate a change from false to true", function() {
-                    var target = Alpha.create(),
-                    source = Omega.create();
+                    var target = new Alpha(),
+                    source = new Omega();
 
                     source.bar = [{a: {b: 0}}, {a: {b: false}}, {a: {b: null}}];
 
@@ -983,8 +983,8 @@ describe("bindings/spec", function() {
                 });
 
                 it("should propagate a change from true to false", function() {
-                    var target = Alpha.create(),
-                    source = Omega.create();
+                    var target = new Alpha(),
+                    source = new Omega();
 
                     source.bar = [{a: {b: 0}}, {a: {b: false}}, {a: {b: true}}];
 
@@ -998,8 +998,8 @@ describe("bindings/spec", function() {
                 });
 
                 it("should propagate the addition of a true value to an otherwise false array", function() {
-                    var target = Alpha.create(),
-                    source = Omega.create();
+                    var target = new Alpha(),
+                    source = new Omega();
 
                     source.bar = [{a: {b: 0}}, {a: {b: false}}, {a: {b: null}}];
 
@@ -1013,8 +1013,8 @@ describe("bindings/spec", function() {
                 });
 
                 it("should propagate the removal of a true value from an otherwise false array", function() {
-                    var target = Alpha.create(),
-                    source = Omega.create();
+                    var target = new Alpha(),
+                    source = new Omega();
 
                     source.bar = [{a: {b: 0}}, {a: {b: false}}, {a: {b: null}}, {a: {b: true}}];
 
@@ -1028,8 +1028,8 @@ describe("bindings/spec", function() {
                 });
 
                 it("should propagate a change from false to true when the array is initially null.", function() {
-                    var target = Alpha.create(),
-                    source = Omega.create();
+                    var target = new Alpha(),
+                    source = new Omega();
 
                     source.bar = null;
 
@@ -1050,8 +1050,8 @@ describe("bindings/spec", function() {
 
     describe("bindings deletion", function() {
         it("should remove a binding on an single level property path", function() {
-            var target = Alpha.create(),
-            source = Omega.create();
+            var target = new Alpha(),
+            source = new Omega();
 
             Bindings.defineBinding(target, "foo", {
                 source: source,
@@ -1067,8 +1067,8 @@ describe("bindings/spec", function() {
         });
 
         it("should remove a binding on an multiple level property path", function() {
-            var target = Alpha.create(),
-            source = Omega.create();
+            var target = new Alpha(),
+            source = new Omega();
 
             Bindings.defineBinding(target, "foo", {
                 source: source,
@@ -1084,8 +1084,8 @@ describe("bindings/spec", function() {
         });
 
         it("should remove a binding on an property path that includes an array index", function() {
-            var target = Alpha.create(),
-            source = Omega.create();
+            var target = new Alpha(),
+            source = new Omega();
 
             Bindings.defineBinding(target, "foo", {
                 source: source,
@@ -1105,10 +1105,10 @@ describe("bindings/spec", function() {
         it("should call \"bindings\" deserialization unit", function() {
             var Alpha = Montage.specialize( {foo: {value: null}}),
                 Omega = Montage.specialize( {bar: {value: null}}),
-                target = Alpha.create(),
-                source = Omega.create(),
-                serializer = Serializer.create().initWithRequire(require),
-                deserializer = Deserializer.create();
+                target = new Alpha(),
+                source = new Omega(),
+                serializer = new Serializer().initWithRequire(require),
+                deserializer = new Deserializer();
 
             Bindings.defineBinding(target, "foo", {
                 source: source,
@@ -1133,9 +1133,9 @@ describe("bindings/spec", function() {
         it("should serialize a binding to a shorthand format", function() {
             var Alpha = Montage.specialize( {foo: {value: null}}),
                 Omega = Montage.specialize( {bar: {value: null}}),
-                target = Alpha.create(),
-                source = Omega.create(),
-                serializer = Serializer.create().initWithRequire(require),
+                target = new Alpha(),
+                source = new Omega(),
+                serializer = new Serializer().initWithRequire(require),
                 serialization,
                 expectedSerialization = {
                     "root": {
@@ -1163,7 +1163,7 @@ describe("bindings/spec", function() {
         });
 
         it("should deserialize a one way binding", function() {
-            var deserializer = Deserializer.create(),
+            var deserializer = new Deserializer(),
                 serialization = {
                     "root": {
                         "prototype": "montage",
@@ -1201,7 +1201,7 @@ describe("bindings/spec", function() {
         });
 
         it("should deserialize a twoway binding", function() {
-            var deserializer = Deserializer.create(),
+            var deserializer = new Deserializer(),
                 serialization = {
                     "root": {
                         "prototype": "montage",

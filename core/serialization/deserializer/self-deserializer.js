@@ -10,7 +10,7 @@ var SelfDeserializer = Montage.specialize( {
 
     create: {
         value: function() {
-            return Montage.create(this);
+            return new this();
         }
     },
 

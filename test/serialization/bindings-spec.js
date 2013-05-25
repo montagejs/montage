@@ -13,7 +13,7 @@ var Type = exports.Type = Montage.specialize( {
 describe("serialization/bindings-spec", function () {
 
     it("should serialize a simple binding in normal form", function () {
-        var object = Type.create();
+        var object = new Type();
         Bindings.defineBindings(object, {
             "bar": {
                 "<-": "foo"
@@ -38,8 +38,8 @@ describe("serialization/bindings-spec", function () {
     });
 
     it("should serialize a binding that references external objects", function () {
-        var object = Type.create();
-        var externalObject = Montage.create();
+        var object = new Type();
+        var externalObject = new Montage();
 
         externalObject.foo = 10;
 

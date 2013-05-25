@@ -7,7 +7,7 @@ describe("test/base/abstract-text-field-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractTextField.create();
+                new AbstractTextField();
             }).toThrow();
         });
 
@@ -15,7 +15,7 @@ describe("test/base/abstract-text-field-spec", function () {
             var TextFieldSubtype = AbstractTextField.specialize( {});
             var aTextFieldSubtype = null;
             expect(function () {
-                aTextFieldSubtype = TextFieldSubtype.create();
+                aTextFieldSubtype = new TextFieldSubtype();
             }).not.toThrow();
             expect(aTextFieldSubtype).toBeDefined();
         });
@@ -26,13 +26,13 @@ describe("test/base/abstract-text-field-spec", function () {
             aTextField;
 
         beforeEach(function () {
-            aTextField = TextField.create();
+            aTextField = new TextField();
             aTextField.element = MockDOM.element();
         });
 
         describe("value", function () {
             beforeEach(function () {
-                aTextField = TextField.create();
+                aTextField = new TextField();
                 aTextField.element = MockDOM.element();
                 aTextField.enterDocument(true);
             });
@@ -60,7 +60,7 @@ describe("test/base/abstract-text-field-spec", function () {
 
         describe("enabled", function () {
             beforeEach(function () {
-                aTextField = TextField.create();
+                aTextField = new TextField();
                 aTextField.element = MockDOM.element();
                 aTextField.prepareForActivationEvents();
             });
@@ -92,7 +92,7 @@ describe("test/base/abstract-text-field-spec", function () {
             aTextField;
 
         beforeEach(function () {
-            aTextField = TextField.create();
+            aTextField = new TextField();
             aTextField.element = MockDOM.element();
         });
 
@@ -134,7 +134,7 @@ describe("test/base/abstract-text-field-spec", function () {
             aTextField, anElement, listener;
 
         beforeEach(function () {
-            aTextField = TextField.create();
+            aTextField = new TextField();
             anElement = MockDOM.element();
             listener = {
                 handleEvent: function() {}

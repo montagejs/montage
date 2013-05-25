@@ -124,7 +124,7 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
 
     didCreate: {
         value: function() {
-            this._pressComposer = PressComposer.create();
+            this._pressComposer = new PressComposer();
         }
     },
 

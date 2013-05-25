@@ -16,7 +16,7 @@ var MontageBuilder = Montage.specialize.call(Builder, {
 
     createElementReference: {
         value: function(id) {
-            return MontageAst.ElementReference.create()
+            return new MontageAst.ElementReference()
                 .initWithRootAndId(this._root, id);
         }
     }

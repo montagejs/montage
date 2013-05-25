@@ -242,7 +242,7 @@ var DocumentResources = Montage.specialize({
             var documentResources = _document.__montage_resources__;
 
             if (!documentResources) {
-                documentResources = _document.__montage_resources__ = DocumentResources.create().initWithDocument(_document);
+                documentResources = _document.__montage_resources__ = new DocumentResources().initWithDocument(_document);
             }
 
             return documentResources;

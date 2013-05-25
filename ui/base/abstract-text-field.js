@@ -27,7 +27,7 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
             }
             AbstractControl.didCreate.call(this); // super
 
-            this._keyComposer = KeyComposer.create();
+            this._keyComposer = new KeyComposer();
             this._keyComposer.component = this;
             this._keyComposer.keys = "enter";
             this.addComposer(this._keyComposer);

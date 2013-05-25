@@ -73,8 +73,8 @@ describe('core/undo-manager-spec', function () {
     var undoManager, roster;
 
     beforeEach(function () {
-        undoManager = UndoManager.create();
-        roster = Roster.create().initWithUndoManager(undoManager);
+        undoManager = new UndoManager();
+        roster = new Roster().initWithUndoManager(undoManager);
     });
 
     describe("initially", function () {

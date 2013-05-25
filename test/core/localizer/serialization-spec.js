@@ -50,7 +50,7 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
     });
 
     function testDeserializer(object, callback) {
-        var deserializer = Deserializer.create(),
+        var deserializer = new Deserializer(),
             objects, latch,
             serializationString = JSON.stringify(object);
 
@@ -68,7 +68,7 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
     }
 
     function testSerializer(object, callback) {
-        var serializer = Serializer.create().initWithRequire(require),
+        var serializer = new Serializer().initWithRequire(require),
             objects;
 
         testDeserializer(object, function(o) {
@@ -244,7 +244,7 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
                         objects = o;
                     });
 
-                    serializer = Serializer.create().initWithRequire(require);
+                    serializer = new Serializer().initWithRequire(require);
                 });
 
                 it("doesn't create a localizations block when there are none", function() {

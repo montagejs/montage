@@ -125,7 +125,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     borderTop = this.convertCssPixelsPropertyStringToNumber(computedStyle.getPropertyValue("border-top-width")),
                     paddingLeft = this.convertCssPixelsPropertyStringToNumber(computedStyle.getPropertyValue("padding-left")),
                     paddingTop = this.convertCssPixelsPropertyStringToNumber(computedStyle.getPropertyValue("padding-top")),
-                    point = convertPointFromPageToNode(this._element, Point.create().init(x, y));
+                    point = convertPointFromPageToNode(this._element, new Point().init(x, y));
 
                 this._pointerStartX = this._pointerX = point.x - borderLeft - paddingLeft;
                 this._pointerStartY = this._pointerY = point.y - borderTop - paddingTop;

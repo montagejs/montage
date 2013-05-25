@@ -41,14 +41,14 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
                 throw new Error("AbstractToggleButton cannot be instantiated.");
             }
             AbstractControl.didCreate.call(this); // super
-            this._pressComposer = PressComposer.create();
+            this._pressComposer = new PressComposer();
             this._pressComposer.defineBinding("longPressThreshold ", {
                 "<-": "holdThreshold",
                 source: this
             });
             this.addComposer(this._pressComposer);
 
-            this._keyComposer = KeyComposer.create();
+            this._keyComposer = new KeyComposer();
             this._keyComposer.component = this;
             this._keyComposer.keys = "space";
             this.addComposer(this._keyComposer);

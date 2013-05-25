@@ -117,14 +117,14 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function(testP
                 });
 
                 it("should return no activeTarget when encountering a self-referential cycle", function () {
-                    var foo = Montage.create();
+                    var foo = new Montage();
                     foo.nextTarget = foo;
                     expect(eventManager._findActiveTarget(foo)).toBeNull();
                 });
 
                 it("should return no activeTarget when encountering a distant cycle", function () {
-                    var foo = Montage.create();
-                    var bar = Montage.create();
+                    var foo = new Montage();
+                    var bar = new Montage();
                     foo.nextTarget = bar;
                     bar.nextTarget = foo;
                     expect(eventManager._findActiveTarget(foo)).toBeNull();

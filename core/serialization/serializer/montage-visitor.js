@@ -172,7 +172,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
             this.builder.push(builderObject);
 
             if (typeof object.serializeSelf === "function") {
-                selfSerializer = SelfSerializer.create().
+                selfSerializer = new SelfSerializer().
                     initWithMalkerAndVisitorAndObject(
                         malker, this, object, builderObject);
                 substituteObject = object.serializeSelf(selfSerializer);
@@ -247,7 +247,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
             this.builder.push(propertiesObject);
 
             if (typeof object.serializeProperties === "function") {
-                propertiesSerializer = PropertiesSerializer.create()
+                propertiesSerializer = new PropertiesSerializer()
                     .initWithMalkerAndVisitorAndObject(malker, this, object);
                 object.serializeProperties(propertiesSerializer);
             } else {
@@ -326,7 +326,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
                 return;
             }
 
-            unitSerializer = UnitSerializer.create()
+            unitSerializer = new UnitSerializer()
                 .initWithMalkerAndVisitorAndObject(malker, this, object);
 
             value = unit(unitSerializer, object);

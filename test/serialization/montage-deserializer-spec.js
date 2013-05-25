@@ -43,7 +43,7 @@ describe("serialization/montage-deserializer-spec", function() {
     var deserializer;
 
     beforeEach(function() {
-        deserializer = Deserializer.create();
+        deserializer = new Deserializer();
     });
 
     describe("Montage Objects Deserialization", function() {
@@ -253,7 +253,7 @@ describe("serialization/montage-deserializer-spec", function() {
                 },
                 serializationString = JSON.stringify(serialization),
                 instances = {
-                    root: objects.OneProp.create()
+                    root: new objects.OneProp()
                 };
 
             deserializer.init(
@@ -959,8 +959,8 @@ describe("serialization/montage-deserializer-spec", function() {
     });
 
     it("should load the correct module even if it's from a diferent package but with the same name", function() {
-        var deserializer1 = Deserializer.create(),
-            deserializer2 = Deserializer.create(),
+        var deserializer1 = new Deserializer(),
+            deserializer2 = new Deserializer(),
             serialization = {
                 root: {
                     prototype: "ui/main.reel"

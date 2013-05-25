@@ -88,7 +88,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
      */
     init: {
         value: function(_require, objectRequires) {
-            this.moduleLoader = ModuleLoader.create()
+            this.moduleLoader = new ModuleLoader()
                                  .init(_require, objectRequires);
 
             return this;
@@ -219,7 +219,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
             var value;
 
             if (typeof object.deserializeProperties === "function") {
-                var propertiesDeserializer = PropertiesDeserializer.create()
+                var propertiesDeserializer = new PropertiesDeserializer()
                     .initWithReviverAndObjects(this, context);
                 value = object.deserializeProperties(propertiesDeserializer);
             } else {
@@ -236,7 +236,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
         value: function(object, objectDesc, context, label) {
             var substituteObject;
 
-            var selfDeserializer = SelfDeserializer.create()
+            var selfDeserializer = new SelfDeserializer()
                 .initWithObjectAndObjectDescriptorAndContextAndUnitNames(object, objectDesc, context, this._unitNames);
             substituteObject = object.deserializeSelf(selfDeserializer);
 
@@ -347,7 +347,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
                 var unitNames = unitsDesc.unitNames;
 
                 for (var j = 0, unitName; unitName = unitNames[j]; j++) {
-                    var unitDeserializer = UnitDeserializer.create()
+                    var unitDeserializer = new UnitDeserializer()
                         .initWithContext(context);
 
                     if (unitName in unitsDesc.objectDesc) {

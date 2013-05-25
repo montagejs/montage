@@ -445,7 +445,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
         set: function (content) {
             // TODO if we provide an implicit content controller, it should be
             // excluded from a serialization of the repetition.
-            this.contentController = RangeController.create().initWithContent(content);
+            this.contentController = new RangeController().initWithContent(content);
         }
     },
 
@@ -952,7 +952,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
     _createIteration: {
         value: function () {
             var self = this,
-                iteration = this.Iteration.create().initWithRepetition(this);
+                iteration = new this.Iteration().initWithRepetition(this);
 
             this._iterationCreationPromise = this._iterationCreationPromise
             .then(function() {
@@ -1595,7 +1595,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
 
     /**
      * The Iteration type for this repetition.  The repetition calls
-     * <code>this.Iteration.create()</code> to make new instances of
+     * <code>new this.Iteration()</code> to make new instances of
      * iterations, so a child class of <code>Repetition</code> may provide an
      * alternate implementation of <code>Iteration</code>.
      */

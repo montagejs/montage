@@ -207,7 +207,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
             var propertyBlueprint = this.blueprint.propertyBlueprintForName(propertyName);
             var storageKey = "_" + propertyBlueprint.name;
             if (value == null && propertyBlueprint.denyDelete) {
-                throw Exception.create().initWithMessageTargetAndMethod("Deny Delete", this, propertyBlueprint.name);
+                throw new Exception().initWithMessageTargetAndMethod("Deny Delete", this, propertyBlueprint.name);
             } else {
                 this[storageKey] = value;
             }

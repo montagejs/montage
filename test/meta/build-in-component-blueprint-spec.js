@@ -31,13 +31,13 @@ describe("meta/build-in-component-blueprint-spec", function () {
         text;
 
     beforeEach(function () {
-//        textinput = Montage.create(TextInput);
-        condition = Montage.create(Condition);
-        loader = Montage.create(Loader);
-        repetition = Montage.create(Repetition);
-        slot = Montage.create(Slot);
-        substitution = Montage.create(Substitution);
-        text = Montage.create(Text);
+//        textinput = new TextInput();
+        condition = new Condition();
+        loader = new Loader();
+        repetition = new Repetition();
+        slot = new Slot();
+        substitution = new Substitution();
+        text = new Text();
     });
 //
 //    describe("test text input blueprint", function () {
@@ -45,7 +45,7 @@ describe("meta/build-in-component-blueprint-spec", function () {
 //            var blueprintPromise = textinput.blueprint;
 //            return blueprintPromise.then(function (blueprint) {
 //                expect(blueprint).toBeTruthy();
-//                var serializer = Serializer.create().initWithRequire(require);
+//                var serializer = new Serializer().initWithRequire(require);
 //                var serializedDescription = serializer.serializeObject(blueprint);
 //                console.log(serializedDescription);
 //              });

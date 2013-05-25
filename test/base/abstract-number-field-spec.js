@@ -13,7 +13,7 @@ describe("test/base/abstract-number-field-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractNumberField.create();
+                new AbstractNumberField();
             }).toThrow();
         });
 
@@ -21,7 +21,7 @@ describe("test/base/abstract-number-field-spec", function () {
             var NumberFieldSubtype = AbstractNumberField.specialize( {constructor: function NumberFieldSubtype() {}});
             var aNumberFieldSubtype = null;
             expect(function () {
-                aNumberFieldSubtype = NumberFieldSubtype.create();
+                aNumberFieldSubtype = new NumberFieldSubtype();
             }).not.toThrow();
             expect(aNumberFieldSubtype).toBeDefined();
         });
@@ -32,7 +32,7 @@ describe("test/base/abstract-number-field-spec", function () {
             aNumberField;
 
         beforeEach(function () {
-            aNumberField = NumberField.create();
+            aNumberField = new NumberField();
             aNumberField.element = MockDOM.element();
             aNumberField._numberFieldTextFieldComponent = MockComponent.component();
             aNumberField._numberFieldMinusComponent = MockComponent.component();
@@ -210,7 +210,7 @@ describe("test/base/abstract-number-field-spec", function () {
             aNumberField;
 
         beforeEach(function () {
-            aNumberField = NumberField.create();
+            aNumberField = new NumberField();
             aNumberField.element = MockDOM.element();
             aNumberField._numberFieldTextFieldComponent = MockComponent.component();
             aNumberField._numberFieldMinusComponent = MockComponent.component();
@@ -312,7 +312,7 @@ describe("test/base/abstract-number-field-spec", function () {
             aNumberField;
 
         beforeEach(function () {
-            aNumberField = NumberField.create();
+            aNumberField = new NumberField();
             aNumberField.element = MockDOM.element();
             aNumberField._numberFieldTextFieldComponent = MockComponent.component();
             aNumberField._numberFieldMinusComponent = MockComponent.component();

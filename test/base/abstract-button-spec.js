@@ -8,14 +8,14 @@ describe("test/base/abstract-button-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractButton.create();
+                new AbstractButton();
             }).toThrow();
         });
         it("can be instantiated as a subtype", function () {
             var ButtonSubtype = AbstractButton.specialize( {});
             var aButtonSubtype;
             expect(function () {
-                aButtonSubtype = ButtonSubtype.create();
+                aButtonSubtype = new ButtonSubtype();
             }).not.toThrow();
             expect(aButtonSubtype).toBeDefined();
         });
@@ -24,7 +24,7 @@ describe("test/base/abstract-button-spec", function () {
         var Button = AbstractButton.specialize( {}),
             aButton;
         beforeEach(function () {
-            aButton = Button.create();
+            aButton = new Button();
             aButton.element = MockDOM.element();
         });
         it("should keep the press composer's longPressThreshold in sync with holdThreshold", function () {
@@ -60,7 +60,7 @@ describe("test/base/abstract-button-spec", function () {
             var Button = AbstractButton.specialize( {}),
                 aButton;
             beforeEach(function () {
-                aButton = Button.create();
+                aButton = new Button();
                 aButton.element = MockDOM.element();
             });
 
@@ -85,7 +85,7 @@ describe("test/base/abstract-button-spec", function () {
             var Button = AbstractButton.specialize( {}),
                 aButton, anElement;
             beforeEach(function () {
-                aButton = Button.create();
+                aButton = new Button();
                 anElement = MockDOM.element();
             });
             it("should set tabindex if needed", function () {
@@ -114,7 +114,7 @@ describe("test/base/abstract-button-spec", function () {
             var Button = AbstractButton.specialize( {}),
                 aButton, anElement, listener;
             beforeEach(function () {
-                aButton = Button.create();
+                aButton = new Button();
                 anElement = MockDOM.element();
                 listener = {
                     handleEvent: function() {}

@@ -14,7 +14,7 @@ var MontageInterpreter = Montage.specialize.call(Interpreter, {
                 throw new Error("Function 'require' missing.");
             }
 
-            this._reviver = MontageReviver.create()
+            this._reviver = new MontageReviver()
                 .init(_require, objectRequires);
 
             return this;
@@ -25,7 +25,7 @@ var MontageInterpreter = Montage.specialize.call(Interpreter, {
         value: function(serialization, objects, element) {
             var context;
 
-            context = MontageContext.create()
+            context = new MontageContext()
                 .init(serialization, this._reviver, objects, element);
 
             return context.getObjects();

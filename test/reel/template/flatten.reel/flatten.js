@@ -65,6 +65,6 @@ var Flatten = exports.Flatten = Component.specialize( {
             filename =  moduleId.split("/").pop();
             templateModuleId = info.moduleId + ".reel/" + filename + ".html"
         }
-        Template.create().initWithModuleId(templateModuleId, onTemplateLoad);
+        new Template().initWithModuleId(templateModuleId, onTemplateLoad);
     }}
 });

@@ -10,7 +10,7 @@ describe("test/base/abstract-image-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractImage.create();
+                new AbstractImage();
             }).toThrow();
         });
 
@@ -18,7 +18,7 @@ describe("test/base/abstract-image-spec", function () {
             var ImageSubtype = AbstractImage.specialize( {});
             var anImageSubtype;
             expect(function () {
-                anImageSubtype = ImageSubtype.create();
+                anImageSubtype = new ImageSubtype();
             }).not.toThrow();
             expect(anImageSubtype).toBeDefined();
         });
@@ -29,13 +29,13 @@ describe("test/base/abstract-image-spec", function () {
             anImage;
 
         beforeEach(function () {
-            anImage = Image.create();
+            anImage = new Image();
             anImage.element = MockDOM.element();
         });
 
         describe("src", function () {
             beforeEach(function () {
-                anImage = Image.create();
+                anImage = new Image();
                 anImage.element = MockDOM.element();
             });
 
@@ -53,7 +53,7 @@ describe("test/base/abstract-image-spec", function () {
             anImage;
 
         beforeEach(function () {
-            anImage = Image.create();
+            anImage = new Image();
             anImage.element = MockDOM.element();
             anImage.needsDraw = false;
         });

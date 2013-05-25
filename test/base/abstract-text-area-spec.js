@@ -7,7 +7,7 @@ describe("test/base/abstract-text-area-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractTextArea.create();
+                new AbstractTextArea();
             }).toThrow();
         });
 
@@ -15,7 +15,7 @@ describe("test/base/abstract-text-area-spec", function () {
             var TextAreaSubtype = AbstractTextArea.specialize( {});
             var aTextAreaSubtype = null;
             expect(function () {
-                aTextAreaSubtype = TextAreaSubtype.create();
+                aTextAreaSubtype = new TextAreaSubtype();
             }).not.toThrow();
             expect(aTextAreaSubtype).toBeDefined();
         });
@@ -26,13 +26,13 @@ describe("test/base/abstract-text-area-spec", function () {
             aTextArea;
 
         beforeEach(function () {
-            aTextArea = TextArea.create();
+            aTextArea = new TextArea();
             aTextArea.element = MockDOM.element();
         });
 
         describe("value", function () {
             beforeEach(function () {
-                aTextArea = TextArea.create();
+                aTextArea = new TextArea();
                 aTextArea.element = MockDOM.element();
                 aTextArea.enterDocument(true);
             });
@@ -60,7 +60,7 @@ describe("test/base/abstract-text-area-spec", function () {
 
         describe("enabled", function () {
             beforeEach(function () {
-                aTextArea = TextArea.create();
+                aTextArea = new TextArea();
                 aTextArea.element = MockDOM.element();
             });
 
@@ -77,7 +77,7 @@ describe("test/base/abstract-text-area-spec", function () {
             aTextArea;
 
         beforeEach(function () {
-            aTextArea = TextArea.create();
+            aTextArea = new TextArea();
             aTextArea.element = MockDOM.element();
         });
 
@@ -105,7 +105,7 @@ describe("test/base/abstract-text-area-spec", function () {
             aTextArea, anElement, listener;
 
         beforeEach(function () {
-            aTextArea = TextArea.create();
+            aTextArea = new TextArea();
             anElement = MockDOM.element();
             listener = {
                 handleEvent: function() {}

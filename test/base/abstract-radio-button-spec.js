@@ -9,7 +9,7 @@ describe("test/base/abstract-radio-button-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractRadioButton.create();
+                new AbstractRadioButton();
             }).toThrow();
         });
 
@@ -17,7 +17,7 @@ describe("test/base/abstract-radio-button-spec", function () {
             var InputRadioSubtype = AbstractRadioButton.specialize( {});
             var aRadioButtonSubtype = null;
             expect(function () {
-                aRadioButtonSubtype = RadioButtonSubtype.create();
+                aRadioButtonSubtype = new InputRadioSubtype();
             }).not.toThrow();
             expect(aRadioButtonSubtype).toBeDefined();
         });
@@ -28,13 +28,13 @@ describe("test/base/abstract-radio-button-spec", function () {
             aRadioButton;
 
         beforeEach(function () {
-            aRadioButton = RadioButton.create();
+            aRadioButton = new InputRadio();
             aRadioButton.element = MockDOM.element();
         });
 
         describe("checked", function () {
             beforeEach(function () {
-                aRadioButton = RadioButton.create();
+                aRadioButton = new InputRadio();
                 aRadioButton.element = MockDOM.element();
                 aRadioButton.checked = false;
                 aRadioButton.prepareForActivationEvents();
@@ -63,7 +63,7 @@ describe("test/base/abstract-radio-button-spec", function () {
 
         describe("enabled", function () {
             beforeEach(function () {
-                aRadioButton = RadioButton.create();
+                aRadioButton = new InputRadio();
                 aRadioButton.element = MockDOM.element();
                 aRadioButton.checked = false;
                 aRadioButton.prepareForActivationEvents();
@@ -100,7 +100,7 @@ describe("test/base/abstract-radio-button-spec", function () {
 
         describe("active", function () {
             beforeEach(function () {
-                aRadioButton = RadioButton.create();
+                aRadioButton = new InputRadio();
                 aRadioButton.element = MockDOM.element();
                 aRadioButton.checked = false;
                 aRadioButton.prepareForActivationEvents();
@@ -145,7 +145,7 @@ describe("test/base/abstract-radio-button-spec", function () {
             aRadioButton;
 
         beforeEach(function () {
-            aRadioButton = RadioButton.create();
+            aRadioButton = new InputRadio();
             aRadioButton.element = MockDOM.element();
         });
 
@@ -164,7 +164,7 @@ describe("test/base/abstract-radio-button-spec", function () {
             aRadioButton, anElement, listener;
 
         beforeEach(function () {
-            aRadioButton = RadioButton.create();
+            aRadioButton = new InputRadio();
             anElement = MockDOM.element();
             listener = {
                 handleEvent: function() {}

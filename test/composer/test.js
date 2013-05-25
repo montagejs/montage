@@ -21,7 +21,7 @@ exports.ProgrammaticTest = TestController.specialize( {
 
     deserializedFromTemplate: {
         value: function() {
-            this.simpleTestComposer = SimpleTestComposer.create();
+            this.simpleTestComposer = new SimpleTestComposer();
             this.dynamicTextC.addComposer(this.simpleTestComposer);
         }
     }
@@ -36,7 +36,7 @@ exports.ProgrammaticLazyTest = TestController.specialize( {
 
     deserializedFromTemplate: {
         value: function() {
-            this.simpleTestComposer = LazyLoadComposer.create();
+            this.simpleTestComposer = new LazyLoadComposer();
             this.dynamicTextC.addComposer(this.simpleTestComposer);
         }
     }

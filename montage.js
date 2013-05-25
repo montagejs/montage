@@ -663,7 +663,7 @@ if (typeof window !== "undefined") {
                 });
 
                 // Load the event-manager
-                defaultEventManager = EventManager.create().initWithWindow(window);
+                defaultEventManager = new EventManager().initWithWindow(window);
 
                 // montageWillLoad is mostly for testing purposes
                 if (typeof global.montageWillLoad === "function") {
@@ -683,7 +683,7 @@ if (typeof window !== "undefined") {
 
                 return appModulePromise.then(function(exports) {
                     var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
-                    application = Application.create();
+                    application = new Application();
                     Object.defineProperty(window.document, "application", {
                         get: Montage.deprecate(
                             null,

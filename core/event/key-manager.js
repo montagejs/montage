@@ -999,7 +999,7 @@ var _defaultKeyManager = null;
 Montage.defineProperty(exports, "defaultKeyManager", {
     get: function() {
         if (!_defaultKeyManager) {
-            _defaultKeyManager = KeyManager.create();
+            _defaultKeyManager = new KeyManager();
         }
         return _defaultKeyManager;
     }

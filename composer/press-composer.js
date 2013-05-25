@@ -403,7 +403,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 event.initCustomEvent(name, true, true, null);
             }
 
-            pressEvent = PressEvent.create();
+            pressEvent = new PressEvent();
             pressEvent.event = event;
             pressEvent.type = name;
             pressEvent.pointer = this._observedPointer;

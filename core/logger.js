@@ -257,7 +257,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
 exports.logger = function(loggerName, onStateChange, dontStoreState) {
     var logger;
     if ((logger = loggers[loggerName]) == null) {
-        logger = Montage.create(Logger).init(loggerName, onStateChange, dontStoreState);
+        logger = new Logger().init(loggerName, onStateChange, dontStoreState);
         Montage.defineProperty(loggers, loggerName, {
             value: logger
         });
@@ -474,7 +474,7 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
 });
 
 var setupUI = function() {
-    LoggerUI.create().init();
+    new LoggerUI().init();
 }
 if (typeof window !== "undefined") {
     // assigning to a local allows us to feature-test without typeof

@@ -7,7 +7,7 @@ describe("paths-spec", function () {
 
         it("should return snapshot of map-change array", function () {
 
-            var object = Montage.create();
+            var object = new Montage();
             object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
             var foos = object.getPath("array.map{foo}");
@@ -20,7 +20,7 @@ describe("paths-spec", function () {
 
         it("should set a property", function () {
 
-            var object = Montage.create();
+            var object = new Montage();
             Object.addEach(object, {a: {b: {c: {}}}});
             object.setPath("a.b.c.d", 10);
             expect(object.a.b.c.d).toBe(10);
@@ -39,7 +39,7 @@ describe("paths-spec", function () {
 
         it("should return incremental map-change array", function () {
 
-            var object = Montage.create();
+            var object = new Montage();
             object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
             var foos = object.addPathChangeListener("array.map{foo}");
@@ -56,7 +56,7 @@ describe("paths-spec", function () {
 
         it("should watch value changes", function () {
 
-            var object = Montage.create();
+            var object = new Montage();
             object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
             var spy = jasmine.createSpy();
@@ -78,7 +78,7 @@ describe("paths-spec", function () {
 
         it("should watch before value changes", function () {
 
-            var object = Montage.create();
+            var object = new Montage();
             object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
             var spy = jasmine.createSpy();
@@ -100,7 +100,7 @@ describe("paths-spec", function () {
 
         it("should watch value changes with path change handler", function () {
 
-            var object = Montage.create();
+            var object = new Montage();
             object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
             var spy = jasmine.createSpy();
@@ -124,7 +124,7 @@ describe("paths-spec", function () {
 
         it("should watch value changes with change handler with a specific method", function () {
 
-            var object = Montage.create();
+            var object = new Montage();
             object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
             var spy = jasmine.createSpy();
@@ -148,7 +148,7 @@ describe("paths-spec", function () {
 
         it("should produce an error", function () {
 
-            var object = Montage.create();
+            var object = new Montage();
             object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
             var sum = object.addPathChangeListener("array.sum{foo}");
@@ -162,7 +162,7 @@ describe("paths-spec", function () {
 
         it("should nest listeners", function () {
 
-            var object = Montage.create();
+            var object = new Montage();
             object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
             var spy = jasmine.createSpy();
@@ -185,7 +185,7 @@ describe("paths-spec", function () {
 
         it("should nest path change and range change listeners", function () {
 
-            var object = Montage.create();
+            var object = new Montage();
             object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
             var spy = jasmine.createSpy();
@@ -213,7 +213,7 @@ describe("paths-spec", function () {
 
         it("should observe range change on mapped array", function () {
 
-            var object = Montage.create();
+            var object = new Montage();
             object.array = [{foo: 1}, {foo: 2}, {foo: 3}];
 
             var spy = jasmine.createSpy();
@@ -245,7 +245,7 @@ describe("paths-spec", function () {
 
     describe("addRangeAtPathChangeListener", function () {
 
-        var object = Montage.create();
+        var object = new Montage();
 
         var spy = jasmine.createSpy();
         object.addRangeAtPathChangeListener("array", function (plus, minus, index) {
@@ -277,7 +277,7 @@ describe("paths-spec", function () {
 
     describe("addRangeAtPathChangeListener II", function() {
         it("should not pass a direct reference of the object at the path to the listener's plus/minus parameters", function() {
-            var object = Montage.create();
+            var object = new Montage();
             var spy = jasmine.createSpy();
             var array1 = [1];
             var array2 = [2];
@@ -296,7 +296,7 @@ describe("paths-spec", function () {
 
     describe("addRangeAtPathChangeListener with handler", function () {
 
-        var object = Montage.create();
+        var object = new Montage();
 
         var handler = {
             handleOffsetArrayRangeChange: function (plus, minus, index) {

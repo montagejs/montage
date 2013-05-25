@@ -49,12 +49,12 @@ var ObjectController = exports.ObjectController = Montage.specialize( /** @lends
     },
  /**
     @function
-    @returns this.objectPrototype.create()
+    @returns new this.objectPrototype()
     */
     newObject: {
         enumerable: false,
         value: function() {
-            return this.objectPrototype.create();
+            return new this.objectPrototype();
         }
     },
 

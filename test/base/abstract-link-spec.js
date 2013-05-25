@@ -7,7 +7,7 @@ describe("test/base/abstract-link-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractLink.create();
+                new AbstractLink();
             }).toThrow();
         });
 
@@ -15,7 +15,7 @@ describe("test/base/abstract-link-spec", function () {
             var LinkSubtype = AbstractLink.specialize( {});
             var aLinkSubtype = null;
             expect(function () {
-                aLinkSubtype = LinkSubtype.create();
+                aLinkSubtype = new LinkSubtype();
             }).not.toThrow();
             expect(aLinkSubtype).toBeDefined();
         });
@@ -26,13 +26,13 @@ describe("test/base/abstract-link-spec", function () {
             aLink;
 
         beforeEach(function () {
-            aLink = Link.create();
+            aLink = new Link();
             aLink.element = MockDOM.element();
         });
 
         describe("enabled", function () {
             beforeEach(function () {
-                aLink = Link.create();
+                aLink = new Link();
                 aLink.element = MockDOM.element();
                 aLink.checked = false;
                 aLink.prepareForActivationEvents();
@@ -60,7 +60,7 @@ describe("test/base/abstract-link-spec", function () {
 
         describe("active", function () {
             beforeEach(function () {
-                aLink = Link.create();
+                aLink = new Link();
                 aLink.element = MockDOM.element();
                 aLink.checked = false;
                 aLink.prepareForActivationEvents();
@@ -105,7 +105,7 @@ describe("test/base/abstract-link-spec", function () {
             aLink;
 
         beforeEach(function () {
-            aLink = Link.create();
+            aLink = new Link();
             aLink.element = MockDOM.element();
         });
 
@@ -135,7 +135,7 @@ describe("test/base/abstract-link-spec", function () {
             aLink, anElement, listener;
 
         beforeEach(function () {
-            aLink = Link.create();
+            aLink = new Link();
             anElement = MockDOM.element();
             listener = {
                 handleEvent: function() {}

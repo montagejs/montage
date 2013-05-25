@@ -103,7 +103,7 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
     manager: {
         get: function() {
             if (_binderManager === null) {
-                _binderManager = BinderManager.create();
+                _binderManager = new BinderManager();
             }
             return _binderManager;
         }
@@ -164,7 +164,7 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
 
             targetRequire.async(binderModuleId).then(function(object) {
                 try {
-                    Deserializer.create().initWithObjectAndRequire(object, targetRequire, binderModuleId).deserializeObject(function(binder) {
+                    new Deserializer().initWithObjectAndRequire(object, targetRequire, binderModuleId).deserializeObject(function(binder) {
                         if (binder) {
                             binder.binderInstanceModuleId = binderModuleId;
                             Binder.manager.addBinder(this);
@@ -251,7 +251,7 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
      */
     addBlueprintNamed: {
         value: function(name, moduleId) {
-            return this.addBlueprint(BlueprintModule.Blueprint.create().initWithNameAndModuleId(name, moduleId));
+            return this.addBlueprint(new BlueprintModule.Blueprint().initWithNameAndModuleId(name, moduleId));
         }
     },
 

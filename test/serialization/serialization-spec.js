@@ -10,7 +10,7 @@ describe("reel/serialization/serialization-spec", function() {
     var serialization;
 
     beforeEach(function() {
-        serialization = Serialization.create();
+        serialization = new Serialization();
     });
 
     it("should find the labels of objects with a specific element id", function() {

@@ -11,7 +11,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
     var serializationExtractor;
 
     beforeEach(function() {
-        serializationExtractor = SerializationExtractor.create();
+        serializationExtractor = new SerializationExtractor();
     });
 
     it("should extract an object", function() {
@@ -34,7 +34,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                     }
                 }
             },
-            serialization = Serialization.create().initWithObject(objects),
+            serialization = new Serialization().initWithObject(objects),
             expectedObjects = {},
             extractedSerialization,
             labels = ["one"];
@@ -59,7 +59,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
 
                 "owner": {}
             },
-            serialization = Serialization.create().initWithObject(objects),
+            serialization = new Serialization().initWithObject(objects),
             expectedObjects = {},
             extractedSerialization,
             labels = ["one"],
@@ -97,7 +97,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                     }
                 }
             },
-            serialization = Serialization.create().initWithObject(objects),
+            serialization = new Serialization().initWithObject(objects),
             expectedObjects = {},
             extractedSerialization,
             labels = ["one"];
@@ -134,7 +134,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                     }
                 }
             },
-            serialization = Serialization.create().initWithObject(objects),
+            serialization = new Serialization().initWithObject(objects),
             expectedObjects = {},
             extractedSerialization,
             labels = ["one", "three"];
@@ -165,7 +165,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                     }
                 },
             },
-            serialization = Serialization.create().initWithObject(objects),
+            serialization = new Serialization().initWithObject(objects),
             expectedObjects = {},
             extractedSerialization,
             labels = ["one", "two"],
@@ -193,7 +193,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
 
                 "two": {},
             },
-            serialization = Serialization.create().initWithObject(objects),
+            serialization = new Serialization().initWithObject(objects),
             expectedObjects = {},
             extractedSerialization,
             labels = ["one", "two"];
@@ -217,7 +217,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                     }
                 }
             },
-            serialization = Serialization.create().initWithObject(objects),
+            serialization = new Serialization().initWithObject(objects),
             expectedObjects = {},
             extractedSerialization,
             labels = ["one"],
@@ -252,7 +252,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                         }
                     }
                 },
-                serialization = Serialization.create().initWithObject(objects),
+                serialization = new Serialization().initWithObject(objects),
                 expectedObjects = {},
                 extractedSerialization,
                 labels = ["one"];
@@ -286,7 +286,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                         }
                     }
                 },
-                serialization = Serialization.create().initWithObject(objects),
+                serialization = new Serialization().initWithObject(objects),
                 expectedObjects = {},
                 extractedSerialization,
                 labels = ["one"];
@@ -324,7 +324,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                         }
                     }
                 },
-                serialization = Serialization.create().initWithObject(objects),
+                serialization = new Serialization().initWithObject(objects),
                 expectedObjects = {},
                 extractedSerialization,
                 labels = ["sum"];
@@ -360,7 +360,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                     }
                 }
             },
-            serialization = Serialization.create().initWithObject(objects),
+            serialization = new Serialization().initWithObject(objects),
             expectedObjects = {},
             extractedSerialization,
             labels = ["one"];

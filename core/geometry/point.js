@@ -54,7 +54,7 @@ exports.Point = Montage.specialize( /** @lends Point# */ {
     @param {Axis} point0 The 0 interpolation point.
     @param {Axis} point1 The 1 interpolation point.
     @param {Axis} precision The interpolation precision.
-    @returns Montage.create(Point).init(xValue, yValue)
+    @returns new Point().init(xValue, yValue)
     */
     interpolate: {
         enumerable: false,
@@ -67,7 +67,7 @@ exports.Point = Montage.specialize( /** @lends Point# */ {
                 xValue = Math.round(xValue * precision) / precision;
                 yValue = Math.round(yValue * precision) / precision;
             }
-            return exports.Point.create().init(xValue, yValue);
+            return new exports.Point().init(xValue, yValue);
         }
     },
 /**

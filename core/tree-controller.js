@@ -67,7 +67,7 @@ var Node = exports.TreeController = Montage.specialize( {
             this.childIterations.addRangeChangeListener(this, "childIterations");
 
             // iteration + indentedChildIterations -> iterations
-            this.iteration = Iteration.create().initWithNodeAndDepth(this, 0);
+            this.iteration = new Iteration().initWithNodeAndDepth(this, 0);
             this.defineBinding("iterations.rangeContent()", {
                 "<-": "[[iteration], indentedChildIterations].flatten()"
             });
@@ -90,7 +90,7 @@ var Node = exports.TreeController = Montage.specialize( {
                 index,
                 minus.length,
                 plus.map(function (child) {
-                    return Node.create().init(
+                    return new Node().init(
                         child,
                         this.childrenPath,
                         this
@@ -106,7 +106,7 @@ var Node = exports.TreeController = Montage.specialize( {
                 index,
                 minus.length,
                 plus.map(function (iteration) {
-                    return this.Iteration.create().initWithNodeAndDepth(
+                    return new this.Iteration().initWithNodeAndDepth(
                         iteration.node,
                         iteration.depth + 1
                     );

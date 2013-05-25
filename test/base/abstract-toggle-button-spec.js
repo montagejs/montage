@@ -8,7 +8,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractToggleButton.create();
+                new AbstractToggleButton();
             }).toThrow();
         });
 
@@ -16,7 +16,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
             var ToggleButtonSubtype = AbstractToggleButton.specialize( {});
             var aToggleButtonSubtype;
             expect(function () {
-                aToggleButtonSubtype = ToggleButtonSubtype.create();
+                aToggleButtonSubtype = new ToggleButtonSubtype();
             }).not.toThrow();
             expect(aToggleButtonSubtype).toBeDefined();
         });
@@ -27,7 +27,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
             aToggleButton;
 
         beforeEach(function () {
-            aToggleButton = ToggleButton.create();
+            aToggleButton = new ToggleButton();
             aToggleButton.element = MockDOM.element();
         });
 
@@ -38,7 +38,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
 
         describe("enabled", function () {
             beforeEach(function () {
-                aToggleButton = ToggleButton.create();
+                aToggleButton = new ToggleButton();
                 aToggleButton.element = MockDOM.element();
                 aToggleButton.prepareForActivationEvents();
             });
@@ -108,7 +108,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
 
         describe("pressed", function () {
             beforeEach(function () {
-                aToggleButton = ToggleButton.create();
+                aToggleButton = new ToggleButton();
                 aToggleButton.element = MockDOM.element();
                 aToggleButton.prepareForActivationEvents();
             });
@@ -146,7 +146,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
             aToggleButton;
 
         beforeEach(function () {
-            aToggleButton = ToggleButton.create();
+            aToggleButton = new ToggleButton();
             aToggleButton.element = MockDOM.element();
             aToggleButton.needsDraw = false;
         });
@@ -188,7 +188,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
             aToggleButton, anElement;
 
         beforeEach(function () {
-            aToggleButton = ToggleButton.create();
+            aToggleButton = new ToggleButton();
             anElement = MockDOM.element();
         });
 
@@ -202,7 +202,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
             aToggleButton, anElement, listener;
 
         beforeEach(function () {
-            aToggleButton = ToggleButton.create();
+            aToggleButton = new ToggleButton();
             anElement = MockDOM.element();
             listener = {
                 handleEvent: function() {}

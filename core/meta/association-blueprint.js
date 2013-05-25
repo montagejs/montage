@@ -49,7 +49,7 @@ exports.AssociationBlueprint = PropertyBlueprint.specialize( /** @lends Associat
             return this._targetBlueprintReference.promise(this.require);
         },
         set: function(blueprint) {
-            this._targetBlueprintReference = BlueprintReference.create().initWithValue(blueprint);
+            this._targetBlueprintReference = new BlueprintReference().initWithValue(blueprint);
         }
     },
 

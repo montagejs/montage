@@ -24,9 +24,9 @@ var MontageSerializer = Montage.specialize.call(Serializer, {
         value: function(_require) {
             this._require = _require;
 
-            this._builder = MontageBuilder.create();
-            this._labeler = MontageLabeler.create();
-            this._visitor = MontageVisitor.create()
+            this._builder = new MontageBuilder();
+            this._labeler = new MontageLabeler();
+            this._visitor = new MontageVisitor()
                 .initWithBuilderAndLabelerAndRequireAndUnits(
                     this._builder,
                     this._labeler,
@@ -68,6 +68,6 @@ var MontageSerializer = Montage.specialize.call(Serializer, {
 
 exports.MontageSerializer = MontageSerializer;
 exports.serialize = function(object, _require) {
-    return MontageSerializer.create().initWithRequire(_require)
+    return new MontageSerializer().initWithRequire(_require)
         .serializeObject(object);
 };

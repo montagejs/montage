@@ -10,18 +10,18 @@ describe("reel/serialization/serialization-merger-spec", function() {
     var merger;
 
     beforeEach(function() {
-        merger = SerializationMerger.create();
+        merger = new SerializationMerger();
     });
 
     it("should merge two non-colliding serializations", function() {
-        var serialization1 = Serialization.create().initWithObject({
+        var serialization1 = new Serialization().initWithObject({
                 "object1": {
                     "value": {
                         "name": "object1"
                     }
                 }
             }),
-            serialization2 = Serialization.create().initWithObject({
+            serialization2 = new Serialization().initWithObject({
                 "object2": {
                     "value": {
                         "name": "object2"
@@ -49,14 +49,14 @@ describe("reel/serialization/serialization-merger-spec", function() {
     });
 
     it("should merge two colliding serializations", function() {
-        var serialization1 = Serialization.create().initWithObject({
+        var serialization1 = new Serialization().initWithObject({
                 "object": {
                     "value": {
                         "name": "object"
                     }
                 }
             }),
-            serialization2 = Serialization.create().initWithObject({
+            serialization2 = new Serialization().initWithObject({
                 "object": {
                     "value": {
                         "name": "object2"
@@ -84,14 +84,14 @@ describe("reel/serialization/serialization-merger-spec", function() {
     });
 
     it("should return a collision table when merging serializations", function() {
-        var serialization1 = Serialization.create().initWithObject({
+        var serialization1 = new Serialization().initWithObject({
                 "object": {
                     "value": {
                         "name": "object"
                     }
                 }
             }),
-            serialization2 = Serialization.create().initWithObject({
+            serialization2 = new Serialization().initWithObject({
                 "object": {
                     "value": {
                         "name": "object2"
@@ -107,14 +107,14 @@ describe("reel/serialization/serialization-merger-spec", function() {
     });
 
     xit("template", function() {
-        var serialization1 = Serialization.create().initWithObject({
+        var serialization1 = new Serialization().initWithObject({
                 "object1": {
                     "value": {
                         "name": "object1"
                     }
                 }
             }),
-            serialization2 = Serialization.create().initWithObject({
+            serialization2 = new Serialization().initWithObject({
                 "object2": {
                     "value": {
                         "name": "object2"

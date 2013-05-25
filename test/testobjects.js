@@ -112,7 +112,7 @@ var TestObject = (function() {
 
 var TestObjectsDesc = exports.TestObjectsDesc = {};
 
-var Empty = exports.Empty = Montage.create(Montage);
+var Empty = exports.Empty = new Montage();
 TestObjectsDesc.empty = TestObject({
     obj: Empty,
     info: {
@@ -121,7 +121,7 @@ TestObjectsDesc.empty = TestObject({
     }
 }, true);
 
-var emptyA = Empty.create();
+var emptyA = new Empty();
 TestObjectsDesc.emptyA = TestObject({
     obj: emptyA,
     info: {
@@ -143,7 +143,7 @@ TestObjectsDesc.simple = TestObject({
     }
 });
 
-var simpleA = Simple.create();
+var simpleA = new Simple();
 TestObjectsDesc.simpleA = TestObject({
     obj: simpleA,
     info: {
@@ -184,7 +184,7 @@ TestObjectsDesc.composed = TestObject({
     }
 });
 
-var composedA = Composed.create();
+var composedA = new Composed();
 TestObjectsDesc.composedA = TestObject({
     obj: composedA,
     info: {
@@ -197,7 +197,7 @@ TestObjectsDesc.composedA = TestObject({
 });
 TestObjectsDesc.composedA.obj.simpleObj = simpleA;
 
-var selfCycleA = Montage.create(Montage);
+var selfCycleA = new Montage();
 Montage.defineProperty(selfCycleA, "self", {value: selfCycleA, serializable: true});
 (selfCycleA.UID);
 TestObjectsDesc.selfCycleA = TestObject({
@@ -211,7 +211,7 @@ TestObjectsDesc.selfCycleA = TestObject({
     }
 });
 
-var indirectCycleA = Montage.create(Montage);
+var indirectCycleA = new Montage();
 (indirectCycleA.UID);
 TestObjectsDesc.indirectCycleA = TestObject({
     obj: indirectCycleA,
@@ -224,7 +224,7 @@ TestObjectsDesc.indirectCycleA = TestObject({
     }
 });
 
-var indirectCycleB = Montage.create(Montage);
+var indirectCycleB = new Montage();
 (indirectCycleB.UID);
 TestObjectsDesc.indirectCycleB = TestObject({
     obj: indirectCycleB,
@@ -263,7 +263,7 @@ TestObjectsDesc.custom = TestObject({
     }
 });
 
-var customA = Custom.create();
+var customA = new Custom();
 TestObjectsDesc.customA = TestObject({
     obj: customA,
     info: {

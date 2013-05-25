@@ -38,7 +38,7 @@ describe("reel/template-spec", function() {
     var template;
 
     beforeEach(function() {
-        template = Template.create();
+        template = new Template();
     });
 
     describe("initialization", function() {
@@ -508,7 +508,7 @@ describe("reel/template-spec", function() {
         it("should call deserializedFromTemplate", function() {
             var html = require("reel/template/delegate-methods-template.html").content,
                 instances = {
-                    two: DelegateMethods.create()
+                    two: new DelegateMethods()
                 };
 
             return template.initWithHtml(html, require)
@@ -565,8 +565,8 @@ describe("reel/template-spec", function() {
             return template.initWithHtml(html, require)
             .then(function() {
                 var instances = {
-                    owner: DelegateMethods.create(),
-                    one: DelegateMethods.create()
+                    owner: new DelegateMethods(),
+                    one: new DelegateMethods()
                 }
                 return template.instantiateWithInstances(instances, document)
                 .then(function(documentPart) {
@@ -585,8 +585,8 @@ describe("reel/template-spec", function() {
             return template.initWithHtml(html, require)
             .then(function() {
                 var instances = {
-                    owner: DelegateMethods.create(),
-                    one: DelegateMethods.create()
+                    owner: new DelegateMethods(),
+                    one: new DelegateMethods()
                 }
                 return template.instantiateWithInstances(instances, document)
                 .then(function(documentPart) {
@@ -645,7 +645,7 @@ describe("reel/template-spec", function() {
     describe("template resources", function() {
         it("should load all scripts except montage serialization", function() {
             var html = require("reel/template/resources-template.html").content,
-                resources = TemplateResources.create();
+                resources = new TemplateResources();
 
             return createPage("reel/template/page.html")
             .then(function(page) {
@@ -667,7 +667,7 @@ describe("reel/template-spec", function() {
 
         it("should load all scripts in two different documents in serial", function() {
             var html = require("reel/template/resources-template.html").content,
-                resources = TemplateResources.create();
+                resources = new TemplateResources();
 
             return Promise.all([
                 createPage("reel/template/page.html"),
@@ -702,7 +702,7 @@ describe("reel/template-spec", function() {
 
         it("should load all scripts in two different documents in parallel", function() {
             var html = require("reel/template/resources-template.html").content,
-                resources = TemplateResources.create();
+                resources = new TemplateResources();
 
             return Promise.all([
                 createPage("reel/template/page.html"),
@@ -734,7 +734,7 @@ describe("reel/template-spec", function() {
 
         it("should load all styles", function() {
             var html = require("reel/template/resources-template.html").content,
-                resources = TemplateResources.create();
+                resources = new TemplateResources();
 
             return createPage("reel/template/page.html")
             .then(function(page) {
@@ -999,8 +999,8 @@ describe("reel/template-spec", function() {
             argumentsTemplate;
 
         beforeEach(function() {
-            parametersTemplate = Template.create();
-            argumentsTemplate = Template.create();
+            parametersTemplate = new Template();
+            argumentsTemplate = new Template();
         });
 
         it("should expand a parameter with non-colliding element", function() {

@@ -40,14 +40,14 @@ TestPageLoader.queueTest("dom/dom", function(testPage) {
             it("should not fail if no node passed", function() {
                 var result;
                 expect(function() {
-                    result = convertPointFromNodeToPage(Point.create().init(0,0));
+                    result = convertPointFromNodeToPage(new Point().init(0,0));
                 }).not.toThrow();
                 expect(result).toBeNull();
             });
             it("should not fail if null node passed", function() {
                 var result;
                 expect(function() {
-                    result = convertPointFromNodeToPage(null,Point.create().init(0,0));
+                    result = convertPointFromNodeToPage(null,new Point().init(0,0));
                 }).not.toThrow();
                 expect(result).toBeNull();
             });
@@ -63,14 +63,14 @@ TestPageLoader.queueTest("dom/dom", function(testPage) {
             it("should not fail if no node passed", function() {
                 var result;
                 expect(function() {
-                    result = convertPointFromPageToNode(Point.create().init(0,0));
+                    result = convertPointFromPageToNode(new Point().init(0,0));
                 }).not.toThrow();
                 expect(result).toBeNull();
             });
             it("should not fail if null node passed", function() {
                 var result;
                 expect(function() {
-                    result = convertPointFromPageToNode(null,Point.create().init(0,0));
+                    result = convertPointFromPageToNode(null,new Point().init(0,0));
                 }).not.toThrow();
                 expect(result).toBeNull();
             });
@@ -147,7 +147,7 @@ TestPageLoader.queueTest("dom/dom", function(testPage) {
 
 var testConvertPoint = function(element, x1, y1, x2, y2) {
     var point1, point2;
-    point1 = convertPointFromNodeToPage(element, Point.create().init(0, 0));
+    point1 = convertPointFromNodeToPage(element, new Point().init(0, 0));
     expect(Math.round(point1.x)).toEqual(x1);
     expect(Math.round(point1.y)).toEqual(y1);
 
@@ -155,7 +155,7 @@ var testConvertPoint = function(element, x1, y1, x2, y2) {
     expect(Math.round(point2.x)).toEqual(0);
     expect(Math.round(point2.y)).toEqual(0);
 
-    point1 = convertPointFromNodeToPage(element, Point.create().init(15, 200));
+    point1 = convertPointFromNodeToPage(element, new Point().init(15, 200));
     expect(Math.round(point1.x)).toEqual(x2);
     expect(Math.round(point1.y)).toEqual(y2);
 

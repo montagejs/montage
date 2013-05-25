@@ -185,7 +185,7 @@ var Flow = exports.Flow = Component.specialize( {
      */
     _appendPath: {
         value: function (path) {
-            var splinePath = FlowBezierSpline.create(),
+            var splinePath = new FlowBezierSpline(),
                 pathKnots = path.knots,
                 length = path.knots.length,
                 knots = [],
@@ -1272,7 +1272,7 @@ var Flow = exports.Flow = Component.specialize( {
             return this.getPath("contentController.content");
         },
         set: function (content) {
-            this.contentController = RangeController.create().initWithContent(content);
+            this.contentController = new RangeController().initWithContent(content);
         }
     },
 

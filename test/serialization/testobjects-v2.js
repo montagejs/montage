@@ -89,7 +89,7 @@ exports.CustomProperties = Montage.specialize( {
 });
 
 exports.CustomPropertiesRef = Montage.specialize( {
-    object: {value: exports.Empty.create()},
+    object: {value: new exports.Empty()},
 
     serializeProperties: {value: function(serializer) {
         serializer.set("object", this.object, "reference");
@@ -102,8 +102,8 @@ exports.CustomPropertiesRef = Montage.specialize( {
 
 exports.CustomAllProperties = Montage.specialize( {
     manchete: {value: 42, serializable: true},
-    rodriguez: {value: exports.Empty.create(), serializable: "reference"},
-    luz: {value: exports.Empty.create(), serializable: true},
+    rodriguez: {value: new exports.Empty(), serializable: "reference"},
+    luz: {value: new exports.Empty(), serializable: true},
     tarantino: {value: 105, serializable: false},
 
     serializeProperties: {value: function(serializer) {
@@ -116,7 +116,7 @@ exports.CustomAllProperties = Montage.specialize( {
 });
 
 exports.CustomRef = Montage.specialize( {
-    object: {value: exports.Empty.create()},
+    object: {value: new exports.Empty()},
 
     serializeSelf: {value: function(serializer) {
         serializer.setProperty("object", this.object, "reference");

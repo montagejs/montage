@@ -108,7 +108,7 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
       Create a ComposerKey.
       The key will only dispatch events when the component's element is in the native key event target path.
       If no identifier is provided, the keys and component's identifier will be used to generate an identifier.
-      Note: You do not have to call KeyComposer.create() before calling this method.
+      Note: You do not have to call new KeyComposer() before calling this method.
       @function
       @param {Object} component. The component to attach the keyComposer to.
       @param {Object} keys. The key sequence.
@@ -121,7 +121,7 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
 
             if (this === KeyComposer) {
                 // This function has been called without creating a new instance of KeyComposer first
-                key = KeyComposer.create();
+                key = new KeyComposer();
             }
 
             if (!identifier) {
@@ -146,7 +146,7 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
       Create a global composerKey.
       A global key will dispatch events without requiring the component's element be in the native key event target path
       If no identifier is provided, the keys and component's identifier will be used to generate an identifier.
-      Note: You do not have to call KeyComposer.create() before calling this method.
+      Note: You do not have to call new KeyComposer() before calling this method.
       @function
       @param {Object} component. The component to attach the keyComposer to.
       @param {Object} keys. The key sequence.
@@ -159,7 +159,7 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
 
             if (this === KeyComposer) {
                 // This function has been called without creating a new instance of KeyComposer first
-                key = KeyComposer.create();
+                key = new KeyComposer();
             }
 
             key.keys = keys;
@@ -373,7 +373,7 @@ var KeyManagerProxy = Montage.specialize(  {
     defaultKeyManager: {
        get: function() {
            if (!_keyManagerProxy) {
-               _keyManagerProxy = KeyManagerProxy.create();
+               _keyManagerProxy = new KeyManagerProxy();
            }
            if (this._defaultKeyManager) {
                return this._defaultKeyManager;

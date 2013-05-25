@@ -56,18 +56,18 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
             beforeEach(function() {
                 // We need to use the testMontage as the base so the global defaultEventManager is the testEventManager
                 // from the test iframe, not the global defaultEventManager of the test
-                parent = testTarget.create();
+                parent = new testTarget();
 
-                orphan = testTarget.create();
+                orphan = new testTarget();
                 orphan.nextTarget = null;
 
-                childFoo = testTarget.create();
+                childFoo = new testTarget();
                 childFoo.nextTarget = parent;
 
-                childBar = testTarget.create();
+                childBar = new testTarget();
                 childBar.nextTarget = parent;
 
-                grandchildFoo = testTarget.create();
+                grandchildFoo = new testTarget();
                 grandchildFoo.nextTarget = childFoo;
 
                 bubbleEvent = window.document.createEvent("CustomEvent");
@@ -366,7 +366,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
             });
 
             it("should have a default nextTarget of the parentComponent on all components", function() {
-                var component = Component.create();
+                var component = new Component();
                 expect(component.nextTarget).toBe(component.parentComponent);
             });
 
@@ -629,7 +629,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
         describe("determining the event target chain", function () {
 
             it("should always include the application when the nextTarget is a dead-end", function () {
-                var foo = Montage.create();
+                var foo = new Montage();
                 foo.nextTarget = null;
 
                 var path = eventManager._eventPathForTarget(foo);
@@ -637,7 +637,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
             });
 
             it("should not include the target itself in the chain", function () {
-                var foo = Montage.create();
+                var foo = new Montage();
                 foo.nextTarget = foo;
 
                 var path = eventManager._eventPathForTarget(foo);
@@ -645,7 +645,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
             });
 
             it("should always include the application when the chain ends due to a detected cycle", function () {
-                var foo = Montage.create();
+                var foo = new Montage();
                 foo.nextTarget = foo;
 
                 var path = eventManager._eventPathForTarget(foo);

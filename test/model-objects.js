@@ -54,30 +54,30 @@ var Department = exports.Department = Montage.specialize({
 });
 
 
-var manager0 = exports.manager0 = Montage.create(Manager);
-var manager1 = exports.manager1 = Montage.create(Manager);
-var manager2 = exports.manager2 = Montage.create(Manager);
-var manager3 = exports.manager3 = Montage.create(Manager);
+var manager0 = exports.manager0 = new Manager();
+var manager1 = exports.manager1 = new Manager();
+var manager2 = exports.manager2 = new Manager();
+var manager3 = exports.manager3 = new Manager();
 
 manager0.managerName = "MANAGER0";
 manager1.managerName = "MANAGER1";
 manager2.managerName = "MANAGER2";
 manager3.managerName = "MANAGER3";
 
-var employee01 = exports.employee01 = Montage.create(Employee);
-var employee02 = exports.employee02 = Montage.create(Employee);
-var employee03 = exports.employee03 = Montage.create(Employee);
-var employee11 = exports.employee11 = Montage.create(Employee);
-var employee12 = exports.employee12 = Montage.create(Employee);
-var employee13 = exports.employee13 = Montage.create(Employee);
-var employee14 = exports.employee14 = Montage.create(Employee);
-var employee21 = exports.employee21 = Montage.create(Employee);
-var employee22 = exports.employee22 = Montage.create(Employee);
-var employee23 = exports.employee23 = Montage.create(Employee);
-var employee24 = exports.employee24 = Montage.create(Employee);
-var employee31 = exports.employee31 = Montage.create(Employee);
-var employee32 = exports.employee32 = Montage.create(Employee);
-var employee33 = exports.employee33 = Montage.create(Employee);
+var employee01 = exports.employee01 = new Employee();
+var employee02 = exports.employee02 = new Employee();
+var employee03 = exports.employee03 = new Employee();
+var employee11 = exports.employee11 = new Employee();
+var employee12 = exports.employee12 = new Employee();
+var employee13 = exports.employee13 = new Employee();
+var employee14 = exports.employee14 = new Employee();
+var employee21 = exports.employee21 = new Employee();
+var employee22 = exports.employee22 = new Employee();
+var employee23 = exports.employee23 = new Employee();
+var employee24 = exports.employee24 = new Employee();
+var employee31 = exports.employee31 = new Employee();
+var employee32 = exports.employee32 = new Employee();
+var employee33 = exports.employee33 = new Employee();
 
 employee01.employeeName = "EMPLOYEE01";
 employee02.employeeName = "EMPLOYEE02";
@@ -124,10 +124,10 @@ var allEmployees = exports.allEmployees = [
     employee32,
     employee33];
 
-var department0 = exports.department0 = Montage.create(Department);
-var department1 = exports.department1 = Montage.create(Department);
-var department2 = exports.department2 = Montage.create(Department);
-var department3 = exports.department3 = Montage.create(Department);
+var department0 = exports.department0 = new Department();
+var department1 = exports.department1 = new Department();
+var department2 = exports.department2 = new Department();
+var department3 = exports.department3 = new Department();
 
 var departments = exports.departments = [department0, department1, department2, department3];
 

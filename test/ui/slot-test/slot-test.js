@@ -71,11 +71,11 @@ var SlotTest = exports.SlotTest = Component.specialize( {
 
     init: {
         value: function() {
-            this.video = VideoMedia.create();
+            this.video = new VideoMedia();
             this.video.duration = "VIDEO 81 Minutes";
             this.video.description = "VIDEO: The Last Dispatch"
 
-            this.photo = PhotoMedia.create();
+            this.photo = new PhotoMedia();
             this.photo.location = "PHOTO North Attleboro, MA";
             this.photo.description = "PHOTO Go Big Red";
 

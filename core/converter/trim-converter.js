@@ -59,7 +59,7 @@ var trim = exports.trim = function(str) {
     var Converter= require("core/converter/converter").Converter,
     TrimConverter = require("core/converter/converter").TrimConverter;
     var str = "      Hello World     ";
-    var trimConverter = TrimConverter.create();
+    var trimConverter = new TrimConverter();
     console.log("After trim: " + trimConverter.convert(str));
     // After trim: Hello World
 */

@@ -187,7 +187,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
         describe("when adding event listeners", function() {
 
             it("should record that the listener cares about an event on the target", function() {
-                var listener = Montage.create();
+                var listener = new Montage();
                 testDocument.addEventListener("mousedown", listener, false);
 
                 var listenerEntry = eventManager.registeredEventListeners["mousedown"][testDocument.uuid].listeners[listener.uuid];
@@ -225,7 +225,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
 
                 testDocument.addEventListener("click", clickSpy, false);
 
-                testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "click", function() {
+                testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "click", function() {
                     expect(clickSpy.handleClick).toHaveBeenCalled();
                 });
             });
@@ -247,7 +247,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                     spyOn(clickSpy, 'handleClick');
                     testDocument.addEventListener("click", clickSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "click", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "click", function() {
                         expect(clickSpy.handleClick).toHaveBeenCalled();
                         expect(inlineClickSpy.handleEvent).toHaveBeenCalled();
                     });
@@ -271,7 +271,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                 spyOn(clickSpy, 'handleClick');
                 testDocument.addEventListener("click", clickSpy, false);
 
-                testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "click", function() {
+                testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "click", function() {
                     expect(clickSpy.handleClick).toHaveBeenCalled();
                     expect(inlineCalled).toBeTruthy();
                 });
@@ -408,7 +408,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                 testDocument.removeEventListener("mousedown", otherListener, false);
 
 
-                testPage.mouseEvent(EventInfo.create().initWithElement(activationTarget.element), "mousedown", function() {
+                testPage.mouseEvent(new EventInfo().initWithElement(activationTarget.element), "mousedown", function() {
                     expect(activationTarget.prepareForActivationEvents).toHaveBeenCalled();
                 });
             });
@@ -443,7 +443,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                     testDocument.addEventListener("mousedown", mousedownCaptureSpy, true);
                     testDocument.addEventListener("mousedown", mousedownBubbleSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(mousedownCaptureSpy.captureMousedown).toHaveBeenCalled();
                         expect(mousedownBubbleSpy.handleMousedown).toHaveBeenCalled();
                     });
@@ -504,7 +504,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                     testDocument.addEventListener("mousedown", documentSpy, true);
                     testDocument.defaultView.addEventListener("mousedown", windowSpy, true);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(target), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(target), "mousedown", function() {
                         expect(windowSpy.captureMousedown).toHaveBeenCalled();
                         expect(documentSpy.captureMousedown).toHaveBeenCalled();
                         expect(bodySpy.captureMousedown).toHaveBeenCalled();
@@ -566,7 +566,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                     target.parentNode.addEventListener("mousedown", parentSpy, false);
                     target.addEventListener("mousedown", targetSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(target), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(target), "mousedown", function() {
                         expect(windowSpy.handleMousedown).toHaveBeenCalled();
                         expect(documentSpy.handleMousedown).toHaveBeenCalled();
                         expect(bodySpy.handleMousedown).toHaveBeenCalled();
@@ -583,7 +583,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                         bubbleCalled = true;
                     }, true);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(bubbleCalled).toBeTruthy();
                     });
                 });
@@ -596,7 +596,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                         bubbleCalled = true;
                     }, true);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(bubbleCalled).toBeTruthy();
                     });
                 });
@@ -609,7 +609,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                         bubbleCalled = true;
                     }, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(bubbleCalled).toBeTruthy();
                     });
                 });
@@ -622,7 +622,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                         bubbleCalled = true;
                     }, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(bubbleCalled).toBeTruthy();
                     });
                 });
@@ -647,7 +647,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                     testDocument.addEventListener("mousedown", eventCaptureSpy, true);
                     testDocument.addEventListener("mousedown", eventBubbleSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(eventCaptureSpy.handleEvent).toHaveBeenCalled();
                         expect(eventBubbleSpy.handleEvent).toHaveBeenCalled();
                     });
@@ -665,7 +665,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
 
                     testDocument.addEventListener("mousedown", eventSpy, true);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                     });
 
@@ -682,7 +682,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
 
                     testDocument.addEventListener("mousedown", eventSpy, true);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument), "mousedown", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                     });
 
@@ -699,7 +699,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
 
                     testDocument.addEventListener("mousedown", eventSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument), "mousedown", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                     });
 
@@ -717,7 +717,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
 
                     testDocument.addEventListener("mousedown", eventSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.body), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.body), "mousedown", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                     });
 
@@ -735,7 +735,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
 
                     testDocument.addEventListener("mousedown", eventSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument), "mousedown", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                     });
 
@@ -762,7 +762,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
 
                         testDocument.body.addEventListener("mousedown", bodyListener, false);
 
-                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.body), "mousedown", function() {
+                        testPage.mouseEvent(new EventInfo().initWithElement(testDocument.body), "mousedown", function() {
                             expect(lateAddedRootListener.handleEvent).toHaveBeenCalled();
                         });
                     });
@@ -785,7 +785,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
 
                     testDocument.addEventListener("mousedown", eventSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument), "mousedown", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                     });
 
@@ -811,7 +811,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
 
                     testDocument.addEventListener("mousedown", eventSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(eventSpy.handleMousedown).toHaveBeenCalled();
                         expect(eventSpy.handleEvent).not.toHaveBeenCalled();
                     });
@@ -832,7 +832,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                     testDocument.addEventListener("mousedown", eventSpy, false);
                     testDocument.addEventListener("mousedown", eventSpy, true);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                         expect(handledEventCount).toBe(2);
                     });
@@ -858,7 +858,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
 
                         testDocument.documentElement.addEventListener("mousedown", eventSpy, false);
 
-                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                             expect(eventSpy.handleFooMousedown).toHaveBeenCalled();
                         });
                     });
@@ -873,7 +873,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                         testDocument.identifier = "document";
                         testDocument.addEventListener("mousedown", eventSpy, false);
 
-                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                             expect(eventSpy.handleFooMousedown).toHaveBeenCalled();
                         });
 
@@ -898,7 +898,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
 
                         testDocument.addEventListener("mousedown", eventSpy, false);
 
-                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                             expect(eventSpy.handleMousedown).toHaveBeenCalled();
                             expect(eventSpy.handleDocumentMousedown).not.toHaveBeenCalled();
                         });
@@ -916,7 +916,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                         testDocument.identifier = "document";
                         testDocument.addEventListener("mousedown", eventSpy, false);
 
-                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                             expect(eventSpy.handleDocumentMousedown).not.toHaveBeenCalled();
                         });
 
@@ -1134,11 +1134,11 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
 
         describe("serialization", function() {
             it("should call \"listeners\" deserialization unit", function() {
-                var sourceObject = Target.create(),
-                    handlerObject = Montage.create(),
-                    serializer = Serializer.create().initWithRequire(require),
-                    deserializer = Deserializer.create(),
-                    actionListener = Montage.create(ActionEventListener).initWithHandler_action_(handlerObject, "doSomething");
+                var sourceObject = new Target(),
+                    handlerObject = new Montage(),
+                    serializer = new Serializer().initWithRequire(require),
+                    deserializer = new Deserializer(),
+                    actionListener = new ActionEventListener().initWithHandler_action_(handlerObject, "doSomething");
 
                 sourceObject.addEventListener("action", actionListener, false);
 

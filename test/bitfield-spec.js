@@ -35,7 +35,7 @@ describe("bitfield-spec",
 function() {
     describe("creating empty bitfield",
     function() {
-        var bitField = BitField.create();
+        var bitField = new BitField();
         it("should be true",
         function() {
             expect(bitField.value).toBeTruthy();
@@ -46,7 +46,7 @@ function() {
         var bitField;
 
         beforeEach(function() {
-            bitField = BitField.create().initWithDescriptor({
+            bitField = new BitField().initWithDescriptor({
                 A: {
                     value: false
                 },

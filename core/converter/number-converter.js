@@ -297,7 +297,7 @@ var NumberConverter = exports.NumberConverter = Converter.specialize( /** @lends
         @default {attribute} NumberValidator Uses this object.
     */
     validator: {
-        value: Montage.create(NumberValidator)
+        value: new NumberValidator()
     },
 
    /**

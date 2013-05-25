@@ -492,7 +492,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
             describe("the component tree", function() {
                 it("should reorganize the component tree when a new component is added", function() {
                     var Component = testPage.window.require("montage/ui/component").Component,
-                        componentE1 = Component.create(),
+                        componentE1 = new Component(),
                         element = testPage.window.document.getElementById("componentE1");
 
                     componentE1.hasTemplate = false;
@@ -839,8 +839,8 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
 
             it("should clone the argument from the template for a named parameter", function() {
                  var templateHtml = require("ui/draw/template-arguments.html").content,
-                    template = Template.create(),
-                    component = Component.create();
+                    template = new Template(),
+                    component = new Component();
 
 
                 return template.initWithHtml(templateHtml)
@@ -863,8 +863,8 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
 
             it("should clone the contents of the component for the star parameter", function() {
                  var templateHtml = require("ui/draw/template-arguments.html").content,
-                    template = Template.create(),
-                    component = Component.create();
+                    template = new Template(),
+                    component = new Component();
 
 
                 return template.initWithHtml(templateHtml)
@@ -890,8 +890,8 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
 
             it("should remove the data-arg attributes when cloning an argument for a named parameter", function() {
                  var templateHtml = require("ui/draw/template-arguments.html").content,
-                    template = Template.create(),
-                    component = Component.create();
+                    template = new Template(),
+                    component = new Component();
 
 
                 return template.initWithHtml(templateHtml)
@@ -915,8 +915,8 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
 
             it("should clone the right argument and ignore arguments for nested components", function() {
                  var templateHtml = require("ui/draw/template-arguments.html").content,
-                    template = Template.create(),
-                    component = Component.create();
+                    template = new Template(),
+                    component = new Component();
 
                 return template.initWithHtml(templateHtml)
                 .then(function() {
@@ -935,8 +935,8 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
 
             it("should clone an argument even if it's inside a data-montage-id element", function() {
                  var templateHtml = require("ui/draw/template-arguments.html").content,
-                    template = Template.create(),
-                    component = Component.create();
+                    template = new Template(),
+                    component = new Component();
 
                 return template.initWithHtml(templateHtml)
                 .then(function() {

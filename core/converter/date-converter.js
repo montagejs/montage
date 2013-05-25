@@ -2606,10 +2606,10 @@ var DateConverter = exports.DateConverter = Converter.specialize(/** @lends Date
 
 /**
         @type {Property}
-        @default {Function} Montage.create(DateValidator)
+        @default {Function} new DateValidator()
     */
     validator: {
-        value: Montage.create(DateValidator)
+        value: new DateValidator()
     },
 
     // valid fn values are:

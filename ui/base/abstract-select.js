@@ -33,9 +33,9 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
                 throw new Error("AbstractSelect cannot be instantiated.");
             }
             AbstractControl.didCreate.call(this); // super
-            this._pressComposer = PressComposer.create();
+            this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
-            this.contentController = RangeController.create();
+            this.contentController = new RangeController();
             this._values = [];
 
             this.defineBindings({

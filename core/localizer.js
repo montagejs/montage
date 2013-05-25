@@ -611,7 +611,7 @@ var DefaultLocalizer = Localizer.specialize( /** @lends DefaultLocalizer# */ {
  * @type {DefaultLocalizer}
  * @static
 */
-var defaultLocalizer = exports.defaultLocalizer = DefaultLocalizer.create().init();
+var defaultLocalizer = exports.defaultLocalizer = new DefaultLocalizer().init();
 
 /**
     The localize function from {@link defaultLocalizer} provided for convenience.
@@ -985,7 +985,7 @@ var Message = exports.Message = Montage.specialize( /** @lends MessageLocalizer#
 });
 
 var createMessageBinding = function(object, prop, key, defaultMessage, data, deserializer) {
-    var message = Message.create();
+    var message = new Message();
 
     for (var d in data) {
         if (typeof data[d] === "string") {

@@ -10,7 +10,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
     var inspector;
 
     beforeEach(function() {
-        inspector = SerializationInspector.create();
+        inspector = new SerializationInspector();
     });
 
     describe("visitor", function() {
@@ -20,7 +20,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         "value": 42
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitor = jasmine.createSpy('visitor'),
                 args;
 
@@ -39,7 +39,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         "value": "a string"
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitor = jasmine.createSpy('visitor'),
                 args;
 
@@ -58,7 +58,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         "value": {"/": {"source": "regexp"}}
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitor = jasmine.createSpy('visitor'),
                 args;
 
@@ -77,7 +77,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         "value": null
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitor = jasmine.createSpy('visitor'),
                 args;
 
@@ -96,7 +96,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         "value": ["a string", 42]
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitor = jasmine.createSpy('visitor'),
                 args;
 
@@ -128,7 +128,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         }
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitor = jasmine.createSpy('visitor'),
                 args;
 
@@ -157,7 +157,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         "value": {"@": "label"}
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitor = jasmine.createSpy('visitor'),
                 args;
 
@@ -176,7 +176,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         "value": {"#": "label"}
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitor = jasmine.createSpy('visitor'),
                 args;
 
@@ -206,7 +206,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         "value": 42
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitor = jasmine.createSpy('visitor'),
                 args;
 
@@ -228,7 +228,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         }
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitorSpy;
 
             visitorSpy = jasmine.createSpy('visitor');
@@ -258,7 +258,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         }
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitorSpy;
 
             visitorSpy = jasmine.createSpy('visitor');
@@ -280,7 +280,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         }
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitorSpy;
 
             visitorSpy = jasmine.createSpy('visitor');
@@ -303,7 +303,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         }
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitorSpy;
 
             visitorSpy = jasmine.createSpy('visitor');
@@ -325,7 +325,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         }
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitorSpy;
 
             visitorSpy = jasmine.createSpy('visitor');
@@ -343,7 +343,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         });
 
         it("should visit a binding converter", function() {
-            var serialization = Serialization.create().initWithObject({
+            var serialization = new Serialization().initWithObject({
                     "text": {
                         "prototype": "montage/ui/text.reel",
                         "bindings": {
@@ -375,7 +375,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         }
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitorSpy;
 
             visitorSpy = jasmine.createSpy('visitor');
@@ -397,7 +397,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         }
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitorSpy;
 
             visitorSpy = jasmine.createSpy('visitor');
@@ -422,7 +422,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                         }
                     }
                 },
-                serialization = Serialization.create().initWithObject(object),
+                serialization = new Serialization().initWithObject(object),
                 visitorSpy;
 
             visitorSpy = jasmine.createSpy('visitor');
@@ -438,7 +438,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
 
     describe("modifications", function() {
         it("should modify a number", function() {
-            var serialization = Serialization.create().initWithObject({
+            var serialization = new Serialization().initWithObject({
                     "object": {
                         "value": 42
                     }
@@ -466,7 +466,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         });
 
         it("should modify a string", function() {
-            var serialization = Serialization.create().initWithObject({
+            var serialization = new Serialization().initWithObject({
                     "object": {
                         "value": "a string"
                     }
@@ -494,7 +494,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         });
 
         it("should modify a regexp", function() {
-            var serialization = Serialization.create().initWithObject({
+            var serialization = new Serialization().initWithObject({
                     "object": {
                         "value": {"/": {"source": "regexp"}}
                     }
@@ -522,7 +522,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         });
 
         it("should modify a null", function() {
-            var serialization = Serialization.create().initWithObject({
+            var serialization = new Serialization().initWithObject({
                     "object": {
                         "value": null
                     }
@@ -550,7 +550,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         });
 
         it("should modify an array", function() {
-            var serialization = Serialization.create().initWithObject({
+            var serialization = new Serialization().initWithObject({
                     "object": {
                         "value": [1, 2, 3]
                     }
@@ -580,7 +580,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         });
 
         it("should modify an object", function() {
-            var serialization = Serialization.create().initWithObject({
+            var serialization = new Serialization().initWithObject({
                     "object": {
                         "value": {
                             "string": "a string"
@@ -614,7 +614,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         });
 
         it("should modify a reference", function() {
-            var serialization = Serialization.create().initWithObject({
+            var serialization = new Serialization().initWithObject({
                     "object": {
                         "value": {"@": "string"}
                     }
@@ -642,7 +642,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         });
 
         it("should modify a label", function() {
-            var serialization = Serialization.create().initWithObject({
+            var serialization = new Serialization().initWithObject({
                     "object1": {
                         "value": {
                             "string": "a string 1"
@@ -686,7 +686,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         });
 
         it("should modify a label of a montage object", function() {
-            var serialization = Serialization.create().initWithObject({
+            var serialization = new Serialization().initWithObject({
                     "object1": {
                         "prototype": "montage/ui/text.reel"
                     }
@@ -716,7 +716,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         });
 
         it("should modify binding references", function() {
-            var serialization = Serialization.create().initWithObject({
+            var serialization = new Serialization().initWithObject({
                     "text": {
                         "prototype": "montage/ui/text.reel",
                         "bindings": {
@@ -750,7 +750,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         });
 
         it("should modify complex binding references", function() {
-            var serialization = Serialization.create().initWithObject({
+            var serialization = new Serialization().initWithObject({
                     "text": {
                         "prototype": "montage/ui/text.reel",
                         "bindings": {
@@ -788,7 +788,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         });
 
         it("should modify a binding converter label", function() {
-            var serialization = Serialization.create().initWithObject({
+            var serialization = new Serialization().initWithObject({
                     "text": {
                         "prototype": "montage/ui/text.reel",
                         "bindings": {
@@ -830,7 +830,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         });
 
         it("should modify a localization reference", function() {
-            var serialization = Serialization.create().initWithObject({
+            var serialization = new Serialization().initWithObject({
                     "text": {
                         "prototype": "montage/ui/text.reel",
                         "localizations": {

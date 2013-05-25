@@ -9,7 +9,7 @@ describe("test/base/abstract-checkbox-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractCheckbox.create();
+                new AbstractCheckbox();
             }).toThrow();
         });
 
@@ -17,7 +17,7 @@ describe("test/base/abstract-checkbox-spec", function () {
             var CheckboxSubtype = AbstractCheckbox.specialize( {});
             var aCheckboxSubtype = null;
             expect(function () {
-                aCheckboxSubtype = CheckboxSubtype.create();
+                aCheckboxSubtype = new CheckboxSubtype();
             }).not.toThrow();
             expect(aCheckboxSubtype).toBeDefined();
         });
@@ -28,13 +28,13 @@ describe("test/base/abstract-checkbox-spec", function () {
             aCheckbox;
 
         beforeEach(function () {
-            aCheckbox = Checkbox.create();
+            aCheckbox = new Checkbox();
             aCheckbox.element = MockDOM.element();
         });
 
         describe("checked", function () {
             beforeEach(function () {
-                aCheckbox = Checkbox.create();
+                aCheckbox = new Checkbox();
                 aCheckbox.element = MockDOM.element();
                 aCheckbox.prepareForActivationEvents();
             });
@@ -78,7 +78,7 @@ describe("test/base/abstract-checkbox-spec", function () {
 
         describe("enabled", function () {
             beforeEach(function () {
-                aCheckbox = Checkbox.create();
+                aCheckbox = new Checkbox();
                 aCheckbox.element = MockDOM.element();
                 aCheckbox.checked = false;
                 aCheckbox.prepareForActivationEvents();
@@ -115,7 +115,7 @@ describe("test/base/abstract-checkbox-spec", function () {
 
         describe("active", function () {
             beforeEach(function () {
-                aCheckbox = Checkbox.create();
+                aCheckbox = new Checkbox();
                 aCheckbox.element = MockDOM.element();
                 aCheckbox.checked = false;
                 aCheckbox.prepareForActivationEvents();
@@ -160,7 +160,7 @@ describe("test/base/abstract-checkbox-spec", function () {
             aCheckbox;
 
         beforeEach(function () {
-            aCheckbox = Checkbox.create();
+            aCheckbox = new Checkbox();
             aCheckbox.element = MockDOM.element();
         });
 
@@ -179,7 +179,7 @@ describe("test/base/abstract-checkbox-spec", function () {
             aCheckbox, anElement, listener;
 
         beforeEach(function () {
-            aCheckbox = Checkbox.create();
+            aCheckbox = new Checkbox();
             anElement = MockDOM.element();
             listener = {
                 handleEvent: function() {}

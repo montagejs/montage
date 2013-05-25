@@ -160,7 +160,7 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
     canDrawGate: {
         get: function() {
             if (!this._canDrawGate) {
-                this._canDrawGate = Gate.create().initWithDelegate(this);
+                this._canDrawGate = new Gate().initWithDelegate(this);
                 this._canDrawGate.setField("componentTreeLoaded", false);
             }
             return this._canDrawGate;
@@ -184,7 +184,7 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
         enumerable: false,
         get: function() {
             if (!this._blockDrawGate) {
-                this._blockDrawGate = Gate.create().initWithDelegate(this);
+                this._blockDrawGate = new Gate().initWithDelegate(this);
                 this._blockDrawGate.setField("element", false);
                 this._blockDrawGate.setField("drawRequested", false);
             }
@@ -2569,7 +2569,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
      */
     canDrawGate: {
         get: function() {
-            return this._canDrawGate || (this._canDrawGate = Gate.create().initWithDelegate(this));
+            return this._canDrawGate || (this._canDrawGate = new Gate().initWithDelegate(this));
         }
     },
 

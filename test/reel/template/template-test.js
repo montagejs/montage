@@ -35,7 +35,7 @@ var Component = require("montage/ui/component").Component;
 
 var TemplateTest = exports.TemplateTest = Montage.specialize( {
     loadComponents: {value: function() {
-//        var component = Component.create();
+//        var component = new Component();
 //        component.hasTemplate = true;
 //        component.element = document.body;
 //
@@ -46,11 +46,11 @@ var TemplateTest = exports.TemplateTest = Montage.specialize( {
     }}
 });
 
-//window.test = Montage.create(TemplateTest);
+//window.test = new TemplateTest();
 
 // Setup up test buttons if we're running in the browser and not in jasmine.
 if (window.parent === window) {
-    //var component = Component.create();
+    //var component = new Component();
     //component.hasTemplate = true;
     //component.element = document.body;
     //component.needsDraw = true;

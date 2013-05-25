@@ -48,7 +48,7 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
     enterDocument: {
         value: function (firstTime) {
             if (firstTime) {
-                this._translateComposer = TranslateComposer.create();
+                this._translateComposer = new TranslateComposer();
                 this._translateComposer.identifier = "thumb";
                 this._translateComposer.axis = this.axis;
                 this._translateComposer.hasMomentum = false;

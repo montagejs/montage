@@ -584,7 +584,7 @@ var _defaultUndoManager = null;
 Montage.defineProperty(exports, "defaultUndoManager", {
     get: function () {
         if (!_defaultUndoManager) {
-            _defaultUndoManager = UndoManager.create();
+            _defaultUndoManager = new UndoManager();
         }
         return _defaultUndoManager;
     }

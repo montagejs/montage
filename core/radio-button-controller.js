@@ -15,7 +15,7 @@ exports.RadioButtonController = Montage.specialize( {
             return this.getPath("contentController.content");
         },
         set: function (content) {
-            this.contentController = RangeController.create()
+            this.contentController = new RangeController()
                 .initWithContent(content);
         }
     },

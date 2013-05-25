@@ -114,7 +114,7 @@ exports.BytesConverter = Converter.specialize( /** @lends BytesConverter# */ {
      var Converter= require("core/converter/converter").Converter;
      var BytesConverter = require("core/converter/converter").BytesConverter;
      var bytes = "12341234";
-     var byteconverter = BytesConverter.create();
+     var byteconverter = new BytesConverter();
      console.log("Converted: " + byteconverter.convert(bytes));
      console.log("Reverted: " + byteconverter.revert(bytes));
      // Converted: 11.77MB
@@ -135,7 +135,7 @@ exports.BytesConverter = Converter.specialize( /** @lends BytesConverter# */ {
      var Converter= require("core/converter/converter").Converter;
      var BytesConverter = require("core/converter/converter").BytesConverter;
      var bytes = "11.77MB";
-     var byteconverter = BytesConverter.create();
+     var byteconverter = new BytesConverter();
      console.log("Reverted: " + byteconverter.revert(bytes));
      // Reverted: 12341234
      */

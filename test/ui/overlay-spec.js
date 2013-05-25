@@ -8,7 +8,7 @@ describe("ui/overlay-spec", function() {
     var anOverlay;
 
     beforeEach(function() {
-        anOverlay = Overlay.create();
+        anOverlay = new Overlay();
         anOverlay.hasTemplate = false;
         anOverlay.element = MockDOM.element();
         anOverlay.modalMaskElement = MockDOM.element();

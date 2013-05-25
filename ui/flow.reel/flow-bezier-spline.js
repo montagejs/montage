@@ -252,7 +252,7 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
 
     transform: {
         value: function (matrix) {
-            var spline = FlowBezierSpline.create();
+            var spline = new FlowBezierSpline();
 
             spline._densities = this._densities;
             spline._densitySummation = this._densitySummation;

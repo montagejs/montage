@@ -135,7 +135,7 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     defaultBlueprintObjectProperty: {
         get: function() {
             if (!this._defaultBlueprintObjectProperty) {
-                this._defaultBlueprintObjectProperty = ObjectProperty.create().init();
+                this._defaultBlueprintObjectProperty = new ObjectProperty().init();
             }
             return this._defaultBlueprintObjectProperty;
         }
@@ -155,7 +155,7 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     defaultBinder: {
         get: function() {
             if (!this._defaultBinder) {
-                this._defaultBinder = BinderModule.Binder.create().initWithName("default");
+                this._defaultBinder = new BinderModule.Binder().initWithName("default");
                 this._defaultBinder.isDefault = true;
                 this.addBinder(this._defaultBinder);
             }

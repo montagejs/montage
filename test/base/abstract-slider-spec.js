@@ -9,14 +9,14 @@ describe("test/base/abstract-slider-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractSlider.create();
+                new AbstractSlider();
             }).toThrow();
         });
         it("can be instantiated as a subtype", function () {
             var SliderSubtype = AbstractSlider.specialize( {});
             var aSliderSubtype = null;
             expect(function () {
-                aSliderSubtype = SliderSubtype.create();
+                aSliderSubtype = new SliderSubtype();
             }).not.toThrow();
             expect(aSliderSubtype).toBeDefined();
         });
@@ -25,7 +25,7 @@ describe("test/base/abstract-slider-spec", function () {
         var Slider = AbstractSlider.specialize( {}),
             aSlider;
         beforeEach(function () {
-            aSlider = Slider.create();
+            aSlider = new Slider();
             aSlider.element = MockDOM.element();
         });
 
@@ -197,7 +197,7 @@ describe("test/base/abstract-slider-spec", function () {
             var Slider = AbstractSlider.specialize( {}),
                 aSlider, anElement;
             beforeEach(function () {
-                aSlider = Slider.create();
+                aSlider = new Slider();
                 anElement = MockDOM.element();
                 aSlider.element = anElement;
             });
@@ -269,7 +269,7 @@ describe("test/base/abstract-slider-spec", function () {
             var Slider = AbstractSlider.specialize( {}),
                 aSlider;
             beforeEach(function () {
-                aSlider = Slider.create();
+                aSlider = new Slider();
                 aSlider.element = MockDOM.element();
             });
 
@@ -294,7 +294,7 @@ describe("test/base/abstract-slider-spec", function () {
             var Slider = AbstractSlider.specialize( {}),
                 aSlider, anElement, listener;
             beforeEach(function () {
-                aSlider = Slider.create();
+                aSlider = new Slider();
                 anElement = MockDOM.element();
                 aSlider.element = anElement;
                 listener = {

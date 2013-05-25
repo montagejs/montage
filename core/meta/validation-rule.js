@@ -162,7 +162,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
     evaluateRule: {
         value: function(objectInstance) {
             if (this._propertyValidationEvaluator === null) {
-                var propertyValidationSemantics = PropertyValidationSemantics.create().initWithBlueprint(this.blueprint);
+                var propertyValidationSemantics = new PropertyValidationSemantics().initWithBlueprint(this.blueprint);
                 this._propertyValidationEvaluator = propertyValidationSemantics.compile(this.selector.syntax);
             }
             return this._propertyValidationEvaluator(objectInstance);
