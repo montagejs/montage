@@ -445,7 +445,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     /**
      @private
      */
-    didCreate: {
+    constructor: {
         value: function() {
             if (window.loadInfo && !this.parentApplication) {
                 this.parentApplication = window.loadInfo.parent.document.application;

@@ -1161,7 +1161,7 @@ var TemplateResources = Montage.specialize( {
     template: {value: null},
     rootUrl: {value: ""},
 
-    didCreate: {
+    constructor: {
         value: function() {
             this._resources = Object.create(null);
         }

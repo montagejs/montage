@@ -13,11 +13,11 @@ var logger = require("core/logger").logger("blueprint");
 exports.RemoteReference = Montage.specialize( {
 
     /**
-      didCreate method
+      constructor method
       @function
       @private
     */
-    didCreate: {
+    constructor: {
         value: function() {
             this._value = null;
             this._reference = null;

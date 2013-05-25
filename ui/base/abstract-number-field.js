@@ -22,7 +22,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
             if (this.constructor === AbstractNumberField) {
                 throw new Error("AbstractNumberField cannot be instantiated.");
             }
-            AbstractControl.didCreate.call(this); // super
+            AbstractControl.constructor.call(this); // super
             this._propertyNamesUsed = {};
             this.defineBinding( "classList.has('montage--disabled')", { "<-": "!enabled" });
         }

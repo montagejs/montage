@@ -36,7 +36,7 @@ exports.Test = Montage.specialize( {
      @param
          @returns
      */
-    didCreate:{
+    constructor:{
         value:function () {
         }
     },

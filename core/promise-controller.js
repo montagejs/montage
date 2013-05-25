@@ -27,7 +27,7 @@ var Promise = require("core/promise").Promise;
 
 var PromiseController = exports.PromiseController = Montage.specialize( {
 
-    didCreate: {
+    constructor: {
         value: function () {
             this.reset = null;
             this.addOwnPropertyChangeListener("promise", this);
@@ -60,7 +60,7 @@ var PromiseController = exports.PromiseController = Montage.specialize( {
                 reset = true;
             };
 
-            // these get set in the context of didCreate, in order, helping
+            // these get set in the context of constructor, in order, helping
             // toward the goal that all promise controllers have the same
             // hidden class by the end of this sequence
             self.value = null;

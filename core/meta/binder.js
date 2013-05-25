@@ -27,11 +27,11 @@ var _binderManager = null;
 var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
 
     /**
-      didCreate method
+      constructor method
       @function
       @private
     */
-    didCreate: {
+    constructor: {
         value: function() {
             this._name = null;
             this.binderModuleId = null;

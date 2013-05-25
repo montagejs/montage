@@ -12,7 +12,7 @@ var Montage = require("core/core").Montage;
 
 var Iteration = Montage.specialize( {
 
-    didCreate: {
+    constructor: {
         value: function () {
             this.depth = null;
             this.node = null;
@@ -36,7 +36,7 @@ var Iteration = Montage.specialize( {
 
 var Node = exports.TreeController = Montage.specialize( {
 
-    didCreate: {
+    constructor: {
         value: function () {
 
             this.content = null;

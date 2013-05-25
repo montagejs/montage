@@ -380,11 +380,11 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     /**
-      didCreate method
+      constructor method
       @function
       @private
     */
-    didCreate: {
+    constructor: {
         value: function() {
             var userAgent = navigator.userAgent,
                 code;

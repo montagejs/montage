@@ -12,9 +12,9 @@ exports.SelectionTest = TestController.specialize( {
         value: null
     },
 
-    didCreate: {
+    constructor: {
         value: function () {
-            TestController.didCreate.call(this);
+            TestController.constructor.call(this);
             this.content = ["Alice", "Bob", "Carol", "Dave", "Eve"];
         }
     },

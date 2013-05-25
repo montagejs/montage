@@ -7,7 +7,7 @@ exports.TargetChainController = Montage.specialize( {
         value: null
     },
 
-    didCreate: {
+    constructor: {
         value: function () {
             this.addOwnPropertyChangeListener("content", this);
         }

@@ -119,9 +119,9 @@ var Iteration = exports.Iteration = Montage.specialize( {
      * Creates the initial values of all instance state.
      * @private
      */
-    didCreate: {
+    constructor: {
         value: function () {
-            Object.getPrototypeOf(Iteration).didCreate.call(this);
+            Object.getPrototypeOf(Iteration).constructor.call(this);
             this.repetition = null;
             this.controller = null;
             this.content = null;
@@ -572,11 +572,11 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
     /**
      * @private
      */
-    didCreate: {
+    constructor: {
         value: function () {
-            Object.getPrototypeOf(Repetition).didCreate.call(this);
+            Object.getPrototypeOf(Repetition).constructor.call(this);
 
-            // XXX Note: Any property added to initialize in didCreate must
+            // XXX Note: Any property added to initialize in constructor must
             // also be accounted for in _teardownIterationTemplate to reset the
             // repetition.
 
@@ -716,18 +716,18 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
      * Called by Component to build the component tree, conveniently abused
      * here to set up an iteration template since we know that this method is
      * called after the inner template becomes available and after
-     * <code>didCreate</code>.  We must set up the iteration template after
+     * <code>constructor</code>.  We must set up the iteration template after
      * creation because the deserializer would interfere with instantiating the
      * inner template.
      * @private
      */
     // TODO @aadsm, are the comments above and below still true, or could we
-    // put _setupIterationTemplate in didCreate again?
+    // put _setupIterationTemplate in constructor again?
     expandComponent: {
         value: function expandComponent() {
             // "_isComponentExpanded" is used by Component to determine whether
             // the node of the component object hierarchy is traversable.
-            // We can't set up the iteration template during "didCreate"
+            // We can't set up the iteration template during "constructor"
             // because it would interfere with the active deserialization
             // process.  We wait until the deserialization is complete and the
             // template is fully instantiated so we can capture all the child
@@ -765,7 +765,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
      * serializer
      *
      * Note that this function must be called on demand for the first iteration
-     * needed because it cannot be called in didCreate.  Setting up the
+     * needed because it cannot be called in constructor.  Setting up the
      * iteration template would interfere with normal deserialization.
      *
      * @private
@@ -968,7 +968,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
                         self.addChildComponent(component);
                     });
                     part.loadComponentTree().then(function() {
-                        self.didCreateIteration(iteration);
+                        self.constructorIteration(iteration);
                     }).done();
                     self.currentIteration = null;
                 })
@@ -990,7 +990,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
      */
     // This utility method is shared by two special cases for the completion of
     // _createIteration.
-    didCreateIteration: {
+    constructorIteration: {
         value: function (iteration) {
             this._createdIterations++;
 
@@ -1378,7 +1378,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
     /**
      * @private
      */
-    // Called by didCreate to monitor changes to isSelectionEnabled and arrange
+    // Called by constructor to monitor changes to isSelectionEnabled and arrange
     // the appropriate event listeners.
     handleIsSelectionEnabledChange: {
         value: function (selectionTracking) {

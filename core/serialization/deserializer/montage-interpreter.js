@@ -68,7 +68,7 @@ var MontageContext = Montage.specialize.call(Context, {
     _unitsToDeserialize: {value: null},
     _element: {value: null},
 
-    didCreate: {
+    constructor: {
         value: function() {
             this._unitsToDeserialize = [];
         }

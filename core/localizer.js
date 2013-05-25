@@ -630,7 +630,7 @@ exports.localize = defaultLocalizer.localize.bind(defaultLocalizer);
 */
 var Message = exports.Message = Montage.specialize( /** @lends MessageLocalizer# */ {
 
-    didCreate: {
+    constructor: {
         value: function() {
             // _data Map needs to track changes on existing properties of
             // _dataObject, .toMap() provides this behaviour.

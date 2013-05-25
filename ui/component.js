@@ -62,9 +62,9 @@ var Montage = require("montage").Montage,
 var Component = exports.Component = Target.specialize(/** @lends module:montage/ui/component.Component# */ {
     DOM_ARG_ATTRIBUTE: {value: "data-arg"},
 
-    didCreate: {
+    constructor: {
         value: function () {
-            Montage.didCreate.call(this);
+            Montage.constructor.call(this);
             this._isComponentExpanded = false;
             this._isTemplateLoaded = false;
             this._isTemplateInstantiated = false;
@@ -2134,7 +2134,7 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
      *
      * exports.Main = Component.specialize( {
      *
-     *     didCreate: {
+     *     constructor: {
      *         value: function() {
      *             this.localizer = defaultLocalizer;
      *             this.waitForLocalizerMessages = true;

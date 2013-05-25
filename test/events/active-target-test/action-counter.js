@@ -7,7 +7,7 @@ exports.ActionCounter = Component.specialize( {
         value: false
     },
 
-    didCreate: {
+    constructor: {
         value: function () {
             this.needsDraw = true;
         }

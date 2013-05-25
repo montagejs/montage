@@ -239,13 +239,13 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
     },
 
     /**
-      didCreate method
+      constructor method
       @private
     */
-    didCreate: {
+    constructor: {
         value: function() {
             // console.log("KEY CREATED")
-            Composer.didCreate.call(this);
+            Composer.constructor.call(this);
         }
     },
 
@@ -304,7 +304,7 @@ var KeyManagerProxy = Montage.specialize(  {
     },
 
     /**
-      didCreate method
+      constructor method
       @private
     */
     _keysToRegister : {
@@ -312,10 +312,10 @@ var KeyManagerProxy = Montage.specialize(  {
     },
 
     /**
-      didCreate method
+      constructor method
       @private
     */
-    didCreate: {
+    constructor: {
         value: function() {
             // console.log("PROXY CREATED")
         }

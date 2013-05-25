@@ -47,7 +47,7 @@ exports.RadioButtonController = Montage.specialize( {
     /**
      * @private
      */
-    didCreate: {
+    constructor: {
         value: function () {
             this._radioButtons = [];
 

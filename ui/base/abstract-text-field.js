@@ -25,7 +25,7 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
             if(this.constructor === AbstractTextField) {
                 throw new Error("AbstractTextField cannot be instantiated.");
             }
-            AbstractControl.didCreate.call(this); // super
+            AbstractControl.constructor.call(this); // super
 
             this._keyComposer = new KeyComposer();
             this._keyComposer.component = this;

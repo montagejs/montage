@@ -49,7 +49,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
         value: false
     },
 
-    didCreate: {
+    constructor: {
         value: function() {
             this._switchElements = Object.create(null);
             this._switchComponentTreeLoaded = Object.create(null);

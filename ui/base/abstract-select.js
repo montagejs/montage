@@ -32,7 +32,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
             if(this.constructor === AbstractSelect) {
                 throw new Error("AbstractSelect cannot be instantiated.");
             }
-            AbstractControl.didCreate.call(this); // super
+            AbstractControl.constructor.call(this); // super
             this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
             this.contentController = new RangeController();

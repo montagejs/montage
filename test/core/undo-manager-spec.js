@@ -6,7 +6,7 @@ var Montage = require("montage").Montage,
 
 var Roster = Montage.specialize( {
 
-    didCreate: {
+    constructor: {
         value: function () {
             this._members = new Set();
         }

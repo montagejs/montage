@@ -40,9 +40,9 @@ var Flow = exports.Flow = Component.specialize( {
     /**
      * @private
      */
-    didCreate: {
+    constructor: {
         value: function () {
-            Component.didCreate.call(this); // super
+            Component.constructor.call(this); // super
             // The template has a binding from these visibleIndexes to
             // the frustrum controller's visibleIndexes.  We manage the
             // array within the flow and use it also in the flow

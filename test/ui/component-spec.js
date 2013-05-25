@@ -1099,11 +1099,11 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                     aComponent.element = anElement;
                     expect(aComponent.classList.contains("foo")).toBeTruthy();
                 });
-                it("should not fail when classList is used in didCreate", function () {
+                it("should not fail when classList is used in constructor", function () {
                     expect(function() {
                         aComponent = Component.specialize( {
                             hasTemplate: { value: false },
-                            didCreate: {
+                            constructor: {
                                 value: function() {
                                     this.classList.contains("foo");
                                 }

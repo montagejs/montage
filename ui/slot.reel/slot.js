@@ -46,9 +46,9 @@ exports.Slot = Component.specialize( /** @lends Slot# */ {
         value: false
     },
 
-    didCreate: {
+    constructor: {
         value: function() {
-            Component.didCreate.call(this);
+            Component.constructor.call(this);
             this.content = null;
         }
     },

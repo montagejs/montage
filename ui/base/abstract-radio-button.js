@@ -26,7 +26,7 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
             if(this.constructor === AbstractRadioButton) {
                 throw new Error("AbstractRadioButton cannot be instantiated.");
             }
-            AbstractControl.didCreate.call(this); // super
+            AbstractControl.constructor.call(this); // super
             this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
 

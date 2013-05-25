@@ -172,7 +172,7 @@ var UndoManager = exports.UndoManager = Montage.specialize( /** @lends UndoManag
         value: null
     },
 
-    didCreate: {
+    constructor: {
         value: function () {
             this._operationQueue = [];
             this._promiseOperationMap = new Map();
