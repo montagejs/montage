@@ -87,6 +87,24 @@ var AbstractRadioButton = exports.AbstractRadioButton = Montage.create(AbstractC
         value: null
     },
 
+    enterDocument: {
+        value: function(firstTime) {
+            if (firstTime) {
+                this.element.setAttribute("role", "radio");
+            }
+        }
+    },
+
+    draw: {
+        value: function() {
+            if (this.checked) {
+                this.element.setAttribute("aria-checked", "true");
+            } else {
+                this.element.setAttribute("aria-checked", "false");
+            }
+        }
+    },
+
     handlePressStart: {
         value: function(event) {
             this.active = true;

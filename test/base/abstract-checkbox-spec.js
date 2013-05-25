@@ -243,4 +243,33 @@ describe("test/base/abstract-checkbox-spec", function () {
         });
     });
 
+    describe("aria", function() {
+        var Checkbox = Montage.create(AbstractCheckbox, {}),
+            aCheckbox;
+
+        beforeEach(function () {
+            aCheckbox = Checkbox.create();
+            aCheckbox.element = MockDOM.element();
+        });
+
+        it("should have the checkbox role", function() {
+            aCheckbox.enterDocument(true);
+
+            expect(aCheckbox.element.getAttribute("role")).toBe("checkbox");
+        });
+
+        it("should have aria-checked set to true when it is checked", function() {
+            aCheckbox.checked = true;
+            aCheckbox.draw();
+
+            expect(aCheckbox.element.getAttribute("aria-checked")).toBe("true");
+        });
+
+        it("should have aria-checked set to false when it is not checked", function() {
+            aCheckbox.checked = false;
+            aCheckbox.draw();
+
+            expect(aCheckbox.element.getAttribute("aria-checked")).toBe("false");
+        });
+    });
 });

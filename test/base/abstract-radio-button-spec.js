@@ -14,27 +14,27 @@ describe("test/base/abstract-radio-button-spec", function () {
         });
 
         it("can be instantiated as a subtype", function () {
-            var InputRadioSubtype = Montage.create(AbstractRadioButton, {});
+            var RadioButtonSubtype = Montage.create(AbstractRadioButton, {});
             var aRadioButtonSubtype = null;
             expect(function () {
-                aRadioButtonSubtype = InputRadioSubtype.create();
+                aRadioButtonSubtype = RadioButtonSubtype.create();
             }).not.toThrow();
             expect(aRadioButtonSubtype).toBeDefined();
         });
     });
 
     describe("properties", function () {
-        var InputRadio = Montage.create(AbstractRadioButton, {}),
+        var RadioButton = Montage.create(AbstractRadioButton, {}),
             aRadioButton;
 
         beforeEach(function () {
-            aRadioButton = InputRadio.create();
+            aRadioButton = RadioButton.create();
             aRadioButton.element = MockDOM.element();
         });
 
         describe("checked", function () {
             beforeEach(function () {
-                aRadioButton = InputRadio.create();
+                aRadioButton = RadioButton.create();
                 aRadioButton.element = MockDOM.element();
                 aRadioButton.checked = false;
                 aRadioButton.prepareForActivationEvents();
@@ -63,7 +63,7 @@ describe("test/base/abstract-radio-button-spec", function () {
 
         describe("enabled", function () {
             beforeEach(function () {
-                aRadioButton = InputRadio.create();
+                aRadioButton = RadioButton.create();
                 aRadioButton.element = MockDOM.element();
                 aRadioButton.checked = false;
                 aRadioButton.prepareForActivationEvents();
@@ -100,7 +100,7 @@ describe("test/base/abstract-radio-button-spec", function () {
 
         describe("active", function () {
             beforeEach(function () {
-                aRadioButton = InputRadio.create();
+                aRadioButton = RadioButton.create();
                 aRadioButton.element = MockDOM.element();
                 aRadioButton.checked = false;
                 aRadioButton.prepareForActivationEvents();
@@ -141,11 +141,11 @@ describe("test/base/abstract-radio-button-spec", function () {
     });
 
     describe("draw", function () {
-        var InputRadio = Montage.create(AbstractRadioButton, {}),
+        var RadioButton = Montage.create(AbstractRadioButton, {}),
             aRadioButton;
 
         beforeEach(function () {
-            aRadioButton = InputRadio.create();
+            aRadioButton = RadioButton.create();
             aRadioButton.element = MockDOM.element();
         });
 
@@ -160,11 +160,11 @@ describe("test/base/abstract-radio-button-spec", function () {
     });
 
     describe("events", function () {
-        var InputRadio = Montage.create(AbstractRadioButton, {}),
+        var RadioButton = Montage.create(AbstractRadioButton, {}),
             aRadioButton, anElement, listener;
 
         beforeEach(function () {
-            aRadioButton = InputRadio.create();
+            aRadioButton = RadioButton.create();
             anElement = MockDOM.element();
             listener = {
                 handleEvent: function() {}
@@ -239,4 +239,33 @@ describe("test/base/abstract-radio-button-spec", function () {
         });
     });
 
+    describe("aria", function() {
+        var RadioButton = Montage.create(AbstractRadioButton, {}),
+            aRadioButton;
+
+        beforeEach(function () {
+            aRadioButton = RadioButton.create();
+            aRadioButton.element = MockDOM.element();
+        });
+
+        it("should have the checkbox role", function() {
+            aRadioButton.enterDocument(true);
+
+            expect(aRadioButton.element.getAttribute("role")).toBe("radio");
+        });
+
+        it("should have aria-checked set to true when it is checked", function() {
+            aRadioButton.checked = true;
+            aRadioButton.draw();
+
+            expect(aRadioButton.element.getAttribute("aria-checked")).toBe("true");
+        });
+
+        it("should have aria-checked set to false when it is not checked", function() {
+            aRadioButton.checked = false;
+            aRadioButton.draw();
+
+            expect(aRadioButton.element.getAttribute("aria-checked")).toBe("false");
+        });
+    });
 });
