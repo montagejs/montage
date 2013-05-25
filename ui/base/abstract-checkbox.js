@@ -48,6 +48,10 @@ var AbstractCheckbox = exports.AbstractCheckbox = Montage.create(AbstractControl
         value: false
     },
 
+    value: {
+        value: null
+    },
+
     _checked: {
         value: false
     },
