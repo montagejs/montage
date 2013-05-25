@@ -185,12 +185,6 @@ Object.defineProperty(Montage, "specialize", {
 
         var prototype = Object.create(this.prototype);
         Montage.defineProperties(prototype, prototypeProperties);
-        Montage.defineProperties(constructor, constructorProperties);
-
-        Montage.defineProperty(constructor, "__isConstructor__", {
-            value: true,
-            enumerable: false
-        });
 
         if (CONSTRUCTOR_COMPATIBILITY) {
             // to catch class properties
@@ -244,6 +238,13 @@ Object.defineProperty(Montage, "specialize", {
             }
         }
         // end compatibility code
+        // needs to be done afterwards so that it overrides any prototype properties
+        Montage.defineProperties(constructor, constructorProperties);
+        Montage.defineProperty(constructor, "__isConstructor__", {
+            value: true,
+            enumerable: false
+        });
+
         constructor.prototype = prototype;
         Montage.defineProperty(prototype, "constructor", {
             value: constructor,

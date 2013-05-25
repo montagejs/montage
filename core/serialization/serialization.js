@@ -159,7 +159,7 @@ var Serialization = Montage.specialize( {
     }
 });
 
-var SerializationMerger = Montage.specialize( {
+var SerializationMerger = Montage.specialize(null, {
     /**
      * Merges serialization2 into serialization1.
      *

@@ -51,19 +51,27 @@ var MontageSerializer = Montage.specialize.call(Serializer, {
         }
     },
 
+    defineSerializationUnit: {
+        value: function(name, funktion) {
+            this.constructor.defineSerializationUnit.call(this, name, funktion);
+        }
+    }
+}, {
+
+    defineSerializationUnit: {
+        value: function(name, funktion) {
+            this._units[name] = funktion;
+        }
+    },
+
     getDefaultObjectNameForModuleId: {
         value: function(moduleId) {
             this._findObjectNameRegExp.test(moduleId);
 
             return RegExp.$1.replace(this._toCamelCaseRegExp, this._replaceToCamelCase);
         }
-    },
-
-    defineSerializationUnit: {
-        value: function(name, funktion) {
-            this._units[name] = funktion;
-        }
     }
+
 });
 
 exports.MontageSerializer = MontageSerializer;

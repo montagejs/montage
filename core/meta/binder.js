@@ -32,7 +32,7 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
       @private
     */
     constructor: {
-        value: function() {
+        value: function Binder() {
             this._name = null;
             this.binderModuleId = null;
             this.isDefault = false;
@@ -92,20 +92,6 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
     name: {
         get: function() {
             return this._name;
-        }
-    },
-
-    /**
-     Returns the blueprint binder manager.
-     @type {Property}
-     @returns Blueprint Binder Manager
-     */
-    manager: {
-        get: function() {
-            if (_binderManager === null) {
-                _binderManager = new BinderManager();
-            }
-            return _binderManager;
         }
     },
 
@@ -303,5 +289,21 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
     blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
 
     blueprint:require("montage")._blueprintDescriptor
+
+}, {
+
+    /**
+     Returns the blueprint binder manager.
+     @type {Property}
+     @returns Blueprint Binder Manager
+     */
+    manager: {
+        get: function() {
+            if (_binderManager === null) {
+                _binderManager = new BinderManager();
+            }
+            return _binderManager;
+        }
+    }
 
 });

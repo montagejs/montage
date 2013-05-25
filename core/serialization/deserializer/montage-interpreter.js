@@ -47,7 +47,7 @@ var MontageInterpreter = Montage.specialize.call(Interpreter, {
 
                 locationId = object.prototype || object.object;
                 if (locationId) {
-                    locationDesc = reviver.parseObjectLocationId(locationId);
+                    locationDesc = MontageReviver.parseObjectLocationId(locationId);
                     module = moduleLoader.getModule(
                         locationDesc.moduleId, label);
                     if (Promise.isPromise(module)) {

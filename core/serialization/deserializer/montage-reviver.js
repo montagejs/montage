@@ -77,8 +77,6 @@ var ModuleLoader = Montage.specialize( {
 
 var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
     moduleLoader: {value: null},
-    _unitRevivers: {value: Object.create(null)},
-    _unitNames: {value: []},
 
     /**
      * @param {Require} _require The require object to load modules
@@ -92,13 +90,6 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
                                  .init(_require, objectRequires);
 
             return this;
-        }
-    },
-
-    defineUnitReviver: {
-        value: function(name, funktion) {
-            this._unitRevivers[name] = funktion;
-            this._unitNames.push(name);
         }
     },
 
@@ -146,7 +137,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
                 objectName;
 
             if (locationId) {
-                locationDesc = this.parseObjectLocationId(locationId);
+                locationDesc = MontageReviver.parseObjectLocationId(locationId);
                 module = this.moduleLoader.getModule(locationDesc.moduleId,
                     label);
                 objectName = locationDesc.objectName;
@@ -200,7 +191,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
             } else {
                 // Units are deserialized after all objects have been revived.
                 // This happens at didReviveObjects.
-                context.setUnitsToDeserialize(object, montageObjectDesc, this._unitNames);
+                context.setUnitsToDeserialize(object, montageObjectDesc, MontageReviver._unitNames);
                 properties = this.deserializeMontageObjectProperties(object, montageObjectDesc.properties, context);
 
                 if (Promise.isPromise(properties)) {
@@ -237,7 +228,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
             var substituteObject;
 
             var selfDeserializer = new SelfDeserializer()
-                .initWithObjectAndObjectDescriptorAndContextAndUnitNames(object, objectDesc, context, this._unitNames);
+                .initWithObjectAndObjectDescriptorAndContextAndUnitNames(object, objectDesc, context, MontageReviver._unitNames);
             substituteObject = object.deserializeSelf(selfDeserializer);
 
             if (Promise.isPromise(substituteObject)) {
@@ -341,7 +332,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
         value: function(context) {
             var unitsToDeserialize = context.getUnitsToDeserialize(),
                 unitsDesc,
-                units = this._unitRevivers;
+                units = MontageReviver._unitRevivers;
 
             for (var i = 0, unitsDesc; unitsDesc = unitsToDeserialize[i]; i++) {
                 var unitNames = unitsDesc.unitNames;
@@ -356,7 +347,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
                 }
             }
         }
-    },
+    }
+
+}, {
+    _unitRevivers: {value: Object.create(null)},
+    _unitNames: {value: []},
 
     _findObjectNameRegExp: {
         value: /([^\/]+?)(\.reel)?$/
@@ -417,7 +412,21 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
 
             return locationDesc;
         }
+    },
+
+    defineUnitReviver: {
+        value: function(name, funktion) {
+            this._unitRevivers[name] = funktion;
+            this._unitNames.push(name);
+        }
+    },
+
+    getTypeOf: {
+        value: function(value) {
+            return this.prototype.getTypeOf.call(this, value);
+        }
     }
+
 });
 
 if (typeof exports !== "undefined") {

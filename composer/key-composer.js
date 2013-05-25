@@ -105,74 +105,6 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
     },
 
     /**
-      Create a ComposerKey.
-      The key will only dispatch events when the component's element is in the native key event target path.
-      If no identifier is provided, the keys and component's identifier will be used to generate an identifier.
-      Note: You do not have to call new KeyComposer() before calling this method.
-      @function
-      @param {Object} component. The component to attach the keyComposer to.
-      @param {Object} keys. The key sequence.
-      @param {Object} identifier. The identifier.
-      @returns {Object} the newly created KeyComposer Object
-    */
-    createKey: {
-        value: function(component, keys, identifier) {
-            var key = this;
-
-            if (this === KeyComposer) {
-                // This function has been called without creating a new instance of KeyComposer first
-                key = new KeyComposer();
-            }
-
-            if (!identifier) {
-                if (component.identifier) {
-                    identifier = component.identifier + keys.toLowerCase().replace(/[ +]/g).toCapitalized();
-                } else {
-                    identifier = keys.toLowerCase().replace(/[ +]/g);
-                }
-            }
-            key.keys = keys;
-            key.identifier = identifier;
-
-            // console.log("CREATING KEY:", component, key, key.identifier);
-
-            component.addComposer(key);
-
-            return key;
-        }
-    },
-
-    /**
-      Create a global composerKey.
-      A global key will dispatch events without requiring the component's element be in the native key event target path
-      If no identifier is provided, the keys and component's identifier will be used to generate an identifier.
-      Note: You do not have to call new KeyComposer() before calling this method.
-      @function
-      @param {Object} component. The component to attach the keyComposer to.
-      @param {Object} keys. The key sequence.
-      @param {Object} identifier. The identifier.
-      @returns {Object} the newly created KeyComposer Object
-    */
-    createGlobalKey: {
-        value: function(component, keys, identifier) {
-            var key = this;
-
-            if (this === KeyComposer) {
-                // This function has been called without creating a new instance of KeyComposer first
-                key = new KeyComposer();
-            }
-
-            key.keys = keys;
-            key.identifier = identifier;
-            // console.log("CREATING GLOBAL KEY:", component, key);
-
-            component.addComposerForElement(key, window);
-
-            return key;
-        }
-    },
-
-    /**
       load method
       @private
     */
@@ -276,6 +208,76 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
             }
         }
     }
+}, {
+
+    /**
+      Create a ComposerKey.
+      The key will only dispatch events when the component's element is in the native key event target path.
+      If no identifier is provided, the keys and component's identifier will be used to generate an identifier.
+      Note: You do not have to call new KeyComposer() before calling this method.
+      @function
+      @param {Object} component. The component to attach the keyComposer to.
+      @param {Object} keys. The key sequence.
+      @param {Object} identifier. The identifier.
+      @returns {Object} the newly created KeyComposer Object
+    */
+    createKey: {
+        value: function(component, keys, identifier) {
+            var key = this;
+
+            if (this === KeyComposer) {
+                // This function has been called without creating a new instance of KeyComposer first
+                key = new KeyComposer();
+            }
+
+            if (!identifier) {
+                if (component.identifier) {
+                    identifier = component.identifier + keys.toLowerCase().replace(/[ +]/g).toCapitalized();
+                } else {
+                    identifier = keys.toLowerCase().replace(/[ +]/g);
+                }
+            }
+            key.keys = keys;
+            key.identifier = identifier;
+
+            // console.log("CREATING KEY:", component, key, key.identifier);
+
+            component.addComposer(key);
+
+            return key;
+        }
+    },
+
+    /**
+      Create a global composerKey.
+      A global key will dispatch events without requiring the component's element be in the native key event target path
+      If no identifier is provided, the keys and component's identifier will be used to generate an identifier.
+      Note: You do not have to call new KeyComposer() before calling this method.
+      @function
+      @param {Object} component. The component to attach the keyComposer to.
+      @param {Object} keys. The key sequence.
+      @param {Object} identifier. The identifier.
+      @returns {Object} the newly created KeyComposer Object
+    */
+    createGlobalKey: {
+        value: function(component, keys, identifier) {
+            var key = this;
+
+            if (this === KeyComposer) {
+                // This function has been called without creating a new instance of KeyComposer first
+                key = new KeyComposer();
+            }
+
+            key.keys = keys;
+            key.identifier = identifier;
+            // console.log("CREATING GLOBAL KEY:", component, key);
+
+            component.addComposerForElement(key, window);
+
+            return key;
+        }
+    }
+
 });
 
 
@@ -363,7 +365,9 @@ var KeyManagerProxy = Montage.specialize(  {
                 this._defaultKeyManager.unregisterKey(keyComposer);
             }
         }
-    },
+    }
+    
+}, {
 
     /**
       Return either the default KeyManager or its KeyManagerProxy.
@@ -382,4 +386,5 @@ var KeyManagerProxy = Montage.specialize(  {
            }
        }
     }
+
 });

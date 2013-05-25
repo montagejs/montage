@@ -48,29 +48,6 @@ exports.Point = Montage.specialize( /** @lends Point# */ {
         }
     },
 /**
-    Interpolates between two points.
-    @function
-    @param {Axis} percent The interpolation percentage.
-    @param {Axis} point0 The 0 interpolation point.
-    @param {Axis} point1 The 1 interpolation point.
-    @param {Axis} precision The interpolation precision.
-    @returns new Point().init(xValue, yValue)
-    */
-    interpolate: {
-        enumerable: false,
-        value: function(percent, point0, point1, precision) {
-            var xValue,
-                yValue;
-            xValue = point0.x + (point1.x - point0.x) * percent;
-            yValue = point0.y + (point1.y - point0.y) * percent;
-            if (precision > 0) {
-                xValue = Math.round(xValue * precision) / precision;
-                yValue = Math.round(yValue * precision) / precision;
-            }
-            return new exports.Point().init(xValue, yValue);
-        }
-    },
-/**
         The x axis point.
         @type {Number}
         @default  0
@@ -88,4 +65,31 @@ exports.Point = Montage.specialize( /** @lends Point# */ {
         enumerable: true,
         value: 0
     }
+
+}, {
+
+    /**
+     * Interpolates between two points.
+     * @function
+     * @param {Axis} percent The interpolation percentage.
+     * @param {Axis} point0 The 0 interpolation point.
+     * @param {Axis} point1 The 1 interpolation point.
+     * @param {Axis} precision The interpolation precision.
+     * @returns new Point().init(xValue, yValue)
+     */
+    interpolate: {
+        enumerable: false,
+        value: function(percent, point0, point1, precision) {
+            var xValue,
+                yValue;
+            xValue = point0.x + (point1.x - point0.x) * percent;
+            yValue = point0.y + (point1.y - point0.y) * percent;
+            if (precision > 0) {
+                xValue = Math.round(xValue * precision) / precision;
+                yValue = Math.round(yValue * precision) / precision;
+            }
+            return new exports.Point().init(xValue, yValue);
+        }
+    }
+
 });

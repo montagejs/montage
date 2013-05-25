@@ -83,37 +83,6 @@ var Template = Montage.specialize( {
         }
     },
 
-    _templateCache: {
-        value: {
-            moduleId: Object.create(null)
-        }
-    },
-    _getTemplateCacheKey: {
-        value: function(moduleId, _require) {
-            // Transforms relative module ids into absolute module ids
-            moduleId = _require.resolve(moduleId);
-            return _require.location + "#" + moduleId;
-        }
-    },
-    getTemplateWithModuleId: {
-        value: function(moduleId, _require) {
-            var cacheKey,
-                template;
-
-            cacheKey = this._getTemplateCacheKey(moduleId, _require);
-            template = this._templateCache.moduleId[cacheKey];
-
-            if (!template) {
-                template = new Template()
-                .initWithModuleId(moduleId, _require);
-
-                this._templateCache.moduleId[cacheKey] = template;
-            }
-
-            return template;
-        }
-    },
-
     /**
      * Initializes the Template with an empty document.
      *
@@ -1153,6 +1122,40 @@ var Template = Montage.specialize( {
                 '>';
         }
     }
+
+}, {
+
+    _templateCache: {
+        value: {
+            moduleId: Object.create(null)
+        }
+    },
+    _getTemplateCacheKey: {
+        value: function(moduleId, _require) {
+            // Transforms relative module ids into absolute module ids
+            moduleId = _require.resolve(moduleId);
+            return _require.location + "#" + moduleId;
+        }
+    },
+    getTemplateWithModuleId: {
+        value: function(moduleId, _require) {
+            var cacheKey,
+                template;
+
+            cacheKey = this._getTemplateCacheKey(moduleId, _require);
+            template = this._templateCache.moduleId[cacheKey];
+
+            if (!template) {
+                template = new Template()
+                .initWithModuleId(moduleId, _require);
+
+                this._templateCache.moduleId[cacheKey] = template;
+            }
+
+            return template;
+        }
+    }
+
 });
 
 var TemplateResources = Montage.specialize( {
@@ -1371,7 +1374,7 @@ function instantiateDocument(_document, _require) {
         rootElement = _document.documentElement;
 
     // Setup a template just like we'd do for a document in a template
-    clonedDocument = Template.createHtmlDocumentWithHtml(html);
+    clonedDocument = template.createHtmlDocumentWithHtml(html);
 
     return template.initWithDocument(clonedDocument, _require)
     .then(function() {

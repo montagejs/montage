@@ -67,12 +67,6 @@ var MontageDeserializer = Montage.specialize.call(Deserializer, {
         }
     },
 
-    defineDeserializationUnit: {
-        value: function(name, funktion) {
-            MontageReviver.defineUnitReviver(name, funktion);
-        }
-    },
-
     getExternalObjectLabels: {
         value: function() {
             var serialization = this.serialization,
@@ -130,6 +124,15 @@ var MontageDeserializer = Montage.specialize.call(Deserializer, {
             return message;
         }
     }
+
+}, {
+
+    defineDeserializationUnit: {
+        value: function(name, funktion) {
+            MontageReviver.defineUnitReviver(name, funktion);
+        }
+    }
+
 });
 
 exports.MontageDeserializer = MontageDeserializer;
