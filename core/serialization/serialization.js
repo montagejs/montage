@@ -4,7 +4,7 @@ var Montage = require("core/core").Montage,
     parse = require("frb/parse"),
     stringify = require("frb/stringify");
 
-var Serialization = Montage.create(Montage, {
+var Serialization = Montage.specialize( {
     _serializationString: {value: null},
     _serializationObject: {value: null},
 
@@ -235,7 +235,7 @@ var SerializationMerger = Object.create(Montage, {
     }
 });
 
-var SerializationInspector = Montage.create(Montage, {
+var SerializationInspector = Montage.specialize( {
     initWithSerialization: {
         value: function(serialization) {
             this._serialization = serialization;
@@ -552,7 +552,7 @@ var SerializationInspector = Montage.create(Montage, {
     }
 });
 
-var SerializationExtractor = Montage.create(Montage, {
+var SerializationExtractor = Montage.specialize( {
     _serialization: {value: null},
 
     initWithSerialization: {

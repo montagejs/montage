@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 
-var Manager = exports.Manager = Montage.create(Montage,{
+var Manager = exports.Manager = Montage.specialize({
     managerId: {set:function(value){this._managerId = value;},get: function() {return this._managerId;}},
     managerName: {set:function(value){this._managerName = value;},get: function() {return this._managerName;}},
     managerSalary : {set:function(value){this._managerSalary = value;},get: function() {return this._managerSalary;}},
@@ -39,7 +39,7 @@ var Manager = exports.Manager = Montage.create(Montage,{
     _managerSalary : { value: null }
 });
 
-var Employee = exports.Employee = Montage.create(Montage,{
+var Employee = exports.Employee = Montage.specialize({
     employeeId: {set:function(value){this._employeeId = value;},get: function() {return this._employeeId;}},
     employeeName: {set:function(value){this._employeeName = value;},get: function() {return this._employeeName;}},
     employeeSalary : {set:function(value){this._employeeSalary = value;},get: function() {return this._employeeSalary;}},
@@ -49,7 +49,7 @@ var Employee = exports.Employee = Montage.create(Montage,{
 });
 
 
-var Department = exports.Department = Montage.create(Montage,{
+var Department = exports.Department = Montage.specialize({
     employees : { value: null, inverseProperty:"department"}
 });
 
@@ -149,7 +149,7 @@ Montage.defineProperty(department3, "manager", {
     value: manager3
 });
 
-var motorola = exports.motorola = Montage.create(Montage,{
+var motorola = exports.motorola = Montage.specialize({
     departments: { value: departments },
     bigBoss: { value: manager0}
 });

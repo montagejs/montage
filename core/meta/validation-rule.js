@@ -16,7 +16,7 @@ var logger = require("core/logger").logger("blueprint");
  @class PropertyValidationRule
  @extends Montage
  */
-var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Montage, /** @lends PropertyValidationRule# */ {
+var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidationRule# */ {
 
     /**
      Initialize a newly allocated blueprint validation rule.

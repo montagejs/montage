@@ -38,7 +38,7 @@ var Montage = require("montage").Montage;
  @class ActionEventListener
  @extends Montage
  */
-var ActionEventListener = exports.ActionEventListener = Montage.create(Montage, /** @lends ActionEventListener# */ {
+var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** @lends ActionEventListener# */ {
 
 /**
     The object to handle the event.

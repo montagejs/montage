@@ -25,7 +25,7 @@
 var Montage = require("montage").Montage;
 var Promise = require("core/promise").Promise;
 
-var PromiseController = exports.PromiseController = Montage.create(Montage, {
+var PromiseController = exports.PromiseController = Montage.specialize( {
 
     didCreate: {
         value: function () {

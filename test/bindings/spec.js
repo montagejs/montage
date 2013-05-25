@@ -34,7 +34,7 @@ var Montage = require("montage").Montage,
     Deserializer = require("montage/core/serialization").Deserializer,
     MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver;
 
-var Alpha = Montage.create(Montage, {
+var Alpha = Montage.specialize( {
 
     _foo: {
         enumerable: false,
@@ -82,7 +82,7 @@ var Alpha = Montage.create(Montage, {
 
 });
 
-var Omega = Montage.create(Montage, {
+var Omega = Montage.specialize( {
 
     _bar: {
         enumerable: false,
@@ -379,9 +379,9 @@ describe("bindings/spec", function() {
 
         beforeEach(function() {
 
-            FormatBar = Montage.create(Montage, {boldMode: {value: null}});
-            DocumentController = Montage.create(Montage, {boldMode: {value: null}});
-            TextItem = Montage.create(Montage, {boldMode: {value: null}});
+            FormatBar = Montage.specialize( {boldMode: {value: null}});
+            DocumentController = Montage.specialize( {boldMode: {value: null}});
+            TextItem = Montage.specialize( {boldMode: {value: null}});
             formatBar = FormatBar.create();
             documentController = DocumentController.create();
             textItem = TextItem.create();
@@ -481,9 +481,9 @@ describe("bindings/spec", function() {
 
             beforeEach(function() {
 
-                FormatBar = Montage.create(Montage, {boldMode: {value: null}});
-                DocumentController = Montage.create(Montage, {boldMode: {value: null}});
-                TextItem = Montage.create(Montage, {boldMode: {value: null}});
+                FormatBar = Montage.specialize( {boldMode: {value: null}});
+                DocumentController = Montage.specialize( {boldMode: {value: null}});
+                TextItem = Montage.specialize( {boldMode: {value: null}});
                 formatBar = FormatBar.create();
                 documentController = DocumentController.create();
                 textItem = TextItem.create();
@@ -1103,8 +1103,8 @@ describe("bindings/spec", function() {
 
     describe("serialization", function() {
         it("should call \"bindings\" deserialization unit", function() {
-            var Alpha = Montage.create(Montage, {foo: {value: null}}),
-                Omega = Montage.create(Montage, {bar: {value: null}}),
+            var Alpha = Montage.specialize( {foo: {value: null}}),
+                Omega = Montage.specialize( {bar: {value: null}}),
                 target = Alpha.create(),
                 source = Omega.create(),
                 serializer = Serializer.create().initWithRequire(require),
@@ -1131,8 +1131,8 @@ describe("bindings/spec", function() {
         });
 
         it("should serialize a binding to a shorthand format", function() {
-            var Alpha = Montage.create(Montage, {foo: {value: null}}),
-                Omega = Montage.create(Montage, {bar: {value: null}}),
+            var Alpha = Montage.specialize( {foo: {value: null}}),
+                Omega = Montage.specialize( {bar: {value: null}}),
                 target = Alpha.create(),
                 source = Omega.create(),
                 serializer = Serializer.create().initWithRequire(require),

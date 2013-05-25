@@ -10,7 +10,7 @@ var Montage = require("montage").Montage,
  * @class AbstractImage
  * @extends Component
  */
-var AbstractImage = exports.AbstractImage = Montage.create(Component, /** @lends AbstractImage# */ {
+var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends AbstractImage# */ {
 
     /**
      * @private

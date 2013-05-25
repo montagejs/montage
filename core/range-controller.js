@@ -45,7 +45,7 @@ var GenericCollection = require("collections/generic-collection");
  * The <code>RangeController</code> is also responsible for managing which
  * content is selected and provides a variety of knobs for that purpose.
  */
-var RangeController = exports.RangeController = Montage.create(Montage, {
+var RangeController = exports.RangeController = Montage.specialize( {
 
     /**
      * @private

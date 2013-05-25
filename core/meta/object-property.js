@@ -17,7 +17,7 @@ var logger = require("core/logger").logger("object-property");
  @class ObjectProperty
  @extends Montage
  */
-var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends ObjectProperty# */ {
+var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
     /**
      @function
      @returns itself

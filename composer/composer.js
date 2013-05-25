@@ -9,7 +9,7 @@ var Montage = require("montage").Montage,
  * @extends Target
  * @summary The Composer prototype is the base class for all composers in Montage. There are two types of composers. One type, called _gesture_ composers listen for and aggregrate low-level events into higher order events (for example, [PressComposer]{@link PressComposer}. The second type of composer is called _calculation_ composers
  */
-exports.Composer = Montage.create(Target, /** @lends Composer# */ {
+exports.Composer = Target.specialize( /** @lends Composer# */ {
 
     _component: {
         value: null

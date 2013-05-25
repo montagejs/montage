@@ -130,7 +130,7 @@ TestObjectsDesc.emptyA = TestObject({
     }
 });
 
-var Simple = exports.Simple = Montage.create(Montage, {
+var Simple = exports.Simple = Montage.specialize( {
     number: {value: 42, serializable: true},
     string: {value: "string", serializable: true},
     regexp: {value: /regexp/gi}
@@ -172,7 +172,7 @@ TestObjectsDesc.klass = TestObject({
     }
 });
 
-var Composed = exports.Composed = Montage.create(Montage, {
+var Composed = exports.Composed = Montage.specialize( {
     tags: {value: ["object", "composed", "test"], serializable: true},
     simpleObj: {value: simpleA, serializable: true}
 });
@@ -240,7 +240,7 @@ TestObjectsDesc.indirectCycleB = TestObject({
 Montage.defineProperty(indirectCycleA, "B", {value: indirectCycleB, serializable: true});
 Montage.defineProperty(indirectCycleB, "A", {value: indirectCycleA, serializable: true});
 
-var Custom = exports.Custom = Montage.create(Montage, {
+var Custom = exports.Custom = Montage.specialize( {
     manchete: {value: 42},
 
     serializeSelf: {value: function(serializer) {

@@ -11,7 +11,7 @@ var Montage = require("montage").Montage,
  @class module:"matte/ui/list.reel".List
  @extends module:montage/ui/component.Component
  */
-var List = exports.List = Montage.create(Component,/** @lends module:"matte/ui/list.reel".List# */ {
+var List = exports.List = Component.specialize(/** @lends module:"matte/ui/list.reel".List# */ {
     /**
       Description TODO
       @private

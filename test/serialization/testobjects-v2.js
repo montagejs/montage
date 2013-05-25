@@ -34,16 +34,16 @@ var Montage = require("montage").Montage,
     Target = require("montage/core/target").Target,
     Uuid = require("montage/core/uuid").Uuid;
 
-exports.Empty = Montage.create(Montage, {});
+exports.Empty = Montage.specialize( {});
 
-exports.Simple = Montage.create(Montage, {
+exports.Simple = Montage.specialize( {
     number: {value: 42, serializable: true},
     string: {value: "string", serializable: true},
     regexp: {value: /regexp/gi, serializable: false},
     foo: {value: null, serializable: false}
 });
 
-exports.OneProp = Montage.create(Target, {
+exports.OneProp = Target.specialize( {
     prop: {value: null, serializable: true},
 
     deserializedFromSerializationCount: {value: 0, serializable: false},
@@ -52,31 +52,31 @@ exports.OneProp = Montage.create(Target, {
     }}
 });
 
-exports.OneReferenceProp = Montage.create(Montage, {
+exports.OneReferenceProp = Montage.specialize( {
     referenceProp: {value: null, serializable: "reference"}
 });
 
-exports.TwoProps = Montage.create(Target, {
+exports.TwoProps = Target.specialize( {
     prop1: {value: null, serializable: true},
     prop2: {value: null, serializable: true}
 });
 
-exports.SerializableAttribute = Montage.create(Montage, {
+exports.SerializableAttribute = Montage.specialize( {
     prop1a: {value: null, serializable: "auto"},
     prop1b: {value: null, serializable: "auto"},
     prop2a: {value: null, serializable: "reference"},
     prop2b: {value: null, serializable: "reference"},
 });
 
-exports.DistinctArrayProp = Montage.create(Montage, {
+exports.DistinctArrayProp = Montage.specialize( {
     prop: {value: [], serializable: true, distinct: true}
 });
 
-exports.DistinctLiteralProp = Montage.create(Montage, {
+exports.DistinctLiteralProp = Montage.specialize( {
     prop: {value: {}, serializable: true, distinct: true}
 });
 
-exports.CustomProperties = Montage.create(Montage, {
+exports.CustomProperties = Montage.specialize( {
     manchete: {value: 42},
 
     serializeProperties: {value: function(serializer) {
@@ -88,7 +88,7 @@ exports.CustomProperties = Montage.create(Montage, {
     }}
 });
 
-exports.CustomPropertiesRef = Montage.create(Montage, {
+exports.CustomPropertiesRef = Montage.specialize( {
     object: {value: exports.Empty.create()},
 
     serializeProperties: {value: function(serializer) {
@@ -100,7 +100,7 @@ exports.CustomPropertiesRef = Montage.create(Montage, {
     }}
 });
 
-exports.CustomAllProperties = Montage.create(Montage, {
+exports.CustomAllProperties = Montage.specialize( {
     manchete: {value: 42, serializable: true},
     rodriguez: {value: exports.Empty.create(), serializable: "reference"},
     luz: {value: exports.Empty.create(), serializable: true},
@@ -115,7 +115,7 @@ exports.CustomAllProperties = Montage.create(Montage, {
     }}
 });
 
-exports.CustomRef = Montage.create(Montage, {
+exports.CustomRef = Montage.specialize( {
     object: {value: exports.Empty.create()},
 
     serializeSelf: {value: function(serializer) {
@@ -127,7 +127,7 @@ exports.CustomRef = Montage.create(Montage, {
     }}
 });
 
-exports.Singleton = Montage.create(Montage, {
+exports.Singleton = Montage.specialize( {
     instance: {value: {another: "object"}},
 
     deserializeSelf: {value: function(serializer) {
@@ -135,7 +135,7 @@ exports.Singleton = Montage.create(Montage, {
     }}
 });
 
-exports.Comp = Montage.create(Montage, {
+exports.Comp = Montage.specialize( {
     element: {value: null, serializable: true},
     child: {value: null, serializable: true},
     templateDidLoadCount: {value: 0},
@@ -148,7 +148,7 @@ exports.Comp = Montage.create(Montage, {
     }},
 });
 
-exports.Custom = Montage.create(Montage, {
+exports.Custom = Montage.specialize( {
     number: {
         serializable: true,
         value: 42

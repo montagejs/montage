@@ -7,7 +7,7 @@ var Montage = require("montage").Montage,
 // TODO doc
 /**
  */
-var FlowTranslateComposer = exports.FlowTranslateComposer = Montage.create(TranslateComposer, {
+var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.specialize( {
 
     _scrollingMode: {
         value: "linear"

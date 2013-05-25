@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 
-exports.Test = Montage.create(Montage, {
+exports.Test = Montage.specialize( {
     svg:{
         value: null
     },

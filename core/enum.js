@@ -39,7 +39,7 @@ var Montage = require("montage").Montage,
  @class Enum
  @extends Montage
  */
-exports.Enum = Montage.create(Montage, /** @lends Enum# */ {
+exports.Enum = Montage.specialize( /** @lends Enum# */ {
 /**
   @private
 */

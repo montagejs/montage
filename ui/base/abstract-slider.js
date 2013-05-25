@@ -18,7 +18,7 @@ var Montage = require("montage").Montage,
  * @class AbstractSlider
  * @extends AbstractControl
  */
-var AbstractSlider = exports.AbstractSlider = Montage.create(AbstractControl, /** @lends AbstractSlider# */ {
+var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @lends AbstractSlider# */ {
 
     // Lifecycle
 

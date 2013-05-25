@@ -44,7 +44,7 @@ var Montage = require("montage").Montage;
  @classdesc Compactly stores multiple values as a short series of bits.
  @extends Montage
  */
-var BitField = exports.BitField = Montage.create(Montage, /** @lends BitField */ {
+var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
 
     /**
      Creates a new BitField object containing the fields provided in the propertyDescriptor parameter.

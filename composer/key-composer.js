@@ -21,7 +21,7 @@ var KEYPRESS_EVENT_TYPE = "keyPress",
  * @classdesc Create a virtual key composed of none or several key modifiers (shift, control, alt and meta) and one native key.
  * @extends Composer
  */
-var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends KeyComposer# */ {
+var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyComposer# */ {
 
     /**
     * @private
@@ -287,7 +287,7 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends KeyC
  */
 var _keyManagerProxy= null;
 
-var KeyManagerProxy = Montage.create(Montage,  {
+var KeyManagerProxy = Montage.specialize(  {
 
     /**
       @private

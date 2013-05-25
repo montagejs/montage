@@ -34,7 +34,7 @@ var Montage = require("montage").Montage,
     logger = require("montage/core/logger").logger("Draw");
 var TestController = require("montage-testing/test-controller").TestController;
 
-var FirstDrawListenerComponent = Montage.create(Component, {
+var FirstDrawListenerComponent = Component.specialize( {
    handleFirstDraw: {
        value: function(event) {
        }
@@ -42,7 +42,7 @@ var FirstDrawListenerComponent = Montage.create(Component, {
 });
 
 
-var Draw = exports.Draw = Montage.create(TestController, {
+var Draw = exports.Draw = TestController.specialize( {
     loadComponents: {
         enumerable: false,
         value: function() {

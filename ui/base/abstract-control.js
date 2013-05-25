@@ -7,7 +7,7 @@ var Montage = require("montage").Montage,
  * @class AbstractControl
  * @extends Component
  */
-exports.AbstractControl = Montage.create(Component, /* @lends AbstractControl# */ {
+exports.AbstractControl = Component.specialize( /* @lends AbstractControl# */ {
 
     /**
      * Dispatch the actionEvent this component is configured to emit upon interaction

@@ -12,7 +12,7 @@ describe("test/base/abstract-text-field-spec", function () {
         });
 
         it("can be instantiated as a subtype", function () {
-            var TextFieldSubtype = Montage.create(AbstractTextField, {});
+            var TextFieldSubtype = AbstractTextField.specialize( {});
             var aTextFieldSubtype = null;
             expect(function () {
                 aTextFieldSubtype = TextFieldSubtype.create();
@@ -22,7 +22,7 @@ describe("test/base/abstract-text-field-spec", function () {
     });
 
     describe("properties", function () {
-        var TextField = Montage.create(AbstractTextField, {}),
+        var TextField = AbstractTextField.specialize( {}),
             aTextField;
 
         beforeEach(function () {
@@ -88,7 +88,7 @@ describe("test/base/abstract-text-field-spec", function () {
     });
 
     describe("draw", function () {
-        var TextField = Montage.create(AbstractTextField, {}),
+        var TextField = AbstractTextField.specialize( {}),
             aTextField;
 
         beforeEach(function () {
@@ -130,7 +130,7 @@ describe("test/base/abstract-text-field-spec", function () {
     });
 
     describe("events", function () {
-        var TextField = Montage.create(AbstractTextField, {}),
+        var TextField = AbstractTextField.specialize( {}),
             aTextField, anElement, listener;
 
         beforeEach(function () {

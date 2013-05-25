@@ -15,7 +15,7 @@ var Montage = require("montage").Montage,
  * @fires action
  * @fires longAction
  */
-var AbstractSelect = exports.AbstractSelect = Montage.create(AbstractControl, /** @lends AbstractSelect# */ {
+var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @lends AbstractSelect# */ {
 
     /**
      * Dispatched when the select is changed through a mouse click or finger tap.

@@ -280,7 +280,7 @@ if (!PROTO_IS_SUPPORTED) {
     var alpha = Montage.create();
     @example
     <caption>Creating a new Montage component with a property descriptor object.</caption>
-    var Button = Montage.create(Component , {
+    var Button = Component.specialize( {
         state: {
             value: null
         }

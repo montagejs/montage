@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-var EventManagerTest = exports.EventManagerTest = Montage.create(Montage, {
+var EventManagerTest = exports.EventManagerTest = Montage.specialize( {
     deserializedFromTemplate: {
         value: function() {
             var dummyComponent = Montage.create(Component);

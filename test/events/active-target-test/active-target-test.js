@@ -2,7 +2,7 @@ var Montage = require("montage").Montage,
     defaultEventManager = require("montage/core/event/event-manager").defaultEventManager,
     Target = require("montage/core/target").Target;
 
-exports.ActiveTargetTest = Montage.create(Target, {
+exports.ActiveTargetTest = Target.specialize( {
 
     targetChainRangeController: {
         value: null

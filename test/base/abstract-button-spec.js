@@ -12,7 +12,7 @@ describe("test/base/abstract-button-spec", function () {
             }).toThrow();
         });
         it("can be instantiated as a subtype", function () {
-            var ButtonSubtype = Montage.create(AbstractButton, {});
+            var ButtonSubtype = AbstractButton.specialize( {});
             var aButtonSubtype;
             expect(function () {
                 aButtonSubtype = ButtonSubtype.create();
@@ -21,7 +21,7 @@ describe("test/base/abstract-button-spec", function () {
         });
     });
     describe("properties", function () {
-        var Button = Montage.create(AbstractButton, {}),
+        var Button = AbstractButton.specialize( {}),
             aButton;
         beforeEach(function () {
             aButton = Button.create();
@@ -57,7 +57,7 @@ describe("test/base/abstract-button-spec", function () {
             });
         });
         describe("draw", function () {
-            var Button = Montage.create(AbstractButton, {}),
+            var Button = AbstractButton.specialize( {}),
                 aButton;
             beforeEach(function () {
                 aButton = Button.create();
@@ -82,7 +82,7 @@ describe("test/base/abstract-button-spec", function () {
             });
         });
         describe("active target", function () {
-            var Button = Montage.create(AbstractButton, {}),
+            var Button = AbstractButton.specialize( {}),
                 aButton, anElement;
             beforeEach(function () {
                 aButton = Button.create();
@@ -111,7 +111,7 @@ describe("test/base/abstract-button-spec", function () {
         });
 
         describe("events", function () {
-            var Button = Montage.create(AbstractButton, {}),
+            var Button = AbstractButton.specialize( {}),
                 aButton, anElement, listener;
             beforeEach(function () {
                 aButton = Button.create();

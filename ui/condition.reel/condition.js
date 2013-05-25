@@ -43,7 +43,7 @@ var Montage = require("montage").Montage,
  @extends Component
  */
 
-exports.Condition = Montage.create(Component, /** @lends Condition# */ {
+exports.Condition = Component.specialize( /** @lends Condition# */ {
 
 /**
     The Condition component does not have an HTML template, so this value is set to false.

@@ -5,7 +5,7 @@ var parse = require("frb/parse");
 var stringify = require("frb/stringify");
 var evaluate = require("frb/evaluate");
 
-var Selector = exports.Selector = Montage.create(Montage, {
+var Selector = exports.Selector = Montage.specialize( {
 
     syntax: {
         value: null

@@ -10,7 +10,7 @@ var Promise = require("core/promise").Promise;
 
 var logger = require("core/logger").logger("blueprint");
 
-exports.RemoteReference = Montage.create(Montage, {
+exports.RemoteReference = Montage.specialize( {
 
     /**
       didCreate method

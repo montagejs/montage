@@ -2,7 +2,7 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     SwipeComposer = require("montage/composer/swipe-composer").SwipeComposer;
 
-exports.Swipe = Montage.create(Montage, {
+exports.Swipe = Montage.specialize( {
 
     deserializedFromTemplate: {
         value: function() {

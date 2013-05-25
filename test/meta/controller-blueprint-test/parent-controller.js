@@ -3,7 +3,7 @@
 var Montage = require("montage").Montage,
     ObjectController = require("montage/core/object-controller").ObjectController;
 
-var  ParentController = exports.ParentController = Montage.create(ObjectController, {
+var  ParentController = exports.ParentController = ObjectController.specialize( {
 
 
     init: {

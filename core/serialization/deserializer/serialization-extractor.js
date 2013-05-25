@@ -2,7 +2,7 @@ var Montage = require("core/core").Montage,
     MontageReviver = require("./montage-reviver").MontageReviver,
     parse = require("frb/parse");
 
-var SerializationExtractor = Montage.create(Montage, {
+var SerializationExtractor = Montage.specialize( {
     _serialization: {value: null},
 
     initWithSerialization: {

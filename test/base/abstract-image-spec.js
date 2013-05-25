@@ -15,7 +15,7 @@ describe("test/base/abstract-image-spec", function () {
         });
 
         it("can be instantiated as a subtype", function () {
-            var ImageSubtype = Montage.create(AbstractImage, {});
+            var ImageSubtype = AbstractImage.specialize( {});
             var anImageSubtype;
             expect(function () {
                 anImageSubtype = ImageSubtype.create();
@@ -25,7 +25,7 @@ describe("test/base/abstract-image-spec", function () {
     });
 
     describe("properties", function () {
-        var Image = Montage.create(AbstractImage, {}),
+        var Image = AbstractImage.specialize( {}),
             anImage;
 
         beforeEach(function () {
@@ -49,7 +49,7 @@ describe("test/base/abstract-image-spec", function () {
     });
 
     describe("draw", function () {
-        var Image = Montage.create(AbstractImage, {}),
+        var Image = AbstractImage.specialize( {}),
             anImage;
 
         beforeEach(function () {

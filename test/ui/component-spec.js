@@ -1033,7 +1033,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                     })
                 });
                 it("should handle leading and trailing spaces in element's className", function() {
-                    var aComponent = Montage.create(Component, {hasTemplate: {value: false}});
+                    var aComponent = Component.specialize( {hasTemplate: {value: false}});
                     aComponent.element = {className: "  foo  "};
                     var funk = jasmine.createSpy("classListForEach");
                     aComponent.classList.forEach(funk);
@@ -1092,7 +1092,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
             describe("using classList before the element is set", function () {
                 var aComponent;
                 it("should update the classList when the element is set", function () {
-                    aComponent = Montage.create(Component, {hasTemplate: { value: false}}).create();
+                    aComponent = Component.specialize( {hasTemplate: { value: false}}).create();
                     var anElement = MockDOM.element();
                     anElement.className = "foo";
                     expect(aComponent.classList.contains("foo")).toBeFalsy();
@@ -1101,7 +1101,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                 });
                 it("should not fail when classList is used in didCreate", function () {
                     expect(function() {
-                        aComponent = Montage.create(Component, {
+                        aComponent = Component.specialize( {
                             hasTemplate: { value: false },
                             didCreate: {
                                 value: function() {

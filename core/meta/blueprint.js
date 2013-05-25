@@ -32,7 +32,7 @@ var Defaults = {
 /**
  @class Blueprint
  */
-var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint# */ {
+var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */ {
 
     FileExtension: {
         value: ".meta"

@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-exports.ActionCounter = Montage.create(Component, {
+exports.ActionCounter = Component.specialize( {
 
     hasTemplate: {
         value: false

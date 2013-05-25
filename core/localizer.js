@@ -46,7 +46,7 @@ var reLanguageTagValidator = /^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/;
     @class Localizer
     @extends Montage
 */
-var Localizer = exports.Localizer = Montage.create(Montage, /** @lends Localizer# */ {
+var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */ {
 
     /**
         Initialize the localizer.
@@ -520,7 +520,7 @@ defaultLocalizer.localize("hello", "Hello").then(function (hi) {
     @class DefaultLocalizer
     @extends Localizer
 */
-var DefaultLocalizer = Montage.create(Localizer, /** @lends DefaultLocalizer# */ {
+var DefaultLocalizer = Localizer.specialize( /** @lends DefaultLocalizer# */ {
     init: {
         value: function() {
             var defaultLocale = this.callDelegateMethod("getDefaultLocale");
@@ -628,7 +628,7 @@ exports.localize = defaultLocalizer.localize.bind(defaultLocalizer);
     @class MessageLocalizer
     @extends Montage
 */
-var Message = exports.Message = Montage.create(Montage, /** @lends MessageLocalizer# */ {
+var Message = exports.Message = Montage.specialize( /** @lends MessageLocalizer# */ {
 
     didCreate: {
         value: function() {

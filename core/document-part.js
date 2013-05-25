@@ -3,7 +3,7 @@ var Montage = require("montage").Montage,
     Promise = require("core/promise").Promise,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
-var DocumentPart = Montage.create(Montage, {
+var DocumentPart = Montage.specialize( {
     template: {value: null},
     fragment: {value: null},
     objects: {value: null},

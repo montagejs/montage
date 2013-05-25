@@ -19,7 +19,7 @@ var logger = require("core/logger").logger("blueprint");
  @extends Montage
  */
 
-var BinderManager = exports.BinderManager = Montage.create(Montage, /** @lends BinderManager# */ {
+var BinderManager = exports.BinderManager = Montage.specialize( /** @lends BinderManager# */ {
 
     didCreate: {
         value: function() {

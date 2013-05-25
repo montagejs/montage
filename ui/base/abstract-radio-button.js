@@ -10,7 +10,7 @@ var CLASS_PREFIX = "montage-RadioButton";
  * @class AbstractRadioButton
  * @extends AbstractControl
  */
-var AbstractRadioButton = exports.AbstractRadioButton = Montage.create(AbstractControl,
+var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.specialize(
     /* @lends AbstractRadioButton# */
 {
     /**

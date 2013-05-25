@@ -50,7 +50,7 @@ var Montage = require("montage").Montage,
     @see module:"matte/ui/textarea.reel".TextArea
 
 */
-var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends TextInput# */ {
+var TextInput = exports.TextInput =  NativeControl.specialize( /** @lends TextInput# */ {
 
     acceptsActiveTarget: {
         value: true

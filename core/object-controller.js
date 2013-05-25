@@ -38,7 +38,7 @@ var Montage = require("montage").Montage;
  @classdesc Generic object controller.
  @extends Montage
  */
-var ObjectController = exports.ObjectController = Montage.create(Montage, /** @lends ObjectController# */ {
+var ObjectController = exports.ObjectController = Montage.specialize( /** @lends ObjectController# */ {
 /**
         @type {Property}
         @default null

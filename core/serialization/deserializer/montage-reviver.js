@@ -6,7 +6,7 @@ var UnitDeserializer = require("./unit-deserializer").UnitDeserializer;
 
 var Promise = require("core/promise").Promise;
 
-var ModuleLoader = Montage.create(Montage, {
+var ModuleLoader = Montage.specialize( {
     _require: {value: null},
     _objectRequires: {value: null},
 

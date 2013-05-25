@@ -45,7 +45,7 @@ describe("core/core-spec", function() {
             object2;
 
         beforeEach(function() {
-            A = Montage.create(Montage, {});
+            A = Montage.specialize( {});
             Object.defineProperty(A, "_montage_metadata", {
                 value: {
                     moduleId:"core-spec",
@@ -430,7 +430,7 @@ describe("core/core-spec", function() {
 
     describe("method inheritance calling \"super\"", function() {
 
-        var A = Montage.create(Montage, {
+        var A = Montage.specialize( {
             everywhere: {
                 enumerable:false,
                 value: function() {
@@ -560,7 +560,7 @@ describe("core/core-spec", function() {
     });
 
     describe("split getter/setter inheritance", function() {
-        var A = Montage.create(Montage, {
+        var A = Montage.specialize( {
                 getsetEverywhere: {
                     get: function() {
                         return this._everywhere;
@@ -669,7 +669,7 @@ describe("core/core-spec", function() {
 
             describe("array property", function() {
 
-                var subType = Montage.create(Montage, {
+                var subType = Montage.specialize( {
                     collection: {
                         value:[],
                         distinct:true
@@ -716,7 +716,7 @@ describe("core/core-spec", function() {
             });
 
             describe("object property", function() {
-                var subType = Montage.create(Montage, {
+                var subType = Montage.specialize( {
                     object: {
                         value: {},
                         distinct:true
@@ -746,7 +746,7 @@ describe("core/core-spec", function() {
             });
 
             describe("WeakMap property", function() {
-                var subType = Montage.create(Montage, {
+                var subType = Montage.specialize( {
                     object: {
                         value:new WeakMap(),
                         distinct:true
@@ -771,7 +771,7 @@ describe("core/core-spec", function() {
             });
 
             describe("Map property", function() {
-                var subType = Montage.create(Montage, {
+                var subType = Montage.specialize( {
                     object: {
                         value:new Map(),
                         distinct:true

@@ -3,7 +3,7 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-var ComponentBlueprintTest2 = exports.ComponentBlueprintTest2 = Montage.create(Component, {
+var ComponentBlueprintTest2 = exports.ComponentBlueprintTest2 = Component.specialize( {
 
     templateDidLoad: {
         value: function() {

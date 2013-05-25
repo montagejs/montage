@@ -42,7 +42,7 @@ var Montage = require("montage").Montage,
 /**
  @class Substitution
  */
-exports.Substitution = Montage.create(Slot, /** @lends Substitution# */ {
+exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
 
     hasTemplate: {
         enumerable: false,

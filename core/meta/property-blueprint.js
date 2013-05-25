@@ -31,7 +31,7 @@ var Defaults = {
 /**
  @class PropertyBlueprint
  */
-exports.PropertyBlueprint = Montage.create(Montage, /** @lends PropertyBlueprint# */ {
+exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */ {
 
     /**
      Initialize a newly allocated property blueprint.

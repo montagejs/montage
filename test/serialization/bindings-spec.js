@@ -4,7 +4,7 @@ var Bindings = require("montage/core/bindings").Bindings;
 var serialize = require("montage/core/serialization").serialize;
 var deserialize = require("montage/core/serialization").deserialize;
 
-var Type = exports.Type = Montage.create(Montage, {
+var Type = exports.Type = Montage.specialize( {
     foo: {
         value: 10
     }

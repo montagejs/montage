@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage;
 var Converter = require('montage/core/converter/converter').Converter;
 
-exports.TargetInfoConverter = Montage.create(Converter, {
+exports.TargetInfoConverter = Converter.specialize( {
 
     convert: {
         value: function (value) {

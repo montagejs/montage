@@ -31,5 +31,5 @@ POSSIBILITY OF SUCH DAMAGE.
 
 var Montage = require("montage").Montage;
 
-exports.ModuleName = Montage.create(Montage, {
+exports.ModuleName = Montage.specialize( {
 });

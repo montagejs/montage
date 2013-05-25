@@ -59,7 +59,7 @@ var Montage = require("montage").Montage,
  * @classdesc Base class for all Montage components.
  * @extends Montage
  */
-var Component = exports.Component = Montage.create(Target,/** @lends module:montage/ui/component.Component# */ {
+var Component = exports.Component = Target.specialize(/** @lends module:montage/ui/component.Component# */ {
     DOM_ARG_ATTRIBUTE: {value: "data-arg"},
 
     didCreate: {
@@ -2132,7 +2132,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
      * var defaultLocalizer = localizer.defaultLocalizer,
      *     _ = defaultLocalizer.localizeSync.bind(defaultLocalizer);
      *
-     * exports.Main = Montage.create(Component, {
+     * exports.Main = Component.specialize( {
      *
      *     didCreate: {
      *         value: function() {

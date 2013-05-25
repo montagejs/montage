@@ -34,7 +34,7 @@ var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 var Template = require("montage/core/template").Template;
 
-var Flatten = exports.Flatten = Montage.create(Component, {
+var Flatten = exports.Flatten = Component.specialize( {
     hasTemplate: {
         value: true
     },

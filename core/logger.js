@@ -113,7 +113,7 @@ consoleLogMontage = function() {
  * @class Logger
  * @extends Montage
  */
-Logger = exports.Logger = Montage.create(Montage,/** @lends Logger# */ {
+Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
    /**
     @function
     @param {String} name The name of the logger.
@@ -265,7 +265,7 @@ exports.logger = function(loggerName, onStateChange, dontStoreState) {
     return logger;
 };
 
-LoggerUI = Montage.create(Montage, /** @lends LoggerUI# */{
+LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
 
     init: {
         value: function() {

@@ -11,7 +11,7 @@ var CLASS_PREFIX = "montage-NumberField";
  * @class AbstractNumberField
  * @extends AbstractControl
  */
-var AbstractNumberField = exports.AbstractNumberField = Montage.create(AbstractControl,
+var AbstractNumberField = exports.AbstractNumberField = AbstractControl.specialize(
     /* @lends AbstractNumberField# */
 {
 

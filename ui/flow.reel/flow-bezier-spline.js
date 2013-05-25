@@ -1,7 +1,7 @@
 
 var Montage = require("montage").Montage;
 
-var FlowBezierSpline = exports.FlowBezierSpline = Montage.create(Montage, {
+var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
 
     didCreate: {
         value: function () {

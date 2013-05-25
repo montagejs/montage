@@ -4,7 +4,7 @@ var Montage = require("montage").Montage,
     Promise = require("montage/core/promise").Promise,
     WAITS_FOR_TIMEOUT = 2500;
 
-var Roster = Montage.create(Montage, {
+var Roster = Montage.specialize( {
 
     didCreate: {
         value: function () {

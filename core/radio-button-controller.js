@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     RangeController = require("core/range-controller").RangeController;
 
-exports.RadioButtonController = Montage.create(Montage, {
+exports.RadioButtonController = Montage.specialize( {
     _radioButtons: {
         value: null
     },

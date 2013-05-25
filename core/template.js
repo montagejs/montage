@@ -9,7 +9,7 @@ var Montage = require("montage").Montage,
     defaultEventManager = require("core/event/event-manager").defaultEventManager,
     defaultApplication;
 
-var Template = Montage.create(Montage, {
+var Template = Montage.specialize( {
     _SERIALIZATON_SCRIPT_TYPE: {value: "text/montage-serialization"},
     _ELEMENT_ID_ATTRIBUTE: {value: "data-montage-id"},
     PARAM_ATTRIBUTE: {value: "data-param"},
@@ -1155,7 +1155,7 @@ var Template = Montage.create(Montage, {
     }
 });
 
-var TemplateResources = Montage.create(Montage, {
+var TemplateResources = Montage.specialize( {
     _resources: {value: null},
     _resourcesLoaded: {value: false},
     template: {value: null},

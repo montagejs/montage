@@ -30,22 +30,22 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 
-var Simple = exports.Simple = Montage.create(Montage, {
+var Simple = exports.Simple = Montage.specialize( {
     simple: {value: null},
     prototypeUuid: {value: "a"}
 }, module);
 
-var Proto = exports.Proto = Montage.create(Montage, {
+var Proto = exports.Proto = Montage.specialize( {
     proto: {value: null},
     prototypeUuid: {value: "b"}
 }, module);
 
-var FunkyProto = exports.FunkyProto = Montage.create(Montage, {
+var FunkyProto = exports.FunkyProto = Montage.specialize( {
     firstUuid: {value: null},
 });
 Montage.getInfoForObject(FunkyProto);
 
-var SubProto = exports.SubProto = Montage.create(Proto, {
+var SubProto = exports.SubProto = Proto.specialize( {
     subProto: {value: null},
     prototypeUuid: {value: "c"}
 }, module);

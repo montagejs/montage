@@ -162,7 +162,7 @@ var UNDO_OPERATION = 0,
  *   @class UndoManager
  *   @extends Montage
 */
-var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends UndoManager# */ {
+var UndoManager = exports.UndoManager = Montage.specialize( /** @lends UndoManager# */ {
 
     _operationQueue: {
         value: null

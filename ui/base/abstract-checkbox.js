@@ -9,9 +9,7 @@ var CLASS_PREFIX = "montage-Checkbox";
  * @class AbstractCheckbox
  * @extends AbstractControl
  */
-var AbstractCheckbox = exports.AbstractCheckbox = Montage.create(AbstractControl,
-/* @lends AbstractCheckbox# */
-{
+var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /* @lends AbstractCheckbox# */ {
     /**
      * Dispatched when the checkbox is activated through a mouse click,
      * finger tap, or when focused and the spacebar is pressed.

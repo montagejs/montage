@@ -18,7 +18,7 @@ var Montage = require("montage").Montage,
  * @class TranslateComposer
  * @extends Composer
  */
-var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** @lends TranslateComposer# */ {
+var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @lends TranslateComposer# */ {
 
     /**
     These elements perform some native action when clicked/touched and so we

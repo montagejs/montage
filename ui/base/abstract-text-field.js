@@ -10,7 +10,7 @@ var CLASS_PREFIX = "montage-TextField";
  * @class AbstractTextField
  * @extends AbstractControl
  */
-var AbstractTextField = exports.AbstractTextField = Montage.create(AbstractControl,
+var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     /* @lends AbstractTextField# */
 {
     /**

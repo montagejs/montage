@@ -33,6 +33,6 @@ exports = typeof exports !== "undefined" ? exports : {};
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 
-var ComponentSlowStyle = exports.ComponentSlowStyle = Montage.create(Component, {
+var ComponentSlowStyle = exports.ComponentSlowStyle = Component.specialize( {
     hasTemplate: {value: true}
 });

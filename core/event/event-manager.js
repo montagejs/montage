@@ -75,7 +75,7 @@ if (typeof window.Touch === "undefined" && "ontouchstart" in window) {
     })();
 }
 
-var EventListenerDescriptor = Montage.create(Montage, {
+var EventListenerDescriptor = Montage.specialize( {
     type: {
         value: null
     },
@@ -133,7 +133,7 @@ var NONE = Event.NONE,
 /**
  @class EventManager
  */
-var EventManager = exports.EventManager = Montage.create(Montage,/** @lends EventManager# */ {
+var EventManager = exports.EventManager = Montage.specialize(/** @lends EventManager# */ {
 
     // Utility
     eventDefinitions: {
@@ -1712,7 +1712,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends Even
         }
     },
     monitorDOMModificationInEventHandling: {value: false},
-    domModificationEventHandler: { value: Montage.create(Montage, {
+    domModificationEventHandler: { value: Montage.specialize( {
         handleEvent: {value : function(event) {
             throw "DOM Modified";
         }},

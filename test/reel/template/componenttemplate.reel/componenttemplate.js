@@ -33,5 +33,5 @@ exports = typeof exports !== "undefined" ? exports : {};
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 
-var ComponentTemplate = exports.ComponentTemplate = Montage.create(Component, {
+var ComponentTemplate = exports.ComponentTemplate = Component.specialize( {
 });

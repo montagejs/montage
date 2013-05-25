@@ -32,7 +32,7 @@ var Montage = require("montage").Montage,
     Bindings = require("montage/core/bindings").Bindings,
     Converter = require("montage/core/converter/converter").Converter;
 
-var TestConverter = Montage.create(Converter, {
+var TestConverter = Converter.specialize( {
 
     convert: {
         value: function(value) {

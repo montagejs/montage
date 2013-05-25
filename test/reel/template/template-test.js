@@ -33,7 +33,7 @@ var querySelector = function(e){return document.querySelector(e);}
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 
-var TemplateTest = exports.TemplateTest = Montage.create(Montage, {
+var TemplateTest = exports.TemplateTest = Montage.specialize( {
     loadComponents: {value: function() {
 //        var component = Component.create();
 //        component.hasTemplate = true;

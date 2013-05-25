@@ -16,7 +16,7 @@ var Montage = require("montage").Montage,
  * @fires longPress
  * @fires pressCancel
  */
-var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends PressComposer# */ {
+var PressComposer = exports.PressComposer = Composer.specialize(/** @lends PressComposer# */ {
 
     /**
         Dispatched when a press begins. It is ended by either a {@link press} or

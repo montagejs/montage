@@ -35,7 +35,7 @@ var Montage = require("montage").Montage,
     FlowBezierSpline = require("ui/flow.reel/flow-bezier-spline").FlowBezierSpline,
     RangeController = require("core/range-controller").RangeController;
 
-var Flow = exports.Flow = Montage.create(Component, {
+var Flow = exports.Flow = Component.specialize( {
 
     /**
      * @private

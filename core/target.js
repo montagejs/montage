@@ -8,7 +8,7 @@ var Montage = require("montage").Montage,
  *
  * @type {Target}
  */
-exports.Target = Montage.create(Montage, {
+exports.Target = Montage.specialize( {
 
     /**
      * Whether or not this target can accept user focus and become the activeTarget

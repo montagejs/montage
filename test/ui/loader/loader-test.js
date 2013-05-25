@@ -1,5 +1,5 @@
 var Montage = require("montage").Montage,
     TestController = require("montage-testing/test-controller").TestController;
 
-exports.LoaderTest = Montage.create(TestController, {
+exports.LoaderTest = TestController.specialize( {
 });

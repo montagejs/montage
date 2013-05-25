@@ -19,7 +19,7 @@ var observeKey = Observers.observeKey;
  * drawn, it is tied to the corresponding controller-model that carries which
  * object the iteration is coupled to, and whether it is selected.
  */
-var Iteration = exports.Iteration = Montage.create(Montage, {
+var Iteration = exports.Iteration = Montage.specialize( {
 
     /**
      * The parent repetition component.
@@ -394,7 +394,7 @@ var Iteration = exports.Iteration = Montage.create(Montage, {
  * @class Repetition
  * @extends Component
  */
-var Repetition = exports.Repetition = Montage.create(Component, /** @lends Repetition# */{
+var Repetition = exports.Repetition = Component.specialize( /** @lends Repetition# */{
 
     // For the creator:
     // ----

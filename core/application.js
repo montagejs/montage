@@ -67,7 +67,7 @@ var Montage = require("core/core").Montage,
  * @class Application
  * @extends Target
  */
-var Application = exports.Application = Montage.create(Target, /** @lends Application# */ {
+var Application = exports.Application = Target.specialize( /** @lends Application# */ {
 
     /**
      Provides a reference to the Montage event manager used in the application.

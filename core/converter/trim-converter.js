@@ -63,7 +63,7 @@ var trim = exports.trim = function(str) {
     console.log("After trim: " + trimConverter.convert(str));
     // After trim: Hello World
 */
-exports.TrimConverter = Montage.create(Converter, /** @lends TrimConverter# */ {
+exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
     /**
      @private
      */

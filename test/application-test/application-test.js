@@ -32,14 +32,14 @@ var Montage = require("montage").Montage,
     Application = require("montage/core/application").Application,
     TestController = require("montage-testing/test-controller").TestController;
 
-exports.ApplicationTest = Montage.create(TestController, {
+exports.ApplicationTest = TestController.specialize( {
 
     testedComponent: {
         value: null
     }
 });
 
-exports.MyApp = Montage.create(Application, {
+exports.MyApp = Application.specialize( {
 
     testProperty: {
         value: true

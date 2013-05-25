@@ -12,7 +12,7 @@ describe("test/base/abstract-text-area-spec", function () {
         });
 
         it("can be instantiated as a subtype", function () {
-            var TextAreaSubtype = Montage.create(AbstractTextArea, {});
+            var TextAreaSubtype = AbstractTextArea.specialize( {});
             var aTextAreaSubtype = null;
             expect(function () {
                 aTextAreaSubtype = TextAreaSubtype.create();
@@ -22,7 +22,7 @@ describe("test/base/abstract-text-area-spec", function () {
     });
 
     describe("properties", function () {
-        var TextArea = Montage.create(AbstractTextArea, {}),
+        var TextArea = AbstractTextArea.specialize( {}),
             aTextArea;
 
         beforeEach(function () {
@@ -73,7 +73,7 @@ describe("test/base/abstract-text-area-spec", function () {
     });
 
     describe("draw", function () {
-        var TextArea = Montage.create(AbstractTextArea, {}),
+        var TextArea = AbstractTextArea.specialize( {}),
             aTextArea;
 
         beforeEach(function () {
@@ -101,7 +101,7 @@ describe("test/base/abstract-text-area-spec", function () {
     });
 
     describe("events", function () {
-        var TextArea = Montage.create(AbstractTextArea, {}),
+        var TextArea = AbstractTextArea.specialize( {}),
             aTextArea, anElement, listener;
 
         beforeEach(function () {

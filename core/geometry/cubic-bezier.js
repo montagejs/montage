@@ -40,7 +40,7 @@ var Point = require("core/geometry/point").Point;
  @extends Montage
  */
 
-var CubicBezier = exports.CubicBezier = Montage.create(Montage, /** @lends CubicBezier# */{
+var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezier# */{
 /**
     @function
     @param {Array} controlPoints Control points.

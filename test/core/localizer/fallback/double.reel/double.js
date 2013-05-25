@@ -2,7 +2,7 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-exports.Double = Montage.create(Component, {
+exports.Double = Component.specialize( {
 
     hasTemplate: {
         value: false

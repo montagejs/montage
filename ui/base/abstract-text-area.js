@@ -9,7 +9,7 @@ var CLASS_PREFIX = "montage-TextArea";
  * @class AbstractTextArea
  * @extends Component
  */
-var AbstractTextArea = exports.AbstractTextArea = Montage.create(Component,
+var AbstractTextArea = exports.AbstractTextArea = Component.specialize(
     /* @lends AbstractTextArea# */
 {
     constructor: {

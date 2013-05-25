@@ -12,7 +12,7 @@ describe("test/base/abstract-link-spec", function () {
         });
 
         it("can be instantiated as a subtype", function () {
-            var LinkSubtype = Montage.create(AbstractLink, {});
+            var LinkSubtype = AbstractLink.specialize( {});
             var aLinkSubtype = null;
             expect(function () {
                 aLinkSubtype = LinkSubtype.create();
@@ -22,7 +22,7 @@ describe("test/base/abstract-link-spec", function () {
     });
 
     describe("properties", function () {
-        var Link = Montage.create(AbstractLink, {}),
+        var Link = AbstractLink.specialize( {}),
             aLink;
 
         beforeEach(function () {
@@ -101,7 +101,7 @@ describe("test/base/abstract-link-spec", function () {
     });
 
     describe("draw", function () {
-        var Link = Montage.create(AbstractLink, {}),
+        var Link = AbstractLink.specialize( {}),
             aLink;
 
         beforeEach(function () {
@@ -131,7 +131,7 @@ describe("test/base/abstract-link-spec", function () {
     });
 
     describe("events", function () {
-        var Link = Montage.create(AbstractLink, {}),
+        var Link = AbstractLink.specialize( {}),
             aLink, anElement, listener;
 
         beforeEach(function () {

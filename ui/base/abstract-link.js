@@ -13,7 +13,7 @@ var CLASS_PREFIX = "montage-Link";
  * @class AbstractLink
  * @extends AbstractControl
  */
-var AbstractLink = exports.AbstractLink = Montage.create(AbstractControl,
+var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
 /* @lends AbstractLink# */
 {
     /**

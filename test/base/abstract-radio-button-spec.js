@@ -14,7 +14,7 @@ describe("test/base/abstract-radio-button-spec", function () {
         });
 
         it("can be instantiated as a subtype", function () {
-            var RadioButtonSubtype = Montage.create(AbstractRadioButton, {});
+            var InputRadioSubtype = AbstractRadioButton.specialize( {});
             var aRadioButtonSubtype = null;
             expect(function () {
                 aRadioButtonSubtype = RadioButtonSubtype.create();
@@ -24,7 +24,7 @@ describe("test/base/abstract-radio-button-spec", function () {
     });
 
     describe("properties", function () {
-        var RadioButton = Montage.create(AbstractRadioButton, {}),
+        var InputRadio = AbstractRadioButton.specialize( {}),
             aRadioButton;
 
         beforeEach(function () {
@@ -141,7 +141,7 @@ describe("test/base/abstract-radio-button-spec", function () {
     });
 
     describe("draw", function () {
-        var RadioButton = Montage.create(AbstractRadioButton, {}),
+        var InputRadio = AbstractRadioButton.specialize( {}),
             aRadioButton;
 
         beforeEach(function () {
@@ -160,7 +160,7 @@ describe("test/base/abstract-radio-button-spec", function () {
     });
 
     describe("events", function () {
-        var RadioButton = Montage.create(AbstractRadioButton, {}),
+        var InputRadio = AbstractRadioButton.specialize( {}),
             aRadioButton, anElement, listener;
 
         beforeEach(function () {

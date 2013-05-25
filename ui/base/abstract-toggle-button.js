@@ -14,7 +14,7 @@ var Montage = require("montage").Montage,
  * @fires action
  * @fires longAction
  */
-var AbstractToggleButton = exports.AbstractToggleButton = Montage.create(AbstractControl, /** @lends AbstractToggleButton# */ {
+var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specialize( /** @lends AbstractToggleButton# */ {
 
     /**
      * Dispatched when the toggle button is activated through a mouse click,

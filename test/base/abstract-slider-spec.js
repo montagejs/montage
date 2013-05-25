@@ -13,7 +13,7 @@ describe("test/base/abstract-slider-spec", function () {
             }).toThrow();
         });
         it("can be instantiated as a subtype", function () {
-            var SliderSubtype = Montage.create(AbstractSlider, {});
+            var SliderSubtype = AbstractSlider.specialize( {});
             var aSliderSubtype = null;
             expect(function () {
                 aSliderSubtype = SliderSubtype.create();
@@ -22,7 +22,7 @@ describe("test/base/abstract-slider-spec", function () {
         });
     });
     describe("properties", function () {
-        var Slider = Montage.create(AbstractSlider, {}),
+        var Slider = AbstractSlider.specialize( {}),
             aSlider;
         beforeEach(function () {
             aSlider = Slider.create();
@@ -194,7 +194,7 @@ describe("test/base/abstract-slider-spec", function () {
             });
         });
         describe("after enterDocument", function () {
-            var Slider = Montage.create(AbstractSlider, {}),
+            var Slider = AbstractSlider.specialize( {}),
                 aSlider, anElement;
             beforeEach(function () {
                 aSlider = Slider.create();
@@ -266,7 +266,7 @@ describe("test/base/abstract-slider-spec", function () {
 
         });
         describe("draw", function () {
-            var Slider = Montage.create(AbstractSlider, {}),
+            var Slider = AbstractSlider.specialize( {}),
                 aSlider;
             beforeEach(function () {
                 aSlider = Slider.create();
@@ -291,7 +291,7 @@ describe("test/base/abstract-slider-spec", function () {
             });
         });
         describe("events", function () {
-            var Slider = Montage.create(AbstractSlider, {}),
+            var Slider = AbstractSlider.specialize( {}),
                 aSlider, anElement, listener;
             beforeEach(function () {
                 aSlider = Slider.create();

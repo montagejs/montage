@@ -13,7 +13,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
         });
 
         it("can be instantiated as a subtype", function () {
-            var ToggleButtonSubtype = Montage.create(AbstractToggleButton, {});
+            var ToggleButtonSubtype = AbstractToggleButton.specialize( {});
             var aToggleButtonSubtype;
             expect(function () {
                 aToggleButtonSubtype = ToggleButtonSubtype.create();
@@ -23,7 +23,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
     });
     
     describe("properties", function () {
-        var ToggleButton = Montage.create(AbstractToggleButton, {}),
+        var ToggleButton = AbstractToggleButton.specialize( {}),
             aToggleButton;
 
         beforeEach(function () {
@@ -142,7 +142,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
     });
 
     describe("draw", function () {
-        var ToggleButton = Montage.create(AbstractToggleButton, {}),
+        var ToggleButton = AbstractToggleButton.specialize( {}),
             aToggleButton;
 
         beforeEach(function () {
@@ -184,7 +184,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
     });
 
     describe("active target", function () {
-        var ToggleButton = Montage.create(AbstractToggleButton, {}),
+        var ToggleButton = AbstractToggleButton.specialize( {}),
             aToggleButton, anElement;
 
         beforeEach(function () {
@@ -198,7 +198,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
     });
 
     describe("events", function () {
-        var ToggleButton = Montage.create(AbstractToggleButton, {}),
+        var ToggleButton = AbstractToggleButton.specialize( {}),
             aToggleButton, anElement, listener;
 
         beforeEach(function () {

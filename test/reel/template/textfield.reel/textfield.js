@@ -33,7 +33,7 @@ exports = typeof exports !== "undefined" ? exports : {};
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 
-var TextField = exports.TextField = Montage.create(Component, {
+var TextField = exports.TextField = Component.specialize( {
     hasTemplate: {value: true},
 
     text: {

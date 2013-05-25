@@ -63,7 +63,7 @@ var wrapProperty = function(obj, key) {
 /**
     @class MutableEvent
 */
-var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends MutableEvent# */ {
+var MutableEvent = exports.MutableEvent = Montage.specialize(/** @lends MutableEvent# */ {
     /**
      @function
      @param {Event} event The original event.

@@ -15,7 +15,7 @@ describe("test/base/abstract-select-spec", function () {
         });
 
         it("can be instantiated as a subtype", function () {
-            var SelectSubtype = Montage.create(AbstractSelect, {});
+            var SelectSubtype = AbstractSelect.specialize( {});
             var aSelectSubtype;
             expect(function () {
                 aSelectSubtype = SelectSubtype.create();
@@ -25,7 +25,7 @@ describe("test/base/abstract-select-spec", function () {
     });
 
     describe("properties", function () {
-        var Select = Montage.create(AbstractSelect, {}),
+        var Select = AbstractSelect.specialize( {}),
             aSelect,
             content = [{
                 "label": "Canada",
@@ -184,7 +184,7 @@ describe("test/base/abstract-select-spec", function () {
     });
 
     describe("draw", function () {
-        var Select = Montage.create(AbstractSelect, {}),
+        var Select = AbstractSelect.specialize( {}),
             aSelect,
             content = [{
                 "label": "Canada",
@@ -256,7 +256,7 @@ describe("test/base/abstract-select-spec", function () {
     });
 
     describe("active target", function () {
-        var Select = Montage.create(AbstractSelect, {}),
+        var Select = AbstractSelect.specialize( {}),
             aSelect, anElement;
 
         beforeEach(function () {
@@ -270,7 +270,7 @@ describe("test/base/abstract-select-spec", function () {
     });
 
     describe("events", function () {
-        var Select = Montage.create(AbstractSelect, {}),
+        var Select = AbstractSelect.specialize( {}),
             aSelect, anElement, listener;
 
         beforeEach(function () {

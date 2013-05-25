@@ -33,7 +33,7 @@ exports = typeof exports !== "undefined" ? exports : {};
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 
-var ComponentZ = exports.ComponentZ = Montage.create(Component, {
+var ComponentZ = exports.ComponentZ = Component.specialize( {
     hasTemplate: {value: true}
 });
 

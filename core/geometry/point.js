@@ -38,7 +38,7 @@ var Montage = require("montage").Montage;
  @extends Montage
  */
 
-exports.Point = Montage.create(Montage, /** @lends Point# */ {
+exports.Point = Montage.specialize( /** @lends Point# */ {
     init: {
         enumerable: false,
         value: function(x, y) {

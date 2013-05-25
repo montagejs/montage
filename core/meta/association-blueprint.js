@@ -14,7 +14,7 @@ var logger = require("core/logger").logger("blueprint");
 /**
  @class AssociationBlueprint
  */
-exports.AssociationBlueprint = Montage.create(PropertyBlueprint, /** @lends AssociationBlueprint# */ {
+exports.AssociationBlueprint = PropertyBlueprint.specialize( /** @lends AssociationBlueprint# */ {
 
     serializeSelf: {
         value: function(serializer) {

@@ -24,7 +24,7 @@ var _binderManager = null;
  @classdesc A blueprint binder is a collection of of blueprints for a specific access type. It also includes the connection information.
  @extends Montage
  */
-var Binder = exports.Binder = Montage.create(Montage, /** @lends Binder# */ {
+var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
 
     /**
       didCreate method

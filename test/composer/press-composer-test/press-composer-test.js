@@ -30,4 +30,4 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 
-var PressComposerTest = exports.PressComposerTest = Montage.create(Montage, {});
+var PressComposerTest = exports.PressComposerTest = Montage.specialize( {});

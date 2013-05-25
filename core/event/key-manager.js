@@ -221,7 +221,7 @@ var KEYPRESS_EVENT_TYPE = "keyPress",
  Do not create a KeyManager directly but instead require for the defaultKeyManager: require("core/event/key-manager").defaultKeyManager
  @extends Montage
 */
-var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends KeyManager# */ {
+var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# */ {
 
     /**
       @private

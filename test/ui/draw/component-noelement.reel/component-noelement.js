@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-exports.ComponentNoelement = Montage.create(Component, {
+exports.ComponentNoelement = Component.specialize( {
     hasTemplate: {value: false},
 
     deserializedFromSerialization: {

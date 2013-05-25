@@ -8,7 +8,7 @@ exports.companyBinder = function () {
     return exports.BinderHelper.companyBinder();
 };
 
-exports.BinderHelper = Montage.create(Montage, {
+exports.BinderHelper = Montage.specialize( {
 
     companyBinder: {
         value: function() {

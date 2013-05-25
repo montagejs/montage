@@ -50,7 +50,7 @@ var Montage = require("montage").Montage;
  @class MontageWindow
  @extends Montage
  */
-var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends MontageWindow# */ {
+var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends MontageWindow# */ {
 
     /**
      @private

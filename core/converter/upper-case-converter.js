@@ -41,7 +41,7 @@ var Converter = require('core/converter/converter').Converter;
  @class UpperCaseConverter
  @classdesc Converts a string to upper-case.
  */
-exports.UpperCaseConverter = Montage.create(Converter, /** @lends UpperCaseConverter# */ {
+exports.UpperCaseConverter = Converter.specialize( /** @lends UpperCaseConverter# */ {
     /**
      @private
      */

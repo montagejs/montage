@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     Composer = require("montage/composer/composer").Composer;
 
-exports.SimpleTestComposer = Montage.create(Composer, {
+exports.SimpleTestComposer = Composer.specialize( {
 
     _loadWasCalled: {
         value: false
@@ -27,7 +27,7 @@ exports.SimpleTestComposer = Montage.create(Composer, {
 
 });
 
-exports.LazyLoadTestComposer = Montage.create(Composer, {
+exports.LazyLoadTestComposer = Composer.specialize( {
 
     lazyLoad: {
         value: true

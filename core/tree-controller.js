@@ -10,7 +10,7 @@ var Montage = require("core/core").Montage;
 // Bind a root node from the data model to a tree controller and bind the tree
 // controller's iterations to a content controller for a repetition.
 
-var Iteration = Montage.create(Montage, {
+var Iteration = Montage.specialize( {
 
     didCreate: {
         value: function () {
@@ -34,7 +34,7 @@ var Iteration = Montage.create(Montage, {
 
 });
 
-var Node = exports.TreeController = Montage.create(Montage, {
+var Node = exports.TreeController = Montage.specialize( {
 
     didCreate: {
         value: function () {

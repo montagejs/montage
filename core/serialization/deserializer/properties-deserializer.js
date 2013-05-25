@@ -1,7 +1,7 @@
 var Montage = require("core/core").Montage;
 var Promise = require("core/promise").Promise;
 
-var PropertiesDeserializer = Montage.create(Montage, {
+var PropertiesDeserializer = Montage.specialize( {
     _object: {value: null},
     _objectDescriptor: {value: null},
     _context: {value: null},

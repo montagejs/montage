@@ -95,7 +95,7 @@ var fileSize = function(bytes, opt_decimals) {
     @classdesc Converts a numeric value to byte format (for example, 2048 is converted to 2MB).
     @extends Converter
  */
-exports.BytesConverter = Montage.create(Converter, /** @lends BytesConverter# */ {
+exports.BytesConverter = Converter.specialize( /** @lends BytesConverter# */ {
 
     /**
      The number of decimals to include in the formatted value. Default is 2.

@@ -17,7 +17,7 @@ var Montage = require("montage").Montage,
  * @fires action
  * @fires longAction
  */
-var AbstractButton = exports.AbstractButton = Montage.create(AbstractControl, /** @lends AbstractButton# */ {
+var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @lends AbstractButton# */ {
 
     /**
      * Dispatched when the button is activated through a mouse click, finger tap,

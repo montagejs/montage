@@ -63,7 +63,7 @@ var formatCurrency = function(value, currency, decimals, useParensForNegative) {
  @classdesc Formats a value as a currency.
  @extends NumberConverter
  */
-exports.CurrencyConverter = Montage.create(NumberConverter, /** @lends CurrencyConverter# */ {
+exports.CurrencyConverter = NumberConverter.specialize( /** @lends CurrencyConverter# */ {
 
     /**
         @type {String}

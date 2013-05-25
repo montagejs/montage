@@ -52,7 +52,7 @@ var Montage = require("core/core").Montage,
  @extends Component
  */
 
-exports.Loader = Montage.create(Component, /** @lends Loader# */ {
+exports.Loader = Component.specialize( /** @lends Loader# */ {
 
     // Configuration Properties
 

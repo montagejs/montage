@@ -11,7 +11,7 @@ var Montage = require("montage").Montage,
  * @classdesc Detects a swipe gesture.
  * @extends Composer
  */
-exports.SwipeComposer = Montage.create(Composer, /** @lends SwipeComposer# */ {
+exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
 
 /**
     @function
