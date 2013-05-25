@@ -273,7 +273,6 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
                 // TODO: For now we need this because we need to set
                 // isDeserilizing before calling didCreate.
                 object = Object.create(module[objectName].prototype);
-                object.constructor = module[objectName];
                 object.isDeserializing = true;
                 if (typeof object.didCreate === "function") {
                     object.didCreate();
