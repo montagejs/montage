@@ -119,7 +119,9 @@ var AbstractTextField = exports.AbstractTextField = Montage.create(AbstractContr
     draw: {
         value: function() {
             this.element.value = this.value;
-            this.element.setAttribute("placeholder", this._placeholderValue);
+            if (this.placeholderValue != null) {
+                this.element.setAttribute("placeholder", this.placeholderValue);
+            }
         }
     },
 

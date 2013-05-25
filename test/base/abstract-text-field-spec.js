@@ -113,6 +113,20 @@ describe("test/base/abstract-text-field-spec", function () {
 
             expect(aTextField.element.value).toBe(aTextField.value);
         });
+
+        it("should draw a placeholder when set", function () {
+            aTextField.placeholderValue = "a placeholder text";
+
+            aTextField.draw();
+
+            expect(aTextField.element.getAttribute("placeholder")).toBe("a placeholder text");
+        });
+
+        it("should not draw a placeholder when not set", function () {
+            aTextField.draw();
+
+            expect(aTextField.element.hasAttribute("placeholder")).toBeFalsy();
+        });
     });
 
     describe("events", function () {
