@@ -1,0 +1,54 @@
+{
+    "enabled_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "enabled",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "value_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "value",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "placeholderValue_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "placeholderValue",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Component",
+                "blueprintModuleId": "ui/component.meta",
+                "prototypeName": "Component"
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "AbstractTextArea",
+            "blueprintModuleId": "ui/base/abstract-text-area.meta",
+            "prototypeName": "AbstractTextArea",
+            "parent": {"@": "blueprint_parent"},
+            "propertyBlueprints": [
+                {"@": "enabled_property"},
+                {"@": "value_property"},
+                {"@": "placeholderValue_property"}
+            ],
+            "propertyBlueprintGroups": {
+                "Main": [
+                    {"@": "enabled_property"},
+                    {"@": "value_property"},
+                    {"@": "placeholderValue_property"}
+                ]
+            }
+        }
+    }
+}

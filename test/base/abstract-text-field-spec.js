@@ -201,4 +201,12 @@ describe("test/base/abstract-text-field-spec", function () {
             });
         });
     });
+    describe("blueprint", function () {
+        it("can be created", function () {
+            var blueprintPromise = AbstractTextField.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).not.toBeNull();
+            });
+        });
+    });
 });

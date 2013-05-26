@@ -268,4 +268,12 @@ describe("test/base/abstract-radio-button-spec", function () {
             expect(aRadioButton.element.getAttribute("aria-checked")).toBe("false");
         });
     });
+    describe("blueprint", function () {
+        it("can be created", function () {
+            var blueprintPromise = AbstractRadioButton.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).not.toBeNull();
+            });
+        });
+    });
 });

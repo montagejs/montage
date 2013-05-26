@@ -1,0 +1,65 @@
+{
+    "enabled_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "enabled",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "label_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "label",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "holdThreshold_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "holdThreshold",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "active_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "active",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "AbstractControl",
+                "blueprintModuleId": "ui/base/abstract-control.meta",
+                "prototypeName": "AbstractControl"
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "AbstractButton",
+            "blueprintModuleId": "ui/base/abstract-button.meta",
+            "prototypeName": "AbstractButton",
+            "parent": {"@": "blueprint_parent"},
+            "propertyBlueprints": [
+                {"@": "enabled_property"},
+                {"@": "label_property"},
+                {"@": "holdThreshold_property"},
+                {"@": "active_property"}
+            ],
+            "propertyBlueprintGroups": {
+                "Main": [
+                    {"@": "enabled_property"},
+                    {"@": "label_property"}
+                ],
+                "Options": [
+                    {"@": "holdThreshold_property"},
+                    {"@": "active_property"}
+                ]
+            }
+        }
+    }
+}

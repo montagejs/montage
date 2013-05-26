@@ -348,4 +348,12 @@ describe("test/base/abstract-slider-spec", function () {
             });
         });
     });
+    describe("blueprint", function () {
+        it("can be created", function () {
+            var blueprintPromise = AbstractSlider.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).not.toBeNull();
+            });
+        });
+    });
 });

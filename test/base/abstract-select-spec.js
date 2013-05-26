@@ -301,4 +301,12 @@ describe("test/base/abstract-select-spec", function () {
             });
         });
     });
+    describe("blueprint", function () {
+        it("can be created", function () {
+            var blueprintPromise = AbstractSelect.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).not.toBeNull();
+            });
+        });
+    });
 });

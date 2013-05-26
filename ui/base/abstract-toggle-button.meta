@@ -1,0 +1,74 @@
+{
+    "enabled_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "enabled",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "pressedLabel_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "pressedLabel",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "unpressedLabel_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "unpressedLabel",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "holdThreshold_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "holdThreshold",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "active_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "active",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "AbstractControl",
+                "blueprintModuleId": "ui/base/abstract-control.meta",
+                "prototypeName": "AbstractControl"
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "AbstractToggleButton",
+            "blueprintModuleId": "ui/base/abstract-toggle-button.meta",
+            "prototypeName": "AbstractToggleButton",
+            "parent": {"@": "blueprint_parent"},
+            "propertyBlueprints": [
+                {"@": "enabled_property"},
+                {"@": "pressedLabel_property"},
+                {"@": "unpressedLabel_property"},
+                {"@": "holdThreshold_property"},
+                {"@": "active_property"}
+            ],
+            "propertyBlueprintGroups": {
+                "Main": [
+                    {"@": "enabled_property"},
+                    {"@": "pressedLabel_property"},
+                    {"@": "unpressedLabel_property"}
+                ],
+                "Options": [
+                    {"@": "holdThreshold_property"},
+                    {"@": "active_property"}
+                ]
+            }
+        }
+    }
+}

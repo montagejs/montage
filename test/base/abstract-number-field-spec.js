@@ -396,4 +396,12 @@ describe("test/base/abstract-number-field-spec", function () {
             });
         });
     });
+    describe("blueprint", function () {
+        it("can be created", function () {
+            var blueprintPromise = AbstractNumberField.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).not.toBeNull();
+            });
+        });
+    });
 });

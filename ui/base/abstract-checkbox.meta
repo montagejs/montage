@@ -1,0 +1,65 @@
+{
+    "enabled_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "enabled",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "value_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "value",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "checked_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "checked",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "active_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "active",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "AbstractControl",
+                "blueprintModuleId": "ui/base/abstract-control.meta",
+                "prototypeName": "AbstractControl"
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "AbstractCheckbox",
+            "blueprintModuleId": "ui/base/abstract-checkbox.meta",
+            "prototypeName": "AbstractCheckbox",
+            "parent": {"@": "blueprint_parent"},
+            "propertyBlueprints": [
+                {"@": "enabled_property"},
+                {"@": "value_property"},
+                {"@": "checked_property"},
+                {"@": "active_property"}
+            ],
+            "propertyBlueprintGroups": {
+                "Main": [
+                    {"@": "enabled_property"},
+                    {"@": "value_property"},
+                    {"@": "checked_property"}
+                ],
+                "Options": [
+                     {"@": "active_property"}
+                ]
+            }
+        }
+    }
+}

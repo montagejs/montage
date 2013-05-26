@@ -126,4 +126,12 @@ describe("test/base/abstract-text-area-spec", function () {
             expect(aTextArea.element.hasEventListener("change", aTextArea)).toBe(true);
         });
     });
+    describe("blueprint", function () {
+        it("can be created", function () {
+            var blueprintPromise = AbstractTextArea.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).not.toBeNull();
+            });
+        });
+    });
 });

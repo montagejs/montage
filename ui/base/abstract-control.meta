@@ -1,0 +1,36 @@
+{
+    "detail_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "detail",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Component",
+                "blueprintModuleId": "ui/component.meta",
+                "prototypeName": "Component"
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "AbstractControl",
+            "blueprintModuleId": "ui/base/abstract-control.meta",
+            "prototypeName": "AbstractControl",
+            "parent": {"@": "blueprint_parent"},
+            "propertyBlueprints": [
+                {"@": "detail_property"}
+            ],
+            "propertyBlueprintGroups": {
+                "Options": [
+                    {"@": "detail_property"}
+                ]
+            }
+        }
+    }
+}

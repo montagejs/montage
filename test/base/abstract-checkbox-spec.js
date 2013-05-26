@@ -272,4 +272,12 @@ describe("test/base/abstract-checkbox-spec", function () {
             expect(aCheckbox.element.getAttribute("aria-checked")).toBe("false");
         });
     });
+    describe("blueprint", function () {
+        it("can be created", function () {
+            var blueprintPromise = AbstractCheckbox.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).not.toBeNull();
+            });
+        });
+    });
 });

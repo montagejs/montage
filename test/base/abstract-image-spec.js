@@ -76,4 +76,12 @@ describe("test/base/abstract-image-spec", function () {
             expect(anImage.element.src).toBe(src1);
         });
     });
+    describe("blueprint", function () {
+        it("can be created", function () {
+            var blueprintPromise = AbstractImage.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).not.toBeNull();
+            });
+        });
+    });
 });

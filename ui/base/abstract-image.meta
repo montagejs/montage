@@ -1,0 +1,47 @@
+{
+    "src_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "src",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "width_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "width",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "height_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "height",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Component",
+                "blueprintModuleId": "ui/component.meta",
+                "prototypeName": "Component"
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "AbstractImage",
+            "blueprintModuleId": "ui/base/abstract-image.meta",
+            "prototypeName": "AbstractImage",
+            "parent": {"@": "blueprint_parent"},
+            "propertyBlueprints": [
+                {"@": "src_property"},
+                {"@": "width_property"},
+                {"@": "height_property"}
+            ]
+        }
+    }
+}
