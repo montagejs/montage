@@ -51,7 +51,36 @@ var Roster = Montage.specialize( {
     removeMember: {
         value: function (member) {
             this.members.delete(member);
-            return this.undoManager.register("Remove Member", Promise.resolve(["Remove " + member, this.addMember, this, member]));
+            var foo = this.undoManager.register("Remove Member", Promise.resolve(["Remove " + member, this.addMember, this, member]));
+            foo.memberName = member;
+            return foo;
+        }
+    },
+
+    removeAllMembers: {
+        value: function () {
+
+            this.undoManager.openBatch("Remove All Members");
+
+            // NOTE purposefully using primitive method to trigger need for batched undo operations
+            var members = this.members.concat();
+            members.forEach(function (member) {
+                this.removeMember(member).done();
+            }, this);
+
+            this.undoManager.closeBatch();
+        }
+    },
+
+    replaceAllMembers: {
+        value: function () {
+
+            this.undoManager.openBatch("Replace All Members");
+
+            this.removeAllMembers();
+            this.addMember("Replacement")
+
+            this.undoManager.closeBatch();
         }
     },
 
@@ -327,4 +356,114 @@ describe('core/undo-manager-spec', function () {
 
     });
 
+    describe("batch operations", function () {
+
+        beforeEach(function() {
+            roster._members = ["Alice", "Bob", "Carol"];
+        });
+
+        describe("registration", function () {
+
+            it("should consider multiple undo registrations within a single batch as a single undo operation", function () {
+                roster.removeAllMembers();
+                expect(undoManager.undoCount).toBe(1);
+                expect(undoManager.undoLabel).toBe("Remove All Members");
+            });
+
+        });
+
+        describe("undoing", function () {
+
+            it("should perform all undo operations within the batch operation", function () {
+                roster.removeAllMembers();
+                return undoManager.undo().then(function () {
+                    expect(roster.members.length).toBe(3);
+                    expect(roster.members[0]).toBe('Alice');
+                    expect(roster.members[1]).toBe('Bob');
+                    expect(roster.members[2]).toBe('Carol');
+                }).timeout(WAITS_FOR_TIMEOUT);
+            });
+
+        });
+
+        describe("redoing", function () {
+
+            it("should perform all redo operations within the batch operation", function () {
+                roster.removeAllMembers();
+                return undoManager.undo().then(function () {
+                    return undoManager.redo();
+                }).then(function () {
+                    expect(roster.members.length).toBe(0);
+                }).timeout(WAITS_FOR_TIMEOUT);
+            });
+
+            it("should perform all redo operations within a batch itself", function () {
+                roster.removeAllMembers();
+                return undoManager.undo().then(function () {
+                    return undoManager.redo();
+                }).then(function () {
+                    expect(undoManager.undoCount).toBe(1);
+                    expect(undoManager.redoCount).toBe(0);
+                }).timeout(WAITS_FOR_TIMEOUT);
+            });
+
+        });
+
+    });
+
+    describe("nested batch operations", function () {
+
+        beforeEach(function() {
+            roster._members = ["Alice", "Bob", "Carol"];
+        });
+
+        describe("registration", function () {
+
+            it("should consider multiple undo batch registrations within a single parent batch as a single undo operation", function () {
+                roster.replaceAllMembers();
+                expect(undoManager.undoCount).toBe(1);
+                expect(undoManager.undoLabel).toBe("Replace All Members");
+            });
+
+        });
+
+        describe("undoing", function () {
+
+            it("should perform all undo batch operations within the parent batch operation", function () {
+                roster.replaceAllMembers();
+                return undoManager.undo().then(function () {
+                    expect(roster.members.length).toBe(3);
+                    expect(roster.members[0]).toBe('Alice');
+                    expect(roster.members[1]).toBe('Bob');
+                    expect(roster.members[2]).toBe('Carol');
+                }).timeout(WAITS_FOR_TIMEOUT);
+            });
+
+        });
+
+        describe("redoing", function () {
+
+            it("should perform all batch redo operations within the parent batch operation", function () {
+                roster.replaceAllMembers();
+                return undoManager.undo().then(function () {
+                    return undoManager.redo();
+                }).then(function () {
+                        expect(roster.members.length).toBe(1);
+                        expect(roster.members[0]).toBe('Replacement');
+                    }).timeout(WAITS_FOR_TIMEOUT);
+            });
+
+            it("should perform all redo operations within a batch itself", function () {
+                roster.replaceAllMembers();
+                return undoManager.undo().then(function () {
+                    return undoManager.redo();
+                }).then(function () {
+                        expect(undoManager.undoCount).toBe(1);
+                        expect(undoManager.redoCount).toBe(0);
+                    }).timeout(WAITS_FOR_TIMEOUT);
+            });
+
+        });
+
+    });
 });

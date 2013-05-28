@@ -178,6 +178,7 @@ var UndoManager = exports.UndoManager = Montage.specialize( /** @lends UndoManag
             this._promiseOperationMap = new Map();
             this._undoStack = new List();
             this._redoStack = new List();
+            this._batchStack = new List();
 
             this.defineBinding("undoLabel", {"<-": "_promiseOperationMap.get(_undoStack.head.prev.value).label"});
             this.defineBinding("undoCount", {"<-": "length", source: this._undoStack});
@@ -188,6 +189,8 @@ var UndoManager = exports.UndoManager = Montage.specialize( /** @lends UndoManag
             this.defineBinding("redoCount", {"<-": "length", source: this._redoStack});
             this.defineBinding("canRedo", {"<-": "!!length", source: this._redoStack});
             this.defineBinding("isRedoing", {"<-": "!!redoEntry"});
+
+            this.defineBinding("currentBatch", {"<-": "_batchStack.head.prev.value"});
         }
     },
 
@@ -269,6 +272,84 @@ var UndoManager = exports.UndoManager = Montage.specialize( /** @lends UndoManag
         value: true
     },
 
+    /**
+     * The stack of batch undos
+     */
+    _batchStack: {
+        value: null
+    },
+
+    /**
+     * The batch to which newly registered undo and redo operations will be added
+     */
+    currentBatch: {
+        value: null
+    },
+
+    /**
+     * Opens a batch operation; subsequent calls to `register` will add those
+     * operations to this batch.
+     */
+    openBatch: {
+        value: function (label) {
+            var deferredBatch = {};
+            deferredBatch.label = label;
+            deferredBatch.promisedOperations = [];
+            this._batchStack.push(deferredBatch);
+        }
+    },
+
+    /**
+     * Closes the current batch operation; subsequent calls to `register` will
+     * add operations to the parent batch or the top level if the closed batch
+     * was the top-most batch.
+     */
+    closeBatch: {
+        value: function () {
+            if (!this.currentBatch) {
+                throw new Error("No batch operation to close");
+            }
+
+            var label = this.currentBatch.label,
+                promisedOperations = this.currentBatch.promisedOperations,
+                operations = [],
+                entry,
+                batchOperation = function () {
+                    entry = Object.create(null);
+
+                    // Open a batch to collect redo operations
+                    this.openBatch(label);
+
+                    operations.forEach(function (operationInfo) {
+                        this._resolveUndoEntry(entry, operationInfo);
+                        entry.undoFunction.apply(entry.context, entry.args);
+                    }, this);
+
+                    this.closeBatch();
+                };
+
+
+            var batchPromise = promisedOperations.reduce(function (previous, promisedOperation) {
+                return previous.then(function (resolvedOperation) {
+                    if (resolvedOperation) {
+                        operations.push(resolvedOperation);
+                    }
+                    return promisedOperation;
+                });
+            }, Promise.resolve());
+
+            this._batchStack.pop();
+
+            var self = this;
+            this.register(label, batchPromise.then(function (finalOperation) {
+                operations.push(finalOperation);
+                // We resolve the batch undo with a function we've created to undo all the child operations
+                // it is resolved with the same shape as the usual undo operation promises
+                return [batchOperation, self];
+            }));
+        }
+    },
+
 /**
  *    Adds a new operation to the either the undo or redo stack as appropriate.
  *
@@ -302,6 +383,9 @@ var UndoManager = exports.UndoManager = Montage.specialize( /** @lends UndoManag
     register: {
         value: function (label, operationPromise) {
 
+            var promisedUndoableOperation,
+                self = this;
+
             if (!Promise.isPromiseAlike(operationPromise)) {
                 throw new Error("UndoManager expected a promise");
             }
@@ -310,63 +394,70 @@ var UndoManager = exports.UndoManager = Montage.specialize( /** @lends UndoManag
                 return Promise.resolve(null);
             }
 
-            var undoEntry = {label: label};
-            this._promiseOperationMap.set(operationPromise, undoEntry);
-
-            if (this.isUndoing) {
-
-                if (this._redoStack.length === this._maxUndoCount) {
-                    this._redoStack.shift();
-                }
-
-                this._redoStack.push(operationPromise);
+            if (this.currentBatch) {
+                this.currentBatch.promisedOperations.push(operationPromise);
+                promisedUndoableOperation = operationPromise;
             } else {
 
-                if (this._undoStack.length === this._maxUndoCount) {
-                    this._undoStack.shift();
+                var undoEntry = {label: label};
+                this._promiseOperationMap.set(operationPromise, undoEntry);
+
+                if (this.isUndoing) {
+
+                    if (this._redoStack.length === this._maxUndoCount) {
+                        this._redoStack.shift();
+                    }
+
+                    this._redoStack.push(operationPromise);
+                } else {
+
+                    if (this._undoStack.length === this._maxUndoCount) {
+                        this._undoStack.shift();
+                    }
+
+                    this._undoStack.push(operationPromise);
+
+                    if (!this.isRedoing && this._redoStack.length > 0) {
+                        this.clearRedo();
+                    }
                 }
 
-                this._undoStack.push(operationPromise);
-
-                if (!this.isRedoing && this._redoStack.length > 0) {
-                    this.clearRedo();
-                }
+                promisedUndoableOperation = operationPromise.then(function (operationInfo) {
+                    self._resolveUndoEntry(undoEntry, operationInfo);
+                    return undoEntry;
+                }).then(function () {
+                    self._flushOperationQueue();
+                });
             }
 
-            return operationPromise.spread(this._resolveUndoEntry(this, undoEntry));
+            return promisedUndoableOperation;
         }
     },
 
     _resolveUndoEntry: {
-        value: function(undoManager, entry) {
+        value: function(entry, operationInfo) {
+            var label,
+                undoFunction,
+                context,
+                firstArgIndex;
 
-            return function () {
+            if (typeof operationInfo[0] === "string") {
+                label = operationInfo[0];
+                undoFunction = operationInfo[1];
+                context = operationInfo[2];
+                firstArgIndex = 3;
+            } else {
+                undoFunction = operationInfo[0];
+                context = operationInfo[1];
+                firstArgIndex = 2;
+            }
 
-                var label,
-                    undoFunction,
-                    context,
-                    firstArgIndex;
-
-                if (typeof arguments[0] === "string") {
-                    label = arguments[0];
-                    undoFunction = arguments[1];
-                    context = arguments[2];
-                    firstArgIndex = 3;
-                } else {
-                    undoFunction = arguments[0];
-                    context = arguments[1];
-                    firstArgIndex = 2;
-                }
-
-                if (label) {
-                    entry.label = label;
-                }
-                entry.undoFunction = undoFunction;
-                entry.context = context;
-                entry.args = Array.prototype.slice.call(arguments, firstArgIndex);
-
-                undoManager._flushOperationQueue();
-            };
+            if (label) {
+                entry.label = label;
+            }
+            entry.undoFunction = undoFunction;
+            entry.context = context;
+            entry.args = operationInfo.slice(firstArgIndex);
         }
     },
 
