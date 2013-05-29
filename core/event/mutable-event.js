@@ -183,7 +183,7 @@ var MutableEvent = exports.MutableEvent = Montage.specialize(/** @lends MutableE
             if (!constructor) {
                 constructor = function MutableEvent() {
                 };
-                constructor.prototype = new MutableEvent()._initPrototypeWithEvent(event);
+                constructor.prototype = new exports.MutableEvent()._initPrototypeWithEvent(event);
                 _eventConstructorsByType[type] = constructor;
             }
             newEvent = new constructor();
