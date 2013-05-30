@@ -1,3 +1,60 @@
+# v0.13.0
+
+-   **Directory Structure**
+
+    All non components moved out of ui and moved to core.
+    Composers moved to the root directory.
+
+-   **Core**
+
+    Montage.create() usage has been replaced by a specialize method on the constructor. The specialize method return a constructor function that can be invoked with the `new` operator.
+    [Montage objects](http://montagejs.org/docs/Montage-objects.html)
+
+-   **FRB Bindings**
+
+    Functional Reactive Bindings [FRB](https://github.com/montagejs/frb) have replaced the old bindings. More info [here](http://montagejs.org/docs/Montage-%E2%99%A5-FRB.html)
+
+-   **<a name="Component_v0130">Component</a>**
+
+    **Lifecycle methods** [Component draw cycle](http://montagejs.org/docs/Component-draw-cycle.html)
+    -   `prepareForDraw` is replaced by `enterDocument`. The first time enterDocument is called a boolean with value true is passed in.
+        enterDocument is called everytime the component's element is added to the DOM. When enterDocument is called the element is already in the DOM.
+    -   `exitDocument` is called everytime the component's element is removed from the DOM. When exitDocument is called the element is still in the DOM.
+    -   `dispose` is called when the components is discarded.
+
+    **classList** A classList property has been added to all component instances. It can be used with the same api as the element's classList without needing to worry about the draw cycle.
+    It can be used to great effect with frb bindings to do things like `classList.has('complete') <- @owner.isCompete`
+
+    **innerTemplate** object replaces the content property.
+
+-   **Template**
+
+    dom arguments and parameters
+
+-   **Serialization**
+
+    A lot of the serialization code has been refactored to a separate project [mousse](https://github.com/montagejs/mousse) and made more generic.
+
+-   **Components**
+
+    The contents of the ui directory have been spit between montage, [digit](https://github.com/montagejs/digit), [matte](https://github.com/montagejs/matte), and [native](https://github.com/montagejs/native)
+    The ui directory now contains
+    -   base - described below
+    -   condition.reel
+    -   flow.reel
+    -   loader.reel
+    -   [overlay.reel](http://montagejs.org/docs/Overlay-component.html)
+    -   repetition.reel
+    -   slot.reel
+    -   substitution.reel
+    -   text.reel - replaces the dynamic-text.reel
+    -   [component.js](#Component_v0130)
+
+-   **Abstract Components**
+
+    In an effort to make basic components easier to create and more consistent, the abstract components provide a super
+    class that widget sets can specialize wuith their own template. This is how the digit widgets are implemented
+
 # v0.12.0
 
 -   **Core**
