@@ -2,34 +2,39 @@
 
 -   **Directory Structure**
 
-    All non components moved out of ui and moved to core.
-    Composers moved to the root directory.
+    All non-components have been moved from the ui directory to the core directory.
+    Composers have been moved to the root directory.
 
 -   **Core**
 
-    Montage.create() usage has been replaced by a specialize method on the constructor. The specialize method return a constructor function that can be invoked with the `new` operator.
-    [Montage objects](http://montagejs.org/docs/Montage-objects.html)
+    `Montage.create()` has been replaced by a `specialize` method on the constructor. The `specialize` method returns a constructor function that can be invoked with the `new` operator. (For details see
+    [Montage objects](http://montagejs.org/docs/Montage-objects.html).)
 
--   **FRB Bindings**
+-   **FRB bindings**
 
-    Functional Reactive Bindings [FRB](https://github.com/montagejs/frb) have replaced the old bindings. More info [here](http://montagejs.org/docs/Montage-%E2%99%A5-FRB.html)
+    Functional Reactive Bindings ([FRB](https://github.com/montagejs/frb)) have replaced the old bindings. [More info >](http://montagejs.org/docs/Montage-%E2%99%A5-FRB.html)
 
--   **<a name="Component_v0130">Component</a>**
+-   **Component**
 
-    **Lifecycle methods** [Component draw cycle](http://montagejs.org/docs/Component-draw-cycle.html)
-    -   `prepareForDraw` is replaced by `enterDocument`. The first time enterDocument is called a boolean with value true is passed in.
-        enterDocument is called everytime the component's element is added to the DOM. When enterDocument is called the element is already in the DOM.
-    -   `exitDocument` is called everytime the component's element is removed from the DOM. When exitDocument is called the element is still in the DOM.
-    -   `dispose` is called when the components is discarded.
+    **Lifecycle methods**
 
-    **classList** A classList property has been added to all component instances. It can be used with the same api as the element's classList without needing to worry about the draw cycle.
-    It can be used to great effect with frb bindings to do things like `classList.has('complete') <- @owner.isCompete`
+    (See also [Component draw cycle](http://montagejs.org/docs/Component-draw-cycle.html).)
+    -   `enterDocument` replaces `prepareForDraw`. The first time `enterDocument` is called, a Boolean with value `true` is passed in.
+        `enterDocument` is called every time the component's element is added to the DOM. When `enterDocument` is called the element is already in the DOM.
+    -   `exitDocument` is called every time the component's element is removed from the DOM. When `exitDocument` is called the element is still in the DOM.
+    -   `dispose` is called when the component is discarded.
 
-    **innerTemplate** object replaces the content property.
+    **classList**
+
+    Added a `classList` property to all component instances. You can use this property with the same API as the element's `classList` without impacting the draw cycle performance. The property can be used to great effect with FRB bindings to do things like: `classList.has('complete') <- @owner.isCompete`.
+
+    **innerTemplate**
+
+    The innerTemplate object replaces the `content` property.
 
 -   **Template**
 
-    dom arguments and parameters
+    > DOM arguments and parameters TODO
 
 -   **Serialization**
 
@@ -37,9 +42,9 @@
 
 -   **Components**
 
-    The contents of the ui directory have been spit between montage, [digit](https://github.com/montagejs/digit), [matte](https://github.com/montagejs/matte), and [native](https://github.com/montagejs/native)
-    The ui directory now contains
-    -   base - described below
+    The contents of the montage/ui directory have been split between the ui directories of the core montage framework and the [digit](https://github.com/montagejs/digit), [matte](https://github.com/montagejs/matte), and [native](https://github.com/montagejs/native) template packages.
+    The montage/ui directory now contains the following directories:
+    -   base (contains abstract components, described below)
     -   condition.reel
     -   flow.reel
     -   loader.reel
@@ -47,13 +52,13 @@
     -   repetition.reel
     -   slot.reel
     -   substitution.reel
-    -   text.reel - replaces the dynamic-text.reel
+    -   text.reel (replaces dynamic-text.reel)
     -   [component.js](#Component_v0130)
 
--   **Abstract Components**
+-   **Abstract components**
 
-    In an effort to make basic components easier to create and more consistent, the abstract components provide a super
-    class that widget sets can specialize wuith their own template. This is how the digit widgets are implemented
+    In an effort to make basic components easier to create and more consistent, the abstract components now provide a super
+    class that widget sets can specialize with their own template. This is how the [digit](https://github.com/montagejs/digit) widgets are implemented.
 
 # v0.12.0
 
