@@ -221,7 +221,7 @@ var KEYPRESS_EVENT_TYPE = "keyPress",
  Do not create a KeyManager directly but instead require for the defaultKeyManager: require("core/event/key-manager").defaultKeyManager
  @extends Montage
 */
-var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends KeyManager# */ {
+var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# */ {
 
     /**
       @private
@@ -380,11 +380,11 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends KeyManag
     },
 
     /**
-      didCreate method
+      constructor method
       @function
       @private
     */
-    didCreate: {
+    constructor: {
         value: function() {
             var userAgent = navigator.userAgent,
                 code;
@@ -999,7 +999,7 @@ var _defaultKeyManager = null;
 Montage.defineProperty(exports, "defaultKeyManager", {
     get: function() {
         if (!_defaultKeyManager) {
-            _defaultKeyManager = KeyManager.create();
+            _defaultKeyManager = new KeyManager();
         }
         return _defaultKeyManager;
     }

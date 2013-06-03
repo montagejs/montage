@@ -7,20 +7,16 @@ var MontageAst = require("./montage-ast");
  *
  * @extends Value
  */
-var MontageBuilder = Montage.create(Builder.prototype, {
-    create: {
-        value: function() {
-            var self = Object.create(this);
-
-            Builder.call(self);
-
-            return self;
+var MontageBuilder = Montage.specialize.call(Builder, {
+    constructor: {
+        value: function MontageBuilder() {
+            Builder.call(this);
         }
     },
 
     createElementReference: {
         value: function(id) {
-            return MontageAst.ElementReference.create()
+            return new MontageAst.ElementReference()
                 .initWithRootAndId(this._root, id);
         }
     }

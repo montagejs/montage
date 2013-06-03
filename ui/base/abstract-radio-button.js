@@ -10,7 +10,7 @@ var CLASS_PREFIX = "montage-RadioButton";
  * @class AbstractRadioButton
  * @extends AbstractControl
  */
-var AbstractRadioButton = exports.AbstractRadioButton = Montage.create(AbstractControl,
+var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.specialize(
     /* @lends AbstractRadioButton# */
 {
     /**
@@ -21,20 +21,13 @@ var AbstractRadioButton = exports.AbstractRadioButton = Montage.create(AbstractC
      * @param {Event} event
      */
 
-    create: {
-        value: function() {
-            if(this === AbstractRadioButton) {
+    constructor: {
+        value: function AbstractRadioButton() {
+            if(this.constructor === AbstractRadioButton) {
                 throw new Error("AbstractRadioButton cannot be instantiated.");
-            } else {
-                return AbstractControl.create.apply(this, arguments);
             }
-        }
-    },
-
-    didCreate: {
-        value: function() {
-            AbstractControl.didCreate.call(this); // super
-            this._pressComposer = PressComposer.create();
+            AbstractControl.constructor.call(this); // super
+            this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
 
             this.defineBindings({
@@ -50,10 +43,6 @@ var AbstractRadioButton = exports.AbstractRadioButton = Montage.create(AbstractC
                 }
             });
         }
-    },
-
-    hasTemplate: {
-        value: false
     },
 
     active: {
@@ -96,6 +85,24 @@ var AbstractRadioButton = exports.AbstractRadioButton = Montage.create(AbstractC
 
     _pressComposer: {
         value: null
+    },
+
+    enterDocument: {
+        value: function(firstTime) {
+            if (firstTime) {
+                this.element.setAttribute("role", "radio");
+            }
+        }
+    },
+
+    draw: {
+        value: function() {
+            if (this.checked) {
+                this.element.setAttribute("aria-checked", "true");
+            } else {
+                this.element.setAttribute("aria-checked", "false");
+            }
+        }
     },
 
     handlePressStart: {

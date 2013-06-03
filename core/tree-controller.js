@@ -10,9 +10,9 @@ var Montage = require("core/core").Montage;
 // Bind a root node from the data model to a tree controller and bind the tree
 // controller's iterations to a content controller for a repetition.
 
-var Iteration = Montage.create(Montage, {
+var Iteration = Montage.specialize( {
 
-    didCreate: {
+    constructor: {
         value: function () {
             this.depth = null;
             this.node = null;
@@ -34,9 +34,9 @@ var Iteration = Montage.create(Montage, {
 
 });
 
-var Node = exports.TreeController = Montage.create(Montage, {
+var Node = exports.TreeController = Montage.specialize( {
 
-    didCreate: {
+    constructor: {
         value: function () {
 
             this.content = null;
@@ -67,7 +67,7 @@ var Node = exports.TreeController = Montage.create(Montage, {
             this.childIterations.addRangeChangeListener(this, "childIterations");
 
             // iteration + indentedChildIterations -> iterations
-            this.iteration = Iteration.create().initWithNodeAndDepth(this, 0);
+            this.iteration = new Iteration().initWithNodeAndDepth(this, 0);
             this.defineBinding("iterations.rangeContent()", {
                 "<-": "[[iteration], indentedChildIterations].flatten()"
             });
@@ -90,7 +90,7 @@ var Node = exports.TreeController = Montage.create(Montage, {
                 index,
                 minus.length,
                 plus.map(function (child) {
-                    return Node.create().init(
+                    return new Node().init(
                         child,
                         this.childrenPath,
                         this
@@ -106,7 +106,7 @@ var Node = exports.TreeController = Montage.create(Montage, {
                 index,
                 minus.length,
                 plus.map(function (iteration) {
-                    return this.Iteration.create().initWithNodeAndDepth(
+                    return new this.Iteration().initWithNodeAndDepth(
                         iteration.node,
                         iteration.depth + 1
                     );

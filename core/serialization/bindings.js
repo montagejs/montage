@@ -3,6 +3,7 @@ var Bindings = require("frb"),
     parse = require("frb/parse"),
     stringify = require("frb/stringify"),
     expand = require("frb/expand"),
+    Scope = require("frb/scope"),
     Serializer = require("core/serialization").Serializer,
     Deserializer = require("core/serialization").Deserializer;
 
@@ -10,10 +11,6 @@ Serializer.defineSerializationUnit("bindings", function (serializer, object) {
     var inputs = Bindings.getBindings(object);
     var outputs = {};
     var hasBindings;
-
-    var parameters = {
-        serialization: serializer
-    };
 
     for (var targetPath in inputs) {
         var input = inputs[targetPath];
@@ -27,12 +24,16 @@ Serializer.defineSerializationUnit("bindings", function (serializer, object) {
 
         if (input.source !== object) {
             var label = serializer.getObjectLabel(input.source);
-            var syntax = expand(parse(sourcePath), {
+            var scope = new Scope({
                 type: "component",
                 label: label
-            }, parameters);
+            });
+            scope.components = serializer;
+            var syntax = expand(parse(sourcePath), scope);
         } else {
-            var syntax = expand(parse(sourcePath), null, parameters);
+            var scope = new Scope();
+            scope.components = serializer;
+            var syntax = expand(parse(sourcePath), scope);
         }
         sourcePath = stringify(syntax);
         if (input.twoWay) {
@@ -90,7 +91,7 @@ Deserializer.defineDeserializationUnit("bindings", function (deserializer, objec
     }
 
     Bindings.defineBindings(object, bindings, {
-        serialization: deserializer
+        components: deserializer
     });
 
 });

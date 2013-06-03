@@ -10,18 +10,19 @@ var Montage = require("montage").Montage,
  * @class AbstractImage
  * @extends Component
  */
-var AbstractImage = exports.AbstractImage = Montage.create(Component, /** @lends AbstractImage# */ {
+var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends AbstractImage# */ {
 
     /**
      * @private
      */
-    create: {
-        value: function() {
-            if(this === AbstractImage) {
+    constructor: {
+        value: function AbstractImage() {
+            if(this.constructor === AbstractImage) {
                 throw new Error("AbstractImage cannot be instantiated.");
-            } else {
-                return Component.create.apply(this, arguments);
             }
+            Component.constructor.call(this); // super
+            this._image = new Image();
+            this._image.onload = this.handleImageLoad.bind(this);
         }
     },
 
@@ -75,17 +76,6 @@ var AbstractImage = exports.AbstractImage = Montage.create(Component, /** @lends
         },
         get: function() {
             return this._textAlternative;
-        }
-    },
-
-    /**
-     * @private
-     */
-    didCreate: {
-        value: function() {
-            Component.didCreate.call(this); // super
-            this._image = new Image();
-            this._image.onload = this.handleImageLoad.bind(this);
         }
     },
 

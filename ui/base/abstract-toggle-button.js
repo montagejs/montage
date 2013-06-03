@@ -14,7 +14,7 @@ var Montage = require("montage").Montage,
  * @fires action
  * @fires longAction
  */
-var AbstractToggleButton = exports.AbstractToggleButton = Montage.create(AbstractControl, /** @lends AbstractToggleButton# */ {
+var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specialize( /** @lends AbstractToggleButton# */ {
 
     /**
      * Dispatched when the toggle button is activated through a mouse click,
@@ -35,30 +35,20 @@ var AbstractToggleButton = exports.AbstractToggleButton = Montage.create(Abstrac
     /**
      * @private
      */
-    create: {
+    constructor: {
         value: function() {
-            if(this === AbstractToggleButton) {
+            if(this.constructor === AbstractToggleButton) {
                 throw new Error("AbstractToggleButton cannot be instantiated.");
-            } else {
-                return AbstractControl.create.apply(this, arguments);
             }
-        }
-    },
-
-    /**
-     * @private
-     */
-    didCreate: {
-        value: function() {
-            AbstractControl.didCreate.call(this); // super
-            this._pressComposer = PressComposer.create();
+            AbstractControl.constructor.call(this); // super
+            this._pressComposer = new PressComposer();
             this._pressComposer.defineBinding("longPressThreshold ", {
                 "<-": "holdThreshold",
                 source: this
             });
             this.addComposer(this._pressComposer);
 
-            this._keyComposer = KeyComposer.create();
+            this._keyComposer = new KeyComposer();
             this._keyComposer.component = this;
             this._keyComposer.keys = "space";
             this.addComposer(this._keyComposer);
@@ -77,7 +67,6 @@ var AbstractToggleButton = exports.AbstractToggleButton = Montage.create(Abstrac
                     "<-": "pressed"
                 }
             });
-
         }
     },
 

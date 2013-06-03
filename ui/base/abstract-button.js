@@ -17,7 +17,7 @@ var Montage = require("montage").Montage,
  * @fires action
  * @fires longAction
  */
-var AbstractButton = exports.AbstractButton = Montage.create(AbstractControl, /** @lends AbstractButton# */ {
+var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @lends AbstractButton# */ {
 
     /**
      * Dispatched when the button is activated through a mouse click, finger tap,
@@ -38,24 +38,13 @@ var AbstractButton = exports.AbstractButton = Montage.create(AbstractControl, /*
     /**
      * @private
      */
-    create: {
-        value: function() {
-            if(this === AbstractButton) {
+    constructor: {
+        value: function AbstractButton() {
+            if(this.constructor ===  AbstractButton) {
                 throw new Error("AbstractControl cannot be instantiated.");
-            } else {
-                return AbstractButton.create.apply(this, arguments);
             }
-        }
-    },
-
-
-    /**
-     * @private
-     */
-    didCreate: {
-        value: function() {
-            AbstractControl.didCreate.call(this); // super
-            this._pressComposer = PressComposer.create();
+            AbstractControl.constructor.call(this); // super
+            this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
             this._pressComposer.defineBinding("longPressThreshold ", {"<-": "holdThreshold", source: this});
 
@@ -64,7 +53,6 @@ var AbstractButton = exports.AbstractButton = Montage.create(AbstractControl, /*
             //classList management
             this.defineBinding("classList.has('montage--disabled')", {"<-": "disabled"});
             this.defineBinding("classList.has('montage--active')", {"<-": "active"});
-
         }
     },
 

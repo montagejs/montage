@@ -45,18 +45,18 @@ describe("converter-spec", function() {
     var date = new Date('25 Aug 2011 12:00:00 PM');
 
     beforeEach(function() {
-        //stringConverter = Montage.create(StringConverter);
-        ucaseConverter = Montage.create(UpperCaseConverter);
-        lcaseConverter = Montage.create(LowerCaseConverter);
-        trimConverter = Montage.create(TrimConverter);
+        //stringConverter = new StringConverter();
+        ucaseConverter = new UpperCaseConverter();
+        lcaseConverter = new LowerCaseConverter();
+        trimConverter = new TrimConverter();
 
-        numberConverter = Montage.create(NumberConverter);
+        numberConverter = new NumberConverter();
         numberConverter.shorten = true;
-        bytesConverter = Montage.create(BytesConverter);
-        dateConverter = Montage.create(DateConverter);
-        currencyConverter = Montage.create(CurrencyConverter);
+        bytesConverter = new BytesConverter();
+        dateConverter = new DateConverter();
+        currencyConverter = new CurrencyConverter();
 
-        dateConverter = Montage.create(DateConverter);
+        dateConverter = new DateConverter();
         //dateConverter.pattern = 'YYYY-MM-DD';
     });
 

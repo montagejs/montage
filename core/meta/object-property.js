@@ -17,7 +17,7 @@ var logger = require("core/logger").logger("object-property");
  @class ObjectProperty
  @extends Montage
  */
-var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends ObjectProperty# */ {
+var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
     /**
      @function
      @returns itself
@@ -207,7 +207,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
             var propertyBlueprint = this.blueprint.propertyBlueprintForName(propertyName);
             var storageKey = "_" + propertyBlueprint.name;
             if (value == null && propertyBlueprint.denyDelete) {
-                throw Exception.create().initWithMessageTargetAndMethod("Deny Delete", this, propertyBlueprint.name);
+                throw new Exception().initWithMessageTargetAndMethod("Deny Delete", this, propertyBlueprint.name);
             } else {
                 this[storageKey] = value;
             }

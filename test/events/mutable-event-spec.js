@@ -41,7 +41,7 @@ describe("events/mutable-event-spec", function() {
         beforeEach(function() {
             type = "myCustomEventType";
             listener = {};
-            target = Target.create();
+            target = new Target();
 
             target.addEventListener(type, listener);
         });
@@ -127,7 +127,7 @@ describe("events/mutable-event-spec", function() {
         beforeEach(function() {
             type = "myCustomEventType";
             listener = {};
-            target = Target.create();
+            target = new Target();
 
             target.addEventListener(type, listener);
         });

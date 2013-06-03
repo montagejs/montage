@@ -11,8 +11,8 @@ var Enum = require("core/enum").Enum;
 
 var logger = require("core/logger").logger("blueprint");
 
-var ValueType = Enum.create().initWithMembers("string", "number", "boolean", "date", "enum", "url", "object");
-var CollectionValueType = Enum.create().initWithMembers("list", "set", "map");
+var ValueType = new Enum().initWithMembers("string", "number", "boolean", "date", "enum", "url", "object");
+var CollectionValueType = new Enum().initWithMembers("list", "set", "map");
 
 var Defaults = {
     name:"default",
@@ -31,7 +31,7 @@ var Defaults = {
 /**
  @class PropertyBlueprint
  */
-exports.PropertyBlueprint = Montage.create(Montage, /** @lends PropertyBlueprint# */ {
+exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */ {
 
     /**
      Initialize a newly allocated property blueprint.

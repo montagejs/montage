@@ -255,7 +255,7 @@ var webkitImplementation = function() {
             _webKitPoint.y = 0;
         }
         point = webkitConvertPointFromNodeToPage(element, _webKitPoint);
-        return point ? Point.create().init(point.x, point.y) : null;
+        return point ? new Point().init(point.x, point.y) : null;
     };
 
     exports.convertPointFromPageToNode = function(element, point) {
@@ -267,7 +267,7 @@ var webkitImplementation = function() {
             _webKitPoint.y = 0;
         }
         point = webkitConvertPointFromPageToNode(element, _webKitPoint);
-        return point ? Point.create().init(point.x, point.y) : null;
+        return point ? new Point().init(point.x, point.y) : null;
     };
 };
 var shimImplementation = function() {
@@ -277,9 +277,9 @@ var shimImplementation = function() {
         }
         var offset;
         if (offset =_offsetForElement(element)) {
-            return Point.create().init((point ? point.x:0)+offset.left, (point ? point.y:0)+offset.top);
+            return new Point().init((point ? point.x:0)+offset.left, (point ? point.y:0)+offset.top);
         } else {
-            return Point.create().init((point ? point.x:0), (point ? point.y:0));
+            return new Point().init((point ? point.x:0), (point ? point.y:0));
         }
     };
 
@@ -289,9 +289,9 @@ var shimImplementation = function() {
         }
         var offset;
         if (offset =_offsetForElement(element)) {
-            return Point.create().init((point ? point.x:0)-offset.left, (point ? point.y:0)-offset.top);
+            return new Point().init((point ? point.x:0)-offset.left, (point ? point.y:0)-offset.top);
         } else {
-            return Point.create().init((point ? point.x:0), (point ? point.y:0));
+            return new Point().init((point ? point.x:0), (point ? point.y:0));
         }
     };
 };

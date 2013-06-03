@@ -21,7 +21,7 @@ var Defaults = {
 
  @class DerivedPropertyBlueprint
  */
-exports.DerivedPropertyBlueprint = Montage.create(PropertyBlueprint, /** @lends DerivedPropertyBlueprint# */ {
+exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends DerivedPropertyBlueprint# */ {
 
     serializeSelf: {
         value: function(serializer) {

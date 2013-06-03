@@ -1,0 +1,8 @@
+{
+    "mappings": {
+        "montage": {
+            "name": "montage",
+            "location": "../../.."
+        }
+    }
+}

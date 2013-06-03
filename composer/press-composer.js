@@ -16,7 +16,7 @@ var Montage = require("montage").Montage,
  * @fires longPress
  * @fires pressCancel
  */
-var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends PressComposer# */ {
+var PressComposer = exports.PressComposer = Composer.specialize(/** @lends PressComposer# */ {
 
     /**
         Dispatched when a press begins. It is ended by either a {@link press} or
@@ -403,10 +403,11 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends P
                 event.initCustomEvent(name, true, true, null);
             }
 
-            pressEvent = PressEvent.create();
+            pressEvent = new PressEvent();
             pressEvent.event = event;
             pressEvent.type = name;
             pressEvent.pointer = this._observedPointer;
+            pressEvent.targetElement = event.target;
 
             if (event.changedTouches &&
                 (index = this._changedTouchisObserved(event.changedTouches)) !== false
@@ -491,7 +492,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends P
 var PressEvent = (function(){
     var value, eventProps, typeProps, eventPropDescriptor, typePropDescriptor, i;
 
-    value = Montage.create(Montage, {
+    value = MutableEvent.specialize({
         type: {
             value: "press"
         },

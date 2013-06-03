@@ -26,8 +26,9 @@
   },
   "dependencies": {
     "collections": "~0.1.17",
-    "frb": "~0.1.27",
-    "mousse": "~0.1.2"
+    "frb": "~0.2.0",
+    "mousse": "~0.1.2",
+    "htmlparser2": "~3.0.5"
   },
   "devDependencies": {
     "montage-testing": "0.2.0-alpha",
@@ -36,8 +37,8 @@
     "q-io": "~1.3.2",
     "jshint": "~2.0.1"
   },
-  "optionalDependencies": {
-    "jsdom": "~0.2.19"
+  "scripts": {
+    "test": "node test/node/node-spec.js"
   },
   "exclude": [
     "bin",

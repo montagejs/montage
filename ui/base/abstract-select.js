@@ -15,7 +15,7 @@ var Montage = require("montage").Montage,
  * @fires action
  * @fires longAction
  */
-var AbstractSelect = exports.AbstractSelect = Montage.create(AbstractControl, /** @lends AbstractSelect# */ {
+var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @lends AbstractSelect# */ {
 
     /**
      * Dispatched when the select is changed through a mouse click or finger tap.
@@ -27,25 +27,15 @@ var AbstractSelect = exports.AbstractSelect = Montage.create(AbstractControl, /*
     /**
      * @private
      */
-    create: {
-        value: function() {
-            if(this === AbstractSelect) {
+    constructor: {
+        value: function AbstractSelect() {
+            if(this.constructor === AbstractSelect) {
                 throw new Error("AbstractSelect cannot be instantiated.");
-            } else {
-                return AbstractControl.create.apply(this, arguments);
             }
-        }
-    },
-
-    /**
-     * @private
-     */
-    didCreate: {
-        value: function() {
-            AbstractControl.didCreate.call(this); // super
-            this._pressComposer = PressComposer.create();
+            AbstractControl.constructor.call(this); // super
+            this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
-            this.contentController = RangeController.create();
+            this.contentController = new RangeController();
             this._values = [];
 
             this.defineBindings({

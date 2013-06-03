@@ -2,32 +2,32 @@ var Montage = require("montage").Montage;
 var AbstractToggleButton = require("montage/ui/base/abstract-toggle-button").AbstractToggleButton;
 var MockDOM = require("mocks/dom");
 
-AbstractToggleButton.hasTemplate = false;
+AbstractToggleButton.prototype.hasTemplate = false;
 
 describe("test/base/abstract-toggle-button-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractToggleButton.create();
+                new AbstractToggleButton();
             }).toThrow();
         });
 
         it("can be instantiated as a subtype", function () {
-            var ToggleButtonSubtype = Montage.create(AbstractToggleButton, {});
+            var ToggleButtonSubtype = AbstractToggleButton.specialize( {});
             var aToggleButtonSubtype;
             expect(function () {
-                aToggleButtonSubtype = ToggleButtonSubtype.create();
+                aToggleButtonSubtype = new ToggleButtonSubtype();
             }).not.toThrow();
             expect(aToggleButtonSubtype).toBeDefined();
         });
     });
     
     describe("properties", function () {
-        var ToggleButton = Montage.create(AbstractToggleButton, {}),
+        var ToggleButton = AbstractToggleButton.specialize( {}),
             aToggleButton;
 
         beforeEach(function () {
-            aToggleButton = ToggleButton.create();
+            aToggleButton = new ToggleButton();
             aToggleButton.element = MockDOM.element();
         });
 
@@ -38,7 +38,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
 
         describe("enabled", function () {
             beforeEach(function () {
-                aToggleButton = ToggleButton.create();
+                aToggleButton = new ToggleButton();
                 aToggleButton.element = MockDOM.element();
                 aToggleButton.prepareForActivationEvents();
             });
@@ -108,7 +108,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
 
         describe("pressed", function () {
             beforeEach(function () {
-                aToggleButton = ToggleButton.create();
+                aToggleButton = new ToggleButton();
                 aToggleButton.element = MockDOM.element();
                 aToggleButton.prepareForActivationEvents();
             });
@@ -142,11 +142,11 @@ describe("test/base/abstract-toggle-button-spec", function () {
     });
 
     describe("draw", function () {
-        var ToggleButton = Montage.create(AbstractToggleButton, {}),
+        var ToggleButton = AbstractToggleButton.specialize( {}),
             aToggleButton;
 
         beforeEach(function () {
-            aToggleButton = ToggleButton.create();
+            aToggleButton = new ToggleButton();
             aToggleButton.element = MockDOM.element();
             aToggleButton.needsDraw = false;
         });
@@ -184,11 +184,11 @@ describe("test/base/abstract-toggle-button-spec", function () {
     });
 
     describe("active target", function () {
-        var ToggleButton = Montage.create(AbstractToggleButton, {}),
+        var ToggleButton = AbstractToggleButton.specialize( {}),
             aToggleButton, anElement;
 
         beforeEach(function () {
-            aToggleButton = ToggleButton.create();
+            aToggleButton = new ToggleButton();
             anElement = MockDOM.element();
         });
 
@@ -198,11 +198,11 @@ describe("test/base/abstract-toggle-button-spec", function () {
     });
 
     describe("events", function () {
-        var ToggleButton = Montage.create(AbstractToggleButton, {}),
+        var ToggleButton = AbstractToggleButton.specialize( {}),
             aToggleButton, anElement, listener;
 
         beforeEach(function () {
-            aToggleButton = ToggleButton.create();
+            aToggleButton = new ToggleButton();
             anElement = MockDOM.element();
             listener = {
                 handleEvent: function() {}
@@ -299,6 +299,14 @@ describe("test/base/abstract-toggle-button-spec", function () {
                 aToggleButton.handleKeyPress(anEvent);
 
                 expect(aToggleButton.pressed).toBe(true);
+            });
+        });
+    });
+    describe("blueprint", function () {
+        it("can be created", function () {
+            var blueprintPromise = AbstractToggleButton.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).not.toBeNull();
             });
         });
     });

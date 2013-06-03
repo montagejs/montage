@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-var Media = Montage.create(Montage, {
+var Media = Montage.specialize( {
 
     type: {
         value: null
@@ -43,7 +43,7 @@ var Media = Montage.create(Montage, {
 
 });
 
-var PhotoMedia = Montage.create(Media, {
+var PhotoMedia = Media.specialize( {
 
     type: {
         value: "photo"
@@ -55,7 +55,7 @@ var PhotoMedia = Montage.create(Media, {
 
 });
 
-var VideoMedia = Montage.create(Media, {
+var VideoMedia = Media.specialize( {
 
     type: {
         value: "video"
@@ -67,15 +67,15 @@ var VideoMedia = Montage.create(Media, {
 
 });
 
-var SlotTest = exports.SlotTest = Montage.create(Component, {
+var SlotTest = exports.SlotTest = Component.specialize( {
 
     init: {
         value: function() {
-            this.video = VideoMedia.create();
+            this.video = new VideoMedia();
             this.video.duration = "VIDEO 81 Minutes";
             this.video.description = "VIDEO: The Last Dispatch"
 
-            this.photo = PhotoMedia.create();
+            this.photo = new PhotoMedia();
             this.photo.location = "PHOTO North Attleboro, MA";
             this.photo.description = "PHOTO Go Big Red";
 

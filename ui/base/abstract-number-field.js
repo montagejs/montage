@@ -11,25 +11,18 @@ var CLASS_PREFIX = "montage-NumberField";
  * @class AbstractNumberField
  * @extends AbstractControl
  */
-var AbstractNumberField = exports.AbstractNumberField = Montage.create(AbstractControl,
+var AbstractNumberField = exports.AbstractNumberField = AbstractControl.specialize(
     /* @lends AbstractNumberField# */
 {
 
     // Lifecycle
 
-    create: {
-        value: function () {
-            if (this === AbstractNumberField) {
+    constructor: {
+        value: function AbstractNumberField() {
+            if (this.constructor === AbstractNumberField) {
                 throw new Error("AbstractNumberField cannot be instantiated.");
-            } else {
-                return AbstractControl.create.apply(this, arguments);
             }
-        }
-    },
-
-    didCreate: {
-        value: function() {
-            AbstractControl.didCreate.call(this); // super
+            AbstractControl.constructor.call(this); // super
             this._propertyNamesUsed = {};
             this.defineBinding( "classList.has('montage--disabled')", { "<-": "!enabled" });
         }
@@ -164,9 +157,9 @@ var AbstractNumberField = exports.AbstractNumberField = Montage.create(AbstractC
 
     handleAction: {
         value: function(event) {
-            if (event.target === this._numberFieldTextFieldAbstractControl ||
-                event.target === this._numberFieldMinusAbstractControl ||
-                event.target === this._numberFieldPlusAbstractControl) {
+            if (event.target === this._numberFieldTextFieldComponent ||
+                event.target === this._numberFieldMinusComponent ||
+                event.target === this._numberFieldPlusComponent) {
                 event.stopPropagation();
                 this.dispatchActionEvent();
             }

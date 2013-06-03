@@ -2,7 +2,7 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-exports.Main = Montage.create(Component, /** @lends Main# */ {
+exports.Main = Component.specialize( /** @lends Main# */ {
     text: {
         value: "Main Draw"
     },

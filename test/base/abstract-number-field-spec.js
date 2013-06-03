@@ -6,33 +6,33 @@ var Montage = require("montage").Montage,
     MockComponent = require("mocks/component"),
     MockEvent = require("mocks/event");
 
-AbstractNumberField.hasTemplate = false;
+AbstractNumberField.prototype.hasTemplate = false;
 
 describe("test/base/abstract-number-field-spec", function () {
 
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractNumberField.create();
+                new AbstractNumberField();
             }).toThrow();
         });
 
         it("can be instantiated as a subtype", function () {
-            var NumberFieldSubtype = Montage.create(AbstractNumberField, {});
+            var NumberFieldSubtype = AbstractNumberField.specialize( {constructor: function NumberFieldSubtype() {}});
             var aNumberFieldSubtype = null;
             expect(function () {
-                aNumberFieldSubtype = NumberFieldSubtype.create();
+                aNumberFieldSubtype = new NumberFieldSubtype();
             }).not.toThrow();
             expect(aNumberFieldSubtype).toBeDefined();
         });
     });
 
     describe("properties", function () {
-        var NumberField = Montage.create(AbstractNumberField, {}),
+        var NumberField = AbstractNumberField.specialize( {constructor: function NumberField() {}}),
             aNumberField;
 
         beforeEach(function () {
-            aNumberField = NumberField.create();
+            aNumberField = new NumberField();
             aNumberField.element = MockDOM.element();
             aNumberField._numberFieldTextFieldComponent = MockComponent.component();
             aNumberField._numberFieldMinusComponent = MockComponent.component();
@@ -206,11 +206,11 @@ describe("test/base/abstract-number-field-spec", function () {
 
     });
     describe("interaction", function () {
-        var NumberField = Montage.create(AbstractNumberField, {}),
+        var NumberField = AbstractNumberField.specialize( {constructor: function NumberField() {}}),
             aNumberField;
 
         beforeEach(function () {
-            aNumberField = NumberField.create();
+            aNumberField = new NumberField();
             aNumberField.element = MockDOM.element();
             aNumberField._numberFieldTextFieldComponent = MockComponent.component();
             aNumberField._numberFieldMinusComponent = MockComponent.component();
@@ -308,11 +308,11 @@ describe("test/base/abstract-number-field-spec", function () {
     });
 
     describe("events", function () {
-        var NumberField = Montage.create(AbstractNumberField, {}),
+        var NumberField = AbstractNumberField.specialize( {constructor: function NumberField() {}}),
             aNumberField;
 
         beforeEach(function () {
-            aNumberField = NumberField.create();
+            aNumberField = new NumberField();
             aNumberField.element = MockDOM.element();
             aNumberField._numberFieldTextFieldComponent = MockComponent.component();
             aNumberField._numberFieldMinusComponent = MockComponent.component();
@@ -393,6 +393,14 @@ describe("test/base/abstract-number-field-spec", function () {
                 aNumberField.enterDocument(true);
                 aNumberField._numberFieldMinusComponent.dispatchEvent(actionEvent);
                 expect(actionEvent.propagationStopped).toBeTruthy();
+            });
+        });
+    });
+    describe("blueprint", function () {
+        it("can be created", function () {
+            var blueprintPromise = AbstractNumberField.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).not.toBeNull();
             });
         });
     });

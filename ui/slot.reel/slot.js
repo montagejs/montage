@@ -39,16 +39,16 @@ var Montage = require("montage").Montage,
  @class Slot
  @extends Component
  */
-exports.Slot = Montage.create(Component, /** @lends Slot# */ {
+exports.Slot = Component.specialize( /** @lends Slot# */ {
 
     hasTemplate: {
         enumerable: false,
         value: false
     },
 
-    didCreate: {
+    constructor: {
         value: function() {
-            Component.didCreate.call(this);
+            Component.constructor.call(this);
             this.content = null;
         }
     },

@@ -2,7 +2,7 @@ var Montage = require("montage").Montage;
 var AbstractImage = require("montage/ui/base/abstract-image").AbstractImage;
 var MockDOM = require("mocks/dom");
 
-AbstractImage.hasTemplate = false;
+AbstractImage.prototype.hasTemplate = false;
 
 var src1 = "data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
 
@@ -10,32 +10,32 @@ describe("test/base/abstract-image-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractImage.create();
+                new AbstractImage();
             }).toThrow();
         });
 
         it("can be instantiated as a subtype", function () {
-            var ImageSubtype = Montage.create(AbstractImage, {});
+            var ImageSubtype = AbstractImage.specialize( {});
             var anImageSubtype;
             expect(function () {
-                anImageSubtype = ImageSubtype.create();
+                anImageSubtype = new ImageSubtype();
             }).not.toThrow();
             expect(anImageSubtype).toBeDefined();
         });
     });
 
     describe("properties", function () {
-        var Image = Montage.create(AbstractImage, {}),
+        var Image = AbstractImage.specialize( {}),
             anImage;
 
         beforeEach(function () {
-            anImage = Image.create();
+            anImage = new Image();
             anImage.element = MockDOM.element();
         });
 
         describe("src", function () {
             beforeEach(function () {
-                anImage = Image.create();
+                anImage = new Image();
                 anImage.element = MockDOM.element();
             });
 
@@ -49,11 +49,11 @@ describe("test/base/abstract-image-spec", function () {
     });
 
     describe("draw", function () {
-        var Image = Montage.create(AbstractImage, {}),
+        var Image = AbstractImage.specialize( {}),
             anImage;
 
         beforeEach(function () {
-            anImage = Image.create();
+            anImage = new Image();
             anImage.element = MockDOM.element();
             anImage.needsDraw = false;
         });
@@ -74,6 +74,14 @@ describe("test/base/abstract-image-spec", function () {
             anImage._isLoadingImage = false;
             anImage.draw();
             expect(anImage.element.src).toBe(src1);
+        });
+    });
+    describe("blueprint", function () {
+        it("can be created", function () {
+            var blueprintPromise = AbstractImage.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).not.toBeNull();
+            });
         });
     });
 });

@@ -5,7 +5,7 @@ var parse = require("frb/parse");
 var stringify = require("frb/stringify");
 var evaluate = require("frb/evaluate");
 
-var Selector = exports.Selector = Montage.create(Montage, {
+var Selector = exports.Selector = Montage.specialize( {
 
     syntax: {
         value: null
@@ -55,6 +55,24 @@ var Selector = exports.Selector = Montage.create(Montage, {
 // support invocation both as class and instance methods like
 // Selector.and("a", "b") and aSelector.and("b")
 parse.semantics.precedence.keys().forEach(function (type) {
+    Montage.defineProperty(Selector.prototype, type, {
+        value: function () {
+            var args = Array.prototype.map.call(arguments, function (argument) {
+                if (typeof argument === "string") {
+                    return parse(argument);
+                } else if (argument.syntax) {
+                    return argument.syntax;
+                } else if (typeof argument === "object") {
+                    return argument;
+                }
+            });
+            // invoked as instance method
+            return new (this.constructor)().initWithSyntax({
+                type: type,
+                args: [this.syntax].concat(args)
+            });
+        }
+    });
     Montage.defineProperty(Selector, type, {
         value: function () {
             var args = Array.prototype.map.call(arguments, function (argument) {
@@ -66,19 +84,11 @@ parse.semantics.precedence.keys().forEach(function (type) {
                     return argument;
                 }
             });
-            if (this.syntax === null) {
-                // invoked as class method
-                return this.create().initWithSyntax({
-                    type: type,
-                    args: args
-                });
-            } else {
-                // invoked as instance method
-                return Object.getPrototypeOf(this).create().initWithSyntax({
-                    type: type,
-                    args: [this.syntax].concat(args)
-                });
-            }
+            // invoked as class method
+            return new this().initWithSyntax({
+                type: type,
+                args: args
+            });
         }
     });
 });

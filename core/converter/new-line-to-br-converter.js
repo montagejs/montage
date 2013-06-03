@@ -52,7 +52,7 @@ var newLineToBr = function(str) {
  @class NewLineToBrConverter
  @classdesc Converts a newline to a &lt;br&gt; tag.
  */
-exports.NewLineToBrConverter = Montage.create(Converter, /** @lends NewLineToBrConverter# */{
+exports.NewLineToBrConverter = Converter.specialize( /** @lends NewLineToBrConverter# */{
 
     /**
      @private

@@ -34,15 +34,15 @@ describe("meta/converter-blueprint-spec", function () {
         currencyConverter;
 
     beforeEach(function () {
-        converter = Montage.create(Converter);
-        ucaseConverter = Montage.create(UpperCaseConverter);
-        lcaseConverter = Montage.create(LowerCaseConverter);
-        trimConverter = Montage.create(TrimConverter);
-        invertConverter = Montage.create(InvertConverter);
-        numberConverter = Montage.create(NumberConverter);
-        bytesConverter = Montage.create(BytesConverter);
-        dateConverter = Montage.create(DateConverter);
-        currencyConverter = Montage.create(CurrencyConverter);
+        converter = new Converter();
+        ucaseConverter = new UpperCaseConverter();
+        lcaseConverter = new LowerCaseConverter();
+        trimConverter = new TrimConverter();
+        invertConverter = new InvertConverter();
+        numberConverter = new NumberConverter();
+        bytesConverter = new BytesConverter();
+        dateConverter = new DateConverter();
+        currencyConverter = new CurrencyConverter();
     });
 
     describe("test converter blueprint", function () {

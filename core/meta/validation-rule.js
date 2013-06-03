@@ -16,7 +16,7 @@ var logger = require("core/logger").logger("blueprint");
  @class PropertyValidationRule
  @extends Montage
  */
-var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Montage, /** @lends PropertyValidationRule# */ {
+var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidationRule# */ {
 
     /**
      Initialize a newly allocated blueprint validation rule.
@@ -162,7 +162,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Mon
     evaluateRule: {
         value: function(objectInstance) {
             if (this._propertyValidationEvaluator === null) {
-                var propertyValidationSemantics = PropertyValidationSemantics.create().initWithBlueprint(this.blueprint);
+                var propertyValidationSemantics = new PropertyValidationSemantics().initWithBlueprint(this.blueprint);
                 this._propertyValidationEvaluator = propertyValidationSemantics.compile(this.selector.syntax);
             }
             return this._propertyValidationEvaluator(objectInstance);

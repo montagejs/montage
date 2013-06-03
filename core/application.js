@@ -67,7 +67,7 @@ var Montage = require("core/core").Montage,
  * @class Application
  * @extends Target
  */
-var Application = exports.Application = Montage.create(Target, /** @lends Application# */ {
+var Application = exports.Application = Target.specialize( /** @lends Application# */ {
 
     /**
      Provides a reference to the Montage event manager used in the application.
@@ -144,7 +144,7 @@ var Application = exports.Application = Montage.create(Target, /** @lends Applic
 
             if (this.parentApplication == null) {
                 if (!this._windows) {
-                    var theWindow = MontageWindow.create();
+                    var theWindow = new MontageWindow();
                     theWindow.application = this;
                     theWindow.window = window;
                     this.window = theWindow;
@@ -170,7 +170,7 @@ var Application = exports.Application = Montage.create(Target, /** @lends Applic
     window: {
         get: function() {
             if (!this._window && this == this.mainApplication) {
-                var theWindow = MontageWindow.create();
+                var theWindow = new MontageWindow();
                 theWindow.application = this;
                 theWindow.window = window;
                 this._window = theWindow;
@@ -287,7 +287,7 @@ var Application = exports.Application = Montage.create(Target, /** @lends Applic
     openWindow: {
         value: function(component, name, parameters) {
             var thisRef = this,
-                childWindow = MontageWindow.create(),
+                childWindow = new MontageWindow(),
                 childApplication,
                 event,
                 windowParams = {
@@ -445,7 +445,7 @@ var Application = exports.Application = Montage.create(Target, /** @lends Applic
     /**
      @private
      */
-    didCreate: {
+    constructor: {
         value: function() {
             if (window.loadInfo && !this.parentApplication) {
                 this.parentApplication = window.loadInfo.parent.document.application;
@@ -495,7 +495,7 @@ var Application = exports.Application = Montage.create(Target, /** @lends Applic
         slotEl.style.zIndex = zIndex;
         slotEl.style.position = 'absolute';
 
-        var popupSlot = Slot.create();
+        var popupSlot = new Slot();
         popupSlot.element = slotEl;
         popupSlot.attachToParentComponent();
         return popupSlot;

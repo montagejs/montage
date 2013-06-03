@@ -24,15 +24,15 @@ var _binderManager = null;
  @classdesc A blueprint binder is a collection of of blueprints for a specific access type. It also includes the connection information.
  @extends Montage
  */
-var Binder = exports.Binder = Montage.create(Montage, /** @lends Binder# */ {
+var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
 
     /**
-      didCreate method
+      constructor method
       @function
       @private
     */
-    didCreate: {
-        value: function() {
+    constructor: {
+        value: function Binder() {
             this._name = null;
             this.binderModuleId = null;
             this.isDefault = false;
@@ -96,20 +96,6 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends Binder# */ {
     },
 
     /**
-     Returns the blueprint binder manager.
-     @type {Property}
-     @returns Blueprint Binder Manager
-     */
-    manager: {
-        get: function() {
-            if (_binderManager === null) {
-                _binderManager = BinderManager.create();
-            }
-            return _binderManager;
-        }
-    },
-
-    /**
      @private
      */
     _blueprintForPrototypeTable: {
@@ -164,7 +150,7 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends Binder# */ {
 
             targetRequire.async(binderModuleId).then(function(object) {
                 try {
-                    Deserializer.create().initWithObjectAndRequire(object, targetRequire, binderModuleId).deserializeObject(function(binder) {
+                    new Deserializer().initWithObjectAndRequire(object, targetRequire, binderModuleId).deserializeObject(function(binder) {
                         if (binder) {
                             binder.binderInstanceModuleId = binderModuleId;
                             Binder.manager.addBinder(this);
@@ -251,7 +237,7 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends Binder# */ {
      */
     addBlueprintNamed: {
         value: function(name, moduleId) {
-            return this.addBlueprint(BlueprintModule.Blueprint.create().initWithNameAndModuleId(name, moduleId));
+            return this.addBlueprint(new BlueprintModule.Blueprint().initWithNameAndModuleId(name, moduleId));
         }
     },
 
@@ -303,5 +289,21 @@ var Binder = exports.Binder = Montage.create(Montage, /** @lends Binder# */ {
     blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
 
     blueprint:require("montage")._blueprintDescriptor
+
+}, {
+
+    /**
+     Returns the blueprint binder manager.
+     @type {Property}
+     @returns Blueprint Binder Manager
+     */
+    manager: {
+        get: function() {
+            if (_binderManager === null) {
+                _binderManager = new BinderManager();
+            }
+            return _binderManager;
+        }
+    }
 
 });

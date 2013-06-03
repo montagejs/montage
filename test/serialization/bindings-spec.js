@@ -4,7 +4,7 @@ var Bindings = require("montage/core/bindings").Bindings;
 var serialize = require("montage/core/serialization").serialize;
 var deserialize = require("montage/core/serialization").deserialize;
 
-var Type = exports.Type = Montage.create(Montage, {
+var Type = exports.Type = Montage.specialize( {
     foo: {
         value: 10
     }
@@ -13,7 +13,7 @@ var Type = exports.Type = Montage.create(Montage, {
 describe("serialization/bindings-spec", function () {
 
     it("should serialize a simple binding in normal form", function () {
-        var object = Type.create();
+        var object = new Type();
         Bindings.defineBindings(object, {
             "bar": {
                 "<-": "foo"
@@ -38,8 +38,8 @@ describe("serialization/bindings-spec", function () {
     });
 
     it("should serialize a binding that references external objects", function () {
-        var object = Type.create();
-        var externalObject = Montage.create();
+        var object = new Type();
+        var externalObject = new Montage();
 
         externalObject.foo = 10;
 
@@ -48,7 +48,7 @@ describe("serialization/bindings-spec", function () {
                 "<-": "@source.foo"
             }
         }, {
-           serialization: {
+           components: {
                getObjectByLabel: function(label) {
                    return externalObject;
                }

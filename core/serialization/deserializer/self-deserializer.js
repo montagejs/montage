@@ -1,7 +1,7 @@
 var Montage = require("core/core").Montage;
 var Promise = require("core/promise").Promise;
 
-var SelfDeserializer = Montage.create(Montage, {
+var SelfDeserializer = Montage.specialize( {
     _object: {value: null},
     _objectDescriptor: {value: null},
     _context: {value: null},
@@ -10,7 +10,7 @@ var SelfDeserializer = Montage.create(Montage, {
 
     create: {
         value: function() {
-            return Montage.create(this);
+            return new this();
         }
     },
 

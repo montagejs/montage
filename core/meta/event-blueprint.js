@@ -20,7 +20,7 @@ var Defaults = {
 /**
  @class EventBlueprint
  */
-exports.EventBlueprint = Montage.create(Montage, /** @lends EventBlueprint# */ {
+exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
 
     /**
      Initialize a newly allocated property blueprint.

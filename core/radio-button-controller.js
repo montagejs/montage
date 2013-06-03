@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     RangeController = require("core/range-controller").RangeController;
 
-exports.RadioButtonController = Montage.create(Montage, {
+exports.RadioButtonController = Montage.specialize( {
     _radioButtons: {
         value: null
     },
@@ -15,7 +15,7 @@ exports.RadioButtonController = Montage.create(Montage, {
             return this.getPath("contentController.content");
         },
         set: function (content) {
-            this.contentController = RangeController.create()
+            this.contentController = new RangeController()
                 .initWithContent(content);
         }
     },
@@ -34,13 +34,9 @@ exports.RadioButtonController = Montage.create(Montage, {
 
     value: {
         set: function(value) {
-            this._value = value;
-
-            for (var i = 0, ii = this._radioButtons.length; i < ii; i++) {
-                if (value === this._radioButtons[i].value) {
-                    this._radioButtons[i].checked = true;
-                    break;
-                }
+            if (this._value !== value) {
+                this._value = value;
+                this._updateRadioButtons();
             }
         },
         get: function() {
@@ -51,7 +47,7 @@ exports.RadioButtonController = Montage.create(Montage, {
     /**
      * @private
      */
-    didCreate: {
+    constructor: {
         value: function () {
             this._radioButtons = [];
 
@@ -62,10 +58,24 @@ exports.RadioButtonController = Montage.create(Montage, {
         }
     },
 
+    _updateRadioButtons: {
+        value: function() {
+            var value = this._value;
+
+            for (var i = 0, ii = this._radioButtons.length; i < ii; i++) {
+                if (value === this._radioButtons[i].value) {
+                    this._radioButtons[i].checked = true;
+                    break;
+                }
+            }
+        }
+    },
+
     registerRadioButton: {
         value: function(radioButton) {
             if (this._radioButtons.indexOf(radioButton) === -1) {
                 this._radioButtons.push(radioButton);
+                this._updateRadioButtons();
             }
         }
     },

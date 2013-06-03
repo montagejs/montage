@@ -44,15 +44,15 @@ var Montage = require("montage").Montage;
  @classdesc Compactly stores multiple values as a short series of bits.
  @extends Montage
  */
-var BitField = exports.BitField = Montage.create(Montage, /** @lends BitField */ {
+var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
 
     /**
      Creates a new BitField object containing the fields provided in the propertyDescriptor parameter.
      @function
      @param {Object} propertyDescriptor An object containing one or more property name/value pairs. Each pair is added to the new BitField.
      @returns {Object} A new BitField object that contains fields described by the property descriptor.
-     @example var bitField = BitField.create();
-     bitField = BitField.create().initWithDescriptor({
+     @example var bitField = new BitField();
+     bitField = new BitField().initWithDescriptor({
      likes_golf: {
      value: false
      },

@@ -11,6 +11,6 @@ var Montage = require("montage").Montage,
     @class module:"./foo.reel".Foo
     @extends module:montage/ui/component.Component
 */
-exports.Foo = Montage.create(Component, /** @lends module:"./foo.reel".Foo# */ {
+exports.Foo = Component.specialize( /** @lends module:"./foo.reel".Foo# */ {
 
 });

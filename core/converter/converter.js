@@ -71,7 +71,7 @@ exports.isDef = isDef;
  @class Validator
  @extends Montage
  */
-var Validator = exports.Validator = Montage.create(Montage, /** @lends Validator# */{
+var Validator = exports.Validator = Montage.specialize( /** @lends Validator# */{
 /**
         @type {Object}
         @default null
@@ -92,7 +92,7 @@ var Validator = exports.Validator = Montage.create(Montage, /** @lends Validator
  <li><code>revert(<i>value</i>)</code>: Do the reverse. Depending on the specific converter being used, the reverse operation may be "lossy".
  </ul>
  */
-var Converter = exports.Converter = Montage.create(Montage, /** @lends Converter# */ {
+var Converter = exports.Converter = Montage.specialize( /** @lends Converter# */ {
 
     /**
      Specifies whether the converter allows partial conversion.

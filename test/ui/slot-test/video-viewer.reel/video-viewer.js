@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-var VideoViewer = exports.VideoViewer = Montage.create(Component, {
+var VideoViewer = exports.VideoViewer = Component.specialize( {
 
     templateDidLoad: {
         value: function() {

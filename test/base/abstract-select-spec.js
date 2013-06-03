@@ -3,29 +3,29 @@ var AbstractSelect = require("montage/ui/base/abstract-select").AbstractSelect;
 var RangeController = require("montage/core/range-controller").RangeController;
 var MockDOM = require("mocks/dom");
 
-AbstractSelect.hasTemplate = false;
+AbstractSelect.prototype.hasTemplate = false;
 
 describe("test/base/abstract-select-spec", function () {
 
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractSelect.create();
+                new AbstractSelect();
             }).toThrow();
         });
 
         it("can be instantiated as a subtype", function () {
-            var SelectSubtype = Montage.create(AbstractSelect, {});
+            var SelectSubtype = AbstractSelect.specialize( {});
             var aSelectSubtype;
             expect(function () {
-                aSelectSubtype = SelectSubtype.create();
+                aSelectSubtype = new SelectSubtype();
             }).not.toThrow();
             expect(aSelectSubtype).toBeDefined();
         });
     });
 
     describe("properties", function () {
-        var Select = Montage.create(AbstractSelect, {}),
+        var Select = AbstractSelect.specialize( {}),
             aSelect,
             content = [{
                 "label": "Canada",
@@ -39,13 +39,13 @@ describe("test/base/abstract-select-spec", function () {
             }];
 
         beforeEach(function () {
-            aSelect = Select.create();
+            aSelect = new Select();
             aSelect.element = MockDOM.element();
         });
 
         describe("enabled", function () {
             beforeEach(function () {
-                aSelect = Select.create();
+                aSelect = new Select();
                 aSelect.element = MockDOM.element();
                 aSelect.prepareForActivationEvents();
             });
@@ -69,7 +69,7 @@ describe("test/base/abstract-select-spec", function () {
 
         describe("contentController", function() {
             it("should setup content with the contentController's content", function() {
-                var contentController = RangeController.create();
+                var contentController = new RangeController();
 
                 contentController.content = content;
                 aSelect.contentController = contentController;
@@ -80,7 +80,7 @@ describe("test/base/abstract-select-spec", function () {
 
         describe("value", function() {
             beforeEach(function () {
-                aSelect = Select.create();
+                aSelect = new Select();
                 aSelect.content = content;
             });
 
@@ -118,7 +118,7 @@ describe("test/base/abstract-select-spec", function () {
 
         describe("values", function() {
             beforeEach(function () {
-                aSelect = Select.create();
+                aSelect = new Select();
                 aSelect.content = content;
                 aSelect.multiSelect = true;
             });
@@ -161,7 +161,7 @@ describe("test/base/abstract-select-spec", function () {
 
         describe("multiSelect", function() {
             beforeEach(function () {
-                aSelect = Select.create();
+                aSelect = new Select();
                 aSelect.content = content;
             });
 
@@ -184,7 +184,7 @@ describe("test/base/abstract-select-spec", function () {
     });
 
     describe("draw", function () {
-        var Select = Montage.create(AbstractSelect, {}),
+        var Select = AbstractSelect.specialize( {}),
             aSelect,
             content = [{
                 "label": "Canada",
@@ -198,7 +198,7 @@ describe("test/base/abstract-select-spec", function () {
             }];
 
         beforeEach(function () {
-            aSelect = Select.create();
+            aSelect = new Select();
             aSelect.element = MockDOM.element();
             aSelect.contentController.content = content;
             aSelect.needsDraw = false;
@@ -256,11 +256,11 @@ describe("test/base/abstract-select-spec", function () {
     });
 
     describe("active target", function () {
-        var Select = Montage.create(AbstractSelect, {}),
+        var Select = AbstractSelect.specialize( {}),
             aSelect, anElement;
 
         beforeEach(function () {
-            aSelect = Select.create();
+            aSelect = new Select();
             anElement = MockDOM.element();
         });
 
@@ -270,11 +270,11 @@ describe("test/base/abstract-select-spec", function () {
     });
 
     describe("events", function () {
-        var Select = Montage.create(AbstractSelect, {}),
+        var Select = AbstractSelect.specialize( {}),
             aSelect, anElement, listener;
 
         beforeEach(function () {
-            aSelect = Select.create();
+            aSelect = new Select();
             anElement = MockDOM.element();
             listener = {
                 handleEvent: function() {}
@@ -298,6 +298,14 @@ describe("test/base/abstract-select-spec", function () {
             beforeEach(function () {
                 aSelect.element = anElement;
                 aSelect.prepareForActivationEvents();
+            });
+        });
+    });
+    describe("blueprint", function () {
+        it("can be created", function () {
+            var blueprintPromise = AbstractSelect.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).not.toBeNull();
             });
         });
     });

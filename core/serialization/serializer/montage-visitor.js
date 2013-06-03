@@ -5,16 +5,14 @@ var SelfSerializer = require("./self-serializer").SelfSerializer;
 var UnitSerializer = require("./unit-serializer").UnitSerializer;
 var Visitor = require("mousse/serialization/visitor").Visitor;
 
-var MontageVisitor = Montage.create(Visitor.prototype, {
+var MontageVisitor = Montage.specialize.call(Visitor, {
     _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
     _require: {value: null},
     _units: {value: null},
     _elements: {value: null},
 
-    create: {
-        value: function() {
-            return Object.create(this);
-        }
+    constructor: {
+        value: function MontageVisitor() {}
     },
 
     initWithBuilderAndLabelerAndRequireAndUnits: {
@@ -31,7 +29,7 @@ var MontageVisitor = Montage.create(Visitor.prototype, {
 
     getTypeOf: {
         value: function(object) {
-            if ("getInfoForObject" in object) {
+            if ("getInfoForObject" in object || "getInfoForObject" in object.constructor) {
                 return "MontageObject";
             } else if (object.thisIsAReferenceCreatedByMontageSerializer) {
                 return "MontageReference";
@@ -174,7 +172,7 @@ var MontageVisitor = Montage.create(Visitor.prototype, {
             this.builder.push(builderObject);
 
             if (typeof object.serializeSelf === "function") {
-                selfSerializer = SelfSerializer.create().
+                selfSerializer = new SelfSerializer().
                     initWithMalkerAndVisitorAndObject(
                         malker, this, object, builderObject);
                 substituteObject = object.serializeSelf(selfSerializer);
@@ -249,7 +247,7 @@ var MontageVisitor = Montage.create(Visitor.prototype, {
             this.builder.push(propertiesObject);
 
             if (typeof object.serializeProperties === "function") {
-                propertiesSerializer = PropertiesSerializer.create()
+                propertiesSerializer = new PropertiesSerializer()
                     .initWithMalkerAndVisitorAndObject(malker, this, object);
                 object.serializeProperties(propertiesSerializer);
             } else {
@@ -328,7 +326,7 @@ var MontageVisitor = Montage.create(Visitor.prototype, {
                 return;
             }
 
-            unitSerializer = UnitSerializer.create()
+            unitSerializer = new UnitSerializer()
                 .initWithMalkerAndVisitorAndObject(malker, this, object);
 
             value = unit(unitSerializer, object);

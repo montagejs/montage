@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 
-exports.AppDelegate = Montage.create(Montage, {
+exports.AppDelegate = Montage.specialize( {
 
     willFinishLoadingCalled: {
         value: false

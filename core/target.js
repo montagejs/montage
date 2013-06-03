@@ -8,7 +8,7 @@ var Montage = require("montage").Montage,
  *
  * @type {Target}
  */
-exports.Target = Montage.create(Montage, {
+exports.Target = Montage.specialize( {
 
     /**
      * Whether or not this target can accept user focus and become the activeTarget
@@ -74,8 +74,8 @@ exports.Target = Montage.create(Montage, {
         value: function(event) {
             var targettedEvent = event;
 
-            if (!MutableEvent.isPrototypeOf(event)) {
-                targettedEvent = MutableEvent.fromEvent(event);
+            if (! (event instanceof MutableEvent)) {
+                targettedEvent = MutableEvent.fromEvent(targettedEvent);
             }
 
             targettedEvent.target = this;

@@ -1,7 +1,7 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-exports.Menu = Montage.create(Component, {
+exports.Menu = Component.specialize( {
 
     hasTemplate: {
         value: false

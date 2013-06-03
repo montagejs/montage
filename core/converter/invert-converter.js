@@ -42,7 +42,7 @@ var Converter = require('core/converter/converter').Converter;
     @class InvertConverter
     @extends Converter
 */
-var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
+var InvertConverter = exports.InvertConverter = Converter.specialize( {
     convert: {
         value: function(v) {
             return !v;

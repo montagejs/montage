@@ -10,7 +10,7 @@ var Montage = require("montage").Montage,
  @class Text
  @extends Component
  */
-exports.Text = Montage.create(Component, /** @lends Text# */ {
+exports.Text = Component.specialize( /** @lends Text# */ {
 
     hasTemplate: {
         value: false

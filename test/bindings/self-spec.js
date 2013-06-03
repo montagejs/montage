@@ -33,7 +33,7 @@ var Bindings = require("montage/core/bindings").Bindings;
 var Converter = require("montage/core/converter/converter").Converter;
 
 
-var StrToBoolConverter = Montage.create(Converter, {
+var StrToBoolConverter = Converter.specialize( {
     convert: {
         value: function(value) {
             return value === "yes";

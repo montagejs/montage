@@ -43,7 +43,7 @@ describe("serialization/montage-deserializer-spec", function() {
     var deserializer;
 
     beforeEach(function() {
-        deserializer = Deserializer.create();
+        deserializer = new Deserializer();
     });
 
     describe("Montage Objects Deserialization", function() {
@@ -63,7 +63,7 @@ describe("serialization/montage-deserializer-spec", function() {
                 serializationString, require);
 
             return deserializer.deserializeObject().then(function(root) {
-                expect(Object.getPrototypeOf(root)).toBe(Montage);
+                expect(Object.getPrototypeOf(root)).toBe(Montage.prototype);
                 expect(root.number).toBe(42);
                 expect(root.string).toBe("a string");
             }).fail(function(reason) {
@@ -253,7 +253,7 @@ describe("serialization/montage-deserializer-spec", function() {
                 },
                 serializationString = JSON.stringify(serialization),
                 instances = {
-                    root: objects.OneProp.create()
+                    root: new objects.OneProp()
                 };
 
             deserializer.init(
@@ -351,7 +351,7 @@ describe("serialization/montage-deserializer-spec", function() {
             .then(function(root) {
                 var info = Montage.getInfoForObject(root);
 
-                expect(Object.getPrototypeOf(root)).toBe(objects.TestobjectsV2);
+                expect(Object.getPrototypeOf(root)).toBe(objects.TestobjectsV2.prototype);
                 expect(root.instance).toBeUndefined();
             }).fail(function(reason) {
                 console.log(reason.stack);
@@ -378,7 +378,7 @@ describe("serialization/montage-deserializer-spec", function() {
             .then(function(root) {
                 var info = Montage.getInfoForObject(root);
 
-                expect(Object.getPrototypeOf(root)).toBe(objects.TestobjectsV2);
+                expect(Object.getPrototypeOf(root)).toBe(objects.TestobjectsV2.prototype);
 
                 expect(info.moduleId).toBe("serialization/testobjects-v2");
                 expect(info.objectName).toBe("TestobjectsV2");
@@ -756,7 +756,7 @@ describe("serialization/montage-deserializer-spec", function() {
             deserializer.init(
                 serializationString, require);
 
-            customDeserialization.deserializeSelf = function(deserializer) {
+            customDeserialization.prototype.deserializeSelf = function(deserializer) {
 
             };
 
@@ -781,7 +781,7 @@ describe("serialization/montage-deserializer-spec", function() {
             deserializer.init(
                 serializationString, require);
 
-            customDeserialization.deserializeSelf = function(deserializer) {
+            customDeserialization.prototype.deserializeSelf = function(deserializer) {
                 type = deserializer.getType();
                 typeValue = deserializer.getTypeValue();
             };
@@ -831,7 +831,7 @@ describe("serialization/montage-deserializer-spec", function() {
             deserializer.init(
                 serializationString, require);
 
-            customDeserialization.deserializeSelf = function(deserializer) {
+            customDeserialization.prototype.deserializeSelf = function(deserializer) {
                 prop1 = deserializer.getProperty("prop1");
             };
 
@@ -850,7 +850,7 @@ describe("serialization/montage-deserializer-spec", function() {
             deserializer.init(
                 serializationString, require);
 
-            customDeserialization.deserializeSelf = function(deserializer) {
+            customDeserialization.prototype.deserializeSelf = function(deserializer) {
                 deserializer.deserializeProperties();
             };
 
@@ -873,7 +873,7 @@ describe("serialization/montage-deserializer-spec", function() {
             deserializer.init(
                 serializationString, require);
 
-            customDeserialization.deserializeSelf = function(deserializer) {
+            customDeserialization.prototype.deserializeSelf = function(deserializer) {
                 deserializer.deserializeProperties();
                 deserializer.deserializeUnit("listeners");
             };
@@ -896,7 +896,7 @@ describe("serialization/montage-deserializer-spec", function() {
             deserializer.init(
                 serializationString, require);
 
-            customDeserialization.deserializeSelf = function(deserializer) {
+            customDeserialization.prototype.deserializeSelf = function(deserializer) {
                 deserializer.deserializeProperties();
                 deserializer.deserializeUnit("bindings");
             };
@@ -921,7 +921,7 @@ describe("serialization/montage-deserializer-spec", function() {
             deserializer.init(
                 serializationString, require);
 
-            customDeserialization.deserializeSelf = function(deserializer) {
+            customDeserialization.prototype.deserializeSelf = function(deserializer) {
                 deserializer.deserializeProperties();
                 deserializer.deserializeUnits();
             };
@@ -944,7 +944,7 @@ describe("serialization/montage-deserializer-spec", function() {
 
             deserializer.init(serializationString, require);
 
-            customDeserialization.deserializeSelf = function(deserializer) {
+            customDeserialization.prototype.deserializeSelf = function(deserializer) {
                 return Promise.resolve(newRoot);
             };
 
@@ -959,8 +959,8 @@ describe("serialization/montage-deserializer-spec", function() {
     });
 
     it("should load the correct module even if it's from a diferent package but with the same name", function() {
-        var deserializer1 = Deserializer.create(),
-            deserializer2 = Deserializer.create(),
+        var deserializer1 = new Deserializer(),
+            deserializer2 = new Deserializer(),
             serialization = {
                 root: {
                     prototype: "ui/main.reel"

@@ -5,7 +5,7 @@ var Montage = require("montage").Montage,
     LazyLoadComposer = require("composer/simple-test-composer").LazyLoadTestComposer;
 var TestController = require("montage-testing/test-controller").TestController;
 
-exports.Test = Montage.create(TestController, {
+exports.Test = TestController.specialize( {
 
     simpleTestComposer: {
         value: null
@@ -13,7 +13,7 @@ exports.Test = Montage.create(TestController, {
 
 });
 
-exports.ProgrammaticTest = Montage.create(TestController, {
+exports.ProgrammaticTest = TestController.specialize( {
 
     simpleTestComposer: {
         value: null
@@ -21,14 +21,14 @@ exports.ProgrammaticTest = Montage.create(TestController, {
 
     deserializedFromTemplate: {
         value: function() {
-            this.simpleTestComposer = SimpleTestComposer.create();
+            this.simpleTestComposer = new SimpleTestComposer();
             this.dynamicTextC.addComposer(this.simpleTestComposer);
         }
     }
 
 });
 
-exports.ProgrammaticLazyTest = Montage.create(TestController, {
+exports.ProgrammaticLazyTest = TestController.specialize( {
 
     simpleTestComposer: {
         value: null
@@ -36,7 +36,7 @@ exports.ProgrammaticLazyTest = Montage.create(TestController, {
 
     deserializedFromTemplate: {
         value: function() {
-            this.simpleTestComposer = LazyLoadComposer.create();
+            this.simpleTestComposer = new LazyLoadComposer();
             this.dynamicTextC.addComposer(this.simpleTestComposer);
         }
     }

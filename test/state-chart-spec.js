@@ -41,13 +41,13 @@ describe("state-chart-spec", function() {
         // NOTE this would probably be written more concisely in real use, I've exposed all the
         // states for my own use during testing
 
-        stateA = State.create().init({
+        stateA = new State().init({
             gamma: function() {
                 this.gotoState('C');
             }
         });
 
-        stateB = State.create().init({
+        stateB = new State().init({
             alpha: function() {
                 this.gotoState('A');
             },
@@ -57,9 +57,9 @@ describe("state-chart-spec", function() {
             }
         });
 
-        stateC = State.create().init({});
+        stateC = new State().init({});
 
-        stateD = State.create().init({
+        stateD = new State().init({
             initialSubstate: 'A',
 
             A: stateA,
@@ -70,13 +70,12 @@ describe("state-chart-spec", function() {
             beta: "B"
         }),
 
-        rootState = State.create().init({
+        rootState = new State().init({
             initialSubstate: 'D',
             D: stateD,
             B: stateB
         });
-
-        stateChart = StateChart.create().initWithState(rootState);
+        stateChart = new StateChart().initWithState(rootState);
     });
 
     describe("when initialized", function() {

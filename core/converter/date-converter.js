@@ -2557,7 +2557,7 @@ var formatDate = function(v, format) {
  @classdesc Validate that date provided as string/number can be converted to a Date Object using the pattern provided.
  @extends Validator
  */
-var DateValidator = exports.DateValidator = Montage.create(Validator,/** @lends DateValidator# */ {
+var DateValidator = exports.DateValidator = Validator.specialize(/** @lends DateValidator# */ {
 
     /**
         @type {Property}
@@ -2594,7 +2594,7 @@ var DateValidator = exports.DateValidator = Montage.create(Validator,/** @lends 
 /**
 @class DateConverter
 */
-var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends DateConverter# */ {
+var DateConverter = exports.DateConverter = Converter.specialize(/** @lends DateConverter# */ {
     /**
      Specifies whether the converter allows partial conversion.
      @type {Property}
@@ -2606,10 +2606,10 @@ var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends 
 
 /**
         @type {Property}
-        @default {Function} Montage.create(DateValidator)
+        @default {Function} new DateValidator()
     */
     validator: {
-        value: Montage.create(DateValidator)
+        value: new DateValidator()
     },
 
     // valid fn values are:

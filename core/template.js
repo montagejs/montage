@@ -9,7 +9,7 @@ var Montage = require("montage").Montage,
     defaultEventManager = require("core/event/event-manager").defaultEventManager,
     defaultApplication;
 
-var Template = Montage.create(Montage, {
+var Template = Montage.specialize( {
     _SERIALIZATON_SCRIPT_TYPE: {value: "text/montage-serialization"},
     _ELEMENT_ID_ATTRIBUTE: {value: "data-montage-id"},
     PARAM_ATTRIBUTE: {value: "data-param"},
@@ -53,7 +53,7 @@ var Template = Montage.create(Montage, {
                         requires[label] = metadata[label].require;
                     }
                 }
-                deserializer = Deserializer.create().init(this.objectsString,
+                deserializer = new Deserializer().init(this.objectsString,
                     this._require, requires);
                 this.__deserializer = deserializer;
             }
@@ -75,42 +75,11 @@ var Template = Montage.create(Montage, {
             var serialiation = this._serialization;
 
             if (!serialiation) {
-                serialiation = this._serialization = Serialization.create();
+                serialiation = this._serialization = new Serialization();
                 serialiation.initWithString(this.objectsString);
             }
 
             return serialiation;
-        }
-    },
-
-    _templateCache: {
-        value: {
-            moduleId: Object.create(null)
-        }
-    },
-    _getTemplateCacheKey: {
-        value: function(moduleId, _require) {
-            // Transforms relative module ids into absolute module ids
-            moduleId = _require.resolve(moduleId);
-            return _require.location + "#" + moduleId;
-        }
-    },
-    getTemplateWithModuleId: {
-        value: function(moduleId, _require) {
-            var cacheKey,
-                template;
-
-            cacheKey = this._getTemplateCacheKey(moduleId, _require);
-            template = this._templateCache.moduleId[cacheKey];
-
-            if (!template) {
-                template = Template.create()
-                .initWithModuleId(moduleId, _require);
-
-                this._templateCache.moduleId[cacheKey] = template;
-            }
-
-            return template;
         }
     },
 
@@ -244,7 +213,7 @@ var Template = Montage.create(Montage, {
 
     clone: {
         value: function() {
-            var clonedTemplate = Template.create();
+            var clonedTemplate = new Template();
 
             clonedTemplate._require = this._require;
             clonedTemplate._baseUrl = this._baseUrl;
@@ -274,7 +243,7 @@ var Template = Montage.create(Montage, {
         value: function(instances, targetDocument) {
             var self = this,
                 fragment,
-                part = DocumentPart.create(),
+                part = new DocumentPart(),
                 templateObjects,
                 templateParameters;
 
@@ -367,7 +336,7 @@ var Template = Montage.create(Montage, {
             var resources = this._resources;
 
             if (!resources) {
-                resources = this._resources = TemplateResources.create();
+                resources = this._resources = new TemplateResources();
                 resources.initWithTemplate(this);
             }
 
@@ -856,7 +825,7 @@ var Template = Montage.create(Montage, {
                 elementIds,
                 labels,
                 template,
-                serialization = Serialization.create(),
+                serialization = new Serialization(),
                 extractedSerialization;
 
             fragment = range.cloneContents();
@@ -874,7 +843,7 @@ var Template = Montage.create(Montage, {
 
             // Create the new template with the extracted serialization and
             // markup.
-            template = Template.create();
+            template = new Template();
             template.initWithObjectsAndDocumentFragment(
                 null, fragment, this._require);
             template.objectsString = extractedSerialization
@@ -888,7 +857,7 @@ var Template = Montage.create(Montage, {
     // TODO: should this be on Serialization?
     _createSerializationWithElementIds: {
         value: function(elementIds) {
-            var serialization = Serialization.create(),
+            var serialization = new Serialization(),
                 labels,
                 extractedSerialization;
 
@@ -989,7 +958,7 @@ var Template = Montage.create(Montage, {
                 elementIds,
                 element,
                 newId,
-                labeler = MontageLabeler.create();
+                labeler = new MontageLabeler();
 
             // Set up the labeler with the current element ids.
             elementIds = this.getElementIds();
@@ -1153,15 +1122,49 @@ var Template = Montage.create(Montage, {
                 '>';
         }
     }
+
+}, {
+
+    _templateCache: {
+        value: {
+            moduleId: Object.create(null)
+        }
+    },
+    _getTemplateCacheKey: {
+        value: function(moduleId, _require) {
+            // Transforms relative module ids into absolute module ids
+            moduleId = _require.resolve(moduleId);
+            return _require.location + "#" + moduleId;
+        }
+    },
+    getTemplateWithModuleId: {
+        value: function(moduleId, _require) {
+            var cacheKey,
+                template;
+
+            cacheKey = this._getTemplateCacheKey(moduleId, _require);
+            template = this._templateCache.moduleId[cacheKey];
+
+            if (!template) {
+                template = new Template()
+                .initWithModuleId(moduleId, _require);
+
+                this._templateCache.moduleId[cacheKey] = template;
+            }
+
+            return template;
+        }
+    }
+
 });
 
-var TemplateResources = Montage.create(Montage, {
+var TemplateResources = Montage.specialize( {
     _resources: {value: null},
     _resourcesLoaded: {value: false},
     template: {value: null},
     rootUrl: {value: ""},
 
-    didCreate: {
+    constructor: {
         value: function() {
             this._resources = Object.create(null);
         }
@@ -1363,15 +1366,15 @@ var TemplateResources = Montage.create(Montage, {
 // Used to create a DocumentPart from a document without a Template
 function instantiateDocument(_document, _require) {
     var self = this,
-        template = Template.create(),
+        template = new Template(),
         html = _document.documentElement.outerHTML,
-        part = DocumentPart.create(),
+        part = new DocumentPart(),
         clonedDocument,
         templateObjects,
         rootElement = _document.documentElement;
 
     // Setup a template just like we'd do for a document in a template
-    clonedDocument = Template.createHtmlDocumentWithHtml(html);
+    clonedDocument = template.createHtmlDocumentWithHtml(html);
 
     return template.initWithDocument(clonedDocument, _require)
     .then(function() {

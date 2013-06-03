@@ -35,7 +35,7 @@ describe("enum-spec",
 function() {
     describe("initialization",
     function() {
-        var TestEnum = Montage.create(Enum).initWithMembers("ZERO","ONE","TWO");
+        var TestEnum = new Enum().initWithMembers("ZERO","ONE","TWO");
         it("should define properties",
         function() {
             expect(Object.getOwnPropertyDescriptor(TestEnum, "ZERO")).not.toBeNull();
@@ -55,7 +55,7 @@ function() {
         });
         it("should not be extensible",
         function() {
-            TestEnum = Montage.create(Enum).initWithMembers("ZERO","ONE","TWO");
+            TestEnum = new Enum().initWithMembers("ZERO","ONE","TWO");
             expect(function() {
                 TestEnum.addMember("THREE");
             }).toThrow();
@@ -63,7 +63,7 @@ function() {
      });
     describe("adding a member",
     function() {
-        var TestEnum = Montage.create(Enum).init();
+        var TestEnum = new Enum().init();
         TestEnum.addMember("ZERO");
         TestEnum.addMember("ONE");
         TestEnum.addMember("TWO");

@@ -10,7 +10,7 @@ var CLASS_PREFIX = "montage-TextField";
  * @class AbstractTextField
  * @extends AbstractControl
  */
-var AbstractTextField = exports.AbstractTextField = Montage.create(AbstractControl,
+var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     /* @lends AbstractTextField# */
 {
     /**
@@ -20,21 +20,14 @@ var AbstractTextField = exports.AbstractTextField = Montage.create(AbstractContr
      * @param {Event} event
      */
 
-    create: {
-        value: function() {
-            if(this === AbstractTextField) {
+    constructor: {
+        value: function AbstractTextField() {
+            if(this.constructor === AbstractTextField) {
                 throw new Error("AbstractTextField cannot be instantiated.");
-            } else {
-                return AbstractControl.create.apply(this, arguments);
             }
-        }
-    },
+            AbstractControl.constructor.call(this); // super
 
-    didCreate: {
-        value: function() {
-            AbstractControl.didCreate.call(this); // super
-
-            this._keyComposer = KeyComposer.create();
+            this._keyComposer = new KeyComposer();
             this._keyComposer.component = this;
             this._keyComposer.keys = "enter";
             this.addComposer(this._keyComposer);
@@ -126,7 +119,9 @@ var AbstractTextField = exports.AbstractTextField = Montage.create(AbstractContr
     draw: {
         value: function() {
             this.element.value = this.value;
-            this.element.setAttribute("placeholder", this._placeholderValue);
+            if (this.placeholderValue != null) {
+                this.element.setAttribute("placeholder", this.placeholderValue);
+            }
         }
     },
 

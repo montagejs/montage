@@ -33,7 +33,7 @@ exports = typeof exports !== "undefined" ? exports : {};
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 
-var ComponentRep = exports.ComponentRep = Montage.create(Component, {
+var ComponentRep = exports.ComponentRep = Component.specialize( {
     listObjects: {
         value: null
     }

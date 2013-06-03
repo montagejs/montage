@@ -45,7 +45,7 @@ describe("core/core-spec", function() {
             object2;
 
         beforeEach(function() {
-            A = Montage.create(Montage);
+            A = Montage.specialize( {});
             Object.defineProperty(A, "_montage_metadata", {
                 value: {
                     moduleId:"core-spec",
@@ -55,7 +55,7 @@ describe("core/core-spec", function() {
                 enumerable:false
             });
 
-            BSubClassOfA = Montage.create(A);
+            BSubClassOfA = Montage.create(A, {});
             Object.defineProperty(BSubClassOfA, "_montage_metadata", {
                 value: {
                     moduleId:"core-spec",
@@ -108,8 +108,8 @@ describe("core/core-spec", function() {
                 expect(a).not.toBeNull();
                 expect(b).not.toBeNull();
                 expect(BSubClassOfA.__proto__).toBe(A);
-                expect(a.__proto__).toBe(A);
-                expect(b.__proto__).toBe(BSubClassOfA);
+                expect(a.__proto__).toBe(A.prototype);
+                expect(b.__proto__).toBe(BSubClassOfA.prototype);
             });
 
             it("should have a unique uuid defined", function() {
@@ -137,13 +137,28 @@ describe("core/core-spec", function() {
                 expect(a.equals(a3)).toBeTruthy();
             });
 
-            describe("create", function() {
-                it("must be given an object, null or undefined as the first agument", function() {
+            //TODO when we remove compatibility mode (Montage.create returns a constructor) this needs to be re-enabled
+            xdescribe("create", function() {
+                it("must be given an object, null or undefined as the first argument", function() {
                     expect(function(){
                         Montage.create("string", {});
                     }).toThrow(new TypeError("Object prototype may only be an Object or null, not 'string'"));
 
                     expect(Montage.create()).toEqual(Montage);
+
+                    expect(Montage.create(null)).toEqual(Object.create(null));
+
+                    expect(Montage.create({a: 1}, {b: { value: 2 }})).toEqual({a: 1, b: 2});
+                });
+            });
+            describe("create", function() {
+                it("must be given an object, null or undefined as the first argument", function() {
+                    expect(function(){
+                        Montage.create("string", {});
+                    }).toThrow(new TypeError("Object prototype may only be an Object or null, not 'string'"));
+
+                    expect(Montage.create().constructor).toEqual(Montage);
+                    expect(Montage.create().__proto__).toEqual(Montage.prototype);
 
                     expect(Montage.create(null)).toEqual(Object.create(null));
 
@@ -415,7 +430,7 @@ describe("core/core-spec", function() {
 
     describe("method inheritance calling \"super\"", function() {
 
-        var A = Montage.create(Montage, {
+        var A = Montage.specialize( {
             everywhere: {
                 enumerable:false,
                 value: function() {
@@ -545,7 +560,7 @@ describe("core/core-spec", function() {
     });
 
     describe("split getter/setter inheritance", function() {
-        var A = Montage.create(Montage, {
+        var A = Montage.specialize( {
                 getsetEverywhere: {
                     get: function() {
                         return this._everywhere;
@@ -654,7 +669,7 @@ describe("core/core-spec", function() {
 
             describe("array property", function() {
 
-                var subType = Montage.create(Montage, {
+                var subType = Montage.specialize( {
                     collection: {
                         value:[],
                         distinct:true
@@ -701,7 +716,7 @@ describe("core/core-spec", function() {
             });
 
             describe("object property", function() {
-                var subType = Montage.create(Montage, {
+                var subType = Montage.specialize( {
                     object: {
                         value: {},
                         distinct:true
@@ -731,7 +746,7 @@ describe("core/core-spec", function() {
             });
 
             describe("WeakMap property", function() {
-                var subType = Montage.create(Montage, {
+                var subType = Montage.specialize( {
                     object: {
                         value:new WeakMap(),
                         distinct:true
@@ -756,7 +771,7 @@ describe("core/core-spec", function() {
             });
 
             describe("Map property", function() {
-                var subType = Montage.create(Montage, {
+                var subType = Montage.specialize( {
                     object: {
                         value:new Map(),
                         distinct:true

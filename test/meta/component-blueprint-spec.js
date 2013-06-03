@@ -22,7 +22,7 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
         });
 
         it("can create new blueprint", function () {
-            var newBlueprint = Blueprint.create().initWithName(component1.identifier);
+            var newBlueprint = new Blueprint().initWithName(component1.identifier);
             expect(newBlueprint).toBeTruthy();
             component1.blueprint = newBlueprint;
             var blueprintPromise = component1.blueprint;
@@ -32,7 +32,7 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
         });
 
         it("can create new property blueprint", function () {
-            var newBlueprint = Blueprint.create().initWithName(component1.identifier);
+            var newBlueprint = new Blueprint().initWithName(component1.identifier);
             expect(newBlueprint).toBeTruthy();
             newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty");
             component1.blueprint = newBlueprint;
@@ -43,7 +43,7 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
         });
 
         it("can create new event blueprint", function () {
-            var newBlueprint = Blueprint.create().initWithName(component1.identifier);
+            var newBlueprint = new Blueprint().initWithName(component1.identifier);
             expect(newBlueprint).toBeTruthy();
             var newEventBlueprint = newBlueprint.addEventBlueprintNamed("action");
             newEventBlueprint.detailKeys = ["one", "two", "three"]
@@ -58,9 +58,9 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
         });
 
         it("can serialize the component blueprint", function () {
-            var serializer = Serializer.create().initWithRequire(require);
+            var serializer = new Serializer().initWithRequire(require);
 
-            var newBlueprint = Blueprint.create().initWithName(component1.identifier);
+            var newBlueprint = new Blueprint().initWithName(component1.identifier);
             expect(newBlueprint).toBeTruthy();
             //
             newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty1");
@@ -96,9 +96,9 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
 
 
         it("can create validation rules", function () {
-            var serializer = Serializer.create().initWithRequire(require);
+            var serializer = new Serializer().initWithRequire(require);
 
-            var newBlueprint = Blueprint.create().initWithName(component3.identifier);
+            var newBlueprint = new Blueprint().initWithName(component3.identifier);
             expect(newBlueprint).toBeTruthy();
             //
             newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty1");
@@ -128,7 +128,7 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
 
 
         describe("test converter blueprint", function () {
-            var component = Montage.create(Component);
+            var component = new Component();
 
             it("should exist", function () {
                 var blueprintPromise = component.blueprint;

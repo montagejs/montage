@@ -2,7 +2,7 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
 
-var DelegateMethods = Montage.create(Component, {
+var DelegateMethods = Component.specialize( {
     deserializedFromTemplateCount: {value: 0},
 
     deserializedFromTemplate: {

@@ -15,6 +15,7 @@ require("montage-testing").run(require,[
         "base/abstract-button-spec",
         "base/abstract-checkbox-spec",
         "base/abstract-image-spec",
+        "base/abstract-link-spec",
         "base/abstract-number-field-spec",
         "base/abstract-radio-button-spec",
         "base/abstract-select-spec",
@@ -22,10 +23,6 @@ require("montage-testing").run(require,[
         "base/abstract-text-area-spec",
         "base/abstract-text-field-spec",
         "base/abstract-toggle-button-spec",
-
-        // packages
-        "collections-spec",
-        "frb-spec",
 
         "bindings/spec",
         "bindings/converter-spec",
@@ -41,6 +38,7 @@ require("montage-testing").run(require,[
         "core/localizer/serialization-spec",
         "core/radio-button-controller-spec",
         "core/selector-spec",
+        "core/super-spec",
         "core/undo-manager-spec",
 
         "core/tree-controller-spec",

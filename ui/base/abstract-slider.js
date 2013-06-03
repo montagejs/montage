@@ -18,28 +18,19 @@ var Montage = require("montage").Montage,
  * @class AbstractSlider
  * @extends AbstractControl
  */
-var AbstractSlider = exports.AbstractSlider = Montage.create(AbstractControl, /** @lends AbstractSlider# */ {
+var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @lends AbstractSlider# */ {
 
     // Lifecycle
 
     /**
      * @private
      */
-    create: {
-        value: function () {
-            if (this === AbstractSlider) {
+    constructor: {
+        value: function AbstractSlider() {
+            if (this.constructor === AbstractSlider) {
                 throw new Error("AbstractSlider cannot be instantiated.");
-            } else {
-                return AbstractControl.create.apply(this, arguments);
             }
-        }
-    },
-
-    /**
-     * @private
-     */
-    didCreate: {
-        value: function () {
+            AbstractControl.constructor.call(this); // super
             //this is so that when we read properties from the dom they are not overwritten
             this._propertyNamesUsed = {};
             this.addOwnPropertyChangeListener("_sliderMagnitude", this);
@@ -57,7 +48,7 @@ var AbstractSlider = exports.AbstractSlider = Montage.create(AbstractControl, /*
     enterDocument: {
         value: function (firstTime) {
             if (firstTime) {
-                this._translateComposer = TranslateComposer.create();
+                this._translateComposer = new TranslateComposer();
                 this._translateComposer.identifier = "thumb";
                 this._translateComposer.axis = this.axis;
                 this._translateComposer.hasMomentum = false;

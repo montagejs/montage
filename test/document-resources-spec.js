@@ -30,7 +30,7 @@ function deletePage(page) {
 
 describe("document-resources-spec", function() {
     it("should add an inline script", function() {
-        var resources = DocumentResources.create(),
+        var resources = new DocumentResources(),
             script;
 
         return createPage("reel/template/page.html")
@@ -53,7 +53,7 @@ describe("document-resources-spec", function() {
     });
 
     it("should add a script file", function() {
-        var resources = DocumentResources.create(),
+        var resources = new DocumentResources(),
             url = "resource.js",
             script;
 
@@ -76,7 +76,7 @@ describe("document-resources-spec", function() {
     });
 
     it("should know its loaded resources", function() {
-        var resources = DocumentResources.create(),
+        var resources = new DocumentResources(),
             url = "resource.js",
             script;
 
@@ -101,7 +101,7 @@ describe("document-resources-spec", function() {
     });
 
     it("should add a script file even if it 404's", function() {
-        var resources = DocumentResources.create(),
+        var resources = new DocumentResources(),
             url = "notfound.js",
             script;
 
@@ -124,7 +124,7 @@ describe("document-resources-spec", function() {
     });
 
     it("should not add a script file twice when requested in serial", function() {
-        var resources = DocumentResources.create(),
+        var resources = new DocumentResources(),
             url = "resource.js",
             script;
 
@@ -154,7 +154,7 @@ describe("document-resources-spec", function() {
     });
 
     it("should not add a script file twice when requested in parallel", function() {
-        var resources = DocumentResources.create(),
+        var resources = new DocumentResources(),
             url = "resource.js",
             script1,
             script2;
@@ -181,7 +181,7 @@ describe("document-resources-spec", function() {
     });
 
     it("should add a scripts even if it timesout", function() {
-        var resources = DocumentResources.create(),
+        var resources = new DocumentResources(),
             // The server is available as template-server.js
             url = "http://localhost:9090/resource.js?delay=60000",
             script;
@@ -212,7 +212,7 @@ describe("document-resources-spec", function() {
     });
 
     it("should preload a resource", function() {
-        var resources = DocumentResources.create(),
+        var resources = new DocumentResources(),
             url = "resource.js",
             script;
 
@@ -235,7 +235,7 @@ describe("document-resources-spec", function() {
     });
 
     it("should preload a resource even if it 404's", function() {
-        var resources = DocumentResources.create(),
+        var resources = new DocumentResources(),
             url = "notfound.js",
             script;
 
@@ -258,7 +258,7 @@ describe("document-resources-spec", function() {
     });
 
     it("should preload a resource even if it timesout", function() {
-        var resources = DocumentResources.create(),
+        var resources = new DocumentResources(),
             // The server is available as template-server.js
             url = "http://localhost:9090/resource.js?delay=60000",
             script;
@@ -286,7 +286,7 @@ describe("document-resources-spec", function() {
     });
 
     it("should add an inline style", function() {
-        var resources = DocumentResources.create();
+        var resources = new DocumentResources();
 
         return createPage("reel/template/page.html")
         .then(function(page) {
@@ -311,7 +311,7 @@ describe("document-resources-spec", function() {
     });
 
     it("should add a style file", function() {
-        var resources = DocumentResources.create(),
+        var resources = new DocumentResources(),
             url = "resource.css";
 
         return createPage("reel/template/page.html")
@@ -346,7 +346,7 @@ describe("document-resources-spec", function() {
     });
 
     it("should not add a style file twice when requested in serial", function() {
-        var resources = DocumentResources.create(),
+        var resources = new DocumentResources(),
             url = "resource.css";
 
         return createPage("reel/template/page.html")

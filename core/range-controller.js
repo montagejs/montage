@@ -45,12 +45,12 @@ var GenericCollection = require("collections/generic-collection");
  * The <code>RangeController</code> is also responsible for managing which
  * content is selected and provides a variety of knobs for that purpose.
  */
-var RangeController = exports.RangeController = Montage.create(Montage, {
+var RangeController = exports.RangeController = Montage.specialize( {
 
     /**
      * @private
      */
-    didCreate: {
+    constructor: {
         value: function () {
 
             this.content = null;
@@ -446,7 +446,7 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
 
     /**
      * Dispatched by range changes to the controller's content, arranged in
-     * didCreate.  Reacts to content changes to ensure that content that no
+     * constructor.  Reacts to content changes to ensure that content that no
      * longer exists is removed from the selection, regardless of whether it is
      * from the user or any other entity modifying the backing collection.
      * @private
@@ -462,7 +462,7 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
 
     /**
      * Dispatched by a range-at-path change listener on the selection, arragned
-     * in didCreate.  Reacts to managed (as by the select or deselect methods)
+     * in constructor.  Reacts to managed (as by the select or deselect methods)
      * or unmanaged changes to the selection by enforcing the
      * <code>avoidsEmptySelection</code> and
      * <code>multiSelect</code> invariants.  However, it must
@@ -489,7 +489,7 @@ var RangeController = exports.RangeController = Montage.create(Montage, {
     },
 
     /**
-     * Dispatched by a range-at-path change listener arranged in didCreate.
+     * Dispatched by a range-at-path change listener arranged in constructor.
      * Synchronizes the <code>iterations</code> with changes to
      * <code>organizedContent</code>.  Also manages the
      * <code>deselectInvisibleContent</code> invariant.

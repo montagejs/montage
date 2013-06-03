@@ -32,7 +32,7 @@ var Defaults = {
 /**
  @class Blueprint
  */
-var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint# */ {
+var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */ {
 
     FileExtension: {
         value: ".meta"
@@ -178,15 +178,15 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
      */
     create: {
         value: function(aPrototype, propertyDescriptor) {
-            if ((typeof aPrototype === "undefined") || (Blueprint.isPrototypeOf(aPrototype))) {
+            if ((typeof aPrototype === "undefined") || (Blueprint.prototype.isPrototypeOf(aPrototype))) {
                 var parentCreate = Object.getPrototypeOf(Blueprint).create;
                 return parentCreate.call(this, (typeof aPrototype === "undefined" ? this : aPrototype), propertyDescriptor);
             }
-            var newPrototype = Montage.create(aPrototype, propertyDescriptor);
-            this.ObjectProperty.applyWithBlueprint(newPrototype, this);
+            var newConstructor = Montage.create(aPrototype, propertyDescriptor);
+            this.ObjectProperty.applyWithBlueprint(newConstructor.prototype, this);
             // We have just created a custom prototype lets use it.
             this.customPrototype = true;
-            return newPrototype;
+            return newConstructor;
         }
     },
 
@@ -198,7 +198,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
     newInstance: {
         value: function() {
             var prototype = this.newInstancePrototype();
-            return (prototype ? prototype.create() : null);
+            return (prototype ? new prototype() : null);
         }
     },
 
@@ -225,7 +225,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
             } else {
                 if (typeof exports[self.prototypeName] === "undefined") {
                     var parentInstancePrototype = (this.parent ? this.parent.newInstancePrototype() : Montage );
-                    var newPrototype = Montage.create(parentInstancePrototype, {
+                    var newConstructor = Montage.create(parentInstancePrototype, {
                         // Token class
                         init: {
                             value: function() {
@@ -233,11 +233,11 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
                             }
                         }
                     });
-                    this.ObjectProperty.applyWithBlueprint(newPrototype, this);
-                    exports[self.prototypeName] = newPrototype;
+                    this.ObjectProperty.applyWithBlueprint(newConstructor.prototype, this);
+                    exports[self.prototypeName] = newConstructor;
                 }
-                var prototype = exports[self.prototypeName];
-                return (prototype ? prototype : null);
+                var constructor = exports[self.prototypeName];
+                return (constructor ? constructor : null);
             }
         }
     },
@@ -285,7 +285,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
 
             targetRequire.async(blueprintModuleId).then(function(object) {
                 try {
-                    Deserializer.create().init(JSON.stringify(object), targetRequire).deserializeObject().then(function(blueprint) {
+                    new Deserializer().init(JSON.stringify(object), targetRequire).deserializeObject().then(function(blueprint) {
                         if (blueprint) {
                             var binder = (blueprint._binder ? blueprint._binder : BinderModule.Binder.manager.defaultBinder); // We do not want to trigger the auto registration
                             var existingBlueprint = binder.blueprintForPrototype(blueprint.prototypeName, blueprint.moduleId);
@@ -329,7 +329,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
             if (object) {
                 var target = Montage.getInfoForObject(object).isInstance ? Object.getPrototypeOf(object) : object;
                 var info = Montage.getInfoForObject(target);
-                var newBlueprint = Blueprint.create().initWithNameAndModuleId(info.objectName, info.moduleId);
+                var newBlueprint = new Blueprint().initWithNameAndModuleId(info.objectName, info.moduleId);
                 for (var name in target) {
                     if ((name.charAt(0) !== "_") && (target.hasOwnProperty(name))) {
                         // We don't want to list private properties
@@ -424,7 +424,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
         },
         set: function(blueprint) {
             if (blueprint) {
-                this._parentReference = BlueprintReference.create().initWithValue(blueprint);
+                this._parentReference = new BlueprintReference().initWithValue(blueprint);
                 this._parent = blueprint;
             } else {
                 this._parentReference = null;
@@ -544,7 +544,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
      */
     newPropertyBlueprint: {
         value: function(name, cardinality) {
-            return PropertyBlueprint.create().initWithNameBlueprintAndCardinality(name, this, cardinality);
+            return new PropertyBlueprint().initWithNameBlueprintAndCardinality(name, this, cardinality);
         }
     },
 
@@ -556,7 +556,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
      */
     newAssociationBlueprint: {
         value: function(name, cardinality) {
-            return AssociationBlueprint.create().initWithNameBlueprintAndCardinality(name, this, cardinality);
+            return new AssociationBlueprint().initWithNameBlueprintAndCardinality(name, this, cardinality);
         }
     },
 
@@ -568,7 +568,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
      */
     newDerivedPropertyBlueprint: {
         value: function(name, cardinality) {
-            return DerivedPropertyBlueprint.create().initWithNameBlueprintAndCardinality(name, this, cardinality);
+            return new DerivedPropertyBlueprint().initWithNameBlueprintAndCardinality(name, this, cardinality);
         }
     },
 
@@ -862,7 +862,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
      */
     newEventBlueprint: {
         value: function(name) {
-            return EventBlueprint.create().initWithNameAndBlueprint(name, this);
+            return new EventBlueprint().initWithNameAndBlueprint(name, this);
         }
     },
 
@@ -959,7 +959,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
         value: function(name) {
             var propertyValidationRule = this._propertyValidationRules[name];
             if (propertyValidationRule == null) {
-                propertyValidationRule = PropertyValidationRule.create().initWithNameAndBlueprint(name, this);
+                propertyValidationRule = new PropertyValidationRule().initWithNameAndBlueprint(name, this);
                 this._propertyValidationRules[name] = propertyValidationRule;
             }
             return propertyValidationRule;
@@ -1006,8 +1006,8 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends Blueprint
 
 
 });
-var UnknownBlueprint = Object.freeze(Blueprint.create().initWithName("Unknown"));
+var UnknownBlueprint = Object.freeze(new Blueprint().initWithName("Unknown"));
 
-var UnknownPropertyBlueprint = Object.freeze(PropertyBlueprint.create().initWithNameBlueprintAndCardinality("Unknown", null, 1));
-var UnknownEventBlueprint = Object.freeze(EventBlueprint.create().initWithNameAndBlueprint("Unknown", null));
+var UnknownPropertyBlueprint = Object.freeze(new PropertyBlueprint().initWithNameBlueprintAndCardinality("Unknown", null, 1));
+var UnknownEventBlueprint = Object.freeze(new EventBlueprint().initWithNameAndBlueprint("Unknown", null));
 

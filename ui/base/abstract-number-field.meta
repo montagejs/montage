@@ -1,0 +1,72 @@
+{
+    "enabled_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "enabled",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "value_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "value",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "min_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "min",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "max_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "max",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "step_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "step",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "AbstractControl",
+                "blueprintModuleId": "ui/base/abstract-control.meta",
+                "prototypeName": "AbstractControl"
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "AbstractNumberField",
+            "blueprintModuleId": "ui/base/abstract-number-field.meta",
+            "prototypeName": "AbstractNumberField",
+            "parent": {"@": "blueprint_parent"},
+            "propertyBlueprints": [
+                {"@": "enabled_property"},
+                {"@": "value_property"},
+                {"@": "min_property"},
+                {"@": "max_property"},
+                {"@": "step_property"}
+            ],
+            "propertyBlueprintGroups": {
+                "Main": [
+                    {"@": "enabled_property"},
+                    {"@": "value_property"},
+                    {"@": "min_property"},
+                    {"@": "max_property"},
+                    {"@": "step_property"}
+                ]
+            }
+        }
+    }
+}

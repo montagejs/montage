@@ -39,7 +39,7 @@ var logger = require("core/logger").logger("exception");
     @class Exception
     @extends Montage
 */
-var Exception = exports.Exception = Montage.create(Montage,/** @lends Exception# */ {
+var Exception = exports.Exception = Montage.specialize(/** @lends Exception# */ {
 /**
         @type {Property}
         @default {String} null

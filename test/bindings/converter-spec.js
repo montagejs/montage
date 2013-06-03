@@ -32,7 +32,7 @@ var Montage = require("montage").Montage,
     Bindings = require("montage/core/bindings").Bindings,
     Converter = require("montage/core/converter/converter").Converter;
 
-var TestConverter = Montage.create(Converter, {
+var TestConverter = Converter.specialize( {
 
     convert: {
         value: function(value) {
@@ -53,8 +53,8 @@ describe("bindings/binding-converter-spec", function() {
     var target, source, bindingDescriptor;
 
     beforeEach(function() {
-        target = Montage.create();
-        source = Montage.create();
+        target = new Montage();
+        source = new Montage();
 
         bindingDescriptor = {
             "<->": "bar",

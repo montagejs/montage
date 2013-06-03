@@ -2,16 +2,16 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     SwipeComposer = require("montage/composer/swipe-composer").SwipeComposer;
 
-exports.Swipe = Montage.create(Montage, {
+exports.Swipe = Montage.specialize( {
 
     deserializedFromTemplate: {
         value: function() {
-            var dummyComponent = Montage.create(Component);
+            var dummyComponent = new Component();
             dummyComponent.hasTemplate = false;
             dummyComponent.element = document.body;
             dummyComponent.attachToParentComponent();
             dummyComponent.needsDraw = true;
-            this.swipeComposer = SwipeComposer.create();
+            this.swipeComposer = new SwipeComposer();
             dummyComponent.addComposer(this.swipeComposer);
             this.swipeComposer.addEventListener("swipe", this, false);
             this.swipeComposer.addEventListener("swipemove", this, false);

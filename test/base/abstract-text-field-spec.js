@@ -7,32 +7,32 @@ describe("test/base/abstract-text-field-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractTextField.create();
+                new AbstractTextField();
             }).toThrow();
         });
 
         it("can be instantiated as a subtype", function () {
-            var TextFieldSubtype = Montage.create(AbstractTextField, {});
+            var TextFieldSubtype = AbstractTextField.specialize( {});
             var aTextFieldSubtype = null;
             expect(function () {
-                aTextFieldSubtype = TextFieldSubtype.create();
+                aTextFieldSubtype = new TextFieldSubtype();
             }).not.toThrow();
             expect(aTextFieldSubtype).toBeDefined();
         });
     });
 
     describe("properties", function () {
-        var TextField = Montage.create(AbstractTextField, {}),
+        var TextField = AbstractTextField.specialize( {}),
             aTextField;
 
         beforeEach(function () {
-            aTextField = TextField.create();
+            aTextField = new TextField();
             aTextField.element = MockDOM.element();
         });
 
         describe("value", function () {
             beforeEach(function () {
-                aTextField = TextField.create();
+                aTextField = new TextField();
                 aTextField.element = MockDOM.element();
                 aTextField.enterDocument(true);
             });
@@ -60,7 +60,7 @@ describe("test/base/abstract-text-field-spec", function () {
 
         describe("enabled", function () {
             beforeEach(function () {
-                aTextField = TextField.create();
+                aTextField = new TextField();
                 aTextField.element = MockDOM.element();
                 aTextField.prepareForActivationEvents();
             });
@@ -88,11 +88,11 @@ describe("test/base/abstract-text-field-spec", function () {
     });
 
     describe("draw", function () {
-        var TextField = Montage.create(AbstractTextField, {}),
+        var TextField = AbstractTextField.specialize( {}),
             aTextField;
 
         beforeEach(function () {
-            aTextField = TextField.create();
+            aTextField = new TextField();
             aTextField.element = MockDOM.element();
         });
 
@@ -113,14 +113,28 @@ describe("test/base/abstract-text-field-spec", function () {
 
             expect(aTextField.element.value).toBe(aTextField.value);
         });
+
+        it("should draw a placeholder when set", function () {
+            aTextField.placeholderValue = "a placeholder text";
+
+            aTextField.draw();
+
+            expect(aTextField.element.getAttribute("placeholder")).toBe("a placeholder text");
+        });
+
+        it("should not draw a placeholder when not set", function () {
+            aTextField.draw();
+
+            expect(aTextField.element.hasAttribute("placeholder")).toBeFalsy();
+        });
     });
 
     describe("events", function () {
-        var TextField = Montage.create(AbstractTextField, {}),
+        var TextField = AbstractTextField.specialize( {}),
             aTextField, anElement, listener;
 
         beforeEach(function () {
-            aTextField = TextField.create();
+            aTextField = new TextField();
             anElement = MockDOM.element();
             listener = {
                 handleEvent: function() {}
@@ -184,6 +198,14 @@ describe("test/base/abstract-text-field-spec", function () {
                 aTextField.handleKeyPress(anEvent);
 
                 expect(callback).toHaveBeenCalled();
+            });
+        });
+    });
+    describe("blueprint", function () {
+        it("can be created", function () {
+            var blueprintPromise = AbstractTextField.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).not.toBeNull();
             });
         });
     });

@@ -9,22 +9,15 @@ var CLASS_PREFIX = "montage-TextArea";
  * @class AbstractTextArea
  * @extends Component
  */
-var AbstractTextArea = exports.AbstractTextArea = Montage.create(Component,
+var AbstractTextArea = exports.AbstractTextArea = Component.specialize(
     /* @lends AbstractTextArea# */
 {
-    create: {
-        value: function() {
-            if(this === AbstractTextArea) {
+    constructor: {
+        value: function AbstractTextArea() {
+            if(this.constructor === AbstractTextArea) {
                 throw new Error("AbstractTextArea cannot be instantiated.");
-            } else {
-                return Component.create.apply(this, arguments);
             }
-        }
-    },
-
-    didCreate: {
-        value: function() {
-            Component.didCreate.call(this); // super
+            Component.constructor.call(this); // super
 
             this.defineBindings({
                 // classList management

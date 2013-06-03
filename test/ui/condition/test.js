@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-exports.Test = Montage.create(Montage, {
+exports.Test = Montage.specialize( {
 
     hideValue: {
         value: false

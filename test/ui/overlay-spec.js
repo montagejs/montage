@@ -2,12 +2,13 @@
 var Montage = require("montage").Montage;
 var Overlay = require("montage/ui/overlay.reel").Overlay;
 var MockDOM = require("mocks/dom");
+var Event = require("mocks/event");
 
 describe("ui/overlay-spec", function() {
     var anOverlay;
 
     beforeEach(function() {
-        anOverlay = Overlay.create();
+        anOverlay = new Overlay();
         anOverlay.hasTemplate = false;
         anOverlay.element = MockDOM.element();
         anOverlay.modalMaskElement = MockDOM.element();
@@ -259,20 +260,19 @@ describe("ui/overlay-spec", function() {
 
     describe("dismissal", function() {
         it("should hide the overlay when a pressStart is fired outside the overlay", function() {
-            var event = {};
+            var event = Event.event();
 
             anOverlay.enterDocument(true);
 
             anOverlay._isShown = true;
             anOverlay._isDisplayed = true;
             event.target = MockDOM.element();
-
             anOverlay._pressComposer._dispatchPressStart(event);
             expect(anOverlay._isShown).toBe(false);
         });
 
         it("should not hide the overlay when a pressStart is fired inside the overlay", function() {
-            var event = {};
+            var event = Event.event();
 
             anOverlay.enterDocument(true);
 
@@ -288,7 +288,7 @@ describe("ui/overlay-spec", function() {
 
     describe("events", function() {
         it("should fire dismiss event when overlay is dismissed", function() {
-            var event = {},
+            var event = Event.event(),
                 callback = jasmine.createSpy();
 
             anOverlay.enterDocument(true);

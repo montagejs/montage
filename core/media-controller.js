@@ -44,7 +44,7 @@ var logger = require("core/logger").logger("mediacontroller");
  @extends Montage
 
  */
-var MediaController = exports.MediaController = Montage.create(Target, /** @lends MediaController# */ {
+var MediaController = exports.MediaController = Target.specialize( /** @lends MediaController# */ {
     /*-----------------------------------------------------------------------------
      MARK:   Constants
      -----------------------------------------------------------------------------*/

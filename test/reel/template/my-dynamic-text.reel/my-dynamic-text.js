@@ -33,7 +33,7 @@ exports = typeof exports !== "undefined" ? exports : {};
 var Montage = require("montage").Montage;
 var Text = require("montage/ui/text.reel").Text;
 
-var MyText = exports.MyText = Montage.create(Text, {
+var MyText = exports.MyText = Text.specialize( {
     didDeserializedFromTemplate: {
         value: false
     },

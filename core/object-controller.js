@@ -38,7 +38,7 @@ var Montage = require("montage").Montage;
  @classdesc Generic object controller.
  @extends Montage
  */
-var ObjectController = exports.ObjectController = Montage.create(Montage, /** @lends ObjectController# */ {
+var ObjectController = exports.ObjectController = Montage.specialize( /** @lends ObjectController# */ {
 /**
         @type {Property}
         @default null
@@ -49,12 +49,12 @@ var ObjectController = exports.ObjectController = Montage.create(Montage, /** @l
     },
  /**
     @function
-    @returns this.objectPrototype.create()
+    @returns new this.objectPrototype()
     */
     newObject: {
         enumerable: false,
         value: function() {
-            return this.objectPrototype.create();
+            return new this.objectPrototype();
         }
     },
 

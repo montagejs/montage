@@ -227,7 +227,7 @@ var numericValueToString = exports.numericValueToString = function(val, opt_deci
  @classdesc Validates that a string can be represented as a numeric value, and returns the numeric value.
  @extends Validator
  */
-var NumberValidator = exports.NumberValidator = Montage.create(Validator, /** @lends NumberValidator# */ {
+var NumberValidator = exports.NumberValidator = Validator.specialize( /** @lends NumberValidator# */ {
 
     /**
      Indicates whether floating point values are allowed.<br>
@@ -282,7 +282,7 @@ var NumberValidator = exports.NumberValidator = Montage.create(Validator, /** @l
  @class NumberConverter
  @classdesc Formats a number for easier readability.
  */
-var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @lends NumberConverter# */ {
+var NumberConverter = exports.NumberConverter = Converter.specialize( /** @lends NumberConverter# */ {
 
     /**
         @type {Property}
@@ -297,7 +297,7 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
         @default {attribute} NumberValidator Uses this object.
     */
     validator: {
-        value: Montage.create(NumberValidator)
+        value: new NumberValidator()
     },
 
    /**

@@ -31,5 +31,5 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-exports.Custom = Montage.create(Component, {
+exports.Custom = Component.specialize( {
 });

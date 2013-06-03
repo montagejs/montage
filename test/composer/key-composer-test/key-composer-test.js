@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 
-var KeyComposerTest = exports.KeyComposerTest = Montage.create(Montage, {
+var KeyComposerTest = exports.KeyComposerTest = Montage.specialize( {
 
     keyPressCalled: {
         value: false

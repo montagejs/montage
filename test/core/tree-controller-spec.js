@@ -22,7 +22,7 @@ describe("core/tree-controller-spec", function () {
 
     it("should vary visible iterations with expand and collapse", function () {
 
-        var node = TreeController.create().init(tree, "children");
+        var node = new TreeController().init(tree, "children");
 
         expect(node.length).toBe(1);
         expect(node.iterations.map(function (iteration) {

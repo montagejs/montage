@@ -2,7 +2,7 @@ var Montage = require("montage").Montage;
 var TestController = require("montage-testing/test-controller").TestController;
 var UUID = require("montage/core/uuid");
 
-exports.SelectionTest = Montage.create(TestController, {
+exports.SelectionTest = TestController.specialize( {
 
     nameController: {
         value: null
@@ -12,9 +12,9 @@ exports.SelectionTest = Montage.create(TestController, {
         value: null
     },
 
-    didCreate: {
+    constructor: {
         value: function () {
-            TestController.didCreate.call(this);
+            TestController.constructor.call(this);
             this.content = ["Alice", "Bob", "Carol", "Dave", "Eve"];
         }
     },

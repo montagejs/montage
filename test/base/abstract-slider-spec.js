@@ -3,29 +3,29 @@ var Montage = require("montage").Montage;
 var AbstractSlider = require("montage/ui/base/abstract-slider").AbstractSlider;
 var MockDOM = require("mocks/dom");
 
-AbstractSlider.hasTemplate = false;
+AbstractSlider.prototype.hasTemplate = false;
 
 describe("test/base/abstract-slider-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractSlider.create();
+                new AbstractSlider();
             }).toThrow();
         });
         it("can be instantiated as a subtype", function () {
-            var SliderSubtype = Montage.create(AbstractSlider, {});
+            var SliderSubtype = AbstractSlider.specialize( {});
             var aSliderSubtype = null;
             expect(function () {
-                aSliderSubtype = SliderSubtype.create();
+                aSliderSubtype = new SliderSubtype();
             }).not.toThrow();
             expect(aSliderSubtype).toBeDefined();
         });
     });
     describe("properties", function () {
-        var Slider = Montage.create(AbstractSlider, {}),
+        var Slider = AbstractSlider.specialize( {}),
             aSlider;
         beforeEach(function () {
-            aSlider = Slider.create();
+            aSlider = new Slider();
             aSlider.element = MockDOM.element();
         });
 
@@ -194,10 +194,10 @@ describe("test/base/abstract-slider-spec", function () {
             });
         });
         describe("after enterDocument", function () {
-            var Slider = Montage.create(AbstractSlider, {}),
+            var Slider = AbstractSlider.specialize( {}),
                 aSlider, anElement;
             beforeEach(function () {
-                aSlider = Slider.create();
+                aSlider = new Slider();
                 anElement = MockDOM.element();
                 aSlider.element = anElement;
             });
@@ -266,10 +266,10 @@ describe("test/base/abstract-slider-spec", function () {
 
         });
         describe("draw", function () {
-            var Slider = Montage.create(AbstractSlider, {}),
+            var Slider = AbstractSlider.specialize( {}),
                 aSlider;
             beforeEach(function () {
-                aSlider = Slider.create();
+                aSlider = new Slider();
                 aSlider.element = MockDOM.element();
             });
 
@@ -291,10 +291,10 @@ describe("test/base/abstract-slider-spec", function () {
             });
         });
         describe("events", function () {
-            var Slider = Montage.create(AbstractSlider, {}),
+            var Slider = AbstractSlider.specialize( {}),
                 aSlider, anElement, listener;
             beforeEach(function () {
-                aSlider = Slider.create();
+                aSlider = new Slider();
                 anElement = MockDOM.element();
                 aSlider.element = anElement;
                 listener = {
@@ -345,6 +345,14 @@ describe("test/base/abstract-slider-spec", function () {
 
                 listeners = em.registeredEventListenersForEventType_onTarget_("translateEnd", aSlider._translateComposer);
                 expect(listeners[aSlider.uuid].listener).toBe(aSlider);
+            });
+        });
+    });
+    describe("blueprint", function () {
+        it("can be created", function () {
+            var blueprintPromise = AbstractSlider.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).not.toBeNull();
             });
         });
     });

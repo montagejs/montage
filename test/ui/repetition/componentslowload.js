@@ -34,7 +34,7 @@ var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 var Promise = require("montage/core/promise").Promise;
 
-var ComponentSlowLoad = exports.ComponentSlowLoad = Montage.create(Component, {
+var ComponentSlowLoad = exports.ComponentSlowLoad = Component.specialize( {
     hasTemplate: {value: false},
     delay: {value: 100},
 

@@ -244,7 +244,7 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
 
             xit("TODO should create a repetition programmatically", function() {
                 var Repetition = testPage.window.require("montage/ui/repetition.reel").Repetition,
-                    repetition = Repetition.create();
+                    repetition = new Repetition();
 
                 repetition.element = querySelector(".list12");
                 repetition.content = [1, 2, 3];

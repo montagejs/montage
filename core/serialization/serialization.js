@@ -4,7 +4,7 @@ var Montage = require("core/core").Montage,
     parse = require("frb/parse"),
     stringify = require("frb/stringify");
 
-var Serialization = Montage.create(Montage, {
+var Serialization = Montage.specialize( {
     _serializationString: {value: null},
     _serializationObject: {value: null},
 
@@ -83,7 +83,7 @@ var Serialization = Montage.create(Montage, {
 
     getSerializationLabelsWithElements: {
         value: function(elementIds) {
-            var inspector = SerializationInspector.create(),
+            var inspector = new SerializationInspector(),
                 labels = [];
 
             inspector.initWithSerialization(this);
@@ -108,7 +108,7 @@ var Serialization = Montage.create(Montage, {
 
     renameElementReferences: {
         value: function(elementsTable) {
-            var inspector = SerializationInspector.create();
+            var inspector = new SerializationInspector();
 
             inspector.initWithSerialization(this);
             inspector.visitSerialization(function(node) {
@@ -121,7 +121,7 @@ var Serialization = Montage.create(Montage, {
 
     renameSerializationLabels: {
         value: function(labelsTable) {
-            var inspector = SerializationInspector.create();
+            var inspector = new SerializationInspector();
 
             inspector.initWithSerialization(this);
             inspector.visitSerialization(function(node) {
@@ -151,7 +151,7 @@ var Serialization = Montage.create(Montage, {
 
     extractSerialization: {
         value: function(labels, externalLabels) {
-            var extractor = SerializationExtractor.create();
+            var extractor = new SerializationExtractor();
 
             extractor.initWithSerialization(this);
             return extractor.extractSerialization(labels, externalLabels);
@@ -159,7 +159,7 @@ var Serialization = Montage.create(Montage, {
     }
 });
 
-var SerializationMerger = Object.create(Montage, {
+var SerializationMerger = Montage.specialize(null, {
     /**
      * Merges serialization2 into serialization1.
      *
@@ -188,7 +188,7 @@ var SerializationMerger = Object.create(Montage, {
             if (collisionTable) {
                 // Clone serialization2 because we don't want to modify it.
                 serializationString2 = serialization2.getSerializationString();
-                serialization2 = Serialization.create()
+                serialization2 = new Serialization()
                     .initWithString(serializationString2);
 
                 serialization2.renameSerializationLabels(collisionTable);
@@ -211,7 +211,7 @@ var SerializationMerger = Object.create(Montage, {
 
     _createCollisionTable: {
         value: function(labels1, labels2) {
-            var labeler = MontageLabeler.create(),
+            var labeler = new MontageLabeler(),
                 collisionTable = {},
                 hasCollision = false;
 
@@ -235,7 +235,7 @@ var SerializationMerger = Object.create(Montage, {
     }
 });
 
-var SerializationInspector = Montage.create(Montage, {
+var SerializationInspector = Montage.specialize( {
     initWithSerialization: {
         value: function(serialization) {
             this._serialization = serialization;
@@ -552,7 +552,7 @@ var SerializationInspector = Montage.create(Montage, {
     }
 });
 
-var SerializationExtractor = Montage.create(Montage, {
+var SerializationExtractor = Montage.specialize( {
     _serialization: {value: null},
 
     initWithSerialization: {
@@ -566,7 +566,7 @@ var SerializationExtractor = Montage.create(Montage, {
      */
     extractSerialization: {
         value: function(labels, externalLabels) {
-            var inspector = SerializationInspector.create(),
+            var inspector = new SerializationInspector(),
                 serializationObject,
                 objects = {},
                 references = [];
@@ -606,7 +606,7 @@ var SerializationExtractor = Montage.create(Montage, {
                 objects[label] = {};
             }
 
-            return Serialization.create().initWithObject(objects);
+            return new Serialization().initWithObject(objects);
         }
     }
 });

@@ -59,12 +59,12 @@ var Montage = require("montage").Montage,
  * @classdesc Base class for all Montage components.
  * @extends Montage
  */
-var Component = exports.Component = Montage.create(Target,/** @lends module:montage/ui/component.Component# */ {
+var Component = exports.Component = Target.specialize(/** @lends module:montage/ui/component.Component# */ {
     DOM_ARG_ATTRIBUTE: {value: "data-arg"},
 
-    didCreate: {
+    constructor: {
         value: function () {
-            Montage.didCreate.call(this);
+            Montage.constructor.call(this);
             this._isComponentExpanded = false;
             this._isTemplateLoaded = false;
             this._isTemplateInstantiated = false;
@@ -160,7 +160,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     canDrawGate: {
         get: function() {
             if (!this._canDrawGate) {
-                this._canDrawGate = Gate.create().initWithDelegate(this);
+                this._canDrawGate = new Gate().initWithDelegate(this);
                 this._canDrawGate.setField("componentTreeLoaded", false);
             }
             return this._canDrawGate;
@@ -184,7 +184,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
         enumerable: false,
         get: function() {
             if (!this._blockDrawGate) {
-                this._blockDrawGate = Gate.create().initWithDelegate(this);
+                this._blockDrawGate = new Gate().initWithDelegate(this);
                 this._blockDrawGate.setField("element", false);
                 this._blockDrawGate.setField("drawRequested", false);
             }
@@ -1234,7 +1234,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 var object = objects[label];
 
                 if (typeof object === "object" && object != null) {
-                    if (!Component.isPrototypeOf(object) || object === this ||
+                    if (!Component.prototype.isPrototypeOf(object) || object === this ||
                         object.parentComponent === this) {
                         templateObjects[label] = object;
                     } else {
@@ -1400,7 +1400,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
             }
 
             if (!this.ownerComponent) {
-                if (Component.isPrototypeOf(owner)) {
+                if (Component.prototype.isPrototypeOf(owner)) {
                     this.ownerComponent = owner;
                 } else {
                     this.ownerComponent = this.rootComponent;
@@ -2132,9 +2132,9 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
      * var defaultLocalizer = localizer.defaultLocalizer,
      *     _ = defaultLocalizer.localizeSync.bind(defaultLocalizer);
      *
-     * exports.Main = Montage.create(Component, {
+     * exports.Main = Component.specialize( {
      *
-     *     didCreate: {
+     *     constructor: {
      *         value: function() {
      *             this.localizer = defaultLocalizer;
      *             this.waitForLocalizerMessages = true;
@@ -2480,7 +2480,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
     },
 
     handleClassListRangeChange: {
-        value: function (name) {
+        value: function (plus, minus) {
             this._classListDirty = true;
             this.needsDraw = true;
         }
@@ -2492,11 +2492,15 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
                 var elementClassList = this.element.classList,
                     classList = this._classList;
 
-                Array.prototype.forEach.call(elementClassList, function (cssClass) {
-                    if (!classList.has(cssClass)) {
-                        elementClassList.remove(cssClass);
+                for (var i = 0, ii = elementClassList.length, className; i < ii; i++) {
+                    className = elementClassList.item(i);
+                    if (!classList.has(className)) {
+                        elementClassList.remove(className);
+                        i--;
+                        ii--;
                     }
-                });
+                }
+
                 this._classList.forEach(function (cssClass) {
                     elementClassList.add(cssClass);
                 });
@@ -2524,7 +2528,7 @@ var Component = exports.Component = Montage.create(Target,/** @lends module:mont
  * @class RootComponent
  * @extends Component
  */
-var rootComponent = Montage.create(Component, /** @lends RootComponent# */{
+var RootComponent = Component.specialize( /** @lends RootComponent# */{
     /**
      * @private
      * @function
@@ -2565,7 +2569,7 @@ var rootComponent = Montage.create(Component, /** @lends RootComponent# */{
      */
     canDrawGate: {
         get: function() {
-            return this._canDrawGate || (this._canDrawGate = Gate.create().initWithDelegate(this));
+            return this._canDrawGate || (this._canDrawGate = new Gate().initWithDelegate(this));
         }
     },
 
@@ -3143,7 +3147,7 @@ var rootComponent = Montage.create(Component, /** @lends RootComponent# */{
     }
 });
 
-rootComponent.init();
+var rootComponent = new RootComponent().init();
 //if(window.parent && window.parent.jasmine) {
 exports.__root__ = rootComponent;
 //}

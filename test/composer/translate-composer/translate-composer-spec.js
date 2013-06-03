@@ -283,11 +283,11 @@ TestPageLoader.queueTest("translate-composer-test", function(testPage) {
 });
 var touchOptions = TestPageLoader.options("translate-composer-test", {timeoutLength: 10000}, function() {console.log("translate-composer-test touch callback");});
 describe("translate-composer-test touch", function () {
-    var testPage = TestPageLoader.init();
+    var testPage = TestPageLoader.testPage.init();
     it("should load", function() {
         console.group("translate-composer-touch-test");
-        var frameLoaded = TestPageLoader.init().loadFrame(touchOptions).then(function(theTestPage) {
-            testPage.window.Touch = function() {};
+        var frameLoaded = TestPageLoader.testPage.init().loadFrame(touchOptions).then(function(theTestPage) {
+            theTestPage.window.Touch = function() {};
         })
        return testPage.loadTest(frameLoaded, touchOptions).then(function(theTestPage) {
            expect(theTestPage.loaded).toBe(true);

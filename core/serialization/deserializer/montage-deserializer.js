@@ -8,16 +8,10 @@ var JSHINT = require("core/jshint").JSHINT;
 
 var logger = require("core/logger").logger("montage-deserializer");
 
-var MontageDeserializer = Montage.create(Deserializer.prototype, {
+var MontageDeserializer = Montage.specialize.call(Deserializer, {
     _interpreter: {value: null},
     _serializationString: {value: null},
     _serialization: {value: null},
-
-    create: {
-        value: function() {
-            return Montage.create(this);
-        }
-    },
 
     init: {
         value: function(serializationString, _require, objectRequires, origin) {
@@ -30,7 +24,7 @@ var MontageDeserializer = Montage.create(Deserializer.prototype, {
             Deserializer.call(this, serializationString);
             this._origin;
             this._serialization = null;
-            this._interpreter = MontageInterpreter.create()
+            this._interpreter = new MontageInterpreter()
                 .init(_require, objectRequires);
 
             return this;
@@ -70,12 +64,6 @@ var MontageDeserializer = Montage.create(Deserializer.prototype, {
             var serialization = JSON.parse(this._serializationString);
 
             return this._interpreter.preloadModules(serialization);
-        }
-    },
-
-    defineDeserializationUnit: {
-        value: function(name, funktion) {
-            MontageReviver.defineUnitReviver(name, funktion);
         }
     },
 
@@ -136,11 +124,20 @@ var MontageDeserializer = Montage.create(Deserializer.prototype, {
             return message;
         }
     }
+
+}, {
+
+    defineDeserializationUnit: {
+        value: function(name, funktion) {
+            MontageReviver.defineUnitReviver(name, funktion);
+        }
+    }
+
 });
 
 exports.MontageDeserializer = MontageDeserializer;
 exports.deserialize = function(serializationString, _require) {
-    return MontageDeserializer.create().
+    return new MontageDeserializer().
         init(serializationString, _require)
         .deserializeObject();
 }

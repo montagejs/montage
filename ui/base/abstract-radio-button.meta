@@ -1,0 +1,65 @@
+{
+    "enabled_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "enabled",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "checked_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "checked",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "active_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "active",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "radioButtonController_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "radioButtonController",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "AbstractControl",
+                "blueprintModuleId": "ui/base/abstract-control.meta",
+                "prototypeName": "AbstractControl"
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "AbstractRadioButton",
+            "blueprintModuleId": "ui/base/abstract-radio-button.meta",
+            "prototypeName": "AbstractRadioButton",
+            "parent": {"@": "blueprint_parent"},
+            "propertyBlueprints": [
+                {"@": "enabled_property"},
+                {"@": "checked_property"},
+                {"@": "active_property"},
+                {"@": "radioButtonController_property"}
+            ],
+            "propertyBlueprintGroups": {
+                "Main": [
+                    {"@": "enabled_property"},
+                    {"@": "checked_property"},
+                    {"@": "radioButtonController_property"}
+                ],
+                "Options": [
+                     {"@": "active_property"}
+                ]
+            }
+        }
+    }
+}

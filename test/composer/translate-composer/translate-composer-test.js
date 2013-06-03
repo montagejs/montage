@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 
-var TranslateComposerTest = exports.TranslateComposerTest = Montage.create(Montage, {
+var TranslateComposerTest = exports.TranslateComposerTest = Montage.specialize( {
     // _example: {
     //     value: null
     // },

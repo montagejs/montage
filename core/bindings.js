@@ -3,17 +3,17 @@ var Montage = require("core/core").Montage;
 
 var Bindings = exports.Bindings = require("frb");
 
-Montage.defineProperties(Montage, {
+var bindingPropertyDescriptors = {
 
     defineBinding: {
-        value: function (targetPath, descriptor, parameters) {
-            return Bindings.defineBinding(this, targetPath, descriptor, parameters);
+        value: function (targetPath, descriptor, commonDescriptor) {
+            return Bindings.defineBinding(this, targetPath, descriptor, commonDescriptor);
         }
     },
 
     defineBindings: {
-        value: function (descriptors, parameters) {
-            return Bindings.defineBindings(this, descriptors, parameters);
+        value: function (descriptors, commonDescriptor) {
+            return Bindings.defineBindings(this, descriptors, commonDescriptor);
         }
     },
 
@@ -41,5 +41,6 @@ Montage.defineProperties(Montage, {
         }
     }
 
-});
-
+};
+Montage.defineProperties(Montage, bindingPropertyDescriptors);
+Montage.defineProperties(Montage.prototype, bindingPropertyDescriptors);

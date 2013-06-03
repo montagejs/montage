@@ -7,32 +7,32 @@ describe("test/base/abstract-text-area-spec", function () {
     describe("creation", function () {
         it("cannot be instantiated directly", function () {
             expect(function () {
-                AbstractTextArea.create();
+                new AbstractTextArea();
             }).toThrow();
         });
 
         it("can be instantiated as a subtype", function () {
-            var TextAreaSubtype = Montage.create(AbstractTextArea, {});
+            var TextAreaSubtype = AbstractTextArea.specialize( {});
             var aTextAreaSubtype = null;
             expect(function () {
-                aTextAreaSubtype = TextAreaSubtype.create();
+                aTextAreaSubtype = new TextAreaSubtype();
             }).not.toThrow();
             expect(aTextAreaSubtype).toBeDefined();
         });
     });
 
     describe("properties", function () {
-        var TextArea = Montage.create(AbstractTextArea, {}),
+        var TextArea = AbstractTextArea.specialize( {}),
             aTextArea;
 
         beforeEach(function () {
-            aTextArea = TextArea.create();
+            aTextArea = new TextArea();
             aTextArea.element = MockDOM.element();
         });
 
         describe("value", function () {
             beforeEach(function () {
-                aTextArea = TextArea.create();
+                aTextArea = new TextArea();
                 aTextArea.element = MockDOM.element();
                 aTextArea.enterDocument(true);
             });
@@ -60,7 +60,7 @@ describe("test/base/abstract-text-area-spec", function () {
 
         describe("enabled", function () {
             beforeEach(function () {
-                aTextArea = TextArea.create();
+                aTextArea = new TextArea();
                 aTextArea.element = MockDOM.element();
             });
 
@@ -73,11 +73,11 @@ describe("test/base/abstract-text-area-spec", function () {
     });
 
     describe("draw", function () {
-        var TextArea = Montage.create(AbstractTextArea, {}),
+        var TextArea = AbstractTextArea.specialize( {}),
             aTextArea;
 
         beforeEach(function () {
-            aTextArea = TextArea.create();
+            aTextArea = new TextArea();
             aTextArea.element = MockDOM.element();
         });
 
@@ -101,11 +101,11 @@ describe("test/base/abstract-text-area-spec", function () {
     });
 
     describe("events", function () {
-        var TextArea = Montage.create(AbstractTextArea, {}),
+        var TextArea = AbstractTextArea.specialize( {}),
             aTextArea, anElement, listener;
 
         beforeEach(function () {
-            aTextArea = TextArea.create();
+            aTextArea = new TextArea();
             anElement = MockDOM.element();
             listener = {
                 handleEvent: function() {}
@@ -124,6 +124,14 @@ describe("test/base/abstract-text-area-spec", function () {
             aTextArea.enterDocument(true);
 
             expect(aTextArea.element.hasEventListener("change", aTextArea)).toBe(true);
+        });
+    });
+    describe("blueprint", function () {
+        it("can be created", function () {
+            var blueprintPromise = AbstractTextArea.blueprint;
+            return blueprintPromise.then(function (blueprint) {
+                expect(blueprint).not.toBeNull();
+            });
         });
     });
 });

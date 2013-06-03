@@ -21,7 +21,7 @@ var Montage = require("montage").Montage,
 
 var CLASS_PREFIX = "montage-Overlay";
 
-exports.Overlay = Montage.create(Component, /** @lends module:Overlay# */ {
+exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
     /**
      * Dispatched when the user dismiss the overlay by clicking outside of it.
      * @event dismiss
@@ -122,9 +122,9 @@ exports.Overlay = Montage.create(Component, /** @lends module:Overlay# */ {
         value: null
     },
 
-    didCreate: {
+    constructor: {
         value: function() {
-            this._pressComposer = PressComposer.create();
+            this._pressComposer = new PressComposer();
         }
     },
 
@@ -194,7 +194,7 @@ exports.Overlay = Montage.create(Component, /** @lends module:Overlay# */ {
 
     handlePressStart: {
         value: function(event) {
-            var targetElement = event._event.target,
+            var targetElement = event.targetElement,
                 element = this.element;
 
             if (!element.contains(targetElement)) {

@@ -40,7 +40,7 @@ var Converter = require("core/converter/converter").Converter;
  @class LowerCaseConverter
  @classdesc Converts a string to lowercase.
  */
-exports.LowerCaseConverter = Montage.create(Converter, /** @lends LowerCaseConverter# */{
+exports.LowerCaseConverter = Converter.specialize( /** @lends LowerCaseConverter# */{
 
     _convert: {
         value: function(v) {

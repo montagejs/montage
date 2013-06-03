@@ -6,12 +6,12 @@ var deserialize = require("montage/core/serialization").deserialize;
 describe("core/selector-spec", function () {
 
     it("should initialize with path", function () {
-        var selector = Selector.create().initWithPath("a.b");
+        var selector = new Selector().initWithPath("a.b");
         expect(selector.evaluate({a: {b: 10}})).toBe(10);
     });
 
     it("should initialize with syntax", function () {
-        var selector = Selector.create().initWithSyntax({
+        var selector = new Selector().initWithSyntax({
             "type": "property",
             "args": [
                 {"type": "value"},
@@ -22,7 +22,7 @@ describe("core/selector-spec", function () {
     });
 
     it("should serialize", function () {
-        var selector = Selector.create().initWithPath("a.b");
+        var selector = new Selector().initWithPath("a.b");
         var serialization = serialize(selector, require);
         var json = JSON.parse(serialization);
         expect(json).toEqual({
@@ -58,7 +58,7 @@ describe("core/selector-spec", function () {
     });
 
     it("should compose with instance methods", function () {
-        var selector = Selector.create().initWithPath("a").and("b");
+        var selector = new Selector().initWithPath("a").and("b");
         expect(selector.evaluate({a: false, b: true})).toBe(false);
     });
 

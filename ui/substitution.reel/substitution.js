@@ -42,14 +42,14 @@ var Montage = require("montage").Montage,
 /**
  @class Substitution
  */
-exports.Substitution = Montage.create(Slot, /** @lends Substitution# */ {
+exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
 
     hasTemplate: {
         enumerable: false,
         value: false
     },
 
-    didCreate: {
+    constructor: {
         value: function() {
             this._switchElements = Object.create(null);
             this._switchComponentTreeLoaded = Object.create(null);

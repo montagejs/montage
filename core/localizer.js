@@ -19,7 +19,8 @@ var Montage = require("montage").Montage,
     FrbBindings = require("frb/bindings"),
     parse = require("frb/parse"),
     stringify = require("frb/stringify"),
-    expand = require("frb/expand");
+    expand = require("frb/expand"),
+    Scope = require("frb/scope");
 
 // Add all locales to MessageFormat object
 MessageFormat.locale = require("core/messageformat-locale");
@@ -45,7 +46,7 @@ var reLanguageTagValidator = /^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/;
     @class Localizer
     @extends Montage
 */
-var Localizer = exports.Localizer = Montage.create(Montage, /** @lends Localizer# */ {
+var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */ {
 
     /**
         Initialize the localizer.
@@ -519,7 +520,7 @@ defaultLocalizer.localize("hello", "Hello").then(function (hi) {
     @class DefaultLocalizer
     @extends Localizer
 */
-var DefaultLocalizer = Montage.create(Localizer, /** @lends DefaultLocalizer# */ {
+var DefaultLocalizer = Localizer.specialize( /** @lends DefaultLocalizer# */ {
     init: {
         value: function() {
             var defaultLocale = this.callDelegateMethod("getDefaultLocale");
@@ -610,7 +611,7 @@ var DefaultLocalizer = Montage.create(Localizer, /** @lends DefaultLocalizer# */
  * @type {DefaultLocalizer}
  * @static
 */
-var defaultLocalizer = exports.defaultLocalizer = DefaultLocalizer.create().init();
+var defaultLocalizer = exports.defaultLocalizer = new DefaultLocalizer().init();
 
 /**
     The localize function from {@link defaultLocalizer} provided for convenience.
@@ -627,9 +628,9 @@ exports.localize = defaultLocalizer.localize.bind(defaultLocalizer);
     @class MessageLocalizer
     @extends Montage
 */
-var Message = exports.Message = Montage.create(Montage, /** @lends MessageLocalizer# */ {
+var Message = exports.Message = Montage.specialize( /** @lends MessageLocalizer# */ {
 
-    didCreate: {
+    constructor: {
         value: function() {
             // _data Map needs to track changes on existing properties of
             // _dataObject, .toMap() provides this behaviour.
@@ -950,12 +951,16 @@ var Message = exports.Message = Montage.create(Montage, /** @lends MessageLocali
 
             if (input.source !== object) {
                 var reference = serializer.addObjectReference(input.source);
-                var syntax = expand(parse(sourcePath), {
+                var scope = new Scope({
                     type: "component",
                     label: reference["@"]
-                }, parameters);
+                });
+                scope.components = serializer;
+                var syntax = expand(parse(sourcePath), scope);
             } else {
-                var syntax = expand(parse(sourcePath), null, parameters);
+                var scope = new Scope();
+                scope.components = serializer;
+                var syntax = expand(parse(sourcePath), scope);
             }
             sourcePath = stringify(syntax);
 
@@ -980,21 +985,21 @@ var Message = exports.Message = Montage.create(Montage, /** @lends MessageLocali
 });
 
 var createMessageBinding = function(object, prop, key, defaultMessage, data, deserializer) {
-    var message = Message.create();
+    var message = new Message();
 
     for (var d in data) {
         if (typeof data[d] === "string") {
             message.data.set(d, data[d]);
         } else {
-            Bindings.defineBinding(message.data, ".get('" + d + "')", data[d], {
-                serialization: deserializer
+            Bindings.defineBinding(message.data, ".get('"+ d + "')", data[d], {
+                components: deserializer
             });
         }
     }
 
     if (typeof key === "object") {
         Bindings.defineBinding(message, "key", key, {
-            serialization: deserializer
+            components: deserializer
         });
     } else {
         message.key = key;
@@ -1003,7 +1008,7 @@ var createMessageBinding = function(object, prop, key, defaultMessage, data, des
     if (typeof defaultMessage === "object") {
 //console.log("Define default binding: ", defaultMessage);
         Bindings.defineBinding(message, "defaultMessage", defaultMessage, {
-            serialization: deserializer
+            components: deserializer
         });
 //console.log(FrbBindings.getBindings(message).source, deserializer.getObjectByLabel("source"));
     } else {
@@ -1026,7 +1031,7 @@ Serializer.defineSerializationUnit("localizations", function(serializer, object)
         var result;
         for (var prop in bindingDescriptors) {
             var desc = bindingDescriptors[prop];
-            if (Message.isPrototypeOf(desc.source)) {
+            if (Message.prototype.isPrototypeOf(desc.source)) {
                 if (!result) {
                     result = {};
                 }

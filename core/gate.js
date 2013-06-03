@@ -39,7 +39,7 @@ var Montage = require("montage").Montage,
  @class Gate
  @extends Montage
  */
-var Gate = exports.Gate = Montage.create(Montage,/** @lends Gate# */ {
+var Gate = exports.Gate = Montage.specialize(/** @lends Gate# */ {
 /**
     @function
     @returns {Gate} A new Gate instance.

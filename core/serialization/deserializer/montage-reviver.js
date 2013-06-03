@@ -6,7 +6,7 @@ var UnitDeserializer = require("./unit-deserializer").UnitDeserializer;
 
 var Promise = require("core/promise").Promise;
 
-var ModuleLoader = Montage.create(Montage, {
+var ModuleLoader = Montage.specialize( {
     _require: {value: null},
     _objectRequires: {value: null},
 
@@ -75,16 +75,8 @@ var ModuleLoader = Montage.create(Montage, {
     }
 });
 
-var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, {
+var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
     moduleLoader: {value: null},
-    _unitRevivers: {value: Object.create(null)},
-    _unitNames: {value: []},
-
-    create: {
-        value: function() {
-            return Montage.create(this);
-        }
-    },
 
     /**
      * @param {Require} _require The require object to load modules
@@ -94,17 +86,10 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
      */
     init: {
         value: function(_require, objectRequires) {
-            this.moduleLoader = ModuleLoader.create()
+            this.moduleLoader = new ModuleLoader()
                                  .init(_require, objectRequires);
 
             return this;
-        }
-    },
-
-    defineUnitReviver: {
-        value: function(name, funktion) {
-            this._unitRevivers[name] = funktion;
-            this._unitNames.push(name);
         }
     },
 
@@ -152,7 +137,7 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
                 objectName;
 
             if (locationId) {
-                locationDesc = this.parseObjectLocationId(locationId);
+                locationDesc = MontageReviver.parseObjectLocationId(locationId);
                 module = this.moduleLoader.getModule(locationDesc.moduleId,
                     label);
                 objectName = locationDesc.objectName;
@@ -206,7 +191,7 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
             } else {
                 // Units are deserialized after all objects have been revived.
                 // This happens at didReviveObjects.
-                context.setUnitsToDeserialize(object, montageObjectDesc, this._unitNames);
+                context.setUnitsToDeserialize(object, montageObjectDesc, MontageReviver._unitNames);
                 properties = this.deserializeMontageObjectProperties(object, montageObjectDesc.properties, context);
 
                 if (Promise.isPromise(properties)) {
@@ -225,7 +210,7 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
             var value;
 
             if (typeof object.deserializeProperties === "function") {
-                var propertiesDeserializer = PropertiesDeserializer.create()
+                var propertiesDeserializer = new PropertiesDeserializer()
                     .initWithReviverAndObjects(this, context);
                 value = object.deserializeProperties(propertiesDeserializer);
             } else {
@@ -242,8 +227,8 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
         value: function(object, objectDesc, context, label) {
             var substituteObject;
 
-            var selfDeserializer = SelfDeserializer.create()
-                .initWithObjectAndObjectDescriptorAndContextAndUnitNames(object, objectDesc, context, this._unitNames);
+            var selfDeserializer = new SelfDeserializer()
+                .initWithObjectAndObjectDescriptorAndContextAndUnitNames(object, objectDesc, context, MontageReviver._unitNames);
             substituteObject = object.deserializeSelf(selfDeserializer);
 
             if (Promise.isPromise(substituteObject)) {
@@ -278,10 +263,12 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
                 }
                 // TODO: For now we need this because we need to set
                 // isDeserilizing before calling didCreate.
-                object = Object.create(module[objectName]);
+                object = Object.create(module[objectName].prototype);
                 object.isDeserializing = true;
                 if (typeof object.didCreate === "function") {
                     object.didCreate();
+                } else if (typeof object.constructor === "function") {
+                    object.constructor();
                 }
                 return object;
                 //return module[objectName].create();
@@ -345,13 +332,13 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
         value: function(context) {
             var unitsToDeserialize = context.getUnitsToDeserialize(),
                 unitsDesc,
-                units = this._unitRevivers;
+                units = MontageReviver._unitRevivers;
 
             for (var i = 0, unitsDesc; unitsDesc = unitsToDeserialize[i]; i++) {
                 var unitNames = unitsDesc.unitNames;
 
                 for (var j = 0, unitName; unitName = unitNames[j]; j++) {
-                    var unitDeserializer = UnitDeserializer.create()
+                    var unitDeserializer = new UnitDeserializer()
                         .initWithContext(context);
 
                     if (unitName in unitsDesc.objectDesc) {
@@ -360,7 +347,11 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
                 }
             }
         }
-    },
+    }
+
+}, {
+    _unitRevivers: {value: Object.create(null)},
+    _unitNames: {value: []},
 
     _findObjectNameRegExp: {
         value: /([^\/]+?)(\.reel)?$/
@@ -421,7 +412,21 @@ var MontageReviver = exports.MontageReviver = Montage.create(Reviver.prototype, 
 
             return locationDesc;
         }
+    },
+
+    defineUnitReviver: {
+        value: function(name, funktion) {
+            this._unitRevivers[name] = funktion;
+            this._unitNames.push(name);
+        }
+    },
+
+    getTypeOf: {
+        value: function(value) {
+            return this.prototype.getTypeOf.call(this, value);
+        }
     }
+
 });
 
 if (typeof exports !== "undefined") {
