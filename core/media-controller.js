@@ -290,6 +290,9 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             return this.mediaController.currentTime;
         },
         set: function(currentTime) {
+            if (this.status === this.EMPTY) {
+                return;
+            }
             try {
                 if (isNaN(this.mediaController.duration)) {
                     logger.error("MediaController:set currentTime: duration is not valid");
@@ -298,7 +301,10 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
                 if (logger.isDebug) {
                     logger.debug("current time: " + this.mediaController.currentTime + ", new time: " + currentTime);
                 }
-                this.mediaController.currentTime = currentTime;
+                var oldTime = this.mediaController.currentTime;
+                if (oldTime !== currentTime) {
+                    this.mediaController.currentTime = currentTime;
+                }
             }
             catch(err) {
                 logger.error("MediaController:Exception in set currentTime" + this.mediaController.currentTime);
@@ -365,42 +371,6 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     },
 
 
-/**
-    @function
-    */
-    toggleRepeat: {
-        value: function() {
-            this.repeat = !this.repeat;
-        }
-    },
-    /**
-    @private
-    */
-    _repeat: {
-        value: false,
-        enumerable: false
-    },
-    /**
-        @type {Function}
-        @default {Boolean} false
-    */
-    repeat: {
-        get: function() {
-            return this._repeat;
-        },
-
-        set: function(repeat) {
-            if (repeat !== this._repeat) {
-                this._repeat = repeat;
-                if (repeat) {
-                    this.mediaElement.setAttribute("loop", "true");
-                } else {
-                    this.mediaElement.removeAttribute("loop");
-                }
-                this._dispatchStateChangeEvent();
-            }
-        }
-    },
     /*-----------------------------------------------------------------------------
      MARK:   Volume Commands
      -----------------------------------------------------------------------------*/
