@@ -19,8 +19,8 @@
     **Lifecycle methods**
 
     (See also [Component draw cycle](http://montagejs.org/docs/Component-draw-cycle.html).)
-    -   `enterDocument` replaces `prepareForDraw`. The first time `enterDocument` is called, a Boolean with value `true` is passed in.
-        `enterDocument` is called every time the component's element is added to the DOM. When `enterDocument` is called the element is already in the DOM.
+    -   `enterDocument` is called every time the component's element is added to the DOM. When `enterDocument` is called the element is already in the DOM.
+        The first time `enterDocument` is called, a Boolean with value `true` is passed in. In this situation `enterDocument` replaces `prepareForDraw`.
     -   `exitDocument` is called every time the component's element is removed from the DOM. When `exitDocument` is called the element is still in the DOM.
     -   `dispose` is called when the component is discarded.
 
