@@ -26,7 +26,7 @@
 
     **classList**
 
-    Added a `classList` property to all component instances. You can use this property with the same API as the element's `classList` without impacting the draw cycle performance. The property can be used to great effect with FRB bindings to do things like: `classList.has('complete') <- @owner.isCompete`.
+    Added a `classList` property to all component instances. You can use this property with the same API as the element's `classList` without impacting the draw cycle performance. The property can be used to great effect with FRB bindings to do things like: `classList.has('complete') <- @owner.isComplete`.
 
     **innerTemplate**
 
