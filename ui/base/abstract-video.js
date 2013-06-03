@@ -126,6 +126,45 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
         }
     },
 
+
+    /**
+    @private
+    */
+    _repeat: {
+        value: false,
+        enumerable: false
+    },
+    /**
+        @type {Function}
+        @default {Boolean} false
+    */
+    repeat: {
+        get: function() {
+            return this._repeat;
+        },
+
+        set: function(repeat) {
+            if (repeat !== this._repeat) {
+                this._repeat = repeat;
+                if (repeat) {
+                    this.mediaElement.setAttribute("loop", "true");
+                } else {
+                    this.mediaElement.removeAttribute("loop");
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+    /**
+    @function
+    */
+    toggleRepeat: {
+        value: function() {
+            this.repeat = !this.repeat;
+        }
+    },
+
+
     /**
       @private
     */
@@ -153,6 +192,17 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
             if (this.posterSrc && this.mediaElement) {
                 this.mediaElement.poster = this.posterSrc;
             }
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    @private
+    */
+    handleMediaStateChange: {
+        value: function() {
+            this.needsDraw = true;
         }
     },
 
