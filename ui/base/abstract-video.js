@@ -196,6 +196,54 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
     },
 
     /**
+        Specifies whether the full screen video is supported.
+        @type {Boolean}
+        @default true
+    */
+    supportsFullScreen: { value: true },
+
+    /**
+    @private
+    */
+    _isFullScreen: { 
+        value: false 
+    },
+
+    isFullScreen: {
+        get: function() {
+            return this._isFullScreen;
+        }
+    },
+
+    /**
+    Toggles full-screen playback mode.
+    @function
+    */
+    toggleFullScreen: {
+        value: function() {
+            if (this.supportsFullScreen) {
+                this._isFullScreen = !this._isFullScreen;
+                if (!this._isFullScreen) {
+                    if (this.element.webkitExitFullscreen) {
+                        this.element.webkitExitFullscreen();
+                    } else if (this.element.webkitCancelFullScreen) {
+                        this.element.webkitCancelFullScreen();
+                    } else if (document.webkitCancelFullScreen && document.webkitCurrentFullScreenElement === this.element) {
+                        document.webkitCancelFullScreen()
+                    }
+                } else {
+                    if (this.element.webkitEnterFullScreen) {
+                        this.element.webkitEnterFullScreen();
+                    } else if (this.element.webkitRequestFullScreen) {
+                        this.element.webkitRequestFullScreen();
+                    }
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    /**
     Description TODO
     @function
     @private
