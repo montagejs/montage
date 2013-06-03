@@ -25,8 +25,23 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
         }
     },
     
-    mediaElement: {
+    _mediaElement: {
         value: null
+    },
+    
+    mediaElement: {
+        get: function() {
+            return this._mediaElement;
+        },
+        set: function(element) {
+            if (this._mediaElement) {
+                this._mediaElement.controller = null;
+            }
+            this._mediaElement = element;
+            if (this.controller) {
+                this._mediaElement.controller = this.controller.mediaController;
+            }
+        }
     },
     
     _controller: {
@@ -106,6 +121,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
     */
     loadMedia: {
         value: function() {
+            this.mediaElement.src = this.src;
             this.mediaElement.load();
         }
     },
@@ -195,14 +211,5 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
                 this._installMediaEventListeners();
             }
         }
-    },
-
-    draw: {
-        value: function() {
-            if (this.controller.status === this.controller.EMPTY) {
-                this.mediaElement.src = this.src;
-            }
-        }
     }
-
 });
