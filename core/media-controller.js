@@ -199,7 +199,7 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             if (logger.isDebug) {
                 logger.debug("MediaController:play()");
             }
-            this.mediaController.currentTime = 0;
+            this.stop();
             this.mediaController.play();
         }
     },
@@ -341,13 +341,8 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             }
 
             // Pause the playback
-            if (this.status === this.PLAYING) {
-                if (logger.isDebug) {
-                    logger.debug("MediaController:stop while PLAYING: will pause");
-                }
-                this.pause();
-            }
-
+            this.mediaController.pause();
+            
             // Reset the status
             this.status = this.STOPPED;
             this.position = 0;
