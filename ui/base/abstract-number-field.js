@@ -296,7 +296,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
                     this.needsDraw = true;
                 }
             }
-            if(this._value !==  this._numberFieldTextFieldComponent.value) {
+            if(this._numberFieldTextFieldComponent && this._value !==  this._numberFieldTextFieldComponent.value) {
                 this._numberFieldTextFieldComponent.value = this._value;
             }
         }
