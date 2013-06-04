@@ -127,7 +127,6 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
         set: function(value) {
             if (value !== this._value) {
                 this._value = value;
-                this._values.splice(0, this.values.length, value);
                 this.needsDraw = true;
             }
         }
