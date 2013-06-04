@@ -65,6 +65,21 @@ describe("test/base/abstract-select-spec", function () {
 
                 expect(aSelect.contentController.content).toBe(content);
             });
+
+            it("should consider the content dirty when it has a new content", function() {
+                aSelect.content = [];
+
+                expect(aSelect._contentIsDirty).toBeTruthy();
+            });
+
+            it("should consider the content dirty when it is modified", function() {
+                aSelect.content = [];
+                aSelect._contentIsDirty = false;
+
+                aSelect.content.push(1);
+
+                expect(aSelect._contentIsDirty).toBeTruthy();
+            });
         });
 
         describe("contentController", function() {
@@ -181,10 +196,24 @@ describe("test/base/abstract-select-spec", function () {
                 expect(aSelect.contentController.selection.length).toBe(1);
             });
         });
+
+        describe("labelPropertyName", function () {
+            beforeEach(function () {
+                aSelect = new Select();
+                aSelect.element = MockDOM.element();
+            });
+
+            it("should consider the content dirty when it is modified", function() {
+                aSelect.labelPropertyName = "key";
+
+                expect(aSelect._contentIsDirty).toBeTruthy();
+            });
+        });
+
     });
 
     describe("draw", function () {
-        var Select = AbstractSelect.specialize( {}),
+        var Select = AbstractSelect.specialize({}),
             aSelect,
             content = [{
                 "label": "Canada",
@@ -253,6 +282,11 @@ describe("test/base/abstract-select-spec", function () {
             aSelect.content.splice(1, 1);
             expect(aSelect.needsDraw).toBeTruthy();
         });
+
+        it("should be requested when labelPropertyName changes", function () {
+            aSelect.labelPropertyName = "key";
+            expect(aSelect.needsDraw).toBeTruthy();
+        });
     });
 
     describe("active target", function () {
@@ -301,6 +335,7 @@ describe("test/base/abstract-select-spec", function () {
             });
         });
     });
+
     describe("blueprint", function () {
         it("can be created", function () {
             var blueprintPromise = AbstractSelect.blueprint;

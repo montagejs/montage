@@ -98,7 +98,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
     },
 
     _labelPropertyName: {
-        value: null
+        value: "label"
     },
 
     labelPropertyName: {
@@ -108,6 +108,8 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
             } else {
                 this._labelPropertyName = "label";
             }
+            this._contentIsDirty = true;
+            this.needsDraw = true;
         },
         get: function() {
             return this._labelPropertyName;
@@ -147,6 +149,10 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
 
     multiSelect: {
         value: false
+    },
+
+    _contentIsDirty: {
+        value: true
     },
 
     prepareForActivationEvents: {
@@ -209,6 +215,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
 
     handleContentRangeChange: {
         value: function() {
+            this._contentIsDirty = true;
             this.needsDraw = true;
         }
     },
