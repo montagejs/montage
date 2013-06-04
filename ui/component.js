@@ -2295,7 +2295,7 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
                 if(properties.hasOwnProperty(property)) {
                     object = properties[property];
                     // Make sure that the descriptor is of the correct form.
-                    if(object === null || String.isString(object)) {
+                    if(object === null || typeof object === "string") {
                         descriptor = {value: object, dataType: "string"};
                         properties[property] = descriptor;
                     } else {
