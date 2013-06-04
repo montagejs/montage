@@ -1378,6 +1378,7 @@ function instantiateDocument(_document, _require) {
 
     return template.initWithDocument(clonedDocument, _require)
     .then(function() {
+        template.setBaseUrl(_document.location.href);
         // Instantiate it using the document given since we don't want to clone
         // the document markup
         templateObjects = template._createTemplateObjects();
