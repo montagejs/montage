@@ -35,25 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 	@module montage/core/extras/string
 */
 
-// TODO rationalize the existence of this method.  typeof is useful
-// for strings, even cross-context strings.  Array.isArray is necessary
-// because typeof does not distinguish arrays and instanceof does not
-// distinguish cross-context arrays.  Perhaps this exists to provide
-// a mote of consistency?
-/**
-    Determines whether the given value is a string.
-    @function external:String.isString
-    @param {Any} value The object to determine if its a String.
-    @returns {Boolean} whether the given value is a string
-*/
-Object.defineProperty(String, "isString", {
-    value: function(obj) {
-        return Object.prototype.toString.call(obj) === "[object String]";
-    },
-    writable: true,
-    configurable: true
-});
-
 /**
     Returns true if the two strings are equal, otherwise returns false.
 
