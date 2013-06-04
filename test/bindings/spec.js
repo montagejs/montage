@@ -232,6 +232,20 @@ describe("bindings/spec", function() {
             expect(target.bar).toBe("getOnlyValue");
         });
 
+        it("should update a 'get only' property on dispatchOwnPropertyChange", function () {
+            var target = new Omega(),
+                source = new Alpha();
+
+            target.defineBinding("result", {"<-": "getOnly", source: source});
+            expect(target.result).toBe("getOnlyValue");
+
+            source.dispatchBeforeOwnPropertyChange("getOnly", "getOnlyValue");
+            source._getOnly = "pass";
+            source.dispatchOwnPropertyChange("getOnly", "pass");
+
+            expect(target.result).toBe("pass");
+        });
+
         it("should give the specified converter a chance to modify the value being passed from the source object to the bound object", function() {
             var target = new Alpha(),
                     source = new Omega();
