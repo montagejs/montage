@@ -75,6 +75,13 @@ describe("test/base/abstract-image-spec", function () {
             anImage.draw();
             expect(anImage.element.src).toBe(src1);
         });
+
+        it("should draw the empty image when src is set to a falsy value", function () {
+            anImage.src = null;
+            anImage._isLoadingImage = false;
+            anImage.draw();
+            expect(anImage.element.src).toBe(anImage.emptyImageSrc);
+        });
     });
     describe("blueprint", function () {
         it("can be created", function () {

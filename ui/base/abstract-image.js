@@ -47,8 +47,10 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
         set: function(value) {
             if (this._src !== value) {
                 this._src = value;
-                this._isLoadingImage = true;
-                this._image.src = value;
+                if (value) {
+                    this._isLoadingImage = true;
+                    this._image.src = value;
+                }
                 this.needsDraw = true;
             }
         },
@@ -89,7 +91,7 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
 
     draw: {
         value: function() {
-            if (this._isLoadingImage) {
+            if (this._isLoadingImage || !this._src) {
                 this.element.src = this.emptyImageSrc;
             } else {
                 this.element.src = this._src;
