@@ -124,6 +124,16 @@ describe("test/base/abstract-link-spec", function () {
             aLink.label = "MontageJS";
             expect(aLink.needsDraw).toBeTruthy();
         });
+
+        it("should be requested when opensNewWindow is changed", function() {
+            aLink.opensNewWindow = true;
+            expect(aLink.needsDraw).toBeTruthy();
+        });
+
+        it("should be requested when textAlternative is changed", function() {
+            aLink.textAlternative = true;
+            expect(aLink.needsDraw).toBeTruthy();
+        });
     });
 
     describe("events", function () {
