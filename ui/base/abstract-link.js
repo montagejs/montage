@@ -64,17 +64,17 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
         value: null
     },
 
-    _src: {
+    _url: {
         value: null
     },
 
-    src: {
+    url: {
         set: function(value) {
-            this._src = value;
+            this._url = value;
             this.needsDraw = true;
         },
         get: function() {
-            return this._src;
+            return this._url;
         }
     },
 
@@ -89,6 +89,34 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
         },
         get: function() {
             return this._label;
+        }
+    },
+
+    _textAlternative: {
+        value: null
+    },
+
+    textAlternative: {
+        set: function(value) {
+            this._textAlternative = value;
+            this.needsDraw = true;
+        },
+        get: function() {
+            return this._textAlternative;
+        }
+    },
+
+    _opensNewWindow: {
+        value: null
+    },
+
+    opensNewWindow: {
+        set: function(value) {
+            this._opensNewWindow = value;
+            this.needsDraw = true;
+        },
+        get: function() {
+            return this._opensNewWindow;
         }
     },
 

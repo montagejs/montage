@@ -34,7 +34,6 @@ describe("test/base/abstract-link-spec", function () {
             beforeEach(function () {
                 aLink = new Link();
                 aLink.element = MockDOM.element();
-                aLink.checked = false;
                 aLink.prepareForActivationEvents();
             });
 
@@ -62,7 +61,6 @@ describe("test/base/abstract-link-spec", function () {
             beforeEach(function () {
                 aLink = new Link();
                 aLink.element = MockDOM.element();
-                aLink.checked = false;
                 aLink.prepareForActivationEvents();
             });
 
@@ -78,8 +76,6 @@ describe("test/base/abstract-link-spec", function () {
             });
 
             it("should be false when the PressComposer fires a pressStart + press while checked", function() {
-                aLink.checked = true;
-
                 aLink._pressComposer.dispatchEventNamed("pressStart");
                 aLink._pressComposer.dispatchEventNamed("press");
 
@@ -119,8 +115,8 @@ describe("test/base/abstract-link-spec", function () {
             expect(aLink.needsDraw).toBeTruthy();
         });
 
-        it("should be requested when src is changed", function() {
-            aLink.src = "http://montagejs.org/";
+        it("should be requested when url is changed", function() {
+            aLink.url = "http://montagejs.org/";
             expect(aLink.needsDraw).toBeTruthy();
         });
 
