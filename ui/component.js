@@ -1238,7 +1238,7 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
                         object.parentComponent === this) {
                         templateObjects[label] = object;
                     } else {
-                        descriptor.get = this._makeTemplateObjectGetter(this, label);
+                        descriptor.get = this._makeTemplateObjectGetter(this, label, object);
                         Object.defineProperty(templateObjects, label, descriptor);
                     }
                 }
@@ -1253,7 +1253,7 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
      * @function
      */
     _makeTemplateObjectGetter: {
-        value: function(owner, label) {
+        value: function(owner, label, object) {
             var querySelectorLabel = "@"+label,
                 isRepeated,
                 components,
@@ -1281,6 +1281,13 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
                                 break;
                             }
                         }
+                    } else if (components.length === 0) {
+                        // We didn't find any in the component tree
+                        // so it was probably removed in the meanwhile.
+                        // We return the one that was in the template
+                        // TODO: need to make sure this component hasn't been
+                        // disposed.
+                        return object;
                     }
 
                     isRepeated = true;
