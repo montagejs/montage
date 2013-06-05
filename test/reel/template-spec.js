@@ -935,6 +935,25 @@ describe("reel/template-spec", function() {
                 expect("test").toBe("executed");
             });
         });
+
+        it("should instantiate in a live page with instances", function() {
+            var module = require("montage/core/template"),
+                instances = {
+                    text: {}
+                };
+
+            return createPage("reel/template/simple-template.html")
+                .then(function(page) {
+                    return module.instantiateDocument(page.document, require, instances)
+                        .then(function(part) {
+                            expect(part.template).toBeDefined();
+                            expect(part.objects.text).toBe(instances.text);
+                        });
+                }).fail(function(reason) {
+                    console.log(reason.stack);
+                    expect("test").toBe("executed");
+                });
+        });
     })
 
     describe("template parameters", function() {

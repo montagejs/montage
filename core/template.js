@@ -512,7 +512,7 @@ var Template = Montage.specialize( {
     },
 
     getInstances: {
-        value: function(instances) {
+        value: function() {
             return this._instances;
         }
     },
@@ -1364,7 +1364,7 @@ var TemplateResources = Montage.specialize( {
 });
 
 // Used to create a DocumentPart from a document without a Template
-function instantiateDocument(_document, _require) {
+function instantiateDocument(_document, _require, instances) {
     var self = this,
         template = new Template(),
         html = _document.documentElement.outerHTML,
@@ -1381,7 +1381,7 @@ function instantiateDocument(_document, _require) {
         template.setBaseUrl(_document.location.href);
         // Instantiate it using the document given since we don't want to clone
         // the document markup
-        templateObjects = template._createTemplateObjects();
+        templateObjects = template._createTemplateObjects(instances);
         part.initWithTemplateAndFragment(template);
 
         return template._instantiateObjects(templateObjects, rootElement)
