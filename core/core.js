@@ -141,7 +141,7 @@ Object.defineProperty(Montage, "specialize", {
             constructor = Montage.deprecate(null, prototypeProperties.didCreate.value, "didCreate", "constructor");
             //constructor = prototypeProperties.didCreate.value;
         } else {
-            constructor = function AnonymousConstructor() {
+            constructor = function Anonymous() {
                 return parent.apply(this, arguments) || this;
             };
         }
