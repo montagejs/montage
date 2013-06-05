@@ -297,6 +297,9 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
                         if (blueprint._parentReference) {
                             // We need to grab the parent before we return or most operation will fail
+                            // Need to get the require from the module that
+                            // all the moduleId references are relative to.
+                            targetRequire = getModuleRequire(targetRequire, blueprintModuleId);
                             return blueprint._parentReference.promise(targetRequire)
                             .then(function(parentBlueprint) {
                                     blueprint._parent = parentBlueprint;
@@ -1012,3 +1015,20 @@ var UnknownBlueprint = Object.freeze(new Blueprint().initWithName("Unknown"));
 var UnknownPropertyBlueprint = Object.freeze(new PropertyBlueprint().initWithNameBlueprintAndCardinality("Unknown", null, 1));
 var UnknownEventBlueprint = Object.freeze(new EventBlueprint().initWithNameAndBlueprint("Unknown", null));
 
+// Adapted from mr/sandbox
+function getModuleRequire(parentRequire, moduleId) {
+    var topId = parentRequire.resolve(moduleId);
+    var module = parentRequire.getModuleDescriptor(topId);
+
+    while (module.redirect || module.mappingRedirect) {
+        if (module.redirect) {
+            topId = module.redirect;
+        } else {
+            parentRequire = module.mappingRequire;
+            topId = module.mappingRedirect;
+        }
+        module = parentRequire.getModuleDescriptor(topId);
+    }
+
+    return module.require;
+}
