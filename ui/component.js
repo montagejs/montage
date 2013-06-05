@@ -2275,9 +2275,9 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
             };
 
             // Define _ property
-            Montage.defineProperty(this, _name, {value: null});
+            Montage.defineProperty(this.prototype, _name, {value: null});
             // Define property getter and setter
-            Montage.defineProperty(this, name, newDescriptor);
+            Montage.defineProperty(this.prototype, name, newDescriptor);
         }
     },
 
@@ -2289,7 +2289,7 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
     addAttributes: {
         value: function(properties) {
             var i, descriptor, property, object;
-            this._elementAttributeDescriptors = properties;
+            this.prototype._elementAttributeDescriptors = properties;
 
             for(property in properties) {
                 if(properties.hasOwnProperty(property)) {
