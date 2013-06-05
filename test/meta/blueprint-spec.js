@@ -237,5 +237,17 @@ describe("meta/blueprint-spec", function () {
             });
         });
 
+        describe("cross package", function () {
+            it("correctly loads blueprints with the same internal module ID", function () {
+                return require.loadPackage({location: "./meta/blueprint/package"})
+                .then(function (require) {
+                    return Blueprint.getBlueprintWithModuleId("thing.meta", require)
+                    .then(function (blueprint) {
+                        expect(blueprint.parent).not.toBe(blueprint);
+                    });
+                });
+            });
+        });
+
     });
 });
