@@ -94,6 +94,25 @@ describe("test/base/abstract-link-spec", function () {
                 expect(aLink.classList.contains("montage--active")).toBe(true);
             });
         });
+
+        describe("label", function() {
+            it("should read the text value of the element if label wasn't provided", function() {
+                var label = "MontageJS";
+
+                aLink.element.textContent = label;
+                aLink.enterDocument(true);
+                expect(aLink.label).toBe(label)
+            });
+
+            it("should not read the text value of the element when label is set", function() {
+                var label = "MontageJS";
+
+                aLink.element.textContent = "Text Content";
+                aLink.label = label;
+                aLink.enterDocument(true);
+                expect(aLink.label).toBe(label)
+            });
+        });
     });
 
     describe("draw", function () {

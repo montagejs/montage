@@ -120,6 +120,16 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
         }
     },
 
+    enterDocument: {
+        value: function(firstTime) {
+            if (firstTime) {
+                if (!this.hasOwnProperty("_label")) {
+                    this.label = this.element.textContent;
+                }
+            }
+        }
+    },
+
     handlePressStart: {
         value: function(event) {
             this.active = true;
@@ -144,7 +154,6 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
             }
 
             this.dispatchActionEvent();
-            this.checked = !this.checked;
         }
     },
 
