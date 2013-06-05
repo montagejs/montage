@@ -4,6 +4,7 @@ var Montage = require("montage").Montage;
 var parse = require("frb/parse");
 var stringify = require("frb/stringify");
 var evaluate = require("frb/evaluate");
+var precedence = require("frb/language").precedence;
 
 var Selector = exports.Selector = Montage.specialize( {
 
@@ -54,7 +55,7 @@ var Selector = exports.Selector = Montage.specialize( {
 // generate methods on Selector for each of the tokens of the language.
 // support invocation both as class and instance methods like
 // Selector.and("a", "b") and aSelector.and("b")
-parse.semantics.precedence.keys().forEach(function (type) {
+precedence.keys().forEach(function (type) {
     Montage.defineProperty(Selector.prototype, type, {
         value: function () {
             var args = Array.prototype.map.call(arguments, function (argument) {
