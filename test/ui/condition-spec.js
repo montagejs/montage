@@ -64,6 +64,12 @@ TestPageLoader.queueTest("ui/condition", {src: "ui/condition/condition-test-page
                 });
             });
         });
+
+        it("should not remove contents if the initial value of the condition is true", function() {
+            var condition = conditionTestPage.test.templateObjects.conditionTrue;
+
+            expect(condition.element.innerHTML).toBe("<span>Bar</span>");
+        });
     });
 });
 

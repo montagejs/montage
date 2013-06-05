@@ -33,6 +33,12 @@ var Montage = require("montage").Montage,
 
 exports.Test = Montage.specialize( {
 
+    deserializedFromTemplate: {
+        value: function(_1, _2, part) {
+            this.templateObjects = part.objects;
+        }
+    },
+
     hideValue: {
         value: false
     },

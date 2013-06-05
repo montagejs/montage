@@ -57,7 +57,7 @@ exports.Condition = Component.specialize( /** @lends Condition# */ {
   @private
 */
     _condition: {
-        value: null
+        value: true
     },
 
     _contents: {
@@ -101,7 +101,11 @@ exports.Condition = Component.specialize( /** @lends Condition# */ {
 
     deserializedFromTemplate: {
         value: function() {
-            this._updateDomContent(this._condition);
+            // update the DOM if the condition is false because we're preventing
+            // changes at deserialization time.
+            if (!this._condition) {
+                this._updateDomContent(this._condition);
+            }
         }
     },
 
