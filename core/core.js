@@ -129,12 +129,14 @@ var FUNCTION_PROPERTIES = Object.getOwnPropertyNames(Function);
 
 Object.defineProperty(Montage, "specialize", {
     value: function specialize(prototypeProperties, constructorProperties) {
-        var parent = this;
+        var constructor, prototype, names, propertyName, property, i, constructorProperty,
+            // check if this constructor has Montage capabilities
+            parent = this,
+            foreignParent = typeof this.specialize === "undefined";
 
         prototypeProperties = prototypeProperties || Object.empty;
         constructorProperties = constructorProperties || Object.empty;
 
-        var constructor;
         if (prototypeProperties.constructor && prototypeProperties.constructor.value) {
             constructor = prototypeProperties.constructor.value;
         } else if (prototypeProperties.didCreate && prototypeProperties.didCreate.value) {
@@ -148,12 +150,12 @@ Object.defineProperty(Montage, "specialize", {
         if (PROTO_IS_SUPPORTED) {
             constructor.__proto__ = parent;
         } else {
-            var names = Object.getOwnPropertyNames(parent);
+            names = Object.getOwnPropertyNames(parent);
             for (var i = 0; i < names.length; i++) {
-                var name = names[i];
-                var property = Object.getOwnPropertyDescriptor(constructor, name);
+                propertyName = names[i];
+                property = Object.getOwnPropertyDescriptor(constructor, propertyName);
                 if (!property || property.configurable) {
-                    Montage.defineProperty(constructor, name, Object.getOwnPropertyDescriptor(parent, name));
+                    Montage.defineProperty(constructor, propertyName, Object.getOwnPropertyDescriptor(parent, propertyName));
                 }
             }
             constructor.__constructorProto__ = parent;
@@ -170,26 +172,36 @@ Object.defineProperty(Montage, "specialize", {
                 enumerable: false
             });
         }
-        // check if this constructor has Montage capabilities
-        if(typeof this.specialize === "undefined") {
-            //if is doesn't then we give it all the properties of Montage
-            var names = Object.getOwnPropertyNames(Montage);
-            for (var i = 0; i < names.length; i++) {
-                var name = names[i];
-                var property = Object.getOwnPropertyDescriptor(constructor, name);
+
+        prototype = Object.create(this.prototype);
+
+        if(foreignParent) {
+            // give the constructor all the properties of Montage
+            names = Object.getOwnPropertyNames(Montage);
+            for ( i = 0; i < names.length; i++) {
+                propertyName = names[i];
+                property = Object.getOwnPropertyDescriptor(constructor, propertyName);
                 if (!property || property.configurable) {
-                    Montage.defineProperty(constructor, name, Object.getOwnPropertyDescriptor(Montage, name));
+                    Montage.defineProperty(constructor, propertyName, Object.getOwnPropertyDescriptor(Montage, propertyName));
+                }
+            }
+            // give the prototype all the properties of Montage.prototype
+            names = Object.getOwnPropertyNames(Montage.prototype);
+            for ( i = 0; i < names.length; i++) {
+                propertyName = names[i];
+                property = Object.getOwnPropertyDescriptor(constructor, propertyName);
+                if (!property || property.configurable) {
+                    Montage.defineProperty(prototype, propertyName, Object.getOwnPropertyDescriptor(Montage.prototype, propertyName));
                 }
             }
         }
 
-        var prototype = Object.create(this.prototype);
         Montage.defineProperties(prototype, prototypeProperties);
 
         if (CONSTRUCTOR_COMPATIBILITY) {
             // to catch class properties
-            var constructorProperty = function(original, constructor, propertyName) {
-                var deprecationWrapper = function() {
+            constructorProperty = function(original, constructor, propertyName) {
+                function deprecationWrapper() {
                     if(this === constructor) {
                         console.warn("Deprecated - " + Montage.getInfoForObject(constructor).objectName + "."
                             + propertyName + " should be moved to constructorProperties");
@@ -199,12 +211,12 @@ Object.defineProperty(Montage, "specialize", {
                 deprecationWrapper.deprecatedFunction = original;
                 return deprecationWrapper;
             };
-            for (var propertyName in prototypeProperties) {
+            for (propertyName in prototypeProperties) {
                 if(FUNCTION_PROPERTIES.has(propertyName)) {
                     // illegal properties on function
                     delete prototypeProperties[propertyName];
                 } else {
-                    var property = prototypeProperties[propertyName];
+                    property = prototypeProperties[propertyName];
                     if(property.value && typeof property.value === "function" && !property.value.__isConstructor__) {
                         property.value = constructorProperty(property.value, constructor, propertyName);
                     } else {

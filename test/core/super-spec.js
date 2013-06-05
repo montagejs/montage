@@ -5,6 +5,7 @@ describe("test/core/super-spec", function () {
     var Vehicle, Car, Beetle,
         vehicle, car, beetle,
         vehicleSpy, carSpy, beetleSpy,
+        vehicleConstructorSpy, carConstructorSpy, beetleConstructorSpy,
         calledSpy;
     beforeEach(function () {
         calledSpy = [];
@@ -20,6 +21,9 @@ describe("test/core/super-spec", function () {
         vehicleSpy = function () {calledSpy.push("vehicleSpy")};
         carSpy = function () {calledSpy.push("carSpy")};
         beetleSpy = function () {calledSpy.push("beetleSpy")};
+        vehicleConstructorSpy = function () {calledSpy.push("vehicleConstructorSpy")};
+        carConstructorSpy = function () {calledSpy.push("carConstructorSpy")};
+        beetleConstructorSpy = function () {calledSpy.push("beetleConstructorSpy")};
     });
     describe("instance", function () {
         describe("methods", function () {
@@ -610,7 +614,204 @@ describe("test/core/super-spec", function () {
             });
         });
     });
-    describe("bindings", function () {
+    describe("Adopt non montage constructor", function () {
+        beforeEach(function () {
+            Vehicle = Montage.specialize.call(function Foreign () {}, {
+                constructor: {value: function Vehicle() {}}
+            });
+            Car = Vehicle.specialize( {
+                constructor: {value: function Car() {}}
+            });
+            Beetle = Car.specialize( {
+                constructor: {value: function Beetle() {}}
+            });
+        });
+        describe("instance", function () {
+            describe("methods", function () {
+                beforeEach(function () {
+                    Montage.defineProperty(Vehicle.prototype, "forward", {
+                        value: function () {
+                            vehicleSpy();
+                        }
+                    });
+                    Montage.defineProperty(Car.prototype, "forward", {
+                        value: function () {
+                            this.super();
+                            carSpy();
+                        }
+                    });
+                    vehicle = new Vehicle();
+                    car = new Car();
+                    beetle = new Beetle();
+                });
+                it("calling forward on vehicle", function () {
+                    vehicle.forward();
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car", function () {
+                    car.forward();
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle", function () {
+                    beetle.forward();
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+             });
 
+            describe("getters", function () {
+                beforeEach(function () {
+                    Montage.defineProperty(Vehicle.prototype, "forward", {
+                        get: function () {
+                            vehicleSpy();
+                        }
+                    });
+                    Montage.defineProperty(Car.prototype, "forward", {
+                        get: function () {
+                            this.super();
+                            carSpy();
+                        }
+                    });
+                    vehicle = new Vehicle();
+                    car = new Car();
+                    beetle = new Beetle();
+                });
+                it("calling forward on vehicle", function () {
+                    vehicle.forward;
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car", function () {
+                    car.forward;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle", function () {
+                    beetle.forward;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                    });
+            });
+
+            describe("setters", function () {
+                beforeEach(function () {
+                    Montage.defineProperty(Vehicle.prototype, "forward", {
+                        set: function () {
+
+                            vehicleSpy();
+                        }
+                    });
+                    Montage.defineProperty(Car.prototype, "forward", {
+                        set: function () {
+                            this.super();
+                            carSpy();
+                        }
+                    });
+                    vehicle = new Vehicle();
+                    car = new Car();
+                    beetle = new Beetle();
+                });
+                it("calling forward on vehicle", function () {
+                    vehicle.forward = true;
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car", function () {
+                    car.forward = true;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle", function () {
+                    beetle.forward = true;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+            });
+
+            describe("constructors", function () {
+                var foreignConstructor;
+                beforeEach(function () {
+                    foreignConstructor = jasmine.createSpy("Foreign")
+                    Vehicle = Montage.specialize.call(foreignConstructor, {
+                        constructor: {
+                            value: function Vehicle() {
+                                vehicleConstructorSpy();
+                                this.super();
+                            }
+                        }
+                    });
+                    Car = Vehicle.specialize( {
+                        constructor: {
+                            value: function Car() {
+                                carConstructorSpy();
+                                this.super();
+                            }
+                        }
+                    });
+                    Beetle = Car.specialize( {
+                        constructor: {
+                            value: function Beetle() {
+                                beetleConstructorSpy();
+                                this.super();
+                            }
+                        }
+                    });
+
+
+
+                });
+                it("calling forward on vehicle", function () {
+                    vehicle = new Vehicle();
+                    expect(calledSpy).toContain("vehicleConstructorSpy");
+                    expect(foreignConstructor).toHaveBeenCalled();
+                });
+                it("calling forward on car", function () {
+                    car = new Car();
+                    expect(calledSpy).toContain("vehicleConstructorSpy");
+                    expect(calledSpy).toContain("carConstructorSpy");
+                    expect(foreignConstructor).toHaveBeenCalled();
+                });
+                it("calling forward on beetle", function () {
+                    beetle = new Beetle();
+                    expect(calledSpy).toContain("vehicleConstructorSpy");
+                    expect(calledSpy).toContain("carConstructorSpy");
+                    expect(calledSpy).toContain("beetleConstructorSpy");
+                    expect(foreignConstructor).toHaveBeenCalled();
+                });
+            });
+        });
+        describe("class", function () {
+            beforeEach(function () {
+                Montage.defineProperty(Vehicle, "forward", {
+                    value: function () {
+                        vehicleSpy();
+                    }
+                });
+                Montage.defineProperty(Car, "forward", {
+                    value: function () {
+                        this.super();
+                        carSpy();
+                    }
+                });
+                vehicle = new Vehicle();
+                car = new Car();
+                beetle = new Beetle();
+            });
+            describe("methods", function () {
+                it("calling forward on Vehicle", function () {
+                    Vehicle.forward();
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on Car", function () {
+                    Car.forward();
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on Beetle", function () {
+                    Beetle.forward();
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+           });
+        });
     });
 });
