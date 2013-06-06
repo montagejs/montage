@@ -28,7 +28,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-/*global Element,Components,Touch */
+/*global Window,Document,Element,Event,Components,Touch */
 /**
  *
  * @author: Lea Verou
@@ -46,13 +46,13 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     UUID = require("core/uuid"),
     MutableEvent = require("core/event/mutable-event").MutableEvent,
-    Serializer = require("core/serializer").Serializer,
-    Deserializer = require("core/deserializer").Deserializer,
+    Serializer = require("core/serialization").Serializer,
+    Deserializer = require("core/serialization").Deserializer,
     defaultEventManager;
 
 // XXX Does not presently function server-side
 if (typeof window !== "undefined") { // client-side
-
+//jshint -W015
 /* This is to handle browsers that have TouchEvents but don't have the global constructor function Touch */
 if (typeof window.Touch === "undefined" && "ontouchstart" in window) {
     window.Touch = function() {
@@ -75,90 +75,7 @@ if (typeof window.Touch === "undefined" && "ontouchstart" in window) {
     })();
 }
 
-/**
- @external Element
- */
-
-/**
- HTML element event handler UUID
- @member external:Element#eventHandlerUUID
- */
-Montage.defineProperty(Element.prototype, "eventHandlerUUID", /** @lends module:montage/core/event/event-manager.defineProperty */ {
-    value: undefined,
-    enumerable: false
-});
-
-
-/**
- The controller (Montage component) for the element.
- @member external:Element#controller
- */
-Montage.defineProperty(Element.prototype, "controller", {
-    get: function() {
-        return defaultEventManager._elementEventHandlerByUUID[this.eventHandlerUUID];
-    },
-    enumerable: false
-});
-
-/**
-    Adds an event listener to the object.
-    @function external:Object#addEventListener
-    @param {string} type The event type to listen for.
-    @param {object | function} listener The listener object or function.
-    @param {boolean} useCapture Specifies whether to listen for the event during the bubble or capture phases.
-*/
-Montage.defineProperty(Object.prototype, "addEventListener", {
-    value: function addEventListener(type, listener, useCapture) {
-        if (listener) {
-            defaultEventManager.registerEventListener(this, type, listener, useCapture);
-        }
-    }
-});
-
-/**
-    Removes an event listener from the object.
-    @function external:Object#removeEventListener
-    @param {string} type The event type.
-    @param {object | function} listener The listener object or function.
-    @param {boolean} useCapture The phase of the event listener.
-*/
-Montage.defineProperty(Object.prototype, "removeEventListener", {
-    value: function removeEventListener(type, listener, useCapture) {
-        if (listener) {
-            defaultEventManager.unregisterEventListener(this, type, listener, useCapture);
-        }
-    }
-});
-
-/**
- @function external:Object#dispatchEvent
- */
-Montage.defineProperty(Object.prototype, "dispatchEvent", {
-    value: function(event) {
-        var targettedEvent = event;
-
-        if (!MutableEvent.isPrototypeOf(event)) {
-             targettedEvent = MutableEvent.fromEvent(event);
-        }
-
-        targettedEvent.target = this;
-        defaultEventManager.handleEvent(targettedEvent);
-    },
-    enumerable: false
-});
-
-/**
- @function external:Object#dispatchEventNamed
- */
-Montage.defineProperty(Object.prototype, "dispatchEventNamed", {
-    value: function(type, canBubble, cancelable, detail) {
-        var event = MutableEvent.fromType(type, canBubble, cancelable, detail);
-        event.target = this;
-        defaultEventManager.handleEvent(event);
-    }
-});
-
-var EventListenerDescriptor = Montage.create(Montage, {
+var EventListenerDescriptor = Montage.specialize( {
     type: {
         value: null
     },
@@ -172,7 +89,7 @@ var EventListenerDescriptor = Montage.create(Montage, {
     }
 });
 
-Serializer.defineSerializationUnit("listeners", function(object, serializer) {
+Serializer.defineSerializationUnit("listeners", function(serializer, object) {
     var eventManager = defaultEventManager,
         uuid = object.uuid,
         eventListenerDescriptors = [],
@@ -201,7 +118,7 @@ Serializer.defineSerializationUnit("listeners", function(object, serializer) {
     }
 });
 
-Deserializer.defineDeserializationUnit("listeners", function(object, listeners) {
+Deserializer.defineDeserializationUnit("listeners", function(deserializer, object, listeners) {
     for (var i = 0, listener; (listener = listeners[i]); i++) {
         object.addEventListener(listener.type, listener.listener, listener.capture);
     }
@@ -214,9 +131,9 @@ var NONE = Event.NONE,
     FUNCTION_TYPE = "function";
 
 /**
- @class module:montage/core/event/event-manager.EventManager
+ @class EventManager
  */
-var EventManager = exports.EventManager = Montage.create(Montage,/** @lends module:montage/core/event/event-manager.EventManager# */ {
+var EventManager = exports.EventManager = Montage.specialize(/** @lends EventManager# */ {
 
     // Utility
     eventDefinitions: {
@@ -429,12 +346,14 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             // Setup the window as much as possible now without knowing whether
             // the DOM is ready or not
 
+            // Keep a reference to the original listener functions
+
             // Note I think it may be implementation specific how these are implemented
             // so I'd rather preserve any native optimizations a browser has for
             // adding listeners to the document versus and element etc.
             aWindow.Element.prototype.nativeAddEventListener = aWindow.Element.prototype.addEventListener;
             Object.defineProperty(aWindow, "nativeAddEventListener", {
-                enumerable: false,
+                configurable: true,
                 value: aWindow.addEventListener
             });
             Object.getPrototypeOf(aWindow.document).nativeAddEventListener = aWindow.document.addEventListener;
@@ -445,7 +364,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
             aWindow.Element.prototype.nativeRemoveEventListener = aWindow.Element.prototype.removeEventListener;
             Object.defineProperty(aWindow, "nativeRemoveEventListener", {
-                enumerable: false,
+                configurable: true,
                 value: aWindow.removeEventListener
             });
             Object.getPrototypeOf(aWindow.document).nativeRemoveEventListener = aWindow.document.removeEventListener;
@@ -454,8 +373,10 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 aWindow.Worker.prototype.nativeRemoveEventListener = aWindow.Worker.prototype.removeEventListener;
             }
 
+            // Redefine listener functions
+
             Object.defineProperty(aWindow, "addEventListener", {
-                enumerable: false,
+                configurable: true,
                 value: (aWindow.XMLHttpRequest.prototype.addEventListener =
                         aWindow.Element.prototype.addEventListener =
                             Object.getPrototypeOf(aWindow.document).addEventListener =
@@ -469,7 +390,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             }
 
             Object.defineProperty(aWindow, "removeEventListener", {
-                enumerable: false,
+                configurable: true,
                 value: (aWindow.XMLHttpRequest.prototype.removeEventListener =
                         aWindow.Element.prototype.removeEventListener =
                             Object.getPrototypeOf(aWindow.document).removeEventListener =
@@ -482,7 +403,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 aWindow.Worker.prototype.removeEventListener = aWindow.removeEventListener;
             }
 
-            // In some browsers each element has their own addEventLister/removeEventListener
+            // In some browsers (Firefox) each element has their own addEventLister/removeEventListener
             // Methodology to find all elements found in Chainvas
             if(aWindow.HTMLDivElement.prototype.addEventListener !== aWindow.Element.prototype.nativeAddEventListener) {
                 if (aWindow.HTMLElement &&
@@ -506,6 +427,26 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                     }
                 }
             }
+
+            /**
+             HTML element event handler UUID
+             @member external:Element#eventHandlerUUID
+             */
+            Montage.defineProperty(aWindow.Element.prototype, "eventHandlerUUID", /** @lends defineProperty */ {
+                value: undefined,
+                enumerable: false
+            });
+
+            /**
+             The component instance directly associated with the specified element.
+             @member external:Element#component
+             */
+            Montage.defineProperty(aWindow.Element.prototype, "component", {
+                get: function() {
+                    return defaultEventManager._elementEventHandlerByUUID[this.eventHandlerUUID];
+                },
+                enumerable: false
+            });
 
             defaultEventManager = aWindow.defaultEventManager = exports.defaultEventManager = this;
             this._registeredWindows.push(aWindow);
@@ -545,15 +486,87 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
     unregisterWindow: {
         enumerable: false,
         value: function(aWindow) {
-
             if (this._registeredWindows.indexOf(aWindow) < 0) {
                 throw "EventManager cannot unregister an unregistered window";
             }
 
-            var removeWindow = function(element) {
+            this._registeredWindows = this._registeredWindows.filter(function (element) {
                 return (aWindow !== element);
-            };
-            this._registeredWindows = this._registeredWindows.filter(removeWindow);
+            });
+
+            delete aWindow.defaultEventManager;
+
+            // Restore existing listener functions
+
+            aWindow.Element.prototype.addEventListener = aWindow.Element.prototype.nativeAddEventListener;
+            Object.defineProperty(aWindow, "addEventListener", {
+                configurable: true,
+                value: aWindow.nativeAddEventListener
+            });
+            Object.getPrototypeOf(aWindow.document).addEventListener = aWindow.document.nativeAddEventListener;
+            aWindow.XMLHttpRequest.prototype.addEventListener = aWindow.XMLHttpRequest.prototype.nativeAddEventListener;
+            if (aWindow.Worker) {
+                aWindow.Worker.prototype.addEventListener = aWindow.Worker.prototype.nativeAddEventListener;
+            }
+
+            aWindow.Element.prototype.removeEventListener = aWindow.Element.prototype.nativeRemoveEventListener;
+            Object.defineProperty(aWindow, "removeEventListener", {
+                configurable: true,
+                value: aWindow.nativeRemoveEventListener
+            });
+            Object.getPrototypeOf(aWindow.document).removeEventListener = aWindow.document.nativeRemoveEventListener;
+            aWindow.XMLHttpRequest.prototype.removeEventListener = aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener;
+            if (aWindow.Worker) {
+                aWindow.Worker.prototype.removeEventListener = aWindow.Worker.prototype.nativeRemoveEventListener;
+            }
+
+            // In some browsers (Firefox) each element has their own addEventLister/removeEventListener
+            // Methodology to find all elements found in Chainvas
+            if(aWindow.HTMLDivElement.prototype.nativeAddEventListener !== aWindow.Element.prototype.addEventListener) {
+                if (aWindow.HTMLElement &&
+                    'addEventListener' in aWindow.HTMLElement.prototype &&
+                    aWindow.Components &&
+                    aWindow.Components.interfaces
+                ) {
+                    var candidate, candidatePrototype;
+
+                    for(candidate in Components.interfaces) {
+                        if(candidate.match(/^nsIDOMHTML\w*Element$/)) {
+                            candidate = candidate.replace(/^nsIDOM/, '');
+                            if(candidate = window[candidate]) {
+                                candidatePrototype = candidate.prototype;
+                                candidatePrototype.addEventListener = candidatePrototype.nativeAddEventListener;
+                                delete candidatePrototype.nativeAddEventListener;
+                                candidatePrototype.removeEventListener = candidatePrototype.nativeRemoveEventListener;
+                                delete candidatePrototype.nativeRemoveEventListener;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Delete our references
+
+            delete aWindow.Element.prototype.nativeAddEventListener;
+            delete aWindow.nativeAddEventListener;
+
+            delete Object.getPrototypeOf(aWindow.document).nativeAddEventListener;
+            delete aWindow.XMLHttpRequest.prototype.nativeAddEventListener;
+            if (aWindow.Worker) {
+                delete aWindow.Worker.prototype.nativeAddEventListener;
+            }
+
+            delete aWindow.Element.prototype.nativeRemoveEventListener;
+            delete aWindow.nativeRemoveEventListener;
+
+            delete Object.getPrototypeOf(aWindow.document).nativeRemoveEventListener;
+            delete aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener;
+            if (aWindow.Worker) {
+                delete aWindow.Worker.prototype.nativeRemoveEventListener;
+            }
+
+            delete aWindow.Element.prototype.eventHandlerUUID;
+            delete aWindow.Element.prototype.component;
 
             this._stopListeningToWindow(aWindow);
         }
@@ -706,13 +719,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 returnResult = false;
 
             if (typeof target.uuid === "undefined") {
-                // TODO WebKit's CanvasPixelArray has a null prototype
-                // and never receives a uuid. It's not really observable anyway so if you get to this
-                // point just, stop. Arguably we could stop even earlier.
-                if (Array.isCanvasPixelArray(target)) {
-                    return;
-                }
-                throw "EventManager cannot observe a target without a uuid";
+                throw new Error("EventManager cannot observe a target without a uuid: " + (target.outerHTML || target));
             }
 
             if (!eventTypeRegistration) {
@@ -941,13 +948,24 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             if (!this._activationHandler) {
                 var eventManager = this;
                 this._activationHandler = function(evt) {
-                    var eventType = evt.type;
+                    var eventType = evt.type,
+                        touchCount;
 
-                    // Don't double call handleEvent if we're already handling it becasue we have a registered listener
-                    if (!eventManager.registeredEventListeners[eventType]) {
-                        eventManager.handleEvent(evt);
+                    // Prepare any components associated with elements that may receive this event
+                    // They need to registered there listeners before the next step, which is to find the components that
+                    // observing for this type of event
+                    if ("focus" === eventType || "mousedown" === eventType || "touchstart" === eventType) {
+                        if (evt.changedTouches) {
+                            touchCount = evt.changedTouches.length;
+                            for (var i = 0; i < touchCount; i++) {
+                                eventManager._prepareComponentsForActivation(evt.changedTouches[i].target);
+                            }
+                        } else {
+                            eventManager._prepareComponentsForActivation(evt.target);
+                        }
                     }
-                }
+
+                };
             }
 
             // The EventManager needs to handle "gateway/pointer/activation events" that we
@@ -962,6 +980,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 aWindow.document.nativeAddEventListener("mousedown", this._activationHandler, true);
                 //TODO also should accommodate mouseenter/mouseover possibly
             }
+            aWindow.document.nativeAddEventListener("focus", this._activationHandler, true);
 
             if (this.application) {
 
@@ -1693,7 +1712,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
     monitorDOMModificationInEventHandling: {value: false},
-    domModificationEventHandler: { value: Montage.create(Montage, {
+    domModificationEventHandler: { value: Montage.specialize( {
         handleEvent: {value : function(event) {
             throw "DOM Modified";
         }},
@@ -1760,21 +1779,11 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 mutableEvent = event;
             }
 
-            // Prepare any components associated with elements that may receive this event
-            // They need to registered there listeners before the next step, which is to find the components that
-            // observing for this type of event
-            if ("mousedown" === eventType || "touchstart" === eventType) {
-                if (mutableEvent.changedTouches) {
-                    touchCount = mutableEvent.changedTouches.length;
-                    for (i = 0; i < touchCount; i++) {
-                        this._prepareComponentsForActivationEventTarget(mutableEvent.changedTouches[i].target);
-                    }
-                } else {
-                    this._prepareComponentsForActivationEventTarget(mutableEvent.target);
-                }
+            if (Element.isElement(mutableEvent.target) || mutableEvent.target instanceof Document ||  mutableEvent.target instanceof Window) {
+                eventPath = this._eventPathForDomTarget(mutableEvent.target);
+            } else {
+                eventPath = this._eventPathForTarget(mutableEvent.target);
             }
-
-            eventPath = this._eventPathForTarget(mutableEvent.target);
 
             // use most specific handler method available, possibly based upon the identifier of the event target
             if (mutableEvent.target.identifier) {
@@ -1827,7 +1836,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                         jListener[captureMethodName](mutableEvent);
                     } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
                         jListener.handleEvent(mutableEvent);
-                    } else if (typeof jListener === FUNCTION_TYPE) {
+                    } else if (typeof jListener === FUNCTION_TYPE && !jListener.__isConstructor__) {
                         jListener.call(iTarget, mutableEvent);
                     }
                 }
@@ -1926,29 +1935,33 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
  /**
   @private
 */
-    _prepareComponentsForActivationEventTarget: {
+    _prepareComponentsForActivation: {
         value: function(eventTarget) {
 
             var target = eventTarget,
                 previousTarget,
                 targetView = target && target.defaultView ? target.defaultView : window,
                 targetDocument = targetView.document ? targetView.document : document,
-                associatedComponent;
+                associatedComponent,
+                lookedForActiveTarget = false,
+                activeTarget = null;
 
             do {
 
                 if (target) {
                     associatedComponent = this.eventHandlerForElement(target);
                     if (associatedComponent) {
-                        if (!associatedComponent._preparedForActivationEvents) {
 
+                        // Once we've found a component starting point,
+                        // find the closest Target that accepts focus
+                        if (!lookedForActiveTarget) {
+                            lookedForActiveTarget = true;
+                            activeTarget = this._findActiveTarget(associatedComponent);
+                        }
+
+                        if (!associatedComponent._preparedForActivationEvents) {
                             associatedComponent._prepareForActivationEvents();
                             associatedComponent._preparedForActivationEvents = true;
-
-                        } else if (associatedComponent._preparedForActivationEvents) {
-                            //TODO can we safely stop if we find the currentTarget has already been activated?
-                            // I want to say no as the tree above may have changed, but I'm going to give it a try
-                            return;
                         }
                     }
                 }
@@ -1975,12 +1988,96 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
             } while (target && previousTarget !== target);
 
+            activeTarget = activeTarget || this.application;
+
+            if (activeTarget !== this.activeTarget) {
+                if (this.activeTarget) {
+                    this.activeTarget.willSurrenderActiveTarget(activeTarget);
+                }
+                activeTarget.willBecomeActiveTarget(this.activeTarget);
+
+                this.activeTarget = activeTarget;
+
+                activeTarget.didBecomeActiveTarget();
+            }
         }
     },
-/**
-  @private
-*/
+
+    /**
+     *
+     @private
+     */
+    _findActiveTarget: {
+        value: function(target) {
+
+            var foundTarget = null,
+                uuidCheckedTargetMap = {};
+
+            //TODO report if a cycle is detected?
+            while (!foundTarget && target && !(target.uuid in uuidCheckedTargetMap)) {
+
+                //TODO complain if a non-Target-alike is considered
+
+                uuidCheckedTargetMap[target.uuid] = target;
+
+                if (target.acceptsActiveTarget) {
+                    foundTarget = target;
+                } else {
+                    target = target.nextTarget;
+                }
+            }
+
+            return foundTarget;
+        }
+    },
+
+    /**
+     * Build the event target chain for the the specified Target
+     * @private
+     */
     _eventPathForTarget: {
+        enumerable: false,
+        value: function(target) {
+
+            if (!target) {
+                return [];
+            }
+
+            var targetCandidate  = target,
+                application = this.application,
+                eventPath = [],
+                discoveredTargets = {};
+
+            // Consider the target "discovered" for less specialized detection of cycles
+            discoveredTargets[target.uuid] = target;
+
+            do {
+                if (!(targetCandidate.uuid in discoveredTargets)) {
+                    eventPath.push(targetCandidate);
+                    discoveredTargets[targetCandidate.uuid] = targetCandidate;
+                }
+
+                targetCandidate = targetCandidate.nextTarget;
+
+                if (!targetCandidate || targetCandidate.uuid in discoveredTargets) {
+                    targetCandidate = application;
+                }
+
+                if (targetCandidate && (targetCandidate.uuid in discoveredTargets)) {
+                    targetCandidate = null;
+                }
+            }
+            while (targetCandidate);
+
+            return eventPath;
+        }
+    },
+
+    /**
+     * Build the event target chain for the the specified DOM target
+     * @private
+     */
+    _eventPathForDomTarget: {
         enumerable: false,
         value: function(target) {
 
@@ -1996,7 +2093,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 eventPath = [];
 
             do {
-                // Don't include the target itself in the event path
+                // Don't include the target itself as the root of the event path
                 if (targetCandidate !== target) {
                     eventPath.push(targetCandidate);
                 }
@@ -2021,7 +2118,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                         targetCandidate = targetDocument;
                         break;
                     default:
-                        targetCandidate = targetCandidate.parentProperty ? targetCandidate[targetCandidate.parentProperty] : targetCandidate.parentNode;
+                        targetCandidate = targetCandidate.parentNode;
 
                         // Run out of hierarchy candidates? go up to the application
                         if (!targetCandidate) {
@@ -2080,6 +2177,34 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         enumerable: false,
         value: function(anElement) {
             return this._elementEventHandlerByUUID[anElement.eventHandlerUUID];
+        }
+    },
+
+    _activeTarget: {
+        value: null
+    },
+
+    /**
+     * The logical component that has focus within the application
+     *
+     * This can be used as the proximal target for dispatching in
+     * situations where it logically makes sense that and event, while
+     * created by some other component, should appear to originate from
+     * where the user is currently focused.
+     *
+     * This is particularly useful for things such as keyboard shortcuts or
+     * menuAction events.
+     */
+    activeTarget: {
+        get: function () {
+            return this._activeTarget || this.application;
+        },
+        set: function (value) {
+            if (value === this._activeTarget) {
+                return;
+            }
+
+            this._activeTarget = value;
         }
     }
 

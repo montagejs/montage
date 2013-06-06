@@ -35,10 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage;
 
 /**
- @class module:montage/core/event/action-event-listener.ActionEventListener
- @extends module:montage/core/core.Montage
+ @class ActionEventListener
+ @extends Montage
  */
-var ActionEventListener = exports.ActionEventListener = Montage.create(Montage, /** @lends module:montage/core/event/action-event-listener.ActionEventListener# */ {
+var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** @lends ActionEventListener# */ {
 
 /**
     The object to handle the event.

@@ -1,0 +1,41 @@
+{
+
+    "value_target_blueprint": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "value",
+            "blueprint": {
+                "@": "root"
+            },
+            "mandatory": true,
+            "valueType": "object",
+            "valueObjectPrototypeName": "Blueprint",
+            "valueObjectModuleId": "core/meta/blueprint",
+            "helpKey": ""
+        }
+    },
+
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "BinderReference",
+            "blueprintModuleId": "core/meta/binder-reference.meta",
+            "prototypeName": "BinderReference",
+            "customPrototype": false,
+            "propertyBlueprints": [
+                {
+                    "@": "value_target_blueprint"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "association-blueprint": [
+                    {
+                        "@": "value_target_blueprint"
+                    }
+                ]
+            },
+            "propertyValidationRules": {
+            }
+        }
+    }
+}

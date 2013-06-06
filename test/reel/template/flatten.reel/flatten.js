@@ -32,9 +32,9 @@ exports = typeof exports !== "undefined" ? exports : {};
 
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
-var Template = require("montage/ui/template").Template;
+var Template = require("montage/core/template").Template;
 
-var Flatten = exports.Flatten = Montage.create(Component, {
+var Flatten = exports.Flatten = Component.specialize( {
     hasTemplate: {
         value: true
     },
@@ -65,6 +65,6 @@ var Flatten = exports.Flatten = Montage.create(Component, {
             filename =  moduleId.split("/").pop();
             templateModuleId = info.moduleId + ".reel/" + filename + ".html"
         }
-        Template.create().initWithModuleId(templateModuleId, onTemplateLoad);
+        new Template().initWithModuleId(templateModuleId, onTemplateLoad);
     }}
 });

@@ -33,6 +33,6 @@ exports = typeof exports !== "undefined" ? exports : {};
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 
-exports.ExternalSerialization = Montage.create(Component, {
+exports.ExternalSerialization = Component.specialize( {
     hasTemplate: {value: true}
 });

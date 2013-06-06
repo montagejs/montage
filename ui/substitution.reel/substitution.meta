@@ -1,0 +1,76 @@
+{
+    "blueprint_substitution_switchValue": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "switchValue",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_substitution_shouldLoadComponentTree": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "shouldLoadComponentTree",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean"
+        }
+    },
+    "blueprint_substitution_transition": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "transition",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object"
+        }
+    },
+    "blueprint_component_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Component",
+                "blueprintModuleId": "ui/component.meta",
+                "prototypeName": "Component"
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "Substitution",
+            "blueprintModuleId": "ui/substitution.reel/substitution.meta",
+            "prototypeName": "Substitution",
+            "parent": {
+                "@": "blueprint_component_reference"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "blueprint_substitution_switchValue"
+                },
+                {
+                    "@": "blueprint_substitution_shouldLoadComponentTree"
+                },
+                {
+                    "@": "blueprint_substitution_transition"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "Substitution": [
+                    {
+                        "@": "blueprint_substitution_switchValue"
+                    },
+                    {
+                        "@": "blueprint_substitution_shouldLoadComponentTree"
+                    },
+                    {
+                        "@": "blueprint_substitution_transition"
+                    }
+                ]
+            }
+        }
+    }
+}

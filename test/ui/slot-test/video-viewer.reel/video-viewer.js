@@ -31,17 +31,17 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-var VideoViewer = exports.VideoViewer = Montage.create(Component, {
+var VideoViewer = exports.VideoViewer = Component.specialize( {
 
     templateDidLoad: {
         value: function() {
-            console.log("VIDEOVIEWER REEL DID LOAD");
+            //console.log("VIDEOVIEWER REEL DID LOAD");
         }
     },
 
     deserializedFromTemplate: {
         value: function() {
-            console.log("VIDEOVIEWER DESERIALIZED FROM REEL");
+            //console.log("VIDEOVIEWER DESERIALIZED FROM REEL");
         }
     },
 

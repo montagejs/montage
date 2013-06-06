@@ -3,17 +3,17 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-var ComponentBlueprintTest3 = exports.ComponentBlueprintTest3 = Montage.create(Component, {
+var ComponentBlueprintTest3 = exports.ComponentBlueprintTest3 = Component.specialize( {
 
     templateDidLoad: {
         value: function() {
-            console.log("Component Blueprint Test 3 template did load");
+            //console.log("Component Blueprint Test 3 template did load");
         }
     },
 
     deserializedFromTemplate: {
         value: function() {
-            console.log("Component Blueprint Test 3 deserialized from template");
+            //console.log("Component Blueprint Test 3 deserialized from template");
         }
     },
 

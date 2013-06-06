@@ -1,0 +1,124 @@
+{
+
+    "numberConverter_shorten": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "shorten",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+
+    "numberConverter_decimals": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "decimals",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+
+    "numberConverter_round": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "round",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+
+    "numberConverter_allowFloat": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "allowFloat",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+
+    "numberConverter_allowNegative": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "allowNegative",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+
+    "converter_blueprint_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Converter",
+                "blueprintModuleId": "core/converter/converter.meta",
+                "prototypeName": "Converter"
+            }
+        }
+    },
+
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "NumberConverter",
+            "blueprintModuleId": "core/converter/number-converter.meta",
+            "prototypeName": "NumberConverter",
+            "customPrototype": false,
+            "parent": {
+                "@": "converter_blueprint_reference"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "numberConverter_shorten"
+                },
+                {
+                    "@": "numberConverter_decimals"
+                },
+                {
+                    "@": "numberConverter_round"
+                },
+                {
+                    "@": "numberConverter_allowFloat"
+                },
+                {
+                    "@": "numberConverter_allowNegative"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "numberConverter": [
+                    {
+                        "@": "numberConverter_shorten"
+                    },
+                    {
+                        "@": "numberConverter_decimals"
+                    },
+                    {
+                        "@": "numberConverter_round"
+                    },
+                    {
+                        "@": "numberConverter_allowFloat"
+                    },
+                    {
+                        "@": "numberConverter_allowNegative"
+                    }
+                ]
+            },
+            "propertyValidationRules": {
+            }
+        }
+    }
+}

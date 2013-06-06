@@ -36,11 +36,11 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage;
 var Point = require("core/geometry/point").Point;
 /**
- @class module:montage/core/geometry/cubic-bezier.CubicBezier
- @extends module:montage/core/core.Montage
+ @class CubicBezier
+ @extends Montage
  */
 
-var CubicBezier = exports.CubicBezier = Montage.create(Montage, /** @lends module:montage/core/geometry/cubic-bezier.CubicBezier# */{
+var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezier# */{
 /**
     @function
     @param {Array} controlPoints Control points.
@@ -66,7 +66,7 @@ var CubicBezier = exports.CubicBezier = Montage.create(Montage, /** @lends modul
 /**
     @function
     @param {Number} t Control point.
-    @returns itself or Montage.create(Point).init(this.p0.x * b1 + this.p1.x * b2 + this.p2.x * b3 + this.p3.x * b4,
+    @returns itself or new Point().init(this.p0.x * b1 + this.p1.x * b2 + this.p2.x * b3 + this.p3.x * b4,
                 this.p0.y * b1 + this.p1.y * b2 + this.p2.y * b3 + this.p3.y * b4)
     */
     position: {
@@ -82,7 +82,7 @@ var CubicBezier = exports.CubicBezier = Montage.create(Montage, /** @lends modul
                 b2 = 3 * t * t * (1 - t),
                 b3 = 3 * t * (1 - t) * (1 - t),
                 b4 = (1 - t) * (1 - t) * (1 - t);
-            return Montage.create(Point).init(this.p0.x * b1 + this.p1.x * b2 + this.p2.x * b3 + this.p3.x * b4,
+            return new Point().init(this.p0.x * b1 + this.p1.x * b2 + this.p2.x * b3 + this.p3.x * b4,
                 this.p0.y * b1 + this.p1.y * b2 + this.p2.y * b3 + this.p3.y * b4);
         }
     },
@@ -101,7 +101,7 @@ var CubicBezier = exports.CubicBezier = Montage.create(Montage, /** @lends modul
 /**
     @function
     @param {Number} t Control point.
-    @returns CubicBezier.create(CubicBezier).init([Montage.create(Point).init(this.p01.x / xScale, this.p01.y / yScale), Montage.create(Point).init(this.p012.x / xScale, this.p012.y / yScale)])
+    @returns CubicBezier.create(CubicBezier).init([new Point().init(this.p01.x / xScale, this.p01.y / yScale), new Point().init(this.p012.x / xScale, this.p012.y / yScale)])
     */
     splitToTimingFunction: {
         enumerable: false,
@@ -110,7 +110,7 @@ var CubicBezier = exports.CubicBezier = Montage.create(Montage, /** @lends modul
             // p0123 x and y are the scale
             var xScale = this.p0123.x,
                 yScale = this.p0123.y;
-            return CubicBezier.create(CubicBezier).init([Montage.create(Point).init(this.p01.x / xScale, this.p01.y / yScale), Montage.create(Point).init(this.p012.x / xScale, this.p012.y / yScale)]);
+            return CubicBezier.create(CubicBezier).init([new Point().init(this.p01.x / xScale, this.p01.y / yScale), new Point().init(this.p012.x / xScale, this.p012.y / yScale)]);
         }
     },
 /**
@@ -147,29 +147,29 @@ var CubicBezier = exports.CubicBezier = Montage.create(Montage, /** @lends modul
 /**
         First control point in bezier curve.
         @type {Property}
-        @default {Number} Montage.create(Point).init(0, 0)
+        @default {Number} new Point().init(0, 0)
     */
     p0: {
         enumerable: true,
-        value: Montage.create(Point).init(0, 0)
+        value: new Point().init(0, 0)
     },
 /**
         Second control point in bezier curve.
         @type {Property}
-        @default {Number} Montage.create(Point).init(0, 0)
+        @default {Number} new Point().init(0, 0)
     */
     p1: {
         enumerable: true,
-        value: Montage.create(Point).init(0, 0)
+        value: new Point().init(0, 0)
     },
 /**
         Third control point in bezier curve.
         @type {Property}
-        @default {Number} Montage.create(Point).init(1, 1)
+        @default {Number} new Point().init(1, 1)
     */
     p2: {
         enumerable: true,
-        value: Montage.create(Point).init(1, 1)
+        value: new Point().init(1, 1)
     },
 /**
         Fourth control point in bezier curve.
@@ -178,6 +178,6 @@ var CubicBezier = exports.CubicBezier = Montage.create(Montage, /** @lends modul
     */
     p3: {
         enumerable: true,
-        value: Montage.create(Point).init(1, 1)
+        value: new Point().init(1, 1)
     }
 });

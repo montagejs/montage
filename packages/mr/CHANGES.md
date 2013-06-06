@@ -1,3 +1,9 @@
+## 0.12.14
+
+ - Fix bug when loading dependencies that use script-injection which are not
+   included in a preloading bundle. Before Mr would hang when waiting for them
+   to load.
+
 ## 0.12.13
 
  - Fix bug in preloading, where isResolved was replaced with isPending in Q 0.9

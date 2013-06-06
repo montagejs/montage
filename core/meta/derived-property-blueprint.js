@@ -19,9 +19,9 @@ var Defaults = {
 /**
  A derived is property blueprint is calculated using other property blueprints of the object.<br/>
 
- @class module:montage/core/meta/blueprint.DerivedPropertyBlueprint
+ @class DerivedPropertyBlueprint
  */
-exports.DerivedPropertyBlueprint = Montage.create(PropertyBlueprint, /** @lends module:montage/core/meta/blueprint.DerivedPropertyBlueprint# */ {
+exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends DerivedPropertyBlueprint# */ {
 
     serializeSelf: {
         value: function(serializer) {
@@ -57,7 +57,6 @@ exports.DerivedPropertyBlueprint = Montage.create(PropertyBlueprint, /** @lends 
     },
 
     /**
-     Description TODO
      @type {Property}
      @default {Boolean} true
      */
@@ -78,7 +77,6 @@ exports.DerivedPropertyBlueprint = Montage.create(PropertyBlueprint, /** @lends 
         distinct:true
     },
     /**
-     Description TODO
      @type {Property}
      @default null
      */
@@ -87,7 +85,6 @@ exports.DerivedPropertyBlueprint = Montage.create(PropertyBlueprint, /** @lends 
     },
 
     /**
-     Description TODO
      @type {Property}
      @default null
      */

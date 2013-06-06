@@ -1,0 +1,65 @@
+{
+    "blueprint_condition_condition": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "condition",
+            "blueprint": {
+                "@": "root"
+            },
+            "valyeType": "boolean"
+        }
+    },
+    "blueprint_condition_removalStrategy": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "removalStrategy",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType":"enum",
+            "enumValues": [
+                "hide",
+                "remove"
+            ]
+        }
+    },
+    "blueprint_component_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Component",
+                "blueprintModuleId": "ui/component.meta",
+                "prototypeName": "Component"
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "Condition",
+            "blueprintModuleId": "ui/condition.reel/condition.meta",
+            "prototypeName": "Condition",
+            "parent": {
+                "@": "blueprint_component_reference"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "blueprint_condition_condition"
+                },
+                {
+                    "@": "blueprint_condition_removalStrategy"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "Condition": [
+                    {
+                        "@": "blueprint_condition_condition"
+                    },
+                    {
+                        "@": "blueprint_condition_removalStrategy"
+                    }
+                ]
+            }
+        }
+    }
+}

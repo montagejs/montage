@@ -29,16 +29,18 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
+    Target = require("montage/core/target").Target,
     ActionEventListener = require("montage/core/event/action-event-listener").ActionEventListener,
-    Serializer = require("montage/core/serializer").Serializer,
-    Deserializer = require("montage/core/deserializer").Deserializer,
-    TestPageLoader = require("support/testpageloader").TestPageLoader,
-    EventInfo = require("support/testpageloader").EventInfo,
+    Serializer = require("montage/core/serialization").Serializer,
+    Deserializer = require("montage/core/serialization").Deserializer,
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
+    EventInfo = require("montage-testing/testpageloader").EventInfo,
+    MontageReviver = require("montage/core/serialization/deserializer/montage-reviver").MontageReviver,
     UUID = require("montage/core/uuid");
 
 var global = typeof global !== "undefined" ? global : window;
 
-var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
+TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage) {
     describe("events/eventmanager-spec", function() {
 
         var NONE = Event.NONE,
@@ -46,15 +48,14 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
             AT_TARGET = Event.AT_TARGET,
             BUBBLING_PHASE = Event.BUBBLING_PHASE;
 
-        it("should load", function() {
-            expect(testPage.loaded).toBeTruthy();
-        });
-
         var testDocument, eventManager;
 
         beforeEach(function() {
+            var testWindow = testPage.iframe.contentWindow;
+            eventManager = testWindow.montageRequire("core/application").application.eventManager;
+
             testDocument = testPage.iframe.contentDocument;
-            eventManager = testDocument.application.eventManager;
+
             eventManager.reset();
         });
 
@@ -154,10 +155,39 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
             }
         });
 
+        describe("when unregistering a window", function () {
+            var testWindow;
+
+            beforeEach(function () {
+                testWindow = testPage.iframe.contentWindow;
+            });
+
+            afterEach(function () {
+                // if there was an error in the test make sure that the window
+                // is still registered
+                if (!testWindow.defaultEventManager) {
+                    eventManager.registerWindow(testWindow);
+                }
+            });
+
+            it("removes the installed functions", function () {
+                eventManager.unregisterWindow(testWindow);
+
+                expect(testWindow.defaultEventManager).toBeUndefined();
+                expect(testWindow.document.body.nativeAddEventListener).toBeUndefined();
+                expect(testWindow.document.body.addEventListener).toBeDefined();
+
+                eventManager.registerWindow(testWindow);
+
+                expect(testWindow.defaultEventManager).toEqual(eventManager);
+                expect(testWindow.document.body.nativeAddEventListener).toBeDefined();
+            });
+        });
+
         describe("when adding event listeners", function() {
 
             it("should record that the listener cares about an event on the target", function() {
-                var listener = Montage.create();
+                var listener = new Montage();
                 testDocument.addEventListener("mousedown", listener, false);
 
                 var listenerEntry = eventManager.registeredEventListeners["mousedown"][testDocument.uuid].listeners[listener.uuid];
@@ -195,7 +225,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                 testDocument.addEventListener("click", clickSpy, false);
 
-                testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "click", function() {
+                testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "click", function() {
                     expect(clickSpy.handleClick).toHaveBeenCalled();
                 });
             });
@@ -217,7 +247,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                     spyOn(clickSpy, 'handleClick');
                     testDocument.addEventListener("click", clickSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "click", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "click", function() {
                         expect(clickSpy.handleClick).toHaveBeenCalled();
                         expect(inlineClickSpy.handleEvent).toHaveBeenCalled();
                     });
@@ -241,7 +271,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                 spyOn(clickSpy, 'handleClick');
                 testDocument.addEventListener("click", clickSpy, false);
 
-                testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "click", function() {
+                testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "click", function() {
                     expect(clickSpy.handleClick).toHaveBeenCalled();
                     expect(inlineCalled).toBeTruthy();
                 });
@@ -378,7 +408,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                 testDocument.removeEventListener("mousedown", otherListener, false);
 
 
-                testPage.mouseEvent(EventInfo.create().initWithElement(activationTarget.element), "mousedown", function() {
+                testPage.mouseEvent(new EventInfo().initWithElement(activationTarget.element), "mousedown", function() {
                     expect(activationTarget.prepareForActivationEvents).toHaveBeenCalled();
                 });
             });
@@ -413,7 +443,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                     testDocument.addEventListener("mousedown", mousedownCaptureSpy, true);
                     testDocument.addEventListener("mousedown", mousedownBubbleSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(mousedownCaptureSpy.captureMousedown).toHaveBeenCalled();
                         expect(mousedownBubbleSpy.handleMousedown).toHaveBeenCalled();
                     });
@@ -474,7 +504,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                     testDocument.addEventListener("mousedown", documentSpy, true);
                     testDocument.defaultView.addEventListener("mousedown", windowSpy, true);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(target), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(target), "mousedown", function() {
                         expect(windowSpy.captureMousedown).toHaveBeenCalled();
                         expect(documentSpy.captureMousedown).toHaveBeenCalled();
                         expect(bodySpy.captureMousedown).toHaveBeenCalled();
@@ -536,7 +566,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                     target.parentNode.addEventListener("mousedown", parentSpy, false);
                     target.addEventListener("mousedown", targetSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(target), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(target), "mousedown", function() {
                         expect(windowSpy.handleMousedown).toHaveBeenCalled();
                         expect(documentSpy.handleMousedown).toHaveBeenCalled();
                         expect(bodySpy.handleMousedown).toHaveBeenCalled();
@@ -553,7 +583,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                         bubbleCalled = true;
                     }, true);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(bubbleCalled).toBeTruthy();
                     });
                 });
@@ -566,7 +596,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                         bubbleCalled = true;
                     }, true);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(bubbleCalled).toBeTruthy();
                     });
                 });
@@ -579,7 +609,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                         bubbleCalled = true;
                     }, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(bubbleCalled).toBeTruthy();
                     });
                 });
@@ -592,7 +622,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                         bubbleCalled = true;
                     }, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(bubbleCalled).toBeTruthy();
                     });
                 });
@@ -617,7 +647,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                     testDocument.addEventListener("mousedown", eventCaptureSpy, true);
                     testDocument.addEventListener("mousedown", eventBubbleSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(eventCaptureSpy.handleEvent).toHaveBeenCalled();
                         expect(eventBubbleSpy.handleEvent).toHaveBeenCalled();
                     });
@@ -635,7 +665,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                     testDocument.addEventListener("mousedown", eventSpy, true);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                     });
 
@@ -652,7 +682,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                     testDocument.addEventListener("mousedown", eventSpy, true);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument), "mousedown", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                     });
 
@@ -669,7 +699,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                     testDocument.addEventListener("mousedown", eventSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument), "mousedown", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                     });
 
@@ -687,7 +717,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                     testDocument.addEventListener("mousedown", eventSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.body), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.body), "mousedown", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                     });
 
@@ -705,7 +735,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                     testDocument.addEventListener("mousedown", eventSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument), "mousedown", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                     });
 
@@ -732,7 +762,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                         testDocument.body.addEventListener("mousedown", bodyListener, false);
 
-                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.body), "mousedown", function() {
+                        testPage.mouseEvent(new EventInfo().initWithElement(testDocument.body), "mousedown", function() {
                             expect(lateAddedRootListener.handleEvent).toHaveBeenCalled();
                         });
                     });
@@ -755,7 +785,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                     testDocument.addEventListener("mousedown", eventSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument), "mousedown", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                     });
 
@@ -781,7 +811,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                     testDocument.addEventListener("mousedown", eventSpy, false);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(eventSpy.handleMousedown).toHaveBeenCalled();
                         expect(eventSpy.handleEvent).not.toHaveBeenCalled();
                     });
@@ -802,7 +832,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                     testDocument.addEventListener("mousedown", eventSpy, false);
                     testDocument.addEventListener("mousedown", eventSpy, true);
 
-                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                         expect(handledEventCount).toBe(2);
                     });
@@ -828,7 +858,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                         testDocument.documentElement.addEventListener("mousedown", eventSpy, false);
 
-                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                             expect(eventSpy.handleFooMousedown).toHaveBeenCalled();
                         });
                     });
@@ -843,7 +873,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                         testDocument.identifier = "document";
                         testDocument.addEventListener("mousedown", eventSpy, false);
 
-                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                             expect(eventSpy.handleFooMousedown).toHaveBeenCalled();
                         });
 
@@ -868,7 +898,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                         testDocument.addEventListener("mousedown", eventSpy, false);
 
-                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                             expect(eventSpy.handleMousedown).toHaveBeenCalled();
                             expect(eventSpy.handleDocumentMousedown).not.toHaveBeenCalled();
                         });
@@ -886,12 +916,122 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                         testDocument.identifier = "document";
                         testDocument.addEventListener("mousedown", eventSpy, false);
 
-                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "mousedown", function() {
                             expect(eventSpy.handleDocumentMousedown).not.toHaveBeenCalled();
                         });
 
                         delete testDocument.identifier;
                     });
+                });
+            });
+
+            describe("dispatched from the document", function () {
+
+                it("should distribute the event to listeners of the proximal target", function () {
+                    var captureCalled = false,
+                        bubbleCalled = false;
+
+                    var fooCaptureSpy = {
+                        captureFoo: function() {
+                            expect(bubbleCalled).toBe(false);
+                            captureCalled = true;
+                        }
+                    };
+
+                    var fooBubbleSpy = {
+                        handleFoo: function() {
+                            expect(captureCalled).toBe(true);
+                            bubbleCalled = true;
+                        }
+                    };
+
+                    spyOn(fooCaptureSpy, 'captureFoo').andCallThrough();
+                    spyOn(fooBubbleSpy, 'handleFoo').andCallThrough();
+
+                    testDocument.addEventListener("foo", fooCaptureSpy, true);
+                    testDocument.addEventListener("foo", fooBubbleSpy, false);
+
+                    var event = testDocument.createEvent("CustomEvent");
+                    event.initEvent("foo", true, true);
+                    testDocument.dispatchEvent(event);
+
+                    testDocument.removeEventListener("foo", fooCaptureSpy, true);
+                    testDocument.removeEventListener("foo", fooBubbleSpy, false);
+
+                    expect(fooCaptureSpy.captureFoo).toHaveBeenCalled();
+                    expect(fooBubbleSpy.handleFoo).toHaveBeenCalled();
+                });
+
+                it("should distribute the event to listeners along the distribution chain", function () {
+                    var captureCalled = false,
+                        bubbleCalled = false;
+
+                    var fooCaptureSpy = {
+                        captureFoo: function() {
+                            expect(bubbleCalled).toBe(false);
+                            captureCalled = true;
+                        }
+                    };
+
+                    var fooBubbleSpy = {
+                        handleFoo: function() {
+                            expect(captureCalled).toBe(true);
+                            bubbleCalled = true;
+                        }
+                    };
+
+                    spyOn(fooCaptureSpy, 'captureFoo').andCallThrough();
+                    spyOn(fooBubbleSpy, 'handleFoo').andCallThrough();
+
+                    testDocument.defaultView.addEventListener("foo", fooCaptureSpy, true);
+                    testDocument.defaultView.addEventListener("foo", fooBubbleSpy, false);
+
+                    var event = testDocument.createEvent("CustomEvent");
+                    event.initEvent("foo", true, true);
+                    testDocument.dispatchEvent(event);
+
+                    testDocument.defaultView.removeEventListener("foo", fooCaptureSpy, true);
+                    testDocument.defaultView.removeEventListener("foo", fooBubbleSpy, false);
+
+                    expect(fooCaptureSpy.captureFoo).toHaveBeenCalled();
+                    expect(fooBubbleSpy.handleFoo).toHaveBeenCalled();
+                });
+            });
+
+            describe("dispatched from the window", function () {
+                it("should distribute the event to listeners of the proximal target", function () {
+                    var captureCalled = false,
+                        bubbleCalled = false;
+
+                    var fooCaptureSpy = {
+                        captureFoo: function() {
+                            expect(bubbleCalled).toBe(false);
+                            captureCalled = true;
+                        }
+                    };
+
+                    var fooBubbleSpy = {
+                        handleFoo: function() {
+                            expect(captureCalled).toBe(true);
+                            bubbleCalled = true;
+                        }
+                    };
+
+                    spyOn(fooCaptureSpy, 'captureFoo').andCallThrough();
+                    spyOn(fooBubbleSpy, 'handleFoo').andCallThrough();
+
+                    testDocument.defaultView.addEventListener("foo", fooCaptureSpy, true);
+                    testDocument.defaultView.addEventListener("foo", fooBubbleSpy, false);
+
+                    var event = testDocument.createEvent("CustomEvent");
+                    event.initEvent("foo", true, true);
+                    testDocument.defaultView.dispatchEvent(event);
+
+                    testDocument.defaultView.removeEventListener("foo", fooCaptureSpy, true);
+                    testDocument.defaultView.removeEventListener("foo", fooBubbleSpy, false);
+
+                    expect(fooCaptureSpy.captureFoo).toHaveBeenCalled();
+                    expect(fooBubbleSpy.handleFoo).toHaveBeenCalled();
                 });
             });
 
@@ -946,8 +1086,10 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
         });
 
         describe("elements' event handler support", function() {
-            var element = testPage.querySelector("#element");
-
+            var element;
+            beforeEach(function () {
+                element = testPage.querySelector("#element");
+            });
             afterEach(function() {
                 eventManager.unregisterEventHandlerForElement(element);
             });
@@ -992,29 +1134,27 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
         describe("serialization", function() {
             it("should call \"listeners\" deserialization unit", function() {
-                var sourceObject = Montage.create(),
-                    handlerObject = Montage.create(),
-                    serializer = Serializer.create().initWithRequire(require),
-                    deserializer = Deserializer.create(),
-                    actionListener = Montage.create(ActionEventListener).initWithHandler_action_(handlerObject, "doSomething");
+                var sourceObject = new Target(),
+                    handlerObject = new Montage(),
+                    serializer = new Serializer().initWithRequire(require),
+                    deserializer = new Deserializer(),
+                    actionListener = new ActionEventListener().initWithHandler_action_(handlerObject, "doSomething");
 
                 sourceObject.addEventListener("action", actionListener, false);
 
                 var serialization = serializer.serializeObject(sourceObject);
                 var labels = {};
-                labels[handlerObject.uuid] = handlerObject;
-                deserializer.initWithStringAndRequire(serialization, require);
-                var object = null;
-                spyOn(deserializer._indexedDeserializationUnits, "listeners").andCallThrough();
-                deserializer.deserializeWithInstances(labels, function(objects) {
+                labels.actioneventlistener = handlerObject;
+
+                deserializer.init(
+                    serialization, require);
+                spyOn(MontageReviver._unitRevivers, "listeners").andCallThrough();
+
+                return deserializer.deserialize(labels)
+                .then(function(objects) {
                     object = objects.root;
+                    expect(MontageReviver._unitRevivers.listeners).toHaveBeenCalled();
                 });
-                waitsFor(function() {
-                    return object;
-                });
-                runs(function() {
-                    expect(deserializer._indexedDeserializationUnits.listeners).toHaveBeenCalled();
-                })
              });
         });
     });

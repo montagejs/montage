@@ -8,11 +8,11 @@ exports.companyBinder = function () {
     return exports.BinderHelper.companyBinder();
 };
 
-exports.BinderHelper = Montage.create(Montage, {
+exports.BinderHelper = Montage.specialize( {
 
     companyBinder: {
         value: function() {
-            var companyBinder = Binder.create().initWithName("CompanyBinder");
+            var companyBinder = new Binder().initWithName("CompanyBinder");
 
             var personBlueprint = companyBinder.addBlueprintNamed("Person", "meta/blueprint/person");
             personBlueprint.addToOnePropertyBlueprintNamed("name");

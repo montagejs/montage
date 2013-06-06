@@ -14,14 +14,14 @@ var BinderModule = require("core/meta/binder");
 var logger = require("core/logger").logger("blueprint");
 
 /**
- @class module:montage/core/meta/binder-manager.BinderManager
+ @class BinderManager
  @classdesc A blueprint binder manager is a singleton that is responsible for loading and dispaching binders and blueprints.
- @extends module:montage/core/core.Montage
+ @extends Montage
  */
 
-var BinderManager = exports.BinderManager = Montage.create(Montage, /** @lends module:montage/core/meta/binder-manager.BinderManager# */ {
+var BinderManager = exports.BinderManager = Montage.specialize( /** @lends BinderManager# */ {
 
-    didCreate: {
+    constructor: {
         value: function() {
             this._binders = [];
             this._binderTable = {};
@@ -45,8 +45,7 @@ var BinderManager = exports.BinderManager = Montage.create(Montage, /** @lends m
 
     /**
      Return the list of binder registered on the manager
-     @type {Property} Function
-     @default {Array} new Array()
+     @type {Array<Binder>}
      */
     binders: {
         get: function() {
@@ -76,7 +75,6 @@ var BinderManager = exports.BinderManager = Montage.create(Montage, /** @lends m
     },
 
     /**
-     Description TODO
      @function
      @param {Property} binder TODO
      */
@@ -137,7 +135,7 @@ var BinderManager = exports.BinderManager = Montage.create(Montage, /** @lends m
     defaultBlueprintObjectProperty: {
         get: function() {
             if (!this._defaultBlueprintObjectProperty) {
-                this._defaultBlueprintObjectProperty = ObjectProperty.create().init();
+                this._defaultBlueprintObjectProperty = new ObjectProperty().init();
             }
             return this._defaultBlueprintObjectProperty;
         }
@@ -157,7 +155,7 @@ var BinderManager = exports.BinderManager = Montage.create(Montage, /** @lends m
     defaultBinder: {
         get: function() {
             if (!this._defaultBinder) {
-                this._defaultBinder = BinderModule.Binder.create().initWithName("default");
+                this._defaultBinder = new BinderModule.Binder().initWithName("default");
                 this._defaultBinder.isDefault = true;
                 this.addBinder(this._defaultBinder);
             }

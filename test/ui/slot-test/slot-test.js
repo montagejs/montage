@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-var Media = Montage.create(Montage, {
+var Media = Montage.specialize( {
 
     type: {
         value: null
@@ -43,7 +43,7 @@ var Media = Montage.create(Montage, {
 
 });
 
-var PhotoMedia = Montage.create(Media, {
+var PhotoMedia = Media.specialize( {
 
     type: {
         value: "photo"
@@ -55,7 +55,7 @@ var PhotoMedia = Montage.create(Media, {
 
 });
 
-var VideoMedia = Montage.create(Media, {
+var VideoMedia = Media.specialize( {
 
     type: {
         value: "video"
@@ -67,15 +67,15 @@ var VideoMedia = Montage.create(Media, {
 
 });
 
-var SlotTest = exports.SlotTest = Montage.create(Component, {
+var SlotTest = exports.SlotTest = Component.specialize( {
 
     init: {
         value: function() {
-            this.video = VideoMedia.create();
+            this.video = new VideoMedia();
             this.video.duration = "VIDEO 81 Minutes";
             this.video.description = "VIDEO: The Last Dispatch"
 
-            this.photo = PhotoMedia.create();
+            this.photo = new PhotoMedia();
             this.photo.location = "PHOTO North Attleboro, MA";
             this.photo.description = "PHOTO Go Big Red";
 
@@ -195,36 +195,38 @@ var SlotTest = exports.SlotTest = Montage.create(Component, {
         value: null
     },
 
-    prepareForDraw: {
+    enterDocument: {
         enumerable: false,
-        value: function() {
-            this.componentWithNoElementButton.addEventListener("action", this);
-            this.componentInPageWithElementButton.addEventListener("action", this);
-            this.barButton.addEventListener("action", this);
-            this.bazButton.addEventListener("action", this);
-            this.quxButton.addEventListener("action", this);
-            this.emptyButton.addEventListener("action", this);
+        value: function(firstTime) {
+            if (firstTime) {
+                this.componentWithNoElementButton.addEventListener("action", this);
+                this.componentInPageWithElementButton.addEventListener("action", this);
+                this.barButton.addEventListener("action", this);
+                this.bazButton.addEventListener("action", this);
+                this.quxButton.addEventListener("action", this);
+                this.emptyButton.addEventListener("action", this);
 
-            this.videoButton.addEventListener("action", this);
-            this.photoButton.addEventListener("action", this);
+                this.videoButton.addEventListener("action", this);
+                this.photoButton.addEventListener("action", this);
+            }
         }
     },
 
-    handleComponentWithNoElementButtonAction: {
+    handleComponentWithNoElementButtonPress: {
         enumerable: false,
         value: function() {
             this.showContent(this.componentWithNoElement);
         }
     },
 
-    handleComponentInPageWithElementButtonAction: {
+    handleComponentInPageWithElementButtonPress: {
         enumerable: false,
         value: function() {
             this.showContent(this.componentInPageWithElement);
         }
     },
 
-    handleVideoButtonAction: {
+    handleVideoButtonPress: {
         enumerable: false,
         value: function() {
             this.currentMedia = this.video;
@@ -232,7 +234,7 @@ var SlotTest = exports.SlotTest = Montage.create(Component, {
         }
     },
 
-    handlePhotoButtonAction: {
+    handlePhotoButtonPress: {
         enumerable: false,
         value: function() {
             this.currentMedia = this.photo;
@@ -240,28 +242,28 @@ var SlotTest = exports.SlotTest = Montage.create(Component, {
         }
     },
 
-    handleBarButtonAction: {
+    handleBarButtonPress: {
         enumerable: false,
         value: function() {
             this.showContent(this.barContent);
         }
     },
 
-    handleBazButtonAction: {
+    handleBazButtonPress: {
         enumerable: false,
         value: function() {
             this.showContent(this.bazContent);
         }
     },
 
-    handleQuxButtonAction: {
+    handleQuxButtonPress: {
         enumerable: false,
         value: function() {
             this.showContent(this.quxContent);
         }
     },
 
-    handleEmptyButtonAction: {
+    handleEmptyButtonPress: {
         enumerable: false,
         value: function() {
             this.showContent(null);
@@ -271,7 +273,7 @@ var SlotTest = exports.SlotTest = Montage.create(Component, {
     showContent: {
         enumerable: false,
         value: function(content) {
-            console.log("chooser showContent:", content);
+            //console.log("chooser showContent:", content);
             this.slot.content = content;
         }
     }

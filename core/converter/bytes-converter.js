@@ -91,11 +91,11 @@ var fileSize = function(bytes, opt_decimals) {
 };
 
 /**
-    @class module:montage/core/converter/bytes-converter.BytesConverter
+    @class BytesConverter
     @classdesc Converts a numeric value to byte format (for example, 2048 is converted to 2MB).
-    @extends module:montage/core/converter.Converter
+    @extends Converter
  */
-exports.BytesConverter = Montage.create(Converter, /** @lends module:montage/core/converter/bytes-converter.BytesConverter# */ {
+exports.BytesConverter = Converter.specialize( /** @lends BytesConverter# */ {
 
     /**
      The number of decimals to include in the formatted value. Default is 2.
@@ -114,7 +114,7 @@ exports.BytesConverter = Montage.create(Converter, /** @lends module:montage/cor
      var Converter= require("core/converter/converter").Converter;
      var BytesConverter = require("core/converter/converter").BytesConverter;
      var bytes = "12341234";
-     var byteconverter = BytesConverter.create();
+     var byteconverter = new BytesConverter();
      console.log("Converted: " + byteconverter.convert(bytes));
      console.log("Reverted: " + byteconverter.revert(bytes));
      // Converted: 11.77MB
@@ -130,12 +130,12 @@ exports.BytesConverter = Montage.create(Converter, /** @lends module:montage/cor
      @function
      @param {String} v The value to revert.
      @returns {String} v
-     @see module:montage/converter.BytesConverter#convert
+     @see BytesConverter#convert
      @example
      var Converter= require("core/converter/converter").Converter;
      var BytesConverter = require("core/converter/converter").BytesConverter;
      var bytes = "11.77MB";
-     var byteconverter = BytesConverter.create();
+     var byteconverter = new BytesConverter();
      console.log("Reverted: " + byteconverter.revert(bytes));
      // Reverted: 12341234
      */

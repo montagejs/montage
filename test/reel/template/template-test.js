@@ -33,9 +33,9 @@ var querySelector = function(e){return document.querySelector(e);}
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 
-var TemplateTest = exports.TemplateTest = Montage.create(Montage, {
+var TemplateTest = exports.TemplateTest = Montage.specialize( {
     loadComponents: {value: function() {
-//        var component = Component.create();
+//        var component = new Component();
 //        component.hasTemplate = true;
 //        component.element = document.body;
 //
@@ -46,11 +46,11 @@ var TemplateTest = exports.TemplateTest = Montage.create(Montage, {
     }}
 });
 
-//window.test = Montage.create(TemplateTest);
+//window.test = new TemplateTest();
 
 // Setup up test buttons if we're running in the browser and not in jasmine.
 if (window.parent === window) {
-    //var component = Component.create();
+    //var component = new Component();
     //component.hasTemplate = true;
     //component.element = document.body;
     //component.needsDraw = true;

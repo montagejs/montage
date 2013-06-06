@@ -32,8 +32,9 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     _root = require("montage/ui/component")._root,
     logger = require("montage/core/logger").logger("Draw");
+var TestController = require("montage-testing/test-controller").TestController;
 
-var FirstDrawListenerComponent = Montage.create(Component, {
+var FirstDrawListenerComponent = Component.specialize( {
    handleFirstDraw: {
        value: function(event) {
        }
@@ -41,25 +42,46 @@ var FirstDrawListenerComponent = Montage.create(Component, {
 });
 
 
-var Draw = exports.Draw = Montage.create(Montage, {
+var Draw = exports.Draw = TestController.specialize( {
     loadComponents: {
         enumerable: false,
         value: function() {
-            this.componentA = Montage.create(Component);
+            if (this.componentA) {
+                this.componentA.detachFromParentComponent();
+            }
+            if (this.componentA1) {
+                this.componentA1.detachFromParentComponent();
+            }
+            if (this.componentB) {
+                this.componentB.detachFromParentComponent();
+            }
+            if (this.componentB1) {
+                this.componentB1.detachFromParentComponent();
+            }
+            if (this.componentB2) {
+                this.componentB2.detachFromParentComponent();
+            }
+
+            this.componentA = new Component();
             this.componentA.hasTemplate = false;
             this.componentA.element = document.getElementsByClassName("componentA")[0];
-            this.componentA1 = Montage.create(Component);
+            this.componentA.attachToParentComponent();
+            this.componentA1 = new Component();
             this.componentA1.hasTemplate = false;
             this.componentA1.element = document.getElementsByClassName("componentA1")[0];
-            this.componentB = Montage.create(FirstDrawListenerComponent);
+            this.componentA1.attachToParentComponent();
+            this.componentB = new FirstDrawListenerComponent();
             this.componentB.hasTemplate = false;
             this.componentB.element = document.getElementsByClassName("componentB")[0];
-            this.componentB1 = Montage.create(FirstDrawListenerComponent);
+            this.componentB.attachToParentComponent();
+            this.componentB1 = new FirstDrawListenerComponent();
             this.componentB1.hasTemplate = false;
             this.componentB1.element = document.getElementsByClassName("componentB1")[0];
-            this.componentB2 = Montage.create(Component);
+            this.componentB1.attachToParentComponent();
+            this.componentB2 = new Component();
             this.componentB2.hasTemplate = false;
             this.componentB2.element = document.getElementsByClassName("componentB2")[0];
+            this.componentB2.attachToParentComponent();
             return this;
         }
     },
@@ -98,5 +120,21 @@ var Draw = exports.Draw = Montage.create(Montage, {
     },
     componentC1: {
         value: null
+    },
+
+    class1: {
+        value: true
+    },
+
+    class2: {
+        value: false
+    },
+
+    classListTemplate1: {
+        value: true
+    },
+
+    classListTemplate2: {
+        value: false
     }
 });

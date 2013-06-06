@@ -1,9 +1,9 @@
 /* <copyright>
 </copyright> */
 var Montage = require("montage").Montage,
-    ObjectController = require("montage/ui/controller/object-controller").ObjectController;
+    ObjectController = require("montage/core/object-controller").ObjectController;
 
-var  TestController = exports.TestController = Montage.create(ObjectController, {
+var  TestController = exports.TestController = ObjectController.specialize( {
 
     init: {
       value: function() {

@@ -39,11 +39,11 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     logger = require("core/logger").logger("condition");
 /**
- @class module:"montage/ui/condition.reel".Condition
- @extends module:montage/ui/component.Component
+ @class Condition
+ @extends Component
  */
 
-exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/condition.reel".Condition# */ {
+exports.Condition = Component.specialize( /** @lends Condition# */ {
 
 /**
     The Condition component does not have an HTML template, so this value is set to false.
@@ -54,14 +54,16 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
         value: false
     },
 /**
-  Description TODO
   @private
 */
     _condition: {
+        value: true
+    },
+
+    _contents: {
         value: null
     },
 /**
-        Description TODO
         @type {Function}
         @default null
     */
@@ -74,17 +76,36 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
 
             this._condition = value;
             this.needsDraw = true;
-            // If it is being deserialized originalContent has not been populated yet
-            if (this.removalStrategy === "remove"  && !this.isDeserializing) {
-                if (value) {
-                    this.domContent = this.originalContent;
-                } else {
-                    this.domContent = null;
-                }
+            // If it is being deserialized element might not been set yet
+            if (!this.isDeserializing) {
+                this._updateDomContent(value);
             }
         },
         get: function() {
             return this._condition;
+        }
+    },
+
+    _updateDomContent: {
+        value: function(value) {
+            if (this.removalStrategy === "remove") {
+                if (value) {
+                    this.domContent = this._contents;
+                } else {
+                    this._contents = this.domContent;
+                    this.domContent = null;
+                }
+            }
+        }
+    },
+
+    deserializedFromTemplate: {
+        value: function() {
+            // update the DOM if the condition is false because we're preventing
+            // changes at deserialization time.
+            if (!this._condition) {
+                this._updateDomContent(this._condition);
+            }
         }
     },
 
@@ -102,27 +123,22 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
             return this._removalStrategy;
         },
         set:function (value) {
+            var contents;
+
             if (this._removalStrategy === value) {
                 return;
             }
             if (value === "hide" && !this.isDeserializing) {
-                this.domContent = this.originalContent;
+                contents = this.domContent;
+                this.domContent = this._contents;
+                this._contents = contents;
             }
             this._removalStrategy = value;
             this.needsDraw = true;
         }
     },
 
-    prepareForDraw: {
-        value: function() {
-            if (this.removalStrategy === "remove" && !this.condition) {
-                this.domContent = null;
-            }
-        }
-    },
-
     /**
-    Description TODO
     @function
     */
     draw: {

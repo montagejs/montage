@@ -52,18 +52,18 @@ var trim = exports.trim = function(str) {
     return str.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
 };
 /**
-    @class module:montage/core/converter/trim-converter.TrimConverter
+    @class TrimConverter
     @classdesc Trims a string of white space.
     @example
     <caption>Removes leading and trailing white space from a string.</caption>
     var Converter= require("core/converter/converter").Converter,
     TrimConverter = require("core/converter/converter").TrimConverter;
     var str = "      Hello World     ";
-    var trimConverter = TrimConverter.create();
+    var trimConverter = new TrimConverter();
     console.log("After trim: " + trimConverter.convert(str));
     // After trim: Hello World
 */
-exports.TrimConverter = Montage.create(Converter, /** @lends module:montage/core/converter/trim-converter.TrimConverter# */ {
+exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
     /**
      @private
      */

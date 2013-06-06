@@ -29,18 +29,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader;
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-var testPage = TestPageLoader.queueTest("slot-test", function() {
+TestPageLoader.queueTest("slot-test/slot-test", function(testPage) {
     describe("ui/slot-spec", function() {
-        it("should load", function() {
-            expect(testPage.loaded).toBeTruthy();
-        });
-
         var slot;
 
         beforeEach(function() {
-            console.log("CLEAR!")
             slot = testPage.test.slot;
             slot.content = null;
         });
@@ -77,7 +72,7 @@ var testPage = TestPageLoader.queueTest("slot-test", function() {
                 testPage.waitForDraw();
 
                 runs(function() {
-                    console.log(content.element, originalElement)
+                    //console.log(content.element, originalElement)
                     expect(content.element).toBe(originalElement);
                 });
             });

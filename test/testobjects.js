@@ -32,7 +32,6 @@ exports = typeof exports !== "undefined" ? exports : {};
 
 var Montage = require("montage").Montage,
     Uuid = require("montage/core/uuid").Uuid;
-//var Moose = require("moose").Moose;
 
 var TestObject = (function() {
     var instances = [];
@@ -113,7 +112,7 @@ var TestObject = (function() {
 
 var TestObjectsDesc = exports.TestObjectsDesc = {};
 
-var Empty = exports.Empty = Montage.create(Montage);
+var Empty = exports.Empty = new Montage();
 TestObjectsDesc.empty = TestObject({
     obj: Empty,
     info: {
@@ -122,7 +121,7 @@ TestObjectsDesc.empty = TestObject({
     }
 }, true);
 
-var emptyA = Empty.create();
+var emptyA = new Empty();
 TestObjectsDesc.emptyA = TestObject({
     obj: emptyA,
     info: {
@@ -131,7 +130,7 @@ TestObjectsDesc.emptyA = TestObject({
     }
 });
 
-var Simple = exports.Simple = Montage.create(Montage, {
+var Simple = exports.Simple = Montage.specialize( {
     number: {value: 42, serializable: true},
     string: {value: "string", serializable: true},
     regexp: {value: /regexp/gi}
@@ -144,7 +143,7 @@ TestObjectsDesc.simple = TestObject({
     }
 });
 
-var simpleA = Simple.create();
+var simpleA = new Simple();
 TestObjectsDesc.simpleA = TestObject({
     obj: simpleA,
     info: {
@@ -173,7 +172,7 @@ TestObjectsDesc.klass = TestObject({
     }
 });
 
-var Composed = exports.Composed = Montage.create(Montage, {
+var Composed = exports.Composed = Montage.specialize( {
     tags: {value: ["object", "composed", "test"], serializable: true},
     simpleObj: {value: simpleA, serializable: true}
 });
@@ -185,7 +184,7 @@ TestObjectsDesc.composed = TestObject({
     }
 });
 
-var composedA = Composed.create();
+var composedA = new Composed();
 TestObjectsDesc.composedA = TestObject({
     obj: composedA,
     info: {
@@ -198,7 +197,7 @@ TestObjectsDesc.composedA = TestObject({
 });
 TestObjectsDesc.composedA.obj.simpleObj = simpleA;
 
-var selfCycleA = Montage.create(Montage);
+var selfCycleA = new Montage();
 Montage.defineProperty(selfCycleA, "self", {value: selfCycleA, serializable: true});
 (selfCycleA.UID);
 TestObjectsDesc.selfCycleA = TestObject({
@@ -212,7 +211,7 @@ TestObjectsDesc.selfCycleA = TestObject({
     }
 });
 
-var indirectCycleA = Montage.create(Montage);
+var indirectCycleA = new Montage();
 (indirectCycleA.UID);
 TestObjectsDesc.indirectCycleA = TestObject({
     obj: indirectCycleA,
@@ -225,7 +224,7 @@ TestObjectsDesc.indirectCycleA = TestObject({
     }
 });
 
-var indirectCycleB = Montage.create(Montage);
+var indirectCycleB = new Montage();
 (indirectCycleB.UID);
 TestObjectsDesc.indirectCycleB = TestObject({
     obj: indirectCycleB,
@@ -241,7 +240,7 @@ TestObjectsDesc.indirectCycleB = TestObject({
 Montage.defineProperty(indirectCycleA, "B", {value: indirectCycleB, serializable: true});
 Montage.defineProperty(indirectCycleB, "A", {value: indirectCycleA, serializable: true});
 
-var Custom = exports.Custom = Montage.create(Montage, {
+var Custom = exports.Custom = Montage.specialize( {
     manchete: {value: 42},
 
     serializeSelf: {value: function(serializer) {
@@ -264,7 +263,7 @@ TestObjectsDesc.custom = TestObject({
     }
 });
 
-var customA = Custom.create();
+var customA = new Custom();
 TestObjectsDesc.customA = TestObject({
     obj: customA,
     info: {

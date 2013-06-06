@@ -35,7 +35,7 @@ describe("gate-spec",
 function() {
     describe("creating empty gate",
     function() {
-        var gate = Gate.create().init();
+        var gate = new Gate().init();
         it("should be true",
         function() {
             expect(gate.value).toBeTruthy();
@@ -46,7 +46,7 @@ function() {
         var gate;
 
         beforeEach(function() {
-            gate = Gate.create().initWithDescriptor({
+            gate = new Gate().initWithDescriptor({
                 A: {
                     value: false
                 },

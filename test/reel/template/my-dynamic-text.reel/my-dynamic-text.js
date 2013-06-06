@@ -31,9 +31,9 @@ POSSIBILITY OF SUCH DAMAGE.
 exports = typeof exports !== "undefined" ? exports : {};
 
 var Montage = require("montage").Montage;
-var DynamicText = require("montage/ui/dynamic-text.reel").DynamicText;
+var Text = require("montage/ui/text.reel").Text;
 
-var MyDynamicText = exports.MyDynamicText = Montage.create(DynamicText, {
+var MyText = exports.MyText = Text.specialize( {
     didDeserializedFromTemplate: {
         value: false
     },

@@ -48,11 +48,11 @@ var Montage = require("core/core").Montage,
     LOADED = 3;
 
 /**
- @class module:montage/ui/loader.Loader
- @extends module:montage/ui/component.Component
+ @class Loader
+ @extends Component
  */
 
-exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.Loader# */ {
+exports.Loader = Component.specialize( /** @lends Loader# */ {
 
     // Configuration Properties
 
@@ -211,7 +211,10 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     },
 
     _mainComponent: {
-        enumerable: false,
+        value: null
+    },
+
+    _mainComponentEnterDocument: {
         value: null
     },
 
@@ -298,7 +301,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
                 children = loaderElement.children;
 
                 for (i = 0; (iChild = children[i]); i++) {
-                    if ((iComponent = iChild.controller)) {
+                    if ((iComponent = iChild.component)) {
                         iComponent.attachToParentComponent();
                         iComponent.needsDraw = true;
                     }
@@ -341,105 +344,108 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
             // instantiate it and lets find out what else we need to load
             // based on its template
             this._mainComponent = exports[this.mainName].create();
-            this.childComponents.push(this._mainComponent);
+            this._mainComponentEnterDocument = this._mainComponent.enterDocument;
+            this._mainComponent.enterDocument = this.mainComponentEnterDocument.bind(this);
             this._mainComponent.setElementWithParentComponent(document.createElement("div"), this);
+            this._mainComponent.attachToParentComponent();
             this._mainComponent.needsDraw = true;
         }
     },
 
-    childComponentWillPrepareForDraw: {
-        value: function(child) {
+    mainComponentEnterDocument: {
+        value: function() {
             var self = this,
                 insertionElement;
 
-            // if the mainComponent is ready to draw...
-            if (child === this._mainComponent) {
+            if (logger.isDebug) {
+                logger.debug(this, "main preparing to draw");
+            }
+            this.isLoadingMainComponent = false;
 
+            // Determine old content
+            this._contentToRemove = document.createRange();
+
+            // If installing classnames on the documentElement (to affect as high a level as possible)
+            // make sure content only ends up inside the body
+            insertionElement = this.element === document.documentElement ? document.body : this.element;
+            this._contentToRemove.selectNodeContents(insertionElement);
+
+            // Add new content so mainComponent can actually draw
+            this.childComponents = [this._mainComponent];
+            insertionElement.appendChild(this._mainComponent.element);
+
+            var startBootstrappingTimeout = document[bootstrappingTimeoutPropertyName],
+                timing = document._montageTiming,
+                remainingBootstrappingDelay,
+                remainingLoadingDelay;
+
+            // if we hadn't even started to say we were bootstrapping…
+            if (!timing.bootstrappingStartTime) {
+                // don't bother showing bootstrapping, just show the mainComponent
                 if (logger.isDebug) {
-                    logger.debug(this, "main preparing to draw");
+                    logger.debug(this, "bootstrapper never shown");
                 }
-                this.isLoadingMainComponent = false;
+                clearTimeout(startBootstrappingTimeout);
+                startBootstrappingTimeout = null;
+                this._revealMainComponent();
+            }
 
-                // Determine old content
-                this._contentToRemove = document.createRange();
+            // Otherwise if we started bootstrapping, but never started loading…
+            else if (timing.bootstrappingStartTime && !timing.loadingStartTime) {
 
-                // If installing classnames on the documentElement (to affect as high a level as possible)
-                // make sure content only ends up inside the body
-                insertionElement = this.element === document.documentElement ? document.body : this.element;
-                this._contentToRemove.selectNodeContents(insertionElement);
+                // don't ever show the loader and wait until we've bootstrapped for the minimumBootstrappingDuration
+                clearTimeout(this._showLoadingTimeout);
+                this._showLoadingTimeout = null;
 
-                // Add new content so mainComponent can actually draw
-                this.childComponents = [this._mainComponent];
-                insertionElement.appendChild(this._mainComponent.element);
+                timing.bootstrappingEndTime = Date.now();
 
-                var startBootstrappingTimeout = document[bootstrappingTimeoutPropertyName],
-                    timing = document._montageTiming,
-                    remainingBootstrappingDelay,
-                    remainingLoadingDelay;
-
-                // if we hadn't even started to say we were bootstrapping…
-                if (!timing.bootstrappingStartTime) {
-                    // don't bother showing bootstrapping, just show the mainComponent
+                if ((remainingBootstrappingDelay = this.minimumBootstrappingDuration - (timing.bootstrappingEndTime - timing.bootstrappingStartTime)) > 0) {
                     if (logger.isDebug) {
-                        logger.debug(this, "bootstrapper never shown");
+                        logger.debug(this, "show bootstrapper for another " + remainingBootstrappingDelay + "ms");
                     }
-                    clearTimeout(startBootstrappingTimeout);
-                    startBootstrappingTimeout = null;
+                    this._showMainComponentTimeout = setTimeout(function () {
+                        if (logger.isDebug) {
+                            logger.debug(this, "ok, shown bootstrapper long enough");
+                        }
+                        self._revealMainComponent();
+                    }, remainingBootstrappingDelay);
+                } else {
+                    setTimeout(function () {
+                        if (logger.isDebug) {
+                            logger.debug(this, "ok, showing bootstrapper now");
+                        }
+                        self._revealMainComponent();
+                    }, 0);
+                }
+            }
+
+            //Otherwise, we apparently started showing loading progress…
+            else if (timing.loadingStartTime) {
+                timing.loadingEndTime = Date.now();
+
+                // wait until we've loaded for the minimumLoadingDuration
+                // TODO this is not precise, but it's a decent start for scheduling the delay
+                if ((remainingLoadingDelay = this.minimumLoadingDuration - (timing.loadingEndTime - timing.loadingStartTime)) > 0) {
+                    if (logger.isDebug) {
+                        logger.debug(this, "show loader for another " + remainingLoadingDelay + "ms");
+                    }
+                    this._showMainComponentTimeout = setTimeout(function () {
+                        if (logger.isDebug) {
+                            logger.debug(this, "ok, shown loader long enough");
+                        }
+                        self._revealMainComponent();
+                    }, remainingLoadingDelay);
+                } else {
+                    // or we showed loading long enough, go ahead and show mainComponent
                     this._revealMainComponent();
                 }
+            }
 
-                // Otherwise if we started bootstrapping, but never started loading…
-                else if (timing.bootstrappingStartTime && !timing.loadingStartTime) {
+            var mainComponent = this._mainComponent;
 
-                    // don't ever show the loader and wait until we've bootstrapped for the minimumBootstrappingDuration
-                    clearTimeout(this._showLoadingTimeout);
-                    this._showLoadingTimeout = null;
-
-                    timing.bootstrappingEndTime = Date.now();
-
-                    if ((remainingBootstrappingDelay = this.minimumBootstrappingDuration - (timing.bootstrappingEndTime - timing.bootstrappingStartTime)) > 0) {
-                        if (logger.isDebug) {
-                            logger.debug(this, "show bootstrapper for another " + remainingBootstrappingDelay + "ms");
-                        }
-                        this._showMainComponentTimeout = setTimeout(function () {
-                            if (logger.isDebug) {
-                                logger.debug(this, "ok, shown bootstrapper long enough");
-                            }
-                            self._revealMainComponent();
-                        }, remainingBootstrappingDelay);
-                    } else {
-                        setTimeout(function () {
-                            if (logger.isDebug) {
-                                logger.debug(this, "ok, showing bootstrapper now");
-                            }
-                            self._revealMainComponent();
-                        }, 0);
-                    }
-                }
-
-                //Otherwise, we apparently started showing loading progress…
-                else if (timing.loadingStartTime) {
-                    timing.loadingEndTime = Date.now();
-
-                    // wait until we've loaded for the minimumLoadingDuration
-                    // TODO this is not precise, but it's a decent start for scheduling the delay
-                    if ((remainingLoadingDelay = this.minimumLoadingDuration - (timing.loadingEndTime - timing.loadingStartTime)) > 0) {
-                        if (logger.isDebug) {
-                            logger.debug(this, "show loader for another " + remainingLoadingDelay + "ms");
-                        }
-                        this._showMainComponentTimeout = setTimeout(function () {
-                            if (logger.isDebug) {
-                                logger.debug(this, "ok, shown loader long enough");
-                            }
-                            self._revealMainComponent();;
-                        }, remainingLoadingDelay);
-                    } else {
-                        // or we showed loading long enough, go ahead and show mainComponent
-                        this._revealMainComponent();
-                    }
-                }
-
-
+            mainComponent.enterDocument = this._mainComponentEnterDocument;
+            if (mainComponent.enterDocument) {
+                return mainComponent.enterDocument.apply(mainComponent, arguments);
             }
         }
     },

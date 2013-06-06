@@ -1,4 +1,7 @@
 /**
+    @module montage/core/messageformat
+*/
+/**
  * messageformat.js
  *
  * ICU PluralFormat + SelectFormat for JavaScript
@@ -11,6 +14,10 @@
 (function ( root ) {
 
   // Create the contructor function
+/**
+ * @class MessageFormat
+ * @classdesc see [messageformat.js](https://github.com/SlexAxton/messageformat.js)
+*/
   function MessageFormat ( locale, pluralFunc ) {
     var fallbackLocale;
 

@@ -33,9 +33,6 @@ require("montage");
 
 describe("core/extras/string", function () {
 
-    // not testing String.isString because it should be deprecated
-    // TODO remove this note if isString is removed
-
     describe("String#equals", function () {
 
         it("should recognize a string", function () {

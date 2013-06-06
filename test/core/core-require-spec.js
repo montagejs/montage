@@ -53,7 +53,7 @@ function() {
         });
         it("should describe a class instance object",
         function() {
-            var instance = objects.Simple.create();
+            var instance = new objects.Simple();
             var info = Montage.getInfoForObject(instance);
 
             expect(info.objectName).toBe("Simple");

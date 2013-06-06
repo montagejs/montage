@@ -40,16 +40,25 @@ POSSIBILITY OF SUCH DAMAGE.
                 "properties": {
                     "element": {
                         "#": "montage-flow-repetition"
+                    },
+                    "contentController": {
+                        "@": "frustrumController"
                     }
                 },
                 "bindings": {
-                    "objects": {"<-": "@owner.objects"},
-                    "contentController": {"<-": "@owner.contentController"},
                     "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"}
                 }
             },
+            "frustrumController": {
+                "prototype": "core/range-controller",
+                "bindings": {
+                    "content": {"<-": "@owner.contentController.organizedContent ?? @owner.content"},
+                    "selection": {"<-": "@owner.contentController.selection"},
+                    "visibleIndexes": {"<-": "@owner._visibleIndexes"}
+                }
+            },
             "flowTranslateComposer": {
-                "prototype": "ui/composer/flow-translate-composer",
+                "prototype": "ui/flow.reel/flow-translate-composer",
                 "properties": {
                     "flow": {"@": "owner"},
                     "invertAxis": true,
@@ -86,6 +95,9 @@ POSSIBILITY OF SUCH DAMAGE.
                     },
                     "_cameraElement": {
                         "#": "montage-flow-camera"
+                    },
+                    "_frustrumController": {
+                        "@": "frustrumController"
                     }
                 },
                 "bindings": {
@@ -101,7 +113,11 @@ POSSIBILITY OF SUCH DAMAGE.
 <body>
     <div data-montage-id="montage-flow" class="montage-Flow">
         <div data-montage-id="montage-flow-camera" class="montage-Flow-camera">
-            <div data-montage-id="montage-flow-repetition" class="montage-Flow-Repetition"></div>
+            <div data-montage-id="montage-flow-repetition" class="montage-Flow-Repetition">
+                <div data-montage-id="wrapper">
+                    <div data-param="*"></div>
+                </div>
+            </div>
             <div data-montage-id="montage-flow-slot" class="montage-Flow-Slot"></div>
         </div>
     </div>

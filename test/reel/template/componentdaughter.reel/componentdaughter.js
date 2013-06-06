@@ -34,5 +34,5 @@ var Montage = require("montage").Montage;
 var ComponentMother = require("reel/template/componentmother.reel").ComponentMother;
 
 
-var ComponentDaughter = exports.ComponentDaughter = Montage.create(ComponentMother, {
+var ComponentDaughter = exports.ComponentDaughter = ComponentMother.specialize( {
 });

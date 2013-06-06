@@ -32,23 +32,25 @@ exports = typeof exports !== "undefined" ? exports : {};
 
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
+var Promise = require("montage/core/promise").Promise;
 
-var ComponentSlowLoad = exports.ComponentSlowLoad = Montage.create(Component, {
+var ComponentSlowLoad = exports.ComponentSlowLoad = Component.specialize( {
     hasTemplate: {value: false},
     delay: {value: 100},
 
     // This code makes the first instantiated component to load after the second
     loadComponentTree: {value: function(callback) {
-        var self = this;
+        var self = this,
+            defered = Promise.defer();
 
         setTimeout(function() {
             self.canDrawGate.setField("componentTreeLoaded", true);
-            if (callback) {
-                callback();
-            }
+            defered.resolve();
         }, ComponentSlowLoad.delay);
 
         ComponentSlowLoad.delay -= 20;
+
+        return defered.promise;
     }}
 });
 

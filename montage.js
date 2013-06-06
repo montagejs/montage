@@ -98,11 +98,14 @@ if (typeof window !== "undefined") {
 
             // setup serialization compiler
             config.makeCompiler = function (config) {
-                return exports.SerializationCompiler(
+                return exports.MetaCompiler(
                     config,
-                    exports.TemplateCompiler(
+                    exports.SerializationCompiler(
                         config,
-                        Require.makeCompiler(config)
+                        exports.TemplateCompiler(
+                            config,
+                            Require.makeCompiler(config)
+                        )
                     )
                 );
             };
@@ -139,81 +142,170 @@ if (typeof window !== "undefined") {
                 }));
             }
 
-            Require.loadPackage({
-                location: montageLocation,
-                hash: params.montageHash
-            }, config)
-            .then(function (montageRequire) {
-                // load the promise package so we can inject the bootstrapped
-                // promise library back into it
+            var applicationRequirePromise;
 
-                var promiseLocation;
-                if (params.promiseLocation) {
-                    promiseLocation = URL.resolve(Require.getLocation(), params.promiseLocation);
-                } else {
-                    promiseLocation = URL.resolve(montageLocation, "packages/mr/packages/q");
-                }
-
-                return [
-                    montageRequire,
-                    montageRequire.loadPackage({
-                        location: promiseLocation,
-                        hash: params.promiseHash
-                    })
-                ];
-            })
-            .spread(function (montageRequire, promiseRequire) {
-                montageRequire.inject("core/mini-url", URL);
-                montageRequire.inject("core/promise", {Promise: Promise});
-                promiseRequire.inject("q", Promise);
-
-                // install the linter, which loads on the first error
-                config.lint = function (module) {
-                    montageRequire.async("core/jshint")
-                    .then(function (JSHINT) {
-                        if (!JSHINT.JSHINT(module.text)) {
-                            console.warn("JSHint Error: "+module.location);
-                            JSHINT.JSHINT.errors.forEach(function(error) {
-                                if (error) {
-                                    console.warn("Problem at line "+error.line+" character "+error.character+": "+error.reason);
-                                    if (error.evidence) {
-                                        console.warn("    " + error.evidence);
-                                    }
-                                }
-                            });
-                        }
-                    })
-                    .done();
-                };
-
+            if (!("remoteTrigger" in params)) {
                 if ("autoPackage" in params) {
-                    montageRequire.injectPackageDescription(location, {
+                    Require.injectPackageDescription(location, {
                         dependencies: {
                             montage: "*"
                         }
-                    });
+                    }, config);
+                } else {
+                    // handle explicit package.json location
+                    if (location.slice(location.length - 5) === ".json") {
+                        var packageDescriptionLocation = location;
+                        location = URL.resolve(location, ".");
+                        Require.injectPackageDescriptionLocation(
+                            location,
+                            packageDescriptionLocation,
+                            config
+                        );
+                    }
                 }
-
-                // handle explicit package.json location
-                if (location.slice(location.length - 5) === ".json") {
-                    var packageDescriptionLocation = location;
-                    location = URL.resolve(location, ".");
-                    montageRequire.injectPackageDescriptionLocation(
-                        location,
-                        packageDescriptionLocation
-                    );
-                }
-
-                return montageRequire.loadPackage({
+                applicationRequirePromise = Require.loadPackage({
                     location: location,
                     hash: applicationHash
+                }, config);
+            } else {
+                // allows the bootstrapping to be remote controlled by the
+                // parent window, with a dynamically generated package
+                // description
+                var trigger = Promise.defer();
+                window.postMessage({
+                    type: "montageReady"
+                }, "*");
+                var messageCallback = function (event) {
+                    if (
+                        params.remoteTrigger === event.origin &&
+                        (event.source === window || event.source === window.parent)
+                    ) {
+                        switch (event.data.type) {
+                        case "montageInit":
+                            window.removeEventListener("message", messageCallback);
+                            trigger.resolve([event.data.location, event.data.injections]);
+                            break;
+                        case "isMontageReady":
+                            // allow the injector to query the state in case
+                            // they missed the first message
+                            window.postMessage({
+                                type: "montageReady"
+                            }, "*");
+                        }
+                    }
+                };
+                window.addEventListener("message", messageCallback);
+
+                applicationRequirePromise = trigger.promise.spread(function (location, injections) {
+                    var promise = Require.loadPackage({
+                        location: location,
+                        hash: applicationHash
+                    }, config);
+                    if (injections) {
+                        promise = promise.then(function (applicationRequire) {
+                            location = URL.resolve(location, ".");
+                            var packageDescriptions = injections.packageDescriptions,
+                                packageDescriptionLocations = injections.packageDescriptionLocations,
+                                mappings = injections.mappings,
+                                dependencies = injections.dependencies,
+                                index, injectionsLength;
+
+                            if (packageDescriptions) {
+                                injectionsLength = packageDescriptions.length;
+                                for (index = 0; index < injectionsLength; index++) {
+                                    applicationRequire.injectPackageDescription(
+                                        packageDescriptions[index].location,
+                                        packageDescriptions[index].description);
+                                }
+                            }
+
+                            if (packageDescriptionLocations) {
+                                injectionsLength = packageDescriptionLocations.length;
+                                for (index = 0; index < injectionsLength; index++) {
+                                    applicationRequire.injectPackageDescriptionLocation(
+                                        packageDescriptionLocations[index].location,
+                                        packageDescriptionLocations[index].descriptionLocation);
+                                }
+                            }
+
+                            if (mappings) {
+                                injectionsLength = mappings.length;
+                                for (index = 0; index < injectionsLength; index++) {
+                                    applicationRequire.injectMapping(
+                                        mappings[index].dependency,
+                                        mappings[index].name);
+                                }
+                            }
+
+                            if (dependencies) {
+                                injectionsLength = dependencies.length;
+                                for (index = 0; index < injectionsLength; index++) {
+                                    applicationRequire.injectDependency(
+                                        dependencies[index].name,
+                                        dependencies[index].version);
+                                }
+                            }
+
+                            return applicationRequire;
+                        });
+                    }
+
+                    return promise;
+                });
+            }
+
+            applicationRequirePromise
+            .then(function (applicationRequire) {
+                applicationRequire.loadPackage({
+                    location: montageLocation,
+                    hash: params.montageHash
                 })
-                .then(function (applicationRequire) {
+                .then(function (montageRequire) {
+                    // load the promise package so we can inject the bootstrapped
+                    // promise library back into it
+                    var promiseLocation;
+                    if (params.promiseLocation) {
+                        promiseLocation = URL.resolve(Require.getLocation(), params.promiseLocation);
+                    } else {
+                        promiseLocation = URL.resolve(montageLocation, "packages/mr/packages/q");
+                    }
+
+                    return [
+                        montageRequire,
+                        montageRequire.loadPackage({
+                            location: promiseLocation,
+                            hash: params.promiseHash
+                        })
+                    ];
+                })
+                .spread(function (montageRequire, promiseRequire) {
+                    montageRequire.inject("core/mini-url", URL);
+                    montageRequire.inject("core/promise", {Promise: Promise});
+                    promiseRequire.inject("q", Promise);
+
+                    // install the linter, which loads on the first error
+                    config.lint = function (module) {
+                        montageRequire.async("core/jshint")
+                        .then(function (JSHINT) {
+                            if (!JSHINT.JSHINT(module.text)) {
+                                console.warn("JSHint Error: "+module.location);
+                                JSHINT.JSHINT.errors.forEach(function(error) {
+                                    if (error) {
+                                        console.warn("Problem at line "+error.line+" character "+error.character+": "+error.reason);
+                                        if (error.evidence) {
+                                            console.warn("    " + error.evidence);
+                                        }
+                                    }
+                                });
+                            }
+                        })
+                        .done();
+                    };
 
                     global.require = applicationRequire;
                     global.montageRequire = montageRequire;
                     platform.initMontage(montageRequire, applicationRequire, params);
-                })
+                });
             })
             .done();
 
@@ -289,6 +381,25 @@ if (typeof window !== "undefined") {
                 return module;
             } else {
                 return load(id, module);
+            }
+        };
+    };
+
+    /**
+     * Allows the .meta files to be loaded as json
+     * @see Compiler middleware in require/require.js
+     * @param config
+     * @param compile
+     */
+    var metaExpression = /\.meta/;
+    exports.MetaCompiler = function (config, compile) {
+        return function (module) {
+            var json = (module.location || "").match(metaExpression);
+            if (json) {
+                module.exports = JSON.parse(module.text);
+                return module;
+            } else {
+                return compile(module);
             }
         };
     };
@@ -449,8 +560,9 @@ if (typeof window !== "undefined") {
                 callbackIfReady();
             }
 
-            // this permits montage.js to be injected after domready
-            if (document.readyState === "interactive") {
+            // this permits montage.js to be injected after DOMContentLoaded
+            // http://jsperf.com/readystate-boolean-vs-regex/2
+            if (/interactive|complete/.test(document.readyState)) {
                 domLoad();
             } else {
                 document.addEventListener("DOMContentLoaded", domLoad, true);
@@ -525,14 +637,11 @@ if (typeof window !== "undefined") {
         initMontage: function (montageRequire, applicationRequire, params) {
 
             var dependencies = [
+                "core/core",
                 "core/event/event-manager",
-                "core/deserializer",
+                "core/serialization/deserializer/montage-reviver",
                 "core/logger"
             ];
-
-            if (typeof window !== "undefined") {
-                dependencies.push("core/event/binding");
-            }
 
             var Promise = montageRequire("core/promise").Promise;
 
@@ -541,8 +650,9 @@ if (typeof window !== "undefined") {
 
                 dependencies.forEach(montageRequire);
 
+                var Montage = montageRequire("core/core").Montage;
                 var EventManager = montageRequire("core/event/event-manager").EventManager;
-                var Deserializer = montageRequire("core/deserializer").Deserializer;
+                var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                 var logger = montageRequire("core/logger").logger
 
                 var defaultEventManager, application;
@@ -553,7 +663,7 @@ if (typeof window !== "undefined") {
                 });
 
                 // Load the event-manager
-                defaultEventManager = EventManager.create().initWithWindow(window);
+                defaultEventManager = new EventManager().initWithWindow(window);
 
                 // montageWillLoad is mostly for testing purposes
                 if (typeof global.montageWillLoad === "function") {
@@ -563,17 +673,26 @@ if (typeof window !== "undefined") {
                 // Load the application
 
                 var appProto = applicationRequire.packageDescription.applicationPrototype,
-                    applicationDescription, appModulePromise;
+                    applicationLocation, appModulePromise;
                 if (appProto) {
-                    applicationDescription = Deserializer.parseForModuleAndName(appProto);
-                    appModulePromise = applicationRequire.async(applicationDescription.module);
+                    applicationLocation = MontageReviver.parseObjectLocationId(appProto);
+                    appModulePromise = applicationRequire.async(applicationLocation.moduleId);
                 } else {
-                    appModulePromise = montageRequire.async("ui/application");
+                    appModulePromise = montageRequire.async("core/application");
                 }
 
                 return appModulePromise.then(function(exports) {
-                    application = exports[(applicationDescription ? applicationDescription.name : "Application")].create();
-                    window.document.application = application;
+                    var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
+                    application = new Application();
+                    Object.defineProperty(window.document, "application", {
+                        get: Montage.deprecate(
+                            null,
+                            function () {
+                                return exports.application
+                            },
+                            "document.application is deprecated, use require(\"montage/core/application\").application instead."
+                            )
+                    });
                     defaultEventManager.application = application;
                     application.eventManager = defaultEventManager;
                     application._load(applicationRequire, function() {
@@ -581,6 +700,9 @@ if (typeof window !== "undefined") {
                             // If a module was specified in the config then we initialize it now
                             applicationRequire.async(params.module)
                             .done();
+                        }
+                        if (typeof global.montageDidLoad === "function") {
+                            global.montageDidLoad();
                         }
                     });
                 })

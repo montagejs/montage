@@ -41,7 +41,7 @@ function() {
             var point;
 
             beforeEach(function() {
-                point = Montage.create(Point);
+                point = new Point();
             });
 
             it("should be origin",
@@ -56,7 +56,7 @@ function() {
             var point;
 
             beforeEach(function() {
-                point = Montage.create(Point).init(10, 20);
+                point = new Point().init(10, 20);
             });
 
             it("should be (x, y)",
@@ -75,7 +75,7 @@ function() {
             var points;
 
             beforeEach(function() {
-                points = [Montage.create(Point).init(0, 0), Montage.create(Point).init(0, 0)];
+                points = [new Point().init(0, 0), new Point().init(0, 0)];
             });
 
             it("is correct positions",
@@ -93,7 +93,7 @@ function() {
             var points;
 
             beforeEach(function() {
-                points = [Montage.create(Point).init(10, -10), Montage.create(Point).init(-20, 10)];
+                points = [new Point().init(10, -10), new Point().init(-20, 10)];
             });
 
             it("is correct positions",
@@ -111,7 +111,7 @@ function() {
             var points;
 
             beforeEach(function() {
-                points = [Montage.create(Point).init(.315, 0), Montage.create(Point).init(.54, .75)];
+                points = [new Point().init(.315, 0), new Point().init(.54, .75)];
             });
 
             it("is correct positions",

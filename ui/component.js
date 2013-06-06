@@ -30,53 +30,109 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /*global Element */
 /**
-	@module montage/ui/component
-    @requires montage
-    @requires montage/ui/template
-    @requires montage/core/gate
-    @requires montage/core/logger | component
-    @requires montage/core/logger | drawing
-    @requires montage/core/event/event-manager
+ * @module montage/ui/component
+ * @requires montage
+ * @requires montage/ui/template
+ * @requires montage/core/gate
+ * @requires montage/core/logger | component
+ * @requires montage/core/logger | drawing
+ * @requires montage/core/event/event-manager
  */
 var Montage = require("montage").Montage,
-    Template = require("ui/template").Template,
+    Target = require("core/target").Target,
+    Bindings = require("core/bindings").Bindings,
+    Template = require("core/template").Template,
+    DocumentResources = require("core/document-resources").DocumentResources,
     Gate = require("core/gate").Gate,
     Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("component"),
+    drawPerformanceLogger = require("core/logger").logger("Drawing performance"),
     drawLogger = require("core/logger").logger("drawing"),
-    defaultEventManager = require("core/event/event-manager").defaultEventManager;
+    defaultEventManager = require("core/event/event-manager").defaultEventManager,
+    Set = require("collections/set");
 
 /**
-    @requires montage/ui/component-description
+ * @requires montage/ui/component-description
  */
 /**
- * @class module:montage/ui/component.Component
+ * @class Component
  * @classdesc Base class for all Montage components.
-   @extends module:montage/core/core.Montage
+ * @extends Montage
  */
-var Component = exports.Component = Montage.create(Montage,/** @lends module:montage/ui/component.Component# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default null
+var Component = exports.Component = Target.specialize(/** @lends module:montage/ui/component.Component# */ {
+    DOM_ARG_ATTRIBUTE: {value: "data-arg"},
+
+    constructor: {
+        value: function () {
+            Montage.constructor.call(this);
+            this._isComponentExpanded = false;
+            this._isTemplateLoaded = false;
+            this._isTemplateInstantiated = false;
+            this._isComponentTreeLoaded = false;
+        }
+    },
+
+    /**
+     * The delegate of this component
+     * @type {Object}
+     * @default null
     */
     delegate: {
         value: null
     },
 
+    /**
+     * The templateObjects property is populated by the template. It is a map of all the instances present in the
+     * template's serialization keyed by their label. If the templateObjects is initialized prior to template load then
+     * if one it's keys matches a label in the serialization that value is used rather than the what is defined in the
+     * template.
+     * @type {Object}
+     * @default null
+     */
     templateObjects: {
         serializable: false,
         value: null
     },
 
-    parentProperty: {
-        value: "parentComponent"
+    _nextTarget: {
+        value: null
     },
 
     /**
-      Dispatch the actionEvent this component is configured to emit upon interaction
-      @private
-    */
+     * The next Target to consider in the event target chain
+     *
+     * Currently, components themselves do not allow this chain to be broken;
+     * setting a component's nextTarget to a falsy value will cause nextTarget
+     * to resolve as the parentComponent.
+     *
+     * To interrupt the propagation path a Target that accepts a falsy
+     * nextTarget needs to be set at a component's nextTarget.
+     */
+    nextTarget: {
+        get: function () {
+            return this._nextTarget || this.parentComponent;
+        },
+        set: function (value) {
+            this._nextTarget = value;
+        }
+    },
+
+    _ownerDocumentPart: {
+        value: null
+    },
+
+    _templateDocumentPart: {
+        value: null
+    },
+
+    _domArguments: {
+        value: null
+    },
+
+    /**
+     * Dispatch the actionEvent this component is configured to emit upon interaction
+     * @private
+     */
     _dispatchActionEvent: {
         value: function() {
             this.dispatchEvent(this.createActionEvent());
@@ -85,10 +141,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     /**
-        Create a custom event to dispatch upon interaction
-        @type {Function}
-        @returns and event to dispatch upon interaction
-    */
+     * Convenience to create a custom event named "action"
+     * @function
+     * @returns and event to dispatch upon interaction
+     */
     createActionEvent: {
         value: function() {
             var actionEvent = document.createEvent("CustomEvent");
@@ -97,38 +153,38 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
-/**
-    Description TODO
-    @function
-    @returns this._canDrawGate
-    */
+    /**
+     * The gate controlling the canDraw() response of the component.
+     * @type {Gate}
+     */
     canDrawGate: {
         get: function() {
             if (!this._canDrawGate) {
-                this._canDrawGate = Gate.create().initWithDelegate(this);
+                this._canDrawGate = new Gate().initWithDelegate(this);
                 this._canDrawGate.setField("componentTreeLoaded", false);
             }
             return this._canDrawGate;
         },
         enumerable: false
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     * @private
+     */
     _blockDrawGate: {
         value: null
     },
-/**
-    Description TODO
-    @function
-    @returns this._blockDrawGate
-    */
+
+    /**
+     * The gate controlling whether the component will ask to draw.
+     * @type {Gate}
+     * @private
+     */
     blockDrawGate: {
         enumerable: false,
         get: function() {
             if (!this._blockDrawGate) {
-                this._blockDrawGate = Gate.create().initWithDelegate(this);
+                this._blockDrawGate = new Gate().initWithDelegate(this);
                 this._blockDrawGate.setField("element", false);
                 this._blockDrawGate.setField("drawRequested", false);
             }
@@ -136,34 +192,49 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
-   /**
-  Description TODO
-  @private
-*/ _firstDraw: {
+    /**
+     * @private
+     */
+    _firstDraw: {
         enumerable: false,
         value: true
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     * @private
+     */
     _completedFirstDraw: {
         enumerable: false,
         value: false
     },
-/**
-  Description TODO
-  @private
-*/
+
+    originalElement: {
+        value: null
+    },
+
+    /**
+     * @private
+     */
     _element: {
         enumerable: false,
         value: null
     },
-/**
-        Description TODO
-        @type {Function}
-        @default null
-    */
+
+    /**
+     * The element of the component as defined in it's template.
+     * ```json
+     * {
+     *    "component": {
+     *        "properties": {
+     *            "element": {"#": "datamontageid"}
+     *        }
+     *    }
+     * }
+     * ```
+     * At prepareForDraw the element is replaced by the template if the component has one.
+     * @type {DOMElement}
+     * @default null
+     */
     element: {
         get: function() {
             return this._element;
@@ -201,68 +272,181 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     this.blockDrawGate.setField("element", true);
                 }
             }
+            this._initializeClassListFromElement(value);
+        }
+    },
+
+    getElementId: {
+        value: function() {
+            var element = this._element;
+
+            if (element) {
+                return element.getAttribute("data-montage-id");
+            }
+        }
+    },
+
+    _initDomArguments: {
+        value: function() {
+            var candidates,
+                domArguments = {},
+                name,
+                node,
+                element = this.element;
+
+            candidates = element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "]");
+
+            // Need to make sure that we filter dom args that are for nested
+            // components and not for this component.
+            nextCandidate:
+            for (var i = 0, candidate; (candidate = candidates[i]); i++) {
+                node = candidate;
+                while ((node = node.parentNode) !== element) {
+                    // This candidate is inside another component so skip it.
+                    if (node.component) {
+                        continue nextCandidate;
+                    }
+                }
+                this._findAndDetachComponents(candidate);
+                candidate.parentNode.removeChild(candidate);
+                name = candidate.getAttribute(this.DOM_ARG_ATTRIBUTE);
+                candidate.removeAttribute(this.DOM_ARG_ATTRIBUTE);
+                domArguments[name] = candidate;
+            }
+
+            this._domArguments = domArguments;
+        }
+    },
+
+    getDomArgumentNames: {
+        value: function() {
+            return Object.keys(this._domArguments);
+        }
+    },
+
+    /**
+     * When a Dom Argument is extracted from a Component it is no longer
+     * available
+     *
+     * @param {String} name The name of the argument
+     * @returns The element
+     */
+    extractDomArgument: {
+        value: function(name) {
+            var argument;
+
+            argument = this._domArguments[name];
+            delete this._domArguments[name];
+
+            return argument;
+        }
+    },
+
+    _getDomArgument: {
+        value: function(element, name) {
+            var candidates,
+                node,
+                elementId,
+                serialization,
+                labels;
+
+            candidates = element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "='" + name + "']");
+
+            // Make sure that the argument we find is indeed part of element and
+            // not an argument from an inner component.
+            nextCandidate:
+            for (var i = 0, candidate; (candidate = candidates[i]); i++) {
+                node = candidate;
+                while ((node = node.parentNode) !== element) {
+                    elementId = this._template.getElementId(node);
+
+                    // Check if this node is an element of a component.
+                    // TODO: Make this operation faster
+                    if (elementId) {
+                        serialization = this._template.getSerialization();
+                        labels = serialization.getSerializationLabelsWithElements(
+                            elementId);
+
+                        if (labels.length > 0) {
+                            // This candidate is inside another component so
+                            // skip it.
+                            continue nextCandidate;
+                        }
+                    }
+                }
+                return candidate;
+            }
+        }
+    },
+
+    getTemplateParameterArgument: {
+        value: function(template, name) {
+            var element,
+                range,
+                argument;
+
+            element = template.getElementById(this.getElementId());
+
+            if (name === "*") {
+                range = template.document.createRange();
+                range.selectNodeContents(element);
+                argument = range.cloneContents();
+            } else {
+                argument = this._getDomArgument(element, name).cloneNode(true);
+                argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
+            }
+
+            return argument;
         }
     },
 
     setElementWithParentComponent: {
         value: function(element, parent) {
             this._alternateParentComponent = parent;
-            if (this.element != element) {
+            if (this.element !== element) {
                 this.element = element;
             }
         }
     },
 
     // access to the Application object
-/**
-    Description TODO
-    @function
-    @returns document.application
+    /**
+     * Convenience to access the application object.
+     * @type {Application}
     */
     application: {
         enumerable: false,
         get: function() {
-            return document.application;
+            return require("core/application").application;
         }
     },
-/**
-    Description TODO
-    @function
-    @returns defaultEventManager
-    */
+
+    /**
+     * Convenience to access the defaultEventManager object.
+     * @type {EventManager}
+     */
     eventManager: {
         enumerable: false,
         get: function() {
             return defaultEventManager;
         }
     },
-/**
-    Description TODO
-    @function
-    @returns rootComponent
-    */
+
+    /**
+     * Convenience to access the rootComponent object.
+     * @type {RootComponent}
+     */
     rootComponent: {
         enumerable: false,
         get: function() {
             return rootComponent;
         }
     },
-/**
-    Description TODO
-    @function
-    @returns {Boolean} false
-    */
-    acceptsDirectFocus: {
-        enumerable: false,
-        value: function() {
-            return false;
-        }
-    },
-/**
-    Description TODO
-    @function
-    @returns targetElementController
-    */
+
+    /**
+     * @function
+     * @returns targetElementController
+     */
     elementControllerFromEvent: {
         enumerable: false,
         value: function(event, targetElementController) {
@@ -274,30 +458,35 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: null
     },
 
-/**
-  Description TODO
-  @private
-*/
-    _cachedParentComponent: {
+    /**
+     * @private
+     */
+    __parentComponent: {
         value: null
     },
-        // TODO store the value and delete it after draw
-/**
-    The parent component is found by walking up the DOM tree from the node returned by the <i>element</i> property.<br>
-    If we find a parentNode that has a controller then we return this controller.<br>
-    Returns undefined if this is the rootComponent.
-    @function
-    @returns undefined or cachedParentComponent
-    */
+
+    _parentComponent: {
+        set: function(value) {
+            this.__parentComponent = value;
+            this.dispatchOwnPropertyChange("parentComponent", value);
+        },
+        get: function() {
+            return this.__parentComponent;
+        }
+    },
+
+    /**
+     * The parent component is found by walking up the DOM tree from the node returned by the <i>element</i> property.
+     * If we find a parentNode that has a controller then we return this controller.
+     * Returns undefined if this is the rootComponent.
+     * @function
+     * @returns undefined or cachedParentComponent
+     */
+    // TODO store the value and delete it after draw
     parentComponent: {
         enumerable: false,
         get: function() {
-            var cachedParentComponent = this._cachedParentComponent;
-            if (cachedParentComponent == null) {
-                return (this._cachedParentComponent = this.findParentComponent());
-            } else {
-                return cachedParentComponent;
-            }
+            return this._parentComponent;
         }
     },
 
@@ -335,12 +524,14 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 operator = matches[2] || " ",
                 rightHandOperand = matches[3],
                 rest = matches[4],
-                found;
+                found,
+                i,
+                childComponent;
 
             if (leftHandOperand) {
                 rest = rightHandOperand ? "@"+rightHandOperand + rest : "";
 
-                for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
+                for (i = 0, childComponent; (childComponent = childComponents[i]); i++) {
                     if (leftHandOperand === Montage.getInfoForObject(childComponent).label) {
                         if (rest) {
                             return childComponent.querySelectorComponent(rest);
@@ -355,7 +546,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     }
                 }
             } else {
-                for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
+                for (i = 0, childComponent; (childComponent = childComponents[i]); i++) {
                     if (rightHandOperand === Montage.getInfoForObject(childComponent).label) {
                         if (rest) {
                             return childComponent.querySelectorComponent(rest);
@@ -390,11 +581,13 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 operator = matches[2] || " ",
                 rightHandOperand = matches[3],
                 rest = matches[4],
-                found = [];
+                found = [],
+                i,
+                childComponent;
 
             if (leftHandOperand) {
                 rest = rightHandOperand ? "@"+rightHandOperand + rest : "";
-                for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
+                for (i = 0, childComponent; (childComponent = childComponents[i]); i++) {
                     if (leftHandOperand === Montage.getInfoForObject(childComponent).label && (!owner || owner === childComponent.ownerComponent)) {
                         if (rest) {
                             found = found.concat(childComponent.querySelectorAllComponent(rest));
@@ -406,7 +599,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     }
                 }
             } else {
-                for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
+                for (i = 0, childComponent; (childComponent = childComponents[i]); i++) {
                     if (rightHandOperand === Montage.getInfoForObject(childComponent).label && (!owner || owner === childComponent.ownerComponent)) {
                         if (rest) {
                             found = found.concat(childComponent.querySelectorAllComponent(rest, owner));
@@ -421,31 +614,29 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
-/**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+    /**
+     * @type {Template}
+     * @default null
+     */
     template: {
         enumerable: false,
         value: null
     },
 
-/**
-        Specifies whether the component has an HTML template file associated with it.
-        @type {Property}
-        @default {Boolean} true
-*/
+    /**
+     * Specifies whether the component has an HTML template file associated with it.
+     * @type {Boolean}
+     * @default {Boolean} true
+     */
     hasTemplate: {
         enumerable: false,
         value: true
     },
 
-/**
-        Description TODO
-        @type {Property}
-        @default null
-*/
+    /**
+     * @private
+     * @type {String}
+     */
     _templateModuleId: {
         serializable: false,
         value: null
@@ -459,42 +650,66 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     _treeLevel: {
         value: 0
     },
-/**
-    Description TODO
-    @function
-    @param {Component} childComponent The childComponent
-    */
+
+    /**
+     * @private
+     * @deprecated
+     * @function
+     * @param {Component} childComponent The childComponent
+     */
+    // TODO update all calls to use addChildComponent and remove this method.
     _addChildComponent: {
         value: function(childComponent) {
-            if (this.childComponents.indexOf(childComponent) == -1) {
+            return this.addChildComponent(childComponent);
+        }
+    },
+
+    /**
+     * Description TODO
+     * @function
+     * @param {Component} childComponent The childComponent
+     */
+    addChildComponent: {
+        value: function (childComponent) {
+            if (this.childComponents.indexOf(childComponent) === -1) {
                 this.childComponents.push(childComponent);
-                childComponent._cachedParentComponent = this;
+                childComponent._prepareForEnterDocument();
+                childComponent._parentComponent = this;
+
+                if (childComponent.needsDraw) {
+                    childComponent._addToParentsDrawList();
+                }
             }
         }
     },
-/**
-    Description TODO
-    @function
-    */
+
+    /**
+     * @function
+     */
     attachToParentComponent: {
         value: function() {
-            this._cachedParentComponent = null;
+            this.detachFromParentComponent();
+            this._parentComponent = null;
 
-            var parentComponent = this.parentComponent,
+            var parentComponent = this.findParentComponent(),
                 childComponents,
                 childComponent;
 
             if (parentComponent) {
+                // This component's children may have been attached to the
+                // parent before we were initialized, and so we now need to
+                // check if any of our parent's children should actually be
+                // ours.
                 childComponents = parentComponent.childComponents;
                 for (var i = 0; (childComponent = childComponents[i]); i++) {
                     var newParentComponent = childComponent.findParentComponent();
                     if (newParentComponent === this) {
                         parentComponent.removeChildComponent(childComponent);
-                        newParentComponent._addChildComponent(childComponent);
+                        newParentComponent.addChildComponent(childComponent);
                     }
                 }
 
-                parentComponent._addChildComponent(this);
+                parentComponent.addChildComponent(this);
             }
         }
     },
@@ -508,66 +723,133 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Component} childComponent The childComponent
-    */
+
+    /**
+     * @function
+     * @param {Component} childComponent The childComponent
+     */
     removeChildComponent: {
         value: function(childComponent) {
             var childComponents = this.childComponents,
-                element = childComponent._element,
                 ix = childComponents.indexOf(childComponent);
 
             if (ix > -1) {
                 childComponents.splice(ix, 1);
-                childComponent._cachedParentComponent = null;
+                childComponent._parentComponent = null;
                 childComponent._alternateParentComponent = null;
+
+                childComponent._leaveDocument();
+
+                if (childComponent._addedToDrawList) {
+                    childComponent._addedToDrawList = false;
+                    ix = this._drawList.indexOf(childComponent);
+                    this._drawList.splice(ix, 1);
+                }
+                this.rootComponent.removeFromCannotDrawList(childComponent);
             }
         }
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Array} []
+
+    /**
+     * The child componet sof the component. This should not be edited directly.
+     * @see Component#attachToParentComponent
+     * @type {Array}
+     * @default Array []
     */
     childComponents: {
         enumerable: false,
         distinct: true,
         value: []
     },
-/**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+
+    _needsEnterDocument: {
+        value: false
+    },
+
+    _inDocument: {
+        value: false
+    },
+
+    __leaveDocument: {
+        value: function() {
+            if (this._inDocument && typeof this.leaveDocument === "function") {
+                this.leaveDocument();
+                this._inDocument = false;
+            }
+        }
+    },
+
+    _leaveDocument: {
+        value: function() {
+            if (this._needsEnterDocument) {
+                this._needsEnterDocument = false;
+            } else {
+                this.__leaveDocument();
+
+                this.traverseComponentTree(function(component) {
+                    component.__leaveDocument();
+                });
+            }
+        }
+    },
+
+    _prepareForEnterDocument: {
+        value: function() {
+            this._needsEnterDocument = true;
+
+            // On their first draw components will have their needsDraw = true
+            // when they loadComponentTree.
+            if (!this._firstDraw) {
+                this.needsDraw = true;
+                this.traverseComponentTree(function(component) {
+                    if (component._needsEnterDocument) {
+                        return false;
+                    }
+                    component._needsEnterDocument = true;
+                    component.needsDraw = true;
+                });
+            }
+        }
+    },
+
+    /**
+     * The owner component is the owner of the template form which this component was instantiated.
+     * @type {Component}
+     * @default null
+     */
     ownerComponent: {
         enumerable: false,
         value: null
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {}
-    */
+
+    /**
+     * Unused?
+     * @private
+     */
     components: {
         enumerable: false,
         value: {}
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     * @private
+     */
     _isComponentExpanded: {
         enumerable: false,
         value: null
     },
 
+    /**
+     * @private
+     */
     _isTemplateLoaded: {
         enumerable: false,
         value: null
     },
 
+    /**
+     * @private
+     */
     _isTemplateInstantiated: {
         enumerable: false,
         value: null
@@ -578,29 +860,27 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
      * @function
      */
     cleanupDeletedComponentTree: {
-        value: function(deleteBindings) {
+        value: function(cancelBindings) {
             // Deleting bindings in all cases was causing the symptoms expressed in gh-603
             // Until we have a more granular way we shouldn't do this,
-            // the deleteBindings parameter is a short term fix.
-            if (deleteBindings) {
-                Object.deleteBindings(this);
+            // the cancelBindings parameter is a short term fix.
+            if (cancelBindings) {
+                Bindings.cancelBindings(this);
             }
             this.needsDraw = false;
             this.traverseComponentTree(function(component) {
                 // See above comment
-                if (deleteBindings) {
-                    Object.deleteBindings(component);
+                if (cancelBindings) {
+                    Bindings.cancelBindings(component);
                 }
                 component.needsDraw = false;
             });
         }
     },
 
-    originalContent: {
-        serializable: false,
-        value: null
-    },
-
+    /**
+     * @private
+     */
     _newDomContent: {
         enumerable: false,
         value: null
@@ -617,7 +897,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         },
         set: function(value) {
             var components,
-                componentsToAdd = [];
+                componentsToAdd = [],
+                i,
+                component;
 
             this._newDomContent = value;
             this.needsDraw = true;
@@ -632,37 +914,21 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
             // cleanup current content
             components = this.childComponents;
-            for (var i = 0, component; (component = components[i]); i++) {
+            for (i = 0, component; (component = components[i]); i++) {
                 component.detachFromParentComponent();
-                component.cleanupDeletedComponentTree();
             }
 
             if (value instanceof Element) {
-                findAndDetachComponents(value);
-            } else if (value) {
-                for (var i = 0; i < value.length; i++) {
-                    findAndDetachComponents(value[i]);
+                this._findAndDetachComponents(value, componentsToAdd);
+            } else if (value && value[0]) {
+                for (i = 0; i < value.length; i++) {
+                    this._findAndDetachComponents(value[i], componentsToAdd);
                 }
             }
 
-            // find the component fringe and detach them from the component tree
-            function findAndDetachComponents(node) {
-                var component = node.controller;
-
-                if (component) {
-                    component.detachFromParentComponent();
-                    componentsToAdd.push(component);
-                } else {
-                    var childNodes = node.childNodes;
-                    for (var i = 0, childNode; (childNode = childNodes[i]); i++) {
-                        findAndDetachComponents(childNode);
-                    }
-                }
-            }
-
-            // not sure if I can rely on _cachedParentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
-            for (var i = 0, component; (component = componentsToAdd[i]); i++) {
-                this._addChildComponent(component);
+            // not sure if I can rely on _parentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
+            for (i = 0, component; (component = componentsToAdd[i]); i++) {
+                this.addChildComponent(component);
             }
         }
     },
@@ -671,61 +937,108 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: false
     },
 
+    _findAndDetachComponents: {
+        value: function(node, components) {
+            // TODO: Check if searching the childComponents of the parent
+            //       component can make the search faster..
+            var component = node.component,
+                children;
+
+            if (!components) {
+                components = [];
+            }
+
+            if (component) {
+                component.detachFromParentComponent();
+                components.push(component);
+            } else {
+                // DocumentFragments don't have children so we default to
+                // childNodes.
+                children = node.children || node.childNodes;
+                for (var i = 0, child; (child = children[i]); i++) {
+                    this._findAndDetachComponents(child, components);
+                }
+            }
+
+            return components;
+        }
+    },
+
+    // Some components, like the repetition, might use their initial set of
+    // child components as a template to clone them and instantiate them as the
+    // real/effective child components.
+    //
+    // When this happens the original child components are in a way pointless
+    // to the application and should not be used.
+    //
+    // If other objects get a reference to these child components in the
+    // template serialization the way to know that they are going to be
+    // cloned is by checking if one of their parent components has
+    // its clonesChildComponents set to true.
     clonesChildComponents: {
         writable: false,
         value: false
     },
 
-/**
-    Description TODO
-    @function
-    */
-    deserializedFromSerialization: {
-        value: function() {
-            this.attachToParentComponent();
-            if (this._element) {
-                // the DOM content of the component was dynamically modified
-                // but it hasn't been drawn yet, we're going to assume that
-                // this new DOM content is the desired original content for
-                // this component since it has been set at deserialization
-                // time.
-                if (this._newDomContent) {
-                    this.originalContent = this._newDomContent;
-                } else {
-                    this.originalContent = Array.prototype.slice.call(this._element.childNodes, 0);
+    _innerTemplate: {value: null},
+
+    innerTemplate: {
+        serializable: false,
+        get: function() {
+            var innerTemplate = this._innerTemplate,
+                ownerDocumentPart,
+                ownerTemplate,
+                elementId,
+                serialization,
+                externalObjectLabels,
+                ownerTemplateObjects,
+                externalObjects;
+
+            if (!innerTemplate) {
+                ownerDocumentPart = this._ownerDocumentPart;
+
+                if (ownerDocumentPart) {
+                    ownerTemplate = ownerDocumentPart.template;
+
+                    elementId = this.getElementId();
+                    innerTemplate = ownerTemplate.createTemplateFromElementContents(elementId);
+
+                    serialization = innerTemplate.getSerialization();
+                    externalObjectLabels = serialization.getExternalObjectLabels();
+                    ownerTemplateObjects = ownerDocumentPart.objects;
+                    externalObjects = Object.create(null);
+
+                    for (var i = 0, label; (label = externalObjectLabels[i]); i++) {
+                        externalObjects[label] = ownerTemplateObjects[label];
+                    }
+                    innerTemplate.setInstances(externalObjects);
+
+                    this._innerTemplate = innerTemplate;
                 }
             }
-            if (! this.hasOwnProperty("identifier")) {
-                this.identifier = Montage.getInfoForObject(this).label;
-            }
-        }
-    },
 
-    serializeProperties: {
-        value: function(serializer) {
-            serializer.setAll();
-            var childComponents = this.childComponents;
-            for (var i = 0, l = childComponents.length; i < l; i++) {
-                serializer.addObject(childComponents[i]);
-            }
+            return innerTemplate;
+        },
+        set: function(value) {
+            this._innerTemplate = value;
         }
     },
 
     /**
-    This method is called right before draw is called.<br>
-    If <code>canDraw()</code> returns false, then the component is re-added to the parent's draw list and draw isn't called.
-    @function
-    @returns {Boolean} true or false
-    */
+     * This method is called right before draw is called.
+     * If ```canDraw()``` returns false, then the component is re-added to the parent's draw list and draw isn't called.
+     * @function
+     * @returns {Boolean} true or false
+     */
     canDraw: {
         value: function() {
             return this._canDraw;
         }
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     * @private
+     */
     _canDraw: {
         get: function() {
             return (!this._canDrawGate || this._canDrawGate.value);
@@ -735,122 +1048,88 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         },
         enumerable: false
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     * @private
+     */
     _prepareCanDraw: {
         enumerable: false,
         value: function _prepareCanDraw() {
             if (!this._isComponentTreeLoaded) {
-                this.loadComponentTree();
+                this.loadComponentTree().done();
             }
         }
     },
-/**
-  Description TODO
-  @private
-*/
-    _loadComponentTreeCallbacks: {
-        enumerable: false,
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     * @private
+     */
     _isComponentTreeLoaded: {
-        enumerable: false,
         value: null
     },
-/**
-  Description TODO
-  @private
-*/
-    _isComponentTreeLoading: {
-        enumerable: false,
-        value: null
+
+    shouldLoadComponentTree: {
+        value: true
     },
-/**
-    Description TODO
-    @function
-    @param {Object} callback Callback object
-    @returns itself
-    */
-    loadComponentTree: {value: function loadComponentTree(callback) {
-        var self = this,
-            canDrawGate = this.canDrawGate;
 
-        if (this._isComponentTreeLoaded) {
-            if (callback) {
-                callback(this);
-            }
-            return;
-        }
+    _loadComponentTreeDeferred: {value: null},
+    loadComponentTree: {
+        value: function loadComponentTree() {
+            var self = this,
+                canDrawGate = this.canDrawGate,
+                deferred = this._loadComponentTreeDeferred;
 
-        if (callback) {
-            if (this._loadComponentTreeCallbacks == null) {
-                this._loadComponentTreeCallbacks = [callback];
-            } else {
-                this._loadComponentTreeCallbacks.push(callback);
-            }
-        }
-        if (this._isComponentTreeLoading) {
-            return;
-        }
+            if (!deferred) {
+                deferred = Promise.defer();
+                this._loadComponentTreeDeferred = deferred;
 
-        canDrawGate.setField("componentTreeLoaded", false);
-        // only put it in the root component's draw list if the component has requested to be draw, it's possible to load the component tree without asking for a draw.
-        // What about the hasTemplate check?
-        if (this.needsDraw || this.hasTemplate) {
-            this._canDraw = false;
-        }
+                canDrawGate.setField("componentTreeLoaded", false);
 
-        function callCallbacks() {
-            var callback, callbacks = self._loadComponentTreeCallbacks;
-
-            self._isComponentTreeLoading = false;
-            self._isComponentTreeLoaded = true;
-
-            canDrawGate.setField("componentTreeLoaded", true);
-
-            if (callbacks) {
-                for (var i = 0; (callback = callbacks[i]); i++) {
-                    callback(self);
+                // only put it in the root component's draw list if the
+                // component has requested to be draw, it's possible to load the
+                // component tree without asking for a draw.
+                // What about the hasTemplate check?
+                if (this.needsDraw || this.hasTemplate) {
+                    this._canDraw = false;
                 }
-                self._loadComponentTreeCallbacks = callbacks = null;
-            }
-        }
 
-        this._isComponentTreeLoading = true;
-        this.expandComponent(function() {
-            var childComponent,
-                childComponents = self.childComponents,
-                childComponentsCount = childComponents.length,
-                childrenLoadedCount = 0,
-                i;
+                this.expandComponent().then(function() {
+                    if (self.hasTemplate || self.shouldLoadComponentTree) {
+                        var promises = [],
+                            childComponents = self.childComponents,
+                            childComponent;
 
-            if (childComponentsCount === 0) {
-                callCallbacks();
-                return;
-            }
+                        for (var i = 0; (childComponent = childComponents[i]); i++) {
+                            promises.push(childComponent.loadComponentTree());
+                        }
 
-            for (i = 0; (childComponent = childComponents[i]); i++) {
-                childComponent.loadComponentTree(function() {
-                    if (++childrenLoadedCount === childComponentsCount) {
-                        callCallbacks();
+                        return Promise.all(promises);
                     }
-                });
+                }).then(function() {
+                    self._isComponentTreeLoaded = true;
+                    // When the component tree is loaded we need to draw if the
+                    // component needs to have its enterDocument() called.
+                    // This is because we explicitly avoid drawing when we set
+                    // _needsEnterDocument before the first draw because we
+                    // don't want to trigger the draw before its component tree
+                    // is loaded.
+                    if (self._needsEnterDocument) {
+                        self.needsDraw = true;
+                    }
+                    canDrawGate.setField("componentTreeLoaded", true);
+                    deferred.resolve();
+                }, deferred.reject).done();
             }
-        });
-    }},
-/**
-    Description TODO
-    @function
-    @param {Property} visitor visitor
-    @param {Object} callback callback object
-    @returns itself
-    */
+            return deferred.promise;
+        }
+    },
+
+    /**
+     *  Whenever traverseComponentTree reaches the end of a subtree Component#expandComponent~callback is called.
+     * @function
+     * @param {Component#traverseComponentTree~visitor} visitor  visitor
+     * @param {Component#traverseComponentTree~callback} callback callback object
+     */
     traverseComponentTree: {value: function traverseComponentTree(visitor, callback) {
         var self = this;
 
@@ -876,129 +1155,220 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 return;
             }
 
+            var visitorFunction = function() {
+                if (--childLeftCount === 0 && callback) {
+                    callback();
+                }
+            };
             for (var i = 0; (childComponent = childComponents[i]); i++) {
-                childComponent.traverseComponentTree(visitor, function() {
-                    if (--childLeftCount === 0 && callback) {
-                        callback();
-                    }
-                });
+                childComponent.traverseComponentTree(visitor, visitorFunction);
             }
         }
 
         if (this._isComponentExpanded) {
             traverse();
-        } else {
-            this.expandComponent(function() {
-                traverse();
-            });
+        } else if (callback) {
+            callback();
         }
     }},
-/**
-    Description TODO
-    @function
-    @param {Object} callback  TODO
+    /**
+     * Visitor function for Component#traverseComponentTree. For every component in the tree, the visitor function is
+     * called with the current component as an argument.
+     * If the function returns false then the traversal is stopped for that subtree.
+     * @function Component#traverseComponentTree~visitor
+     * @param Component visitedComponent
+     */
+    /**
+     * @function Component#traverseComponentTree~callback
+     */
+
+
+    /**
+    * @function
+    * @param {Component#expandComponent~callback} callback  TODO
     */
-    expandComponent: {value: function expandComponent(callback) {
-        var self = this;
+    _expandComponentDeferred: {value: null},
+    expandComponent: {
+        value: function expandComponent() {
+            var self = this,
+                deferred = this._expandComponentDeferred;
 
-        if (this.hasTemplate && !this._isTemplateInstantiated) {
-            this.loadTemplate(function() {
-                self._isComponentExpanded = true;
-                if (callback) {
-                    callback();
+            if (!deferred) {
+                deferred = Promise.defer();
+                this._expandComponentDeferred = deferred;
+
+                if (this.hasTemplate) {
+                    this._instantiateTemplate().then(function() {
+                        self._isComponentExpanded = true;
+                        self._addTemplateStyles();
+                        self.needsDraw = true;
+                        deferred.resolve();
+                    }, deferred.reject);
+                } else {
+                    this._isComponentExpanded = true;
+                    deferred.resolve();
                 }
-            });
-        } else {
-            self._isComponentExpanded = true;
-            if (callback) {
-                callback();
             }
-        }
-    }},
 
-/**
-  Description TODO
-  @private
-*/
-    _loadTemplateCallbacks: {
-        enumerable: false,
-        value: null
+            return deferred.promise;
+        }
     },
 
-/**
-    Description TODO
-    @function
-    @param {Object} callback  TODO
-*/
-    loadTemplate: {value: function loadTemplate(callback) {
-        var self = this;
+    _templateObjectDescriptor: {
+        value: {
+            enumerable: true,
+            configurable: true
+        }
+    },
 
-        if (!this._isTemplateInstantiated) {
-            this._loadTemplate(function(template) {
-                var instances = self.templateObjects;
+    /**
+     * @private
+     * @function
+     */
+    _setupTemplateObjects: {
+        value: function(objects) {
+            var descriptor = this._templateObjectDescriptor,
+                templateObjects = Object.create(null);
+
+            for (var label in objects) {
+                var object = objects[label];
+
+                if (typeof object === "object" && object != null) {
+                    if (!Component.prototype.isPrototypeOf(object) || object === this ||
+                        object.parentComponent === this) {
+                        templateObjects[label] = object;
+                    } else {
+                        descriptor.get = this._makeTemplateObjectGetter(this, label, object);
+                        Object.defineProperty(templateObjects, label, descriptor);
+                    }
+                }
+            }
+
+            this.templateObjects = templateObjects;
+        }
+    },
+
+    /**
+     * @private
+     * @function
+     */
+    _makeTemplateObjectGetter: {
+        value: function(owner, label, object) {
+            var querySelectorLabel = "@"+label,
+                isRepeated,
+                components,
+                component;
+
+            return function templateObjectGetter() {
+                if (isRepeated) {
+                    return owner.querySelectorAllComponent(querySelectorLabel, owner);
+                } else {
+                    components = owner.querySelectorAllComponent(querySelectorLabel, owner);
+                    // if there's only one maybe it's not repeated, let's go up
+                    // the tree and found out.
+                    if (components.length === 1) {
+                        component = components[0];
+                        while (component = component.parentComponent) {
+                            if (component === owner) {
+                                // we got to the owner without ever hitting a component
+                                // that repeats its child components, we can
+                                // safely recreate this property with a static value
+                                Object.defineProperty(this, label, {
+                                    value: components[0]
+                                });
+                                return components[0];
+                            } else if (component.clonesChildComponents) {
+                                break;
+                            }
+                        }
+                    } else if (components.length === 0) {
+                        // We didn't find any in the component tree
+                        // so it was probably removed in the meanwhile.
+                        // We return the one that was in the template
+                        // TODO: need to make sure this component hasn't been
+                        // disposed.
+                        return object;
+                    }
+
+                    isRepeated = true;
+                    return components;
+                }
+            };
+        }
+    },
+
+    /**
+     * @private
+     * @function
+     */
+    _instantiateTemplate: {
+        value: function() {
+            var self = this;
+            return this._loadTemplate().then(function(template) {
+                if (!self._element) {
+                    console.error("Cannot instantiate template without an element.", self);
+                    return Promise.reject(new Error("Cannot instantiate template without an element.", self));
+                }
+                var instances = self.templateObjects,
+                    _document = self._element.ownerDocument;
 
                 if (instances) {
                     instances.owner = self;
                 } else {
-                    self.templateObjects = instances = {owner: self};
+                    instances = {owner: self};
                 }
 
-                // this actually also serves as isTemplateInstantiating
                 self._isTemplateInstantiated = true;
-                template.instantiateWithInstancesAndDocument(instances, self._element.ownerDocument, function() {
-                    if (callback) {
-                        callback();
-                    }
+
+                return template.instantiateWithInstances(instances, _document)
+                .then(function(documentPart) {
+                    self._templateDocumentPart = documentPart;
+                    documentPart.fragment = null;
+                })
+                .fail(function(reason) {
+                    var message = reason.stack || reason;
+                    console.error("Error in", template.getBaseUrl() + ":", message);
+                    throw reason;
                 });
             });
         }
-    }},
+    },
 
-    _loadTemplate: {value: function _loadTemplate(callback) {
-        if (this._isTemplateLoaded) {
-            if (callback) {
-                callback(this._template);
+    _templateDidLoad: {
+        value: function(documentPart) {
+            this._setupTemplateObjects(documentPart.objects);
+        }
+    },
+
+    _loadTemplatePromise: {value: null},
+    _loadTemplate: {
+        value: function _loadTemplate() {
+            var self = this,
+                promise = this._loadTemplatePromise,
+                info;
+
+            if (!promise) {
+                info = Montage.getInfoForObject(this);
+
+                promise = this._loadTemplatePromise = Template.getTemplateWithModuleId(
+                    this.templateModuleId, info.require)
+                .then(function(template) {
+                    self._template = template;
+                    self._isTemplateLoaded = true;
+
+                    return template;
+                });
             }
-            return;
+
+            return promise;
         }
-        // TODO we can create _loadTemplateCallbacks with [] and use "distinct" after merging with master
-        if (callback) {
-            if (this._loadTemplateCallbacks === null) {
-                this._loadTemplateCallbacks = [callback];
-            } else {
-                this._loadTemplateCallbacks.push(callback);
-            }
-        }
-        if (this._isTemplateLoading) {
-            return;
-        }
-        this._isTemplateLoading = true;
-        var self = this;
-        var info, moduleId;
+    },
 
-        var onTemplateLoad = function(template) {
-            var callbacks = self._loadTemplateCallbacks;
-            self._template = template;
-            self._isTemplateLoaded = true;
-            self._isTemplateLoading = false;
-
-            if (callbacks) {
-                for (var i = 0; (callback = callbacks[i]); i++) {
-                    callback(template);
-                }
-                self._loadTemplateCallbacks = callbacks = null;
-            }
-        };
-
-        info = Montage.getInfoForObject(this);
-
-        if (logger.isDebug) {
-            logger.debug(this, "Will load " + this.templateModuleId);
-        }
-        // this call will be synchronous if the template is cached.
-        Template.templateWithModuleId(info.require, this.templateModuleId, onTemplateLoad);
-    }},
-
+    /**
+     * @private
+     * @type {String}
+     * @default
+     */
     templateModuleId: {
         get: function() {
             return this._templateModuleId || this._getDefaultTemplateModuleId();
@@ -1021,14 +1391,31 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
+    deserializedFromSerialization: {
+        value: function() {
+            this.attachToParentComponent();
+        }
+    },
+
     _deserializedFromTemplate: {
-        value: function(owner) {
+        value: function(owner, label, documentPart) {
+            Montage.getInfoForObject(this).label = label;
+            this._ownerDocumentPart = documentPart;
+
+            if (! this.hasOwnProperty("identifier")) {
+                this.identifier = label;
+            }
+
             if (!this.ownerComponent) {
-                if (Component.isPrototypeOf(owner)) {
+                if (Component.prototype.isPrototypeOf(owner)) {
                     this.ownerComponent = owner;
                 } else {
                     this.ownerComponent = this.rootComponent;
                 }
+            }
+
+            if (this._needsDrawInDeserialization) {
+                this.needsDraw = true;
             }
         }
     },
@@ -1049,12 +1436,12 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 dotIndex = ( dotIndex < slashIndex ? moduleId.length : dotIndex );
 
                 var blueprintModuleId;
-                if ((dotIndex < moduleId.length) && ( moduleId.slice(dotIndex, moduleId.length) == ".reel")) {
+                if ((dotIndex < moduleId.length) && ( moduleId.slice(dotIndex, moduleId.length) === ".reel")) {
                     // We are in a reel
-                    blueprintModuleId = moduleId + "/" + moduleId.slice(slashIndex, dotIndex) + "-blueprint.json";
+                    blueprintModuleId = moduleId + "/" + moduleId.slice(slashIndex, dotIndex) + ".meta";
                 } else {
                     // We look for the default
-                    blueprintModuleId = moduleId.slice(0, dotIndex) + "-blueprint.json";
+                    blueprintModuleId = moduleId.slice(0, dotIndex) + ".meta";
                 }
 
                 Montage.defineProperty(self, "_blueprintModuleId", {
@@ -1068,17 +1455,17 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     blueprint: require("montage")._blueprintDescriptor,
 
     /**
-    Callback for the <code>_canDrawGate</code>.<br>
+    Callback for the ```canDrawGate```.
     Propagates to the parent and adds the component to the draw list.
     @function
-    @param {Property} gate
-    @see _canDrawGate
+    @param {Gate} gate
+    @see Component#canDrawGate
     */
     gateDidBecomeTrue: {
         value: function(gate) {
-            if (gate == this._canDrawGate) {
+            if (gate === this._canDrawGate) {
                 this._canDraw = true;
-            } else if (gate == this._blockDrawGate) {
+            } else if (gate === this._blockDrawGate) {
                 rootComponent.componentBlockDraw(this);
                 this._prepareCanDraw();
             }
@@ -1086,41 +1473,61 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false
     },
 
-/**
-    Gate that controls the _canDraw property. When it becomes true it sets _canDraw to true.
-    @function
-    @returns Gate
-    @private
-    */
+    /**
+     * Gate that controls the _canDraw property. When it becomes true it sets _canDraw to true.
+     * @function
+     * @returns Gate
+     * @private
+     */
     _canDrawGate: {
         enumerable: false,
         value: null
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     * @private
+     */
     _preparedForActivationEvents: {
         enumerable: false,
         value: false
     },
 
     /**
-        If needsDraw property returns true this call adds the current component instance to the rootComponents draw list.<br>
-        Then it iterates on every child component in the component's drawList.<br>
-        On everyone of them it calls <code>canDraw()</code>.<br>
-        If the result is true, <code>_drawIfNeeded()</code> is called, otherwise they are ignored.
+        If needsDraw property returns true this call adds the current component instance to the rootComponents draw list.
+        Then it iterates on every child component in the component's drawList.
+        On everyone of them it calls ```canDraw()```.
+        If the result is true, ```_drawIfNeeded()``` is called, otherwise they are ignored.
         @private
      */
     _drawIfNeeded: {
         enumerable: false,
         value: function _drawIfNeeded(level) {
             var childComponent,
-                oldDrawList, i, childComponentListLength;
+                oldDrawList, i, childComponentListLength,
+                firstDraw = this._firstDraw;
+
             this._treeLevel = level;
-            if (this.needsDraw && !this._addedToDrawCycle) {
+            if (firstDraw) {
+                this.originalElement = this.element;
+            }
+            if (this.needsDraw) {
                 rootComponent.addToDrawCycle(this);
             }
+            if (firstDraw && this.prepareForDraw) {
+                Montage.callDeprecatedFunction(this, this.prepareForDraw, "prepareForDraw", "enterDocument(firstTime)");
+            }
+            if (this._needsEnterDocument) {
+                this._needsEnterDocument = false;
+                this._inDocument = true;
+                if (typeof this.enterDocument === "function") {
+                    this.enterDocument(firstDraw);
+                }
+                this._enterDocument(firstDraw);
+            }
+            if (firstDraw) {
+                this.originalElement = null;
+            }
+
             if (drawLogger.isDebug) {
                 drawLogger.debug(this, "drawList: " + (this._drawList || []).length + " of " + this.childComponents.length);
             }
@@ -1150,20 +1557,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             var component, composer, length, i;
             if (this._firstDraw) {
 
-                if (this.parentComponent && typeof this.parentComponent.childComponentWillPrepareForDraw === "function") {
-                    this.parentComponent.childComponentWillPrepareForDraw(this);
-                }
-
-                this._willPrepareForDraw();
-                if (typeof this.willPrepareForDraw === "function") {
-                    this.willPrepareForDraw();
-                }
-
                 this._prepareForDraw();
-
-                if (this.prepareForDraw) {
-                    this.prepareForDraw();
-                }
 
                 // Load any non lazyLoad composers that have been added
                 length = this.composerList.length;
@@ -1187,10 +1581,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
-/**
-  Description TODO
-  @private
-*/
+    /**
+     * @private
+     * @function
+     */
     _replaceElementWithTemplate: {
         enumerable: false,
         value: function() {
@@ -1215,6 +1609,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 template.setAttribute(attributeName, value);
             }
 
+            this._initializeClassListFromElement(template);
+
             if (element.parentNode) {
                 element.parentNode.replaceChild(template, element);
             } else {
@@ -1238,34 +1634,148 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
-/**
-  Description TODO
-  @private
-*/
+    /**
+     * @private
+     * @function
+     */
+    _addTemplateStyles: {
+        value: function() {
+            var part = this._templateDocumentPart,
+                resources,
+                styles,
+                _document,
+                documentHead;
+
+            if (part) {
+                resources = part.template.getResources();
+                _document = this.element.ownerDocument;
+                documentHead = _document.head;
+                styles = resources.createStylesForDocument(_document);
+
+                for (var i = 0, style; (style = styles[i]); i++) {
+                    this.rootComponent.addStylesheet(style);
+                }
+            }
+        }
+    },
+
+    /**
+     * @private
+     * @function
+     */
     _prepareForDraw: {
         value: function _prepareForDraw() {
             if (logger.isDebug) {
                 logger.debug(this, "_templateElement: " + this._templateElement);
             }
+
+            this._initDomArguments();
             if (this._templateElement) {
+                this._bindTemplateParametersToArguments();
                 this._replaceElementWithTemplate();
-            }
-            // This will schedule a second draw for any component that has children
-            var childComponents = this.childComponents;
-            for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
-                if (drawLogger.isDebug) {
-                    drawLogger.debug(this, "needsDraw = true for: " + childComponent._montage_metadata.exportedSymbol);
-                }
-                childComponent.needsDraw = true;
             }
         },
         enumerable: false
     },
-/**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+
+    _bindTemplateParametersToArguments: {
+        value: function() {
+            var parameters = this._templateDocumentPart.parameters,
+                parameter,
+                templateArguments,
+                argument,
+                validation,
+                contents,
+                components,
+                range,
+                component;
+
+            templateArguments = this._domArguments;
+
+            if (!this._template.hasParameters() &&
+                templateArguments.length === 1) {
+                return;
+            }
+
+            validation = this._validateTemplateArguments(
+                templateArguments, parameters);
+            if (validation) {
+                throw validation;
+            }
+
+            for (var key in parameters) {
+                parameter = parameters[key];
+                argument = templateArguments[key];
+
+                if (key === "*") {
+                    range = this._element.ownerDocument.createRange();
+                    range.selectNodeContents(this._element);
+                    contents = range.extractContents();
+                } else {
+                    contents = argument;
+                }
+
+                components = this._findAndDetachComponents(contents);
+                parameter.parentNode.replaceChild(contents, parameter);
+                for (var i = 0; (component = components[i]); i++) {
+                    component.attachToParentComponent();
+                }
+            }
+        }
+    },
+
+    _validateTemplateArguments: {
+        value: function(templateArguments, templateParameters) {
+            var parameterNames = Object.keys(templateParameters),
+                argumentNames,
+                param;
+
+            // If the template does not have parameters it is up to the
+            // component to use its arguments.
+            if (parameterNames.length === 0) {
+                return;
+            }
+
+            if (templateArguments == null) {
+                if (parameterNames.length > 0) {
+                    return new Error('No arguments provided for ' +
+                    this.templateModuleId + '. Arguments needed: ' +
+                    parameterNames + '.');
+                }
+            } else {
+                if ("*" in templateParameters) {
+                    argumentNames = Object.keys(templateArguments);
+                    if (argumentNames.length > 0) {
+                        return new Error('Arguments "' + argumentNames +
+                        '" were given to component but no named parameters ' +
+                        'are defined in ' + this.templateModuleId);
+                    }
+                } else {
+                    // All template parameters need to be satisfied.
+                    for (param in templateParameters) {
+                        if (!(param in templateArguments)) {
+                            return new Error('"' + param + '" argument not ' +
+                            'given in ' + this.templateModuleId);
+                        }
+                    }
+                    // Arguments for non-existant parameters are not allowed.
+                    // Only the star argument is allowed.
+                    for (param in templateArguments) {
+                        if (param !== "*" && !(param in templateParameters)) {
+                            return new Error('"' + param + '" parameter does ' +
+                            'not exist in ' + this.templateModuleId);
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    /**
+     * Called by the {EventManager} before dispatching a ```touchstart``` or ```mousedown```.
+     * The component can implement this method to add event listeners for these events before they are dispatched.
+     * @function
+     */
     prepareForActivationEvents: {
         enumerable: false,
         value: null
@@ -1291,10 +1801,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
-/**
-  Description TODO
-  @private
-*/
+    /**
+     * @private
+     */
     _performDomContentChanges: {
         value: function() {
             var contents = this._newDomContent,
@@ -1306,9 +1815,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
                 element.innerHTML = "";
 
-                if (contents instanceof Element) {
+                if (Element.isElement(contents)) {
                     element.appendChild(contents);
-                } else if(contents !== null) {
+                } else if(contents != null) {
                     for (var i = 0, content; (content = contents[i]); i++) {
                         element.appendChild(content);
                     }
@@ -1322,29 +1831,43 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
         }
     },
+
     /**
-    This method is called so that the callee can insert or remove nodes from the DOMontage.
-    @function
-    */
+     * Provides the component a chance to prepare for it being drawn for the first time. For a component with an HTML template, this method is invoked when the template been loaded and applied to the DOM.
+     * @function
+     * @see http://montagejs.org/docs/Component-draw-cycle.html
+     */
+    prepareForDraw: {
+        enumerable: false,
+        value: null
+    },
+
+    /**
+     * This is the prescribed location for components to update its DOM structure or modify its styles.
+     * @function
+     * @see http://montagejs.org/docs/Component-draw-cycle.html
+     */
     draw: {
         enumerable: false,
         value: function() {
         }
     },
-/**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+
+    /**
+     * Provides the component an opportunity to query the DOM for any necessary calculations before drawing. If the execution of this method sets needsDraw to true on other components, those components will be added to the current draw cycle.
+     * @function
+     * @see http://montagejs.org/docs/Component-draw-cycle.html
+     */
     willDraw: {
         enumerable: false,
         value: null
     },
 
     /**
-        This method is called once all the components that could draw in this loop have done so.
-        @function
-    */
+     * Provides the component an opportunity to query the DOM for any necessary calculations after drawing.
+     * @function
+     * @see http://montagejs.org/docs/Component-draw-cycle.html
+     */
     didDraw: {
         enumerable: false,
         value: function() {
@@ -1352,16 +1875,16 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     /**
-       Records wether or not we have been added to the parent's drawList.
-       @private
+     * Records whether or not we have been added to the parent's drawList.
+     * @private
      */
     _addedToDrawList: {
         value: false
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     * @private
+     */
     _addToParentsDrawList: {
         enumerable: false,
         value: function() {
@@ -1374,34 +1897,37 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     }
                 } else {
                     parentComponent._addToDrawList(this);
-                }
-                if (drawLogger.isDebug) {
-                    drawLogger.debug("drawList -- childComponent",this._montage_metadata.objectName," added to ",parentComponent._montage_metadata.objectName);
+                    if (drawLogger.isDebug) {
+                        drawLogger.debug("drawList -- childComponent",this._montage_metadata.objectName," added to ",parentComponent._montage_metadata.objectName);
+                    }
                 }
             }
         }
     },
 
     /**
-       Backing property for needsDraw.
-       @private
+     * @private
      */
     _needsDraw: {
-        enumerable: false,
+        value: false
+    },
+
+    _needsDrawInDeserialization: {
         value: false
     },
 
     /**
-     The purpose of this property is to trigger the adding of the component to the draw list and maintain whether draw needs to be called as a consequence of drawIfNeeded.<br>
-     If needsDraw is set to true, and the component can draw but is not yet added to the parent Draw List, then addToDrawList() is called on the parentComponent with this as the argument.<br>
-     If the component cannot draw then it's recorded in the component's blockDrawGate that a draw was requested.<br>
-     Two actions are required for a component to load:
-     <ol>
-        <li>it needs an element</li>
-        <li>a draw must have been requested</li>
-     </ol>
-     @type {Function}
-     @default {Boolean} false
+     * The purpose of this property is to trigger the adding of the component to the draw list and maintain whether draw needs to be called as a consequence of drawIfNeeded.
+     * If needsDraw is set to true, and the component can draw but is not yet added to the parent Draw List, then ```addToDrawList()``` is called on the parentComponent with this as the argument.
+     * If the component cannot draw then it's recorded in the component's ```blockDrawGate``` that a draw was requested.
+     *
+     * Two actions are required for a component to load:
+     *
+     * - it needs an element
+     * - a draw must have been requested
+     *
+     * @type {Boolean}
+     * @default {Boolean} false
      */
     needsDraw: {
         enumerable: false,
@@ -1411,6 +1937,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         set: function(value) {
             if (this.isDeserializing) {
                 // Ignore needsDraw(s) which happen during deserialization
+                this._needsDrawInDeserialization = true;
                 return;
             }
             if (this._needsDraw !== value) {
@@ -1424,24 +1951,22 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     } else {
                         this.blockDrawGate.setField("drawRequested", true);
                     }
-                } else {
-
                 }
             }
         }
     },
 
     /**
-     Contains the list of childComponents this instance is reponsible for drawing.
-     @private
+     * Contains the list of childComponents this instance is reponsible for drawing.
+     * @private
      */
     _drawList: {
         value: null
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     * @private
+     */
     __addToDrawList: {
         enumerable: false,
         value: function(childComponent) {
@@ -1458,9 +1983,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     /**
-     Adds the passed in child component to the drawList<br>
-     If the current instance isn't added to the drawList of its parentComponent, then it adds itself.
-     @private
+     * Adds the passed in child component to the drawList
+     * If the current instance isn't added to the drawList of its parentComponent, then it adds itself.
+     * @private
      */
     _addToDrawList: {
         enumerable: false,
@@ -1478,10 +2003,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     // Pointer Claiming
 
     /**
-        Ask this component to surrender the specified pointer to the demandingComponent.<br>
-        The component can decide whether or not it should do this given the pointer and demandingComponent involved.<br>
-        Some components may decide not to surrender control ever, while others may do so in certain situations.<br>
-        Returns true if the pointer was surrendered, false otherwise.<br>
+        Ask this component to surrender the specified pointer to the demandingComponent.
+        The component can decide whether or not it should do this given the pointer and demandingComponent involved.
+        Some components may decide not to surrender control ever, while others may do so in certain situations.
+        Returns true if the pointer was surrendered, false otherwise.
         The demandingComponent is responsible for claiming the surrendered pointer if it desires.
         @function
         @param {Property} pointer The pointerIdentifier that the demanding component is asking this component to surrender
@@ -1496,8 +2021,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
     // Composers
     /*
-        Variable to track this component's associated composers
-        @private
+     * Variable to track this component's associated composers
+     * @private
      */
     composerList: {
         value: [],
@@ -1506,10 +2031,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     /**
-        Adds the passed in composer to the component's composer list.
-        @function
-        @param {Composer} composer Composer object
-    */
+     * Adds the passed in composer to the component's composer list.
+     * @function
+     * @param {Composer} composer Composer object
+     */
     addComposer: {  // What if the same composer instance is added to more than one component?
         value: function(composer) {
             this.addComposerForElement(composer, composer.element);
@@ -1517,12 +2042,12 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     /**
-        Adds the passed in composer to the component's composer list and
-        sets the element of the composer to the passed in element.
-        @function
-        @param {Composer} composer Composer object
-        @param {Element} element Element
-    */
+     * Adds the passed in composer to the component's composer list and
+     * sets the element of the composer to the passed in element.
+     * @function
+     * @param {Composer} composer Composer object
+     * @param {Element} element Element
+     */
     addComposerForElement: {
         value: function(composer, element) {
             composer.component = this;
@@ -1540,12 +2065,12 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     /**
-        Adds the passed in composer to the list of composers which will have their
-        frame method called during the next draw cycle.  It causes a draw cycle to be scheduled
-        iff one has not already been scheduled.
-        @function
-        @param {Composer} composer Composer object
-    */
+     * Adds the passed in composer to the list of composers which will have their
+     * frame method called during the next draw cycle.  It causes a draw cycle to be scheduled
+     * iff one has not already been scheduled.
+     * @function
+     * @param {Composer} composer Composer object
+     */
     scheduleComposer: {
         value: function(composer) {
             this.rootComponent.addToComposerList(composer);
@@ -1553,11 +2078,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     /**
-        Removes the passed in composer from this component's composer list.  It takes care
-        of calling the composers unload method before removing it from the list.
-        @function
-        @param {Composer} composer Composer object
-    */
+     * Removes the passed in composer from this component's composer list.  It takes care
+     * of calling the composers unload method before removing it from the list.
+     * @function
+     * @param {Composer} composer Composer object
+     */
     removeComposer: {
         value: function(composer) {
             var i, length;
@@ -1573,10 +2098,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     /**
-        A convenience method for removing all composers from a component.  This method
-        is responsible for calling unload on each composer before removing it.
-        @function
-    */
+     * A convenience method for removing all composers from a component.  This method
+     * is responsible for calling unload on each composer before removing it.
+     * @function
+     */
     clearAllComposers: {
         value: function() {
             var i, length, composerList = this.composerList;
@@ -1589,53 +2114,57 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     /**
-        The localizer for this component
-        @type {module:montage/core/localizer.Localizer}
-        @default null
-    */
+     * The localizer for this component
+     * @type {Localizer}
+     * @default null
+     */
     localizer: {
         value: null
     },
 
+    /**
+     * @private
+     */
     _waitForLocalizerMessages: {
         value: false
     },
+
     /**
-        Whether to wait for the localizer to load messages before drawing.
-        Make sure to set the localizer before setting to <code>true</code>.
-        @type Boolean
-        @default false
-        @example
-    // require localizer
-    var defaultLocalizer = localizer.defaultLocalizer,
-        _ = defaultLocalizer.localizeSync.bind(defaultLocalizer);
-
-    exports.Main = Montage.create(Component, {
-
-        didCreate: {
-            value: function() {
-                this.localizer = defaultLocalizer;
-                this.waitForLocalizerMessages = true;
-            }
-        },
-
-        // ...
-
-        // no draw happens until the localizer's messages have been loaded
-        prepareForDraw: {
-            value: function() {
-                this._greeting = _("hello", "Hello {name}!");
-            }
-        },
-        draw: {
-            value: function() {
-                // this is for illustration only. This example is simple enough that
-                // you should use a localizations binding
-                this._element.textContent = this._greeting({name: this.name});
-            }
-        }
-    }
-    */
+     * Whether to wait for the localizer to load messages before drawing.
+     * Make sure to set the localizer before setting to ```true```.
+     * @type Boolean
+     * @default false
+     * @example
+     * // require localizer
+     * var defaultLocalizer = localizer.defaultLocalizer,
+     *     _ = defaultLocalizer.localizeSync.bind(defaultLocalizer);
+     *
+     * exports.Main = Component.specialize( {
+     *
+     *     constructor: {
+     *         value: function() {
+     *             this.localizer = defaultLocalizer;
+     *             this.waitForLocalizerMessages = true;
+     *         }
+     *     },
+     *
+     *     // ...
+     *
+     *     // no draw happens until the localizer's messages have been loaded
+     *     prepareForDraw: {
+     *         value: function() {
+     *             this._greeting = _("hello", "Hello {name}!");
+     *         }
+     *     },
+     *     draw: {
+     *         value: function() {
+     *             // this is for illustration only. This example is simple enough that
+     *             // you should use a localizations binding
+     *             this._element.textContent = this._greeting({name: this.name});
+     *         }
+     *     }
+     * }
+     */
     waitForLocalizerMessages: {
         enumerable: false,
         get: function() {
@@ -1673,19 +2202,19 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     //
 
     /**
-        Stores values that need to be set on the element. Cleared each draw cycle.
-        @private
+     * Stores values that need to be set on the element. Cleared each draw cycle.
+     * @private
      */
     _elementAttributeValues: {
         value: null
     },
 
     /**
-        Stores the descriptors of the properties that can be set on this control
-        @private
+     * Stores the descriptors of the properties that can be set on this control
+     * @private
      */
     _elementAttributeDescriptors: {
-       value: null
+        value: null
     },
 
 
@@ -1707,11 +2236,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     /**
-    * Adds a property to the component with the specified name. This method is used internally by the framework convert a DOM element's standard attributes into bindable properties. It creates an accessor property (getter/setter) with the same name as the specified property, as well as a "backing" data property whose name is prepended with an underscore (_). The backing variable is assigned the value from the property descriptor. For example, if the name  "title" is passed as the first parameter, a "title" accessor property is created as well a data property named "_title".
-    * @function
-    * @param {String} name The property name to add.
-    * @param {Object} descriptor An object that specifies the new properties default attributes such as configurable and enumerable.
-    */
+     * Adds a property to the component with the specified name. This method is used internally by the framework convert a DOM element's standard attributes into bindable properties. It creates an accessor property (getter/setter) with the same name as the specified property, as well as a "backing" data property whose name is prepended with an underscore (_). The backing variable is assigned the value from the property descriptor. For example, if the name  "title" is passed as the first parameter, a "title" accessor property is created as well a data property named "_title".
+     * @function
+     * @param {String} name The property name to add.
+     * @param {Object} descriptor An object that specifies the new properties default attributes such as configurable and enumerable.
+     */
     defineAttribute: {
         value: function(name, descriptor) {
             descriptor = descriptor || {};
@@ -1719,8 +2248,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
 
             var newDescriptor = {
-                configurable: (typeof descriptor.configurable == 'undefined') ? true: descriptor.configurable,
-                enumerable: (typeof descriptor.enumerable == 'undefined') ?  true: descriptor.enumerable,
+                configurable: (typeof descriptor.configurable === 'undefined') ? true: descriptor.configurable,
+                enumerable: (typeof descriptor.enumerable === 'undefined') ?  true: descriptor.enumerable,
                 set: (function(name, attributeName) {
                     return function(value) {
                         var descriptor = this._getElementAttributeDescriptor(name, this);
@@ -1753,27 +2282,27 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             };
 
             // Define _ property
-            Montage.defineProperty(this, _name, {value: null});
+            Montage.defineProperty(this.prototype, _name, {value: null});
             // Define property getter and setter
-            Montage.defineProperty(this, name, newDescriptor);
+            Montage.defineProperty(this.prototype, name, newDescriptor);
         }
     },
 
     /**
-    * Add the specified properties as properties of this component.
-    * @function
-    * @param {object} properties An object that contains the properties you want to add.
-    */
+     * Add the specified properties as properties of this component.
+     * @function
+     * @param {object} properties An object that contains the properties you want to add.
+     */
     addAttributes: {
         value: function(properties) {
             var i, descriptor, property, object;
-            this._elementAttributeDescriptors = properties;
+            this.prototype._elementAttributeDescriptors = properties;
 
             for(property in properties) {
                 if(properties.hasOwnProperty(property)) {
                     object = properties[property];
                     // Make sure that the descriptor is of the correct form.
-                    if(object === null || String.isString(object)) {
+                    if(object === null || typeof object === "string") {
                         descriptor = {value: object, dataType: "string"};
                         properties[property] = descriptor;
                     } else {
@@ -1792,57 +2321,66 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
 // callbacks
 
-    _willPrepareForDraw: {
-        value: function() {
-            // The element is now ready, so we can read the attributes that
-            // have been set on it.
-            var attributes, i, length, name, value, attributeName, descriptor;
-            attributes = this.element.attributes;
-            if (attributes) {
-                length = attributes.length
-                for(i=0; i < length; i++) {
-                    name = attributes[i].name;
-                    value = attributes[i].value;
+    /**
+     * @private
+     */
+    _enterDocument: {
+        value: function(firstTime) {
+            var originalElement;
 
-                    descriptor = this._getElementAttributeDescriptor(name, this);
-                    // check if this attribute from the markup is a well-defined attribute of the component
-                    if(descriptor || (typeof this[name] !== 'undefined')) {
-                        // at this point we know that we will need it so create it.
-                        if(this._elementAttributeValues === null) {
-                            this._elementAttributeValues = {};
-                        }
-                        // only set the value if a value has not already been set by binding
-                        if(typeof this._elementAttributeValues[name] === 'undefined') {
-                            this._elementAttributeValues[name] = value;
-                            if( (typeof this[name] == 'undefined') || this[name] == null) {
-                                this[name] = value;
+            if (firstTime) {
+// The element is now ready, so we can read the attributes that
+                // have been set on it.
+                originalElement = this.originalElement;
+
+                var attributes, i, length, name, value, attributeName, descriptor;
+                attributes = originalElement.attributes;
+                if (attributes) {
+                    length = attributes.length;
+                    for(i=0; i < length; i++) {
+                        name = attributes[i].name;
+                        value = attributes[i].value;
+
+                        descriptor = this._getElementAttributeDescriptor(name, this);
+                        // check if this attribute from the markup is a well-defined attribute of the component
+                        if(descriptor || (typeof this[name] !== 'undefined')) {
+                            // at this point we know that we will need it so create it.
+                            if(this._elementAttributeValues === null) {
+                                this._elementAttributeValues = {};
+                            }
+                            // only set the value if a value has not already been set by binding
+                            if(typeof this._elementAttributeValues[name] === 'undefined') {
+                                this._elementAttributeValues[name] = value;
+                                if( (typeof this[name] === 'undefined') || this[name] == null) {
+                                    this[name] = value;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            // textContent is a special case since it isn't an attribute
-            descriptor = this._getElementAttributeDescriptor('textContent', this);
-            if(descriptor) {
-                // check if this element has textContent
-                var textContent = this.element.textContent;
-                if(typeof this._elementAttributeValues.textContent === 'undefined') {
-                    this._elementAttributeValues.textContent = textContent;
-                    if( this.textContent == null) {
-                        this.textContent = textContent;
+                // textContent is a special case since it isn't an attribute
+                descriptor = this._getElementAttributeDescriptor('textContent', this);
+                if(descriptor) {
+                    // check if this element has textContent
+                    var textContent = originalElement.textContent;
+                    if(typeof this._elementAttributeValues.textContent === 'undefined') {
+                        this._elementAttributeValues.textContent = textContent;
+                        if( this.textContent == null) {
+                            this.textContent = textContent;
+                        }
                     }
                 }
-            }
 
-            // Set defaults for any properties that weren't serialised or set
-            // as attributes on the element.
-            if (this._elementAttributeDescriptors) {
-                for (attributeName in this._elementAttributeDescriptors) {
-                    descriptor = this._elementAttributeDescriptors[attributeName];
-                    var _name = "_"+attributeName;
-                    if (this[_name] === null && descriptor !== null && "value" in descriptor) {
-                        this[_name] = this._elementAttributeDescriptors[attributeName].value;
+                // Set defaults for any properties that weren't serialised or set
+                // as attributes on the element.
+                if (this._elementAttributeDescriptors) {
+                    for (attributeName in this._elementAttributeDescriptors) {
+                        descriptor = this._elementAttributeDescriptors[attributeName];
+                        var _name = "_"+attributeName;
+                        if (this[_name] === null && descriptor !== null && "value" in descriptor) {
+                            this[_name] = this._elementAttributeDescriptors[attributeName].value;
+                        }
                     }
                 }
             }
@@ -1850,6 +2388,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
+    /**
+     * @private
+     */
     _draw: {
         value: function() {
             var element = this.element, descriptor;
@@ -1885,22 +2426,120 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     delete this._elementAttributeValues[attributeName];
                 }
             }
+            // classList
+            this._drawClassListIntoComponent();
+        }
+    },
+
+    _classList: {
+        value: null
+    },
+
+    _classListDirty: {
+        value: false
+    },
+
+    /**
+     The classList of the component's element, the purpose is to mimic the element's API but to also respect the draw.
+     It can also be bound to by binding each class as a property.
+     example to toggle the complete class: "classList.has('complete')" : { "<-" : "@owner.isCompete"}
+     @type {Property}
+     @default null
+     */
+    classList: {
+        get: function () {
+            if (this._classList === null) {
+                this._classList = new Set();
+                this._subscribeToToClassListChanges();
+                this._initializeClassListFromElement(this.element);
+            }
+            return this._classList;
+        }
+    },
+
+    _initializeClassListFromElement: {
+        value: function(element) {
+            var className;
+            if (element && element.className && (className = element.className.trim())) {
+                // classList
+                if (className.length !== 0) {
+                    // important to initializae the classList first, so that the listener doesn't get installed.
+                    var classList = this.classList;
+                    if (this._unsubscribeToClassListChanges) {
+                        this._unsubscribeToClassListChanges();
+                    }
+                    classList.addEach(className.split(/\s+/));
+                    this._subscribeToToClassListChanges();
+                }
+            }
+
+        }
+    },
+
+    _unsubscribeToClassListChanges: {
+        value: null
+    },
+
+    _subscribeToToClassListChanges: {
+        value: function() {
+            this._unsubscribeToClassListChanges = this._classList.addRangeChangeListener(this, "classList");
+        }
+    },
+
+    handleClassListRangeChange: {
+        value: function (plus, minus) {
+            this._classListDirty = true;
+            this.needsDraw = true;
+        }
+    },
+
+    _drawClassListIntoComponent: {
+        value: function () {
+            if (this._classListDirty) {
+                var elementClassList = this.element.classList,
+                    classList = this._classList;
+
+                for (var i = 0, ii = elementClassList.length, className; i < ii; i++) {
+                    className = elementClassList.item(i);
+                    if (!classList.has(className)) {
+                        elementClassList.remove(className);
+                        i--;
+                        ii--;
+                    }
+                }
+
+                this._classList.forEach(function (cssClass) {
+                    elementClassList.add(cssClass);
+                });
+                this._classListDirty = false;
+            }
+        }
+    },
+
+    dispose: {
+        value: function() {
+            this.cancelBindings();
+            this.detachFromParentComponent();
+            defaultEventManager.unregisterEventHandlerForElement(this, this._element);
+            this._element = null;
+
+            this.childComponents.forEach(function(component) {
+                component.dispose();
+            });
         }
     }
 });
 
 
-
-/* @extends montage/ui/component.Component */
 /**
- * @class module:montage/ui/component.RootComponent
- * @classdesc RootComponent class is a subclass of {@link Component}
+ * @class RootComponent
+ * @extends Component
  */
-var rootComponent = Montage.create(Component, /** @lends module:montage/ui/component.RootComponent# */{
-/**
-    Description TODO
-    @function
-    @returns itself
+var RootComponent = Component.specialize( /** @lends RootComponent# */{
+    /**
+     * @private
+     * @function
+     * @returns itself
     */
     init: {
         value: function() {
@@ -1908,6 +2547,9 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         }
     },
 
+    /**
+     * @private
+     */
     needsDraw: {
         enumerable: true,
         get: function() {
@@ -1929,37 +2571,40 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         }
     },
 
+    /**
+     * @private
+     */
     canDrawGate: {
         get: function() {
-            return this._canDrawGate || (this._canDrawGate = Gate.create().initWithDelegate(this));
+            return this._canDrawGate || (this._canDrawGate = new Gate().initWithDelegate(this));
         }
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     * @private
+     */
     _clearNeedsDrawTimeOut: {
         value: null
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     * @private
+     */
     _needsDrawList: {
         value: []
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     * @private
+     */
     _cannotDrawList: {
         value: null
     },
-/**
-    Description TODO
-    @function
-    @param {Object} component Component object
-    */
+
+    /**
+     * @function
+     * @param {Object} component Component object
+     */
     componentBlockDraw: {
         value: function(component) {
             this._cannotDrawList = (this._cannotDrawList ? this._cannotDrawList : {});
@@ -1971,15 +2616,17 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         }
     },
 
-/**
-    Description TODO
-    @function
-    @param {Object} component Component object
-    @param {Number} value Component value
-*/
+    /**
+     * @function
+     * @param {Object} component Component object
+     * @param {Number} value Component value
+     */
     componentCanDraw: {
         value: function(component, value) {
             if (value) {
+                if (!this._cannotDrawList) {
+                    return;
+                }
                 delete this._cannotDrawList[component.uuid];
                 this._needsDrawList.push(component);
                 if (Object.keys(this._cannotDrawList).length === 0 && this._needsDrawList.length > 0) {
@@ -1999,10 +2646,10 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
             }
         }
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     * @private
+     */
     _clearNeedsDrawList: {
         value: function() {
             var component, i, length, needsDrawList = this._needsDrawList;
@@ -2017,14 +2664,15 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
             needsDrawList.splice(0, length);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Component} componentId The component ID
-    */
+
+    /**
+     * @function
+     * @param {Component} componentId The component ID
+     */
     removeFromCannotDrawList: {
-        value: function(componentId) {
-            delete this._cannotDrawList[componentId];
+        value: function(component) {
+            delete this._cannotDrawList[component.uuid];
+
             if (Object.keys(this._cannotDrawList).length === 0 && this._needsDrawList.length > 0) {
                 if (!this._clearNeedsDrawTimeOut) {
                     var self = this;
@@ -2036,6 +2684,9 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         }
     },
 
+    /**
+     * @private
+     */
     _cancelDrawIfScheduled: {
         value: function() {
             var requestedAnimationFrame = this.requestedAnimationFrame,
@@ -2057,8 +2708,8 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     },
 
     /**
-        Adds the passed in child component to the drawList.
-        @private
+     * Adds the passed in child component to the drawList.
+     * @private
      */
     _addToDrawList: {
         value: function(childComponent) {
@@ -2073,9 +2724,8 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
 
     /**
      * Adds the passed in composer to the list of composers to be executed
-     * in the next draw cycle and requests a draw cycle iff one has not been
+     * in the next draw cycle and requests a draw cycle if one has not been
      * requested yet.
-     * @private
      * @function
      * @param {Composer} composer Composer object
      */
@@ -2100,54 +2750,57 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     },
 
     /*
-        Flag to track if a composer is requesting a draw
-        @private
+     * Flag to track if a composer is requesting a draw
+     * @private
      */
     _scheduleComposerRequest: {
         value: false
     },
 
     /**
-        The value returned by requestAnimationFrame.<br>
-        If a request has been scheduled but not run yet, else null.
-        @type {Property}
-        @default null
-    */
+     * The value returned by requestAnimationFrame.
+     * If a request has been scheduled but not run yet, else null.
+     * @private
+     * @type {Number}
+     * @default null
+     */
     requestedAnimationFrame: {
         value: null,
         enumerable: false
     },
-/**
-        Description TODO
-        @type {Property}
-        @default (window.webkitRequestAnimationFrame ? window.webkitRequestAnimationFrame : window.mozRequestAnimationFrame)
-    */
+
+    /**
+     * @private
+     * @function
+     */
     requestAnimationFrame: {
         value: (window.webkitRequestAnimationFrame ? window.webkitRequestAnimationFrame : window.mozRequestAnimationFrame),
         enumerable: false
     },
 
-/**
-        Description TODO
-        @type {Property}
-        @default (window.webkitCancelRequestAnimationFrame ? window.webkitCancelRequestAnimationFrame : window.mozCancelRequestAnimationFrame)
-    */
+    /**
+     * @private
+     * @function
+     */
     cancelAnimationFrame: {
         value: (window.webkitCancelRequestAnimationFrame ? window.webkitCancelRequestAnimationFrame : window.mozCancelRequestAnimationFrame),
         enumerable: false
     },
 
     /**
-        Set to the current time of the frame while drawing is in progress.<br>
-        The frame time is either supplied by the requestAnimationFrame callback if available in the browser, or by using Date.now if it is a setTimeout.
-        @private
+     * Set to the current time of the frame while drawing is in progress.
+     * The frame time is either supplied by the requestAnimationFrame callback if available in the browser, or by using Date.now if it is a setTimeout.
+     * @private
      */
     _frameTime: {
         value: null
     },
 
-    // oldSource and diff are used to detect DOM modifications outside of the
-    // draw loop, but only if drawLogger.isDebug is true.
+    /**
+     * oldSource and diff are used to detect DOM modifications outside of the
+     * draw loop, but only if drawLogger.isDebug is true.
+     * @private
+     */
     _oldSource: {
         value: null
     },
@@ -2158,54 +2811,111 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
             var ns = {};
             var os = {};
 
-            for ( var i = 0; i < n.length; i++ ) {
-              if ( ns[ n[i] ] == null )
-                ns[ n[i] ] = { rows: [], o: null };
-              ns[ n[i] ].rows.push( i );
+            //jshint -W116
+            for (var i = 0; i < n.length; i++ ) {
+                if (ns[ n[i] ] == null ) {
+                    ns[ n[i] ] = { rows: [], o: null };
+                }
+                ns[ n[i] ].rows.push( i );
             }
 
             for (i = 0; i < o.length; i++ ) {
-              if ( os[ o[i] ] == null )
-                os[ o[i] ] = { rows: [], n: null };
-              os[ o[i] ].rows.push( i );
+                if (os[ o[i] ] == null ) {
+                    os[ o[i] ] = { rows: [], n: null };
+                }
+                os[ o[i] ].rows.push( i );
             }
 
             for (i in ns ) {
-              if ( ns[i].rows.length == 1 && typeof(os[i]) != "undefined" && os[i].rows.length == 1 ) {
-                n[ ns[i].rows[0] ] = { text: n[ ns[i].rows[0] ], row: os[i].rows[0] };
-                o[ os[i].rows[0] ] = { text: o[ os[i].rows[0] ], row: ns[i].rows[0] };
-              }
+                if (ns[i].rows.length === 1 && typeof(os[i]) !== "undefined" && os[i].rows.length === 1 ) {
+                    n[ ns[i].rows[0] ] = { text: n[ ns[i].rows[0] ], row: os[i].rows[0] };
+                    o[ os[i].rows[0] ] = { text: o[ os[i].rows[0] ], row: ns[i].rows[0] };
+                }
             }
 
             for (i = 0; i < n.length - 1; i++ ) {
-              if ( n[i].text != null && n[i+1].text == null && n[i].row + 1 < o.length && o[ n[i].row + 1 ].text == null &&
-                   n[i+1] == o[ n[i].row + 1 ] ) {
-                n[i+1] = { text: n[i+1], row: n[i].row + 1 };
-                o[n[i].row+1] = { text: o[n[i].row+1], row: i + 1 };
-              }
+                if (n[i].text != null && n[i+1].text == null &&
+                    n[i].row + 1 < o.length && o[ n[i].row + 1 ].text == null &&
+                    n[i+1] == o[ n[i].row + 1 ]
+                ) {
+                    n[i+1] = { text: n[i+1], row: n[i].row + 1 };
+                    o[n[i].row+1] = { text: o[n[i].row+1], row: i + 1 };
+                }
             }
 
             for (i = n.length - 1; i > 0; i-- ) {
-              if ( n[i].text != null && n[i-1].text == null && n[i].row > 0 && o[ n[i].row - 1 ].text == null &&
-                   n[i-1] == o[ n[i].row - 1 ] ) {
-                n[i-1] = { text: n[i-1], row: n[i].row - 1 };
-                o[n[i].row-1] = { text: o[n[i].row-1], row: i - 1 };
-              }
+                if (n[i].text != null && n[i-1].text == null &&
+                    n[i].row > 0 && o[ n[i].row - 1 ].text == null &&
+                    n[i-1] == o[ n[i].row - 1 ]
+                ) {
+                    n[i-1] = { text: n[i-1], row: n[i].row - 1 };
+                    o[n[i].row-1] = { text: o[n[i].row-1], row: i - 1 };
+                }
             }
+            //jshint +W116
 
             return { o: o, n: n };
         }
     },
 
-/**
-    Description TODO
-    @function
-    */
+    /**
+     * @private
+     */
     _previousDrawDate: {
         enumerable: false,
         value: 0
     },
 
+    /**
+     * @private
+     */
+    _documentResources: {
+        value: null
+    },
+
+    /**
+     * @private
+     */
+    _needsStylesheetsDraw: {
+        value: false
+    },
+
+    /**
+     * @private
+     */
+    _stylesheets: {
+        value: []
+    },
+
+    /**
+     * @private
+     */
+    addStylesheet: {
+        value: function(style) {
+            this._stylesheets.push(style);
+            this._needsStylesheetsDraw = true;
+        }
+    },
+
+    /**
+     * @private
+     */
+    drawStylesheets: {
+        value: function() {
+            var documentResources = this._documentResources,
+                stylesheets = this._stylesheets,
+                stylesheet;
+
+            while ((stylesheet = stylesheets.shift())) {
+                documentResources.addStyle(stylesheet);
+            }
+            this._needsStylesheetsDraw = false;
+        }
+    },
+
+    /**
+     * @private
+     */
     drawTree: {
         value: function drawTree() {
             if (this.requestedAnimationFrame === null) { // 0 is a valid requestedAnimationFrame value
@@ -2214,6 +2924,24 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                 }
                 var self = this, requestAnimationFrame = this.requestAnimationFrame;
                 var _drawTree = function(timestamp) {
+                    var drawPerformanceStartTime;
+
+                    // Before initiating a draw cycle through the components we
+                    // need to have a draw cycle just to add all the stylesheets
+                    // if any is requested to draw.
+                    // We need to do this because adding the stylesheets at the
+                    // same time the components draw won't make the styles
+                    // available at that first draw.
+                    if (self._needsStylesheetsDraw) {
+                        self.drawStylesheets();
+                        self.requestedAnimationFrame = null;
+                        self.drawTree();
+                        return;
+                    }
+
+                    if (drawPerformanceLogger.isDebug) {
+                        drawPerformanceStartTime = window.performance.now();
+                    }
                     self._frameTime = (timestamp ? timestamp : Date.now());
                     if (self._clearNeedsDrawTimeOut) {
                         self._clearNeedsDrawList();
@@ -2243,6 +2971,13 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
 
                     self.drawIfNeeded();
 
+                    if (drawPerformanceLogger.isDebug) {
+                        var drawPerformanceEndTime = window.performance.now();
+                        console.log("Draw Cycle Time: ",
+                            drawPerformanceEndTime - drawPerformanceStartTime,
+                            ", Components: ", self._lastDrawComponentsCount);
+                    }
+
                     if (drawLogger.isDebug) {
                         console.groupEnd();
                         self._oldSource = document.documentElement.innerHTML;
@@ -2271,28 +3006,27 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         },
         enumerable: false
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     * @private
+     */
     _readyToDrawList: {
         enumerable: false,
         value: []
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     * @private
+     */
     _readyToDrawListIndex: {
         enumerable: false,
         value: null
     },
-/**
-    Description TODO
-    @function
-    @param {Component} component Component to add
-    @returns itself
-    */
+
+    /**
+     * @function
+     * @param {Component} component Component to add
+     */
     addToDrawCycle: {
         value: function(component) {
             var needsDrawListIndex = this._readyToDrawListIndex, length, composer;
@@ -2312,9 +3046,14 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     },
 
 
+    _lastDrawComponentsCount: {
+        value: null
+    },
+
     /**
-        @function
-        @returns !!needsDrawList.length
+     * @private
+     * @function
+     * @returns Boolean true if all the components that needed to draw have drawn
     */
     drawIfNeeded:{
         value: function drawIfNeeded() {
@@ -2358,7 +3097,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
             // Sort the needsDraw list so that any newly added items are drawn in the correct order re: parent-child
             var sortByLevel = function(component1, component2) {
                 return component1._treeLevel - component2._treeLevel;
-            }
+            };
             needsDrawList.sort(sortByLevel);
 
             for (i = 0; i < j; i++) {
@@ -2389,14 +3128,20 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                     drawLogger.debug(component._montage_metadata.objectName, " didDraw treeLevel ",component._treeLevel);
                 }
             }
+
+            if (drawPerformanceLogger.isDebug) {
+                this._lastDrawComponentsCount = needsDrawList.length;
+            }
+
             return !!needsDrawList.length;
         }
     },
-/**
-        Description TODO
-        @type {Function}
-        @default element
-    */
+
+    /**
+     * @private
+     * @type {DOMElement}
+     * @default null
+     */
     element: {
         get:function() {
             return this._element;
@@ -2404,11 +3149,12 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         set:function(value) {
             defaultEventManager.registerEventHandlerForElement(this, value);
             this._element = value;
+            this._documentResources = DocumentResources.getInstanceForDocument(value);
         }
     }
 });
 
-rootComponent.init();
+var rootComponent = new RootComponent().init();
 //if(window.parent && window.parent.jasmine) {
 exports.__root__ = rootComponent;
 //}

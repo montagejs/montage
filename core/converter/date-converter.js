@@ -2513,11 +2513,8 @@ var Montage = require("montage").Montage,
 
 
 // Date
-var DATE_CLASS = '[object Date]';
 var FUNCTION_CLASS = '[object Function]',
     BOOLEAN_CLASS = '[object Boolean]',
-    NUMBER_CLASS = '[object Number]',
-    STRING_CLASS = '[object String]',
     ARRAY_CLASS = '[object Array]',
     DATE_CLASS = '[object Date]';
 var _toString = Object.prototype.toString;
@@ -2527,18 +2524,15 @@ var _toString = Object.prototype.toString;
 var isDate = function(object) {
     return _toString.call(object) === DATE_CLASS;
 };
-var isNumber = function(object) {
-    return _toString.call(object) === NUMBER_CLASS;
-};
 
 var formatDate = function(v, format) {
     var date;
-    if (String.isString(v)) {
+    if (typeof v === "string") {
         // try to create a Date instance from the string
         // date must be a string that can be parsed by Date
         // see - http://www.w3schools.com/jsref/jsref_parse.asp
         date = new Date(Date.parse(v));
-    } else if (isNumber(v)) {
+    } else if (typeof v === "number") {
         date = new Date(v);
     } else {
         date = v;
@@ -2553,11 +2547,11 @@ var formatDate = function(v, format) {
 
 /**
  Date Validator:
- @class module:montage/core/converter/date-converter.DateValidator
+ @class DateValidator
  @classdesc Validate that date provided as string/number can be converted to a Date Object using the pattern provided.
- @extends module:montage/core/converter.Validator
+ @extends Validator
  */
-var DateValidator = exports.DateValidator = Montage.create(Validator,/** @lends module:montage/core/converter/date-converter.DateValidator# */ {
+var DateValidator = exports.DateValidator = Validator.specialize(/** @lends DateValidator# */ {
 
     /**
         @type {Property}
@@ -2569,7 +2563,7 @@ var DateValidator = exports.DateValidator = Montage.create(Validator,/** @lends 
    /**
     @function
     @param {Date} v Value.
-    @returns {message: 'Unable to parse date - ' + v + ' in the format - ' + this.pattern} || new Date(result)
+    //@returns {message: 'Unable to parse date - ' + v + ' in the format - ' + this.pattern} | new Date(result)
     */
     validate: {
         value: function(v) {
@@ -2592,9 +2586,9 @@ var DateValidator = exports.DateValidator = Montage.create(Validator,/** @lends 
 
 // Date Converter
 /**
-@class module:montage/core/converter/date-converter.DateConverter
+@class DateConverter
 */
-var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends module:montage/core/converter/date-converter.DateConverter# */ {
+var DateConverter = exports.DateConverter = Converter.specialize(/** @lends DateConverter# */ {
     /**
      Specifies whether the converter allows partial conversion.
      @type {Property}
@@ -2606,10 +2600,10 @@ var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends 
 
 /**
         @type {Property}
-        @default {Function} Montage.create(DateValidator)
+        @default {Function} new DateValidator()
     */
     validator: {
-        value: Montage.create(DateValidator)
+        value: new DateValidator()
     },
 
     // valid fn values are:
@@ -2627,7 +2621,8 @@ var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends 
     */
     convert: {
         value: function(v) {
-            if (isDate(v) || String.isString(v) || isNumber(v)) {
+            var t = typeof v;
+            if (isDate(v) || t === "string" || t === "number") {
                 return formatDate(v, this.pattern);
             }
             return v;

@@ -1,0 +1,179 @@
+{
+    "blueprint_loader_mainModule": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "mainModule",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_loader_mainName": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "mainName",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_loader_includeFrameworkModules": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "includeFrameworkModules",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_loader_minimumBootstrappingDuration": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "minimumBootstrappingDuration",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_loader_minimumLoadingDuration": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "minimumLoadingDuration",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_loader_currentStage": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "currentStage",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_loader_isLoadingMainComponent": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "isLoadingMainComponent",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_loader_readyToShowLoader": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "readyToShowLoader",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_loader_readyToShowMainComponent": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "readyToShowMainComponent",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_loader_removeContentOnLoad": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "removeContentOnLoad",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_component_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Component",
+                "blueprintModuleId": "ui/component.meta",
+                "prototypeName": "Component"
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "Loader",
+            "blueprintModuleId": "ui/loader.reel/loader.meta",
+            "prototypeName": "Loader",
+            "parent": {
+                "@": "blueprint_component_reference"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "blueprint_loader_mainModule"
+                },
+                {
+                    "@": "blueprint_loader_mainName"
+                },
+                {
+                    "@": "blueprint_loader_includeFrameworkModules"
+                },
+                {
+                    "@": "blueprint_loader_minimumBootstrappingDuration"
+                },
+                {
+                    "@": "blueprint_loader_minimumLoadingDuration"
+                },
+                {
+                    "@": "blueprint_loader_currentStage"
+                },
+                {
+                    "@": "blueprint_loader_isLoadingMainComponent"
+                },
+                {
+                    "@": "blueprint_loader_readyToShowLoader"
+                },
+                {
+                    "@": "blueprint_loader_readyToShowMainComponent"
+                },
+                {
+                    "@": "blueprint_loader_removeContentOnLoad"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "Loader": [
+                    {
+                        "@": "blueprint_loader_mainModule"
+                    },
+                    {
+                        "@": "blueprint_loader_mainName"
+                    },
+                    {
+                        "@": "blueprint_loader_includeFrameworkModules"
+                    },
+                    {
+                        "@": "blueprint_loader_minimumBootstrappingDuration"
+                    },
+                    {
+                        "@": "blueprint_loader_minimumLoadingDuration"
+                    },
+                    {
+                        "@": "blueprint_loader_currentStage"
+                    },
+                    {
+                        "@": "blueprint_loader_isLoadingMainComponent"
+                    },
+                    {
+                        "@": "blueprint_loader_readyToShowLoader"
+                    },
+                    {
+                        "@": "blueprint_loader_readyToShowMainComponent"
+                    },
+                    {
+                        "@": "blueprint_loader_removeContentOnLoad"
+                    }
+                ]
+            }
+        }
+    }
+}

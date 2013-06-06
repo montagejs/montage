@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
     Defines standardized shims to intrinsic <code>Array</code> object.
-    @see [Array class]{@link external:Array}
+    @see {external:Array}
     @module montage/core/shim/array
 */
 

@@ -1,0 +1,128 @@
+{
+    "blueprint_repetition_content": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "content",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object",
+            "cardinality": -1
+
+        }
+    },
+    "blueprint_repetition_contentController": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "contentController",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object"
+        }
+    },
+    "blueprint_repetition_isSelectionEnabled": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "isSelectionEnabled",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean"
+        }
+    },
+    "blueprint_repetition_selection": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "selection",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object"
+        }
+    },
+    "blueprint_repetition_selectedIndexes": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "selectedIndexes",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "number",
+            "cardinality": -1
+        }
+    },
+    "blueprint_repetition_clonesChildComponents": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "clonesChildComponents",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean"
+        }
+    },
+    "blueprint_component_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Component",
+                "blueprintModuleId": "ui/component.meta",
+                "prototypeName": "Component"
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "Repetition",
+            "blueprintModuleId": "ui/repetition.reel/repetition.meta",
+            "prototypeName": "Repetition",
+            "parent": {
+                "@": "blueprint_component_reference"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "blueprint_repetition_content"
+                },
+                {
+                    "@": "blueprint_repetition_contentController"
+                },
+                {
+                    "@": "blueprint_repetition_isSelectionEnabled"
+                },
+                {
+                    "@": "blueprint_repetition_selection"
+                },
+                {
+                    "@": "blueprint_repetition_selectedIndexes"
+                },
+                {
+                    "@": "blueprint_repetition_clonesChildComponents"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "Repetition": [
+                    {
+                        "@": "blueprint_repetition_content"
+                    },
+                    {
+                        "@": "blueprint_repetition_contentController"
+                    },
+                    {
+                        "@": "blueprint_repetition_isSelectionEnabled"
+                    },
+                    {
+                        "@": "blueprint_repetition_selection"
+                    },
+                    {
+                        "@": "blueprint_repetition_selectedIndexes"
+                    },
+                    {
+                        "@": "blueprint_repetition_clonesChildComponents"
+                    }
+                ]
+            }
+        }
+    }
+}

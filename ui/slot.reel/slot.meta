@@ -1,0 +1,61 @@
+{
+    "blueprint_slot_delegate": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "delegate",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object"
+        }
+    },
+    "blueprint_slot_content": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "content",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object"
+        }
+    },
+    "blueprint_component_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Component",
+                "blueprintModuleId": "ui/component.meta",
+                "prototypeName": "Component"
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "Slot",
+            "blueprintModuleId": "ui/slot.reel/slot.meta",
+            "prototypeName": "Slot",
+            "parent": {
+                "@": "blueprint_component_reference"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "blueprint_slot_delegate"
+                },
+                {
+                    "@": "blueprint_slot_content"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "Slot": [
+                    {
+                        "@": "blueprint_slot_delegate"
+                    },
+                    {
+                        "@": "blueprint_slot_content"
+                    }
+                ]
+            }
+        }
+    }
+}

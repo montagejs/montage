@@ -38,12 +38,12 @@ POSSIBILITY OF SUCH DAMAGE.
     @requires montage/core/core
 */
 /**
-    @class module:montage/core/uuid.Uuid
-    @extends module:montage/core/core.Montage
+    @class Uuid
+    @extends Montage
  */
 var CHARS = '0123456789ABCDEF'.split(''),
     FORMAT = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.split(''),
-    Uuid = exports.Uuid = Object.create(Object.prototype, /** @lends module:montage/core/uuid.Uuid# */ {
+    Uuid = exports.Uuid = Object.create(Object.prototype, /** @lends Uuid# */ {
         /**
             Returns a univerally unique ID (UUID).
             @function

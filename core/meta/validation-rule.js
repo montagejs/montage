@@ -13,10 +13,10 @@ var PropertyValidationSemantics = require("core/meta/validation-semantics").Prop
 var logger = require("core/logger").logger("blueprint");
 
 /**
- @class module:montage/core/meta/validation-rule.PropertyValidationRule
- @extends module:montage/core/core.Montage
+ @class PropertyValidationRule
+ @extends Montage
  */
-var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Montage, /** @lends module:montage/core/meta/validation-rule.PropertyValidationRule# */ {
+var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidationRule# */ {
 
     /**
      Initialize a newly allocated blueprint validation rule.
@@ -39,7 +39,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Mon
             serializer.setProperty("blueprint", this.owner, "reference");
             //            serializer.setProperty("validationSelector", this._validationSelector, "reference");
             serializer.setProperty("messageKey", this.messageKey);
-            serializer.setProperties();
+            serializer.setAllProperties();
         }
     },
 
@@ -162,15 +162,15 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.create(Mon
     evaluateRule: {
         value: function(objectInstance) {
             if (this._propertyValidationEvaluator === null) {
-                var propertyValidationSemantics = PropertyValidationSemantics.create().initWithBlueprint(this.blueprint);
+                var propertyValidationSemantics = new PropertyValidationSemantics().initWithBlueprint(this.blueprint);
                 this._propertyValidationEvaluator = propertyValidationSemantics.compile(this.selector.syntax);
             }
             return this._propertyValidationEvaluator(objectInstance);
         }
     },
 
-        blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId: require("montage")._blueprintModuleIdDescriptor,
 
-        blueprint:require("montage")._blueprintDescriptor
+    blueprint: require("montage")._blueprintDescriptor
 
 });

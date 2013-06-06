@@ -31,7 +31,13 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
-exports.Test = Montage.create(Montage, {
+exports.Test = Montage.specialize( {
+
+    deserializedFromTemplate: {
+        value: function(_1, _2, part) {
+            this.templateObjects = part.objects;
+        }
+    },
 
     hideValue: {
         value: false

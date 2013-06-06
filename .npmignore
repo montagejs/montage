@@ -1,6 +1,12 @@
-.idea
-node_modules
 .DS_Store
+.gitignore
+.idea
+.jshintignore
+.jshintrc
 atlassian-ide-plugin.xml
 etc
+node_modules
+npm-debug.log
+spec
 test
+TEST-*.xml

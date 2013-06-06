@@ -68,10 +68,10 @@ exports.isDef = isDef;
 // Validators
 /**
  Base validator object.
- @class module:montage/core/converter.Validator
- @extends module:montage/core/core.Montage
+ @class Validator
+ @extends Montage
  */
-var Validator = exports.Validator = Montage.create(Montage, /** @lends module:montage/core/converter.Validator# */{
+var Validator = exports.Validator = Montage.specialize( /** @lends Validator# */{
 /**
         @type {Object}
         @default null
@@ -85,14 +85,14 @@ var Validator = exports.Validator = Montage.create(Montage, /** @lends module:mo
 // Converters
 
 /**
- @class module:montage/core/converter.Converter
+ @class Converter
  @classdesc The base Converter class that is extended by specific converter classes. A Converter has two primary methods:
  <ul>
  <li><code>convert(<i>value</i>)</code> : Convert value to a String.
  <li><code>revert(<i>value</i>)</code>: Do the reverse. Depending on the specific converter being used, the reverse operation may be "lossy".
  </ul>
  */
-var Converter = exports.Converter = Montage.create(Montage, /** @lends module:montage/core/converter.Converter# */ {
+var Converter = exports.Converter = Montage.specialize( /** @lends Converter# */ {
 
     /**
      Specifies whether the converter allows partial conversion.
@@ -118,6 +118,11 @@ var Converter = exports.Converter = Montage.create(Montage, /** @lends module:mo
     revert: {
         enumerable: false,
         value: null
-    }
+    },
+
+    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+
+    blueprint:require("montage")._blueprintDescriptor
+
 });
 

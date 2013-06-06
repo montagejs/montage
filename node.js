@@ -29,6 +29,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
+/*jshint node:true, browser:false */
+
 var FS = require("q-io/fs");
 
 var MontageBoot = require("./montage");
@@ -38,18 +40,16 @@ require("mr/node");
 var Promise = require("q");
 var URL = require("url");
 
-var jsdom = require("jsdom").jsdom;
-var Node = require("jsdom").level(1).Node;
-var domToHtml = require("jsdom/lib/jsdom/browser/domtohtml").domToHtml;
+var htmlparser = require("htmlparser2");
+var DomUtils = htmlparser.DomUtils;
+
+Require.overlays = ["node", "server", "montage"];
 
 exports.bootstrap = function () {
     var command = process.argv.slice(0, 3);
     var args = process.argv.slice(2);
     var program = args.shift();
     return FS.canonical(program).then(function (program) {
-        if (error) {
-            throw new Error(error);
-        }
         return findPackage(program)
         .fail(function (error) {
             if (error.message === "Can't find package") {
@@ -61,13 +61,14 @@ exports.bootstrap = function () {
         .then(function (directory) {
             return loadPackagedModule(directory, program, command, args);
         });
-    })
+    });
 };
 
 var findPackage = function (path) {
     var directory = FS.directory(path);
-    if (directory === path)
+    if (directory === path) {
         throw new Error("Can't find package");
+    }
     var packageJson = FS.join(directory, "package.json");
     return FS.stat(path)
     .then(function (stat) {
@@ -77,7 +78,7 @@ var findPackage = function (path) {
             return findPackage(directory);
         }
     });
-}
+};
 
 var loadFreeModule = function (program, command, args) {
     throw new Error("Can't load module that is not in a package");
@@ -169,31 +170,51 @@ Require.makeLoader = (function (makeLoader) {
 
 var parseHtmlDependencies = function (text, location) {
     var dependencies = [];
-    var document = jsdom(text, null, {
-        "features": {
-            "FetchExternalResources": false,
-            "ProcessExternalResources": false
-        }
-    });
-    collectHtmlDependencies(document, dependencies);
+
+    var dom = parseHtml(text);
+    collectHtmlDependencies(dom, dependencies);
+
     return dependencies;
 };
 
-var collectHtmlDependencies = function (document, dependencies) {
-    visit(document, function (element) {
-        if (element.nodeType == Node.ELEMENT_NODE) {
-            if (element.tagName === "SCRIPT") {
-                if (element.getAttribute("type") === "text/montage-serialization") {
+var collectHtmlDependencies = function (dom, dependencies) {
+    visit(dom, function (element) {
+        if (DomUtils.isTag(element)) {
+            if (element.name === "script") {
+                if (getAttribute(element, "type") === "text/montage-serialization") {
                     collectSerializationDependencies(getText(element), dependencies);
                 }
-            } else if (element.tagName === "LINK") {
-                if (element.getAttribute("type") === "text/montage-serialization") {
-                    dependencies.push(element.getAttribute("href"));
+            } else if (element.name === "link") {
+                if (getAttribute(element, "type") === "text/montage-serialization") {
+                    dependencies.push(getAttribute(element, "href"));
                 }
             }
         }
     });
 };
+
+function parseHtml(html) {
+    var dom, error;
+
+    var handler = new htmlparser.DomHandler(function (_error, _dom) {
+        error = _error;
+        dom = _dom;
+    });
+
+    // although these functions use callbacks they are actually synchronous
+    var parser = new htmlparser.Parser(handler);
+    parser.write(html);
+    parser.done();
+
+    if (error) {
+        throw error;
+    } else if (!dom) {
+        throw new Error("HTML parsing did not complete");
+    }
+
+    // wrap the returned array in a pseudo-document object for consistency
+    return {type: "document", children: dom};
+}
 
 function visit(element, visitor) {
     var pruned;
@@ -204,15 +225,20 @@ function visit(element, visitor) {
     if (pruned) {
         return;
     }
-    element = element.firstChild;
-    while (element) {
-        visit(element, visitor);
-        element = element.nextSibling;
+
+    var children = element.children;
+    var len = children ? children.length : 0;
+    for (var i = 0; i < len; i++) {
+        visit(children[i], visitor);
     }
 }
 
+function getAttribute(element, name) {
+    return element.attribs ? element.attribs[name] : null;
+}
+
 function getText(element) {
-    return domToHtml(element._childNodes, true, true);
+    return DomUtils.getText(element);
 }
 
 var collectSerializationDependencies = function (text, dependencies) {
@@ -222,11 +248,11 @@ var collectSerializationDependencies = function (text, dependencies) {
         if (description.lazy) {
             return;
         }
-        if (typeof description.module === "string") { // XXX deprecated
-            dependencies.push(description.module);
-        }
         if (typeof description.prototype === "string") {
             dependencies.push(parsePrototypeForModule(description.prototype));
+        }
+        if (typeof description.object === "string") {
+            dependencies.push(parsePrototypeForModule(description.object));
         }
     });
     return dependencies;

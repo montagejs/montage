@@ -32,18 +32,19 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Localizer = require("montage/core/localizer"),
     Promise = require("montage/core/promise").Promise,
-    Deserializer = require("montage/core/deserializer").Deserializer;
+    Bindings = require("montage/core/bindings").Bindings,
+    Map = require("montage/collections/map");
 
 describe("core/localizer-spec", function() {
 
     describe("Message", function() {
         var message;
         beforeEach(function() {
-            message = Localizer.Message.create();
+            message = new Localizer.Message();
         });
 
         it("has an init method that accepts key and default", function() {
-            message = Localizer.Message.create().init("hello", "Hello");
+            message = new Localizer.Message().init("hello", "Hello");
             return message.localized.then(function (localized) {
                 expect(localized).toBe("Hello");
             });
@@ -53,7 +54,7 @@ describe("core/localizer-spec", function() {
             var object = {
                 name: "World"
             };
-            message = Localizer.Message.create().init("hello", "Hello, {name}", object);
+            message = new Localizer.Message().init("hello", "Hello, {name}", object);
             return message.localized.then(function (localized) {
                 expect(localized).toBe("Hello, World");
             });
@@ -76,9 +77,9 @@ describe("core/localizer-spec", function() {
                 name: "World"
             };
 
-            Object.defineBinding(message, "key", {
-                boundObject: def,
-                boundObjectPropertyPath: "key"
+            Bindings.defineBinding(message, "key", {
+                "<->": "key",
+                source: def
             });
 
             return message.localized.then(function (localized) {
@@ -98,9 +99,9 @@ describe("core/localizer-spec", function() {
                 name: "before"
             };
 
-            Object.defineBinding(message, "data.name", {
-                boundObject: object,
-                boundObjectPropertyPath: "name"
+            Bindings.defineBinding(message, "data.get('name')", {
+                "<->": "name",
+                source: object
             });
 
             return message.localized.then(function (localized) {
@@ -110,7 +111,7 @@ describe("core/localizer-spec", function() {
                 return message.localized;
             }).then(function (localized) {
                 expect(localized).toBe("Hello, after");
-                message.data.name = "later";
+                message.data.set("name", "later");
 
                 return message.localized;
             }).then(function (localized) {
@@ -128,14 +129,14 @@ describe("core/localizer-spec", function() {
 
             var object = {};
 
-            Object.defineBinding(object, "name", {
-                boundObject: otherObject,
-                boundObjectPropertyPath: "name"
+            Bindings.defineBinding(object, "name", {
+                "<->": "name",
+                source: otherObject,
             });
 
-            Object.defineBinding(message, "data.name", {
-                boundObject: object,
-                boundObjectPropertyPath: "name"
+            Bindings.defineBinding(message, "data.get('name')", {
+                "<->": "name",
+                source: object,
             });
 
             return message.localized.then(function (localized) {
@@ -157,7 +158,7 @@ describe("core/localizer-spec", function() {
 
             return message.localized.then(function (localized) {
                 expect(localized).toBe("Hello, before");
-                message.data.name = "after";
+                message.data.set("name", "after");
 
                 return message.localized;
             }).then(function (localized) {
@@ -188,11 +189,11 @@ describe("core/localizer-spec", function() {
     describe("Localizer", function(){
         var l;
         beforeEach(function() {
-            l = Localizer.Localizer.create().init("en");
+            l = new Localizer.Localizer().init("en");
         });
 
         it("can be created with a foreign language code", function() {
-            var l = Localizer.Localizer.create().init("no");
+            var l = new Localizer.Localizer().init("no");
             expect(l.messageFormat).not.toBe(null);
         });
 
@@ -347,7 +348,7 @@ describe("core/localizer-spec", function() {
             });
 
             it("loads non-English messages", function() {
-                var l = Localizer.Localizer.create().init("no");
+                var l = new Localizer.Localizer().init("no");
                 return require.loadPackage(module.directory + "localizer/fallback/", {}).then(function(r){
                     l.require = r;
                     return l.loadMessages();
@@ -358,7 +359,7 @@ describe("core/localizer-spec", function() {
             });
 
             it("loads the fallback messages", function() {
-                var l = Localizer.Localizer.create().init("no-x-compiled");
+                var l = new Localizer.Localizer().init("no-x-compiled");
                 return require.loadPackage(module.directory + "localizer/fallback/", {}).then(function(r){
                     l.require = r;
                     return l.loadMessages();

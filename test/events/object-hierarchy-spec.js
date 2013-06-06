@@ -30,35 +30,20 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
-var TestPageLoader = require("support/testpageloader").TestPageLoader;
+var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
+TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function(testPage) {
     describe("events/object-hierarchy-spec", function() {
 
-        it("should load", function() {
-            expect(testPage.loaded).toBeTruthy();
-        });
-
-        var eventManager, parent, testApplication, testMontage;
+        var eventManager, parent, testApplication, testTarget;
 
         beforeEach(function() {
+            var testWindow = testPage.iframe.contentWindow;
             var testDocument = testPage.iframe.contentDocument;
-            testMontage = testDocument.defaultView.montageRequire("montage").Montage,
-            testApplication = testDocument.application;
+            testTarget = testDocument.defaultView.montageRequire("core/target").Target;
+            testApplication = testWindow.montageRequire("core/application").application;
             eventManager = testApplication.eventManager;
             eventManager.reset();
-        });
-
-        it("should have a parentProperty on a Montage object", function() {
-            expect((Montage.create()).parentProperty).toBeDefined();
-        });
-
-        it("should have a parentProperty on a object", function() {
-            expect((Object.create(Object.prototype)).parentProperty).toBeDefined();
-        });
-
-        it("should have a parentProperty on a object literal", function() {
-            expect({}.parentProperty).toBeDefined();
         });
 
         describe("handling events throughout the object hierarchy", function() {
@@ -71,23 +56,19 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
             beforeEach(function() {
                 // We need to use the testMontage as the base so the global defaultEventManager is the testEventManager
                 // from the test iframe, not the global defaultEventManager of the test
-                parent = testMontage.create();
+                parent = new testTarget();
 
-                orphan = testMontage.create();
-                orphan.parentProperty = "parent";
-                orphan.parent = null;
+                orphan = new testTarget();
+                orphan.nextTarget = null;
 
-                childFoo = testMontage.create();
-                childFoo.parentProperty = "foo";
-                childFoo.foo = parent;
+                childFoo = new testTarget();
+                childFoo.nextTarget = parent;
 
-                childBar = testMontage.create();
-                childBar.parentProperty = "bar";
-                childBar.bar = parent;
+                childBar = new testTarget();
+                childBar.nextTarget = parent;
 
-                grandchildFoo = testMontage.create();
-                grandchildFoo.parentProperty = "parent";
-                grandchildFoo.parent = childFoo;
+                grandchildFoo = new testTarget();
+                grandchildFoo.nextTarget = childFoo;
 
                 bubbleEvent = window.document.createEvent("CustomEvent");
                 bubbleEvent.initCustomEvent("bubbleEvent", true, false, null);
@@ -384,8 +365,9 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
                 bubbleEvent.initCustomEvent("bubbleEvent", true, false, null);
             });
 
-            it("should have a default parentProperty on all components", function() {
-                expect((Component.create()).parentProperty).toBe("parentComponent");
+            it("should have a default nextTarget of the parentComponent on all components", function() {
+                var component = new Component();
+                expect(component.nextTarget).toBe(component.parentComponent);
             });
 
             describe("during the capture phase", function() {
@@ -640,6 +622,34 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
                 expect(childListener.captureBubbleEvent).toHaveBeenCalled();
                 expect(childListener.handleEvent).toHaveBeenCalled();
                 expect(parentListener.handleEvent).toHaveBeenCalled();
+            });
+
+        });
+
+        describe("determining the event target chain", function () {
+
+            it("should always include the application when the nextTarget is a dead-end", function () {
+                var foo = new Montage();
+                foo.nextTarget = null;
+
+                var path = eventManager._eventPathForTarget(foo);
+                expect(path[0]).toBe(testApplication);
+            });
+
+            it("should not include the target itself in the chain", function () {
+                var foo = new Montage();
+                foo.nextTarget = foo;
+
+                var path = eventManager._eventPathForTarget(foo);
+                expect(path.indexOf(foo)).toBe(-1);
+            });
+
+            it("should always include the application when the chain ends due to a detected cycle", function () {
+                var foo = new Montage();
+                foo.nextTarget = foo;
+
+                var path = eventManager._eventPathForTarget(foo);
+                expect(path[0]).toBe(testApplication);
             });
 
         });

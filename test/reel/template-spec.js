@@ -1,402 +1,1299 @@
 /* <copyright>
-Copyright (c) 2012, Motorola Mobility LLC.
+Copyright (c) 2013, António Afonso
 All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-
-* Neither the name of Motorola Mobility LLC nor the names of its
-  contributors may be used to endorse or promote products derived from this
-  software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader,
-    Template = require("montage/ui/template").Template,
+    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
+    Template = require("montage/core/template").Template,
+    TemplateResources = require("montage/core/template").TemplateResources,
     Component = require("montage/ui/component").Component,
-    Serializer = require("montage/core/serializer").Serializer,
-    objects = require("serialization/testobjects-v2").objects,
-    Repetition = require("montage/ui/repetition.reel").Repetition;
+    Promise = require("montage/q"),
+    objects = require("serialization/testobjects-v2").objects;
 
-var stripPP = function stripPrettyPrintting(str) {
-    return str.replace(/\n\s*/g, "");
-};
+var DelegateMethods = require("reel/template/delegate-methods").DelegateMethods;
 
-var testPage = TestPageLoader.queueTest("template", function() {
-    describe("reel/template-spec", function() {
-        var eventManager,
-            application;
+function createPage(url) {
+    var iframe = document.createElement("iframe"),
+        deferred = Promise.defer();
 
-        var querySelector = function(s) {
-            return testPage.querySelector(s);
-        };
-        var querySelectorAll = function(s) {
-            return testPage.querySelectorAll(s);
-        };
+    iframe.src = url;
+    iframe.onload = function() {
+        deferred.resolve(iframe.contentWindow);
+    };
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
 
-        it("should load", function() {
-            expect(testPage.loaded).toBeTruthy();
-            application = testPage.window.document.application;
-            eventManager = application.eventManager;
+    iframe.contentWindow.__iframe__ = iframe;
+
+    return deferred.promise;
+}
+
+function deletePage(page) {
+    var iframe = page.__iframe__;
+
+    iframe.parentNode.removeChild(iframe);
+}
+
+describe("reel/template-spec", function() {
+    var template;
+
+    beforeEach(function() {
+        template = new Template();
+    });
+
+    describe("initialization", function() {
+        it("should initialize document and objects with the default", function() {
+            template.initWithRequire(require);
+
+            expect(template.objectsString).toBe("");
+            expect(template.document.body.childNodes.length).toBe(0);
         });
 
-        describe("main document template", function() {
-            it("should draw all components", function() {
-                expect(querySelectorAll("input.textfield0").length).toBe(1);
-                expect(querySelectorAll(".content1 > input.textfield").length).toBe(1);
-                expect(querySelectorAll(".content2 > div input.textfield").length).toBe(1);
-            });
-        });
-
-        it("should have unique templates for components with the same moduleId in different packages", function() {
-            expect(testPage.test.mainA.name).toBe("A")
-            expect(testPage.test.mainA.childMain.name).toBe("B")
-        });
-
-        it("should export all template objects into templateObjects", function() {
-            var component = objects.Comp.create(),
-                htmlDocument = document.implementation.createHTMLDocument(""),
-                script = htmlDocument.createElement("script"),
-                latch;
-
-            component.element = document.createElement("div");
-            component.element.setAttribute("data-montage-id", "myDiv");
-
-            script.setAttribute("type", Template._SCRIPT_TYPE);
-            script.textContent = Serializer.create().initWithRequire(require).serialize({owner: component, object1: 1, object2: "string"});
-            htmlDocument.head.appendChild(script);
-
-            var template = Template.create().initWithDocument(htmlDocument);
-
-            component.templateObjects = {};
-            template.instantiateWithComponent(component, function() {
-                latch = true;
-            });
-
-            waitsFor(function() { return latch; });
-            runs(function() {
-                expect(Object.keys(component.templateObjects).length).toBe(2);
-            })
-        });
-
-        it("should export non-direct children into templateObjects as getters", function() {
-            var owner = Component.create(),
-                repetition = Repetition.create(),
-                comp = Component.create(),
-                htmlDocument = document.implementation.createHTMLDocument(""),
-                script = htmlDocument.createElement("script"),
-                latch;
-
-            htmlDocument.body.innerHTML = '<div id="myDiv" data-montage-id="myDiv"><div id="repetition" data-montage-id="repetition"><div id="comp" data-montage-id="comp"></div></div></div>';
-
-            owner.element = htmlDocument.getElementById("myDiv");
-            repetition.element = htmlDocument.getElementById("repetition");
-
-            script.setAttribute("type", Template._SCRIPT_TYPE);
-            script.textContent = Serializer.create().initWithRequire(require).serialize({owner: owner, repetition: repetition, comp: comp});
-            htmlDocument.head.appendChild(script);
-
-            var template = Template.create().initWithDocument(htmlDocument);
-
-            owner.templateObjects = {};
-            template.instantiateWithComponent(owner, function() {
-                latch = true;
-            });
-
-            waitsFor(function() { return latch; });
-            runs(function() {
-                expect(Object.keys(owner.templateObjects).length).toBe(2);
-            });
-        });
-
-        it("should find non-direct children of non-clonesChildComponents' components", function() {
-            var owner = Component.create(),
-                htmlDocument = document.implementation.createHTMLDocument(""),
-                script = htmlDocument.createElement("script"),
-                latch;
-
-            htmlDocument.body.innerHTML = '<div id="myDiv" data-montage-id="myDiv"><div id="nonCloningComponent" data-montage-id="nonCloningComponent"><div id="comp" data-montage-id="comp"></div></div></div>';
-
-            owner.element = htmlDocument.getElementById("myDiv");
-            script.setAttribute("type", Template._SCRIPT_TYPE);
-            script.textContent = JSON.stringify({
-              "owner":{
-                "prototype":"montage/ui/component",
-                "properties":{
-                  "element":{"#":"myDiv"}}},
-
-              "nonCloningComponent":{
-                "prototype":"montage/ui/component",
-                "properties":{
-                  "hasTemplate": false,
-                  "element":{"#":"nonCloningComponent"}}},
-
-              "comp":{
-                "prototype":"montage/ui/component",
-                "properties": {
-                    "element":{"#":"comp"}
-                }
-              }
-            }, null, 2);
-
-            htmlDocument.head.appendChild(script);
-
-            var template = Template.create().initWithDocument(htmlDocument);
-
-            owner.templateObjects = {};
-            template.instantiateWithComponent(owner, function() {
-                latch = true;
-            });
-
-            waitsFor(function() { return latch; });
-            runs(function() {
-                expect(Object.keys(owner.templateObjects).length).toBe(2);
-                expect(owner.templateObjects.comp.identifier).toBe("comp");
-            });
-        });
-
-        describe("instantiation delegates", function() {
-            it("should call templateDidLoad function on the root object", function() {
-                var component = objects.Comp.create();
-                component.element = document.createElement("div");
-                component.element.setAttribute("data-montage-id", "myDiv");
-                component.child = objects.Comp.create();
-                var htmlDocument = document.implementation.createHTMLDocument(""),
-                latch;
-
-                var script = htmlDocument.createElement("script");
-                script.setAttribute("type", Template._SCRIPT_TYPE);
-                script.textContent = Serializer.create().initWithRequire(require).serialize({owner: component});
-                htmlDocument.head.appendChild(script);
-
-                var template = Template.create().initWithDocument(htmlDocument);
-                template.instantiateWithComponent(component, function() {
-                    latch = true;
-                });
-
-                waitsFor(function() { return latch; });
-                runs(function() {
-                    expect(component.templateDidLoadCount).toBe(1);
-                    expect(component.child.templateDidLoadCount).toBe(0);
-                });
-            });
-
-            it("should call deserializedFromTemplate function on the instantiated objects", function() {
-                var component = objects.Comp.create();
-                component.element = document.createElement("div");
-                component.element.setAttribute("data-montage-id", "myDiv");
-                component.child = objects.Comp.create();
-                var htmlDocument = document.implementation.createHTMLDocument("");
-
-                var script = htmlDocument.createElement("script");
-                script.setAttribute("type", Template._SCRIPT_TYPE);
-                script.textContent = Serializer.create().initWithRequire(require).serialize({owner: component});
-                htmlDocument.head.appendChild(script);
-                var latch,
-                    componentDeserializedFromTemplateCount,
-                    childDeserializedFromTemplateCount,
-                    template = Template.create().initWithDocument(htmlDocument);
-
-                template.instantiateWithComponent(component, function() {
-                    componentDeserializedFromTemplateCount = component.deserializedFromTemplateCount;
-                    childDeserializedFromTemplateCount = component.child.deserializedFromTemplateCount;
-                    latch = true;
-                });
-
-                waitsFor(function() { return latch; });
-                runs(function() {
-                    expect(componentDeserializedFromTemplateCount).toBe(0);
-                    expect(childDeserializedFromTemplateCount).toBe(1);
-                });
-            });
-        });
-
-        describe("Styled components", function() {
-            it("should import the styles of the component template", function() {
-                var element = querySelector(".componentstyle");
-                var subelement = querySelector(".componentstyle > div");
-                var win = element.ownerDocument.defaultView;
-                var style;
-
-                style = win.getComputedStyle(element);
-                expect(style.getPropertyValue("position")).toBe("relative");
-
-                style = win.getComputedStyle(subelement);
-                expect(style.getPropertyValue("position")).toBe("absolute");
-                expect(style.getPropertyValue("border-left-width")).toBe("1px");
-                expect(style.getPropertyValue("padding-left")).toBe("5px");
-            });
-
-            it("should load the styles of the component before drawing it", function() {
-                var component = application.delegate.slowstyle,
-                    element = querySelector(".componentslowstyle"),
-                    left;
-
-                spyOn(component, 'didDraw').andCallFake(function() {
-                    var subelement = querySelector(".componentslowstyle > div"),
-                        win = element.ownerDocument.defaultView;
-                    style = win.getComputedStyle(subelement);
-                    expect(style.getPropertyValue("left")).toBe("300px");
-                });
-
-                component.element = element;
-                component.needsDraw = true;
-                testPage.waitForDraw();
-                runs(function() {
-                    expect(component.didDraw).toHaveBeenCalled();
-                });
-            });
-        });
-
-        describe("Installation of listeners", function() {
-            it("should install bindings", function() {
-                var component = querySelector("input.textfield0").controller;
-                var listener = eventManager.registeredEventListenersForEventType_onTarget_("change@text", component);
-
-                expect(listener).toBeDefined();
-            });
-
-            it("should install action listeners", function() {
-                var component = querySelector("input.textfield0").controller;
-                spyOn(application.delegate, "listener");
-
-                var anEvent = document.createEvent("CustomEvent");
-                anEvent.initCustomEvent("action", true, true, null);
-
-                component.dispatchEvent.call(component, anEvent);
-                expect(application.delegate.listener).toHaveBeenCalled();
-            });
-        });
-
-        it("should maintain external references", function() {
-            var comp = Montage.create(Component),
-                rootComp = Montage.create(Component, {
-                    serializeProperties: {value: function(serializer) {
-                        serializer.set("object", comp, "reference");
-                    }}
-                }),
-                template = Template.create(),
-                newRootComp = Montage.create(Component);
-
-            rootComp.element = document.createElement("div");
-            newRootComp.element = document.createElement("div");
-            template.initWithComponent(rootComp);
-            template.instantiateWithComponent(newRootComp, function() {
-                expect(newRootComp.object).toBe(comp);
-            });
-        });
-
-        it("should be able to reference the template object", function() {
-            var component = application.delegate.template;
-
-            expect(component.templateReference).toBe(component._template);
-        });
-
-        it("should change the draw of a component by extending", function() {
-            var element = querySelector(".componentson");
-
-            expect(element.textContent).toBe("Component Son");
-        });
-
-        it("should change the markup of a component by extending a template", function() {
-            var component = application.delegate.daughter,
-                element = component.element;
-
-            expect(element).toBeDefined();
-            expect(element.innerHTML).toBe('\n        <div class="header">Component Daughter <span data-montage-id="label">Label</span></div>\n        \n        <div>Component Mother</div>\n        <div>Mother Content</div>\n    \n    ');
-            expect(window.getComputedStyle(element).getPropertyValue("color")).toBe("rgb(255, 192, 203)");
-            expect(component.motherTemplateLoaded).toBeDefined();
-            expect(querySelector(".componentdaughter .partOfMotherTemplate")).toBeDefined();
-        });
-
-        it("should call deserializedFromTemplate once on non-owner components of extended templates", function() {
-            var component = application.delegate.granddaughter;
-
-            expect(component.label.didDeserializedFromTemplate).toBeTruthy();
-        });
-
-        it("should call templateDidLoad only once on the owner component of extended templates", function() {
-            var component = application.delegate.granddaughter;
-
-            expect(component.templateDidLoadCallCount).toBe(1);
-        });
-
-        it("should", function() {
-            var component = application.delegate.granddaughtersister;
-
-            component.element = querySelector(".componentgranddaughtersister");
-            component.needsDraw = true;
-            testPage.waitForDraw();
-            runs(function() {
-                expect(component.element.innerHTML).toBe('\n        <div class="header">Component Granddaughter</div>\n        \n        <div class="header">Component Daughter <span data-montage-id="label">Label</span></div>\n        \n        <div>Component Mother</div>\n        <div>Mother Content</div>\n    \n    \n    ');
-                expect(component.label).toBeDefined();
-                expect(component.label.didDeserializedFromTemplate).toBeTruthy();
-                expect(component.templateDidLoadCallCount).toBe(1);
-            });
-        });
-
-        it("TODO should load external scripts", function() {
-            var component = application.delegate.script;
-            expect(component).not.toBeUndefined();
-            if (component) {
-                expect(component._element.ownerDocument.querySelectorAll('script[src$="/componentscript.reel/componentscript-script.js"]').length).toBe(1);
-                expect(testPage.window.HeresAGlobalVariableFromComponentScript).toBeTruthy();
-            }
-        });
-
-        it("should serialize the properties list defined by the delegate", function() {
-            var component = Component.create(),
-                template = Template.create();
-
-            component.element = document.createElement("div");
-            component.element.setAttribute("data-montage-id", "myDiv");
-            component.aProperty = true;
-
-            template.delegate = {
-                serializeObjectProperties: function(serializer, object, propertyNames) {
-                    for (var i = 0; i < propertyNames.length; i++) {
-                        serializer.set(propertyNames[i], null);
+        it("should initialize document and objects with HTML", function() {
+            var html = require("reel/template/simple-template.html").content,
+                expectedObjects = {
+                    "text": {
+                        "prototype": "montage/ui/text.reel",
+                        "properties": {
+                            "element": {"#": "text"},
+                            "value": "Hello, World!"
+                        }
                     }
-                    serializer.set("aProperty", object.aProperty)
+                };
+
+            return template.initWithHtml(html)
+            .then(function() {
+                var children = template.document.body.children,
+                    objects = JSON.parse(template.objectsString);
+
+                expect(objects).toEqual(expectedObjects);
+                expect(children.length).toBe(1);
+                // there must be a better way to compare DOM tree's...
+                expect(children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should initialize document and objects with a document", function() {
+            var html = require("reel/template/simple-template.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                expectedObjects = {
+                    "text": {
+                        "prototype": "montage/ui/text.reel",
+                        "properties": {
+                            "element": {"#": "text"},
+                            "value": "Hello, World!"
+                        }
+                    }
+                };
+
+            htmlDocument.documentElement.innerHTML = html;
+
+            return template.initWithDocument(htmlDocument)
+            .then(function() {
+                var children = template.document.body.children,
+                    objects = JSON.parse(template.objectsString);
+
+                expect(objects).toEqual(expectedObjects);
+                expect(children.length).toBe(1);
+                // there must be a better way to compare DOM tree's...
+                expect(children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should initialize document and objects with objects and a document fragment", function() {
+            var fragment = document.createDocumentFragment(),
+                children,
+                objects,
+                expectedObjects = {
+                    "text": {
+                        "prototype": "montage/ui/text.reel",
+                        "properties": {
+                            "element": {"#": "text"},
+                            "value": "Hello, World!"
+                        }
+                    }
+                };
+
+            fragment.appendChild(document.createElement("span"))
+                .setAttribute("data-montage-id", "text");
+
+            template.initWithObjectsAndDocumentFragment(expectedObjects, fragment);
+
+            children = template.document.body.children;
+            objects = JSON.parse(template.objectsString);
+
+            expect(objects).toEqual(expectedObjects);
+            expect(children.length).toBe(1);
+            // there must be a better way to compare DOM tree's...
+            expect(children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
+        });
+
+        it("should initialize document and objects with a module id", function() {
+            var moduleId = "reel/template/simple-template.html",
+                expectedObjects = {
+                    "text": {
+                        "prototype": "montage/ui/text.reel",
+                        "properties": {
+                            "element": {"#": "text"},
+                            "value": "Hello, World!"
+                        }
+                    }
+                };
+
+            return template.initWithModuleId(moduleId, require)
+            .then(function() {
+                var children = template.document.body.children,
+                    objects = JSON.parse(template.objectsString);
+
+                expect(objects).toEqual(expectedObjects);
+                expect(children.length).toBe(1);
+                // there must be a better way to compare DOM tree's...
+                expect(children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should reuse the same template instance for the same module id", function() {
+            var moduleId = "reel/template/simple-template.html";
+
+            return Template.getTemplateWithModuleId(moduleId, require)
+            .then(function(template1) {
+                return Template.getTemplateWithModuleId(moduleId, require)
+                .then(function(template2) {
+                    expect(template1).toBe(template2);
+                });
+            });
+        });
+    });
+
+    describe("objects", function() {
+        it("should change the objects of a template", function() {
+            var expectedObjects = {
+                "array": {
+                    "value": [1, 2, 3]
+                },
+
+                "object": {
+                    "value": {
+                        "array": {"@": "array"}
+                    }
+                },
+
+                "repetition": {
+                    "prototype": "montage/ui/repetition.reel",
+                    "properties": {
+                        "element": {"#": "repetition"}
+                    }
                 }
             };
 
-            var template = template.initWithComponent(component);
-            expect(stripPP(template._ownerSerialization)).toBe('{"owner":{"prototype":"montage/ui/component","properties":{"aProperty":true}}}');
+            template.initWithRequire(require);
+
+            template.setObjects(expectedObjects);
+            expect(JSON.parse(template.objectsString)).toEqual(expectedObjects);
         });
-        /* TODO: need error reporting from template to test this
-        it("should not see objects from the instances input that are not declared in the serialization", function() {
-            var htmlDocument = document.implementation.createHTMLDocument(""),
-                script = htmlDocument.createElement("script");
 
-            script.setAttribute("type", Template._SCRIPT_TYPE);
-            script.textContent = '{"object": {"value": {"@": "alien"}}}';
-            htmlDocument.head.appendChild(script);
+        it("should instantiate the objects with an document fragment", function() {
+            var html = require("reel/template/simple-template.html").content,
+                div = document.createElement("div"),
+                fragment = document.createDocumentFragment();
 
-            var template = Template.create().initWithDocument(htmlDocument),
-                instances = {alien: 2};
-            template.instantiateWithInstancesAndDocument(instances, document, function() {
-                expect(Object.keys(instances).length).toBe(2);
+            fragment.appendChild(div)
+                .setAttribute("data-montage-id", "text");
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                return template._instantiateObjects(null, fragment)
+                .then(function(objects) {
+                    var text = objects.text;
+
+                    expect(text).toBeDefined();
+                    expect(text.value).toBe("Hello, World!");
+                    expect(text.element).toBe(div);
+                });
+            }).fail(function() {
+                expect("test").toBe("executed");
             });
         });
-        */
+
+        it("should read the objects from an external file", function() {
+            var moduleId = "reel/template/external-objects-file.html",
+                expectedSerialization = {
+                    "text": {
+                        "prototype": "montage/ui/text.reel",
+                        "properties": {
+                            "element": {"#": "text"},
+                            "value": "Hello, World!"
+                        }
+                    }
+                };
+
+            return Template.getTemplateWithModuleId(moduleId, require)
+            .then(function(template) {
+                var serialization = template.getSerialization()
+                    .getSerializationObject();
+
+                expect(serialization).toEqual(expectedSerialization);
+            });
+        });
+    });
+
+    describe("markup", function() {
+        it("should change the markup of a template", function() {
+            var html = require("reel/template/simple-template.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                expectedObjects = {
+                    "owner": {
+                        "properties": {
+                            "element": {"#": "owner"},
+                        }
+                    }
+                };
+
+            htmlDocument.documentElement.innerHTML = html;
+            template.initWithRequire(require);
+            template.setObjects(expectedObjects);
+
+            template.setDocument(htmlDocument);
+
+            var children = template.document.body.children,
+                objects = JSON.parse(template.objectsString);
+
+            expect(objects).toEqual(expectedObjects);
+            expect(children.length).toBe(1);
+            // there must be a better way to compare DOM tree's...
+            expect(children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
+        });
+
+        it("should clone the markup out of the document", function() {
+            var html = require("reel/template/simple-template.html").content,
+                expectedObjects = {
+                    "text": {
+                        "prototype": "montage/ui/text.reel",
+                        "properties": {
+                            "element": {"#": "text"},
+                            "value": "Hello, World!"
+                        }
+                    }
+                };
+
+            return template.initWithHtml(html)
+            .then(function() {
+                var fragment = template._createMarkupDocumentFragment(document),
+                    element = document.createElement("div"),
+                    children = template.document.body.children;
+
+                // fragment doesn't have the "children" interface
+                element.appendChild(fragment);
+
+                expect(element.children.length).toBe(1);
+                expect(element.children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
+                expect(element.children[0]).toNotBe(children[0]);
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should add a node to the template without collisions", function() {
+            var html = require("reel/template/modification.html").content,
+                htmlModification = require("reel/template/modification-elements.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                collisionTable;
+
+            template.initWithHtml(html, require);
+            htmlDocument.documentElement.innerHTML = htmlModification;
+
+            node = htmlDocument.getElementById("noCollision");
+            reference = template.getElementById("title");
+
+            collisionTable = template.insertNodeBefore(node, reference);
+
+            expect(collisionTable).toBeUndefined();
+            expect(reference.previousSibling).toBe(node);
+        });
+
+        it("should add a node to the template with collisions", function() {
+            var html = require("reel/template/modification.html").content,
+                htmlModification = require("reel/template/modification-elements.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                children,
+                collisionTable,
+                expectedCollisionTable;
+
+            template.initWithHtml(html, require);
+            htmlDocument.documentElement.innerHTML = htmlModification;
+
+            node = htmlDocument.getElementById("collisions");
+            reference = template.getElementById("title");
+
+            title = htmlDocument.getElementById("title");
+
+            collisionTable = template.insertNodeBefore(node, reference);
+            expectedCollisionTable = {
+                "repetition": node.getAttribute("data-montage-id"),
+                "title": title.getAttribute("data-montage-id")
+            };
+
+            expect(collisionTable).toEqual(expectedCollisionTable);
+        });
+
+        it("should append a node to the template", function() {
+            var html = require("reel/template/modification.html").content,
+                htmlModification = require("reel/template/modification-elements.html").content,
+                htmlDocument = document.implementation.createHTMLDocument("");
+
+            template.initWithHtml(html, require);
+            htmlDocument.documentElement.innerHTML = htmlModification;
+
+            node = htmlDocument.getElementById("noCollision");
+            reference = template.getElementById("title").parentNode;
+
+            template.appendNode(node, reference);
+
+            expect(reference.children.length).toBe(2);
+            expect(reference.lastChild).toBe(node);
+        });
+    });
+
+    describe("instantiation", function() {
+        it("should have the same markup as the template", function() {
+            var html = require("reel/template/simple-template.html").content;
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                return template.instantiate(document)
+                .then(function(documentPart) {
+                    var _document = documentPart.fragment.ownerDocument,
+                        element;
+
+                    element = _document.createElement("div");
+                    element.appendChild(documentPart.fragment);
+
+                    expect(element.children.length).toBe(1);
+                    expect(element.children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
+                })
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should reference the template", function() {
+            var html = require("reel/template/simple-template.html").content;
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                return template.instantiate(document)
+                .then(function(documentPart) {
+                    expect(documentPart.template).toBe(template);
+                })
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should only reference objects that were declared in the template", function() {
+            var html = require("reel/template/simple-template.html").content;
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                return template.instantiate(document)
+                .then(function(documentPart) {
+                    expect(Object.keys(documentPart.objects).length).toBe(1);
+                    expect(documentPart.objects.text).toBeDefined();
+                })
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should instantiate an empty template", function() {
+            var html = require("reel/template/empty-template.html").content;
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                return template.instantiate(document)
+                .then(function(documentPart) {
+                    expect(documentPart.objects).toEqual({});
+                })
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should have the correct child components", function() {
+            var html = require("reel/template/component-tree-template.html").content;
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                return template.instantiate(document)
+                .then(function(documentPart) {
+                    var objects = documentPart.objects;
+
+                    expect(documentPart.childComponents)
+                        .toEqual([objects.title, objects.rows]);
+                });
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should instantiate a template with instances", function() {
+            var html = require("reel/template/simple-template.html").content,
+                text = {},
+                instances = {
+                    text: text
+                };
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                return template.instantiateWithInstances(instances, document)
+                .then(function(documentPart) {
+                    expect(documentPart.objects.text).toBe(text);
+                })
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should use the object instances set when none is given", function() {
+            var html = require("reel/template/simple-template.html").content,
+                text = {},
+                instances = {
+                    text: text
+                };
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                template.setInstances(instances);
+
+                return template.instantiate(document)
+                .then(function(documentPart) {
+                    expect(documentPart.objects.text).toBe(text);
+                })
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should ignore the object instances set when one is given", function() {
+            var html = require("reel/template/simple-template.html").content,
+                text = {},
+                instances = {
+                    text: text
+                };
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                template.setInstances({text: {}});
+
+                return template.instantiateWithInstances(instances, document)
+                .then(function(documentPart) {
+                    expect(documentPart.objects.text).toBe(text);
+                })
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+    });
+
+    describe("delegate methods", function() {
+        var DelegateMethods = require("reel/template/delegate-methods").DelegateMethods;
+
+        it("should call deserializedFromTemplate", function() {
+            var html = require("reel/template/delegate-methods-template.html").content,
+                instances = {
+                    two: new DelegateMethods()
+                };
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                return template.instantiateWithInstances(instances, document)
+                .then(function(documentPart) {
+                    var objects = documentPart.objects;
+
+                    expect(objects.owner.deserializedFromTemplateCount).toBe(1);
+                    expect(objects.one.deserializedFromTemplateCount).toBe(1);
+                    expect(objects.two.deserializedFromTemplateCount).toBe(0);
+                });
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should not call deserializedFromTemplate on null values", function() {
+            var html = require("reel/template/delegate-methods-null-template.html").content;
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                return template.instantiate(document)
+                .then(function(documentPart) {
+                    expect(true).toBe(true);
+                });
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should call templateDidLoad on owner object", function() {
+            var html = require("reel/template/delegate-methods-template.html").content;
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                return template.instantiate(document)
+                .then(function(documentPart) {
+                    var objects = documentPart.objects;
+
+                    expect(objects.owner.templateDidLoadCount).toBe(1);
+                    expect(objects.one.templateDidLoadCount).toBe(0);
+                    expect(objects.two.templateDidLoadCount).toBe(0);
+                });
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should not call templateDidLoad on external objects", function() {
+            var html = require("reel/template/delegate-methods-template-external.html").content;
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                var instances = {
+                    owner: new DelegateMethods(),
+                    one: new DelegateMethods()
+                }
+                return template.instantiateWithInstances(instances, document)
+                .then(function(documentPart) {
+                    var objects = documentPart.objects;
+
+                    expect(objects.owner.templateDidLoadCount).toBe(0);
+                });
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should not call deserializedFromTemplate on external objects", function() {
+            var html = require("reel/template/delegate-methods-template-external.html").content;
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                var instances = {
+                    owner: new DelegateMethods(),
+                    one: new DelegateMethods()
+                }
+                return template.instantiateWithInstances(instances, document)
+                .then(function(documentPart) {
+                    var objects = documentPart.objects;
+
+                    expect(objects.one.deserializedFromTemplateCount).toBe(0);
+                });
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+    });
+
+    describe("external objects", function() {
+        it("should have access to application object", function() {
+            var html = require("reel/template/external-objects-template.html").content,
+                instances = {
+                    one: {}
+                };
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                return template.instantiateWithInstances(instances, document)
+                .then(function(documentPart) {
+                    var objects = documentPart.objects;
+
+                    expect(objects.one.application).toBeDefined();
+                });
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should have access to template object", function() {
+            var html = require("reel/template/external-objects-template.html").content,
+                instances = {
+                    one: {}
+                };
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                return template.instantiateWithInstances(instances, document)
+                .then(function(documentPart) {
+                    var objects = documentPart.objects;
+
+                    expect(objects.one.template).toBe(template);
+                });
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+    });
+
+    describe("template resources", function() {
+        it("should load all scripts except montage serialization", function() {
+            var html = require("reel/template/resources-template.html").content,
+                resources = new TemplateResources();
+
+            return createPage("reel/template/page.html")
+            .then(function(page) {
+                return template.initWithHtml(html)
+                .then(function() {
+                    resources.initWithTemplate(template);
+
+                    return resources.loadScripts(page.document)
+                    .then(function() {
+                        expect(page.ReelTemplateResourceLoadCount).toBe(1);
+                        expect(page.document.scripts.length).toBe(2);
+                        deletePage(page);
+                    });
+                });
+            }).fail(function(reason) {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should load all scripts in two different documents in serial", function() {
+            var html = require("reel/template/resources-template.html").content,
+                resources = new TemplateResources();
+
+            return Promise.all([
+                createPage("reel/template/page.html"),
+                createPage("reel/template/page.html")])
+            .then(function(pages) {
+                var page1 = pages[0],
+                    page2 = pages[1];
+
+                return template.initWithHtml(html)
+                .then(function() {
+                    resources.initWithTemplate(template);
+
+                    return resources.loadScripts(page1.document)
+                    .then(function() {
+                        return resources.loadScripts(page2.document)
+                        .then(function() {
+                            expect(page1.ReelTemplateResourceLoadCount).toBe(1);
+                            expect(page2.ReelTemplateResourceLoadCount).toBe(1);
+                            expect(page1.document.scripts.length).toBe(2);
+                            expect(page2.document.scripts.length).toBe(2);
+                            deletePage(page1);
+                            deletePage(page2);
+                        });
+                    });
+                });
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+
+
+        it("should load all scripts in two different documents in parallel", function() {
+            var html = require("reel/template/resources-template.html").content,
+                resources = new TemplateResources();
+
+            return Promise.all([
+                createPage("reel/template/page.html"),
+                createPage("reel/template/page.html")])
+            .then(function(pages) {
+                var page1 = pages[0],
+                    page2 = pages[1];
+
+                return template.initWithHtml(html)
+                .then(function() {
+                    resources.initWithTemplate(template);
+                    return Promise.all([
+                        resources.loadScripts(page1.document),
+                        resources.loadScripts(page2.document)])
+                    .then(function() {
+                        expect(page1.ReelTemplateResourceLoadCount).toBe(1);
+                        expect(page2.ReelTemplateResourceLoadCount).toBe(1);
+                        expect(page1.document.scripts.length).toBe(2);
+                        expect(page2.document.scripts.length).toBe(2);
+                        deletePage(page1);
+                        deletePage(page2);
+                    });
+                });
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should load all styles", function() {
+            var html = require("reel/template/resources-template.html").content,
+                resources = new TemplateResources();
+
+            return createPage("reel/template/page.html")
+            .then(function(page) {
+                return template.initWithHtml(html)
+                .then(function() {
+                    resources.initWithTemplate(template);
+
+                    return resources.loadStyles(page.document)
+                    .then(function() {
+                        expect(resources.getStyles().length).toBe(2);
+                        deletePage(page);
+                    });
+                });
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+    });
+
+    describe("sub templates", function() {
+        describe("find element ids in DOM tree", function() {
+            it("should find no element ids", function() {
+                var moduleId = "reel/template/sub-template.html",
+                    expectedIds = [],
+                    elementIds,
+                    node;
+
+                return template.initWithModuleId(moduleId, require)
+                .then(function() {
+                    node = template.document.getElementById("title");
+                    elementIds = template._getChildrenElementIds(node);
+                    expect(elementIds.length).toBe(0);
+                }).fail(function(reason) {
+                    console.log(reason.stack);
+                    expect("test").toBe("executed");
+                });
+            });
+
+            it("should find a single element id", function() {
+                var moduleId = "reel/template/sub-template.html",
+                    expectedIds = [],
+                    elementIds,
+                    node;
+
+                return template.initWithModuleId(moduleId, require)
+                .then(function() {
+                    node = template.document.getElementById("list");
+                    elementIds = template._getChildrenElementIds(node);
+
+                    expect(elementIds.length).toBe(1);
+                    expect(elementIds).toContain("item")
+                }).fail(function(reason) {
+                    console.log(reason.stack);
+                    expect("test").toBe("executed");
+                });
+            });
+
+            it("should find all element ids of a populated tree", function() {
+                var moduleId = "reel/template/sub-template.html",
+                    expectedIds = [],
+                    elementIds,
+                    node;
+
+                return template.initWithModuleId(moduleId, require)
+                .then(function() {
+                    node = template.document.getElementById("rows");
+                    elementIds = template._getChildrenElementIds(node);
+
+                    expect(elementIds.length).toBe(3);
+                    expect(elementIds).toContain("row");
+                    expect(elementIds).toContain("columns");
+                    expect(elementIds).toContain("column");
+                }).fail(function(reason) {
+                    console.log(reason.stack);
+                    expect("test").toBe("executed");
+                });
+            });
+        });
+
+        it("should create a sub template from a leaf element", function() {
+            var moduleId = "reel/template/sub-template.html",
+                expectedObjects = {
+                    "item": {
+                        "prototype": "montage/ui/text.reel",
+                        "properties": {
+                            "element": {"#": "item"}
+                        }
+                    },
+
+                    "owner": {}
+                },
+                subTemplate,
+                objects;
+
+            return template.initWithModuleId(moduleId, require)
+            .then(function() {
+                subTemplate = template.createTemplateFromElementContents("list");
+                objects = JSON.parse(subTemplate.objectsString);
+
+                expect(objects).toEqual(expectedObjects);
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should create a sub template from a leaf element", function() {
+            var moduleId = "reel/template/sub-template.html",
+                expectedObjects = {
+                    "list": {
+                        "prototype": "montage/ui/repetition.reel",
+                        "properties": {
+                            "element": {"#": "list"}
+                        }
+                    },
+                    "item": {
+                        "prototype": "montage/ui/text.reel",
+                        "properties": {
+                            "element": {"#": "item"}
+                        }
+                    },
+
+                    "owner": {}
+                },
+                subTemplate,
+                objects;
+
+            return template.initWithModuleId(moduleId, require)
+            .then(function() {
+                subTemplate = template.createTemplateFromElement("list");
+                objects = JSON.parse(subTemplate.objectsString);
+
+                expect(objects).toEqual(expectedObjects);
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should create a sub template with composed components", function() {
+            var moduleId = "reel/template/sub-template.html",
+                expectedObjects = {
+                    "row": {
+                        "prototype": "montage/ui/text.reel",
+                        "properties": {
+                            "element": {"#": "row"}
+                        }
+                    },
+
+                    "columns": {
+                        "prototype": "montage/ui/repetition.reel",
+                        "properties": {
+                            "element": {"#": "columns"}
+                        }
+                    },
+
+                    "column": {
+                        "prototype": "montage/ui/text.reel",
+                        "properties": {
+                            "element": {"#": "column"}
+                        }
+                    },
+
+                    "owner": {}
+                },
+                subTemplate,
+                objects;
+
+            return template.initWithModuleId(moduleId, require)
+            .then(function() {
+                subTemplate = template.createTemplateFromElementContents("rows");
+                objects = JSON.parse(subTemplate.objectsString);
+
+                expect(objects).toEqual(expectedObjects);
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+    });
+
+    describe("document (live) templates", function() {
+        it("should instantiate in a live page", function() {
+            var module = require("montage/core/template");
+
+            return createPage("reel/template/simple-template.html")
+            .then(function(page) {
+                return module.instantiateDocument(page.document, require)
+                .then(function(part) {
+                    expect(part.template).toBeDefined();
+                    expect(part.objects.text).toBeDefined();
+                    //expect(part.fragment).toBe(page.document.documentElement);
+                    //expect(part.childComponents.length).toBe(1);
+                });
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should instantiate in a live page with instances", function() {
+            var module = require("montage/core/template"),
+                instances = {
+                    text: {}
+                };
+
+            return createPage("reel/template/simple-template.html")
+                .then(function(page) {
+                    return module.instantiateDocument(page.document, require, instances)
+                        .then(function(part) {
+                            expect(part.template).toBeDefined();
+                            expect(part.objects.text).toBe(instances.text);
+                        });
+                }).fail(function(reason) {
+                    console.log(reason.stack);
+                    expect("test").toBe("executed");
+                });
+        });
+    })
+
+    describe("template parameters", function() {
+        it("should find the star parameter", function() {
+            var html = require("reel/template/template-star-parameter.html").content;
+
+            return template.initWithHtml(html)
+            .then(function() {
+                var templateParameters = template.getParameters(),
+                    templateParameterKeys = Object.keys(templateParameters);
+
+                expect(templateParameterKeys.length).toBe(1);
+                expect(templateParameterKeys).toContain("*");
+            })
+        });
+
+        it("should find all parameters", function() {
+            var html = require("reel/template/template-parameters.html").content;
+
+            return template.initWithHtml(html)
+            .then(function() {
+                var templateParameters = template.getParameters(),
+                    templateParameterKeys = Object.keys(templateParameters);
+
+                expect(templateParameterKeys.length).toBe(2);
+                expect(templateParameterKeys).toContain("leftSide");
+                expect(templateParameterKeys).toContain("rightSide");
+            })
+        });
+
+        it("should fail when star and other parameters were declared", function() {
+            var html = require("reel/template/template-parameters-error.html").content;
+
+            return template.initWithHtml(html)
+            .then(function() {
+                try {
+                    template.getParameters();
+                    expect("call").toBe("fail");
+                } catch (ex) {
+                    expect(true).toBe(true);
+                }
+            })
+        });
+
+        it("should fail when the same parameter is declared more than once", function() {
+            var html = require("reel/template/template-duplicate-parameters.html").content;
+
+            return template.initWithHtml(html)
+            .then(function() {
+                try {
+                    template.getParameters();
+                    expect("call").toBe("fail");
+                } catch (ex) {
+                    expect(true).toBe(true);
+                }
+            })
+        });
+    });
+
+    describe("expanding template parameters", function() {
+        var parametersTemplate,
+            argumentsTemplate;
+
+        beforeEach(function() {
+            parametersTemplate = new Template();
+            argumentsTemplate = new Template();
+        });
+
+        it("should expand a parameter with non-colliding element", function() {
+            var parametersHtml = require("reel/template/template-star-parameter.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                delegate;
+
+            delegate = {
+                getTemplateParameterArgument: function(template, name) {
+                    range = document.createRange();
+                    range.selectNodeContents(template.getElementById("list"));
+                    return range.extractContents();
+                }
+            };
+
+            return Promise.all([
+                parametersTemplate.initWithHtml(parametersHtml),
+                argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var repetition,
+                    args;
+
+                parametersTemplate.expandParameters(
+                    argumentsTemplate, delegate);
+
+                repetition = parametersTemplate.getElementById("repetition");
+                args = repetition.children[0].children;
+
+                expect(args.length).toBe(2);
+                expect(args[0].textContent).toBe("Section");
+                expect(args[1].textContent).toBe("Paragraph");
+            });
+        });
+
+        it("should expand a parameter with colliding element", function() {
+            var parametersHtml = require("reel/template/template-star-parameter.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                delegate;
+
+            delegate = {
+                getTemplateParameterArgument: function(template, name) {
+                    range = document.createRange();
+                    range.selectNodeContents(
+                        template.getElementById("element-id-collision"));
+                    return range.extractContents();
+                }
+            };
+
+            return Promise.all([
+                parametersTemplate.initWithHtml(parametersHtml),
+                argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var repetition,
+                    args;
+
+                parametersTemplate.expandParameters(
+                    argumentsTemplate, delegate);
+
+                repetition = parametersTemplate.getElementById("repetition");
+                args = repetition.children[0].children;
+
+                expect(parametersTemplate.getElementId(args[0]))
+                    .not.toBe("repetition");
+            });
+        });
+
+        it("should expand multiple parameters with non-colliding element", function() {
+            var parametersHtml = require("reel/template/template-parameters.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                delegate;
+
+            delegate = {
+                getTemplateParameterArgument: function(template, name) {
+                    range = document.createRange();
+                    range.selectNodeContents(
+                        template.getElementById("multiple-elements-" + name));
+                    return range.extractContents();
+                }
+            };
+
+            return Promise.all([
+                parametersTemplate.initWithHtml(parametersHtml),
+                argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var repetition,
+                    side;
+
+                parametersTemplate.expandParameters(
+                    argumentsTemplate, delegate);
+
+                side = parametersTemplate.getElementById("leftSide");
+                expect(side.children.length).toBe(1);
+                expect(side.children[0].textContent).toBe("Left Side");
+
+                side = parametersTemplate.getElementById("rightSide");
+                expect(side.children.length).toBe(1);
+                expect(side.children[0].textContent).toBe("Right Side");
+            });
+        });
+
+        it("should expand multiple parameters with colliding elements", function() {
+            var parametersHtml = require("reel/template/template-parameters.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                delegate;
+
+            delegate = {
+                getTemplateParameterArgument: function(template, name) {
+                    range = document.createRange();
+                    range.selectNodeContents(
+                        template.getElementById("multiple-elements-colliding-" + name));
+                    return range.extractContents();
+                }
+            };
+
+            return Promise.all([
+                parametersTemplate.initWithHtml(parametersHtml),
+                argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var repetition,
+                    side,
+                    leftSideElementId,
+                    rightSideElementId;
+
+                parametersTemplate.expandParameters(
+                    argumentsTemplate, delegate);
+
+                side = parametersTemplate.getElementById("leftSide");
+                leftSideElementId = parametersTemplate.getElementId(
+                    side.children[0]);
+
+                side = parametersTemplate.getElementById("rightSide");
+                rightSideElementId = parametersTemplate.getElementId(
+                    side.children[0]);
+
+                expect(leftSideElementId).not.toBe("leftSide");
+                expect(rightSideElementId).not.toBe("rightSide");
+                expect(leftSideElementId).not.toBe(rightSideElementId);
+            });
+        });
+
+        it("should expand a parameter with element and non-colliding objects", function() {
+            var parametersHtml = require("reel/template/template-star-parameter.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                delegate,
+                serialization;
+
+            delegate = {
+                getTemplateParameterArgument: function(template, name) {
+                    range = document.createRange();
+                    range.selectNodeContents(
+                        template.getElementById("objects-no-collision"));
+                    return range.extractContents();
+                }
+            };
+
+            return Promise.all([
+                parametersTemplate.initWithHtml(parametersHtml),
+                argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var repetition,
+                    args,
+                    expansionResult;
+
+                expansionResult = parametersTemplate.expandParameters(
+                    argumentsTemplate, delegate);
+
+                serialization = parametersTemplate.getSerialization();
+                labels = serialization.getSerializationLabels();
+
+                expect(expansionResult.labelsCollision).toBeFalsy();
+                expect(labels).toContain("section");
+            });
+        });
+
+        it("should expand a parameter with element and colliding objects", function() {
+            var parametersHtml = require("reel/template/template-star-parameter.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                delegate,
+                serialization;
+
+            delegate = {
+                getTemplateParameterArgument: function(template, name) {
+                    range = document.createRange();
+                    range.selectNodeContents(
+                        template.getElementById("objects-collision"));
+                    return range.extractContents();
+                }
+            };
+
+            return Promise.all([
+                parametersTemplate.initWithHtml(parametersHtml),
+                argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var repetition,
+                    args,
+                    collisionTable;
+
+                collisionTable = parametersTemplate.expandParameters(
+                    argumentsTemplate, delegate);
+
+                serialization = parametersTemplate.getSerialization();
+                labels = serialization.getSerializationLabelsWithElements(
+                    ["foo"]);
+
+                expect(labels).not.toContain("foo");
+            });
+        });
+
+        it("should expand multiple parameters with elements and colliding objects", function() {
+            var parametersHtml = require("reel/template/template-parameters.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                delegate,
+                serialization;
+
+            delegate = {
+                getTemplateParameterArgument: function(template, name) {
+                    range = document.createRange();
+                    range.selectNodeContents(
+                        template.getElementById("multiple-objects-" + name));
+                    return range.extractContents();
+                }
+            };
+
+            return Promise.all([
+                parametersTemplate.initWithHtml(parametersHtml),
+                argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var repetition,
+                    expansionResult,
+                    labelsCollisions,
+                    labels,
+                    serializationObject,
+                    leftSide,
+                    rightSide;
+
+                expansionResult = parametersTemplate.expandParameters(
+                    argumentsTemplate, delegate);
+
+                serialization = parametersTemplate.getSerialization();
+                serializationObject = serialization.getSerializationObject();
+                labelsCollisions = expansionResult.labelsCollisions;
+                labels = Object.keys(labelsCollisions);
+
+                expect(labels.length).toBe(2);
+                expect(labels).toContain("leftSide");
+                expect(labels).toContain("rightSide");
+
+                leftSide = serializationObject[labelsCollisions.leftSide];
+                rightSide = serializationObject[labelsCollisions.rightSide];
+
+                // Make sure the binding from rightSide to leftSide was
+                // changed to the new label.
+                expect(rightSide.bindings.value["<-"])
+                    .toBe("@" + labelsCollisions.leftSide + ".value");
+            });
+        });
+    });
+
+    describe("cache", function() {
+        it("should treat same module id in different package as different templates", function() {
+            return require.loadPackage("package-a").then(function(pkg1) {
+                return require.loadPackage("package-b").then(function(pkg2) {
+                    return Template.getTemplateWithModuleId("ui/main.reel/main.html", pkg1)
+                    .then(function(template1) {
+                        return Template.getTemplateWithModuleId("ui/main.reel/main.html", pkg2)
+                        .then(function(template2) {
+                            expect(template1).toNotBe(template2);
+                        });
+                    });
+                });
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
     });
 });

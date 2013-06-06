@@ -216,12 +216,12 @@ var KEYPRESS_EVENT_TYPE = "keyPress",
 
 
 /**
- @class module:montage/core/event/key-manager.KeyManager
+ @class KeyManager
  @classdesc The KeyManager dispatches KeyComposer events when it detects a keyComposer has been pressed or released.
  Do not create a KeyManager directly but instead require for the defaultKeyManager: require("core/event/key-manager").defaultKeyManager
- @extends module:montage/core/core.Montage
+ @extends Montage
 */
-var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:montage/core/event/key-manager.KeyManager# */ {
+var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# */ {
 
     /**
       @private
@@ -380,11 +380,11 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
     },
 
     /**
-      didCreate method
+      constructor method
       @function
       @private
     */
-    didCreate: {
+    constructor: {
         value: function() {
             var userAgent = navigator.userAgent,
                 code;
@@ -810,6 +810,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                     if (keyDown) {
                         // Reset trigger
                         delete this._triggeredKeys[keyComposer.uuid];
+                        event.preventDefault();
                     } else if (this._triggeredKeys[keyComposer.uuid]) {
                         // that key has already been triggered, let's ignore it...
                         continue;
@@ -823,8 +824,9 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                             longPressEvent = document.createEvent("CustomEvent");
                             longPressEvent.initCustomEvent(LONGKEYPRESS_EVENT_TYPE, true, true, null);
                             longPressEvent.activeElement = event.target;
+                            longPressEvent.identifier = keyComposer.identifier;
                             longPressEvent = MutableEvent.fromEvent(longPressEvent);
-                            keyComposer.dispatchEvent(longPressEvent);
+                            defaultEventManager.activeTarget.dispatchEvent(longPressEvent);
                             delete thisRef._longPressKeys[keyComposer.uuid];
                         }, this._longPressThreshold);
 
@@ -836,11 +838,12 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 keyComposerEvent = document.createEvent("CustomEvent");
                 keyComposerEvent.initCustomEvent(eventType, true, true, null);
                 keyComposerEvent.activeElement = event.target;
+                keyComposerEvent.identifier = keyComposer.identifier;
                 keyComposerEvent = MutableEvent.fromEvent(keyComposerEvent);
                 if (this._opera) {
                     keyComposerEvent.type = eventType; // Opera modifes the capitalization of custom event's type when that one is similar to a native event's type
                 }
-                keyComposer.dispatchEvent(keyComposerEvent);
+                defaultEventManager.activeTarget.dispatchEvent(keyComposerEvent);
 
                 // console.log("keyComposer Event DISPATCHED:", keyComposerEvent, event.target, keyComposer);
                 if (keyComposerEvent.defaultPrevented) {
@@ -996,7 +999,7 @@ var _defaultKeyManager = null;
 Montage.defineProperty(exports, "defaultKeyManager", {
     get: function() {
         if (!_defaultKeyManager) {
-            _defaultKeyManager = KeyManager.create();
+            _defaultKeyManager = new KeyManager();
         }
         return _defaultKeyManager;
     }
