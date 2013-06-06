@@ -336,7 +336,7 @@ extendedPropertyAttributes.forEach(function(name) {
     Object.defineProperty(Object.prototype, UNDERSCORE + name + ATTRIBUTE_PROPERTIES, {
         enumerable: false,
         configurable: false,
-        writable: false,
+        writable: true,
         value: {}
     });
 });
@@ -636,7 +636,7 @@ function getAttributeProperties(proto, attributeName) {
         return proto[attributePropertyName];
     } else {
         return Object.defineProperty(proto, attributePropertyName, {
-            enumerable: false, configurable: false, writable: false,
+            enumerable: false, configurable: false, writable: true,
             value: Object.create(getAttributeProperties(Object.getPrototypeOf(proto), attributeName))
         })[attributePropertyName];
     }
