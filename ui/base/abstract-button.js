@@ -48,10 +48,8 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
             this.addComposer(this._pressComposer);
             this._pressComposer.defineBinding("longPressThreshold ", {"<-": "holdThreshold", source: this});
 
-            this.defineBinding("enabled ", {"<->": "!disabled"});
-
             //classList management
-            this.defineBinding("classList.has('montage--disabled')", {"<-": "disabled"});
+            this.defineBinding("classList.has('montage--disabled')", {"<-": "!enabled"});
             this.defineBinding("classList.has('montage--active')", {"<-": "active"});
         }
     },
@@ -64,21 +62,6 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
      */
     enabled: {
         value: true
-    },
-
-
-    _disabled: {
-        value: false
-    },
-
-    disabled: {
-        get: function () {
-            return this._disabled;
-        },
-        set: function (value) {
-            this._disabled = value;
-            this.needsDraw = true;
-        }
     },
 
     _preventFocus: {
