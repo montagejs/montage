@@ -14,6 +14,16 @@ TestPageLoader.queueTest("loader/loader-test", function(testPage) {
     });
 
     describe("ui/loader/loader-spec", function() {
+        it("should be in the PRELOADING stage or after", function() {
+            var loader = test.templateObjects.owner;
+
+            if (loader.currentStage === PRELOADING) {
+                waitsFor(function() {
+                    return loader.currentStage > PRELOADING;
+                }, "PRELOADING is over", 2000);
+            }
+        });
+
         it("should be in the BOOTSTRAPPING stage or after", function() {
             var loader = test.templateObjects.owner;
 
