@@ -170,7 +170,7 @@ var Template = Montage.specialize( {
             this._require = _require;
             this.document = this.createHtmlDocumentWithHtml("");
             this.document.body.appendChild(
-                this.document.importNode(documentFragment)
+                this.document.importNode(documentFragment, true)
             );
             this.setObjects(objects);
 
@@ -391,7 +391,7 @@ var Template = Montage.specialize( {
 
             for (var i = 0, ii = nodes.length; i < ii; i++) {
                 fragment.appendChild(
-                    targetDocument.importNode(nodes[i])
+                    targetDocument.importNode(nodes[i], true)
                 );
             }
 
@@ -1336,7 +1336,6 @@ var TemplateResources = Montage.specialize( {
     createStylesForDocument: {
         value: function(targetDocument) {
             var styles = this.getStyles(),
-                style,
                 newStyle,
                 stylesForDocument = [],
                 baseUrl = this.template.getBaseUrl(),
@@ -1348,8 +1347,7 @@ var TemplateResources = Montage.specialize( {
 
             for (var i = 0, style; (style = styles[i]); i++) {
                 url = style.getAttribute("href");
-
-                newStyle = targetDocument.importNode(style);
+                newStyle = targetDocument.importNode(style, true);
                 stylesForDocument.push(newStyle);
 
                 if (url) {
