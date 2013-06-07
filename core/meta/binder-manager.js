@@ -22,7 +22,7 @@ var logger = require("core/logger").logger("blueprint");
 var BinderManager = exports.BinderManager = Montage.specialize( /** @lends BinderManager# */ {
 
     constructor: {
-        value: function() {
+        value: function BinderManager() {
             this._binders = [];
             this._binderTable = {};
         }

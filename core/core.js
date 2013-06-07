@@ -1002,7 +1002,7 @@ exports._blueprintDescriptor = {
     set:function (value) {
         var info = Montage.getInfoForObject(this);
         var _blueprintValue;
-        var self = (info && !info.isInstance) ? this : Object.getPrototypeOf(this);
+        var self = (info && !info.isInstance) ? this : this.constructor;
         if (value === null) {
             _blueprintValue = null;
         } else if (typeof value.then === "function") {

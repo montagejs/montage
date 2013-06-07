@@ -16,6 +16,12 @@ var logger = require("core/logger").logger("blueprint");
  */
 exports.AssociationBlueprint = PropertyBlueprint.specialize( /** @lends AssociationBlueprint# */ {
 
+    constructor: {
+        value: function AssociationBlueprint() {
+            this.super();
+        }
+    },
+
     serializeSelf: {
         value: function(serializer) {
             serializer.setProperty("targetBlueprint", this._targetBlueprintReference);

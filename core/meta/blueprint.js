@@ -38,6 +38,12 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
         value: ".meta"
     },
 
+    constructor: {
+        value: function Blueprint() {
+            this.super();
+        }
+    },
+
     /**
      @function
      @param {String} name TODO

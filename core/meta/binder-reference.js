@@ -15,6 +15,12 @@ var logger = require("core/logger").logger("blueprint");
 
 exports.BinderReference = RemoteReference.create(RemoteReference, {
 
+    constructor: {
+        value: function BinderReference() {
+            this.super();
+        }
+    },
+
     /**
      The identifier is the name of the binder and is used to make the serialization of binders more
      readable.

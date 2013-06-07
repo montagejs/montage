@@ -18,7 +18,8 @@ exports.RemoteReference = Montage.specialize( {
       @private
     */
     constructor: {
-        value: function() {
+        value: function RemoteReference() {
+            this.super();
             this._value = null;
             this._reference = null;
             this._promise = null;
