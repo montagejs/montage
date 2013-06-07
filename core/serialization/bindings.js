@@ -21,7 +21,7 @@ Serializer.defineSerializationUnit("bindings", function (serializer, object) {
             continue;
 
         var sourcePath = input.sourcePath;
-
+        var syntax = input.sourceSyntax;
         if (input.source !== object) {
             var label = serializer.getObjectLabel(input.source);
             var scope = new Scope({
@@ -29,13 +29,13 @@ Serializer.defineSerializationUnit("bindings", function (serializer, object) {
                 label: label
             });
             scope.components = serializer;
-            var syntax = expand(parse(sourcePath), scope);
-        } else {
-            var scope = new Scope();
-            scope.components = serializer;
-            var syntax = expand(parse(sourcePath), scope);
+            syntax = expand(syntax, scope);
         }
-        sourcePath = stringify(syntax);
+
+        var scope = new Scope();
+        scope.components = serializer;
+        sourcePath = stringify(syntax, scope);
+
         if (input.twoWay) {
             output["<->"] = sourcePath;
         } else {
