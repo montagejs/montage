@@ -354,6 +354,22 @@ describe('core/undo-manager-spec', function () {
             }).timeout(WAITS_FOR_TIMEOUT);
         });
 
+        it("should report the expected undoLabel while in the middle of undoing", function () {
+            var deferredAdditionUndo = roster.testableAddMember("Alice"),
+                spyObject = {
+                    removeMember: function (member) {
+                        expect(undoManager.undoLabel).toBe("Test Label");
+                    }
+                };
+
+            spyOn(spyObject, "removeMember").andCallThrough();
+            deferredAdditionUndo.resolve(["Test Label", spyObject.removeMember, spyObject, "Alice"]);
+
+            return undoManager.undo().then(function (success) {
+                expect(spyObject.removeMember).toHaveBeenCalled();
+            }).timeout(WAITS_FOR_TIMEOUT);
+        });
+
     });
 
     describe("batch operations", function () {
