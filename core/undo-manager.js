@@ -404,6 +404,9 @@ var UndoManager = exports.UndoManager = Montage.specialize( /** @lends UndoManag
 
                 if (this.isUndoing) {
 
+                    // Preserve the current undo label as the redo label by default
+                    undoEntry.label = this.undoLabel;
+
                     if (this._redoStack.length === this._maxUndoCount) {
                         this._redoStack.shift();
                     }
