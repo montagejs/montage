@@ -25,7 +25,7 @@ describe("meta/blueprint-spec", function () {
         describe("Creation", function () {
         });
         describe("Adding blueprints", function () {
-            var binder = new Binder().initWithName("CompanyBinder");
+            var binder = new Binder().initWithNameAndRequire("CompanyBinder", global.require);
 
             var personBlueprint = new Blueprint().initWithName("Person");
             binder.addBlueprint(personBlueprint);
@@ -88,7 +88,7 @@ describe("meta/blueprint-spec", function () {
             });
         });
         describe("blueprint to instance association", function () {
-            var binder = new Binder().initWithName("Binder");
+            var binder = new Binder().initWithNameAndRequire("Binder", global.require);
             var personBlueprint = new Blueprint().initWithName("Person");
             personBlueprint.moduleId = "mymodule";
             binder.addBlueprint(personBlueprint);
@@ -104,7 +104,7 @@ describe("meta/blueprint-spec", function () {
         describe("applying a basic blueprint to a prototype", function () {
             var louis, personBlueprint;
             beforeEach(function () {
-                var binder = new Binder().initWithName("Binder");
+                var binder = new Binder().initWithNameAndRequire("Binder", global.require);
                 personBlueprint = new Blueprint().initWithNameAndModuleId("Person", "mymodule");
                 personBlueprint.addPropertyBlueprint(personBlueprint.newPropertyBlueprint("name", 1));
                 personBlueprint.addPropertyBlueprint(personBlueprint.newPropertyBlueprint("keywords", Infinity));
@@ -127,7 +127,7 @@ describe("meta/blueprint-spec", function () {
         describe("adding a PropertyBlueprint", function () {
             var circle, shapeBlueprint;
             beforeEach(function () {
-                var binder = new Binder().initWithName("Binder");
+                var binder = new Binder().initWithNameAndRequire("Binder", global.require);
                 shapeBlueprint = new Blueprint().initWithNameAndModuleId("Shape", "mymodule");
                 binder.addBlueprint(shapeBlueprint);
                 var propertyBlueprint = shapeBlueprint.newPropertyBlueprint("size", 1);
@@ -234,6 +234,18 @@ describe("meta/blueprint-spec", function () {
                 var info = Montage.getInfoForObject(Person);
                 expect(info.moduleId).toBe("meta/blueprint/person");
                 expect(info.objectName).toBe("Person");
+            });
+        });
+
+        describe("cross package", function () {
+            it("correctly loads blueprints with the same internal module ID", function () {
+                return require.loadPackage({location: "./meta/blueprint/package"})
+                .then(function (require) {
+                    return Blueprint.getBlueprintWithModuleId("thing.meta", require)
+                    .then(function (blueprint) {
+                        expect(blueprint.parent).not.toBe(blueprint);
+                    });
+                });
             });
         });
 

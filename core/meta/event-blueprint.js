@@ -22,6 +22,12 @@ var Defaults = {
  */
 exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
 
+    constructor: {
+        value: function EventBlueprint() {
+            this.super();
+        }
+    },
+    
     /**
      Initialize a newly allocated property blueprint.
      @function

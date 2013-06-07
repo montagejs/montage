@@ -17,6 +17,12 @@ var logger = require("core/logger").logger("blueprint");
 
 exports.BlueprintReference = RemoteReference.specialize( {
 
+    constructor: {
+        value: function BlueprintReference() {
+            this.super();
+        }
+    },
+
     /**
      The identifier is the name of the binder and is used to make the serialization of binders more
      readable.
@@ -37,7 +43,7 @@ exports.BlueprintReference = RemoteReference.specialize( {
     },
 
     valueFromReference: {
-        value: function(references, require) {
+        value: function(references, targetRequire) {
             var blueprintName = references.blueprintName;
             var blueprintModuleId = references.blueprintModuleId;
             var prototypeName = references.prototypeName;
@@ -57,17 +63,6 @@ exports.BlueprintReference = RemoteReference.specialize( {
                         deferredBlueprint.resolve(blueprint);
                     } else {
                         try {
-                            // We need to be careful as the parent may be in another module
-                            var targetRequire = require;
-                            var slashIndex = blueprintModuleId.indexOf("/");
-                            if (slashIndex > 0) {
-                                var prefix = blueprintModuleId.substring(0, slashIndex);
-                                var mappings = require.mappings;
-                                if (prefix in mappings) {
-                                    blueprintModuleId = blueprintModuleId.substring(slashIndex + 1);
-                                    targetRequire = targetRequire.getPackage(mappings[prefix].location);
-                                }
-                            }
                             BlueprintModule.Blueprint.getBlueprintWithModuleId(blueprintModuleId, targetRequire).then(function(blueprint) {
                                 if (blueprint) {
                                     binder.addBlueprint(blueprint);

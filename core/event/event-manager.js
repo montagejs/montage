@@ -707,7 +707,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
     registerEventListener: {
         enumerable: false,
-        value: function(target, eventType, listener, useCapture) {
+        value: function registerEventListener(target, eventType, listener, useCapture) {
 
             // console.log("EventManager.registerEventListener", target, eventType, listener, useCapture)
 
@@ -771,7 +771,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
     */
     unregisterEventListener: {
         enumerable: false,
-        value: function(target, eventType, listener, useCapture) {
+        value: function unregisterEventListener(target, eventType, listener, useCapture) {
 
             // console.log("EventManager.unregisterEventListener", target, eventType, listener, useCapture)
 

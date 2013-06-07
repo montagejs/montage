@@ -125,6 +125,7 @@ Montage.callDeprecatedFunction = function callDeprecatedFunction(scope, callback
 };
 
 var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;
+var PROTO_PROPERTIES_BLACKLIST = {"_montage_metadata": 1, "__state__": 1};
 var FUNCTION_PROPERTIES = Object.getOwnPropertyNames(Function);
 
 Object.defineProperty(Montage, "specialize", {
@@ -153,9 +154,11 @@ Object.defineProperty(Montage, "specialize", {
             names = Object.getOwnPropertyNames(parent);
             for (var i = 0; i < names.length; i++) {
                 propertyName = names[i];
-                property = Object.getOwnPropertyDescriptor(constructor, propertyName);
-                if (!property || property.configurable) {
-                    Montage.defineProperty(constructor, propertyName, Object.getOwnPropertyDescriptor(parent, propertyName));
+                if (!(PROTO_PROPERTIES_BLACKLIST.hasOwnProperty(propertyName))) {
+                    property = Object.getOwnPropertyDescriptor(constructor, propertyName);
+                    if (!property || property.configurable) {
+                        Montage.defineProperty(constructor, propertyName, Object.getOwnPropertyDescriptor(parent, propertyName));
+                    }
                 }
             }
             constructor.__constructorProto__ = parent;
@@ -336,7 +339,7 @@ extendedPropertyAttributes.forEach(function(name) {
     Object.defineProperty(Object.prototype, UNDERSCORE + name + ATTRIBUTE_PROPERTIES, {
         enumerable: false,
         configurable: false,
-        writable: false,
+        writable: true,
         value: {}
     });
 });
@@ -636,7 +639,7 @@ function getAttributeProperties(proto, attributeName) {
         return proto[attributePropertyName];
     } else {
         return Object.defineProperty(proto, attributePropertyName, {
-            enumerable: false, configurable: false, writable: false,
+            enumerable: false, configurable: false, writable: true,
             value: Object.create(getAttributeProperties(Object.getPrototypeOf(proto), attributeName))
         })[attributePropertyName];
     }
@@ -1010,7 +1013,7 @@ exports._blueprintDescriptor = {
     set:function (value) {
         var info = Montage.getInfoForObject(this);
         var _blueprintValue;
-        var self = (info && !info.isInstance) ? this : Object.getPrototypeOf(this);
+        var self = (info && !info.isInstance) ? this : this.constructor;
         if (value === null) {
             _blueprintValue = null;
         } else if (typeof value.then === "function") {
