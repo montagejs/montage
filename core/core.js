@@ -848,7 +848,7 @@ var uuidGetGenerator = function() {
                 });
             }
             //This is really because re-defining the property on DOMWindow actually doesn't work, so the original property with the getter is still there and return this._uuid if there.
-            if (this instanceof Element || !info.isInstance || !(VALUE in Object.getOwnPropertyDescriptor(this, "uuid")) || !(PROTO in this /* lame way to detect IE */)) {
+            if (this instanceof Element || !info.isInstance || !(VALUE in (Object.getOwnPropertyDescriptor(this, "uuid")||{})) || !(PROTO in this /* lame way to detect IE */)) {
                 //This is needed to workaround some bugs in Safari where re-defining uuid doesn't work for DOMWindow.
                 this._uuid = uuid;
             }
