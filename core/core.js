@@ -125,6 +125,7 @@ Montage.callDeprecatedFunction = function callDeprecatedFunction(scope, callback
 };
 
 var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;
+var PROTO_PROPERTIES_BLACKLIST = {"_montage_metadata": 1, "__state__": 1};
 var FUNCTION_PROPERTIES = Object.getOwnPropertyNames(Function);
 
 Object.defineProperty(Montage, "specialize", {
@@ -153,9 +154,11 @@ Object.defineProperty(Montage, "specialize", {
             names = Object.getOwnPropertyNames(parent);
             for (var i = 0; i < names.length; i++) {
                 propertyName = names[i];
-                property = Object.getOwnPropertyDescriptor(constructor, propertyName);
-                if (!property || property.configurable) {
-                    Montage.defineProperty(constructor, propertyName, Object.getOwnPropertyDescriptor(parent, propertyName));
+                if (!(PROTO_PROPERTIES_BLACKLIST.hasOwnProperty(propertyName))) {
+                    property = Object.getOwnPropertyDescriptor(constructor, propertyName);
+                    if (!property || property.configurable) {
+                        Montage.defineProperty(constructor, propertyName, Object.getOwnPropertyDescriptor(parent, propertyName));
+                    }
                 }
             }
             constructor.__constructorProto__ = parent;
