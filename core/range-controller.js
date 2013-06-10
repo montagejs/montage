@@ -57,7 +57,7 @@ var RangeController = exports.RangeController = Montage.specialize( {
             this._selection = [];
             this.selection = [];
             this.defineBinding("_selection.rangeContent()", {
-                "<->": "selection"
+                "<->": "selection.rangeContent()"
             });
 
             this.sortPath = null;
