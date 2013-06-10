@@ -14,8 +14,8 @@ var Montage = require("montage").Montage,
 /**
  * @class AbstractButton
  * @extends AbstractControl
- * @fires action
- * @fires longAction
+ * @fires AbstractButton#action
+ * @fires AbstractButton#longAction
  */
 var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @lends AbstractButton# */ {
 
@@ -24,15 +24,14 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
      * or when focused and the spacebar is pressed.
      * @event action
      * @memberof AbstractButton
-     * @param {Event} event
+     * @property {Dict} detail - The detail object as defined in  {@link AbstractControl#detail}
      */
 
     /**
-     * Dispatched when the button is pressed for a period of time, set by
-     * {@link holdThreshold}.
+     * Dispatched when the button is pressed for a period of time, set by  {@link AbstractButton#holdThreshold}.
      * @event longAction
      * @memberof AbstractButton
-     * @param {Event} event
+     * @property {Dict} detail - The detail object as defined in {@link AbstractControl#detail}
      */
 
     /**
@@ -56,8 +55,8 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
 
     /**
      * Enables or disables the Button from user input. When this property is set to ```false```,
-     * the "disabled" CSS style is applied to the button's DOM element during the next draw cycle. When set to
-     * ```true``` the "disabled" CSS class is removed from the element's class list.
+     * the "montage--disabled" CSS style is applied to the button's DOM element during the next draw cycle. When set to
+     * ```true``` the "montage--disabled" CSS class is removed from the element's class list.
      * @type {boolean}
      */
     enabled: {
@@ -97,22 +96,20 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     },
 
     /**
-      Stores the node that contains this button's value. Only used for
-      non-`<input>` elements.
-      @private
-    */
+     * Stores the node that contains this button's value. Only used for
+     * non-`<input>` elements.
+     * @private
+     */
     _labelNode: {value:undefined, enumerable: false},
 
     _label: { value: undefined, enumerable: false },
 
     /**
-        The displayed text on the button. In an &lt;input> element this is taken from the element's ```value``` attribute. On any other element (including &lt;button>) this is the first child node which is a text node. If one isn't found then it will be created.
-
-        If the button has a non-null ```converter``` property, the converter object's ```convert()``` method is called on the value before being assigned to the button instance.
-
-        @type {string}
-        @default undefined
-    */
+     * The displayed text on the button. In an &lt;input> element this is taken from the element's ```value``` attribute. On any other element (including &lt;button>) this is the first child node which is a text node. If one isn't found then it will be created.
+     * If the button has a non-null ```converter``` property, the converter object's ```convert()``` method is called on the value before being assigned to the button instance.
+     * @type {string}
+     * @default undefined
+     */
     label: {
         get: function() {
             return this._label;
@@ -165,10 +162,10 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     },
 
     /**
-        This property is true when the button is being interacted with, either through mouse click or touch event, otherwise false.
-        @type {boolean}
-        @default false
-    */
+     * This property is true when the button is being interacted with, either through mouse click or touch event, otherwise false.
+     * @type {boolean}
+     * @default false
+     */
     active: {
         get: function() {
             return this._active;
@@ -200,8 +197,9 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     // Handlers
 
     /**
-    Called when the user starts interacting with the component.
-    */
+     * Called when the user starts interacting with the component.
+     * @private
+     */
     handlePressStart: {
         value: function(event) {
             this.active = true;
@@ -219,8 +217,9 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     },
 
     /**
-    Called when the user has interacted with the button.
-    */
+     * Called when the user has interacted with the button.
+     * @private
+     */
     handlePress: {
         value: function(event) {
             this.active = false;
@@ -316,10 +315,10 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     },
 
     /**
-    Draws the label to the DOM.
-    @function
-    @private
-    */
+     * Draws the label to the DOM.
+     * @function
+     * @private
+     */
     _drawLabel: {
         enumerable: false,
         value: function(value) {
