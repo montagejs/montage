@@ -4,6 +4,7 @@
  */
 
 var Montage = require("montage").Montage,
+    Target = require("core/target").Target,
     Promise = require("core/promise").Promise,
     Map = require("collections/map"),
     List = require("collections/list");
@@ -160,9 +161,9 @@ var UNDO_OPERATION = 0,
  *    but in the order they are undone or redone.
  *
  *   @class UndoManager
- *   @extends Montage
+ *   @extends Target
 */
-var UndoManager = exports.UndoManager = Montage.specialize( /** @lends UndoManager# */ {
+var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManager# */ {
 
     _operationQueue: {
         value: null
@@ -425,6 +426,12 @@ var UndoManager = exports.UndoManager = Montage.specialize( /** @lends UndoManag
                     }
                 }
 
+                // Only call if this is a new change, not one being added
+                // during an undo or redo operation
+                if (!this.isUndoing && !this.isRedoing) {
+                    this.dispatchEventNamed("operationRegistered", true, false);
+                }
+
                 promisedUndoableOperation = operationPromise.then(function (operationInfo) {
                     self._resolveUndoEntry(undoEntry, operationInfo);
                     return undoEntry;
@@ -600,7 +607,12 @@ var UndoManager = exports.UndoManager = Montage.specialize( /** @lends UndoManag
                 return Promise.resolve(null);
             }
 
-            return this._scheduleOperation(this._undoStack.pop(), UNDO_OPERATION);
+            var self = this;
+            return this._scheduleOperation(this._undoStack.pop(), UNDO_OPERATION)
+            .then(function (value) {
+                self.dispatchEventNamed("undo", true, false, value);
+                return value;
+            });
         }
     },
 
@@ -616,7 +628,12 @@ var UndoManager = exports.UndoManager = Montage.specialize( /** @lends UndoManag
                 return Promise.resolve(null);
             }
 
-            return this._scheduleOperation(this._redoStack.pop(), REDO_OPERATION);
+            var self = this;
+            return this._scheduleOperation(this._redoStack.pop(), REDO_OPERATION)
+            .then(function (value) {
+                self.dispatchEventNamed("redo", true, false);
+                return value;
+            });
         }
     },
 
