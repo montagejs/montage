@@ -53,9 +53,14 @@
     -   [overlay.reel](http://montagejs.org/docs/Overlay-component.html)
     -   repetition.reel
     -   slot.reel
-    -   substitution.reel
+    -   [substitution.reel](http://montagejs.org/docs/Substitution-component.html)
     -   text.reel (replaces dynamic-text.reel)
     -   [component.js](#Component_v0130)
+
+
+    **Substitution**
+
+    The substitution's API has substantially changed to a template based approach that makes use of the new component arguments API.
 
 -   **Abstract components**
 
