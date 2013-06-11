@@ -7,16 +7,12 @@ var Montage = require("montage").Montage,
  * @class AbstractControl
  * @extends Component
  */
-exports.AbstractControl = Component.specialize( /* @lends AbstractControl# */ {
+exports.AbstractControl = Component.specialize( /** @lends AbstractControl# */ {
 
-    /**
-     * Dispatch the actionEvent this component is configured to emit upon interaction
-     */
     dispatchActionEvent: {
         value: function() {
             this.dispatchEvent(this.createActionEvent());
-        },
-        enumerable: false
+        }
     },
 
     _detail: {
