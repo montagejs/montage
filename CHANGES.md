@@ -28,15 +28,15 @@
 
     Added a `classList` property to all component instances. You can use this property with the same API as the element's `classList` without impacting the draw cycle performance. The property can be used to great effect with FRB bindings to do things like: `classList.has('complete') <- @owner.isComplete`.
 
--   **Template**
-
-    Templates can now have DOM parameters. A DOM parameter is specified in a template using the `data-param` attribute on the DOM node that represents the parameter. `data-param` has the value of the parameter name.
-
--   **Component**
+    **DOM arguments**
 
     Components can now receive DOM arguments. A DOM argument is specified in the component markup by adding a `data-arg` attribute and assign a name to its value.
     DOM arguments can be referenced after the first `enterDocument` with the `extractDomArgument(name)` method.
     When a component has a Template with parameters, each template parameter element is replaced with the corresponding component argument element.
+
+-   **Template**
+
+    Templates can now have DOM parameters. A DOM parameter is specified in a template using the `data-param` attribute on the DOM node that represents the parameter. `data-param` has the value of the parameter name.
 
 -   **Serialization**
 
