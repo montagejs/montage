@@ -8,17 +8,17 @@
 -   **Core**
 
     `Montage.create()` has been replaced by a `specialize` method on the constructor. The `specialize` method returns a constructor function that can be invoked with the `new` operator. (For details see
-    [Montage objects](http://montagejs.org/docs/Montage-objects.html).)
+    [Montage objects](http://montagejs.org/docs/montage-objects.html).)
 
 -   **FRB bindings**
 
-    Functional Reactive Bindings ([FRB](https://github.com/montagejs/frb)) have replaced the old bindings. [More info >](http://montagejs.org/docs/Montage-%E2%99%A5-FRB.html)
+    Functional Reactive Bindings ([FRB](https://github.com/montagejs/frb)) have replaced the old bindings. [More info >](http://montagejs.org/docs/montage-%E2%99%A5-frb.html)
 
 -   **Component**
 
     **Lifecycle methods**
 
-    (See also [Component draw cycle](http://montagejs.org/docs/Component-draw-cycle.html).)
+    (See also [Component draw cycle](http://montagejs.org/docs/component-draw-cycle.html).)
     -   `enterDocument` is called every time the component's element is added to the DOM. When `enterDocument` is called the element is already in the DOM.
         The first time `enterDocument` is called, a Boolean with value `true` is passed in. In this situation `enterDocument` replaces `prepareForDraw`.
     -   `exitDocument` is called every time the component's element is removed from the DOM. When `exitDocument` is called the element is still in the DOM.
@@ -50,10 +50,11 @@
     -   condition.reel
     -   flow.reel
     -   loader.reel
-    -   [overlay.reel](http://montagejs.org/docs/Overlay-component.html)
+    -   [overlay.reel](http://montagejs.org/docs/overlay-component.html)
     -   repetition.reel
     -   slot.reel
-    -   [substitution.reel](http://montagejs.org/docs/Substitution-component.html)
+    -   [substitution.reel](http://montagejs.org/docs/substitution-component
+    .html)
     -   text.reel (replaces dynamic-text.reel)
     -   [component.js](#Component_v0130)
 
