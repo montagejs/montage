@@ -8,8 +8,7 @@
  @requires montage/ui/native-control
  @requires montage/composer/press-composer
  */
-var Montage = require("montage").Montage,
-    AbstractControl = require("ui/base/abstract-control").AbstractControl,
+var AbstractControl = require("ui/base/abstract-control").AbstractControl,
     TranslateComposer = require("composer/translate-composer").TranslateComposer,
     KeyComposer = require("composer/key-composer").KeyComposer,
     Dict = require("collections/dict");
