@@ -231,33 +231,6 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     },
 
     /**
-     * Registers an event listener on the application instance.
-     * @function
-     * @param {String} type The event type to listen for.
-     * @param {Object} listener A listener object that defines an event handler function, or a function to handle the event.
-     * @param {Function} useCapture If <code>true</code>, the listener will only be notified during the event's capture phase.<br>
-     * If <code>false</code> (the default) the listener will be notified during the event's bubble phase.
-     */
-    addEventListener: {
-        value: function(type, listener, useCapture) {
-            Object.getPrototypeOf(Application)["addEventListener"].call(this, type, listener, useCapture);
-        }
-    },
-
-    /**
-     * Removes a previously registered event listener on the application instance.
-     * @function
-     * @param {String} type The event type that was originally registered.
-     * @param {Object} listener The listener object or function that was registered to handle the event.
-     * @param {Function} useCapture TODO
-     */
-    removeEventListener: {
-        value: function(type, listener, useCapture) {
-            Object.getPrototypeOf(Application)["removeEventListener"].call(this, type, listener, useCapture);
-        }
-    },
-
-    /**
      * The application's delegate object, it can implement a ```willFinishLoading``` method that will be called right
      * after the index.html is loaded
      * @type {Object}
