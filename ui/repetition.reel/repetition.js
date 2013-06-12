@@ -121,7 +121,8 @@ var Iteration = exports.Iteration = Montage.specialize( {
      */
     constructor: {
         value: function () {
-            Object.getPrototypeOf(Iteration).constructor.call(this);
+            this.super();
+
             this.repetition = null;
             this.controller = null;
             this.content = null;
@@ -574,7 +575,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
      */
     constructor: {
         value: function () {
-            Object.getPrototypeOf(Repetition).constructor.call(this);
+            this.super();
 
             // XXX Note: Any property added to initialize in constructor must
             // also be accounted for in _teardownIterationTemplate to reset the
