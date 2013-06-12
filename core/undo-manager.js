@@ -165,6 +165,28 @@ var UNDO_OPERATION = 0,
 */
 var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManager# */ {
 
+    /**
+        Dispatched when a new change is registered (i.e. not while undoing or
+        redoing).
+
+        @event operationRegistered
+        @memberof UndoManager
+    */
+
+    /**
+        Dispatched when an undo has been completed.
+
+        @event undo
+        @memberof UndoManager
+    */
+
+    /**
+        Dispatched when a redo has been completed.
+
+        @event redo
+        @memberof UndoManager
+    */
+
     _operationQueue: {
         value: null
     },
