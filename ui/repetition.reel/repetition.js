@@ -1,5 +1,3 @@
-"use strict";
-
 var Montage = require("montage").Montage;
 var Component = require("ui/component").Component;
 var Template = require("core/template").Template;

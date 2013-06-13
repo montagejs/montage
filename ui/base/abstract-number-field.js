@@ -1,4 +1,3 @@
-"use strict";
 /*global require, exports, document, Error*/
 var Montage = require("montage").Montage,
     AbstractControl = require("ui/base/abstract-control").AbstractControl,

@@ -1,5 +1,3 @@
-"use strict";
-
 var Montage = require("montage").Montage;
 var Promise = require("core/promise").Promise;
 var GenericCollection = require("collections/generic-collection");
