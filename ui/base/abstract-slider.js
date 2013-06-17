@@ -322,6 +322,12 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
         },
         set: function (value) {
             if (! isNaN(value = parseFloat(value))) {
+                if (value > this._max) {
+                    value = this._max;
+                } else if (value < this._min) {
+                    value = this._min;
+                }
+
                 if (this._value !== value) {
                     this._value = value;
                 }
