@@ -596,7 +596,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
                 "<-": "iterations.filter{selected}"
             });
             this.defineBinding("selectedIndexes", {
-                "<-": "iterations.map{index}"
+                "<-": "selectedIterations.map{index}"
             });
 
 
