@@ -312,6 +312,10 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
         }
     },
 
+    _value: {
+        value: 50
+    },
+
     value: {
         get: function () {
             return this._value;
@@ -413,34 +417,34 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
                     this._propertyNamesUsed[key] = true;
                 }
                 //adjust the value
-                if (this.value <= this.min) {
+                if (this._value <= this._min) {
                     //first the simple case
-                    this.value = this.min;
+                    this._value = this._min;
                 } else {
-                    var magnitude = this.value - this.min;
-                    var remainder = magnitude % this.step;
+                    var magnitude = this._value - this._min;
+                    var remainder = magnitude % this._step;
                     if (remainder) {
                         //if we have a remainder then we need to adjust the value
                         // Inspired by http://www.w3.org/html/wg/drafts/html/master/forms.html#range-state-(type=range)
                         // if we are in the middle of two stepped value then go for the larger one.
-                        var roundup = (remainder >= this.step * 0.5) && ((this.value - remainder) + this.step <= this.max);
+                        var roundup = (remainder >= this._step * 0.5) && ((this._value - remainder) + this._step <= this._max);
                         if (roundup) {
-                            this.value = (this.value - remainder) + this.step;
+                            this._value = (this._value - remainder) + this._step;
                         } else {
-                            this.value = this.value - remainder;
+                            this._value = this._value - remainder;
                         }
                     }
 
                 }
 
                 //otherwise don't adjust the value just check it's within  min and max
-                 if (this.value > this.max) {
-                    this.value = this.max;
+                if (this._value > this._max) {
+                    this._value = this._max;
                 }
 
                 // ~~ is vastly faster then Math.floor
                 // http://jsperf.com/math-floor-vs-math-round-vs-parseint/8
-                this._valuePercentage = (~~(((this.value - this._min) * this._sliderMagnitude) / (this._max - this._min)) * 100 / this._sliderMagnitude);
+                this._valuePercentage = (~~(((this._value - this._min) * this._sliderMagnitude) / (this._max - this._min)) * 100 / this._sliderMagnitude);
                 this.needsDraw = true;
             }
         }
