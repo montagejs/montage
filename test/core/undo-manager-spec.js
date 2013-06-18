@@ -103,6 +103,50 @@ var Roster = Montage.specialize( {
     }
 });
 
+var Text = Montage.specialize({
+    initWithUndoManager: {
+        value: function (undoManager) {
+            this.undoManager = undoManager;
+            return this;
+        }
+    },
+
+    text: {
+        value: "abc"
+    },
+
+    del: {
+        value: function (isSlow) {
+            var self = this;
+            var promise = isSlow ? Promise.delay(20) : Promise.resolve();
+
+            promise = promise.then(function () {
+                var c = self.text.charAt(self.text.length - 1);
+                self.text = self.text.substring(0, self.text.length - 1);
+
+                return [self.add, self, c, isSlow];
+            });
+
+            return self.undoManager.register("Delete character", promise);
+        }
+    },
+
+    add: {
+        value: function (c, isSlow) {
+            var self = this;
+            var promise = isSlow ? Promise.delay(20) : Promise.resolve();
+
+            promise = promise.then(function () {
+                self.text += c;
+
+                return [self.del, self, isSlow];
+            });
+
+            return self.undoManager.register("Add character", promise);
+        }
+    }
+});
+
 describe('core/undo-manager-spec', function () {
 
     var undoManager, roster;
@@ -376,6 +420,18 @@ describe('core/undo-manager-spec', function () {
             }).timeout(WAITS_FOR_TIMEOUT);
         });
 
+        it("maintains order when an operation is a long running async operation", function () {
+            var text = new Text().initWithUndoManager(undoManager);
+
+            text.del(true);
+            text.del(false);
+
+            undoManager.undo().done();
+            return undoManager.undo().then(function () {
+                expect(text.text).toBe("abc");
+            });
+        });
+
     });
 
     describe("batch operations", function () {
@@ -446,40 +502,15 @@ describe('core/undo-manager-spec', function () {
         });
 
         it("maintains order when an operation is a long running async operation", function () {
-            var text = "abc";
-
-            function del(isSlow) {
-                var promise = isSlow ? Promise.delay(20) : Promise.resolve();
-
-                promise = promise.then(function () {
-                    var c = text.charAt(text.length - 1);
-                    text = text.substring(0, text.length - 1);
-
-                    return [add, undefined, c, isSlow];
-                });
-
-                return undoManager.register("Delete character", promise);
-            }
-
-            function add(c, isSlow) {
-                var promise = isSlow ? Promise.delay(20) : Promise.resolve();
-
-                promise = promise.then(function () {
-                    text += c;
-
-                    return [del, undefined, isSlow];
-                });
-
-                return undoManager.register("Add character", promise);
-            }
+            var text = new Text().initWithUndoManager(undoManager);
 
             undoManager.openBatch("Delete 2 characters");
-            del(false);
-            del(true);
+            text.del(false);
+            text.del(true);
             undoManager.closeBatch();
 
             return undoManager.undo().then(function () {
-                expect(text).toBe("abc");
+                expect(text.text).toBe("abc");
             });
         });
 
