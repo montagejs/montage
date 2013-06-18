@@ -9,6 +9,12 @@ var Montage = require("montage").Montage,
  */
 var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.specialize( {
 
+    constructor: {
+        value: function FlowTranslateComposer() {
+            this.super();
+        }
+    },
+
     _scrollingMode: {
         value: "linear"
     },

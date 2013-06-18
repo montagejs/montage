@@ -54,6 +54,12 @@ var Montage = require("core/core").Montage,
 
 exports.Loader = Component.specialize( /** @lends Loader# */ {
 
+    constructor: {
+        value: function Loader() {
+            this.super();
+        }
+    },
+
     // Configuration Properties
 
 /**

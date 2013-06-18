@@ -39,6 +39,13 @@ var Montage = require("montage").Montage;
  @extends Montage
  */
 var ObjectController = exports.ObjectController = Montage.specialize( /** @lends ObjectController# */ {
+
+    constructor: {
+        value: function ObjectController() {
+            this.super();
+        }
+    },
+
 /**
         @type {Property}
         @default null
