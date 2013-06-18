@@ -1306,18 +1306,21 @@ var Flow = exports.Flow = Component.specialize( {
         value: null
     },
 
-    // TODO remove possibly redundant with binding to objectAtCurrentIteration
     /**
      * @private
      */
     observeProperty: {
-        value: function (key, emit, source, parameters, beforeChange) {
-            if (key === "currentIteration" || key === "objectAtCurrentIteration" || key === "contentAtCurrentIteration") {
+        value: function (key, emit, scope) {
+            if (
+                key === "currentIteration" ||
+                key === "objectAtCurrentIteration" ||
+                key === "contentAtCurrentIteration"
+            ) {
                 if (this._repetition) {
-                    return this._repetition.observeProperty(key, emit, source, parameters, beforeChange);
+                    return this._repetition.observeProperty(key, emit, scope);
                 }
             } else {
-                return observeProperty(this, key, emit, source, parameters, beforeChange);
+                return observeProperty(this, key, emit, scope);
             }
         }
     },

@@ -1021,7 +1021,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
      * @private
      */
     observeProperty: {
-        value: function (key, emit, source, parameters, beforeChange) {
+        value: function (key, emit, scope) {
             if (key === "contentAtCurrentIteration" || key === "objectAtCurrentIteration") {
                 // delegate to the mapping from iterations to content for the
                 // current iteration
@@ -1029,9 +1029,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
                     this._contentForIteration,
                     this.currentIteration,
                     emit,
-                    source,
-                    parameters,
-                    beforeChange
+                    scope
                 );
             } else if (key === "currentIteration") {
                 // Shortcut since this property is sticky -- won't change in
@@ -1040,14 +1038,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
                 return emit(this.currentIteration);
             } else {
                 // fall back to normal property observation
-                return observeProperty(
-                    this,
-                    key,
-                    emit,
-                    source,
-                    parameters,
-                    beforeChange
-                );
+                return observeProperty(this, key, emit, scope);
             }
         }
     },

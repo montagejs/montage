@@ -18,22 +18,35 @@ var pathChangeDescriptors = new WeakMap();
 var pathPropertyDescriptors = {
 
     getPath: {
-        value: function (path, parameters) {
-            return evaluate(path, this, parameters);
+        value: function (path, parameters, document, components) {
+            return evaluate(
+                path,
+                this,
+                parameters || this,
+                document,
+                components
+            );
         }
     },
 
     setPath: {
-        value: function (path, value, parameters) {
-            return assign(this, path, value, parameters);
+        value: function (path, value, parameters, document, components) {
+            return assign(
+                this,
+                path,
+                value,
+                parameters || this,
+                document,
+                components
+            );
         }
     },
 
     observePath: {
-        value: function (path, emit, parameters, beforeChange) {
+        value: function (path, emit) {
             var syntax = parse(path);
             var observe = compileObserver(syntax);
-            return observe(emit, this, parameters, beforeChange);
+            return observe(autoCancelPrevious(emit), new Scope(this));
         }
     },
 
