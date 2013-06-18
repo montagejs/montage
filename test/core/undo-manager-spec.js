@@ -445,6 +445,44 @@ describe('core/undo-manager-spec', function () {
 
         });
 
+        it("maintains order when an operation is a long running async operation", function () {
+            var text = "abc";
+
+            function del(isSlow) {
+                var promise = isSlow ? Promise.delay(20) : Promise.resolve();
+
+                promise = promise.then(function () {
+                    var c = text.charAt(text.length - 1);
+                    text = text.substring(0, text.length - 1);
+
+                    return [add, undefined, c, isSlow];
+                });
+
+                return undoManager.register("Delete character", promise);
+            }
+
+            function add(c, isSlow) {
+                var promise = isSlow ? Promise.delay(20) : Promise.resolve();
+
+                promise = promise.then(function () {
+                    text += c;
+
+                    return [del, undefined, isSlow];
+                });
+
+                return undoManager.register("Add character", promise);
+            }
+
+            undoManager.openBatch("test");
+            del(false);
+            del(true);
+            undoManager.closeBatch();
+
+            return undoManager.undo().then(function () {
+                expect(text).toBe("abc");
+            });
+        });
+
     });
 
     describe("nested batch operations", function () {
