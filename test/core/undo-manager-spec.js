@@ -473,7 +473,7 @@ describe('core/undo-manager-spec', function () {
                 return undoManager.register("Add character", promise);
             }
 
-            undoManager.openBatch("test");
+            undoManager.openBatch("Delete 2 characters");
             del(false);
             del(true);
             undoManager.closeBatch();

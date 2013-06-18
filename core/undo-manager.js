@@ -343,13 +343,16 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
                     // Open a batch to collect redo operations
                     this.openBatch(label);
 
-                    for (var i = operations.length - 1; i >= 0;  i--) {
-                        var operationInfo = operations[i];
-                        this._resolveUndoEntry(entry, operationInfo);
-                        entry.undoFunction.apply(entry.context, entry.args);
-                    }
+                    var done = operations.reduceRight(function (previous, operationInfo) {
+                        return previous.then(function () {
+                            self._resolveUndoEntry(entry, operationInfo);
+                            return entry.undoFunction.apply(entry.context, entry.args);
+                        });
+                    }, Promise.resolve());
 
-                    this.closeBatch();
+                    return done.finally(function () {
+                        self.closeBatch();
+                    });
                 };
 
 
