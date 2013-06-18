@@ -8,7 +8,7 @@ var Roster = Montage.specialize( {
 
     constructor: {
         value: function () {
-            this._members = new Set();
+            this._members = [];
         }
     },
 
@@ -42,18 +42,26 @@ var Roster = Montage.specialize( {
     //NOTE these APIs return the add promise to expose more testing surface area, this is not a demand of the undo system
 
     addMember: {
-        value: function (member) {
-            this.members.add(member);
+        value: function (member, position) {
+            position = position || this.members.length - 1;
+            this._members.splice(position, 0, member);
             return this.undoManager.register("Add Member", Promise.resolve(["Add " + member, this.removeMember, this, member]));
         }
     },
 
     removeMember: {
         value: function (member) {
-            this.members.delete(member);
-            var foo = this.undoManager.register("Remove Member", Promise.resolve(["Remove " + member, this.addMember, this, member]));
-            foo.memberName = member;
-            return foo;
+            var index = this._members.indexOf(member);
+            if (index !== -1) {
+                this._members.splice(index, 1);
+
+                var foo = this.undoManager.register("Remove Member", Promise.resolve(["Remove " + member, this.addMember, this, member, index]));
+                foo.memberName = member;
+                return foo;
+            } else {
+                return Promise.resolve();
+            }
+
         }
     },
 
@@ -62,11 +70,9 @@ var Roster = Montage.specialize( {
 
             this.undoManager.openBatch("Remove All Members");
 
-            // NOTE purposefully using primitive method to trigger need for batched undo operations
-            var members = this.members.concat();
-            members.forEach(function (member) {
-                this.removeMember(member).done();
-            }, this);
+            while (this._members.length) {
+                this.removeMember(this._members[this._members.length - 1]);
+            }
 
             this.undoManager.closeBatch();
         }
@@ -392,6 +398,20 @@ describe('core/undo-manager-spec', function () {
 
             it("should perform all undo operations within the batch operation", function () {
                 roster.removeAllMembers();
+                return undoManager.undo().then(function () {
+                    expect(roster.members.length).toBe(3);
+                    expect(roster.members[0]).toBe('Alice');
+                    expect(roster.members[1]).toBe('Bob');
+                    expect(roster.members[2]).toBe('Carol');
+                }).timeout(WAITS_FOR_TIMEOUT);
+            });
+
+            it("should perform the undos in the oposite order to the registrations", function () {
+                undoManager.openBatch("Ordered removal");
+                roster.removeMember('Carol');
+                roster.removeMember('Bob');
+                undoManager.closeBatch();
+
                 return undoManager.undo().then(function () {
                     expect(roster.members.length).toBe(3);
                     expect(roster.members[0]).toBe('Alice');
