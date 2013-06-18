@@ -118,7 +118,7 @@ var Iteration = exports.Iteration = Montage.specialize( {
      * @private
      */
     constructor: {
-        value: function () {
+        value: function Repetition() {
             this.super();
 
             this.repetition = null;

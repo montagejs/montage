@@ -10,6 +10,12 @@ var DocumentPart = Montage.specialize( {
     childComponents: {value: null},
     parameters: {value: null},
 
+    constructor: {
+        value: function DocumentPart() {
+            this.super();
+        }
+    },
+
     initWithTemplateAndFragment: {
         value: function(template, fragment) {
             this.template = template;

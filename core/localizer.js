@@ -47,6 +47,12 @@ var reLanguageTagValidator = /^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/;
 */
 var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */ {
 
+    constructor: {
+        value: function Localizer() {
+            this.super()
+        }
+    },
+
     /**
         Initialize the localizer.
         @function

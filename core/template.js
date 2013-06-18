@@ -83,6 +83,12 @@ var Template = Montage.specialize( {
         }
     },
 
+    constructor: {
+        value: function Template() {
+            this.super();
+        }
+    },
+
     /**
      * Initializes the Template with an empty document.
      *
@@ -1165,7 +1171,7 @@ var TemplateResources = Montage.specialize( {
     rootUrl: {value: ""},
 
     constructor: {
-        value: function() {
+        value: function TemplateResources() {
             this._resources = Object.create(null);
         }
     },

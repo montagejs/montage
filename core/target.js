@@ -10,6 +10,12 @@ var Montage = require("montage").Montage,
  */
 exports.Target = Montage.specialize( {
 
+    constructor: {
+        value: function Target() {
+            this.super();
+        }
+    },
+
     /**
      * Whether or not this target can accept user focus and become the activeTarget
      * This matches up with the <code>document.activeElement</code> property purpose-wise;

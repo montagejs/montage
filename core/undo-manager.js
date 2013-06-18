@@ -196,7 +196,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
     },
 
     constructor: {
-        value: function () {
+        value: function UndoManager() {
             this._operationQueue = [];
             this._promiseOperationMap = new Map();
             this._undoStack = new List();

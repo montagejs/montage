@@ -7,6 +7,12 @@ var DocumentResources = Montage.specialize({
     _resources: {value: null},
     _preloaded: {value: null},
 
+    constructor: {
+        value: function DocumentResources() {
+            this.super();
+        }
+    },
+
     initWithDocument: {
         value: function(_document) {
             this.clear();
