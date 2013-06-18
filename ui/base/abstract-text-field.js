@@ -2,7 +2,8 @@
 var Montage = require("montage").Montage,
     AbstractControl = require("ui/base/abstract-control").AbstractControl,
     KeyComposer = require("composer/key-composer").KeyComposer,
-    Dict = require("collections/dict");
+    Dict = require("collections/dict"),
+    Operators = require("frb/operators");
 
 var CLASS_PREFIX = "montage-TextField";
 
@@ -120,7 +121,7 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
 
     draw: {
         value: function() {
-            this.element.value = this.value;
+            this.element.value = Operators.string(this.value);
             if (this.placeholderValue != null) {
                 this.element.setAttribute("placeholder", this.placeholderValue);
             }
