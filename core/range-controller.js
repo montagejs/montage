@@ -443,6 +443,45 @@ var RangeController = exports.RangeController = Montage.specialize( {
     },
 
     /**
+     * Creates content and adds it to the controller and its backing
+     * collection.  Uses `add` and `contentConstructor`.
+     */
+    addContent: {
+        value: function () {
+            var content = new this.contentConstructor();
+            this.add(content);
+            return content;
+        }
+    },
+
+    _contentConstructor: {
+        value: null
+    },
+
+    /**
+     * Creates a content value for this range controller.  If the backing
+     * collection has an intrinsict type, uses its `contentConstructor`.
+     * Otherwise, creates and returns simple, empty objects.
+     *
+     * This property can be set to an alternate content constructor, which will
+     * take precedence over either of the above defaults.
+     */
+    contentConstructor: {
+        get: function () {
+            if (this._contentConstructor) {
+                return this._contentConstructor;
+            } else if (this.content.contentConstructor) {
+                return this.content.contentConstructor;
+            } else {
+                return Object;
+            }
+        },
+        set: function (contentConstructor) {
+            this._contentConstructor = contentConstructor;
+        }
+    },
+
+    /**
      * Dispatched by range changes to the controller's content, arranged in
      * constructor.  Reacts to content changes to ensure that content that no
      * longer exists is removed from the selection, regardless of whether it is
