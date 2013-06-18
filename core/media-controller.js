@@ -712,10 +712,15 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             this.mediaElement.addEventListener('emptied', this, false);
             this.mediaElement.addEventListener('ended', this, false);
         }
-    }
+    },
     /*-----------------------------------------------------------------------------
      MARK:   Configuration
      -----------------------------------------------------------------------------*/
 
+     constructor: {
+         value: function MediaController() {
+             this.super();
+         }
+     }
 
 });

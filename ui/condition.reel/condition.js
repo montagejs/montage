@@ -63,6 +63,13 @@ exports.Condition = Component.specialize( /** @lends Condition# */ {
     _contents: {
         value: null
     },
+
+    constructor: {
+        value: function Condition() {
+            this.super();
+        }
+    },
+
 /**
         @type {Function}
         @default null

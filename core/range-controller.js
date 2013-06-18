@@ -49,7 +49,7 @@ var RangeController = exports.RangeController = Montage.specialize( {
      * @private
      */
     constructor: {
-        value: function () {
+        value: function RangeController() {
 
             this.content = null;
             this._selection = [];
