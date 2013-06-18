@@ -459,7 +459,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
                     self._resolveUndoEntry(undoEntry, operationInfo);
                     return undoEntry;
                 }).then(function () {
-                    self._flushOperationQueue();
+                    return self._flushOperationQueue();
                 });
             }
 
@@ -503,43 +503,46 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
                 completedPromises = [],
                 completedCount,
                 promise,
-                entry,
-                opMap = this._promiseOperationMap;
+                opMap = this._promiseOperationMap,
+                self = this;
 
             if (0 === opCount) {
                 return;
             }
 
-            // Perform all promised operations, in order, that have been resolved
-            // with an undoFunction
-            for (i = opCount - 1; i >= 0; i--) {
-                promise = opQueue[i];
-                entry = this._promiseOperationMap.get(promise);
+            // If we hit an operation without an undoFunction then we can't
+            // process any more. Equivalent to a `break` in a for-loop
+            var inoperableOperation = false;
+            var performed = opQueue.reduce(function (previous, promise) {
+                var entry = self._promiseOperationMap.get(promise);
 
-                if (typeof entry.undoFunction === "function") {
-                    this._performOperation(entry);
+                if (!inoperableOperation && typeof entry.undoFunction === "function") {
                     completedPromises.push(promise);
+                    return previous.then(function () {
+                        return self._performOperation(entry);
+                    }).then(function () {
+                        opMap.delete(promise);
+                    });
                 } else {
-                    break;
+                    console.log("inoperableOperation", entry.label);
+                    inoperableOperation = true;
+                    return previous;
                 }
-            }
+            }, Promise.resolve());
 
             completedCount = completedPromises.length;
-
             if (completedCount > 0) {
-                // remove the performed operations
-                opQueue.splice(opCount - completedCount, completedCount);
-
-                completedPromises.forEach(function (opPromise) {
-                    opMap.delete(opPromise);
-                });
+                // remove the (soon to be) performed operations
+                opQueue.splice(0, completedCount);
             }
 
+            return performed;
         }
     },
 
     _performOperation: {
         value: function (entry) {
+            var self = this;
 
             if (entry.operationType === UNDO_OPERATION) {
                 this.undoEntry = entry;
@@ -555,19 +558,21 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
                 throw e;
             }
 
-            //TODO do we need to wait for the promise to resolve before moving to the next operation?
             if (Promise.isPromiseAlike(opResult)) {
-                opResult.then(function (success) {
+                return opResult.finally(function () {
+                    self.undoEntry = null;
+                    self.redoEntry = null;
+                }).then(function (success) {
                     entry.deferredOperation.resolve(success);
                 }, function (failure) {
                     entry.deferredOperation.reject(failure);
-                }).done();
+                });
             } else {
+                this.undoEntry = null;
+                this.redoEntry = null;
                 entry.deferredOperation.resolve(opResult);
             }
 
-            this.undoEntry = null;
-            this.redoEntry = null;
         }
     },
 
@@ -670,9 +675,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
             entry.operationType = operationType;
 
             this._operationQueue.push(operationPromise);
-            this._flushOperationQueue();
-
-            return deferredOperation.promise;
+            return this._flushOperationQueue().thenResolve(deferredOperation.promise);
         }
     },
 

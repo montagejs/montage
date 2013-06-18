@@ -43,9 +43,9 @@ var Roster = Montage.specialize( {
 
     addMember: {
         value: function (member, position) {
-            position = position || this.members.length - 1;
+            position = position || this.members.length;
             this._members.splice(position, 0, member);
-            return this.undoManager.register("Add Member", Promise.resolve(["Add " + member, this.removeMember, this, member]));
+            return this.undoManager.register("Add " + member, Promise.resolve([this.removeMember, this, member]));
         }
     },
 
@@ -55,7 +55,7 @@ var Roster = Montage.specialize( {
             if (index !== -1) {
                 this._members.splice(index, 1);
 
-                var foo = this.undoManager.register("Remove Member", Promise.resolve(["Remove " + member, this.addMember, this, member, index]));
+                var foo = this.undoManager.register("Remove " + member, Promise.resolve([this.addMember, this, member, index]));
                 foo.memberName = member;
                 return foo;
             } else {
