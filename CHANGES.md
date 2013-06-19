@@ -1,3 +1,10 @@
+# 0.13.0
+
+ - Fix bootstrap stopping if document had finished loading.
+ - Update to Q v0.9.6
+ - Add more complete demo and split the readme into multiple documentation
+   files.
+
 ## 0.12.14
 
  - Fix bug when loading dependencies that use script-injection which are not

@@ -15,10 +15,12 @@
             callbackIfReady();
         }
 
-        // this permits bootstrap.js to be injected after domready
-        document.addEventListener("DOMContentLoaded", domLoad, true);
-        if (document.readyState === "interactive") {
+        // this permits bootstrap.js to be injected after DOMContentLoaded
+        // http://jsperf.com/readystate-boolean-vs-regex/2
+        if (/interactive|complete/.test(document.readyState)) {
             domLoad();
+        } else {
+            document.addEventListener("DOMContentLoaded", domLoad, true);
         }
 
         // determine which scripts to load
@@ -109,11 +111,17 @@
                             params[name] = script.dataset[name];
                         }
                     } else if (script.attributes) {
+                        var dataRe = /^data-(.*)$/,
+                            letterAfterDash = /-([a-z])/g,
+                            upperCaseChar = function (_, c) {
+                                return c.toUpperCase();
+                            };
+
                         for (j = 0; j < script.attributes.length; j++) {
                             attr = script.attributes[j];
                             match = attr.name.match(/^data-(.*)$/);
                             if (match) {
-                                params[match[1]] = attr.value;
+                                params[match[1].replace(letterAfterDash, upperCaseChar)] = attr.value;
                             }
                         }
                     }

@@ -1,2 +1,3 @@
-console.log("Hello, World!");
-console.log("I am", module.location);
+var data = require("data");
+
+document.getElementById("hello").textContent = data;

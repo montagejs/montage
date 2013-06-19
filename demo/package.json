@@ -1,0 +1,6 @@
+{
+    "name": "mr-demo",
+    "dependencies": {
+        "mr": "*"
+    }
+}

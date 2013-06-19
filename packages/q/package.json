@@ -1,6 +1,6 @@
 {
   "name": "q",
-  "version": "0.9.2",
+  "version": "0.9.6",
   "description": "A library for promises (CommonJS/Promises/A,B,D)",
   "homepage": "https://github.com/kriskowal/q",
   "author": "Kris Kowal <kris@cixar.com> (https://github.com/kriskowal)",
@@ -9,7 +9,7 @@
     "promise",
     "promises",
     "promises-a",
-    "promises-a-plus",
+    "promises-aplus",
     "deferred",
     "future",
     "async",
@@ -44,17 +44,22 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "jshint": ">=1.1.0",
+    "jshint": "~2.1.3",
     "cover": "*",
     "jasmine-node": "1.2.2",
     "opener": "*",
-    "promises-aplus-tests": "1.x"
+    "promises-aplus-tests": "1.x",
+    "grunt": "~0.4.1",
+    "grunt-cli": "~0.1.9",
+    "grunt-contrib-uglify": "~0.2.2"
   },
   "scripts": {
     "test": "jasmine-node spec && promises-aplus-tests spec/aplus-adapter",
     "test-browser": "opener spec/q-spec.html",
     "lint": "jshint q.js",
-    "cover": "cover run node_modules/jasmine-node/bin/jasmine-node spec && cover report html && opener cover_html/index.html"
+    "cover": "cover run node_modules/jasmine-node/bin/jasmine-node spec && cover report html && opener cover_html/index.html",
+    "minify": "grunt",
+    "prepublish": "grunt"
   },
   "overlay": {
     "teleport": {
