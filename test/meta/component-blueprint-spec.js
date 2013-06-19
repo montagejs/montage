@@ -23,22 +23,22 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
 
         it("can create new blueprint", function () {
             var newBlueprint = new Blueprint().initWithName(component1.identifier);
-            expect(newBlueprint).toBeTruthy();
             component1.blueprint = newBlueprint;
             var blueprintPromise = component1.blueprint;
             return blueprintPromise.then(function (blueprint) {
-                expect(blueprint).not.toBeNull();
+                expect(newBlueprint).toBeDefined();
+                expect(blueprint).toBe(newBlueprint);
             });
         });
 
         it("can create new property blueprint", function () {
             var newBlueprint = new Blueprint().initWithName(component1.identifier);
-            expect(newBlueprint).toBeTruthy();
             newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty");
             component1.blueprint = newBlueprint;
             var blueprintPromise = component1.blueprint;
             return blueprintPromise.then(function (blueprint) {
-                expect(blueprint).toBeTruthy();
+                var propertyBlueprint = blueprint.propertyBlueprintForName("bindableProperty");
+                expect(propertyBlueprint).toBeDefined();
             });
         });
 
@@ -46,13 +46,13 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
             var newBlueprint = new Blueprint().initWithName(component1.identifier);
             expect(newBlueprint).toBeTruthy();
             var newEventBlueprint = newBlueprint.addEventBlueprintNamed("action");
-            newEventBlueprint.detailKeys = ["one", "two", "three"]
+            newEventBlueprint.detailKeys = ["one", "two", "three"];
+            //debugger
             component1.blueprint = newBlueprint;
             var blueprintPromise = component1.blueprint;
             return blueprintPromise.then(function (blueprint) {
-                expect(blueprint).toBeTruthy();
                 var eventBlueprint = blueprint.eventBlueprintForName("action");
-                expect(eventBlueprint).toBeTruthy();
+                expect(eventBlueprint).toBeDefined();
                 expect(eventBlueprint.detailKeys.length).toBe(3);
             });
         });
@@ -61,7 +61,6 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
             var serializer = new Serializer().initWithRequire(require);
 
             var newBlueprint = new Blueprint().initWithName(component1.identifier);
-            expect(newBlueprint).toBeTruthy();
             //
             newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty1");
             newBlueprint.addToOnePropertyBlueprintNamed("bindableProperty2");
@@ -78,10 +77,8 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
 
             var blueprintPromise = component1.blueprint;
             return blueprintPromise.then(function (blueprint) {
-                expect(blueprint).toBeTruthy();
                 var serializedDescription = serializer.serializeObject(blueprint);
                 expect(serializedDescription).toBeTruthy();
-                console.log(serializedDescription);
             });
         });
 

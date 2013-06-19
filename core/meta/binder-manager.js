@@ -22,7 +22,7 @@ var logger = require("core/logger").logger("blueprint");
 var BinderManager = exports.BinderManager = Montage.specialize( /** @lends BinderManager# */ {
 
     constructor: {
-        value: function() {
+        value: function BinderManager() {
             this._binders = [];
             this._binderTable = {};
         }
@@ -155,7 +155,7 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     defaultBinder: {
         get: function() {
             if (!this._defaultBinder) {
-                this._defaultBinder = new BinderModule.Binder().initWithName("default");
+                this._defaultBinder = new BinderModule.Binder().initWithNameAndRequire("default", global.require);
                 this._defaultBinder.isDefault = true;
                 this.addBinder(this._defaultBinder);
             }

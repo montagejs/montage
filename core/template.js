@@ -83,6 +83,12 @@ var Template = Montage.specialize( {
         }
     },
 
+    constructor: {
+        value: function Template() {
+            this.super();
+        }
+    },
+
     /**
      * Initializes the Template with an empty document.
      *
@@ -170,7 +176,7 @@ var Template = Montage.specialize( {
             this._require = _require;
             this.document = this.createHtmlDocumentWithHtml("");
             this.document.body.appendChild(
-                this.document.importNode(documentFragment)
+                this.document.importNode(documentFragment, true)
             );
             this.setObjects(objects);
 
@@ -391,7 +397,7 @@ var Template = Montage.specialize( {
 
             for (var i = 0, ii = nodes.length; i < ii; i++) {
                 fragment.appendChild(
-                    targetDocument.importNode(nodes[i])
+                    targetDocument.importNode(nodes[i], true)
                 );
             }
 
@@ -512,7 +518,7 @@ var Template = Montage.specialize( {
     },
 
     getInstances: {
-        value: function(instances) {
+        value: function() {
             return this._instances;
         }
     },
@@ -1165,7 +1171,7 @@ var TemplateResources = Montage.specialize( {
     rootUrl: {value: ""},
 
     constructor: {
-        value: function() {
+        value: function TemplateResources() {
             this._resources = Object.create(null);
         }
     },
@@ -1336,7 +1342,6 @@ var TemplateResources = Montage.specialize( {
     createStylesForDocument: {
         value: function(targetDocument) {
             var styles = this.getStyles(),
-                style,
                 newStyle,
                 stylesForDocument = [],
                 baseUrl = this.template.getBaseUrl(),
@@ -1348,8 +1353,7 @@ var TemplateResources = Montage.specialize( {
 
             for (var i = 0, style; (style = styles[i]); i++) {
                 url = style.getAttribute("href");
-
-                newStyle = targetDocument.importNode(style);
+                newStyle = targetDocument.importNode(style, true);
                 stylesForDocument.push(newStyle);
 
                 if (url) {
@@ -1364,7 +1368,7 @@ var TemplateResources = Montage.specialize( {
 });
 
 // Used to create a DocumentPart from a document without a Template
-function instantiateDocument(_document, _require) {
+function instantiateDocument(_document, _require, instances) {
     var self = this,
         template = new Template(),
         html = _document.documentElement.outerHTML,
@@ -1378,9 +1382,10 @@ function instantiateDocument(_document, _require) {
 
     return template.initWithDocument(clonedDocument, _require)
     .then(function() {
+        template.setBaseUrl(_document.location.href);
         // Instantiate it using the document given since we don't want to clone
         // the document markup
-        templateObjects = template._createTemplateObjects();
+        templateObjects = template._createTemplateObjects(instances);
         part.initWithTemplateAndFragment(template);
 
         return template._instantiateObjects(templateObjects, rootElement)

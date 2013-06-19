@@ -36,10 +36,10 @@
         }
     },
 
-    "blueprint_flow_objects":{
+    "blueprint_flow_content":{
         "prototype":"core/meta/property-blueprint",
         "properties":{
-            "name":"objects",
+            "name":"content",
             "blueprint":{
                 "@":"root"
             },
@@ -155,7 +155,7 @@
                     "@":"blueprint_flow_momentumDuration"
                 },
                 {
-                    "@":"blueprint_flow_objects"
+                    "@":"blueprint_flow_content"
                 },
                 {
                     "@":"blueprint_flow_contentController"
@@ -190,7 +190,7 @@
                 ],
                 "data":[
                     {
-                        "@":"blueprint_flow_objects"
+                        "@":"blueprint_flow_content"
                     },
                     {
                         "@":"blueprint_flow_contentController"

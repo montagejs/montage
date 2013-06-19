@@ -31,12 +31,6 @@ describe("test/base/abstract-button-spec", function () {
             aButton.holdThreshold = 10;
             expect(aButton._pressComposer.longPressThreshold).toEqual(10);
         });
-        it("should maintain disabled as the opposite of enabled", function () {
-            aButton.enabled = true;
-            expect(aButton.disabled).toBeFalsy();
-            aButton.disabled = true;
-            expect(aButton.enabled).toBeFalsy();
-        });
         describe("label", function () {
             it("is writable", function () {
                 aButton.label = "hello";

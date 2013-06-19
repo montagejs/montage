@@ -1238,7 +1238,7 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
                         object.parentComponent === this) {
                         templateObjects[label] = object;
                     } else {
-                        descriptor.get = this._makeTemplateObjectGetter(this, label);
+                        descriptor.get = this._makeTemplateObjectGetter(this, label, object);
                         Object.defineProperty(templateObjects, label, descriptor);
                     }
                 }
@@ -1253,7 +1253,7 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
      * @function
      */
     _makeTemplateObjectGetter: {
-        value: function(owner, label) {
+        value: function(owner, label, object) {
             var querySelectorLabel = "@"+label,
                 isRepeated,
                 components,
@@ -1281,6 +1281,13 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
                                 break;
                             }
                         }
+                    } else if (components.length === 0) {
+                        // We didn't find any in the component tree
+                        // so it was probably removed in the meanwhile.
+                        // We return the one that was in the template
+                        // TODO: need to make sure this component hasn't been
+                        // disposed.
+                        return object;
                     }
 
                     isRepeated = true;
@@ -2275,9 +2282,9 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
             };
 
             // Define _ property
-            Montage.defineProperty(this, _name, {value: null});
+            Montage.defineProperty(this.prototype, _name, {value: null});
             // Define property getter and setter
-            Montage.defineProperty(this, name, newDescriptor);
+            Montage.defineProperty(this.prototype, name, newDescriptor);
         }
     },
 
@@ -2289,13 +2296,13 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
     addAttributes: {
         value: function(properties) {
             var i, descriptor, property, object;
-            this._elementAttributeDescriptors = properties;
+            this.prototype._elementAttributeDescriptors = properties;
 
             for(property in properties) {
                 if(properties.hasOwnProperty(property)) {
                     object = properties[property];
                     // Make sure that the descriptor is of the correct form.
-                    if(object === null || String.isString(object)) {
+                    if(object === null || typeof object === "string") {
                         descriptor = {value: object, dataType: "string"};
                         properties[property] = descriptor;
                     } else {

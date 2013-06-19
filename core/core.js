@@ -125,35 +125,40 @@ Montage.callDeprecatedFunction = function callDeprecatedFunction(scope, callback
 };
 
 var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;
+var PROTO_PROPERTIES_BLACKLIST = {"_montage_metadata": 1, "__state__": 1};
 var FUNCTION_PROPERTIES = Object.getOwnPropertyNames(Function);
 
 Object.defineProperty(Montage, "specialize", {
     value: function specialize(prototypeProperties, constructorProperties) {
-        var parent = this;
+        var constructor, prototype, names, propertyName, property, i, constructorProperty,
+            // check if this constructor has Montage capabilities
+            parent = this,
+            foreignParent = typeof this.specialize === "undefined";
 
         prototypeProperties = prototypeProperties || Object.empty;
         constructorProperties = constructorProperties || Object.empty;
 
-        var constructor;
         if (prototypeProperties.constructor && prototypeProperties.constructor.value) {
             constructor = prototypeProperties.constructor.value;
         } else if (prototypeProperties.didCreate && prototypeProperties.didCreate.value) {
             constructor = Montage.deprecate(null, prototypeProperties.didCreate.value, "didCreate", "constructor");
             //constructor = prototypeProperties.didCreate.value;
         } else {
-            constructor = function AnonymousConstructor() {
+            constructor = function Anonymous() {
                 return parent.apply(this, arguments) || this;
             };
         }
         if (PROTO_IS_SUPPORTED) {
             constructor.__proto__ = parent;
         } else {
-            var names = Object.getOwnPropertyNames(parent);
+            names = Object.getOwnPropertyNames(parent);
             for (var i = 0; i < names.length; i++) {
-                var name = names[i];
-                var property = Object.getOwnPropertyDescriptor(constructor, name);
-                if (!property || property.configurable) {
-                    Montage.defineProperty(constructor, name, Object.getOwnPropertyDescriptor(parent, name));
+                propertyName = names[i];
+                if (!(PROTO_PROPERTIES_BLACKLIST.hasOwnProperty(propertyName))) {
+                    property = Object.getOwnPropertyDescriptor(constructor, propertyName);
+                    if (!property || property.configurable) {
+                        Montage.defineProperty(constructor, propertyName, Object.getOwnPropertyDescriptor(parent, propertyName));
+                    }
                 }
             }
             constructor.__constructorProto__ = parent;
@@ -170,26 +175,36 @@ Object.defineProperty(Montage, "specialize", {
                 enumerable: false
             });
         }
-        // check if this constructor has Montage capabilities
-        if(typeof this.specialize === "undefined") {
-            //if is doesn't then we give it all the properties of Montage
-            var names = Object.getOwnPropertyNames(Montage);
-            for (var i = 0; i < names.length; i++) {
-                var name = names[i];
-                var property = Object.getOwnPropertyDescriptor(constructor, name);
+
+        prototype = Object.create(this.prototype);
+
+        if(foreignParent) {
+            // give the constructor all the properties of Montage
+            names = Object.getOwnPropertyNames(Montage);
+            for ( i = 0; i < names.length; i++) {
+                propertyName = names[i];
+                property = Object.getOwnPropertyDescriptor(constructor, propertyName);
                 if (!property || property.configurable) {
-                    Montage.defineProperty(constructor, name, Object.getOwnPropertyDescriptor(Montage, name));
+                    Montage.defineProperty(constructor, propertyName, Object.getOwnPropertyDescriptor(Montage, propertyName));
+                }
+            }
+            // give the prototype all the properties of Montage.prototype
+            names = Object.getOwnPropertyNames(Montage.prototype);
+            for ( i = 0; i < names.length; i++) {
+                propertyName = names[i];
+                property = Object.getOwnPropertyDescriptor(constructor, propertyName);
+                if (!property || property.configurable) {
+                    Montage.defineProperty(prototype, propertyName, Object.getOwnPropertyDescriptor(Montage.prototype, propertyName));
                 }
             }
         }
 
-        var prototype = Object.create(this.prototype);
         Montage.defineProperties(prototype, prototypeProperties);
 
         if (CONSTRUCTOR_COMPATIBILITY) {
             // to catch class properties
-            var constructorProperty = function(original, constructor, propertyName) {
-                var deprecationWrapper = function() {
+            constructorProperty = function(original, constructor, propertyName) {
+                function deprecationWrapper() {
                     if(this === constructor) {
                         console.warn("Deprecated - " + Montage.getInfoForObject(constructor).objectName + "."
                             + propertyName + " should be moved to constructorProperties");
@@ -199,12 +214,12 @@ Object.defineProperty(Montage, "specialize", {
                 deprecationWrapper.deprecatedFunction = original;
                 return deprecationWrapper;
             };
-            for (var propertyName in prototypeProperties) {
+            for (propertyName in prototypeProperties) {
                 if(FUNCTION_PROPERTIES.has(propertyName)) {
                     // illegal properties on function
                     delete prototypeProperties[propertyName];
                 } else {
-                    var property = prototypeProperties[propertyName];
+                    property = prototypeProperties[propertyName];
                     if(property.value && typeof property.value === "function" && !property.value.__isConstructor__) {
                         property.value = constructorProperty(property.value, constructor, propertyName);
                     } else {
@@ -324,7 +339,7 @@ extendedPropertyAttributes.forEach(function(name) {
     Object.defineProperty(Object.prototype, UNDERSCORE + name + ATTRIBUTE_PROPERTIES, {
         enumerable: false,
         configurable: false,
-        writable: false,
+        writable: true,
         value: {}
     });
 });
@@ -624,7 +639,7 @@ function getAttributeProperties(proto, attributeName) {
         return proto[attributePropertyName];
     } else {
         return Object.defineProperty(proto, attributePropertyName, {
-            enumerable: false, configurable: false, writable: false,
+            enumerable: false, configurable: false, writable: true,
             value: Object.create(getAttributeProperties(Object.getPrototypeOf(proto), attributeName))
         })[attributePropertyName];
     }
@@ -794,6 +809,14 @@ Montage.defineProperty(Montage, "getInfoForObject", {
 
 var UUID = require("core/uuid");
 
+// HACK: This is to fix an IE10 bug where a getter on the window prototype chain
+// gets some kind of proxy Window object which cannot have properties defined
+// on it, instead of the `window` itself. Adding the uuid directly to the
+// window removes the needs to call the getter.
+if (typeof window !== "undefined") {
+    window.uuid = UUID.generate();
+}
+
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
 var uuidGetGenerator = function() {
@@ -825,7 +848,7 @@ var uuidGetGenerator = function() {
                 });
             }
             //This is really because re-defining the property on DOMWindow actually doesn't work, so the original property with the getter is still there and return this._uuid if there.
-            if (this instanceof Element || !info.isInstance || !(VALUE in Object.getOwnPropertyDescriptor(this, "uuid")) || !(PROTO in this /* lame way to detect IE */)) {
+            if (this instanceof Element || !info.isInstance || !(VALUE in (Object.getOwnPropertyDescriptor(this, "uuid")||{})) || !(PROTO in this /* lame way to detect IE */)) {
                 //This is needed to workaround some bugs in Safari where re-defining uuid doesn't work for DOMWindow.
                 this._uuid = uuid;
             }
@@ -990,7 +1013,7 @@ exports._blueprintDescriptor = {
     set:function (value) {
         var info = Montage.getInfoForObject(this);
         var _blueprintValue;
-        var self = (info && !info.isInstance) ? this : Object.getPrototypeOf(this);
+        var self = (info && !info.isInstance) ? this : this.constructor;
         if (value === null) {
             _blueprintValue = null;
         } else if (typeof value.then === "function") {

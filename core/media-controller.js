@@ -657,9 +657,18 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     _removeControlEventHandlers: {
         value: function() {
         }
-    }
+    },
     /*-----------------------------------------------------------------------------
      MARK:   Configuration
      -----------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
+=======
+     constructor: {
+         value: function MediaController() {
+             this.super();
+         }
+     }
+
+>>>>>>> 048bb181df579020e02439611ad15adbd49b4621
 });

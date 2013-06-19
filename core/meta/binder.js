@@ -33,6 +33,7 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
     */
     constructor: {
         value: function Binder() {
+            this.super();
             this._name = null;
             this.binderModuleId = null;
             this.isDefault = false;
@@ -46,10 +47,13 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
      @param {String} name TODO
      @returns itself
      */
-    initWithName: {
-        value: function(name) {
-            // match null or undefined
-            this._name = (name != null ? name : "default");
+    initWithNameAndRequire: {
+        value: function(name, _require) {
+            if (!name) throw new Error("name is required");
+            if (!_require) throw new Error("require is required");
+
+            this._name = name;
+            this._require = _require;
             Binder.manager.addBinder(this);
             return this;
         }
@@ -92,6 +96,25 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
     name: {
         get: function() {
             return this._name;
+        }
+    },
+
+    /**
+     @private
+     */
+    _require: {
+        value: null
+    },
+
+    /**
+     Require for the binder. All blueprints added must be in this require's
+     package, or in a direct dependency.
+     @function
+     @returns {String} this._require
+     */
+    require: {
+        get: function() {
+            return this._require;
         }
     },
 
@@ -190,7 +213,7 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
      @returns blueprint
      */
     addBlueprint: {
-        value: function(blueprint) {
+        value: function (blueprint) {
             if (blueprint !== null) {
                 var index = this.blueprints.indexOf(blueprint);
                 if (index < 0) {

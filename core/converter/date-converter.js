@@ -2513,11 +2513,8 @@ var Montage = require("montage").Montage,
 
 
 // Date
-var DATE_CLASS = '[object Date]';
 var FUNCTION_CLASS = '[object Function]',
     BOOLEAN_CLASS = '[object Boolean]',
-    NUMBER_CLASS = '[object Number]',
-    STRING_CLASS = '[object String]',
     ARRAY_CLASS = '[object Array]',
     DATE_CLASS = '[object Date]';
 var _toString = Object.prototype.toString;
@@ -2527,18 +2524,15 @@ var _toString = Object.prototype.toString;
 var isDate = function(object) {
     return _toString.call(object) === DATE_CLASS;
 };
-var isNumber = function(object) {
-    return _toString.call(object) === NUMBER_CLASS;
-};
 
 var formatDate = function(v, format) {
     var date;
-    if (String.isString(v)) {
+    if (typeof v === "string") {
         // try to create a Date instance from the string
         // date must be a string that can be parsed by Date
         // see - http://www.w3schools.com/jsref/jsref_parse.asp
         date = new Date(Date.parse(v));
-    } else if (isNumber(v)) {
+    } else if (typeof v === "number") {
         date = new Date(v);
     } else {
         date = v;
@@ -2627,7 +2621,8 @@ var DateConverter = exports.DateConverter = Converter.specialize(/** @lends Date
     */
     convert: {
         value: function(v) {
-            if (isDate(v) || String.isString(v) || isNumber(v)) {
+            var t = typeof v;
+            if (isDate(v) || t === "string" || t === "number") {
                 return formatDate(v, this.pattern);
             }
             return v;

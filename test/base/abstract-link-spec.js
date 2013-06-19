@@ -34,7 +34,6 @@ describe("test/base/abstract-link-spec", function () {
             beforeEach(function () {
                 aLink = new Link();
                 aLink.element = MockDOM.element();
-                aLink.checked = false;
                 aLink.prepareForActivationEvents();
             });
 
@@ -62,7 +61,6 @@ describe("test/base/abstract-link-spec", function () {
             beforeEach(function () {
                 aLink = new Link();
                 aLink.element = MockDOM.element();
-                aLink.checked = false;
                 aLink.prepareForActivationEvents();
             });
 
@@ -78,8 +76,6 @@ describe("test/base/abstract-link-spec", function () {
             });
 
             it("should be false when the PressComposer fires a pressStart + press while checked", function() {
-                aLink.checked = true;
-
                 aLink._pressComposer.dispatchEventNamed("pressStart");
                 aLink._pressComposer.dispatchEventNamed("press");
 
@@ -96,6 +92,25 @@ describe("test/base/abstract-link-spec", function () {
                 aLink.active = true;
 
                 expect(aLink.classList.contains("montage--active")).toBe(true);
+            });
+        });
+
+        describe("label", function() {
+            it("should read the text value of the element if label wasn't provided", function() {
+                var label = "MontageJS";
+
+                aLink.element.textContent = label;
+                aLink.enterDocument(true);
+                expect(aLink.label).toBe(label)
+            });
+
+            it("should not read the text value of the element when label is set", function() {
+                var label = "MontageJS";
+
+                aLink.element.textContent = "Text Content";
+                aLink.label = label;
+                aLink.enterDocument(true);
+                expect(aLink.label).toBe(label)
             });
         });
     });
@@ -119,13 +134,23 @@ describe("test/base/abstract-link-spec", function () {
             expect(aLink.needsDraw).toBeTruthy();
         });
 
-        it("should be requested when src is changed", function() {
-            aLink.src = "http://montagejs.org/";
+        it("should be requested when url is changed", function() {
+            aLink.url = "http://montagejs.org/";
             expect(aLink.needsDraw).toBeTruthy();
         });
 
         it("should be requested when label is changed", function() {
             aLink.label = "MontageJS";
+            expect(aLink.needsDraw).toBeTruthy();
+        });
+
+        it("should be requested when opensNewWindow is changed", function() {
+            aLink.opensNewWindow = true;
+            expect(aLink.needsDraw).toBeTruthy();
+        });
+
+        it("should be requested when textAlternative is changed", function() {
+            aLink.textAlternative = true;
             expect(aLink.needsDraw).toBeTruthy();
         });
     });

@@ -1,4 +1,3 @@
-"use strict";
 /*global require, exports, document, Error*/
 var Montage = require("montage").Montage,
     AbstractControl = require("ui/base/abstract-control").AbstractControl,
@@ -296,7 +295,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
                     this.needsDraw = true;
                 }
             }
-            if(this._value !==  this._numberFieldTextFieldComponent.value) {
+            if(this._numberFieldTextFieldComponent && this._value !==  this._numberFieldTextFieldComponent.value) {
                 this._numberFieldTextFieldComponent.value = this._value;
             }
         }

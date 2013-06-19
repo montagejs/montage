@@ -354,6 +354,22 @@ describe('core/undo-manager-spec', function () {
             }).timeout(WAITS_FOR_TIMEOUT);
         });
 
+        it("should report the expected undoLabel while in the middle of undoing", function () {
+            var deferredAdditionUndo = roster.testableAddMember("Alice"),
+                spyObject = {
+                    removeMember: function (member) {
+                        expect(undoManager.undoLabel).toBe("Test Label");
+                    }
+                };
+
+            spyOn(spyObject, "removeMember").andCallThrough();
+            deferredAdditionUndo.resolve(["Test Label", spyObject.removeMember, spyObject, "Alice"]);
+
+            return undoManager.undo().then(function (success) {
+                expect(spyObject.removeMember).toHaveBeenCalled();
+            }).timeout(WAITS_FOR_TIMEOUT);
+        });
+
     });
 
     describe("batch operations", function () {
@@ -464,6 +480,66 @@ describe('core/undo-manager-spec', function () {
             });
 
         });
+    });
 
+    describe("event", function () {
+        var listener;
+
+        beforeEach(function () {
+            listener = {
+                handleOperationRegistered: function () {},
+                handleUndo: function () {},
+                handleRedo: function () {}
+            };
+            undoManager.addEventListener("operationRegistered", listener, false);
+            undoManager.addEventListener("undo", listener, false);
+            undoManager.addEventListener("redo", listener, false);
+        });
+
+        it("operationRegistered is dispatched when an operation is added", function () {
+            spyOn(listener, "handleOperationRegistered");
+
+            return roster.addMember("Alice")
+            .then(function () {
+                expect(listener.handleOperationRegistered).toHaveBeenCalled();
+            });
+        });
+
+        it("operationRegistered is not dispatched when an operation is added as a result of an undo", function () {
+            return roster.addMember("Alice")
+            .then(function () {
+                spyOn(listener, "handleOperationRegistered");
+                return undoManager.undo();
+            })
+            .then(function () {
+                expect(listener.handleOperationRegistered).not.toHaveBeenCalled();
+            });
+        });
+
+        it("undo is dispatched when an undo is performed", function () {
+            return roster.addMember("Alice")
+            .then(function () {
+                spyOn(listener, "handleUndo");
+
+                return undoManager.undo();
+            })
+            .then(function () {
+                expect(listener.handleUndo).toHaveBeenCalled();
+            });
+        });
+
+        it("redo is dispatched when a redo is performed", function () {
+            return roster.addMember("Alice")
+            .then(function () {
+                return undoManager.undo();
+            })
+            .then(function () {
+                spyOn(listener, "handleRedo");
+                return undoManager.redo();
+            })
+            .then(function () {
+                expect(listener.handleRedo).toHaveBeenCalled();
+            });
+        });
     });
 });

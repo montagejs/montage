@@ -56,6 +56,13 @@ POSSIBILITY OF SUCH DAMAGE.
                 "condition": {"<->": "@test.removeValue"}
             }
         },
+        "conditionTrue": {
+            "prototype": "montage/ui/condition.reel",
+            "properties": {
+                "element": {"#": "conditionTrue"},
+                "condition": true
+            }
+        },
         "application": {
             "prototype": "montage/core/application",
             "properties": {
@@ -70,6 +77,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
     <div data-montage-id="hideMe" class="fetchHide"><span>Hello</span></div>
     <div data-montage-id="removeContent" class="fetchRemove"><span>Foo</span></div>
-
+    <div data-montage-id="conditionTrue"><span>Bar</span></div>
 </body>
 </html>

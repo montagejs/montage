@@ -33,6 +33,12 @@ var Defaults = {
  */
 exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */ {
 
+    constructor: {
+        value: function PropertyBlueprint() {
+            this.super();
+        }
+    },
+
     /**
      Initialize a newly allocated property blueprint.
      @function

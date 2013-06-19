@@ -58,7 +58,7 @@ TestPageLoader.queueTest("firstdraw-simple", {src: "ui/drawing/simple.html", fir
 TestPageLoader.queueTest("firstdraw-repetition", {src: "ui/drawing/repetition.html", firstDraw: true}, function(repetitionTestPage) {
     describe("Drawing Repetition", function() {
         describe("repeating component", function() {
-            it("should draw within first draw", function() {
+            it("TODO should draw within first draw", function() {
 
                 repetitionTestPage.waitForComponentDraw(repetitionTestPage.test.repetition1);
 

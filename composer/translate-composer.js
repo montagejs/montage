@@ -1,4 +1,3 @@
-"use strict";
 /*global require,exports */
 /**
     @module montage/composer/translate-composer

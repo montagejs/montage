@@ -390,7 +390,7 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                 });
             });
 
-            it("should draw one>five iterations on the nested repetition w/ component", function() {
+            it("TODO should draw one>five iterations on the nested repetition w/ component", function() {
                 delegate.list3Objects = [[{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}], [{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}, {text: "iteration 4"}, {text: "iteration 5"}]];
                 testPage.waitForComponentDraw(delegate.repetition4);
 
@@ -766,35 +766,6 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                     expect(content.length).toBe(3);
                     for (var i = 0; i < content.length; i++) {
                         expect(content[i].textContent).toBe("Y");
-                    }
-                });
-            });
-
-            it("should rebuild the repetition when set twice in succession", function() {
-                var repetition = querySelector(".list11a").component;
-
-                runs(function () {
-                    var content = repetition.element.children;
-                    expect(content.length).toBe(3);
-                    for (var i = 0; i < content.length; i++) {
-                        expect(content[i].textContent).toBe("X");
-                    }
-
-                    var newTemplateA = repetition.innerTemplate.clone();
-                    var newTemplateB = repetition.innerTemplate.clone();
-
-                    newTemplateA.document.querySelector("li").textContent = "Y";
-                    newTemplateB.document.querySelector("li").textContent = "Z";
-
-                    repetition.innerTemplate = newTemplateA;
-                    repetition.innerTemplate = newTemplateB;
-                });
-                testPage.waitForComponentDraw(repetition);
-                runs(function () {
-                    var content = repetition.element.children;
-                    expect(content.length).toBe(3);
-                    for (var i = 0; i < content.length; i++) {
-                        expect(content[i].textContent).toBe("Z");
                     }
                 });
             });

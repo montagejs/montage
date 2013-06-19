@@ -72,7 +72,7 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
                     testPage.mouseEvent({target: listElementToSelect}, "mousedown", function () {
                         testPage.mouseEvent({target: listElementToSelect}, "mouseup", function () {
                             expect(listElementToSelect.classList.contains("selected")).toBeTruthy();
-                            expect(nameController.selection[4]).toBe(nameController.organizedContent[4]);
+                            expect(nameController.selection[0]).toBe(nameController.organizedContent[4]);
                         });
                     });
 

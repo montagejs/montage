@@ -1,0 +1,8 @@
+{
+    "mappings": {
+        "montage": "../../../.."
+    },
+    "dependencies": {
+        "dependency": "*"
+    }
+}

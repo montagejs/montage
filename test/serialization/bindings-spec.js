@@ -54,6 +54,7 @@ describe("serialization/bindings-spec", function () {
                }
            }
         });
+
         var serialization = serialize(object, require);
         var notation = JSON.parse(serialization);
         expect(notation).toEqual({

@@ -18,6 +18,13 @@ var logger = require("core/logger").logger("object-property");
  @extends Montage
  */
 var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
+
+    constructor: {
+        value: function ObjectProperty() {
+            this.super();
+        }
+    },
+
     /**
      @function
      @returns itself

@@ -38,6 +38,12 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
         value: ".meta"
     },
 
+    constructor: {
+        value: function Blueprint() {
+            this.super();
+        }
+    },
+
     /**
      @function
      @param {String} name TODO
@@ -266,58 +272,6 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     blueprintInstanceModuleId: {
         serializable: false,
         value: null
-    },
-
-    /**
-     Gets a blueprint from a serialized file at the given module id.
-     @function
-     @param {String} blueprint module id
-     @param {Function} require function
-     */
-    getBlueprintWithModuleId: {
-        value: function(blueprintModuleId, require) {
-            var deferredBlueprint = Promise.defer();
-            var targetRequire = require;
-            if (!targetRequire) {
-                // This is probably wrong but at least we will try
-                targetRequire = this.require;
-            }
-
-            targetRequire.async(blueprintModuleId).then(function(object) {
-                try {
-                    new Deserializer().init(JSON.stringify(object), targetRequire).deserializeObject().then(function(blueprint) {
-                        if (blueprint) {
-                            var binder = (blueprint._binder ? blueprint._binder : BinderModule.Binder.manager.defaultBinder); // We do not want to trigger the auto registration
-                            var existingBlueprint = binder.blueprintForPrototype(blueprint.prototypeName, blueprint.moduleId);
-                            if (existingBlueprint) {
-                                deferredBlueprint.resolve(existingBlueprint);
-                            } else {
-                                binder.addBlueprint(blueprint);
-                                blueprint.blueprintInstanceModuleId = blueprintModuleId;
-                                if (blueprint._parentReference) {
-                                    // We need to grab the parent before we return or most operation will fail
-                                    blueprint._parentReference.promise(targetRequire).then(function(parentBlueprint) {
-                                            blueprint._parent = parentBlueprint;
-                                            deferredBlueprint.resolve(blueprint);
-                                        }, function(error) {
-                                            deferredBlueprint.reject(new Error("Cannot resolve parent blueprint ", blueprint._parentReference, error))
-                                        }
-                                    );
-                                } else {
-                                    deferredBlueprint.resolve(blueprint);
-                                }
-                            }
-                        } else {
-                            deferredBlueprint.reject(new Error("No Blueprint found " + blueprintModuleId));
-                        }
-                    }, targetRequire);
-                } catch (exception) {
-                    deferredBlueprint.reject(new Error("Error deserializing Blueprint " + blueprintModuleId + " " + JSON.stringfy(exception)));
-                }
-            }, deferredBlueprint.reject);
-
-            return deferredBlueprint.promise;
-        }
     },
 
     /*
@@ -1005,9 +959,92 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     blueprint:require("montage")._blueprintDescriptor
 
 
+}, {
+    /**
+     Gets a blueprint from a serialized file at the given module id.
+     @function
+     @param {String} blueprint module id
+     @param {Function} require function
+     */
+    getBlueprintWithModuleId: {
+        value: function(blueprintModuleId, targetRequire) {
+            if (!targetRequire) {
+                throw new Error("Require needed to get blueprint " + blueprintModuleId);
+            }
+
+            return targetRequire.async(blueprintModuleId)
+            .then(function (object) {
+                // Need to get the require from the module, because thats
+                // what all the moduleId references are relative to.
+                targetRequire = getModuleRequire(targetRequire, blueprintModuleId);
+                return new Deserializer().init(JSON.stringify(object), targetRequire).deserializeObject();
+            })
+            .then(function (blueprint) {
+                if (!blueprint) {
+                    throw new Error("No Blueprint found for " + blueprintModuleId);
+                }
+
+                // Access default through manager because we do not want to trigger the auto registration
+                var binder = (blueprint._binder ? blueprint._binder : BinderModule.Binder.manager.defaultBinder);
+
+                // Only check or add to a binder if the blueprint is referenced
+                // from the binder's package or a direct dependency. If it's
+                // from a dependency's dependency then the module ID will be
+                // incorrect
+                if (targetRequire.location === binder.require.location) {
+                    var existingBlueprint = binder.blueprintForPrototype(blueprint.prototypeName, blueprint.moduleId);
+
+                    if (existingBlueprint) {
+                        return existingBlueprint;
+                    } else {
+                        binder.addBlueprint(blueprint);
+                    }
+                }
+
+                blueprint.blueprintInstanceModuleId = blueprintModuleId;
+
+                if (blueprint._parentReference) {
+                    // Load parent "synchronously" so that all the properties
+                    // through the blueprint chain are available
+                    return blueprint._parentReference.promise(targetRequire)
+                    .then(function(parentBlueprint) {
+                            blueprint._parent = parentBlueprint;
+                            return blueprint;
+                        }, function(error) {
+                            throw new Error("Cannot resolve parent blueprint " + blueprint._parentReference + " because " + error);
+                        }
+                    );
+                } else {
+                    return blueprint;
+                }
+            })
+            .fail(function (error) {
+                var e = new Error("Error deserializing Blueprint " + blueprintModuleId + " because " + error.message);
+                e.error = error;
+                throw e;
+            });
+        }
+    }
 });
 var UnknownBlueprint = Object.freeze(new Blueprint().initWithName("Unknown"));
 
 var UnknownPropertyBlueprint = Object.freeze(new PropertyBlueprint().initWithNameBlueprintAndCardinality("Unknown", null, 1));
 var UnknownEventBlueprint = Object.freeze(new EventBlueprint().initWithNameAndBlueprint("Unknown", null));
 
+// Adapted from mr/sandbox
+function getModuleRequire(parentRequire, moduleId) {
+    var topId = parentRequire.resolve(moduleId);
+    var module = parentRequire.getModuleDescriptor(topId);
+
+    while (module.redirect || module.mappingRedirect) {
+        if (module.redirect) {
+            topId = module.redirect;
+        } else {
+            parentRequire = module.mappingRequire;
+            topId = module.mappingRedirect;
+        }
+        module = parentRequire.getModuleDescriptor(topId);
+    }
+
+    return module.require;
+}

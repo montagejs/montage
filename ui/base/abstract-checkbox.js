@@ -42,6 +42,11 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
         }
     },
 
+    /**
+     * This property is true when the checkbox is being interacted with, either through mouse click or touch event, otherwise false.
+     * @type {boolean}
+     * @default false
+     */
     active: {
         value: false
     },
@@ -54,6 +59,11 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
         value: false
     },
 
+    /**
+     * This property reflect the checked state of the checkbox.
+     * @type {boolean}
+     * @default false
+     */
     checked: {
         set: function(value) {
             this._checked = value;
@@ -63,6 +73,12 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
         }
     },
 
+    /**
+     * Enables or disables the checkbox from user input. When this property is set to ```false```,
+     * the "montage--disabled" CSS class is applied to the checkbox's DOM element during the next draw cycle. When set to
+     * ```true``` the "montage--disabled" CSS class is removed from the element's class list.
+     * @type {boolean}
+     */
     enabled: {
         value: true
     },

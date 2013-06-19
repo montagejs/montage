@@ -74,13 +74,13 @@ var List = exports.List = Component.specialize(/** @lends module:"matte/ui/list.
     // into the repetition, not the list
 
     observeProperty: {
-        value: function (key, emit, source, parameters, beforeChange) {
+        value: function (key, emit, scope) {
             if (key === "objectAtCurrentIteration" || key === "currentIteration") {
                 if (this._repetition) {
-                    return this._repetition.observeProperty(key, emit, source, parameters, beforeChange);
+                    return this._repetition.observeProperty(key, emit, scope);
                 }
             } else {
-                return observeProperty(this, key, emit, source, parameters, beforeChange);
+                return observeProperty(this, key, emit, scope);
             }
         }
     }

@@ -17,7 +17,6 @@ var Montage = require("montage").Montage,
     Bindings = require("core/bindings").Bindings,
     PropertyChanges = require("collections/listen/property-changes"),
     FrbBindings = require("frb/bindings"),
-    parse = require("frb/parse"),
     stringify = require("frb/stringify"),
     expand = require("frb/expand"),
     Scope = require("frb/scope");
@@ -47,6 +46,12 @@ var reLanguageTagValidator = /^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/;
     @extends Montage
 */
 var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */ {
+
+    constructor: {
+        value: function Localizer() {
+            this.super()
+        }
+    },
 
     /**
         Initialize the localizer.
@@ -944,11 +949,7 @@ var Message = exports.Message = Montage.specialize( /** @lends MessageLocalizer#
                 return;
             }
 
-            var parameters = {
-                serialization: serializer
-            };
-            var sourcePath = input.sourcePath;
-
+            var syntax = input.sourceSyntax;
             if (input.source !== object) {
                 var reference = serializer.addObjectReference(input.source);
                 var scope = new Scope({
@@ -956,13 +957,12 @@ var Message = exports.Message = Montage.specialize( /** @lends MessageLocalizer#
                     label: reference["@"]
                 });
                 scope.components = serializer;
-                var syntax = expand(parse(sourcePath), scope);
-            } else {
-                var scope = new Scope();
-                scope.components = serializer;
-                var syntax = expand(parse(sourcePath), scope);
+                syntax = expand(syntax, scope);
             }
-            sourcePath = stringify(syntax);
+
+            var scope = new Scope();
+            scope.components = serializer;
+            var sourcePath = stringify(syntax, scope);
 
             if (input.twoWay) {
                 output["<->"] = sourcePath;
