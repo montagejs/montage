@@ -26,4 +26,45 @@ describe("core/range-controller-spec", function() {
 
     });
 
+    describe("addContent and contentConstructor", function () {
+
+        it("should instantiate a configured content type", function () {
+            rangeController.contentConstructor = function FromTheFirstDimension() {
+                this.x = 10;
+            };
+            var content = rangeController.addContent();
+            expect(content).toEqual({x: 10});
+            expect(rangeController.content).toContain({x: 10});
+        });
+
+        it("should defer to the content type of the backing collection", function () {
+            var content = [];
+            content.contentConstructor = function FromTheFirstDimension() {
+                this.x = 10;
+            };
+            rangeController.content = content;
+            var content = rangeController.addContent();
+            expect(content).toEqual({x: 10});
+            expect(rangeController.content).toContain({x: 10});
+        });
+
+        it("should use a default content constructor otherwise", function () {
+            var content = rangeController.addContent();
+            expect(content).toEqual({});
+            expect(rangeController.content).toContain({});
+        });
+
+        it("should ensure homogeneous content type", function () {
+            rangeController.content = [];
+            rangeController.contentConstructor = Date;
+            rangeController.addContent();
+            rangeController.addContent();
+            rangeController.addContent();
+            expect(rangeController.content.every(function (date) {
+                return date instanceof rangeController.contentConstructor;
+            })).toBe(true);
+        });
+
+    });
+
 });
