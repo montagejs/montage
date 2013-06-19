@@ -66,6 +66,21 @@ var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** 
     },
 
     /**
+     * Returns a new ActionEventListener instance with the specified handler and action.
+     * @function
+     * @param {Object} handler The event handler
+     * @param {String|Function} action The event handler action
+     * @returns {ActionEventListener} The initialized ActionEventListener
+     * */
+    initWithHandler_action_: {
+        value: function(handler, action) {
+            this.handler = handler;
+            this.action = action;
+            return this;
+        }
+    },
+
+    /**
      * @private
      */
     handleEvent: {
