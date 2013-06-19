@@ -1,0 +1,52 @@
+{
+
+    "actionEventListener_handler": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "handler",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object"
+        }
+    },
+
+    "actionEventListener_action": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "action",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "string"
+        }
+    },
+
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "ActionEventListener",
+            "blueprintModuleId": "core/event/action-event-listener.meta",
+            "prototypeName": "ActionEventListener",
+            "customPrototype": false,
+            "propertyBlueprints": [
+                {
+                    "@": "actionEventListener_handler"
+                },
+                {
+                    "@": "actionEventListener_action"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "actionEventListener": [
+                    {
+                        "@": "actionEventListener_handler"
+                    },
+                    {
+                        "@": "actionEventListener_action"
+                    }
+                ]
+            }
+        }
+    }
+}
