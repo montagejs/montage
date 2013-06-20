@@ -132,7 +132,6 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
                     logger.debug("MediaController:status: " + status);
                 }
                 this._status = status;
-                this._dispatchStateChangeEvent();
             }
         }
     },
@@ -395,7 +394,6 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
                 volume = 0;
             }
             this.mediaController.volume = volume / 100.0;
-            this._dispatchStateChangeEvent();
         }
     },
 
@@ -598,18 +596,7 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             this.status = this.STOPPED;
         }
     },
-    
-    /**
-    @private
-    */
-    _dispatchStateChangeEvent: {
-        value: function() {
-            var stateEvent = window.document.createEvent("CustomEvent");
-            stateEvent.initCustomEvent("mediaStateChange", true, true, null);
-            this.dispatchEvent(stateEvent);
-        }
-    },
-    
+
     /**
     @private
     */

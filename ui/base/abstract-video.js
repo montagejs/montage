@@ -244,11 +244,9 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
     },
 
     /**
-    Description TODO
-    @function
     @private
     */
-    handleMediaStateChange: {
+    handleControllerStatusChange: {
         value: function() {
             this.needsDraw = true;
         }
@@ -257,9 +255,9 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
     /**
     @private
     */
-    _installMediaEventListeners: {
+    handleControllerVolumeChange: {
         value: function() {
-            this.videoController.addEventListener("mediaStateChange", this, false);
+            this.needsDraw = true;
         }
     },
 
@@ -300,13 +298,14 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
                         this.mediaElement.textTracks[this.mediaElement.textTracks.length-1].mode = "showing";
                     }
                 }
+                this.addPathChangeListener("videoController.status", this, "handleControllerStatusChange");
+                this.addPathChangeListener("videoController.volume", this, "handleControllerVolumeChange");
 
                 if (!this.videoController) {
                     this.videoController = Montage.create(MediaController);
                 }
                 this.mediaElement.controller = this.videoController.mediaController;
 
-                this._installMediaEventListeners();
             }
         }
     }
