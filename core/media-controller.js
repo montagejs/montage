@@ -536,7 +536,7 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             if (logger.isDebug) {
                 logger.debug("MediaController:handleEnded");
             }
-            // If the mediaElement is not in the paused=true state
+            // If the media controller is not in the paused=true state
             // then it won't fire a play event when you start playing again
             this.mediaController.pause();
             this.status = this.STOPPED;
@@ -578,12 +578,7 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
                         console.error("The video playback was aborted due to a corruption problem or because the video used features your browser did not support.");
                         break;
                     case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                        if (this.mediaElement.src.length > 0) {
-                            console.error("The video at " + this.mediaElement.src + " could not be loaded, either because the server or network failed or because the format is not supported.");
-                        }
-                        else {
-                            console.error("No video has been selected.");
-                        }
+                        console.error("The selected video could not be loaded, either because the server or network failed, the format is not supported, or no video has been selected.");
                         break;
                     default:
                         console.error("An unknown error occurred.");
@@ -629,7 +624,7 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
                 handleError             = this.handleError.bind(this),
                 handleEmptied           = this.handleEmptied.bind(this),
                 handleEnded             = this.handleEnded.bind(this);
-                
+
             this.mediaController.addEventListener('loadedmetadata', handleLoadedmetadata, false);
             this.mediaController.addEventListener('timeupdate', handleTimeupdate, false);
             this.mediaController.addEventListener('play', handlePlay, false);
@@ -650,7 +645,8 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
                 this.mediaController.removeEventListener('error', handleError);
                 this.mediaController.removeEventListener('emptied', handleEmptied);
                 this.mediaController.removeEventListener('ended', handleEnded);
-            }
+            };
+
         }
     },
     
@@ -662,13 +658,10 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
      MARK:   Configuration
      -----------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-=======
      constructor: {
          value: function MediaController() {
              this.super();
          }
      }
 
->>>>>>> 048bb181df579020e02439611ad15adbd49b4621
 });
