@@ -118,7 +118,7 @@ var Iteration = exports.Iteration = Montage.specialize( {
      * @private
      */
     constructor: {
-        value: function Repetition() {
+        value: function Iteration() {
             this.super();
 
             this.repetition = null;
@@ -572,7 +572,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
      * @private
      */
     constructor: {
-        value: function () {
+        value: function Repetition() {
             this.super();
 
             // XXX Note: Any property added to initialize in constructor must
