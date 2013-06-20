@@ -1,5 +1,6 @@
 var Montage = require("montage").Montage,
-    Promise = require("core/promise").Promise;
+    Promise = require("core/promise").Promise,
+    URL = require("core/mini-url");
 
 var DocumentResources = Montage.specialize({
     _SCRIPT_TIMEOUT: {value: 5000},
@@ -17,7 +18,6 @@ var DocumentResources = Montage.specialize({
         value: function(_document) {
             this.clear();
             this._document = _document;
-            this._link = _document.createElement("a");
 
             return this;
         }
@@ -173,22 +173,9 @@ var DocumentResources = Montage.specialize({
         }
     },
 
-    _link: {value: null},
     normalizeUrl: {
         value: function(url, baseUrl) {
-            var link = this._link;
-
-            if (! /^https?:\/\/|^\//.test(url)) { // TODO: look into base links...
-                if (baseUrl) {
-                    link.href = baseUrl + url;
-                } else {
-                    link.href = url;
-                }
-            } else {
-                link.href = url;
-            }
-
-            return link.href;
+            return URL.resolve(baseUrl || "http://", url);
         }
     },
 
