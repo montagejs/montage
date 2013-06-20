@@ -39,12 +39,12 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
             }
             this._mediaElement = element;
             if (this.controller) {
-                this._mediaElement.controller = this.controller.mediaController;
+                this._mediaElement.controller = this.videoController.mediaController;
             }
         }
     },
     
-    _controller: {
+    _videoController: {
         value: null
     },
     
@@ -53,13 +53,13 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
         @type {module:montage/core/media-controller.MediaController}
         @default null
     */
-    controller: {
+    videoController: {
         get: function() {
-            return this._controller;
+            return this._videoController;
         },
         set: function(controller) {
             if (controller) {
-                this._controller = controller;
+                this._videoController = controller;
                 if (this.mediaElement) {
                     this.mediaElement.controller = controller.mediaController;
                 }
@@ -259,7 +259,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
     */
     _installMediaEventListeners: {
         value: function() {
-            this.controller.addEventListener("mediaStateChange", this, false);
+            this.videoController.addEventListener("mediaStateChange", this, false);
         }
     },
 
@@ -301,10 +301,10 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
                     }
                 }
 
-                if (!this.controller) {
-                    this.controller = Montage.create(MediaController);
+                if (!this.videoController) {
+                    this.videoController = Montage.create(MediaController);
                 }
-                this.mediaElement.controller = this.controller.mediaController;
+                this.mediaElement.controller = this.videoController.mediaController;
 
                 this._installMediaEventListeners();
             }
