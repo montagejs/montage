@@ -38,7 +38,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
                 this._mediaElement.controller = null;
             }
             this._mediaElement = element;
-            if (this.controller) {
+            if (this.videoController) {
                 this._mediaElement.controller = this.videoController.mediaController;
             }
         }
@@ -90,7 +90,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
     @private
     */
     _sources: {
-        value: null
+        value: []
     },
     /**
      * @type {Array}
@@ -98,11 +98,11 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
      */
     sources: {
         get: function() {
-            return [];
+            return this._sources;
         },
         set: function(sources) {
             if (sources && sources.length) {
-                var mediaElement = document.createElement("video");
+                var mediaElement = this.element.ownerDocument.createElement("video");
                 for (var i=0;i<sources.length;i++) {
                     var mediaSrc = sources[i].src,
                         mediaType = sources[i].type;
@@ -125,7 +125,6 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
             this.mediaElement.load();
         }
     },
-
 
     /**
     @private
@@ -155,6 +154,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
             }
         }
     },
+
     /**
     @function
     */
@@ -164,13 +164,13 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
         }
     },
 
-
     /**
       @private
     */
     _posterSrc: {
         value: null
     },
+
     /**
      * @type {String}
      * @default null
@@ -214,7 +214,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
             return this._isFullScreen;
         }
     },
-
+    
     /**
     Toggles full-screen playback mode.
     @function
@@ -228,8 +228,8 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
                         this.element.webkitExitFullscreen();
                     } else if (this.element.webkitCancelFullScreen) {
                         this.element.webkitCancelFullScreen();
-                    } else if (document.webkitCancelFullScreen && document.webkitCurrentFullScreenElement === this.element) {
-                        document.webkitCancelFullScreen()
+                    } else if (this.element.ownerDocument.webkitCancelFullScreen && this.element.ownerDocument.webkitCurrentFullScreenElement === this.element) {
+                        this.element.ownerDocument.webkitCancelFullScreen()
                     }
                 } else {
                     if (this.element.webkitEnterFullScreen) {
@@ -264,7 +264,6 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
     enterDocument: {
         value: function(firstTime) {
             if (firstTime) {
-            
                 // look for src attribute on original element
                 if (this.originalElement.hasAttribute("src") && this.originalElement.getAttribute("src")) {
                     this.src = this.originalElement.getAttribute("src");
@@ -275,14 +274,14 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
                     for (var i=0;i<sources.length;i++) {
                         mediaSrc = sources[i].getAttribute("src");
                         mediaType = sources[i].getAttribute("type");
-                        if (mediaType && !this.originalElement.canPlayType(mediaType)) {
+                        if (mediaType && !this.mediaElement.canPlayType(mediaType)) {
                             continue;
                         }
                         this.src = mediaSrc;
                         break;
                     }
                 }
-                
+
                 // try to grab <track> child elements from original element
                 var tracks = this.originalElement.getElementsByTagName("track");
                 for (var i=0;i<tracks.length;i++) {
@@ -298,6 +297,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
                         this.mediaElement.textTracks[this.mediaElement.textTracks.length-1].mode = "showing";
                     }
                 }
+
                 this.addPathChangeListener("videoController.status", this, "handleControllerStatusChange");
                 this.addPathChangeListener("videoController.volume", this, "handleControllerVolumeChange");
 
@@ -305,7 +305,6 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
                     this.videoController = Montage.create(MediaController);
                 }
                 this.mediaElement.controller = this.videoController.mediaController;
-
             }
         }
     }
