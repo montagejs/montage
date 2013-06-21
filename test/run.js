@@ -1,5 +1,6 @@
 require("montage-testing").run(require,[
         // Please keep in alphabetical order
+
         "application-spec",
         "bitfield-spec",
         "claimed-pointer-spec",
@@ -23,6 +24,7 @@ require("montage-testing").run(require,[
         "base/abstract-text-area-spec",
         "base/abstract-text-field-spec",
         "base/abstract-toggle-button-spec",
+        "base/abstract-video-spec",
 
         "bindings/spec",
         "bindings/converter-spec",
