@@ -41,7 +41,16 @@
                 {"@": "src_property"},
                 {"@": "width_property"},
                 {"@": "height_property"}
-            ]
+            ],
+            "propertyBlueprintGroups": {
+                "Main": [
+                    {"@": "src_property"}
+                ],
+                "Options": [
+                    {"@": "width_property"},
+                    {"@": "height_property"}
+                ]
+            }
         }
     }
 }
