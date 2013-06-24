@@ -527,7 +527,6 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
                         opMap.delete(promise);
                     });
                 } else {
-                    console.log("inoperableOperation", entry.label);
                     inoperableOperation = true;
                     return previous;
                 }
