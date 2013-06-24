@@ -147,6 +147,16 @@ describe("test/base/abstract-image-spec", function () {
             expect(rebasedSrc).toBe(src);
         });
 
+        it("should not rebase protocol: urls", function() {
+            var src = "protocol://image.jpg",
+                rebasedSrc;
+
+            anImage.src = src;
+            rebasedSrc = anImage._getRebasedSrc();
+
+            expect(rebasedSrc).toBe(src);
+        });
+
         it("should not rebase empty urls", function() {
             var src = "",
                 rebasedSrc;

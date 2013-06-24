@@ -4,7 +4,8 @@
  @module montage/ui/base/abstract-image.reel
  */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
+    Component = require("ui/component").Component,
+    URL = require("core/mini-url");
 
 /**
  * @class AbstractImage
@@ -115,8 +116,8 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
         value: function() {
             var url = this._src,
                 baseUrl,
-                // Check for "http://", "https://", "/", "//" and "data:"
-                absoluteUrlRegExp = /^https?:\/\/|^\/|^data:/;
+                // Check for "<protocol>:", "/" and "//"
+                absoluteUrlRegExp = /^[\w\-]+:|^\//;
 
             if (url) {
                 if (absoluteUrlRegExp.test(url)) {
@@ -124,7 +125,7 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
                 } else if (this._ownerDocumentPart) {
                     baseUrl = this._ownerDocumentPart.template.getBaseUrl();
                     if (baseUrl) {
-                        return baseUrl + url;
+                        return URL.resolve(baseUrl, url);
                     }
                 }
             }
