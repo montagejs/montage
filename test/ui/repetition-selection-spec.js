@@ -42,6 +42,21 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
                 });
             });
 
+            it("should not deselect the representative element if clicked again", function () {
+                var listElementToSelect = querySelectorAll("ul>li")[1];
+                testPage.mouseEvent({target: listElementToSelect}, "mousedown", function () {
+                    testPage.mouseEvent({target: listElementToSelect}, "mouseup", function () {
+                        expect(listElementToSelect.classList.contains("selected")).toBeTruthy();
+
+                        testPage.mouseEvent({target: listElementToSelect}, "mousedown", function () {
+                            testPage.mouseEvent({target: listElementToSelect}, "mouseup", function () {
+                                expect(listElementToSelect.classList.contains("selected")).toBeTruthy();
+                            });
+                        });
+                    });
+                });
+            });
+
         });
 
         describe("reflecting the contentController selection", function () {
