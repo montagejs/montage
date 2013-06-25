@@ -1,3 +1,26 @@
+# v0.13.1
+
+-   **RangeController**
+
+    `addContent()` added to allow direct creation of objects in the content of the RangeController.
+    see `contentConstructor` to specify the type.
+
+-   **UndoManager**
+
+    UndoManager now accepts promises and batching.
+
+-   **Repetition**
+
+    Pressing on an already selected iteration now does nothing instead of toggling it.
+
+-   **Flow**
+
+    Flow is now positioned absolute so that it expands to fill all the available space.
+
+-   **AbstractSlider**
+
+    The slider now uses a translate3d to take advantage of gpu acceleration.
+
 # v0.13.0
 
 -   **Directory Structure**
