@@ -1541,7 +1541,9 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
                 // And select it, if there is one
                 if (iteration) {
                     iteration.active = false;
-                    iteration.selected = !iteration.selected;
+                    if (!iteration.selected) {
+                        iteration.selected = true;
+                    }
                 }
             }
 
