@@ -68,12 +68,6 @@
                 "component":[
                     {
                         "@":"blueprint_component_identifier"
-                    },
-                    {
-                        "@":"blueprint_component_element"
-                    },
-                    {
-                        "@":"blueprint_component_classList"
                     }
                 ]
             },
