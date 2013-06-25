@@ -103,7 +103,9 @@ var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** 
             //TODO accepting an actual function is less than ideal from the serialization standpoint
             serializer.set("action", this.action);
         }
-    },
+    }
+
+}, {
 
     blueprintModuleId: require("montage")._blueprintModuleIdDescriptor,
 
