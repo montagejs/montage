@@ -3,6 +3,7 @@
         "prototype": "core/meta/property-blueprint",
         "properties": {
             "name": "enabled",
+            "valueType": "boolean",
             "blueprint": {"@": "root"}
         }
     },
@@ -10,6 +11,7 @@
         "prototype": "core/meta/property-blueprint",
         "properties": {
             "name": "value",
+            "valueType": "object",
             "blueprint": {"@": "root"}
         }
     },
@@ -17,6 +19,7 @@
         "prototype": "core/meta/property-blueprint",
         "properties": {
             "name": "checked",
+            "valueType": "boolean",
             "blueprint": {"@": "root"}
         }
     },
@@ -24,6 +27,7 @@
         "prototype": "core/meta/property-blueprint",
         "properties": {
             "name": "active",
+            "valueType": "boolean",
             "blueprint": {"@": "root"}
         }
     },

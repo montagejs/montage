@@ -3,6 +3,9 @@
         "prototype": "core/meta/property-blueprint",
         "properties": {
             "name": "detail",
+            "valueType": "object",
+            "readOnly": true,
+            "collectionValueType":"dict",
             "blueprint": {"@": "root"}
         }
     },
@@ -27,7 +30,7 @@
                 {"@": "detail_property"}
             ],
             "propertyBlueprintGroups": {
-                "Options": [
+                "Control": [
                     {"@": "detail_property"}
                 ]
             }
