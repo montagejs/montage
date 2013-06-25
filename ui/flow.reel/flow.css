@@ -30,10 +30,15 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 .montage-Flow {
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
     overflow: hidden;
     -webkit-transform: translateZ(0);
 }
+
 .montage-Flow-camera,
 .montage-Flow-Repetition {
     position: absolute;
@@ -44,10 +49,12 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform-style: preserve-3d;
     -webkit-transform: translateZ(0);
 }
+
 .montage-Flow-Repetition .no-transition,
 .montage-Flow-Repetition .no-transition * {
     -webkit-transition: none !important;
 }
+
 .montage-Flow-Repetition > div {
     position: absolute;
     top: 50%;
@@ -57,6 +64,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: translateZ(0);
     -webkit-transform-style: preserve-3d;
 }
+
 .montage-Flow-Slot {
     position: absolute;
     top: 50%;
