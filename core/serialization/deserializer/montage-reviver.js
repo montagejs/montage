@@ -331,17 +331,17 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
     _deserializeUnits: {
         value: function(context) {
             var unitsToDeserialize = context.getUnitsToDeserialize(),
-                unitsDesc,
-                units = MontageReviver._unitRevivers;
+                units = MontageReviver._unitRevivers,
+                unitNames,
+                unitDeserializer;
 
             for (var i = 0, unitsDesc; unitsDesc = unitsToDeserialize[i]; i++) {
-                var unitNames = unitsDesc.unitNames;
+                unitNames = unitsDesc.unitNames;
 
                 for (var j = 0, unitName; unitName = unitNames[j]; j++) {
-                    var unitDeserializer = new UnitDeserializer()
-                        .initWithContext(context);
-
                     if (unitName in unitsDesc.objectDesc) {
+                        unitDeserializer = new UnitDeserializer()
+                            .initWithContext(context);
                         units[unitName](unitDeserializer, unitsDesc.object, unitsDesc.objectDesc[unitName]);
                     }
                 }
