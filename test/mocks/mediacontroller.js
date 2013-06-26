@@ -50,6 +50,17 @@ exports.mediaController = function () {
         hasEventListener: function(eventType, listener) {
             return !!(eventListeners[eventType] &&
                       eventListeners[eventType].indexOf(listener) >= 0);
-        }
+        },
+        play: function() {},
+        pause: function() {},
+        unpause: function() {},
+        defaultPlaybackRate: 1,
+        playbackRate: 1,
+        playbackState: "waiting",
+        currentTime: 0,
+        duration: 0,
+        volume: 1,
+        muted: false,
+        paused: false
     };
 }
