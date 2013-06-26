@@ -335,6 +335,9 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
             var self = this;
             window.require.async(this.mainModule)
             .then(function (exports) {
+                if (!(self.mainName in exports)) {
+                    throw new Error(self.mainName + " was not found in " + self.mainModule);
+                }
                 return self._mainLoadedCallback(exports);
             })
             .done();
