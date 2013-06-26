@@ -147,6 +147,7 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
         set: function(time, shouldNotUpdate) {
             this._position = time;
             if (!shouldNotUpdate) {
+                this._pauseTime = null;
                 this.currentTime = time;
             }
         },
@@ -154,6 +155,7 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             return this._position;
         }
     },
+
     /**
     @private
     */
@@ -198,10 +200,22 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             if (logger.isDebug) {
                 logger.debug("MediaController:play()");
             }
-            this.stop();
+            // setting currentTime will throw if video not loaded yet(?)
+            if (this.mediaController.currentTime !== 0) {
+                this.mediaController.currentTime = 0;
+            }
             this.mediaController.play();
+            this._pauseTime = null;
         }
     },
+    
+    /**
+    @private
+    */
+    _pauseTime: {
+        value: null
+    },
+
     /**
     @function
     */
@@ -210,6 +224,8 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             if (logger.isDebug) {
                 logger.debug("MediaController:pause()");
             }
+            // temporary workaround for Chrome issue: https://code.google.com/p/chromium/issues/detail?id=242839
+            this._pauseTime = this.mediaController.currentTime;
             this.mediaController.pause();
         }
     },
@@ -221,6 +237,9 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             if (logger.isDebug) {
                 logger.debug("MediaController:unpause()");
             }
+            if (this._pauseTime !== null) {
+                this.mediaController.currentTime = this._pauseTime;
+            }
             this.mediaController.unpause();
         }
     },
@@ -231,13 +250,16 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     playPause: {
         value: function() {
             if (logger.isDebug) {
-                logger.debug("MediaController:playPause");
+                logger.debug("MediaController:playPause()");
             }
 
             var playing = (this.status === this.PLAYING);
+            var paused = (this.status === this.PAUSED);
             this.playbackRate = this.mediaController.defaultPlaybackRate;
             if (playing) {
                 this.pause();
+            } else if (paused) {
+                this.unpause();
             } else {
                 this.play();
             }
@@ -266,20 +288,7 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             }
         }
     },
-    /**
-    @private
-    */
-    _currentTime: {
-        value: 0,
-        enumerable: false
-    },
-    /**
-    @private
-    */
-    _updateCurrentTime: {
-        value: false,
-        enumerable: false
-    },
+
     /**
         @type {Function}
         @default {Number} 0
@@ -317,7 +326,7 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
         value: function() {
             if (this.status === this.PLAYING) {
                 if (logger.isDebug) {
-                    logger.debug("MediaController:rewind");
+                    logger.debug("MediaController:rewind()");
                 }
                 this.playbackRate = -4.0;
             }
@@ -330,7 +339,7 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
         value: function() {
             if (this.status === this.PLAYING) {
                 if (logger.isDebug) {
-                    logger.debug("MediaController:fastForward");
+                    logger.debug("MediaController:fastForward()");
                 }
                 this.playbackRate = 4.0;
             }
@@ -342,30 +351,15 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     stop: {
         value: function() {
             if (logger.isDebug) {
-                logger.debug("MediaController:stop");
+                logger.debug("MediaController:stop()");
             }
 
             // Pause the playback
             this.mediaController.pause();
-            
+            this._pauseTime = null;
             // Reset the status
             this.status = this.STOPPED;
             this.position = 0;
-        }
-    },
-
-
-    /**
-    @function
-    */
-    reset: {
-        value: function() {
-            if (logger.isDebug) {
-                logger.debug("MediaController:reset");
-            }
-            if (this.status !== this.STOPPED) {
-                this.stop();
-            }
         }
     },
 
