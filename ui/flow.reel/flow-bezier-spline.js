@@ -4,7 +4,7 @@ var Montage = require("montage").Montage;
 var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
 
     constructor: {
-        value: function () {
+        value: function FlowBezierSpline() {
             this._knots = [];
             this._densities = [];
         }

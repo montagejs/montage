@@ -2,6 +2,7 @@ var Montage = require("montage").Montage,
     RangeController = require("core/range-controller").RangeController;
 
 exports.RadioButtonController = Montage.specialize( {
+
     _radioButtons: {
         value: null
     },
@@ -48,7 +49,7 @@ exports.RadioButtonController = Montage.specialize( {
      * @private
      */
     constructor: {
-        value: function () {
+        value: function RadioButtonController() {
             this._radioButtons = [];
 
             this.addRangeAtPathChangeListener("_radioButtons.map{checked}", this, "handleRadioButtonChange");

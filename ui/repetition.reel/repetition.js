@@ -1,5 +1,3 @@
-"use strict";
-
 var Montage = require("montage").Montage;
 var Component = require("ui/component").Component;
 var Template = require("core/template").Template;
@@ -120,8 +118,9 @@ var Iteration = exports.Iteration = Montage.specialize( {
      * @private
      */
     constructor: {
-        value: function () {
-            Object.getPrototypeOf(Iteration).constructor.call(this);
+        value: function Repetition() {
+            this.super();
+
             this.repetition = null;
             this.controller = null;
             this.content = null;
@@ -574,7 +573,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
      */
     constructor: {
         value: function () {
-            Object.getPrototypeOf(Repetition).constructor.call(this);
+            this.super();
 
             // XXX Note: Any property added to initialize in constructor must
             // also be accounted for in _teardownIterationTemplate to reset the
@@ -596,7 +595,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
                 "<-": "iterations.filter{selected}"
             });
             this.defineBinding("selectedIndexes", {
-                "<-": "iterations.map{index}"
+                "<-": "selectedIterations.map{index}"
             });
 
 
@@ -1022,7 +1021,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
      * @private
      */
     observeProperty: {
-        value: function (key, emit, source, parameters, beforeChange) {
+        value: function (key, emit, scope) {
             if (key === "contentAtCurrentIteration" || key === "objectAtCurrentIteration") {
                 // delegate to the mapping from iterations to content for the
                 // current iteration
@@ -1030,9 +1029,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
                     this._contentForIteration,
                     this.currentIteration,
                     emit,
-                    source,
-                    parameters,
-                    beforeChange
+                    scope
                 );
             } else if (key === "currentIteration") {
                 // Shortcut since this property is sticky -- won't change in
@@ -1041,14 +1038,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
                 return emit(this.currentIteration);
             } else {
                 // fall back to normal property observation
-                return observeProperty(
-                    this,
-                    key,
-                    emit,
-                    source,
-                    parameters,
-                    beforeChange
-                );
+                return observeProperty(this, key, emit, scope);
             }
         }
     },

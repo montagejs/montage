@@ -1,9 +1,6 @@
 {
   "name": "montage",
-  "version": "0.13.0-alpha",
-  "publishConfig": {
-    "tag": "edge"
-  },
+  "version": "0.13.0",
   "description": "A UI Framework",
   "repository": {
     "type": "git",
@@ -29,13 +26,13 @@
     }
   },
   "dependencies": {
-    "collections": "~0.1.17",
-    "frb": "~0.2.3",
+    "collections": "~0.1.21",
+    "frb": "~0.2.4",
     "mousse": "~0.1.2",
     "htmlparser2": "~3.0.5"
   },
   "devDependencies": {
-    "montage-testing": "0.2.0-alpha",
+    "montage-testing": "~0.2.0",
     "mr": "~0.12.6",
     "q": "~0.8.12",
     "q-io": "~1.3.2",

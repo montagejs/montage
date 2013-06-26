@@ -65,6 +65,15 @@ exports.element = function (_document) {
 
             return false;
         },
+        getElementsByTagName: function(tagName) {
+            var elements = [];
+            for (var i=0;i<this.childNodes.length;i++) {
+                if (this.childNodes[i].tagName.toUpperCase() === tagName.toUpperCase()) {
+                    elements.push(this.childNodes[i]);
+                }
+            }
+            return elements;
+        },
         focus: function () {},
         blur: function () {},
         addEventListener: function (eventType, listener, useCapture) {

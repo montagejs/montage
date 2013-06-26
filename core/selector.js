@@ -12,6 +12,12 @@ var Selector = exports.Selector = Montage.specialize( {
         value: null
     },
 
+    constructor: {
+        value: function Selector() {
+            this.super();
+        }
+    },
+
     initWithSyntax: {
         value: function (syntax) {
             this.syntax = syntax;

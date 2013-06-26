@@ -28,7 +28,7 @@ var Promise = require("core/promise").Promise;
 var PromiseController = exports.PromiseController = Montage.specialize( {
 
     constructor: {
-        value: function () {
+        value: function PromiseController() {
             this.reset = null;
             this.addOwnPropertyChangeListener("promise", this);
             this.promise = null;

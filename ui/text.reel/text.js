@@ -12,6 +12,12 @@ var Montage = require("montage").Montage,
  */
 exports.Text = Component.specialize( /** @lends Text# */ {
 
+    constructor: {
+        value: function Text() {
+            this.super();
+        }
+    },
+
     hasTemplate: {
         value: false
     },
