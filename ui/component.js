@@ -63,8 +63,8 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
     DOM_ARG_ATTRIBUTE: {value: "data-arg"},
 
     constructor: {
-        value: function () {
-            Montage.constructor.call(this);
+        value: function Component() {
+            this.super();
             this._isComponentExpanded = false;
             this._isTemplateLoaded = false;
             this._isTemplateInstantiated = false;
@@ -2536,6 +2536,11 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
  * @extends Component
  */
 var RootComponent = Component.specialize( /** @lends RootComponent# */{
+    constructor: {
+        value: function RootComponent() {
+            this.super();
+        }
+    },
     /**
      * @private
      * @function
