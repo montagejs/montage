@@ -1312,11 +1312,10 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
                 var instances = self.templateObjects,
                     _document = self._element.ownerDocument;
 
-                if (instances) {
-                    instances.owner = self;
-                } else {
-                    instances = {owner: self};
+                if (!instances) {
+                    instances = Object.create(null);
                 }
+                instances.owner = self;
 
                 self._isTemplateInstantiated = true;
 
