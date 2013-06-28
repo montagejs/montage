@@ -36,6 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("core/core").Montage,
     Component = require("ui/component").Component,
     logger = require("core/logger").logger("loader"),
+    defaultEventManager = require("core/event/event-manager").defaultEventManager,
     bootstrappingTimeoutPropertyName = "_montageStartBootstrappingTimeout",
     MONTAGE_BOOTSTRAPPER_ELEMENT_ID = "montage-app-bootstrapper",
     MONTAGE_LOADER_ELEMENT_ID = "montage-app-loader",
@@ -452,6 +453,11 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
 
             var mainComponent = this._mainComponent;
 
+            // Remove the connection from the Loader to the DOM tree and add
+            // the main component to the component tree.
+            defaultEventManager.unregisterEventHandlerForElement(this.element);
+            mainComponent.attachToParentComponent();
+
             mainComponent.enterDocument = this._mainComponentEnterDocument;
             if (mainComponent.enterDocument) {
                 return mainComponent.enterDocument.apply(mainComponent, arguments);
@@ -518,6 +524,9 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
                 var loadEvent = document.createEvent("CustomEvent");
                 loadEvent.initCustomEvent("componentLoaded", true, true, this._mainComponent);
                 this.dispatchEvent(loadEvent, true, true);
+                // Remove the Loader from the component tree, we can only do
+                // this after the last draw the Loader needs to make.
+                this.detachFromParentComponent();
             }
 
         }
