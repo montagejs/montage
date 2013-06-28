@@ -458,6 +458,12 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
             defaultEventManager.unregisterEventHandlerForElement(this.element);
             mainComponent.attachToParentComponent();
 
+            // When the main component enters the document it is loaded, update
+            // the currentStage to reflect that situation if we're behind.
+            if (this.currentStage < LOADED) {
+                this.currentStage = LOADED;
+            }
+
             mainComponent.enterDocument = this._mainComponentEnterDocument;
             if (mainComponent.enterDocument) {
                 return mainComponent.enterDocument.apply(mainComponent, arguments);
