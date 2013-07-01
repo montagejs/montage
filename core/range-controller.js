@@ -583,7 +583,9 @@ var RangeController = exports.RangeController = Montage.specialize( {
                 this._selection.splice(0, length - 1);
             }
         }
-    },
+    }
+
+}, {
 
     blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
 

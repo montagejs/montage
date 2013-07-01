@@ -400,5 +400,11 @@ exports.TreeController = Montage.specialize({
         value: Node
     }
 
+}, {
+
+    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+
+    blueprint:require("montage")._blueprintDescriptor
+
 });
 
