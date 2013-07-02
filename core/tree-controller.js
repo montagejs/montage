@@ -73,7 +73,7 @@ var Node = exports.TreeControllerNode = Montage.specialize({
     /**
      * The governing content controller
      */
-    controller: {
+    _controller: {
         value: null
     },
 
@@ -178,7 +178,7 @@ var Node = exports.TreeControllerNode = Montage.specialize({
         value: function TreeControllerNode(controller, parent, content, depth, entry) {
             this.super();
 
-            this.controller = controller;
+            this._controller = controller;
             this.parent = parent;
             this.content = content;
             this.depth = depth;
@@ -194,7 +194,7 @@ var Node = exports.TreeControllerNode = Montage.specialize({
             // waits for depth to be defined to ensure that child nodes know
             // their depth when they are created by initialization of children
             this.defineBinding("_childrenContent", {
-                "<-": "depth.defined() ? content.path(controller.childrenPath ?? 'children') : []"
+                "<-": "depth.defined() ? content.path(_controller.childrenPath ?? 'children') : []"
             });
 
             // _childrenContent -> _childrenEntries
@@ -245,7 +245,7 @@ var Node = exports.TreeControllerNode = Montage.specialize({
                 minus.length,
                 plus.map(function (entry) {
                     return new this.constructor(
-                        this.controller,
+                        this._controller,
                         this,
                         entry[1], // content
                         this.depth + 1,
