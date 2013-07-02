@@ -39,7 +39,8 @@
     "jshint": "~2.0.1"
   },
   "scripts": {
-    "test": "node test/node/node-spec.js"
+    "test": "node test/node/node-spec.js",
+    "jsdoc": "node ../montagejs.org/build/jsdoc/jsdoc.js -out $PWD/builds/jsdoc/ montage@npm-link"
   },
   "exclude": [
     "bin",

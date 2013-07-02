@@ -4,3 +4,4 @@ npm-debug.log
 .DS_Store
 atlassian-ide-plugin.xml
 TEST-*.xml
+/builds
