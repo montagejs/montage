@@ -311,6 +311,7 @@ var Flow = exports.Flow = Component.specialize( {
                 this._appendPath(value[i]);
             }
             this.needsDraw = true;
+            this._needsComputeVisibleRange = true;
         }
     },
 
@@ -338,6 +339,7 @@ var Flow = exports.Flow = Component.specialize( {
             this._cameraPosition = value;
             this._isCameraUpdated = true;
             this.needsDraw = true;
+            this._needsComputeVisibleRange = true;
         }
     },
 
@@ -357,6 +359,7 @@ var Flow = exports.Flow = Component.specialize( {
             this._cameraTargetPoint = value;
             this._isCameraUpdated = true;
             this.needsDraw = true;
+            this._needsComputeVisibleRange = true;
         }
     },
 
@@ -376,6 +379,7 @@ var Flow = exports.Flow = Component.specialize( {
             this._cameraFov = value;
             this._isCameraUpdated = true;
             this.needsDraw = true;
+            this._needsComputeVisibleRange = true;
         }
     },
 
@@ -399,6 +403,7 @@ var Flow = exports.Flow = Component.specialize( {
             this._cameraRoll = value;
             this._isCameraUpdated = true;
             this.needsDraw = true;
+            this._needsComputeVisibleRange = true;
         }
     },
 
@@ -694,6 +699,7 @@ var Flow = exports.Flow = Component.specialize( {
         set: function (value) {
             this._boundingBoxSize = value;
             this.elementsBoundingSphereRadius = Math.sqrt(value[0] * value[0] + value[1] * value[1] + value[2] * value[2]) * .5;
+            this._needsComputeVisibleRange = true;
         }
     },
 
@@ -715,6 +721,7 @@ var Flow = exports.Flow = Component.specialize( {
             if (this._elementsBoundingSphereRadius !== value) {
                 this._elementsBoundingSphereRadius = value;
                 this.needsDraw = true;
+                this._needsComputeVisibleRange = true;
             }
         }
     },
@@ -1021,6 +1028,14 @@ var Flow = exports.Flow = Component.specialize( {
         }
     },
 
+    _needsComputeVisibleRange: {
+        value: true
+    },
+
+    _previousVisibleRanges: {
+        value: null
+    },
+
     /**
      * @private
      */
@@ -1065,10 +1080,18 @@ var Flow = exports.Flow = Component.specialize( {
             if (splinePaths.length) {
                 mod = this._numberOfIterations % pathsLength;
                 div = (this._numberOfIterations - mod) / pathsLength;
+                if (this._needsComputeVisibleRange) {
+                    this._previousVisibleRanges = [];
+                }
                 for (k = 0; k < pathsLength; k++) {
                     iterations = div + ((k < mod) ? 1 : 0);
-                    intersections = this._computeVisibleRange(splinePaths[k]);
-                    splinePaths[k]._computeDensitySummation();
+                    if (this._needsComputeVisibleRange) {
+                        intersections = this._computeVisibleRange(splinePaths[k]);
+                        this._previousVisibleRanges[k] = intersections;
+                        splinePaths[k]._computeDensitySummation();
+                    } else {
+                        intersections = this._previousVisibleRanges[k];
+                    }
                     offset =  this._scroll - paths[k].headOffset;
                     for (i = 0; i < intersections.length; i++) {
                         startIndex = Math.ceil(intersections[i][0] + offset);
@@ -1090,6 +1113,7 @@ var Flow = exports.Flow = Component.specialize( {
                         }
                     }
                 }
+                this._needsComputeVisibleRange = false;
             }
 
             this._updateVisibleIndexes(newVisibleIndexes, newContentIndexes);
@@ -1209,7 +1233,6 @@ var Flow = exports.Flow = Component.specialize( {
             if (this._slideOffsetsLength) {
                 this.needsDraw = true;
             }
-            //console.log("draw");
         }
     },
 
