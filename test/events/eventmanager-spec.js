@@ -123,6 +123,14 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                 });
             }
 
+            if (MediaController) {
+                it("should have overridden the addEventListener for MediaController", function() {
+                    var mediaController = testDocument.defaultView.MediaController.prototype;
+                    expect(mediaController.nativeAddEventListener).toBeTruthy();
+                    expect(mediaController.nativeAddEventListener).toNotBe(mediaController.addEventListener);
+                });
+            }
+
             it("should have overridden the removeEventListener for window", function() {
                 var testWindow = testDocument.defaultView;
                 expect(testWindow.nativeRemoveEventListener).toBeTruthy();
@@ -151,6 +159,14 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                     var worker = testDocument.defaultView.Worker.prototype;
                     expect(worker.nativeRemoveEventListener).toBeTruthy();
                     expect(worker.nativeRemoveEventListener).toNotBe(worker.removeEventListener);
+                });
+            }
+
+            if (MediaController) {
+                it("should have overridden the addEventListener for MediaController", function() {
+                    var mediaController = testDocument.defaultView.MediaController.prototype;
+                    expect(mediaController.nativeRemoveEventListener).toBeTruthy();
+                    expect(mediaController.nativeRemoveEventListener).toNotBe(mediaController.removeEventListener);
                 });
             }
         });

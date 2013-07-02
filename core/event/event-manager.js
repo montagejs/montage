@@ -361,6 +361,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             if (aWindow.Worker) {
                 aWindow.Worker.prototype.nativeAddEventListener = aWindow.Worker.prototype.addEventListener;
             }
+            if (aWindow.MediaController) {
+                aWindow.MediaController.prototype.nativeAddEventListener = aWindow.MediaController.prototype.addEventListener;
+            }
 
             aWindow.Element.prototype.nativeRemoveEventListener = aWindow.Element.prototype.removeEventListener;
             Object.defineProperty(aWindow, "nativeRemoveEventListener", {
@@ -371,6 +374,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener = aWindow.XMLHttpRequest.prototype.removeEventListener;
             if (aWindow.Worker) {
                 aWindow.Worker.prototype.nativeRemoveEventListener = aWindow.Worker.prototype.removeEventListener;
+            }
+            if (aWindow.MediaController) {
+                aWindow.MediaController.prototype.nativeRemoveEventListener = aWindow.MediaController.prototype.removeEventListener;
             }
 
             // Redefine listener functions
@@ -388,6 +394,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             if (aWindow.Worker) {
                 aWindow.Worker.prototype.addEventListener = aWindow.addEventListener;
             }
+            if (aWindow.MediaController) {
+                aWindow.MediaController.prototype.addEventListener = aWindow.addEventListener;
+            }
 
             Object.defineProperty(aWindow, "removeEventListener", {
                 configurable: true,
@@ -401,6 +410,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
             if (aWindow.Worker) {
                 aWindow.Worker.prototype.removeEventListener = aWindow.removeEventListener;
+            }
+            if (aWindow.MediaController) {
+                aWindow.MediaController.prototype.removeEventListener = aWindow.removeEventListener;
             }
 
             // In some browsers (Firefox) each element has their own addEventLister/removeEventListener
