@@ -25,10 +25,10 @@
 // THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
 //
 /**
-	@module montage/core/converter/number-converter
-    @requires montage/core/core
-    @requires montage/core/converter/converter
-*/
+ * @module montage/core/converter/number-converter
+ * @requires montage/core/core
+ * @requires montage/core/converter/converter
+ */
 var Montage = require("montage").Montage;
 var Converter = require('core/converter/converter').Converter;
 var Validator = require("core/converter/converter").Validator;
@@ -36,23 +36,23 @@ var isNumber = require('core/converter/converter').isNumber;
 var isDef = require('core/converter/converter').isDef;
 
 /**
- Regular expression for detecting scaling units, such as K, M, G, etc. for<br>
- converting a string representation to a numeric value.
- Also allow 'k' to be aliased to 'K'.  These could be used for SI (powers<br>
- of 1000) or Binary (powers of 1024) conversions.<br>
- Also allow final 'B' to be interpreted as byte-count, implicitly triggering<br>
- binary conversion (e.g., '10.2MB').
- @type {RegExp}
- @memberof module:montage/core/converter#
- @private
+ * Regular expression for detecting scaling units, such as K, M, G, etc. for<br>
+ * converting a string representation to a numeric value.
+ * Also allow 'k' to be aliased to 'K'.  These could be used for SI (powers<br>
+ * of 1000) or Binary (powers of 1024) conversions.<br>
+ * Also allow final 'B' to be interpreted as byte-count, implicitly triggering<br>
+ * binary conversion (e.g., '10.2MB').
+ * @type {RegExp}
+ * @memberof module:montage/core/converter#
+ * @private
  */
 var SCALED_NUMERIC_RE_ = /^([\-]?\d+\.?\d*)([K,M,G,T,P,k,m,u,n]?)[B]?$/;
 
 /**
- Ordered list of scaling prefixes in decreasing order.
- @memberof module:montage/converter#
- @type {Array}
- @private
+ * Ordered list of scaling prefixes in decreasing order.
+ * @memberof module:montage/converter#
+ * @type {Array}
+ * @private
  */
     // kishore - changed prefix 'G' to 'B' to represent Billion
 var NUMERIC_SCALE_PREFIXES_ = [
@@ -61,10 +61,10 @@ var NUMERIC_SCALE_PREFIXES_ = [
 
 
 /**
- Scaling factors for conversion of numeric value to string.  SI conversion.
- @memberof module:montage/converter#
- @type {Object}
- @private
+ * Scaling factors for conversion of numeric value to string.  SI conversion.
+ * @memberof module:montage/converter#
+ * @type {Object}
+ * @private
  */
 var NUMERIC_SCALES_SI_ = exports.NUMERIC_SCALES_SI_ = {
     '': 1,
@@ -80,10 +80,10 @@ var NUMERIC_SCALES_SI_ = exports.NUMERIC_SCALES_SI_ = {
 };
 
 /**
- Scaling factors for conversion of numeric value to string. Binary conversion.
- @memberof module:montage/converter#
- @type {Object}
- @private
+ * Scaling factors for conversion of numeric value to string. Binary conversion.
+ * @memberof module:montage/converter#
+ * @type {Object}
+ * @private
  */
 var NUMERIC_SCALES_BINARY_ = exports.NUMERIC_SCALES_BINARY_ = {
     '': 1,
@@ -136,12 +136,12 @@ var _numericValueToString = exports._numericValueToString = function(val, conver
 };
 
 /**
- Converts a string to numeric value, taking into account the units.
- @memberof module:montage/converter#
- @param {string} stringValue String to be converted to numeric value.
- @param {Object} conversion Dictionary of conversion scales.
- @return {number} Numeric value for string.  If it cannot be converted, returns NaN.
- @private
+ * Converts a string to numeric value, taking into account the units.
+ * @memberof module:montage/converter#
+ * @param {string} stringValue String to be converted to numeric value.
+ * @param {Object} conversion Dictionary of conversion scales.
+ * @return {number} Numeric value for string.  If it cannot be converted, returns NaN.
+ * @private
  */
 var _stringToNumericValue = function(stringValue, conversion) {
     var match = stringValue.match(SCALED_NUMERIC_RE_);
@@ -153,14 +153,14 @@ var _stringToNumericValue = function(stringValue, conversion) {
 
 
 /**
- Checks whether string value containing scaling units (K, M, G, T, P, m, u, n) can be converted to a number.<br>
- Where there is a decimal, there must be a digit to the left of the decimal point.<br>
- Negative numbers are valid.<br>
- @example 0, 1, 1.0, 10.4K, 2.3M, -0.3P, 1.2m
- @memberof module:montage/core/converter#
- @function
- @param {String} val String value to check.
- @return {Boolean} true If the string could be converted to a numeric value.
+ * Checks whether string value containing scaling units (K, M, G, T, P, m, u, n) can be converted to a number.<br>
+ * Where there is a decimal, there must be a digit to the left of the decimal point.<br>
+ * Negative numbers are valid.<br>
+ * @example 0, 1, 1.0, 10.4K, 2.3M, -0.3P, 1.2m
+ * @memberof module:montage/core/converter#
+ * @function
+ * @param {String} val String value to check.
+ * @return {Boolean} true If the string could be converted to a numeric value.
  */
 var isConvertableScaledNumber = function(val) {
     return SCALED_NUMERIC_RE_.test(val);
@@ -168,12 +168,12 @@ var isConvertableScaledNumber = function(val) {
 
 
 /**
- Converts a string to numeric value, taking into account the units.<br>
- If string ends in 'B', use binary conversion.
- @memberof module:montage/core/converter#
- @function
- @param {String} stringValue String to be converted to numeric value.
- @return {Number} Numeric value for string.
+ * Converts a string to numeric value, taking into account the units.<br>
+ * If string ends in 'B', use binary conversion.
+ * @memberof module:montage/core/converter#
+ * @function
+ * @param {String} stringValue String to be converted to numeric value.
+ * @return {Number} Numeric value for string.
  */
 var stringToNumericValue = exports.stringToNumericValue = function(stringValue) {
     if (stringValue.endsWith('B')) {
@@ -187,12 +187,12 @@ var stringToNumericValue = exports.stringToNumericValue = function(stringValue) 
 
 
 /**
-   Converts a numeric value to string representation. SI conversion.
-   @memberof module:montage/core/converter#
-   @function
-   @param {Number} val Value to be converted.
-   @param {Number} opt_decimals The number of decimals to use. Defaults to 2.
-   @returns {String} String representation of number.
+ * Converts a numeric value to string representation. SI conversion.
+ * @memberof module:montage/core/converter#
+ * @function
+ * @param {Number} val Value to be converted.
+ * @param {Number} opt_decimals The number of decimals to use. Defaults to 2.
+ * @returns {String} String representation of number.
  */
 var numericValueToString = exports.numericValueToString = function(val, opt_decimals) {
     return _numericValueToString(val, NUMERIC_SCALES_SI_, opt_decimals);
@@ -201,37 +201,37 @@ var numericValueToString = exports.numericValueToString = function(val, opt_deci
 
 
 /**
- @class NumberValidator
- @classdesc Validates that a string can be represented as a numeric value, and returns the numeric value.
- @extends Validator
+ * @class NumberValidator
+ * @classdesc Validates that a string can be represented as a numeric value, and returns the numeric value.
+ * @extends Validator
  */
 var NumberValidator = exports.NumberValidator = Validator.specialize( /** @lends NumberValidator# */ {
 
     /**
-     Indicates whether floating point values are allowed.<br>
-     If <code>true</code> (the default) then the validator attempts to parse the string as a float value.<br>
-     If <code>false</code>, it attempts to parse the value as an integer.
-     @type {Property}
-     @default {Boolean} true
+     * Indicates whether floating point values are allowed.<br>
+     * If <code>true</code> (the default) then the validator attempts to parse the string as a float value.<br>
+     * If <code>false</code>, it attempts to parse the value as an integer.
+     * @type {Property}
+     * @default {Boolean} true
      */
     allowFloat: {
         value: true
     },
 
     /**
-        @type {Property}
-        @default {Boolean} true
-    */
+     * @type {Property}
+     * @default {Boolean} true
+     */
     allowNegative: {
         value: true
     },
 
     /**
-     Determines if the parameter <code>v</code> is a number or not.
-     @function
-     @param {String} v The value to validate as a number.
-     @returns {Number} num An integer or float, if the value provided to the function can parsed as a number;
-     otherwise returns an error.
+     * Determines if the parameter <code>v</code> is a number or not.
+     * @function
+     * @param {String} v The value to validate as a number.
+     * @returns {Number} num An integer or float, if the value provided to the function can parsed as a number;
+     * otherwise returns an error.
      */
     validate: {
         value: function(v) {
@@ -257,76 +257,79 @@ var NumberValidator = exports.NumberValidator = Validator.specialize( /** @lends
 
 
 /**
- @class NumberConverter
- @classdesc Formats a number for easier readability.
+ * @class NumberConverter
+ * @classdesc Formats a number for easier readability.
  */
 var NumberConverter = exports.NumberConverter = Converter.specialize( /** @lends NumberConverter# */ {
 
     /**
-        @type {Property}
-        @default {Boolean} false
-    */
-        // do not allow partial conversion
+     * Allow partial conversion
+     * @type {Property}
+     * @default {Boolean} false
+     */
     allowPartialConversion: {
         value: false
     },
+
     /**
-        @type {Function}
-        @default {attribute} NumberValidator Uses this object.
-    */
+     * @type {Function}
+     * @default {attribute} NumberValidator Uses this object.
+     */
     validator: {
         value: new NumberValidator()
     },
 
-   /**
-        @type {Property}
-        @default {String} null
-    */
+    /**
+     * @type {Property}
+     * @default {String} null
+     */
         // valid fn values are:
     shorten: {
         value: null
     },
+
     /**
-        @type {Property}
-        @default {Number} 2
-    */
+     * @type {Property}
+     * @default {Number} 2
+     */
     decimals: {
         value: 2
     },
 
     /**
-        @type {Property}
-        @default {Number} null
-    */
+     * @type {Property}
+     * @default {Number} null
+     */
     round: {
         value: null
     },
 
-   /**
-  @private
-*/
+    /**
+     * @private
+     */
     _reg: {
         value: /(\d+)(\d{3})/
     },
 
     /**
-        @type {Property}
-        @default {Boolean} true
-    */
+     * @type {Property}
+     * @default {Boolean} true
+     */
     allowFloat: {
         value: true
     },
+
     /**
-        @type {Property}
-        @default {Boolean} true
-    */
+     * @type {Property}
+     * @default {Boolean} true
+     */
     allowNegative: {
         value: true
     },
 
     // credit: sugar.js - https://github.com/andrewplummer/Sugar
     /**
-     @private
+     * @private
      */
     _makeReadable: {
         value: function(num, comma, period) {
@@ -341,13 +344,14 @@ var NumberConverter = exports.NumberConverter = Converter.specialize( /** @lends
             return numeric + decimal;
         }
     },
+
     /**
-     @function
-     @param {Value} v The value to convert.
-     @returns this._makeReadable(num)
+     * @function
+     * @param {number} value The value to convert.
+     * @returns {String}
      */
     convert: {
-        value: function(v) {
+        value: function(value) {
             if (this.shorten) {
                 // shorten the number to 10K, 100K, 1M etc
                 return numericValueToString(v, this.decimals);
@@ -367,8 +371,13 @@ var NumberConverter = exports.NumberConverter = Converter.specialize( /** @lends
     },
 
     /**
-     @function
-     @param {String} stringValue The value of the string.
+     * @function
+     * @param {String} stringValue The string representation of a number.
+     * @returns {number} The numeric value validated with to {NumberConverter#validator}.
+     * @throws {Error} if the return value of {NumberConverter#validator#validate} is not a number
+     * @see NumberConverter#validator
+     * @see NumberConverter#allowFloat
+     * @see NumberConverter#allowNegative
      */
     revert: {
         value: function(stringValue) {

@@ -1,18 +1,18 @@
 /* <copyright>
 </copyright> */
  /**
-  @version: 1.0 Alpha-1
-  @author: Coolite Inc. http://www.coolite.com/
-  @date: 2008-04-13
-  @copyright: Copyright (c) 2006-2008, Coolite Inc. (http://www.coolite.com/). All rights reserved.
-  @license: Licensed under The MIT License. See license.txt and http://www.datejs.com/license/.
-  @website: http://www.datejs.com/
+  * @version: 1.0 Alpha-1
+  * @author: Coolite Inc. http://www.coolite.com/
+  * @date: 2008-04-13
+  * @copyright: Copyright (c) 2006-2008, Coolite Inc. (http://www.coolite.com/). All rights reserved.
+  * @license: Licensed under The MIT License. See license.txt and http://www.datejs.com/license/.
+  * @website: http://www.datejs.com/
   */
 /**
-	@module montage/core/converter/date-converter
-    @requires montage/core/core
-    @requires montage/core/converter/converter
-*/
+ * @module montage/core/converter/date-converter
+ * @requires montage/core/core
+ * @requires montage/core/converter/converter
+ */
 var Montage = require("montage").Montage,
     Converter = require("core/converter/converter").Converter,
     Validator = require("core/converter/converter").Validator;
@@ -29,10 +29,10 @@ var Montage = require("montage").Montage,
         };
 
     /**
-        Resets the time of this Date object to 12:00 AM (00:00), which is the start of the day.
-        @function
-        @param {Boolean} .clone() this date instance before clearing Time
-        @return {Date} itself
+     * Resets the time of this Date object to 12:00 AM (00:00), which is the start of the day.
+     * @function
+     * @param {Boolean} .clone() this date instance before clearing Time
+     * @return {Date} itself
      */
     $P.clearTime = function () {
         this.setHours(0);
@@ -44,8 +44,8 @@ var Montage = require("montage").Montage,
 
     /**
      * Resets the time of this Date object to the current time ('now').
-        @function
-        @return {Date} itself
+     * @function
+     * @return {Date} itself
      */
     $P.setTimeToNow = function () {
         var n = new Date();
@@ -57,20 +57,20 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Gets a date that is set to the current date. The time is set to the start of the day (00:00 or 12:00 AM).
-        @function
-        @return {Date} The current date.
+     * Gets a date that is set to the current date. The time is set to the start of the day (00:00 or 12:00 AM).
+     * @function
+     * @return {Date} The current date.
      */
     $D.today = function () {
         return new Date().clearTime();
     };
 
     /**
-        Compares the first date to the second date and returns an number indication of their relative values.
-        @function
-        @param {Date} First Date object to compare [Required].
-        @param {Date} Second Date object to compare to [Required].
-        @return {Number} -1 = date1 is lessthan date2. 0 = values are equal. 1 = date1 is greaterthan date2.
+     * Compares the first date to the second date and returns an number indication of their relative values.
+     * @function
+     * @param {Date} First Date object to compare [Required].
+     * @param {Date} Second Date object to compare to [Required].
+     * @return {Number} -1 = date1 is lessthan date2. 0 = values are equal. 1 = date1 is greaterthan date2.
      */
     $D.compare = function (date1, date2) {
         if (isNaN(date1) || isNaN(date2)) {
@@ -83,21 +83,21 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Compares the first Date object to the second Date object and returns true if they are equal.
-        @function
-        @param {Date} First Date object to compare [Required]
-        @param {Date} Second Date object to compare to [Required]
-        @return {Boolean} true if dates are equal. false if they are not equal.
+     * Compares the first Date object to the second Date object and returns true if they are equal.
+     * @function
+     * @param {Date} First Date object to compare [Required]
+     * @param {Date} Second Date object to compare to [Required]
+     * @return {Boolean} true if dates are equal. false if they are not equal.
      */
     $D.equals = function (date1, date2) {
         return (date1.compareTo(date2) === 0);
     };
 
     /**
-        Gets the day number (0-6) if given a CultureInfo specific string which is a valid dayName, abbreviatedDayName or shortestDayName (two char).
-        @function
-        @param {String}   The name of the day (eg. "Monday, "Mon", "tuesday", "tue", "We", "we").
-        @return {Number}  The day number
+     * Gets the day number (0-6) if given a CultureInfo specific string which is a valid dayName, abbreviatedDayName or shortestDayName (two char).
+     * @function
+     * @param {String}   The name of the day (eg. "Monday, "Mon", "tuesday", "tue", "We", "we").
+     * @return {Number}  The day number
      */
     $D.getDayNumberFromName = function (name) {
         var n = $C.dayNames, m = $C.abbreviatedDayNames, o = $C.shortestDayNames, s = name.toLowerCase();
@@ -110,10 +110,10 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Gets the month number (0-11) if given a Culture Info specific string which is a valid monthName or abbreviatedMonthName.
-        @function
-        @param {String}   The name of the month (eg. "February, "Feb", "october", "oct").
-        @return {Number}  The day number
+     * Gets the month number (0-11) if given a Culture Info specific string which is a valid monthName or abbreviatedMonthName.
+     * @function
+     * @param {String}   The name of the month (eg. "February, "Feb", "october", "oct").
+     * @return {Number}  The day number
      */
     $D.getMonthNumberFromName = function (name) {
         var n = $C.monthNames, m = $C.abbreviatedMonthNames, s = name.toLowerCase();
@@ -126,31 +126,31 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Determines if the current date instance is within a LeapYear.
-        @function
-        @param {Number}   The year.
-        @return {Boolean} true if date is within a LeapYear, otherwise false.
+     * Determines if the current date instance is within a LeapYear.
+     * @function
+     * @param {Number}   The year.
+     * @return {Boolean} true if date is within a LeapYear, otherwise false.
      */
     $D.isLeapYear = function (year) {
         return ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0);
     };
 
     /**
-        Gets the number of days in the month, given a year and month value. Automatically corrects for LeapYear.
-        @function
-        @param {Number}   The year.
-        @param {Number}   The month (0-11).
-        @return {Number}  The number of days in the month.
+     * Gets the number of days in the month, given a year and month value. Automatically corrects for LeapYear.
+     * @function
+     * @param {Number}   The year.
+     * @param {Number}   The month (0-11).
+     * @return {Number}  The number of days in the month.
      */
     $D.getDaysInMonth = function (year, month) {
         return [31, ($D.isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
     };
 
-   /**
-    @function
-    @param {Number} offset
-    @returns null
-    */
+    /**
+     * @function
+     * @param {Number} offset
+     * @returns null
+     */
     $D.getTimezoneAbbreviation = function (offset) {
         var z = $C.timezones, p;
         for (var i = 0; i < z.length; i++) {
@@ -160,11 +160,11 @@ var Montage = require("montage").Montage,
         }
         return null;
     };
-     /**
-    @function
-    @param {String} name
-    @returns null
-    */
+    /**
+     * @function
+     * @param {String} name
+     * @returns null
+     */
     $D.getTimezoneOffset = function (name) {
         var z = $C.timezones, p;
         for (var i = 0; i < z.length; i++) {
@@ -176,87 +176,87 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Returns a new Date object that is an exact date and time copy of the original instance.
-        @function
-        @return {Date} A new Date instance
+     * Returns a new Date object that is an exact date and time copy of the original instance.
+     * @function
+     * @return {Date} A new Date instance
      */
     $P.clone = function () {
         return new Date(this.getTime());
     };
 
     /**
-        Compares this instance to a Date object and returns an number indication of their relative values.
-        @function
-        @param {Date} Date Object to compare [Required].
-        @return {Number} -1 = This is less-than date. 0 = values are equal. 1 = this is greater-than date.
+     * Compares this instance to a Date object and returns an number indication of their relative values.
+     * @function
+     * @param {Date} Date Object to compare [Required].
+     * @return {Number} -1 = This is less-than date. 0 = values are equal. 1 = this is greater-than date.
      */
     $P.compareTo = function (date) {
         return Date.compare(this, date);
     };
 
     /**
-        Compares this instance to another Date object and returns true if they are equal.
-        @function
-        @param {Date} Date Object to compare. If no date to compare, new Date() [now] is used.
-        @return {Boolean} true If dates are equal. False if they are not equal.
+     * Compares this instance to another Date object and returns true if they are equal.
+     * @function
+     * @param {Date} Date Object to compare. If no date to compare, new Date() [now] is used.
+     * @return {Boolean} true If dates are equal. False if they are not equal.
      */
     $P.equals = function (date) {
         return Date.equals(this, date || new Date());
     };
 
     /**
-        Determines if this instance is between a range of two dates or equal to either the start or end dates.
-        @function
-        @param {Date} start Of range [Required]
-        @param {Date} end Of range [Required]
-        @return {Boolean} true This is between or equal to the start and end dates, else false.
+     * Determines if this instance is between a range of two dates or equal to either the start or end dates.
+     * @function
+     * @param {Date} start Of range [Required]
+     * @param {Date} end Of range [Required]
+     * @return {Boolean} true This is between or equal to the start and end dates, else false.
      */
     $P.between = function (start, end) {
         return this.getTime() >= start.getTime() && this.getTime() <= end.getTime();
     };
 
     /**
-        Determines if this date occurs after the date to compare to.
-        @function
-        @param {Date}     Date object to compare. If no date to compare, new Date() ("now") is used.
-        @return {Boolean} true if this date instance is greater than the date to compare to (or "now"), otherwise false.
+     * Determines if this date occurs after the date to compare to.
+     * @function
+     * @param {Date}     Date object to compare. If no date to compare, new Date() ("now") is used.
+     * @return {Boolean} true if this date instance is greater than the date to compare to (or "now"), otherwise false.
      */
     $P.isAfter = function (date) {
         return this.compareTo(date || new Date()) === 1;
     };
 
     /**
-        Determines if this date occurs before the date to compare to.
-        @function
-        @param {Date}     date object to compare. If no date to compare, new Date() ("now") is used.
-        @return {Boolean} true if this date instance is less than the date to compare to (or "now").
+     * Determines if this date occurs before the date to compare to.
+     * @function
+     * @param {Date}     date object to compare. If no date to compare, new Date() ("now") is used.
+     * @return {Boolean} true if this date instance is less than the date to compare to (or "now").
      */
     $P.isBefore = function (date) {
         return (this.compareTo(date || new Date()) === -1);
     };
 
     /*
-        Determines if the current Date instance occurs today.
-        @function
-        @return {Boolean} true if this date instance is 'today', otherwise false.
+     * Determines if the current Date instance occurs today.
+     * @function
+     * @return {Boolean} true if this date instance is 'today', otherwise false.
      */
 
     /**
-        Determines if the current Date instance occurs on the same Date as the supplied 'date'.
-        If no 'date' to compare to is provided, the current Date instance is compared to 'today'.
-        @function
-        @param {Date} date object to compare. If no date to compare, the current Date ("now") is used.
-        @return {Boolean} true if this Date instance occurs on the same Day as the supplied 'date'.
+     * Determines if the current Date instance occurs on the same Date as the supplied 'date'.
+     * If no 'date' to compare to is provided, the current Date instance is compared to 'today'.
+     * @function
+     * @param {Date} date object to compare. If no date to compare, the current Date ("now") is used.
+     * @return {Boolean} true if this Date instance occurs on the same Day as the supplied 'date'.
      */
     $P.isToday = $P.isSameDay = function (date) {
         return this.clone().clearTime().equals((date || new Date()).clone().clearTime());
     };
 
     /**
-        Adds the specified number of milliseconds to this instance.
-        @function
-        @param {Number} value   The number of milliseconds to add. The number can be positive or negative [Required]
-        @return {Date}    this
+     * Adds the specified number of milliseconds to this instance.
+     * @function
+     * @param {Number} value   The number of milliseconds to add. The number can be positive or negative [Required]
+     * @return {Date}    this
      */
     $P.addMilliseconds = function (value) {
         this.setMilliseconds(this.getMilliseconds() + value * 1);
@@ -264,20 +264,20 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Adds the specified number of seconds to this instance.
-        @function
-        @param {Number} value  The number of seconds to add. The number can be positive or negative [Required]
-        @return {Date}    this
+     * Adds the specified number of seconds to this instance.
+     * @function
+     * @param {Number} value  The number of seconds to add. The number can be positive or negative [Required]
+     * @return {Date}    this
      */
     $P.addSeconds = function (value) {
         return this.addMilliseconds(value * 1000);
     };
 
     /**
-        Adds the specified number of seconds to this instance.
-        @function
-        @param {Number} value  The number of seconds to add. The number can be positive or negative [Required]
-        @return {Date}    this
+     * Adds the specified number of seconds to this instance.
+     * @function
+     * @param {Number} value  The number of seconds to add. The number can be positive or negative [Required]
+     * @return {Date}    this
      */
     $P.addMinutes = function (value) {
         return this.addMilliseconds(value * 60000);
@@ -285,10 +285,10 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Adds the specified number of hours to this instance.
-        @function
-        @param {Number} value  The number of hours to add. The number can be positive or negative [Required]
-        @return {Date}  this
+     * Adds the specified number of hours to this instance.
+     * @function
+     * @param {Number} value  The number of hours to add. The number can be positive or negative [Required]
+     * @return {Date}  this
      */
     $P.addHours = function (value) {
         return this.addMilliseconds(value * 3600000);
@@ -296,10 +296,10 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Adds the specified number of days to this instance.
-        @function
-        @param {Number} value  The number of days to add. The number can be positive or negative [Required]
-        @return {Date}  this
+     * Adds the specified number of days to this instance.
+     * @function
+     * @param {Number} value  The number of days to add. The number can be positive or negative [Required]
+     * @return {Date}  this
      */
     $P.addDays = function (value) {
         this.setDate(this.getDate() + value * 1);
@@ -307,20 +307,20 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Adds the specified number of weeks to this instance.
-        @function
-        @param {Number} value  The number of weeks to add. The number can be positive or negative [Required]
-        @return {Date}  this.addDays(value * 7)
+     * Adds the specified number of weeks to this instance.
+     * @function
+     * @param {Number} value  The number of weeks to add. The number can be positive or negative [Required]
+     * @return {Date}  this.addDays(value * 7)
      */
     $P.addWeeks = function (value) {
         return this.addDays(value * 7);
     };
 
     /**
-        Adds the specified number of months to this instance.
-        @function
-        @param {Number} value  The number of months to add. The number can be positive or negative [Required]
-        @return {Date}  this
+     * Adds the specified number of months to this instance.
+     * @function
+     * @param {Number} value  The number of months to add. The number can be positive or negative [Required]
+     * @return {Date}  this
      */
     $P.addMonths = function (value) {
         var n = this.getDate();
@@ -331,25 +331,22 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Adds the specified number of years to this instance.
-        @param {Number} value  The number of years to add. The number can be positive or negative [Required]
-        @return {Date}    this
+     * Adds the specified number of years to this instance.
+     * @param {Number} value  The number of years to add. The number can be positive or negative [Required]
+     * @return {Date}    this
      */
     $P.addYears = function (value) {
         return this.addMonths(value * 12);
     };
 
     /**
-        Adds (or subtracts) to the value of the years, months, weeks, days, hours, minutes, seconds, milliseconds of the date instance using given configuration object. Positive and Negative values allowed.
-        @function
-        @param {Object} config  Configuration object containing attributes (months, days, etc.)
-        @return {Date}  this
-        @example
-        <pre><code>
-         Date.today().add( { days: 1, months: 1 } )
-
-         new Date().add( { years: -1 } )
-        </code></pre>
+     * Adds (or subtracts) to the value of the years, months, weeks, days, hours, minutes, seconds, milliseconds of the date instance using given configuration object. Positive and Negative values allowed.
+     * @function
+     * @param {Object} config  Configuration object containing attributes (months, days, etc.)
+     * @return {Date}  this
+     * @example
+     * Date.today().add( { days: 1, months: 1 } )
+     * new Date().add( { years: -1 } )
      */
     $P.add = function (config) {
         if (typeof config == "number") {
@@ -389,12 +386,12 @@ var Montage = require("montage").Montage,
     var $y, $m, $d;
 
     /**
-        Get the week number. Week one (1) is the week which contains the first Thursday of the year. Monday is considered the first day of the week.
-        This algorithm is a JavaScript port of the work presented by Claus Tøndering at http://www.tondering.dk/claus/cal/node8.html#SECTION00880000000000000000
-        .getWeek() Algorithm Copyright (c) 2008 Claus Tondering.
-        The .getWeek() function does NOT convert the date to UTC. The local datetime is used. Please use .getISOWeek() to get the week of the UTC converted date.
-        @function
-        @return {Number}  1 to 53
+     * Get the week number. Week one (1) is the week which contains the first Thursday of the year. Monday is considered the first day of the week.
+     * This algorithm is a JavaScript port of the work presented by Claus Tøndering at http://www.tondering.dk/claus/cal/node8.html#SECTION00880000000000000000
+     * .getWeek() Algorithm Copyright (c) 2008 Claus Tondering.
+     * The .getWeek() function does NOT convert the date to UTC. The local datetime is used. Please use .getISOWeek() to get the week of the UTC converted date.
+     * @function
+     * @return {Number}  1 to 53
      */
     $P.getWeek = function () {
         var a, b, c, d, e, f, g, n, s, w;
@@ -437,10 +434,10 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Get the ISO 8601 week number. Week one ("01") is the week which contains the first Thursday of the year. Monday is considered the first day of the week.
-        The .getISOWeek() function does convert the date to it's UTC value. Please use .getWeek() to get the week of the local date.
-        @function
-        @return {String}  "01" to "53"
+     * Get the ISO 8601 week number. Week one ("01") is the week which contains the first Thursday of the year. Monday is considered the first day of the week.
+     * The .getISOWeek() function does convert the date to it's UTC value. Please use .getWeek() to get the week of the local date.
+     * @function
+     * @return {String}  "01" to "53"
      */
     $P.getISOWeek = function () {
         $y = this.getUTCFullYear();
@@ -450,19 +447,19 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Moves the date to Monday of the week set. Week one (1) is the week which contains the first Thursday of the year.
-        @function
-        @param {Number} n  A Number (1 to 53) that represents the week of the year.
-        @return {Date}    this
+     * Moves the date to Monday of the week set. Week one (1) is the week which contains the first Thursday of the year.
+     * @function
+     * @param {Number} n  A Number (1 to 53) that represents the week of the year.
+     * @return {Date}    this
      */
     $P.setWeek = function (n) {
         return this.moveToDayOfWeek(1).addWeeks(n - this.getWeek());
     };
 
     // private
-/**
-  @private
-*/
+    /**
+     * @private
+     */
     var validate = function (n, min, max, name) {
         if (typeof n == "undefined") {
             return false;
@@ -475,10 +472,10 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Validates the number is within an acceptable range for milliseconds [0-999].
-        @function
-        @param {Number} value  The number to check if within range.
-        @return {Boolean} true if within range, otherwise false.
+     * Validates the number is within an acceptable range for milliseconds [0-999].
+     * @function
+     * @param {Number} value  The number to check if within range.
+     * @return {Boolean} true if within range, otherwise false.
      */
     $D.validateMillisecond = function (value) {
         return validate(value, 0, 999, "millisecond");
@@ -495,68 +492,65 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Validates the number is within an acceptable range for minutes [0-59].
-        @function
-        @param {Number} value  The number to check if within range.
-        @return {Boolean} true if within range, otherwise false.
+     * Validates the number is within an acceptable range for minutes [0-59].
+     * @function
+     * @param {Number} value  The number to check if within range.
+     * @return {Boolean} true if within range, otherwise false.
      */
     $D.validateMinute = function (value) {
         return validate(value, 0, 59, "minute");
     };
 
     /**
-        Validates the number is within an acceptable range for hours [0-23].
-        @function
-        @param {Number} value  The number to check if within range.
-        @return {Boolean} true If within range, otherwise false.
+     * Validates the number is within an acceptable range for hours [0-23].
+     * @function
+     * @param {Number} value  The number to check if within range.
+     * @return {Boolean} true If within range, otherwise false.
      */
     $D.validateHour = function (value) {
         return validate(value, 0, 23, "hour");
     };
 
     /**
-        Validates the number is within an acceptable range for the days in a month [0-MaxDaysInMonth].
-        @function
-        @param {Number} value  The number to check if within range.
-        @param {Number} year  The number to check if within range.
-        @param {Number} month  The number to check if within range.
-        @return {Boolean} true if within range, otherwise false.
+     * Validates the number is within an acceptable range for the days in a month [0-MaxDaysInMonth].
+     * @function
+     * @param {Number} value  The number to check if within range.
+     * @param {Number} year  The number to check if within range.
+     * @param {Number} month  The number to check if within range.
+     * @return {Boolean} true if within range, otherwise false.
      */
     $D.validateDay = function (value, year, month) {
         return validate(value, 1, $D.getDaysInMonth(year, month), "day");
     };
 
     /**
-        Validates the number is within an acceptable range for months [0-11].
-        @function
-        @param {Number} value  The number to check if within range.
-        @return {Boolean} true if within range, otherwise false.
+     * Validates the number is within an acceptable range for months [0-11].
+     * @function
+     * @param {Number} value  The number to check if within range.
+     * @return {Boolean} true if within range, otherwise false.
      */
     $D.validateMonth = function (value) {
         return validate(value, 0, 11, "month");
     };
 
     /**
-        Validates the number is within an acceptable range for years.
-        @function
-        @param {Number} value  The number to check if within range.
-        @return {Boolean} true if within range, otherwise false.
+     * Validates the number is within an acceptable range for years.
+     * @function
+     * @param {Number} value  The number to check if within range.
+     * @return {Boolean} true if within range, otherwise false.
      */
     $D.validateYear = function (value) {
         return validate(value, 0, 9999, "year");
     };
 
     /**
-        Set the value of year, month, day, hour, minute, second, millisecond of date instance using given configuration object.
-        @function
-        @param {Object} config Configuration object containing attributes (month, day, etc.)
-        @return {Date} this
-        @example
-        <pre><code>
-        Date.today().set( { day: 20, month: 1 } )
-
-        new Date().set( { millisecond: 0 } )
-        </code></pre>
+     * Set the value of year, month, day, hour, minute, second, millisecond of date instance using given configuration object.
+     * @function
+     * @param {Object} config Configuration object containing attributes (month, day, etc.)
+     * @return {Date} this
+     * @example
+     * Date.today().set( { day: 20, month: 1 } )
+     * new Date().set( { millisecond: 0 } )
      */
     $P.set = function (config) {
         if ($D.validateMillisecond(config.millisecond)) {
@@ -604,29 +598,29 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Moves the date to the first day of the month.
-        @function
-        @return {Date} this
+     * Moves the date to the first day of the month.
+     * @function
+     * @return {Date} this
      */
     $P.moveToFirstDayOfMonth = function () {
         return this.set({ day: 1 });
     };
 
     /**
-        Moves the date to the last day of the month.
-        @function
-        @return {Date} this
+     * Moves the date to the last day of the month.
+     * @function
+     * @return {Date} this
      */
     $P.moveToLastDayOfMonth = function () {
         return this.set({ day: $D.getDaysInMonth(this.getFullYear(), this.getMonth())});
     };
 
     /**
-        Moves the date to the next n'th occurrence of the dayOfWeek starting from the beginning of the month. The number (-1) is a magic number and will return the last occurrence of the dayOfWeek in the month.
-        @function
-        @param {Number} dayOfWeek  The dayOfWeek to move to.
-        @param {Number} occurrence  The n'th occurrence to move to. Use (-1) to return the last occurrence in the month.
-        @return {Date}    this
+     * Moves the date to the next n'th occurrence of the dayOfWeek starting from the beginning of the month. The number (-1) is a magic number and will return the last occurrence of the dayOfWeek in the month.
+     * @function
+     * @param {Number} dayOfWeek  The dayOfWeek to move to.
+     * @param {Number} occurrence  The n'th occurrence to move to. Use (-1) to return the last occurrence in the month.
+     * @return {Date}    this
      */
     $P.moveToNthOccurrence = function (dayOfWeek, occurrence) {
         var shift = 0;
@@ -644,11 +638,11 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Move to the next or last dayOfWeek based on the orient value.
-        @function
-        @param {Number} dayOfWeek The dayOfWeek to move to
-        @param {Number} orient  Forward (+1) or Back (-1). Defaults to +1. [Optional]
-        @return {Date}    this
+     * Move to the next or last dayOfWeek based on the orient value.
+     * @function
+     * @param {Number} dayOfWeek The dayOfWeek to move to
+     * @param {Number} orient  Forward (+1) or Back (-1). Defaults to +1. [Optional]
+     * @return {Date}    this
      */
     $P.moveToDayOfWeek = function (dayOfWeek, orient) {
         var diff = (dayOfWeek - this.getDay() + 7 * (orient || +1)) % 7;
@@ -656,11 +650,11 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Move to the next or last month based on the orient value.
-        @function
-        @param {Number} month  The month to move to. 0 = January, 11 = December
-        @param {Number} orient  Forward (+1) or Back (-1). Defaults to +1. [Optional]
-        @return {Date}    this
+     * Move to the next or last month based on the orient value.
+     * @function
+     * @param {Number} month  The month to move to. 0 = January, 11 = December
+     * @param {Number} orient  Forward (+1) or Back (-1). Defaults to +1. [Optional]
+     * @return {Date}    this
      */
     $P.moveToMonth = function (month, orient) {
         var diff = (month - this.getMonth() + 12 * (orient || +1)) % 12;
@@ -668,62 +662,62 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Get the Ordinal day (numeric day number) of the year, adjusted for leap year.
-        @function
-        @return {Number} 1 through 365 (366 in leap years)
+     * Get the Ordinal day (numeric day number) of the year, adjusted for leap year.
+     * @function
+     * @return {Number} 1 through 365 (366 in leap years)
      */
     $P.getOrdinalNumber = function () {
         return Math.ceil((this.clone().clearTime() - new Date(this.getFullYear(), 0, 1)) / 86400000) + 1;
     };
 
     /**
-        Get the time zone abbreviation of the current date.
-        @function
-        @return {String} The abbreviated time zone name (e.g. "EST")
+     * Get the time zone abbreviation of the current date.
+     * @function
+     * @return {String} The abbreviated time zone name (e.g. "EST")
      */
     $P.getTimezone = function () {
         return $D.getTimezoneAbbreviation(this.getUTCOffset());
     };
     /**
-        @function
-        @param {Number} offset
-        @return {Number} this.addMinutes(there - here)
+     * @function
+     * @param {Number} offset
+     * @return {Number} this.addMinutes(there - here)
      */
     $P.setTimezoneOffset = function (offset) {
         var here = this.getTimezoneOffset(), there = Number(offset) * -6 / 10;
         return this.addMinutes(there - here);
     };
     /**
-        @function
-        @param {Number} offset
-        @return {Number} this.setTimezoneOffset($D.getTimezoneOffset(offset))
+     * @function
+     * @param {Number} offset
+     * @return {Number} this.setTimezoneOffset($D.getTimezoneOffset(offset))
      */
     $P.setTimezone = function (offset) {
         return this.setTimezoneOffset($D.getTimezoneOffset(offset));
     };
 
     /**
-        Indicates whether Daylight Saving Time is observed in the current time zone.
-        @function
-        @return {Boolean} true|false
+     * Indicates whether Daylight Saving Time is observed in the current time zone.
+     * @function
+     * @return {Boolean} true|false
      */
     $P.hasDaylightSavingTime = function () {
         return (Date.today().set({month: 0, day: 1}).getTimezoneOffset() !== Date.today().set({month: 6, day: 1}).getTimezoneOffset());
     };
 
     /**
-        Indicates whether this Date instance is within the Daylight Saving Time range for the current time zone.
-        @function
-        @return {Boolean} true|false
+     * Indicates whether this Date instance is within the Daylight Saving Time range for the current time zone.
+     * @function
+     * @return {Boolean} true|false
      */
     $P.isDaylightSavingTime = function () {
         return Date.today().set({month: 0, day: 1}).getTimezoneOffset() != this.getTimezoneOffset();
     };
 
     /**
-        Get the offset from UTC of the current date.
-        @function
-        @return {String} The 4-character offset string prefixed with + or - (e.g. "-0500").
+     * Get the offset from UTC of the current date.
+     * @function
+     * @return {String} The 4-character offset string prefixed with + or - (e.g. "-0500").
      */
     $P.getUTCOffset = function () {
         var n = this.getTimezoneOffset() * -10 / 6, r;
@@ -737,10 +731,10 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Returns the number of milliseconds between this date and date.
-        @function
-        @param {Date} date Defaults to now
-        @return {Number} The diff in milliseconds
+     * Returns the number of milliseconds between this date and date.
+     * @function
+     * @param {Date} date Defaults to now
+     * @return {Number} The diff in milliseconds
      */
     $P.getElapsed = function (date) {
         return (date || new Date()) - this;
@@ -769,8 +763,8 @@ var Montage = require("montage").Montage,
 
     // private
     /**
-  @private
-*/
+     * @private
+     */
     $P._toString = $P.toString;
 
     /**
@@ -841,10 +835,10 @@ var Montage = require("montage").Montage,
      y      The CultureInfo yearMonth Format Pattern                                     "MMMM, yyyy"
      </pre>
      */
-     /**
-        @function
-        @param {String} format  A format string consisting of one or more format spcifiers [Optional].
-        @return {String}  A string representation of the current Date object.
+    /**
+     * @function
+     * @param {String} format  A format string consisting of one or more format spcifiers [Optional].
+     * @return {String}  A string representation of the current Date object.
      */
     $P.toString = function (format) {
         var x = this;
@@ -989,19 +983,17 @@ var Montage = require("montage").Montage,
         twoDigitYearMax: 2029,
 
         /**
-         The dateElementOrder is based on the order of the format specifiers in the formatPatterns.DatePattern.
-         @example:
-         <pre>
-         shortDatePattern    dateElementOrder
-         ------------------  ----------------
-         "M/d/yyyy"          "mdy"
-         "dd/MM/yyyy"        "dmy"
-         "yyyy-MM-dd"        "ymd"
-         </pre>
-
-         The correct dateElementOrder is required by the parser to
-         determine the expected order of the date elements in the
-         string being parsed.
+         * The dateElementOrder is based on the order of the format specifiers in the formatPatterns.DatePattern.
+         * @example:
+         * shortDatePattern    dateElementOrder
+         * ------------------  ----------------
+         * "M/d/yyyy"          "mdy"
+         * "dd/MM/yyyy"        "dmy"
+         * "yyyy-MM-dd"        "ymd"
+         *
+         * The correct dateElementOrder is required by the parser to
+         * determine the expected order of the date elements in the
+         * string being parsed.
          */
         dateElementOrder: "mdy",
 
@@ -1169,12 +1161,12 @@ var Montage = require("montage").Montage,
      * long                long
      * short               short
      */
-/**
-    @function
-    @param {String} s
-    @param {Number} 1
-    @returns ("000" + s).slice(l * -1)
-    */
+    /**
+     * @function
+     * @param {String} s
+     * @param {Number} 1
+     * @returns ("000" + s).slice(l * -1)
+     */
     var p = function (s, l) {
         if (!l) {
             l = 2;
@@ -1183,75 +1175,73 @@ var Montage = require("montage").Montage,
     };
 
     /**
-        Converts the value of the current Date object to its equivalent string representation.
-        Format Specifiers
-        @function
-        @param {String} format  A format string consisting of one or more format spcifiers [Optional].
-        @return {String}  A string representation of the current Date object.
-        @example
-     <pre>
-     CUSTOM DATE AND TIME FORMAT STRINGS
-     Format  Description                                                                  Example
-     ------  ---------------------------------------------------------------------------  -----------------------
-     s      The seconds of the minute between 0-59.                                      "0" to "59"
-     ss     The seconds of the minute with leading zero if required.                     "00" to "59"
-
-     m      The minute of the hour between 0-59.                                         "0"  or "59"
-     mm     The minute of the hour with leading zero if required.                        "00" or "59"
-
-     h      The hour of the day between 1-12.                                            "1"  to "12"
-     hh     The hour of the day with leading zero if required.                           "01" to "12"
-
-     H      The hour of the day between 0-23.                                            "0"  to "23"
-     HH     The hour of the day with leading zero if required.                           "00" to "23"
-
-     d      The day of the month between 1 and 31.                                       "1"  to "31"
-     dd     The day of the month with leading zero if required.                          "01" to "31"
-     ddd    Abbreviated day name. Date.CultureInfo.abbreviatedDayNames.                                "Mon" to "Sun"
-     dddd   The full day name. Date.CultureInfo.dayNames.                                              "Monday" to "Sunday"
-
-     M      The month of the year between 1-12.                                          "1" to "12"
-     MM     The month of the year with leading zero if required.                         "01" to "12"
-     MMM    Abbreviated month name. Date.CultureInfo.abbreviatedMonthNames.                            "Jan" to "Dec"
-     MMMM   The full month name. Date.CultureInfo.monthNames.                                          "January" to "December"
-
-     yy     The year as a two-digit number.                                              "99" or "08"
-     yyyy   The full four digit year.                                                    "1999" or "2008"
-
-     t      Displays the first character of the A.M./P.M. designator.                    "A" or "P"
-     Date.CultureInfo.amDesignator or Date.CultureInfo.pmDesignator
-     tt     Displays the A.M./P.M. designator.                                           "AM" or "PM"
-     Date.CultureInfo.amDesignator or Date.CultureInfo.pmDesignator
-
-     S      The ordinal suffix ("st, "nd", "rd" or "th") of the current day.            "st, "nd", "rd" or "th"
-
-     || *Format* || *Description* || *Example* ||
-     || d      || The CultureInfo shortDate Format Pattern                                     || "M/d/yyyy" ||
-     || D      || The CultureInfo longDate Format Pattern                                      || "dddd, MMMM dd, yyyy" ||
-     || F      || The CultureInfo fullDateTime Format Pattern                                  || "dddd, MMMM dd, yyyy h:mm:ss tt" ||
-     || m      || The CultureInfo monthDay Format Pattern                                      || "MMMM dd" ||
-     || r      || The CultureInfo rfc1123 Format Pattern                                       || "ddd, dd MMM yyyy HH:mm:ss GMT" ||
-     || s      || The CultureInfo sortableDateTime Format Pattern                              || "yyyy-MM-ddTHH:mm:ss" ||
-     || t      || The CultureInfo shortTime Format Pattern                                     || "h:mm tt" ||
-     || T      || The CultureInfo longTime Format Pattern                                      || "h:mm:ss tt" ||
-     || u      || The CultureInfo universalSortableDateTime Format Pattern                     || "yyyy-MM-dd HH:mm:ssZ" ||
-     || y      || The CultureInfo yearMonth Format Pattern                                     || "MMMM, yyyy" ||
-
-
-     STANDARD DATE AND TIME FORMAT STRINGS
-     Format  Description                                                                  Example ("en-US")
-     ------  ---------------------------------------------------------------------------  -----------------------
-     d      The CultureInfo shortDate Format Pattern                                     "M/d/yyyy"
-     D      The CultureInfo longDate Format Pattern                                      "dddd, MMMM dd, yyyy"
-     F      The CultureInfo fullDateTime Format Pattern                                  "dddd, MMMM dd, yyyy h:mm:ss tt"
-     m      The CultureInfo monthDay Format Pattern                                      "MMMM dd"
-     r      The CultureInfo rfc1123 Format Pattern                                       "ddd, dd MMM yyyy HH:mm:ss GMT"
-     s      The CultureInfo sortableDateTime Format Pattern                              "yyyy-MM-ddTHH:mm:ss"
-     t      The CultureInfo shortTime Format Pattern                                     "h:mm tt"
-     T      The CultureInfo longTime Format Pattern                                      "h:mm:ss tt"
-     u      The CultureInfo universalSortableDateTime Format Pattern                     "yyyy-MM-dd HH:mm:ssZ"
-     y      The CultureInfo yearMonth Format Pattern                                     "MMMM, yyyy"
-     </pre>
+     * Converts the value of the current Date object to its equivalent string representation.
+     * Format Specifiers
+     * @function
+     * @param {String} format  A format string consisting of one or more format spcifiers [Optional].
+     * @return {String}  A string representation of the current Date object.
+     * @example
+     * CUSTOM DATE AND TIME FORMAT STRINGS
+     * Format  Description                                                                  Example
+     * ------  ---------------------------------------------------------------------------  -----------------------
+     * s      The seconds of the minute between 0-59.                                      "0" to "59"
+     * ss     The seconds of the minute with leading zero if required.                     "00" to "59"
+     *
+     * m      The minute of the hour between 0-59.                                         "0"  or "59"
+     * mm     The minute of the hour with leading zero if required.                        "00" or "59"
+     *
+     * h      The hour of the day between 1-12.                                            "1"  to "12"
+     * hh     The hour of the day with leading zero if required.                           "01" to "12"
+     *
+     * H      The hour of the day between 0-23.                                            "0"  to "23"
+     * HH     The hour of the day with leading zero if required.                           "00" to "23"
+     *
+     * d      The day of the month between 1 and 31.                                       "1"  to "31"
+     * dd     The day of the month with leading zero if required.                          "01" to "31"
+     * ddd    Abbreviated day name. Date.CultureInfo.abbreviatedDayNames.                                "Mon" to "Sun"
+     * dddd   The full day name. Date.CultureInfo.dayNames.                                              "Monday" to "Sunday"
+     *
+     * M      The month of the year between 1-12.                                          "1" to "12"
+     * MM     The month of the year with leading zero if required.                         "01" to "12"
+     * MMM    Abbreviated month name. Date.CultureInfo.abbreviatedMonthNames.                            "Jan" to "Dec"
+     * MMMM   The full month name. Date.CultureInfo.monthNames.                                          "January" to "December"
+     *
+     * yy     The year as a two-digit number.                                              "99" or "08"
+     * yyyy   The full four digit year.                                                    "1999" or "2008"
+     *
+     * t      Displays the first character of the A.M./P.M. designator.                    "A" or "P"
+     * Date.CultureInfo.amDesignator or Date.CultureInfo.pmDesignator
+     * tt     Displays the A.M./P.M. designator.                                           "AM" or "PM"
+     * Date.CultureInfo.amDesignator or Date.CultureInfo.pmDesignator
+     *
+     * S      The ordinal suffix ("st, "nd", "rd" or "th") of the current day.            "st, "nd", "rd" or "th"
+     *
+     * || *Format* || *Description* || *Example* ||
+     * || d      || The CultureInfo shortDate Format Pattern                                     || "M/d/yyyy" ||
+     * || D      || The CultureInfo longDate Format Pattern                                      || "dddd, MMMM dd, yyyy" ||
+     * || F      || The CultureInfo fullDateTime Format Pattern                                  || "dddd, MMMM dd, yyyy h:mm:ss tt" ||
+     * || m      || The CultureInfo monthDay Format Pattern                                      || "MMMM dd" ||
+     * || r      || The CultureInfo rfc1123 Format Pattern                                       || "ddd, dd MMM yyyy HH:mm:ss GMT" ||
+     * || s      || The CultureInfo sortableDateTime Format Pattern                              || "yyyy-MM-ddTHH:mm:ss" ||
+     * || t      || The CultureInfo shortTime Format Pattern                                     || "h:mm tt" ||
+     * || T      || The CultureInfo longTime Format Pattern                                      || "h:mm:ss tt" ||
+     * || u      || The CultureInfo universalSortableDateTime Format Pattern                     || "yyyy-MM-dd HH:mm:ssZ" ||
+     * || y      || The CultureInfo yearMonth Format Pattern                                     || "MMMM, yyyy" ||
+     *
+     *
+     * STANDARD DATE AND TIME FORMAT STRINGS
+     * Format  Description                                                                  Example ("en-US")
+     * ------  ---------------------------------------------------------------------------  -----------------------
+     * d      The CultureInfo shortDate Format Pattern                                     "M/d/yyyy"
+     * D      The CultureInfo longDate Format Pattern                                      "dddd, MMMM dd, yyyy"
+     * F      The CultureInfo fullDateTime Format Pattern                                  "dddd, MMMM dd, yyyy h:mm:ss tt"
+     * m      The CultureInfo monthDay Format Pattern                                      "MMMM dd"
+     * r      The CultureInfo rfc1123 Format Pattern                                       "ddd, dd MMM yyyy HH:mm:ss GMT"
+     * s      The CultureInfo sortableDateTime Format Pattern                              "yyyy-MM-ddTHH:mm:ss"
+     * t      The CultureInfo shortTime Format Pattern                                     "h:mm tt"
+     * T      The CultureInfo longTime Format Pattern                                      "h:mm:ss tt"
+     * u      The CultureInfo universalSortableDateTime Format Pattern                     "yyyy-MM-dd HH:mm:ssZ"
+     * y      The CultureInfo yearMonth Format Pattern                                     "MMMM, yyyy"
      */
     Date.prototype.format = function (format) {
         var x = this;
@@ -2300,19 +2290,19 @@ var Montage = require("montage").Montage,
         "d"
     ]);
 
-   /**
-  @private
-*/
+    /**
+     * @private
+     */
     // starting rule for general purpose grammar
     g._start = _.process(_.set([ g.date, g.time, g.expression ],
         g.generalDelimiter, g.whiteSpace), t.finish);
 
     // real starting rule: tries selected formats first,
     // then general purpose rule
-/**
-    @function
-    @param {String} s
-    */
+    /**
+     * @function
+     * @param {String} s
+     */
     g.start = function (s) {
         try {
             var r = g._formats.call({}, s);
@@ -2323,109 +2313,108 @@ var Montage = require("montage").Montage,
         }
         return g._start.call({}, s);
     };
-/**
-  @private
-*/
+
+    /**
+     * @private
+     */
     $D._parse = $D.parse;
 
     /**
-        Converts the specified string value into its JavaScript Date equivalent using CultureInfo specific format information.
-        @function
-        @param {String} s  The string value to convert into a Date object [Required]
-        @return {Date} A Date object or null if the string cannot be converted into a Date.
-        @example
-     <pre><code>
-     ///////////
-     // Dates //
-     ///////////
-
-     // 15-Oct-2004
-     var d1 = Date.parse("10/15/2004");
-
-     // 15-Oct-2004
-     var d1 = Date.parse("15-Oct-2004");
-
-     // 15-Oct-2004
-     var d1 = Date.parse("2004.10.15");
-
-     //Fri Oct 15, 2004
-     var d1 = Date.parse("Fri Oct 15, 2004");
-
-     ///////////
-     // Times //
-     ///////////
-
-     // Today at 10 PM.
-     var d1 = Date.parse("10 PM");
-
-     // Today at 10:30 PM.
-     var d1 = Date.parse("10:30 P.M.");
-
-     // Today at 6 AM.
-     var d1 = Date.parse("06am");
-
-     /////////////////////
-     // Dates and Times //
-     /////////////////////
-
-     // 8-July-2004 @ 10:30 PM
-     var d1 = Date.parse("July 8th, 2004, 10:30 PM");
-
-     // 1-July-2004 @ 10:30 PM
-     var d1 = Date.parse("2004-07-01T22:30:00");
-
-     ////////////////////
-     // Relative Dates //
-     ////////////////////
-
-     // Returns today's date. The string "today" is culture specific.
-     var d1 = Date.parse("today");
-
-     // Returns yesterday's date. The string "yesterday" is culture specific.
-     var d1 = Date.parse("yesterday");
-
-     // Returns the date of the next thursday.
-     var d1 = Date.parse("Next thursday");
-
-     // Returns the date of the most previous monday.
-     var d1 = Date.parse("last monday");
-
-     // Returns today's day + one year.
-     var d1 = Date.parse("next year");
-
-     ///////////////
-     // Date Math //
-     ///////////////
-
-     // Today + 2 days
-     var d1 = Date.parse("t+2");
-
-     // Today + 2 days
-     var d1 = Date.parse("today + 2 days");
-
-     // Today + 3 months
-     var d1 = Date.parse("t+3m");
-
-     // Today - 1 year
-     var d1 = Date.parse("today - 1 year");
-
-     // Today - 1 year
-     var d1 = Date.parse("t-1y");
-
-
-     /////////////////////////////
-     // Partial Dates and Times //
-     /////////////////////////////
-
-     // July 15th of this year.
-     var d1 = Date.parse("July 15");
-
-     // 15th day of current day and year.
-     var d1 = Date.parse("15");
-
-     // July 1st of current year at 10pm.
-     var d1 = Date.parse("7/1 10pm");
-     </code></pre>
+     * Converts the specified string value into its JavaScript Date equivalent using CultureInfo specific format information.
+     * @function
+     * @param {String} s  The string value to convert into a Date object [Required]
+     * @return {Date} A Date object or null if the string cannot be converted into a Date.
+     * @example
+     * ///////////
+     * // Dates //
+     * ///////////
+     *
+     * // 15-Oct-2004
+     * var d1 = Date.parse("10/15/2004");
+     *
+     * // 15-Oct-2004
+     * var d1 = Date.parse("15-Oct-2004");
+     *
+     * // 15-Oct-2004
+     * var d1 = Date.parse("2004.10.15");
+     *
+     * //Fri Oct 15, 2004
+     * var d1 = Date.parse("Fri Oct 15, 2004");
+     *
+     * ///////////
+     * // Times //
+     * ///////////
+     *
+     * // Today at 10 PM.
+     * var d1 = Date.parse("10 PM");
+     *
+     * // Today at 10:30 PM.
+     * var d1 = Date.parse("10:30 P.M.");
+     *
+     * // Today at 6 AM.
+     * var d1 = Date.parse("06am");
+     *
+     * /////////////////////
+     * // Dates and Times //
+     * /////////////////////
+     *
+     * // 8-July-2004 @ 10:30 PM
+     * var d1 = Date.parse("July 8th, 2004, 10:30 PM");
+     *
+     * // 1-July-2004 @ 10:30 PM
+     * var d1 = Date.parse("2004-07-01T22:30:00");
+     *
+     * ////////////////////
+     * // Relative Dates //
+     * ////////////////////
+     *
+     * // Returns today's date. The string "today" is culture specific.
+     * var d1 = Date.parse("today");
+     *
+     * // Returns yesterday's date. The string "yesterday" is culture specific.
+     * var d1 = Date.parse("yesterday");
+     *
+     * // Returns the date of the next thursday.
+     * var d1 = Date.parse("Next thursday");
+     *
+     * // Returns the date of the most previous monday.
+     * var d1 = Date.parse("last monday");
+     *
+     * // Returns today's day + one year.
+     * var d1 = Date.parse("next year");
+     *
+     * ///////////////
+     * // Date Math //
+     * ///////////////
+     *
+     * // Today + 2 days
+     * var d1 = Date.parse("t+2");
+     *
+     * // Today + 2 days
+     * var d1 = Date.parse("today + 2 days");
+     *
+     * // Today + 3 months
+     * var d1 = Date.parse("t+3m");
+     *
+     * // Today - 1 year
+     * var d1 = Date.parse("today - 1 year");
+     *
+     * // Today - 1 year
+     * var d1 = Date.parse("t-1y");
+     *
+     *
+     * /////////////////////////////
+     * // Partial Dates and Times //
+     * /////////////////////////////
+     *
+     * // July 15th of this year.
+     * var d1 = Date.parse("July 15");
+     *
+     * // 15th day of current day and year.
+     * var d1 = Date.parse("15");
+     *
+     * // July 1st of current year at 10pm.
+     * var d1 = Date.parse("7/1 10pm");
      */
     $D.parse = function (s) {
         var r = null;
@@ -2518,25 +2507,26 @@ var formatDate = function(v, format) {
 
 
 /**
- Date Validator:
- @class DateValidator
- @classdesc Validate that date provided as string/number can be converted to a Date Object using the pattern provided.
- @extends Validator
+ * Date Validator:
+ * @class DateValidator
+ * @classdesc Validate that date provided as string/number can be converted to a Date Object using the pattern provided.
+ * @extends Validator
  */
 var DateValidator = exports.DateValidator = Validator.specialize(/** @lends DateValidator# */ {
 
     /**
-        @type {Property}
-        @default {Date} 'MM/dd/yyyy'
-    */
+     * @type {Property}
+     * @default {Date} 'MM/dd/yyyy'
+     */
     pattern: {
         value: 'MM/dd/yyyy'
     },
-   /**
-    @function
-    @param {Date} v Value.
-    //@returns {message: 'Unable to parse date - ' + v + ' in the format - ' + this.pattern} | new Date(result)
-    */
+
+    /**
+     * @function
+     * @param {Date} v Value.
+     * //@returns {message: 'Unable to parse date - ' + v + ' in the format - ' + this.pattern} | new Date(result)
+     */
     validate: {
         value: function(v) {
             // @todo - implement a Date validator that will accept all the date formats
@@ -2558,8 +2548,8 @@ var DateValidator = exports.DateValidator = Validator.specialize(/** @lends Date
 
 // Date Converter
 /**
-@class DateConverter
-*/
+ * @class DateConverter
+ */
 var DateConverter = exports.DateConverter = Converter.specialize(/** @lends DateConverter# */ {
     /**
      Specifies whether the converter allows partial conversion.
@@ -2570,27 +2560,28 @@ var DateConverter = exports.DateConverter = Converter.specialize(/** @lends Date
         value: false
     },
 
-/**
-        @type {Property}
-        @default {Function} new DateValidator()
-    */
+    /**
+     * @type {Property}
+     * @default {Function} new DateValidator()
+     */
     validator: {
         value: new DateValidator()
     },
 
     // valid fn values are:
-/**
-        @type {Property}
-        @default {Date} 'MM/dd/yyyy'
-    */
+    /**
+     * @type {Property}
+     * @default {Date} 'MM/dd/yyyy'
+     */
     pattern: {
         value: 'MM/dd/yyyy'
     },
+
     /**
-    @function
-    @param {Date} v Value.
-    @returns v
-    */
+     * @function
+     * @param {Date} v Value.
+     * @returns v
+     */
     convert: {
         value: function(v) {
             var t = typeof v;
@@ -2600,10 +2591,10 @@ var DateConverter = exports.DateConverter = Converter.specialize(/** @lends Date
             return v;
         }
     },
-/**
-    @function
-    @param {Date} v Value.
-    */
+    /**
+     * @function
+     * @param {Date} v Value.
+     */
     revert: {
         value: function(v) {
             if(isDate(v)) {

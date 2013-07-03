@@ -1,20 +1,20 @@
 /* <copyright>
 </copyright> */
 /**
-	@module montage/core/converter/trim-converter
-    @requires montage/core/core
-    @requires montage/core/converter/converter
-*/
+ * @module montage/core/converter/trim-converter
+ * @requires montage/core/core
+ * @requires montage/core/converter/converter
+ */
 var Montage = require("montage").Montage;
 var Converter = require('core/converter/converter').Converter;
 
 
 /**
-    Trims a string of any leading or trailing white space.
-    @memberof module:montage/core/converter#
-    @function
-    @param {String} str String to be trimmed.
-    @returns {String} The trimmed string.
+ * Trims a string of any leading or trailing white space.
+ * @memberof module:montage/core/converter#
+ * @function
+ * @param {String} str String to be trimmed.
+ * @returns {String} The trimmed string.
  */
 var trim = exports.trim = function(str) {
     // from Google Closure library
@@ -24,20 +24,20 @@ var trim = exports.trim = function(str) {
     return str.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
 };
 /**
-    @class TrimConverter
-    @classdesc Trims a string of white space.
-    @example
-    <caption>Removes leading and trailing white space from a string.</caption>
-    var Converter= require("core/converter/converter").Converter,
-    TrimConverter = require("core/converter/converter").TrimConverter;
-    var str = "      Hello World     ";
-    var trimConverter = new TrimConverter();
-    console.log("After trim: " + trimConverter.convert(str));
-    // After trim: Hello World
-*/
+ * @class TrimConverter
+ * @classdesc Trims a string of white space.
+ * @example
+ * <caption>Removes leading and trailing white space from a string.</caption>
+ * var Converter= require("core/converter/converter").Converter,
+ * TrimConverter = require("core/converter/converter").TrimConverter;
+ * var str = "      Hello World     ";
+ * var trimConverter = new TrimConverter();
+ * console.log("After trim: " + trimConverter.convert(str));
+ * // After trim: Hello World
+ */
 exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
     /**
-     @private
+     * @private
      */
     _convert: {
         value: function(v) {
@@ -48,19 +48,20 @@ exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
     },
 
     /**
-     Trims the provided string and returns the new string.
-     @function
-     @param {String} v The string to trim.
-     @returns this._convert(v)
+     * Trims the provided string and returns the new string.
+     * @function
+     * @param {String} v The string to trim.
+     * @returns this._convert(v)
      */
     convert: {value: function(v) {
         return this._convert(v);
     }},
+
     /**
-     Reverts the conversion.
-     @function
-     @param {String} v The string to revert.
-     @returns this._convert(v)
+     * Reverts the conversion.
+     * @function
+     * @param {String} v The string to revert.
+     * @returns this._convert(v)
      */
     revert: {value: function(v) {
         return this._convert(v);
