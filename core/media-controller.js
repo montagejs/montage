@@ -639,10 +639,13 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
      MARK:   Configuration
      -----------------------------------------------------------------------------*/
 
-     constructor: {
-         value: function MediaController() {
-             this.super();
-         }
-     }
+    constructor: {
+        value: function MediaController() {
+            this.super();
+        }
+    },
+
+    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+    blueprint:require("montage")._blueprintDescriptor
 
 });
