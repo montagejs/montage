@@ -23,6 +23,14 @@
             "blueprint": {"@": "root"}
         }
     },
+    "textAlternative_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "textAlternative",
+            "valueType": "string",
+            "blueprint": {"@": "root"}
+        }
+    },
     "active_property": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -52,6 +60,7 @@
                 {"@": "enabled_property"},
                 {"@": "src_property"},
                 {"@": "label_property"},
+                {"@": "textAlternative_property"},
                 {"@": "active_property"}
             ],
             "propertyBlueprintGroups": {
@@ -61,7 +70,8 @@
                     {"@": "label_property"}
                 ],
                 "Options": [
-                     {"@": "active_property"}
+                    {"@": "active_property"},
+                    {"@": "textAlternative_property"}
                 ]
             }
         }
