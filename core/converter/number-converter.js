@@ -351,7 +351,7 @@ var NumberConverter = exports.NumberConverter = Converter.specialize( /** @lends
      * @returns {String}
      */
     convert: {
-        value: function(value) {
+        value: function(v) {
             if (this.shorten) {
                 // shorten the number to 10K, 100K, 1M etc
                 return numericValueToString(v, this.decimals);
