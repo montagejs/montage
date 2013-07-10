@@ -433,7 +433,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * Imperatively initializes a repetition with content.  You can alternately
      * bind the `content` property of a repetition without initializing.  You
      * should not use the `contentController` property of the repetition if you
-     * are initialize with the `content` property.
+     * are initialized with the `content` property.
      */
     initWithContent: {
         value: function (content) {
