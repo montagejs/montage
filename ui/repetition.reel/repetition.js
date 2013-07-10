@@ -17,7 +17,7 @@ var observeKey = Observers.observeKey;
  * drawn, it is tied to the corresponding controller-model that carries which
  * object the iteration is coupled to, and whether it is selected.
  */
-var Iteration = exports.Iteration = Montage.specialize( {
+var Iteration = exports.Iteration = Montage.specialize({
 
     /**
      * The parent repetition component.
@@ -25,12 +25,12 @@ var Iteration = exports.Iteration = Montage.specialize( {
     repetition: {value: null},
 
     /**
-     * The repetition gets iterations from its <code>contentController</code>.
-     * The controller is responsible for tracking which iterations are drawn
-     * and which are selected.  The iteration view-model is attached to the
-     * controller view-model by this property. The <code>selected</code> and
-     * <code>object</code> properties are bound to the eponymous properties of
-     * the iteration controller.
+     * The repetition gets iterations from its `contentController`.  The
+     * controller is responsible for tracking which iterations are drawn and
+     * which are selected.  The iteration view-model is attached to the
+     * controller view-model by this property. The `selected` and `object`
+     * properties are bound to the eponymous properties of the iteration
+     * controller.
      */
     controller: {value: null},
 
@@ -42,17 +42,17 @@ var Iteration = exports.Iteration = Montage.specialize( {
     /**
      * Whether the content for this iteration is selected.  This property is
      * bound bidirectionally to whether every element on the document for the
-     * corresponding drawn iteration has the <code>selected</code> CSS class
-     * (synchronized on draw), and whether the <code>object</code> is in the
-     * <code>contentController.selection</code> collection.
+     * corresponding drawn iteration has the `selected` CSS class (synchronized
+     * on draw), and whether the `object` is in the
+     * `contentController.selection` collection.
      */
     selected: {value: null},
 
     /**
-     * A <code>DocumentFragment</code>, donated by the repetition's
-     * <code>_iterationTemplate</code> n&eacute;e <code>innerTemplate</code>
-     * which contains the elements that the iteration owns when they are not on
-     * the document between the top and bottom boundaries.
+     * A `DocumentFragment`, donated by the repetition's `_iterationTemplate`
+     * n&eacute;e `innerTemplate` which contains the elements that the
+     * iteration owns when they are not on the document between the top and
+     * bottom boundaries.
      * @private
      */
     _fragment: {value: null},
@@ -70,7 +70,7 @@ var Iteration = exports.Iteration = Montage.specialize( {
 
     /**
      * The position of this iteration on the document last time it was drawn,
-     * and its position within the <code>repetition.drawnIterations</code>.
+     * and its position within the `repetition.drawnIterations`.
      * @private
      */
     _drawnIndex: {value: null},
@@ -178,6 +178,12 @@ var Iteration = exports.Iteration = Montage.specialize( {
             this.addOwnPropertyChangeListener("selected", this);
             this.addOwnPropertyChangeListener("_noTransition", this);
 
+            this.addPathChangeListener(
+                "index.defined() && _childComponents.defined()",
+                this,
+                "handleComponentModelChange"
+            );
+
             this.cachedFirstElement = null;
 
         }
@@ -235,13 +241,6 @@ var Iteration = exports.Iteration = Montage.specialize( {
 
             // Inject the elements into the document
             element.insertBefore(this._fragment, bottomBoundary);
-
-            // Inject the child components onto the repetition
-            repetition.childComponents.swap(
-                index * repetition._childComponentsPerIteration,
-                0,
-                this._childComponents
-            );
 
             // Once the child components have drawn once, and thus created all
             // their elements, we can add them to the _iterationForElement map
@@ -304,6 +303,29 @@ var Iteration = exports.Iteration = Montage.specialize( {
     },
 
     /**
+     * This is a method that responds to changes (and the initial value of) the
+     * FRB expression `index.defined() && _childComponents.defined()`.
+     * @private
+     */
+    handleComponentModelChange: {
+        value: function (onComponentModel) {
+            if (onComponentModel) {
+                this._childComponents.forEach(
+                    this.repetition.addChildComponent,
+                    this.repetition
+                );
+            // the second condition protects against removing before adding in
+            // the initial state.
+            } else if (this._childComponents) {
+                this._childComponents.forEach(
+                    this.repetition.removeChildComponent,
+                    this.repetition
+                );
+            }
+        }
+    },
+
+    /**
      * Dispatched by the "active" and "selected" property change listeners to
      * notify the repetition that these iterations need to have their CSS class
      * lists updated.
@@ -343,8 +365,16 @@ var Iteration = exports.Iteration = Montage.specialize( {
         }
     },
 
-    // TODO doc
     /**
+     * The first tag node inside this iteration.  This is an accessor.  The
+     * accessor function searches for the first element every time
+     * it is accessed, to protect against changes to the structure within
+     * the iteration.
+     *
+     * The accessor stores its result in `cachedFirstElement`.  If you are
+     * certain that the internal structure of the repetition is consistent and
+     * have accessed `firstElement` at least once before, you can take
+     * advantage of quick access to `cachedFirstElement`.
      */
     firstElement: {
         get: function () {
@@ -365,8 +395,9 @@ var Iteration = exports.Iteration = Montage.specialize( {
         }
     },
 
-    // TODO doc
     /**
+     * The most recent result of the `firstElement` accessor, useful for speed
+     * if you know that the internal structure of the iteration is static.
      */
     cachedFirstElement: {
         value: null
@@ -380,8 +411,8 @@ var Iteration = exports.Iteration = Montage.specialize( {
 /**
  * A component that manages copies of its inner template for each value in its
  * content.  The content is managed by a controller.  The repetition will
- * create a <code>RangeController</code> for the content if you provide a
- * <code>content</code> property instead of a <code>contentController</code>.
+ * create a `RangeController` for the content if you provide a `content`
+ * property instead of a `contentController`.
  *
  * Ensures that the document contains iterations in the same order as provided
  * by the content controller.
@@ -393,17 +424,16 @@ var Iteration = exports.Iteration = Montage.specialize( {
  * @class Repetition
  * @extends Component
  */
-var Repetition = exports.Repetition = Component.specialize( /** @lends Repetition# */{
+var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition# */{
 
     // For the creator:
     // ----
 
     /**
      * Imperatively initializes a repetition with content.  You can alternately
-     * bind the <code>content</code> property of a repetition without
-     * initializing.  You should not use the <code>contentController</code>
-     * property of the repetition if you are initialize with the
-     * <code>content</code> property.
+     * bind the `content` property of a repetition without initializing.  You
+     * should not use the `contentController` property of the repetition if you
+     * are initialized with the `content` property.
      */
     initWithContent: {
         value: function (content) {
@@ -414,10 +444,10 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
 
     /**
      * Imperatively initializes a repetition with a content controller, like a
-     * <code>RangeController</code>.  You can alternately bind the
-     * <code>contentController</code> property of a repetition without
-     * initializing.  You should not use the <code>content</code> property of a
-     * repetition if you are using its <code>contentController</code>.
+     * `RangeController`.  You can alternately bind the `contentController`
+     * property of a repetition without initializing.  You should not use the
+     * `content` property of a repetition if you are using its
+     * `contentController`.
      */
     initWithContentController: {
         value: function (contentController) {
@@ -434,8 +464,8 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
      *
      * The content represents the entire backing collection.  The content
      * controller may filter, sort, or otherwise manipulate the visible region
-     * of the content.  The <code>index</code> of each iteration corresponds
-     * to the position within the visible region of the controller.
+     * of the content.  The `index` of each iteration corresponds to the
+     * position within the visible region of the controller.
      */
     content: {
         get: function () {
@@ -449,11 +479,10 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
     },
 
     /**
-     * A range controller or instance with the same interface
-     * (<code>iterations</code> and <code>selection</code> properties, where
-     * each <iteration has <code>object</code> and <code>selected</code>
-     * properties).  The controller is responsible for managing which contents
-     * are visible, selected, and the order of their appearance.
+     * A range controller or instance with the same interface (`iterations` and
+     * `selection` properties, where each <iteration has `object` and
+     * `selected` properties).  The controller is responsible for managing
+     * which contents are visible, selected, and the order of their appearance.
      */
     contentController: {value: null},
 
@@ -496,9 +525,9 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
 
     /**
      * The user may determine which iterations are active by setting or
-     * manipulating the content of the <code>activeIterations</code> array.  At
-     * present, the repetition does not guarantee any particular order of
-     * appearnce of the contained iterations.
+     * manipulating the content of the `activeIterations` array.  At present,
+     * the repetition does not guarantee any particular order of appearnce of
+     * the contained iterations.
      */
     activeIterations: {value: null},
 
@@ -510,26 +539,24 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
      * will be drawn.  There is one repetition iteration for each controller
      * iteration.  The repetition iterations have more responsibilities than
      * the corresponding controller, but some of the properties are bound by
-     * the same names, like <code>object</code> and <code>selected</code>.
+     * the same names, like `object` and `selected`.
      */
     iterations: {value: null},
 
     /**
-     * The user may bind to the <code>currentIteration</code> when the
-     * repetition instantiates a new iteration.  The template guarantees that
-     * child components can safely bind to the containing repetition.
+     * The user may bind to the `currentIteration` when the repetition
+     * instantiates a new iteration.  The template guarantees that child
+     * components can safely bind to the containing repetition.
      *
      * At present, you cannot bind to a grandparent repetition's
-     * <code>currentIteration</code>, so it becomes the responsibility of the
-     * parent repetition to bind its parent repetition's
-     * <code>currentIteration</code> to a property of itself so its children
-     * can access their grandparent.
+     * `currentIteration`, so it becomes the responsibility of the parent
+     * repetition to bind its parent repetition's `currentIteration` to a
+     * property of itself so its children can access their grandparent.
      */
     currentIteration: {value: null},
 
     /**
-     * The user may bind the the <code>currentIteration.object</code> with this
-     * shorthand.
+     * The user may bind the the `currentIteration.object` with this shorthand.
      */
     contentAtCurrentIteration: {value: null},
 
@@ -538,20 +565,19 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
     // ----
 
     /**
-     * Informs the super-type, <code>Component</code>, that there is no
-     * <code>repetition.html</code>.
+     * Informs the super-type, `Component`, that there is no `repetition.html`.
      * @private
      */
     hasTemplate: {value: false},
 
     /**
-     * A copy of <code>innerTemplate</code>, provided by the
-     * <code>Component</code> layer, that produces the HTML and components for
-     * each iteration.  If this property is <code>null</code>, it signifies
-     * that the template is in transition, either during initialization or due
-     * to resetting <code>innerTemplate</code>.  In either case, it is a
-     * reliable indicator that the repetition is responding to controller
-     * iteration range changes, since that requires a functioning template.
+     * A copy of `innerTemplate`, provided by the `Component` layer, that
+     * produces the HTML and components for each iteration.  If this property
+     * is `null`, it signifies that the template is in transition, either
+     * during initialization or due to resetting `innerTemplate`.  In either
+     * case, it is a reliable indicator that the repetition is responding to
+     * controller iteration range changes, since that requires a functioning
+     * template.
      * @private
      */
     _iterationTemplate: {value: null},
@@ -715,9 +741,9 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
      * Called by Component to build the component tree, conveniently abused
      * here to set up an iteration template since we know that this method is
      * called after the inner template becomes available and after
-     * <code>constructor</code>.  We must set up the iteration template after
-     * creation because the deserializer would interfere with instantiating the
-     * inner template.
+     * `constructor`.  We must set up the iteration template after creation
+     * because the deserializer would interfere with instantiating the inner
+     * template.
      * @private
      */
     // TODO @aadsm, are the comments above and below still true, or could we
@@ -801,10 +827,10 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
             // instead of using the initial DOM and components.
             var childComponents = this.childComponents;
             var childComponent;
-            var ix = childComponents.length - 1;
+            var index = childComponents.length - 1;
             // pop() each component instead of shift() to avoid bubbling the
             // indexes of each child component on every iteration.
-            while ((childComponent = childComponents[ix--])) {
+            while ((childComponent = childComponents[index--])) {
                 childComponent.detachFromParentComponent();
                 childComponent.needsDraw = false;
                 childComponent.cleanupDeletedComponentTree(true); // cancel bindings, permanent
@@ -823,11 +849,11 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
     },
 
     /**
-     * This method is used both in <code>cleanupDeletedComponentTree</code> and
-     * the internal <code>handleInnerTemplateChange</code> functions, to
-     * retract all drawn iterations from the document, prepare all allocated
-     * iterations for garbage collection, and pause observation of the
-     * controller's iterations.
+     * This method is used both in `cleanupDeletedComponentTree` and the
+     * internal `handleInnerTemplateChange` functions, to retract all drawn
+     * iterations from the document, prepare all allocated iterations for
+     * garbage collection, and pause observation of the controller's
+     * iterations.
      * @private
      */
     _teardownIterationTemplate: {
@@ -848,6 +874,7 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
                 var iteration = this._freeIterations[i];
                 for (var j = 0; j < iteration._childComponents.length; j++) {
                     var childComponent = iteration._childComponents[j];
+                    this.removeChildComponent(childComponent);
                     childComponent.cleanupDeletedComponentTree(true); // true cancels bindings
                 }
             }
@@ -944,8 +971,8 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
     /**
      * Creates a new iteration and sets up a new instance of the iteration
      * template.  Ensures that only one iteration is being instantiated at a
-     * time to guarantee that <code>currentIteration</code> can be reliably
-     * bound to the particular iteration.
+     * time to guarantee that `currentIteration` can be reliably bound to the
+     * particular iteration.
      * @private
      */
     _createIteration: {
@@ -961,13 +988,16 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
 
                 var promise = self._iterationTemplate.instantiate(_document)
                 .then(function (part) {
-                    iteration._childComponents = part.childComponents;
-                    iteration._fragment = part.fragment;
-                    part.childComponents.forEach(function (component) {
-                        self.addChildComponent(component);
-                    });
                     part.loadComponentTree().then(function() {
-                        self.constructorIteration(iteration);
+                        iteration._fragment = part.fragment;
+                        // It is significant that _childComponents are assigned
+                        // *after* the component tree has finished loading
+                        // because this signals to the iteration that it should
+                        // synchronize the child components with the repetition
+                        // based on whether the iteration should be on the DOM
+                        // hereafter.
+                        iteration._childComponents = part.childComponents;
+                        self.constructIteration(iteration);
                     }).done();
                     self.currentIteration = null;
                 })
@@ -987,9 +1017,8 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
     /**
      * @private
      */
-    // This utility method is shared by two special cases for the completion of
-    // _createIteration.
-    constructorIteration: {
+    // This utility method for the completion of _createIteration.
+    constructIteration: {
         value: function (iteration) {
             this._createdIterations++;
 
@@ -1011,13 +1040,13 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
     },
 
     /**
-     * This ties <code>contentAtCurrentIteration</code> to an iteration.
-     * <code>currentIteration</code> is only current in the stack of
-     * instantiating a template, so this method is a hook that the redirects
-     * <code>contentAtCurrentIteration</code> property change listeners to a map
-     * change listener on the <code>_contentForIteration</code> map instead.
-     * The binding then reacts to changes to the map as iterations are reused
-     * with different content at different positions in the DOM.
+     * This ties `contentAtCurrentIteration` to an iteration.
+     * `currentIteration` is only current in the stack of instantiating a
+     * template, so this method is a hook that the redirects
+     * `contentAtCurrentIteration` property change listeners to a map change
+     * listener on the `_contentForIteration` map instead.  The binding then
+     * reacts to changes to the map as iterations are reused with different
+     * content at different positions in the DOM.
      * @private
      */
     observeProperty: {
@@ -1044,11 +1073,10 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
     },
 
     /**
-     * This makes bindings to <code>currentIteration</code> stick regardless of
-     * how the repetition manipulates the property, and prevents a
-     * getter/setter pair from being attached to the property.
-     * <code>makePropertyObservable</code> is called by in the
-     * <code>listen/property-changes</code> module in the Collections package.
+     * This makes bindings to `currentIteration` stick regardless of how the
+     * repetition manipulates the property, and prevents a getter/setter pair
+     * from being attached to the property.  `makePropertyObservable` is called
+     * by in the `listen/property-changes` module in the Collections package.
      * @private
      */
     makePropertyObservable: {
@@ -1079,11 +1107,11 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
     _controllerIterations: {value: null},
 
     /**
-     * The drawn iterations get synchronized with the <code>iterations</code>
-     * array each time the repetition draws.  The <code>draw</code> method
-     * simply walks down the iterations and drawn iterations arrays, redacting
-     * drawn iterations if they are not at the correct position and injecting
-     * the proper iteration from the model in its place.
+     * The drawn iterations get synchronized with the `iterations` array each
+     * time the repetition draws.  The `draw` method simply walks down the
+     * iterations and drawn iterations arrays, redacting drawn iterations if
+     * they are not at the correct position and injecting the proper iteration
+     * from the model in its place.
      * @private
      */
     _drawnIterations: {value: null},
@@ -1097,11 +1125,6 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
      * @private
      */
     _contentForIteration: {value: null},
-
-    /**
-     * @private
-     */
-    _childComponentsPerIteration: {value: null},
 
     /**
      * Reacts to changes in the controller's organized content by altering the
@@ -1121,9 +1144,9 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
      * repopulated, then resumes listening for changes.
      *
      * Bindings react instantly to the change in the iteration model.  The draw
-     * method synchronizes <code>index</code> and <code>_drawnIndex</code> on
-     * each iteration as it rearranges <code>_drawnIterations</code> to match
-     * the order and content of the <code>iterations</code> array.
+     * method synchronizes `index` and `_drawnIndex` on each iteration as it
+     * rearranges `_drawnIterations` to match the order and content of the
+     * `iterations` array.
      *
      * @private
      */
@@ -1358,9 +1381,9 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
     // ------------------
 
     /**
-     * If <code>isSelectionEnabled</code>, the repetition captures the pointer,
-     * preventing it from passing to parent components, for example for the
-     * purpose of scrolling.
+     * If `isSelectionEnabled`, the repetition captures the pointer, preventing
+     * it from passing to parent components, for example for the purpose of
+     * scrolling.
      * @private
      */
     _selectionPointer: {value: null},
@@ -1561,9 +1584,9 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
      * <em>shallow</em> child elements of an iteration, _iterationForElement.
      * It does so in the Iteration.injectIntoDocument, but is only
      * approximately accurate since technically the child components of an
-     * iteration may add and remove siblings after injection.  For the sake of
-     * simplicity, we ignore these dynamic elements for the purpose of
-     * selection.  Also, as such, this method may return undefined.
+     * iteration may add and remove siblings after injection.  For the purpose
+     * of selection, we caution the user to wrap any dynamic elements in a
+     * static wrapper.
      * @private
      */
     _findIterationContainingElement: {
@@ -1586,10 +1609,9 @@ var Repetition = exports.Repetition = Component.specialize( /** @lends Repetitio
     // ------------------------
 
     /**
-     * The Iteration type for this repetition.  The repetition calls
-     * <code>new this.Iteration()</code> to make new instances of
-     * iterations, so a child class of <code>Repetition</code> may provide an
-     * alternate implementation of <code>Iteration</code>.
+     * The Iteration type for this repetition.  The repetition calls `new
+     * this.Iteration()` to make new instances of iterations, so a child class
+     * of `Repetition` may provide an alternate implementation of `Iteration`.
      */
     Iteration: { value: Iteration, serializable: false }
 
