@@ -34,15 +34,15 @@ describe("meta/converter-blueprint-spec", function () {
         currencyConverter;
 
     beforeEach(function () {
-        converter = new Converter();
-        ucaseConverter = new UpperCaseConverter();
-        lcaseConverter = new LowerCaseConverter();
-        trimConverter = new TrimConverter();
-        invertConverter = new InvertConverter();
-        numberConverter = new NumberConverter();
-        bytesConverter = new BytesConverter();
-        dateConverter = new DateConverter();
-        currencyConverter = new CurrencyConverter();
+        converter = Converter;
+        ucaseConverter = UpperCaseConverter;
+        lcaseConverter = LowerCaseConverter;
+        trimConverter = TrimConverter;
+        invertConverter = InvertConverter;
+        numberConverter = NumberConverter;
+        bytesConverter = BytesConverter;
+        dateConverter = DateConverter;
+        currencyConverter = CurrencyConverter;
     });
 
     describe("test converter blueprint", function () {
