@@ -142,12 +142,6 @@ describe("ui/overlay-spec", function() {
 
             expect(anOverlay.element.ownerDocument.body.childNodes).toContain(anOverlay.element);
         });
-
-        it("should move the modal mask to be a child of the body", function() {
-            anOverlay.enterDocument(true);
-
-            expect(anOverlay.element.ownerDocument.body.childNodes).toContain(anOverlay.modalMaskElement);
-        });
     });
 
     describe("draw", function() {
@@ -174,21 +168,6 @@ describe("ui/overlay-spec", function() {
 
             expect(anOverlay.needsDraw).toBe(true);
             expect(anOverlay.classList.has("montage-Overlay--visible")).toBe(false);
-        });
-
-        it("should be requested when isModal is changed to true", function() {
-            anOverlay._isModal = false;
-            anOverlay.isModal = true;
-
-            expect(anOverlay.needsDraw).toBe(true);
-        });
-
-        it("should be requested when isModal is changed to false", function() {
-            anOverlay._isModal = true;
-
-            anOverlay.isModal = false;
-
-            expect(anOverlay.needsDraw).toBe(true);
         });
 
         it("should not calculate position on willDraw when content is not shown", function() {
@@ -233,14 +212,6 @@ describe("ui/overlay-spec", function() {
             expect(anOverlay.element.style.visibility).toBe("visible");
             expect(anOverlay.element.style.top).toBe("275px");
             expect(anOverlay.element.style.left).toBe("300px");
-        });
-
-        it("should show the modal mask", function() {
-            anOverlay._isModal = true;
-
-            anOverlay.draw();
-
-            expect(anOverlay.modalMaskElement.classList.contains("montage-Overlay-modalMask--visible")).toBe(true);
         });
 
         it("should be requested on window resize when shown", function() {
