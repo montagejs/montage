@@ -302,9 +302,10 @@ var Iteration = exports.Iteration = Montage.specialize({
         }
     },
 
-    // TODO
     /**
-     * index.defined() && _childComponents.defined()
+     * This is a method that responds to changes (and the initial value of) the
+     * FRB expression `index.defined() && _childComponents.defined()`.
+     * @private
      */
     handleComponentModelChange: {
         value: function (onComponentModel) {
