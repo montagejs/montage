@@ -7,9 +7,6 @@
     "url": "https://github.com/montagejs/montage.git"
   },
   "main": "montage",
-  "bin": {
-    "montage": "bin/montage"
-  },
   "overlay": {
     "browser": {
       "main": "core/core",
@@ -43,7 +40,6 @@
     "jsdoc": "node ../montagejs.org/build/jsdoc/jsdoc.js -out $PWD/builds/jsdoc/ montage@npm-link"
   },
   "exclude": [
-    "bin",
     "etc",
     "lab",
     "node.js",
