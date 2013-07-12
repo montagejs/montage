@@ -1,5 +1,7 @@
-var Set = require("montage/collections/set");
-var Event = require("mocks/event");
+var Set = require("montage/collections/set"),
+    Event = require("mocks/event"),
+    Component = require("montage/ui/component").Component,
+    defaultEventManager = require("montage/core/event/event-manager").defaultEventManager;
 
 exports.component = function () {
     var eventListeners = {};
@@ -72,6 +74,19 @@ exports.component = function () {
         hasEventListener: function(eventType, listener) {
             return !!(eventListeners[eventType] &&
                       eventListeners[eventType].indexOf(listener) >= 0);
-        }
+        },
+        childComponents: [],
+        addChildComponent: Component.prototype.addChildComponent,
+        _addToDrawList: function() {}
     };
-}
+};
+
+exports.rootComponent = function (_document) {
+    var component = exports.component();
+
+    defaultEventManager.registerEventHandlerForElement(component, _document);
+    component.element = _document;
+    component.drawTree = function() {};
+
+    return component;
+};
