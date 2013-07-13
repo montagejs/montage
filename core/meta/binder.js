@@ -300,7 +300,7 @@ var Binder = exports.Binder = Montage.specialize(/** @lends Binder# */ {
         }
     },
 
-    _blueprintObjectProperty: {
+    _blueprintObjectPropertyInstance: {
         value: null
     },
 
@@ -312,10 +312,10 @@ var Binder = exports.Binder = Montage.specialize(/** @lends Binder# */ {
      */
     objectPropertyInstance: {
         get: function () {
-            if (!this._blueprintObjectProperty) {
-                this._blueprintObjectProperty = Binder.manager.defaultBlueprintObjectPropertyInstance;
+            if (!this._blueprintObjectPropertyInstance) {
+                this._blueprintObjectPropertyInstance = Binder.manager.defaultBlueprintObjectPropertyInstance;
             }
-            return this._blueprintObjectProperty;
+            return this._blueprintObjectPropertyInstance;
         }
     },
 

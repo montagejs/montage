@@ -1,5 +1,5 @@
 /* <copyright>
-</copyright> */
+ </copyright> */
 var Montage = require("montage").Montage;
 var Blueprint = require("montage/core/meta/blueprint").Blueprint;
 var Binder = require("montage/core/meta/binder").Binder;
@@ -8,19 +8,19 @@ exports.companyBinder = function () {
     return exports.BinderHelper.companyBinder();
 };
 
-exports.BinderHelper = Montage.specialize( {
+exports.BinderHelper = Montage.specialize({
 
     constructor: {
+        // Prototype name for debugging
         value: function BinderHelper() {
-            // Prototype name for debugging
             return this.super();
         }
     }
 
-},{
+}, {
 
     companyBinder: {
-        value: function() {
+        value: function () {
             var companyBinder = new Binder().initWithNameAndRequire("CompanyBinder", global.require);
 
             var personBlueprint = companyBinder.addBlueprintNamed("Person", "meta/blueprint/person");
