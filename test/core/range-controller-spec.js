@@ -54,6 +54,13 @@ describe("core/range-controller-spec", function() {
             expect(rangeController.content).toContain({});
         });
 
+        it("should use a default content constructor when no content is available", function () {
+            rangeController = RangeController.create();
+            var content = rangeController.addContent();
+            expect(content).toEqual({});
+            expect(rangeController.content).toContain({});
+        });
+
         it("should ensure homogeneous content type", function () {
             rangeController.content = [];
             rangeController.contentConstructor = Date;

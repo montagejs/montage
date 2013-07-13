@@ -470,7 +470,7 @@ var RangeController = exports.RangeController = Montage.specialize( {
         get: function () {
             if (this._contentConstructor) {
                 return this._contentConstructor;
-            } else if (this.content.contentConstructor) {
+            } else if (this.content && this.content.contentConstructor) {
                 return this.content.contentConstructor;
             } else {
                 return Object;
