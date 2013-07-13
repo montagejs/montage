@@ -308,7 +308,7 @@ var Binder = exports.Binder = Montage.specialize(/** @lends Binder# */ {
      * Return the blueprint object property for this binder</br>
      * This will return the default if none is declared.
      * @type {Property}
-     * @returns {ObjectProperty} default blueprint object property
+     * @returns {ObjectProperty} default blueprint object property instance
      */
     objectPropertyInstance: {
         get: function () {

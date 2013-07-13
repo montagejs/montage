@@ -121,8 +121,7 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
         }
     },
 
-    _defaultBlueprintObjectProperty: {
-        serializable: true,
+    _defaultBlueprintObjectPropertyInstance: {
         value: null
     },
 
@@ -134,10 +133,10 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
      */
     defaultBlueprintObjectPropertyInstance: {
         get: function() {
-            if (!this._defaultBlueprintObjectProperty) {
-                this._defaultBlueprintObjectProperty = new ObjectProperty().init();
+            if (!this._defaultBlueprintObjectPropertyInstance) {
+                this._defaultBlueprintObjectPropertyInstance = new ObjectProperty().init();
             }
-            return this._defaultBlueprintObjectProperty;
+            return this._defaultBlueprintObjectPropertyInstance;
         }
     },
 

@@ -12,6 +12,7 @@ exports.BinderHelper = Montage.specialize( {
 
     constructor: {
         value: function BinderHelper() {
+            // Prototype name for debugging
             return this.super();
         }
     }
