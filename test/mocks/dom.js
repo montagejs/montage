@@ -1,6 +1,7 @@
 var Set = require("montage/collections/set"),
     defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager,
-    Event = require("mocks/event");
+    Event = require("mocks/event"),
+    Component = require("mocks/component");
 
 exports.element = function (_document) {
     var eventListeners = {},
@@ -176,10 +177,18 @@ exports.window = function () {
 exports.document = function() {
     var result = {
         defaultView: exports.window(),
-        body: null
+        body: null,
+        createElement: function(tagName) {
+            return exports.element(this);
+        }
     };
 
     result.body = exports.element(result);
+    // configure html element
+    result.body.parentNode = exports.element(result);
+    result.body.parentNode.parentNode = result;
+
+    result.rootComponent = Component.rootComponent(result);
 
     return result;
 };
