@@ -38,6 +38,10 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay# */ {
         value: null
     },
 
+    hasModalMask: {
+        value: true
+    },
+
     /**
      * Returns a promise for the show of the overlay. A modal overlay might not
      * be immediately shown if another modal overlay is being shown. When this
@@ -104,7 +108,7 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay# */ {
         value: function() {
             this.super();
 
-            if (this._isShown) {
+            if (this._isShown && this.hasModalMask) {
                 this.modalMaskElement.classList.add(CLASS_PREFIX + "-modalMask--visible");
             } else {
                 this.modalMaskElement.classList.remove(CLASS_PREFIX + "-modalMask--visible");
