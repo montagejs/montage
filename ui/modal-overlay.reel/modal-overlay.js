@@ -38,6 +38,10 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay# */ {
         value: null
     },
 
+    _dismissOnExternalInteraction: {
+        value: false
+    },
+
     hasModalMask: {
         value: true
     },
