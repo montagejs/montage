@@ -83,9 +83,9 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
         value:function (deserializer) {
             this._name = deserializer.getProperty("name");
             this._owner = deserializer.getProperty("blueprint");
-            this._cardinality = this._getPropertyWithDefaults(deserializer, "cardinality");
-            if (this._cardinality === -1) {
-                this._cardinality = Infinity;
+            this.cardinality = this._getPropertyWithDefaults(deserializer, "cardinality");
+            if (this.cardinality === -1) {
+                this.cardinality = Infinity;
             }
             this.mandatory = this._getPropertyWithDefaults(deserializer, "mandatory");
             this.readOnly = this._getPropertyWithDefaults(deserializer, "readOnly");
@@ -166,13 +166,6 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
     },
 
     /**
-     @private
-     */
-    _cardinality:{
-        value:Defaults["cardinality"]
-    },
-
-    /**
      Cardinality of the property blueprint.<br/>
      The Cardinality of an property blueprint is the number of values that can be stored.
      A cardinality of one means that only one object can be stored. Only positive values are legal. A value of infinity means that any number of values can be stored.
@@ -180,9 +173,7 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
      @default {Number} 1
      */
     cardinality:{
-        get:function () {
-            return this._cardinality;
-        }
+        value:Defaults["cardinality"]
     },
 
     /**
