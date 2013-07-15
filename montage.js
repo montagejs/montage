@@ -665,7 +665,7 @@ if (typeof window !== "undefined") {
 
                 // Setup Promise's longStackTrace support option
                 logger("Promise stacktrace support", function(state) {
-                    Promise.longStackJumpLimit = state ? 1 : 0;
+                    Promise.longStackSupport = !!state;
                 });
 
                 // Load the event-manager
