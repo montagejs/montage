@@ -274,43 +274,6 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
         value: null
     },
 
-    /*
-     * Creates a default blueprint with all enumerable properties.
-     * <b>Note</b>Value type are set to the string default.
-     */
-    createDefaultBlueprintForObject:{
-        value:function (object) {
-            if (object) {
-                var target = Montage.getInfoForObject(object).isInstance ? Object.getPrototypeOf(object) : object;
-                var info = Montage.getInfoForObject(target);
-                var newBlueprint = new Blueprint().initWithNameAndModuleId(info.objectName, info.moduleId);
-                for (var name in target) {
-                    if ((name.charAt(0) !== "_") && (target.hasOwnProperty(name))) {
-                        // We don't want to list private properties
-                        var value = target[name];
-                        var propertyBlueprint;
-                        if (Array.isArray(value)) {
-                            propertyBlueprint = newBlueprint.addToManyPropertyBlueprintNamed(name);
-                        } else {
-                            propertyBlueprint = newBlueprint.addToOnePropertyBlueprintNamed(name);
-                        }
-                        newBlueprint.addPropertyBlueprintToGroupNamed(propertyBlueprint, info.objectName);
-                    }
-                }
-                var parentObject = Object.getPrototypeOf(target);
-                if ("blueprint" in parentObject) {
-                    return parentObject.blueprint.then(function (blueprint) {
-                        newBlueprint.parent = blueprint;
-                        return newBlueprint;
-                    });
-                }
-                return newBlueprint;
-            } else {
-                return UnknownBlueprint;
-            }
-        }
-    },
-
     /**
      The identifier is the same as the name and is used to make the
      serialization of a blueprint humane.
@@ -1023,6 +986,43 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
                 e.error = error;
                 throw e;
             });
+        }
+    },
+
+    /*
+     * Creates a default blueprint with all enumerable properties.
+     * <b>Note</b>Value type are set to the string default.
+     */
+    createDefaultBlueprintForObject:{
+        value:function (object) {
+            if (object) {
+                var target = Montage.getInfoForObject(object).isInstance ? Object.getPrototypeOf(object) : object;
+                var info = Montage.getInfoForObject(target);
+                var newBlueprint = new Blueprint().initWithNameAndModuleId(info.objectName, info.moduleId);
+                for (var name in target) {
+                    if ((name.charAt(0) !== "_") && (target.hasOwnProperty(name))) {
+                        // We don't want to list private properties
+                        var value = target[name];
+                        var propertyBlueprint;
+                        if (Array.isArray(value)) {
+                            propertyBlueprint = newBlueprint.addToManyPropertyBlueprintNamed(name);
+                        } else {
+                            propertyBlueprint = newBlueprint.addToOnePropertyBlueprintNamed(name);
+                        }
+                        newBlueprint.addPropertyBlueprintToGroupNamed(propertyBlueprint, info.objectName);
+                    }
+                }
+                var parentObject = Object.getPrototypeOf(target);
+                if ("blueprint" in parentObject) {
+                    return parentObject.blueprint.then(function (blueprint) {
+                        newBlueprint.parent = blueprint;
+                        return newBlueprint;
+                    });
+                }
+                return newBlueprint;
+            } else {
+                return UnknownBlueprint;
+            }
         }
     }
 });
