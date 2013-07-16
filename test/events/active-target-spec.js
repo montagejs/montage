@@ -210,5 +210,24 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function(testP
 
         });
 
+        describe("when the activeTarget is a component being removed from the document", function () {
+
+            var eventManager, proximalElement, proximalComponent, nextTarget;
+
+            beforeEach(function () {
+                proximalElement = testDocument.querySelector("[data-montage-id=C0C0B0]");
+                proximalComponent = proximalElement.component;
+                nextTarget = proximalComponent.nextTarget;
+                eventManager = proximalComponent.eventManager;
+
+                proximalElement.focus();
+            });
+
+            it("should set the activeTarget as the nextTarget of the activeTarget being removed", function () {
+                proximalComponent.parentComponent.removeChildComponent(proximalComponent);
+                expect(eventManager.activeTarget).toBe(nextTarget);
+            });
+
+        });
     });
 });

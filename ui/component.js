@@ -734,11 +734,12 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
                 ix = childComponents.indexOf(childComponent);
 
             if (ix > -1) {
+
+                childComponent._leaveDocument();
+
                 childComponents.splice(ix, 1);
                 childComponent._parentComponent = null;
                 childComponent._alternateParentComponent = null;
-
-                childComponent._leaveDocument();
 
                 if (childComponent._addedToDrawList) {
                     childComponent._addedToDrawList = false;
@@ -789,6 +790,17 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
                 this.traverseComponentTree(function(component) {
                     component.__leaveDocument();
                 });
+            }
+        }
+    },
+
+    /**
+     * Lifecycle method called when this component exits the document
+     */
+    leaveDocument: {
+        value: function () {
+            if (this.isActiveTarget) {
+                defaultEventManager.activeTarget = this.nextTarget;
             }
         }
     },
