@@ -2000,18 +2000,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
             } while (target && previousTarget !== target);
 
-            activeTarget = activeTarget || this.application;
-
-            if (activeTarget !== this.activeTarget) {
-                if (this.activeTarget) {
-                    this.activeTarget.willSurrenderActiveTarget(activeTarget);
-                }
-                activeTarget.willBecomeActiveTarget(this.activeTarget);
-
-                this.activeTarget = activeTarget;
-
-                activeTarget.didBecomeActiveTarget();
-            }
+            this.activeTarget = activeTarget;
         }
     },
 
@@ -2212,11 +2201,22 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             return this._activeTarget || this.application;
         },
         set: function (value) {
+
+            if (!value) {
+                value = this.application;
+            }
+
             if (value === this._activeTarget) {
                 return;
             }
 
+            if (this.activeTarget) {
+                this.activeTarget.willSurrenderActiveTarget(value);
+            }
+
+            value.willBecomeActiveTarget(this.activeTarget);
             this._activeTarget = value;
+            value.didBecomeActiveTarget();
         }
     }
 

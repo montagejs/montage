@@ -48,6 +48,29 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function(testP
                     });
                 }
 
+                describe("activeTarget template methods", function () {
+
+                    it("should invoke willSurrenderActiveTarget before losing activeTarget status", function () {
+                        eventManager.activeTarget = proximalComponent;
+                        spyOn(proximalComponent, "willSurrenderActiveTarget");
+
+                        eventManager.activeTarget = null;
+                        expect(proximalComponent.willSurrenderActiveTarget).toHaveBeenCalled();
+                    });
+
+                    it("should invoke willBecomeActiveTarget before gaining activeTarget status", function () {
+                        spyOn(proximalComponent, "willBecomeActiveTarget");
+                        eventManager.activeTarget = proximalComponent;
+                        expect(proximalComponent.willBecomeActiveTarget).toHaveBeenCalled();
+                    });
+
+                    it("should invoke didBecomeActiveTarget before gaining activeTarget status", function () {
+                        spyOn(proximalComponent, "didBecomeActiveTarget");
+                        eventManager.activeTarget = proximalComponent;
+                        expect(proximalComponent.didBecomeActiveTarget).toHaveBeenCalled();
+                    });
+                });
+
             });
 
             describe("when interaction starts on a proximal target that does not accept focus", function () {
