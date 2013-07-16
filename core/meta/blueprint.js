@@ -1016,48 +1016,46 @@ var Blueprint = exports.Blueprint = Montage.specialize(/** @lends Blueprint# */ 
                 targetRequire = getModuleRequire(targetRequire, blueprintModuleId);
                 return new Deserializer().init(JSON.stringify(object), targetRequire).deserializeObject();
             }).then(function (blueprint) {
-                    if (!blueprint) {
-                        throw new Error("No Blueprint found for " + blueprintModuleId);
-                    }
+                if (!blueprint) {
+                    throw new Error("No Blueprint found for " + blueprintModuleId);
+                }
 
-                    // Access default through manager because we do not want to trigger the auto registration
-                    var binder = (blueprint._binder ? blueprint._binder : Blueprint.binderManager.defaultBinder);
+                // Access default through manager because we do not want to trigger the auto registration
+                var binder = (blueprint._binder ? blueprint._binder : Blueprint.binderManager.defaultBinder);
 
-                    // Only check or add to a binder if the blueprint is referenced
-                    // from the binder's package or a direct dependency. If it's
-                    // from a dependency's dependency then the module ID will be
-                    // incorrect
-                    if (targetRequire.location === binder.require.location) {
-                        var existingBlueprint = binder.blueprintForPrototype(blueprint.prototypeName, blueprint.moduleId);
+                // Only check or add to a binder if the blueprint is referenced
+                // from the binder's package or a direct dependency. If it's
+                // from a dependency's dependency then the module ID will be
+                // incorrect
+                if (targetRequire.location === binder.require.location) {
+                    var existingBlueprint = binder.blueprintForPrototype(blueprint.prototypeName, blueprint.moduleId);
 
-                        if (existingBlueprint) {
-                            return existingBlueprint;
-                        } else {
-                            binder.addBlueprint(blueprint);
-                        }
-                    }
-
-                    blueprint.blueprintInstanceModuleId = blueprintModuleId;
-
-                    if (blueprint._parentReference) {
-                        // Load parent "synchronously" so that all the properties
-                        // through the blueprint chain are available
-                        return blueprint._parentReference.promise(targetRequire)
-                            .then(function (parentBlueprint) {
-                                blueprint._parent = parentBlueprint;
-                                return blueprint;
-                            }, function (error) {
-                                throw new Error("Cannot resolve parent blueprint " + blueprint._parentReference + " because " + error);
-                            }
-                        );
+                    if (existingBlueprint) {
+                        return existingBlueprint;
                     } else {
-                        return blueprint;
+                        binder.addBlueprint(blueprint);
                     }
-                }).fail(function (error) {
-                    var e = new Error("Error deserializing Blueprint " + blueprintModuleId + " because " + error.message);
-                    e.error = error;
-                    throw e;
-                });
+                }
+
+                blueprint.blueprintInstanceModuleId = blueprintModuleId;
+
+                if (blueprint._parentReference) {
+                    // Load parent "synchronously" so that all the properties
+                    // through the blueprint chain are available
+                    return blueprint._parentReference.promise(targetRequire).then(function (parentBlueprint) {
+                        blueprint._parent = parentBlueprint;
+                        return blueprint;
+                    }, function (error) {
+                        throw new Error("Cannot resolve parent blueprint " + blueprint._parentReference + " because " + error);
+                    });
+                } else {
+                    return blueprint;
+                }
+            }).fail(function (error) {
+                var e = new Error("Error deserializing Blueprint " + blueprintModuleId + " because " + error.message);
+                e.error = error;
+                throw e;
+            });
         }
     }
 });
