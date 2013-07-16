@@ -1,0 +1,56 @@
+{
+    "title_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "title",
+            "valueType": "string",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "message_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "message",
+            "valueType": "string",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Component",
+                "prototypeName": "Component",
+                "blueprintModule": {
+                    "%": "ui/component.meta"
+                }
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "Abstract Alert",
+            "parent": {"@": "blueprint_parent"},
+            "propertyBlueprints": [
+                {"@": "title_property"},
+                {"@": "message_property"}
+            ],
+            "propertyBlueprintGroups": {
+                "Main": [
+                    {"@": "message_property"}
+                ],
+                "Options": [
+                    {"@": "title_property"}
+                ]
+            },
+            "blueprintModule": {
+                "%": "ui/base/abstract-alert.meta"
+            },
+            "exportName": "AbstractAlert",
+            "module": {
+                "%": "ui/base/abstract-alert"
+            }
+        }
+    }
+}
