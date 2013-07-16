@@ -37,6 +37,9 @@ POSSIBILITY OF SUCH DAMAGE.
     right: 0;
     overflow: hidden;
     -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
 }
 
 .montage-Flow-camera,
@@ -47,12 +50,21 @@ POSSIBILITY OF SUCH DAMAGE.
     bottom: 0;
     right: 0;
     -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    -ms-transform-style: preserve-3d;
+    transform-style: preserve-3d;
     -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
 }
 
 .montage-Flow-Repetition .no-transition,
 .montage-Flow-Repetition .no-transition * {
     -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -ms-transition: none !important;
+    transition: none !important;
 }
 
 .montage-Flow-Repetition > div {
@@ -62,7 +74,14 @@ POSSIBILITY OF SUCH DAMAGE.
     width: 0;
     height: 0;
     -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
     -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    /* Does not work: http://msdn.microsoft.com/en-gb/library/ie/hh673529%28v=vs.85%29.aspx#the_ms_transform_style_property */
+    -ms-transform-style: preserve-3d;
+    transform-style: preserve-3d;
 }
 
 .montage-Flow-Slot {
@@ -70,4 +89,7 @@ POSSIBILITY OF SUCH DAMAGE.
     top: 50%;
     left: 50%;
     -webkit-transform: translate3d(-50%, -50%, 0);
+    -moz-transform: translate3d(-50%, -50%, 0);
+    -ms-transform: translate3d(-50%, -50%, 0);
+    transform: translate3d(-50%, -50%, 0);
 }

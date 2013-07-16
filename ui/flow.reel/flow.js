@@ -83,6 +83,18 @@ var Flow = exports.Flow = Component.specialize( {
         value: "linear"
     },
 
+    _transform: {
+        value: null
+    },
+
+    _transformCss: {
+        value: null
+    },
+
+    _perspective: {
+        value: null
+    },
+
     /**
      * One of "linear" or "drag".
      *
@@ -917,10 +929,33 @@ var Flow = exports.Flow = Component.specialize( {
         }
     },
 
+    _determineCssPrefixedProperties: {
+        value: function() {
+            if("webkitTransform" in this.element.style) {
+                this._transform = "webkitTransform";
+                this._transformCss = "-webkit-transform";
+                this._perspective = "webkitPerspective";
+            } else if("MozTransform" in this.element.style) {
+                this._transform = "MozTransform";
+                this._transformCss = "-moz-transform";
+                this._perspective = "MozPerspective";
+            } else if("msTransform" in this.element.style) {
+                this._transform = "msTransform";
+                this._transformCss = "-ms-transform";
+                this._perspective = "msPerspective";
+            } else {
+                this._transform = "transform";
+                this._perspective = "perspective";
+            }
+        }
+    },
+
     enterDocument: {
         value: function (firstTime) {
             if (firstTime) {
                 var self = this;
+
+                this._determineCssPrefixedProperties();
 
                 window.addEventListener("resize", function () {
                     self._isCameraUpdated = true;
@@ -1194,8 +1229,8 @@ var Flow = exports.Flow = Component.specialize( {
 
                 tmpZ = vX * -Math.sin(-yAngle) + vZ * Math.cos(-yAngle);
                 xAngle = Math.atan2(-vY, -tmpZ);
-                this._element.style.webkitPerspective = perspective + "px";
-                this._cameraElement.style.webkitTransform =
+                this._element.style[this._perspective]= perspective + "px";
+                this._cameraElement.style[this._transform] =
                     "translate3d(0,0," + perspective + "px)rotateX(" + xAngle + "rad)rotateY(" + (-yAngle) + "rad)" +
                     "translate3d(" + (-this.cameraPosition[0]) + "px," + (-this.cameraPosition[1]) + "px," + (-this.cameraPosition[2]) + "px)";
                 this._isCameraUpdated = false;
@@ -1212,21 +1247,21 @@ var Flow = exports.Flow = Component.specialize( {
                         pos = this._splinePaths[pathIndex].getPositionAtIndexTime(indexTime);
                         rotation = this._splinePaths[pathIndex].getRotationAtIndexTime(indexTime);
                         style =
-                            "-webkit-transform:translate3d(" + (((pos[0] * 100000) >> 0) * .00001) + "px," + (((pos[1] * 100000) >> 0) * .00001) + "px," + (((pos[2] * 100000) >> 0) * .00001) + "px)" +
+                            this._transformCss + ":translate3d(" + (((pos[0] * 100000) >> 0) * .00001) + "px," + (((pos[1] * 100000) >> 0) * .00001) + "px," + (((pos[2] * 100000) >> 0) * .00001) + "px)" +
                             (rotation[2] ? "rotateZ(" + (((rotation[2] * 100000) >> 0) * .00001) + "rad)" : "") +
                             (rotation[1] ? "rotateY(" + (((rotation[1] * 100000) >> 0) * .00001) + "rad)" : "") +
                             (rotation[0] ? "rotateX(" + (((rotation[0] * 100000) >> 0) * .00001) + "rad)" : "") + ";" +
                             this._splinePaths[pathIndex].getStyleAtIndexTime(indexTime);
                         element.setAttribute("style", style);
                     } else {
-                        element.setAttribute("style", "-webkit-transform:scale3d(0,0,0);opacity:0");
+                        element.setAttribute("style", this._transformCss + ":scale3d(0,0,0);opacity:0");
                     }
                 }
             } else {
                 for (i = 0; i < length; i++) {
                     iteration = this._repetition._drawnIterations[i];
                     element = iteration.cachedFirstElement || iteration.firstElement;
-                    element.setAttribute("style", "-webkit-transform:scale3d(0,0,0);opacity:0");
+                    element.setAttribute("style", this._transformCss + ":scale3d(0,0,0);opacity:0");
                 }
             }
             // Continue animation during elastic scrolling
