@@ -88,8 +88,8 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     },
 
     handleKeyPress: {
-        value: function(/*event*/) {
-            if (!this.enabled) {
+        value: function(evt) {
+            if (!this.enabled || evt.keyComposer !== this._keyComposer) {
                 return;
             }
 

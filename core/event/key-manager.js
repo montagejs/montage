@@ -839,6 +839,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 keyComposerEvent.initCustomEvent(eventType, true, true, null);
                 keyComposerEvent.activeElement = event.target;
                 keyComposerEvent.identifier = keyComposer.identifier;
+                keyComposerEvent.keyComposer = keyComposer;
                 keyComposerEvent = MutableEvent.fromEvent(keyComposerEvent);
                 if (this._opera) {
                     keyComposerEvent.type = eventType; // Opera modifes the capitalization of custom event's type when that one is similar to a native event's type
