@@ -614,7 +614,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
             if ((! group) && (this.parent)) {
                 group = this.parent.propertyBlueprintGroupForName(groupName);
             }
-            return (group != null ? group : []);
+            return group;
         }
     },
 
