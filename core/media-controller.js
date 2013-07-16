@@ -79,8 +79,7 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     @private
     */
     _mediaController: {
-        value: null,
-        enumerable: false
+        value: null
     },
     /**
         @type {Function}
@@ -102,8 +101,7 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
                 this._mediaController = controller;
                 this._installControlEventHandlers();
             }
-        },
-        enumerable: false
+        }
     },
 
 
@@ -114,7 +112,6 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     @private
     */
     _status: {
-        enumerable: false,
         value: 3
     },
     /**
@@ -122,7 +119,6 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     @default {Number} 3
     */
     status: {
-        enumerable: false,
         get: function() {
             return this._status;
         },
@@ -138,7 +134,9 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     /**
     @private
     */
-    _position: { value:null, enumerable:false },
+    _position: {
+        value:null
+    },
     /**
     @type {Function}
     @default null
@@ -159,7 +157,9 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     /**
     @private
     */
-    _duration: { value: null, enumerable:false },
+    _duration: {
+        value: null
+    },
     /**
         @type {Function}
         @default null
@@ -189,7 +189,6 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
         @default {Boolean} true
     */
     autoplay: {
-        enumerable: false,
         value: false
     },
     /**
@@ -270,8 +269,7 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     @private
     */
     _playbackRate: {
-        value: 1,
-        enumerable: false
+        value: 1
     },
     /**
     @type {Function}
