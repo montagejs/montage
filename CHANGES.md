@@ -1,3 +1,7 @@
+## 0.13.1
+
+ - Fix `require.identify` to work with cyclic package dependencies
+
 # 0.13.0
 
  - Fix bootstrap stopping if document had finished loading.
