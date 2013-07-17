@@ -449,7 +449,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 document.addEventListener("mouseup", this, true);
                 this._element.addEventListener("mousemove", this, false);
             }
-            this.isAnimating = false;
+            if (this.isAnimating) {
+                this.isAnimating = false;
+                this._dispatchTranslateEnd();
+            }
             this._isFirstMove = true;
         }
     },
