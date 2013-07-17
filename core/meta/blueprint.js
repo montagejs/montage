@@ -998,6 +998,9 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
             if (object) {
                 var target = Montage.getInfoForObject(object).isInstance ? Object.getPrototypeOf(object) : object;
                 var info = Montage.getInfoForObject(target);
+                if (!info.objectName || !info.moduleId) {
+                    return Promise.resolve(UnknownBlueprint);
+                }
                 var newBlueprint = new Blueprint().initWithNameAndModuleId(info.objectName, info.moduleId);
                 for (var name in target) {
                     if ((name.charAt(0) !== "_") && (target.hasOwnProperty(name))) {
@@ -1013,15 +1016,15 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
                     }
                 }
                 var parentObject = Object.getPrototypeOf(target);
-                if ("blueprint" in parentObject) {
+                if (parentObject && "blueprint" in parentObject) {
                     return parentObject.blueprint.then(function (blueprint) {
                         newBlueprint.parent = blueprint;
                         return newBlueprint;
                     });
                 }
-                return newBlueprint;
+                return Promise.resolve(newBlueprint);
             } else {
-                return UnknownBlueprint;
+                return Promise.resolve(UnknownBlueprint);
             }
         }
     }

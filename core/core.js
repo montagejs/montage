@@ -1015,9 +1015,10 @@ exports._blueprintDescriptor = {
                         // generate a blueprint if there is no .meta file.
                         // If the blueprint fails in deserialization then
                         // we should propogate the error
-                        var blueprint = Blueprint.createDefaultBlueprintForObject(self);
-                        blueprint.blueprintInstanceModuleId = blueprintModuleId;
-                        return blueprint;
+                        return Blueprint.createDefaultBlueprintForObject(self).then(function (blueprint) {
+                            blueprint.blueprintInstanceModuleId = blueprintModuleId;
+                            return blueprint;
+                        });
                     });
                 })
             });

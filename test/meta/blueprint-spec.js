@@ -249,5 +249,58 @@ describe("meta/blueprint-spec", function () {
             });
         });
 
+        describe("createDefaultBlueprintForObject", function () {
+            it("should always return a promise", function () {
+                var blueprint = Blueprint.createDefaultBlueprintForObject({});
+                expect(typeof blueprint.then).toBe("function");
+                return blueprint.then(function (blueprint) {
+                    expect(blueprint.name).toBe("Unknown");
+                });
+            });
+
+        });
+
+        describe("blueprint descriptor", function () {
+            it("does not work for objects that aren't in a module", function () {
+                var Sub = Blueprint.specialize();
+                var sub = new Sub();
+
+                expect(function () {
+                    var x = sub.blueprint;
+                }).toThrow();
+            });
+
+
+            it("uses the correct module ID for objects with no .meta", function () {
+                var Sub = Blueprint.specialize();
+                // fake object loaded from module
+                Object.defineProperty(Sub, "_montage_metadata", {
+                    value: {
+                        require: require,
+                        module: "pass",
+                        moduleId: "pass", // deprecated
+                        property: "Pass",
+                        objectName: "Pass", // deprecated
+                        isInstance: false
+                    }
+                });
+
+                var sub = new Sub();
+                sub._montage_metadata = Object.create(Sub._montage_metadata, {
+                    isInstance: { value: true }
+                });
+
+                return sub.blueprint.then(function (blueprint) {
+                    expect(blueprint.blueprintInstanceModuleId).toBe("pass.meta");
+                });
+            });
+
+            it("creates a blueprint when the parent has no blueprint", function () {
+                return Blueprint.blueprint.then(function (blueprint){
+                    expect(blueprint.blueprintInstanceModuleId).toBe("core/meta/blueprint.meta");
+                });
+            });
+        });
+
     });
 });
