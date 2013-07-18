@@ -29,7 +29,10 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
 
     getTypeOf: {
         value: function(object) {
-            if ("getInfoForObject" in object || "getInfoForObject" in object.constructor) {
+            if (object.isModuleReference) {
+                // this needs to be first as a ModuleReference is also a MontageObject
+                return "Module";
+            } else if ("getInfoForObject" in object || "getInfoForObject" in object.constructor) {
                 return "MontageObject";
             } else if (object.thisIsAReferenceCreatedByMontageSerializer) {
                 return "MontageReference";
@@ -59,6 +62,25 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
             } else {
                 throw new Error("Not possible to serialize a DOM element with no " + this._MONTAGE_ID_ATTRIBUTE + " assigned: " + element.outerHTML);
             }
+        }
+    },
+
+    visitModule: {
+        value: function(malker, reference, name) {
+            var referenceReference,
+                moduleId;
+
+            try {
+                moduleId = reference.resolve(this._require);
+            } catch (e) {
+                throw new Error("Not possible to serialize module reference " +
+                    reference.id + " from package " + reference.require.location +
+                    " inside package " + this._require.location
+                );
+            }
+
+            referenceReference = this.builder.createModuleReference(moduleId);
+            this.storeValue(referenceReference, reference, name);
         }
     },
 
