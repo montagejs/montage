@@ -179,6 +179,7 @@ describe("test/base/abstract-text-field-spec", function () {
                     expect(event.type).toEqual("action");
                 }),
                 anEvent = MockDOM.keyPressEvent("enter", aTextField.element);
+                anEvent.keyComposer = aTextField._keyComposer;
 
                 aTextField.addEventListener("action", callback, false);
                 aTextField.handleKeyPress(anEvent);
@@ -191,6 +192,7 @@ describe("test/base/abstract-text-field-spec", function () {
                     expect(event.detail.get("foo")).toEqual("bar");
                 }),
                 anEvent = MockDOM.keyPressEvent("enter", aTextField.element);
+                anEvent.keyComposer = aTextField._keyComposer;
 
                 aTextField.addEventListener("action", callback, false);
                 aTextField.detail.set("foo", "bar");
