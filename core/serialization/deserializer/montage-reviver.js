@@ -95,12 +95,18 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
 
     getTypeOf: {
         value: function(value) {
-            if (value !== null && typeof value === "object"
-                && Object.keys(value).length === 1 && "#" in value) {
-                return "Element";
-            } else {
-                return Reviver.prototype.getTypeOf.call(this, value);
+            if (value !== null &&
+                typeof value === "object" &&
+                Object.keys(value).length === 1
+            ) {
+                if ("#" in value) {
+                    return "Element";
+                } else if ("%" in value) {
+                    return "Module";
+                }
             }
+
+            return Reviver.prototype.getTypeOf.call(this, value);
         }
     },
 
@@ -117,6 +123,18 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
             } else {
                 return Promise.reject(new Error("Element with id '" + elementId + "' was not found."));
             }
+        }
+    },
+
+    reviveModule: {
+        value: function(value, context, label) {
+            var moduleId = value["%"],
+                _require = context.getRequire();
+
+            moduleId = _require.resolve(moduleId);
+            var module = _require.getModuleDescriptor(moduleId);
+
+            return module;
         }
     },
 

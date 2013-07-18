@@ -725,6 +725,48 @@ describe("serialization/montage-deserializer-spec", function() {
         //});
     });
 
+    describe("Module reference deserialization", function() {
+        it("should deserialize a module", function() {
+            var serialization = {
+                    "root": {
+                        "value": {"%": "./testobjects-v2"}
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(
+                serializationString, require);
+
+            return deserializer.deserializeObject()
+            .then(function(root) {
+                // module is now absolute from the root of the test package
+                expect(root.id).toBe("serialization/testobjects-v2");
+                expect(root.require.location).toBe(require.location);
+                expect(root.exports.Empty).toBeDefined();
+            });
+        });
+
+        it("should use the require of the package the deserializer is using", function () {
+            return require.loadPackage("package-a").then(function(pkg1) {
+                var serialization = {
+                        "root": {
+                            "value": {"%": "pass"}
+                        }
+                    },
+                    serializationString = JSON.stringify(serialization);
+
+                deserializer.init(
+                    serializationString, pkg1);
+
+                return deserializer.deserializeObject()
+                .then(function(root) {
+                    expect(root.id).toBe("pass");
+                    expect(root.require.location).toBe(pkg1.location);
+                });
+            });
+        });
+    });
+
     describe("Custom deserialization", function() {
         var customDeserialization = objects.CustomDeserialization,
             serialization = {

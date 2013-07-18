@@ -16,6 +16,7 @@ var MontageInterpreter = Montage.specialize.call(Interpreter, {
 
             this._reviver = new MontageReviver()
                 .init(_require, objectRequires);
+            this._require = _require;
 
             return this;
         }
@@ -26,7 +27,7 @@ var MontageInterpreter = Montage.specialize.call(Interpreter, {
             var context;
 
             context = new MontageContext()
-                .init(serialization, this._reviver, objects, element);
+                .init(serialization, this._reviver, objects, element, this._require);
 
             return context.getObjects();
         }
@@ -67,6 +68,7 @@ var MontageContext = Montage.specialize.call(Context, {
     _ELEMENT_ID_ATTRIBUTE: {value: "data-montage-id"},
     _unitsToDeserialize: {value: null},
     _element: {value: null},
+    _require: {value: null},
 
     constructor: {
         value: function() {
@@ -75,12 +77,19 @@ var MontageContext = Montage.specialize.call(Context, {
     },
 
     init: {
-        value: function(serialization, reviver, objects, element) {
+        value: function(serialization, reviver, objects, element, _require) {
             Context.call(this, serialization, reviver, objects);
 
             this._element = element;
+            this._require = _require;
 
             return this;
+        }
+    },
+
+    getRequire: {
+        value: function () {
+            return this._require;
         }
     },
 
