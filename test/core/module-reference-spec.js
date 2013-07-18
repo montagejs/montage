@@ -71,4 +71,17 @@ describe("core/module-reference-spec", function() {
 
     });
 
+    describe("isModuleReference", function () {
+
+        it("is true", function () {
+            expect(ref.isModuleReference).toBe(true);
+        });
+
+        it("cannot be changed", function () {
+            ref.isModuleReference = false;
+            expect(ref.isModuleReference).toBe(true);
+        });
+
+    });
+
 });

@@ -74,5 +74,13 @@ exports.ModuleReference = Montage.specialize({
         value: function (otherRequire) {
             return otherRequire.identify(this.id, this.require);
         }
+    },
+
+    // Used for cross-frame detection, similar to Array.isArray, but just
+    // a property as there's no need for complex logic.
+    isModuleReference: {
+        writable: false,
+        configurable: false,
+        value: true
     }
 });

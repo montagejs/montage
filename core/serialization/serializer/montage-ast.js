@@ -26,4 +26,30 @@ var ElementReference = Montage.specialize.call(Value, {
     }
 });
 
+/**
+ * ModuleReference
+ *
+ * @extends Value
+ */
+var ModuleReference = Montage.specialize.call(Value, {
+
+    constructor: {
+        value: function ModuleReference() {}
+    },
+
+    initWithRootAndModuleId: {
+        value: function(root, moduleId) {
+            Value.call(this, root, moduleId);
+            return this;
+        }
+    },
+
+    _getSerializationValue: {
+        value: function() {
+            return {"%": this.value};
+        }
+    }
+});
+
 exports.ElementReference = ElementReference;
+exports.ModuleReference = ModuleReference;
