@@ -1,6 +1,7 @@
 var Montage = require("montage/core/core").Montage,
     MontageSerializer = require("montage/core/serialization").Serializer,
-    objects = require("serialization/testobjects-v2").objects;
+    objects = require("serialization/testobjects-v2").objects,
+    ModuleReference = require("montage/core/module-reference").ModuleReference;
 
     function fakeGetSerializablePropertyNames(object, returnValues) {
         getSerializablePropertyNames = Montage.getSerializablePropertyNames;
@@ -35,6 +36,10 @@ var Montage = require("montage/core/core").Montage,
         });
 
         return element;
+    }
+
+    function createFakeModuleReference(id, _require) {
+        return new ModuleReference().initWithIdAndRequire(id, _require || require);
     }
 
 describe("serialization/montage-serializer-spec", function() {
@@ -241,6 +246,106 @@ describe("serialization/montage-serializer-spec", function() {
 
                 expect(JSON.parse(serialization))
                 .toEqual(expectedSerialization);
+            });
+        });
+
+        describe("modules", function() {
+            it("should serialize a module reference", function() {
+                var object = createFakeModuleReference("pass"),
+                    serialization,
+                    expectedSerialization;
+
+                expectedSerialization = {
+                    root: {
+                        value: {"%": "pass"}
+                    }
+                };
+
+                serialization = serializer.serializeObject(object);
+                expect(JSON.parse(serialization))
+                .toEqual(expectedSerialization);
+            });
+
+            it("should serialize an module reference as an object property", function() {
+                var object = new objects.OneProp(),
+                    ref = createFakeModuleReference("pass"),
+                    serialization,
+                    expectedSerialization;
+
+                expectedSerialization = {
+                    root: {
+                        prototype: "serialization/testobjects-v2[OneProp]",
+                        properties: {
+                            identifier: null,
+                            prop: {"%": "pass"}
+                        }
+                    }
+                };
+
+                object.prop = ref;
+
+                serialization = serializer.serializeObject(object);
+
+                expect(JSON.parse(serialization))
+                .toEqual(expectedSerialization);
+            });
+
+            it("should serialize an module reference multiple times", function() {
+                var object = new objects.TwoProps(),
+                    ref = createFakeModuleReference("pass"),
+                    serialization,
+                    expectedSerialization;
+
+                expectedSerialization = {
+                    root: {
+                        prototype: "serialization/testobjects-v2[TwoProps]",
+                        properties: {
+                            identifier: null,
+                            prop1: {"%": "pass"},
+                            prop2: {"%": "pass"}
+                        }
+                    }
+                };
+
+                object.prop1 = ref;
+                object.prop2 = ref;
+
+                serialization = serializer.serializeObject(object);
+                expect(JSON.parse(serialization))
+                .toEqual(expectedSerialization);
+            });
+
+            it("should serialize a module reference from a different package", function() {
+                var montageRequire = require.getPackage({name: "montage"}),
+                    object = createFakeModuleReference("core/module-reference", montageRequire),
+                    serialization,
+                    expectedSerialization;
+
+                expectedSerialization = {
+                    root: {
+                        value: {"%": "montage/core/module-reference"}
+                    }
+                };
+
+                serialization = serializer.serializeObject(object);
+
+                expect(JSON.parse(serialization))
+                .toEqual(expectedSerialization);
+            });
+
+            it("should throw when there is no mapping to the module from a different package", function() {
+                var montageRequire = require.getPackage({name: "montage"}),
+                    object = createFakeModuleReference("pass", require),
+                    serialization;
+
+                // montageRequire has no mapping to this package, and so the
+                // module reference cannot be serialized
+                serializer = new MontageSerializer().initWithRequire(montageRequire);
+                serializer.setSerializationIndentation(4);
+
+                expect(function () {
+                    serialization = serializer.serializeObject(object);
+                }).toThrow();
             });
         });
 
