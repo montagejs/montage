@@ -742,7 +742,6 @@ describe("serialization/montage-deserializer-spec", function() {
                 // module is now absolute from the root of the test package
                 expect(root.id).toBe("serialization/testobjects-v2");
                 expect(root.require.location).toBe(require.location);
-                expect(root.exports.Empty).toBeDefined();
             });
         });
 

@@ -3,6 +3,7 @@ var Reviver = require("mousse/deserialization/reviver").Reviver;
 var PropertiesDeserializer = require("./properties-deserializer").PropertiesDeserializer;
 var SelfDeserializer = require("./self-deserializer").SelfDeserializer;
 var UnitDeserializer = require("./unit-deserializer").UnitDeserializer;
+var ModuleReference = require("core/module-reference").ModuleReference;
 
 var Promise = require("core/promise").Promise;
 
@@ -134,7 +135,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
             moduleId = _require.resolve(moduleId);
             var module = _require.getModuleDescriptor(moduleId);
 
-            return module;
+            return new ModuleReference().initWithIdAndRequire(module.id, module.require);
         }
     },
 
