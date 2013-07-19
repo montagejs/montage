@@ -120,7 +120,8 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
 
     draw: {
         value: function() {
-            this.element.value = this.value;
+            var value = this.value;
+            this.element.value = value || false === value ? value.toString() : "";
             if (this.placeholderValue != null) {
                 this.element.setAttribute("placeholder", this.placeholderValue);
             }
