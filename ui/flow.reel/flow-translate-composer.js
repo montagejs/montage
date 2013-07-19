@@ -288,7 +288,29 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
     /**
      */
     handleMousewheel: {
-        value: function () {
+        value: function(event) {
+            var self = this;
+
+            // If this composers' component is claiming the "wheel" pointer then handle the event
+            if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this.component)) {
+                var oldPageY = this._pageY;
+                this._dispatchTranslateStart();
+                this._pageY = this._pageY + ((event.wheelDeltaY * 20) / 100);
+                this._updateScroll();
+                this._dispatchTranslate();
+                window.clearTimeout(this._translateEndTimeout);
+                this._translateEndTimeout = window.setTimeout(function() {
+                    self._dispatchTranslateEnd();
+                }, 400);
+
+                // If we're not at one of the extremes (i.e. the scroll actually
+                // changed the translate) then we want to preventDefault to stop
+                // the page scrolling.
+                if (oldPageY !== this._pageY && this._shouldPreventDefault(event)) {
+                    event.preventDefault();
+                }
+                this.eventManager.forfeitPointer(this._WHEEL_POINTER, this.component);
+            }
         }
     },
 
