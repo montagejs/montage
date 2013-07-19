@@ -157,40 +157,6 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
         value: false
     },
 
-    /**
-     Gets a binder from a serialized file at the given module id.
-     @function
-     @param {String} binder module id
-     @param {Function} require function
-     */
-    getBinderWithModuleId: {
-        value: function(binderModuleId, targetRequire) {
-            var deferredBinder = Promise.defer();
-            if (!targetRequire) {
-                // This is probably wrong but at least we will try
-                targetRequire = this.require;
-            }
-
-            targetRequire.async(binderModuleId).then(function(object) {
-                try {
-                    new Deserializer().initWithObjectAndRequire(object, targetRequire, binderModuleId).deserializeObject(function(binder) {
-                        if (binder) {
-                            binder.binderInstanceModuleId = binderModuleId;
-                            Binder.manager.addBinder(this);
-                            deferredBinder.resolve(binder);
-                        } else {
-                            deferredBinder.reject(new Error("No Binder found " + binderModuleId));
-                        }
-                    }, targetRequire);
-                } catch (exception) {
-                    deferredBinder.reject(new Error("Error deserializing Binder " + binderModuleId + " " + JSON.stringfy(exception)));
-                }
-            }, deferredBinder.reject);
-
-            return deferredBinder.promise;
-        }
-    },
-
     _blueprints: {
         distinct: true,
         value: []
