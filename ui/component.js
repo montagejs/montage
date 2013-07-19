@@ -735,7 +735,7 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
 
             if (ix > -1) {
 
-                childComponent._leaveDocument();
+                childComponent._exitDocument();
 
                 childComponents.splice(ix, 1);
                 childComponent._parentComponent = null;
@@ -771,16 +771,16 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
         value: false
     },
 
-    __leaveDocument: {
+    __exitDocument: {
         value: function() {
-            if (this._inDocument && typeof this.leaveDocument === "function") {
-                this.leaveDocument();
+            if (this._inDocument && typeof this.exitDocument === "function") {
+                this.exitDocument();
                 this._inDocument = false;
             }
         }
     },
 
-    _leaveDocument: {
+    _exitDocument: {
         value: function() {
             if (this._needsEnterDocument) {
                 this._needsEnterDocument = false;
@@ -797,7 +797,7 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
     /**
      * Lifecycle method called when this component exits the document
      */
-    leaveDocument: {
+    exitDocument: {
         value: function () {
             if (this.isActiveTarget) {
                 defaultEventManager.activeTarget = this.nextTarget;

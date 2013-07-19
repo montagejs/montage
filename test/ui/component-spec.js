@@ -309,7 +309,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
 
                 it("should draw children in an additional cycle that are added during parent's draw", function() {
                     // TODO: we can't make this working at the moment because
-                    // enter/leaveDocument is implemented by forcing a draw
+                    // enter/exitDocument is implemented by forcing a draw
                     return;
                     // setup spies
                     spyOn(testPage.test.componentB, 'draw').andCallFake(function() {
@@ -440,7 +440,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                     runs(function() {
                         expect(testPage.test.componentB.handleFirstDraw).toHaveBeenCalled();
                         // TODO: we can't make this working at the moment because
-                        // enter/leaveDocument is implemented by forcing a draw
+                        // enter/exitDocument is implemented by forcing a draw
                         return;
                         expect(testPage.test.componentB1.handleFirstDraw).not.toHaveBeenCalled();
 
