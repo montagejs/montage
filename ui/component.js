@@ -782,14 +782,27 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
 
     _exitDocument: {
         value: function() {
+            var traverse;
+
             if (this._needsEnterDocument) {
                 this._needsEnterDocument = false;
             } else {
-                this.__leaveDocument();
+                traverse = function (component) {
+                    var childComponents = component.childComponents,
+                        childComponent;
 
-                this.traverseComponentTree(function(component) {
-                    component.__leaveDocument();
-                });
+                    for (var i = 0; (childComponent = childComponents[i]); i++) {
+                        if (childComponent._isComponentExpanded) {
+                            traverse(childComponent);
+                        }
+                    }
+
+                    if (component._inDocument) {
+                        component.__exitDocument();
+                    }
+                };
+
+                traverse(this);
             }
         }
     },
@@ -2687,6 +2700,10 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
      */
     removeFromCannotDrawList: {
         value: function(component) {
+            if (!this._cannotDrawList) {
+                return;
+            }
+
             delete this._cannotDrawList[component.uuid];
 
             if (Object.keys(this._cannotDrawList).length === 0 && this._needsDrawList.length > 0) {

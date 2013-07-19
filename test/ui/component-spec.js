@@ -1115,5 +1115,50 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
             });
 
         });
+
+        describe("exit document", function() {
+            var componentA,
+                componentB,
+                componentC;
+
+            beforeEach(function() {
+                componentA = new Component();
+                componentB = new Component();
+                componentC = new Component();
+
+                componentA.element = MockDOM.element();
+                componentB.element = MockDOM.element();
+                componentC.element = MockDOM.element();
+
+                componentA.addChildComponent(componentB);
+                componentB.addChildComponent(componentC);
+
+                componentA._isComponentExpanded = true;
+                componentB._isComponentExpanded = true;
+                componentC._isComponentExpanded = true;
+
+                componentA._needsEnterDocument = false;
+                componentB._needsEnterDocument = false;
+                componentC._needsEnterDocument = false;
+
+                componentA._inDocument = true;
+                componentB._inDocument = true;
+                componentC._inDocument = true;
+            });
+
+            it("should exit the document in bottom-up order", function() {
+                var callOrder = [];
+                var exitDocument = function() {
+                    callOrder.push(this);
+                };
+
+                spyOn(componentB, "exitDocument").andCallFake(exitDocument);
+                spyOn(componentC, "exitDocument").andCallFake(exitDocument);
+
+                componentA.removeChildComponent(componentB);
+                expect(callOrder[0]).toBe(componentC);
+                expect(callOrder[1]).toBe(componentB);
+            });
+        });
     });
 });
