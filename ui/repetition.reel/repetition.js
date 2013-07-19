@@ -625,15 +625,29 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             });
 
 
-            // The state of the DOM:
+            // The iteration template:
             // ---
 
             // The template that gets repeated in the DOM
             this._iterationTemplate = null;
 
-            // React to changes to the inner template by setting up a new
-            // iteration template and purging all obsolete iterations.
-            this.addOwnPropertyChangeListener("innerTemplate", this);
+            // This triggers the setup of the iteration template
+            this.addPathChangeListener(
+                this._setupRequirements,
+                this,
+                "_handleSetupRequirementsChange"
+            );
+
+            // This triggers the teardown of an iteration template.
+            this.addPathChangeListener(
+                "innerTemplate",
+                this,
+                "_handleInnerTemplateChange"
+            );
+
+
+            // The state of the DOM:
+            // ---
 
             // The "iterations" array tracks "_controllerIterations"
             // synchronously.  Each iteration corresponds to controlled content
@@ -716,6 +730,66 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         }
     },
 
+    // Creating an iteration template:
+    // ----
+
+    /**
+     * This is an FRB expression that becomes true when all of the requirements
+     * for setting up an iteration template have been satisfied.
+     * -   A component is not able to get its innerTemplate before being
+     *     completely deserialized from the template and self means having
+     *     access to its ownerDocumentPart.  This will happen when the
+     *     repetition is asked to load its component tree during template
+     *     instantiation.
+     * -   We shouldn't set up the iteration template if the repetition
+     *     received new content, we'll wait until contentDidLoad is called.
+     *     The problem is that the new components from the new DOM are already
+     *     in the component tree but not in the DOM, and since self function
+     *     removes the child components from the repetition we lose them
+     *     forever.
+     * @private
+     */
+    _setupRequirements: {
+        value: "[" +
+            "!_iterationTemplate.defined()," +
+            "!_newDomContent.defined()," +
+            "!_shouldClearDomContentOnNextDraw," +
+            "_isComponentExpanded," +
+            "_ownerDocumentPart.defined()" +
+        "].every{}"
+    },
+
+    /**
+     * This is the rising-edge trigger for setting up the iteration template.
+     * When the `_setupRequirements` expression becomes true, it is time to set
+     * up the iteration template based on the inner template.
+     * @private
+     */
+    _handleSetupRequirementsChange: {
+        value: function (canSetUp) {
+            if (canSetUp) {
+                this._setupIterationTemplate();
+            }
+        }
+    },
+
+    /**
+     * This is the falling-edge trigger that tears down the iteration template.
+     * A new iteration template will be created if or when an inner template
+     * is provided and all the requirements are satisfied again.
+     * @private
+     */
+    _handleInnerTemplateChange: {
+        value: function (innerTemplate) {
+            if (this._iterationTemplate) {
+                this._teardownIterationTemplate();
+            }
+            if (innerTemplate && this.getPath(this._setupRequirements)) {
+                this._setupIterationTemplate();
+            }
+        }
+    },
+
     /**
      * Prepares this component and all its children for garbage collection
      * (permanently) or reuse.
@@ -725,107 +799,57 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     cleanupDeletedComponentTree: {
         value: function (permanently) {
-            if (this._iterationTemplate) {
-                this._teardownIterationTemplate();
-            }
+            // This also causes _iterationTemplate to be torn down, through
+            // handleInnerTemplateChange.
+            this.innerTemplate = null;
             if (permanently) {
                 this.cancelBindings();
             }
         }
     },
 
-    // Creating an iteration template:
-    // ----
-
     /**
-     * Called by Component to build the component tree, conveniently abused
-     * here to set up an iteration template since we know that this method is
-     * called after the inner template becomes available and after
-     * `constructor`.  We must set up the iteration template after creation
-     * because the deserializer would interfere with instantiating the inner
-     * template.
+     * Called by Component to build the component tree.
      * @private
      */
-    // TODO @aadsm, are the comments above and below still true, or could we
-    // put _setupIterationTemplate in constructor again?
     expandComponent: {
         value: function expandComponent() {
-            // "_isComponentExpanded" is used by Component to determine whether
-            // the node of the component object hierarchy is traversable.
-            // We can't set up the iteration template during "constructor"
-            // because it would interfere with the active deserialization
-            // process.  We wait until the deserialization is complete and the
-            // template is fully instantiated so we can capture all the child
-            // components and DOM elements.
-            if (!this._iterationTemplate) {
-                this._setupIterationTemplate();
-            }
+            // Setting this property to true *causes* _setupIterationTemplate
+            // to be run through the handleSetupRequirementsChange listener,
+            // and as it runs synchronously, guarantees that the template will
+            // be expanded before the next line.
             this._isComponentExpanded = true;
+            // TODO should this ever become false?
             return Promise.resolve();
         }
     },
 
     /**
-     * The initial innerTemplate is provided by the Component system and is a
-     * facility for cloning the HTML and child components that a repetition
-     * contains.  The innerTemplate may be replaced at any time by another
-     * component in order to provide an alternate template to repeat.
+     * When `_setupRequirements` have all been met, this method produces an
+     * iteration template using the `innerTemplate` that has been given to this
+     * repetition.  It also deletes any *initial* child components and starts
+     * watching for changes to the organized content.  Watching for organized
+     * content changes would cause errors if it were not possible to
+     * instantiate iterations.  In symmetry, `_teardownIterationTemplate`
+     * pauses watching the organized content.
      * @private
      */
-    handleInnerTemplateChange: {
-        value: function () {
-            if (this._iterationTemplate) {
-                this._teardownIterationTemplate();
-            }
-            this._setupIterationTemplate();
-        }
-    },
-
-    /**
-     * When a template contains a repetition, the deserializer produces a
-     * repetition instance that initially contains a single iteration's worth of
-     * DOM nodes and components.  To create an iteration template, we must
-     * reserialize the repetition component in isolation, with just its element
-     * and child components.  To accomplish this, set up a temporary
-     * serializer
-     *
-     * Note that this function must be called on demand for the first iteration
-     * needed because it cannot be called in constructor.  Setting up the
-     * iteration template would interfere with normal deserialization.
-     *
-     * @private
-     */
-    // TODO aadsm: is all this true still? - @kriskowal
     _setupIterationTemplate: {
         value: function () {
+            var self = this;
 
-            // We shouldn't set up the iteration template if the repetition
-            // received new content, we'll wait until contentDidLoad is called.
-            // The problem is that the new components from the new DOM are
-            // already in the component tree but not in the DOM, and since this
-            // function removes the child components from the repetition we
-            // lose them forever.
-            // TODO @aadsm: this is part of the chicken-and-egg problem the
-            // draw cycle current has, the DrawManager will solve this.
-            if (this._newDomContent ||
-                this._shouldClearDomContentOnNextDraw ||
-                !this.innerTemplate
-            ) {
-                return;
-            }
-
-            if (this.innerTemplate.hasParameters()) {
-                this._iterationTemplate = this.innerTemplate.clone();
-                this._expandIterationTemplateParameters();
+            if (self.innerTemplate.hasParameters()) {
+                self._iterationTemplate = self.innerTemplate.clone();
+                self._expandIterationTemplateParameters();
             } else {
-                this._iterationTemplate = this.innerTemplate;
+                self._iterationTemplate = self.innerTemplate;
             }
 
             // Erase the initial child component trees. The initial document
             // children will be purged on first draw.  We use the innerTemplate
             // as the iteration template and replicate it for each iteration
             // instead of using the initial DOM and components.
-            var childComponents = this.childComponents;
+            var childComponents = self.childComponents;
             var childComponent;
             var index = childComponents.length - 1;
             // pop() each component instead of shift() to avoid bubbling the
@@ -839,18 +863,19 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // Begin tracking the controller organizedContent.  We manually
             // dispatch a range change to track all the iterations that have
             // come and gone while we were not watching.
-            this.handleOrganizedContentRangeChange(this.organizedContent, [], 0);
+            self.handleOrganizedContentRangeChange(self.organizedContent, [], 0);
             // Dispatches handleOrganizedContentRangeChange:
-            this.organizedContent.addRangeChangeListener(this, "organizedContent");
+            self.organizedContent.addRangeChangeListener(self, "organizedContent");
 
-            this._canDrawInitialContent = true;
-            this.needsDraw = true;
+            self._canDrawInitialContent = true;
+            self.needsDraw = true;
+
         }
     },
 
     /**
      * This method is used both in `cleanupDeletedComponentTree` and the
-     * internal `handleInnerTemplateChange` functions, to retract all drawn
+     * internal `_handleInnerTemplateChange` functions, to retract all drawn
      * iterations from the document, prepare all allocated iterations for
      * garbage collection, and pause observation of the controller's
      * iterations.
@@ -895,6 +920,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         }
     },
 
+    // TODO(@aadsm) doc
+    /**
+     * @private
+     */
     _expandIterationTemplateParameters: {
         value: function() {
             var template = this._iterationTemplate,
