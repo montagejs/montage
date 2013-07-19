@@ -56,6 +56,7 @@ require("montage-testing").run(require,[
         "geometry/point-spec",
 
         "meta/blueprint-spec",
+        "meta/module-binder-spec",
         "meta/component-blueprint-spec",
         "meta/controller-blueprint-spec",
         "meta/converter-blueprint-spec",
