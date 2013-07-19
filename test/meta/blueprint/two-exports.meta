@@ -1,0 +1,56 @@
+{
+    "one_property": {
+        "prototype": "montage/core/meta/property-blueprint",
+        "properties": {
+            "name": "one",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "number"
+        }
+    },
+    "blueprint_one": {
+        "prototype": "montage/core/meta/blueprint",
+        "properties": {
+            "name": "One",
+            "binder": {"@": "root"},
+            "propertyBlueprints": [
+                {
+                    "@": "one_property"
+                }
+            ]
+        }
+    },
+    "two_property": {
+        "prototype": "montage/core/meta/property-blueprint",
+        "properties": {
+            "name": "two",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "number"
+        }
+    },
+    "blueprint_two": {
+        "prototype": "montage/core/meta/blueprint",
+        "properties": {
+            "name": "Two",
+            "binder": {"@": "root"},
+            "propertyBlueprints": [
+                {"@": "two_property"}
+            ]
+        }
+    },
+    "root": {
+        "prototype": "montage/core/meta/module-binder",
+        "properties": {
+            "name": "test",
+            "moduleId": "meta/blueprint/two-exports",
+            "blueprints": [
+                {"@": "blueprint_one"},
+                {"@": "blueprint_two"}
+            ],
+            "binderModuleId": "meta/blueprint/two-exports.meta"
+        }
+    }
+}

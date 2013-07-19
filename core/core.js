@@ -1000,7 +1000,7 @@ exports._blueprintDescriptor = {
                 enumerable: false,
                 value: exports._blueprintDescriptor.BlueprintModulePromise.then(function (Blueprint) {
                     var info = Montage.getInfoForObject(self);
-                    return Blueprint.getBlueprintWithModuleId(blueprintModuleId, info.require).fail(function () {
+                    return Blueprint.getBlueprint(blueprintModuleId, info.require, info.objectName).fail(function () {
                         var blueprint = Blueprint.createDefaultBlueprintForObject(self);
                         blueprint.blueprintInstanceModuleId = blueprintModuleId;
                         return blueprint;
