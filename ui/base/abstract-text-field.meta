@@ -4,7 +4,9 @@
         "properties": {
             "name": "enabled",
             "valueType": "boolean",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "value_property": {
@@ -12,7 +14,9 @@
         "properties": {
             "name": "value",
             "valueType": "string",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "placeholderValue_property": {
@@ -20,7 +24,9 @@
         "properties": {
             "name": "placeholderValue",
             "valueType": "string",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "blueprint_parent": {
@@ -33,25 +39,51 @@
             }
         }
     },
-    "root": {
+    "AbstractTextField": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "AbstractTextField",
             "blueprintModuleId": "ui/base/abstract-text-field.meta",
             "prototypeName": "AbstractTextField",
-            "parent": {"@": "blueprint_parent"},
+            "parent": {
+                "@": "blueprint_parent"
+            },
             "propertyBlueprints": [
-                {"@": "enabled_property"},
-                {"@": "value_property"},
-                {"@": "placeholderValue_property"}
+                {
+                    "@": "enabled_property"
+                },
+                {
+                    "@": "value_property"
+                },
+                {
+                    "@": "placeholderValue_property"
+                }
             ],
             "propertyBlueprintGroups": {
                 "Main": [
-                    {"@": "enabled_property"},
-                    {"@": "value_property"},
-                    {"@": "placeholderValue_property"}
+                    {
+                        "@": "enabled_property"
+                    },
+                    {
+                        "@": "value_property"
+                    },
+                    {
+                        "@": "placeholderValue_property"
+                    }
                 ]
             }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "ui/base/abstract-text-field",
+            "binderModuleId": "ui/base/abstract-text-field.meta",
+            "blueprints": [
+                {
+                    "@": "AbstractTextField"
+                }
+            ]
         }
     }
 }

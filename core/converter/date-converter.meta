@@ -1,5 +1,4 @@
 {
-
     "dateConverter_validator": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -11,7 +10,6 @@
             "helpKey": ""
         }
     },
-
     "dateConverter_pattern": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -23,7 +21,6 @@
             "helpKey": ""
         }
     },
-
     "converter_blueprint_reference": {
         "prototype": "core/meta/blueprint-reference",
         "properties": {
@@ -34,8 +31,7 @@
             }
         }
     },
-
-    "root": {
+    "DateConverter": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "DateConverter",
@@ -63,8 +59,19 @@
                     }
                 ]
             },
-            "propertyValidationRules": {
-            }
+            "propertyValidationRules": {}
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "core/converter/date-converter",
+            "binderModuleId": "core/converter/date-converter.meta",
+            "blueprints": [
+                {
+                    "@": "DateConverter"
+                }
+            ]
         }
     }
 }

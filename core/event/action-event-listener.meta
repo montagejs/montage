@@ -1,5 +1,4 @@
 {
-
     "actionEventListener_handler": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -10,7 +9,6 @@
             "valueType": "object"
         }
     },
-
     "actionEventListener_action": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -21,8 +19,7 @@
             "valueType": "string"
         }
     },
-
-    "root": {
+    "ActionEventListener": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "ActionEventListener",
@@ -47,6 +44,18 @@
                     }
                 ]
             }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "core/event/action-event-listener",
+            "binderModuleId": "core/event/action-event-listener.meta",
+            "blueprints": [
+                {
+                    "@": "ActionEventListener"
+                }
+            ]
         }
     }
 }

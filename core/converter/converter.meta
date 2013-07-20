@@ -1,5 +1,4 @@
 {
-
     "converter_allowPartialConversion": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -12,8 +11,7 @@
             "helpKey": ""
         }
     },
-
-    "root": {
+    "Converter": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "Converter",
@@ -32,8 +30,19 @@
                     }
                 ]
             },
-            "propertyValidationRules": {
-            }
+            "propertyValidationRules": {}
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "core/converter/converter",
+            "binderModuleId": "core/converter/converter.meta",
+            "blueprints": [
+                {
+                    "@": "Converter"
+                }
+            ]
         }
     }
 }

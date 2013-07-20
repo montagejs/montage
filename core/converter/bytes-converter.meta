@@ -1,5 +1,4 @@
 {
-
     "bytesConverter_decimals": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -11,7 +10,6 @@
             "helpKey": ""
         }
     },
-
     "converter_blueprint_reference": {
         "prototype": "core/meta/blueprint-reference",
         "properties": {
@@ -22,8 +20,7 @@
             }
         }
     },
-
-    "root": {
+    "BytesConverter": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "BytesConverter",
@@ -45,8 +42,19 @@
                     }
                 ]
             },
-            "propertyValidationRules": {
-            }
+            "propertyValidationRules": {}
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "core/converter/bytes-converter",
+            "binderModuleId": "core/converter/bytes-converter.meta",
+            "blueprints": [
+                {
+                    "@": "BytesConverter"
+                }
+            ]
         }
     }
 }

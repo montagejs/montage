@@ -4,7 +4,9 @@
         "properties": {
             "name": "enabled",
             "valueType": "boolean",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "value_property": {
@@ -12,7 +14,9 @@
         "properties": {
             "name": "value",
             "valueType": "object",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "checked_property": {
@@ -20,7 +24,9 @@
         "properties": {
             "name": "checked",
             "valueType": "boolean",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "active_property": {
@@ -28,7 +34,9 @@
         "properties": {
             "name": "active",
             "valueType": "boolean",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "blueprint_parent": {
@@ -41,29 +49,59 @@
             }
         }
     },
-    "root": {
+    "AbstractCheckbox": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "AbstractCheckbox",
             "blueprintModuleId": "ui/base/abstract-checkbox.meta",
             "prototypeName": "AbstractCheckbox",
-            "parent": {"@": "blueprint_parent"},
+            "parent": {
+                "@": "blueprint_parent"
+            },
             "propertyBlueprints": [
-                {"@": "enabled_property"},
-                {"@": "value_property"},
-                {"@": "checked_property"},
-                {"@": "active_property"}
+                {
+                    "@": "enabled_property"
+                },
+                {
+                    "@": "value_property"
+                },
+                {
+                    "@": "checked_property"
+                },
+                {
+                    "@": "active_property"
+                }
             ],
             "propertyBlueprintGroups": {
                 "Main": [
-                    {"@": "enabled_property"},
-                    {"@": "value_property"},
-                    {"@": "checked_property"}
+                    {
+                        "@": "enabled_property"
+                    },
+                    {
+                        "@": "value_property"
+                    },
+                    {
+                        "@": "checked_property"
+                    }
                 ],
                 "Options": [
-                     {"@": "active_property"}
+                    {
+                        "@": "active_property"
+                    }
                 ]
             }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "ui/base/abstract-checkbox",
+            "binderModuleId": "ui/base/abstract-checkbox.meta",
+            "blueprints": [
+                {
+                    "@": "AbstractCheckbox"
+                }
+            ]
         }
     }
 }

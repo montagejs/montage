@@ -44,7 +44,7 @@
             }
         }
     },
-    "root": {
+    "Text": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "Text",
@@ -73,6 +73,18 @@
                 ]
             },
             "propertyValidationRules": {}
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "ui/text.reel",
+            "binderModuleId": "ui/text.reel/text.meta",
+            "blueprints": [
+                {
+                    "@": "Text"
+                }
+            ]
         }
     }
 }

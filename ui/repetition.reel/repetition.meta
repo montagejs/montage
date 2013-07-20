@@ -8,7 +8,6 @@
             },
             "valueType": "object",
             "cardinality": -1
-
         }
     },
     "blueprint_repetition_contentController": {
@@ -72,7 +71,7 @@
             }
         }
     },
-    "root": {
+    "Repetition": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "Repetition",
@@ -123,6 +122,18 @@
                     }
                 ]
             }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "ui/repetition.reel",
+            "binderModuleId": "ui/repetition.reel/repetition.meta",
+            "blueprints": [
+                {
+                    "@": "Repetition"
+                }
+            ]
         }
     }
 }

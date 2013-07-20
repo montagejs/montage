@@ -1,5 +1,4 @@
 {
-
     "converter_blueprint_reference": {
         "prototype": "core/meta/blueprint-reference",
         "properties": {
@@ -10,8 +9,7 @@
             }
         }
     },
-
-    "root": {
+    "LowerCaseConverter": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "LowerCaseConverter",
@@ -21,12 +19,21 @@
             "parent": {
                 "@": "converter_blueprint_reference"
             },
-            "propertyBlueprints": [
-            ],
-            "propertyBlueprintGroups": {
-            },
-            "propertyValidationRules": {
-            }
+            "propertyBlueprints": [],
+            "propertyBlueprintGroups": {},
+            "propertyValidationRules": {}
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "core/converter/lower-case-converter",
+            "binderModuleId": "core/converter/lower-case-converter.meta",
+            "blueprints": [
+                {
+                    "@": "LowerCaseConverter"
+                }
+            ]
         }
     }
 }

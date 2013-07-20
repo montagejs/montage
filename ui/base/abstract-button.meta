@@ -4,7 +4,9 @@
         "properties": {
             "name": "enabled",
             "valueType": "boolean",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "label_property": {
@@ -12,7 +14,9 @@
         "properties": {
             "name": "label",
             "valueType": "string",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "holdThreshold_property": {
@@ -20,7 +24,9 @@
         "properties": {
             "name": "holdThreshold",
             "valueType": "number",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "active_property": {
@@ -28,7 +34,9 @@
         "properties": {
             "name": "active",
             "valueType": "boolean",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "blueprint_parent": {
@@ -41,29 +49,59 @@
             }
         }
     },
-    "root": {
+    "AbstractButton": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "AbstractButton",
             "blueprintModuleId": "ui/base/abstract-button.meta",
             "prototypeName": "AbstractButton",
-            "parent": {"@": "blueprint_parent"},
+            "parent": {
+                "@": "blueprint_parent"
+            },
             "propertyBlueprints": [
-                {"@": "enabled_property"},
-                {"@": "label_property"},
-                {"@": "holdThreshold_property"},
-                {"@": "active_property"}
+                {
+                    "@": "enabled_property"
+                },
+                {
+                    "@": "label_property"
+                },
+                {
+                    "@": "holdThreshold_property"
+                },
+                {
+                    "@": "active_property"
+                }
             ],
             "propertyBlueprintGroups": {
                 "Main": [
-                    {"@": "enabled_property"},
-                    {"@": "label_property"}
+                    {
+                        "@": "enabled_property"
+                    },
+                    {
+                        "@": "label_property"
+                    }
                 ],
                 "Options": [
-                    {"@": "holdThreshold_property"},
-                    {"@": "active_property"}
+                    {
+                        "@": "holdThreshold_property"
+                    },
+                    {
+                        "@": "active_property"
+                    }
                 ]
             }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "ui/base/abstract-button",
+            "binderModuleId": "ui/base/abstract-button.meta",
+            "blueprints": [
+                {
+                    "@": "AbstractButton"
+                }
+            ]
         }
     }
 }

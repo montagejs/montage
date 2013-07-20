@@ -4,7 +4,9 @@
         "properties": {
             "name": "src",
             "valueType": "string",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "width_property": {
@@ -12,7 +14,9 @@
         "properties": {
             "name": "width",
             "valueType": "number",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "height_property": {
@@ -20,7 +24,9 @@
         "properties": {
             "name": "height",
             "valueType": "number",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "blueprint_parent": {
@@ -33,27 +39,53 @@
             }
         }
     },
-    "root": {
+    "AbstractImage": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "AbstractImage",
             "blueprintModuleId": "ui/base/abstract-image.meta",
             "prototypeName": "AbstractImage",
-            "parent": {"@": "blueprint_parent"},
+            "parent": {
+                "@": "blueprint_parent"
+            },
             "propertyBlueprints": [
-                {"@": "src_property"},
-                {"@": "width_property"},
-                {"@": "height_property"}
+                {
+                    "@": "src_property"
+                },
+                {
+                    "@": "width_property"
+                },
+                {
+                    "@": "height_property"
+                }
             ],
             "propertyBlueprintGroups": {
                 "Main": [
-                    {"@": "src_property"}
+                    {
+                        "@": "src_property"
+                    }
                 ],
                 "Options": [
-                    {"@": "width_property"},
-                    {"@": "height_property"}
+                    {
+                        "@": "width_property"
+                    },
+                    {
+                        "@": "height_property"
+                    }
                 ]
             }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "ui/base/abstract-image",
+            "binderModuleId": "ui/base/abstract-image.meta",
+            "blueprints": [
+                {
+                    "@": "AbstractImage"
+                }
+            ]
         }
     }
 }

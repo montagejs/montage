@@ -1,5 +1,4 @@
 {
-
     "value_target_blueprint": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -14,8 +13,7 @@
             "helpKey": ""
         }
     },
-
-    "root": {
+    "BinderReference": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "BinderReference",
@@ -34,8 +32,19 @@
                     }
                 ]
             },
-            "propertyValidationRules": {
-            }
+            "propertyValidationRules": {}
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "core/meta/binder-reference",
+            "binderModuleId": "core/meta/binder-reference.meta",
+            "blueprints": [
+                {
+                    "@": "BinderReference"
+                }
+            ]
         }
     }
 }

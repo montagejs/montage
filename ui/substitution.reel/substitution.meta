@@ -38,7 +38,7 @@
             }
         }
     },
-    "root": {
+    "Substitution": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "Substitution",
@@ -71,6 +71,18 @@
                     }
                 ]
             }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "ui/substitution.reel",
+            "binderModuleId": "ui/substitution.reel/substitution.meta",
+            "blueprints": [
+                {
+                    "@": "Substitution"
+                }
+            ]
         }
     }
 }
