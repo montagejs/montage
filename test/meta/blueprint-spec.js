@@ -241,7 +241,7 @@ describe("meta/blueprint-spec", function () {
             it("correctly loads blueprints with the same internal module ID", function () {
                 return require.loadPackage({location: "./meta/blueprint/package"})
                 .then(function (require) {
-                    return Blueprint.getBlueprintWithModuleId("thing.meta", require)
+                    return Blueprint.getBlueprint("thing.meta", require, "Thing")
                     .then(function (blueprint) {
                         expect(blueprint.parent).not.toBe(blueprint);
                     });

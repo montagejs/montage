@@ -965,7 +965,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      */
     getBlueprintWithModuleId: {
         value: Montage.deprecate(void 0, function (blueprintModuleId, targetRequire) {
-            var exportName = MontageReviver.parseObjectLocationId(blueprintModuleId);
+            var exportName = MontageReviver.parseObjectLocationId(blueprintModuleId.replace(/\.meta$/, "")).objectName;
             return this.getBlueprint(blueprintModuleId, targetRequire, exportName);
         }, "getBlueprintWithModuleId", "getBlueprint")
     },
@@ -989,7 +989,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
                 if (blueprint._parentReference) {
                     // Load parent "synchronously" so that all the properties
                     // through the blueprint chain are available
-                    return blueprint._parentReference.promise(targetRequire)
+                    return blueprint._parentReference.promise(binder.require)
                     .then(function(parentBlueprint) {
                             blueprint._parent = parentBlueprint;
                             return blueprint;

@@ -1,7 +1,7 @@
 var Binder = require("core/meta/binder").Binder;
 var Deserializer = require("core/serialization").Deserializer;
 
-exports.ModuleBinder = Binder.specialize({
+var ModuleBinder = exports.ModuleBinder = Binder.specialize({
 
     constructor: {
         value: function ModuleBinder() {
@@ -87,6 +87,13 @@ exports.ModuleBinder = Binder.specialize({
                 targetRequire = getModuleRequire(targetRequire, blueprintModuleId);
                 return new Deserializer().init(JSON.stringify(object), targetRequire).deserializeObject();
             }).then(function (binder) {
+                if (!ModuleBinder.prototype.isPrototypeOf(binder)) {
+                    throw new Error(blueprintModuleId + " does not contain a ModuleBinder");
+                }
+
+                // FIXME do in deserialization
+                binder._require = targetRequire;
+
                 var moduleId = binder.moduleId;
                 binder._blueprints.forEach(function (blueprint) {
                     if (blueprint.moduleId && blueprint.moduleId !== moduleId) {

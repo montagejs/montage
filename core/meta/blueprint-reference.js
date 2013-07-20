@@ -63,7 +63,7 @@ exports.BlueprintReference = RemoteReference.specialize( {
                         deferredBlueprint.resolve(blueprint);
                     } else {
                         try {
-                            BlueprintModule.Blueprint.getBlueprintWithModuleId(blueprintModuleId, targetRequire).then(function(blueprint) {
+                            BlueprintModule.Blueprint.getBlueprint(blueprintModuleId, targetRequire, prototypeName).then(function(blueprint) {
                                 if (blueprint) {
                                     binder.addBlueprint(blueprint);
                                     deferredBlueprint.resolve(blueprint);
@@ -78,7 +78,7 @@ exports.BlueprintReference = RemoteReference.specialize( {
 
                 } else {
                     try {
-                        deferredBlueprint = BlueprintModule.Blueprint.getBlueprintWithModuleId(blueprintModuleId, require);
+                        deferredBlueprint = BlueprintModule.Blueprint.getBlueprint(blueprintModuleId, targetRequire, prototypeName);
                     } catch (exception) {
                         deferredBlueprint.reject(new Error("Error cannot find Blueprint " + blueprintModuleId));
                     }
