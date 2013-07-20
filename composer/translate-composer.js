@@ -19,6 +19,11 @@ var Montage = require("montage").Montage,
  */
 var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @lends TranslateComposer# */ {
 
+    constructor: {
+        value: function TranslateComposer() {
+            this.super();
+        }
+    },
     /**
     These elements perform some native action when clicked/touched and so we
     should not preventDefault when a mousedown/touchstart happens on them.
