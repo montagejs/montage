@@ -1000,7 +1000,12 @@ exports._blueprintDescriptor = {
                 enumerable: false,
                 value: exports._blueprintDescriptor.BlueprintModulePromise.then(function (Blueprint) {
                     var info = Montage.getInfoForObject(self);
-                    return Blueprint.getBlueprint(blueprintModuleId, info.require, info.objectName).fail(function () {
+                    return Blueprint.getBlueprint(blueprintModuleId, info.require, info.objectName)
+                    .fail(function () {
+                        // FIXME throw typed errors, so that we only
+                        // generate a blueprint if there is no .meta file.
+                        // If the blueprint fails in deserialization then
+                        // we should propogate the error
                         var blueprint = Blueprint.createDefaultBlueprintForObject(self);
                         blueprint.blueprintInstanceModuleId = blueprintModuleId;
                         return blueprint;
