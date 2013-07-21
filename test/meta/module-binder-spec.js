@@ -2,7 +2,8 @@ var ModuleBinder = require("montage/core/meta/module-binder").ModuleBinder;
 var Blueprint = require("montage/core/meta/blueprint").Blueprint;
 var Promise = require("montage/core/promise").Promise;
 
-var MontageSerializer = require("montage/core/serialization").Serializer;
+var Serializer = require("montage/core/serialization").Serializer;
+var Deserializer = require("montage/core/serialization").Deserializer;
 
 var twoExports = require("./blueprint/two-exports");
 
@@ -39,6 +40,48 @@ function makeFakeRequire(mappings, fallbackRequire) {
 
 describe("meta/module-bindiner-spec", function () {
 
+    var binderSerialization = {
+        "blueprint_one_a": {
+            "prototype": "montage/core/meta/property-blueprint",
+            "properties": {
+                "name": "a",
+                "blueprint": {"@": "blueprint_one"}
+            }
+        },
+        "blueprint_one": {
+            "prototype": "montage/core/meta/blueprint",
+            "properties": {
+                "name": "one",
+                "binder": {"@": "root"},
+                "blueprintModuleId": null,
+                "prototypeName": "one",
+                "propertyBlueprints": [
+                    {"@": "blueprint_one_a"}
+                ]
+            }
+        },
+        "blueprint_two": {
+            "prototype": "montage/core/meta/blueprint",
+            "properties": {
+                "name": "two",
+                "binder": {"@": "root"},
+                "blueprintModuleId": null,
+                "prototypeName": "two"
+            }
+        },
+        "root": {
+            "prototype": "montage/core/meta/module-binder",
+            "properties": {
+                "name": "test",
+                "blueprints": [
+                    {"@": "blueprint_one"},
+                    {"@": "blueprint_two"}
+                ],
+                "binderModuleId": "meta/test"
+            }
+        }
+    };
+
     describe("ModuleBinder", function () {
 
         var binder, blueprintOne, blueprintTwo;
@@ -59,7 +102,7 @@ describe("meta/module-bindiner-spec", function () {
             var serializer;
 
             beforeEach(function() {
-                serializer = new MontageSerializer().initWithRequire(require);
+                serializer = new Serializer().initWithRequire(require);
                 serializer.setSerializationIndentation(4);
             });
 
@@ -67,47 +110,7 @@ describe("meta/module-bindiner-spec", function () {
                 var expectedSerialization,
                     serialization;
 
-                expectedSerialization = {
-                    "blueprint_one_a": {
-                        "prototype": "montage/core/meta/property-blueprint",
-                        "properties": {
-                            "name": "a",
-                            "blueprint": {"@": "blueprint_one"}
-                        }
-                    },
-                    "blueprint_one": {
-                        "prototype": "montage/core/meta/blueprint",
-                        "properties": {
-                            "name": "one",
-                            "binder": {"@": "root"},
-                            "blueprintModuleId": null,
-                            "prototypeName": "one",
-                            "propertyBlueprints": [
-                                {"@": "blueprint_one_a"}
-                            ]
-                        }
-                    },
-                    "blueprint_two": {
-                        "prototype": "montage/core/meta/blueprint",
-                        "properties": {
-                            "name": "two",
-                            "binder": {"@": "root"},
-                            "blueprintModuleId": null,
-                            "prototypeName": "two"
-                        }
-                    },
-                    "root": {
-                        "prototype": "montage/core/meta/module-binder",
-                        "properties": {
-                            "name": "test",
-                            "blueprints": [
-                                {"@": "blueprint_one"},
-                                {"@": "blueprint_two"}
-                            ],
-                            "binderModuleId": "meta/test"
-                        }
-                    }
-                };
+                expectedSerialization = binderSerialization;
 
                 serialization = serializer.serializeObject(binder);
                 expect(JSON.parse(serialization))
@@ -122,16 +125,44 @@ describe("meta/module-bindiner-spec", function () {
             });
         });
 
+        describe("deserialization", function () {
+            var deserializer;
+            beforeEach(function () {
+                deserializer = new Deserializer();
+
+            });
+
+
+            it("makes exports available after deserialization", function () {
+                return deserializer.init(JSON.stringify(binderSerialization), require).deserializeObject()
+                .then(function (binder) {
+                    expect(binder.getBlueprintForExport("one")).toBeDefined();
+                    expect(binder.getBlueprintForExport("one").name).toBe("one");
+                });
+            });
+
+        });
+
         describe("getBlueprintForExport", function () {
             it("gets the blueprint with the given exportName", function () {
                 expect(binder.getBlueprintForExport("one")).toBe(blueprintOne);
                 expect(binder.getBlueprintForExport("two")).toBe(blueprintTwo);
             });
 
-            it("updates live", function () {
+            it("updates when a blueprint is added", function () {
                 var blueprintThree = new Blueprint().initWithNameAndModuleId("three");
                 binder.addBlueprint(blueprintThree);
                 expect(binder.getBlueprintForExport("three")).toBe(blueprintThree);
+            });
+
+            it("updates when a blueprint is removed", function () {
+                binder.removeBlueprint(blueprintOne);
+                expect(binder.getBlueprintForExport("one")).not.toBeDefined();
+            });
+
+            it("updates when a blueprint's prototypeName is changed", function () {
+                blueprintOne.prototypeName = "pass";
+                expect(binder.getBlueprintForExport("pass")).toBe(blueprintOne);
             });
         });
 
@@ -143,9 +174,8 @@ describe("meta/module-bindiner-spec", function () {
             });
 
             it("returns a binder", function () {
-                var serializer = new MontageSerializer().initWithRequire(require);
                 var _require = makeFakeRequire({
-                    "test.meta": JSON.parse(serializer.serializeObject(binder))
+                    "test.meta": binderSerialization
                 }, require);
 
                 return ModuleBinder.getBinder("test.meta", _require)

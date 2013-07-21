@@ -40,31 +40,41 @@ var ModuleBinder = exports.ModuleBinder = Binder.specialize({
 
     handleBlueprintsRangeChange: {
         value: function (plus, minus) {
-            var _exports = this._exports;
+            var isDeserializing = this.isDeserializing;
             // TODO check that all blueprints come from the same require when
             // added
             plus.forEach(function (blueprint) {
-                // TODO throw errors? Perhaps in a beforeRangeChange to prevent
-                // the change from taking. But might leave things in an
-                // inconsistent state.
-                if (
-                    blueprint.prototypeName in _exports &&
-                    _exports[blueprint.prototypeName] !== blueprint
-                ) {
-                    console.error(
-                        "Two different blueprints with the same prototypeName added to a module binder",
-                        _exports[blueprint.prototypeName],
-                        blueprint
-                    );
-                } else if (!this.isDeserializing && !blueprint.prototypeName) {
+                if (blueprint.prototypeName) {
+                    this.handlePrototypeNameChange(blueprint.prototypeName, "prototypeName", blueprint);
+                } else if (!isDeserializing) {
+                    // TODO throw error? Perhaps in a beforeRangeChange to prevent
+                    // the change from taking. But might leave things in an
+                    // inconsistent state.
                     console.error("ModuleBinder blueprint must have a prototypeName");
-                } else {
-                    _exports[blueprint.prototypeName] = blueprint;
                 }
-            });
+                blueprint.addOwnPropertyChangeListener("prototypeName", this);
+            }, this);
             minus.forEach(function (blueprint) {
-                delete _exports[blueprint.prototypeName];
-            });
+                blueprint.removeOwnPropertyChangeListener("prototypeName", this);
+                delete this._exports[blueprint.prototypeName];
+            }, this);
+        }
+    },
+
+    handlePrototypeNameChange: {
+        value: function (value, key, blueprint) {
+            var _exports = this._exports;
+            if (
+                blueprint.prototypeName in _exports &&
+                _exports[blueprint.prototypeName] !== blueprint
+            ) {
+                console.error(
+                    "Two different blueprints with the same prototypeName added to a module binder",
+                    _exports[blueprint.prototypeName],
+                    blueprint
+                );
+            }
+            _exports[value] = blueprint;
         }
     },
 
@@ -80,6 +90,7 @@ var ModuleBinder = exports.ModuleBinder = Binder.specialize({
                 throw new Error(blueprintModuleId + " blueprint module id does not end in '.meta'");
             }
 
+            // FIXME cache module-binders
             return targetRequire.async(blueprintModuleId)
             .then(function (object) {
                 // Need to get the require from the module, because thats
