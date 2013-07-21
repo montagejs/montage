@@ -970,6 +970,16 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
         }, "getBlueprintWithModuleId", "getBlueprint")
     },
 
+    /**
+     * Gets a blueprint for the given exportName from the .meta module at
+     * blueprintModuleId, which is relative to targetRequire.
+     * @function
+     * @param {string} blueprintModuleId The module id of a .meta module
+     * @param {function} targetRequire The require that the module id is relative to
+     * @param {string} exportName The name of the export to get the blueprint
+     * for.
+     * @returns {Promise.<Blueprint>} A promise for the blueprint in the .meta module
+     */
     getBlueprint: {
         value: function(blueprintModuleId, targetRequire, exportName) {
             if (!targetRequire) {

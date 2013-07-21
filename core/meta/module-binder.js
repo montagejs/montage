@@ -7,7 +7,6 @@ var ModuleBinder = exports.ModuleBinder = Binder.specialize({
         value: function ModuleBinder() {
             var self = this.super();
             this._exports = {};
-            // this.blueprints.addRangeChangeListener(this, "blueprints");
             this.addRangeAtPathChangeListener("_blueprints", this, "handleBlueprintsRangeChange");
             return self;
         }
@@ -30,6 +29,10 @@ var ModuleBinder = exports.ModuleBinder = Binder.specialize({
         }
     },
 
+    /**
+     * The id of the module that this binder is for
+     * @type {string}
+     */
     moduleId: {
         value: null
     },
@@ -78,12 +81,26 @@ var ModuleBinder = exports.ModuleBinder = Binder.specialize({
         }
     },
 
+    /**
+     * Gets the blueprint in this ModuleBinder with the given exportName/prototypeName
+     * @function
+     * @param {string} exportName Name of the export to get the blueprint for.
+     * @returns {Blueprint}
+     */
     getBlueprintForExport: {
         value: function (exportName) {
             return this._exports[exportName];
         }
     }
 }, {
+
+    /**
+     * Gets the binder from a .meta module.
+     * @function
+     * @param {string} blueprintModuleId The module id of a .meta module
+     * @param {function} targetRequire The require that the module id is relative to
+     * @returns {Promise.<ModuleBinder>} A promise for the ModuleBinder in the .meta module
+     */
     getBinder: {
         value: function(blueprintModuleId, targetRequire) {
             if (blueprintModuleId.search(/\.meta$/) === -1) {
