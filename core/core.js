@@ -787,6 +787,14 @@ Montage.defineProperty(Montage, "getInfoForObject", {
             } else {
                 instanceMetadataDescriptor = _instanceMetadataDescriptor;
             }
+
+            // don't modify the Object prototype, because this will cause
+            // future calls to Montage.getInfoForObject on objects without
+            // their own _montage_metadata property to return this one
+            if (object === Object.prototype) {
+                return Object.create(metadata, instanceMetadataDescriptor);
+            }
+
             try {
                 return Object.defineProperty(object, "_montage_metadata", {
                     enumerable: false,
