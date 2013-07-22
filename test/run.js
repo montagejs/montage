@@ -33,6 +33,7 @@ require("montage-testing").run(require,[
         "composer/translate-composer/translate-composer-spec",
 
         "core/core-spec",
+        "core/core-require-spec",
         "core/dom-spec",
         "core/localizer-spec",
         "core/localizer/serialization-spec",

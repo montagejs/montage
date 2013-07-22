@@ -33,12 +33,12 @@ var Montage = require("montage").Montage;
 var Simple = exports.Simple = Montage.specialize( {
     simple: {value: null},
     prototypeUuid: {value: "a"}
-}, module);
+});
 
 var Proto = exports.Proto = Montage.specialize( {
     proto: {value: null},
     prototypeUuid: {value: "b"}
-}, module);
+});
 
 var FunkyProto = exports.FunkyProto = Montage.specialize( {
     firstUuid: {value: null},
@@ -48,7 +48,7 @@ Montage.getInfoForObject(FunkyProto);
 var SubProto = exports.SubProto = Proto.specialize( {
     subProto: {value: null},
     prototypeUuid: {value: "c"}
-}, module);
+});
 
 var Funktion = exports.Funktion = function() {
     this.foo = function() {
