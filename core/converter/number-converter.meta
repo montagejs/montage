@@ -1,5 +1,4 @@
 {
-
     "numberConverter_shorten": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -11,7 +10,6 @@
             "helpKey": ""
         }
     },
-
     "numberConverter_decimals": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -23,7 +21,6 @@
             "helpKey": ""
         }
     },
-
     "numberConverter_round": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -35,7 +32,6 @@
             "helpKey": ""
         }
     },
-
     "numberConverter_allowFloat": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -47,7 +43,6 @@
             "helpKey": ""
         }
     },
-
     "numberConverter_allowNegative": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -59,7 +54,6 @@
             "helpKey": ""
         }
     },
-
     "converter_blueprint_reference": {
         "prototype": "core/meta/blueprint-reference",
         "properties": {
@@ -70,8 +64,7 @@
             }
         }
     },
-
-    "root": {
+    "NumberConverter": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "NumberConverter",
@@ -117,8 +110,19 @@
                     }
                 ]
             },
-            "propertyValidationRules": {
-            }
+            "propertyValidationRules": {}
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "core/converter/number-converter",
+            "binderModuleId": "core/converter/number-converter.meta",
+            "blueprints": [
+                {
+                    "@": "NumberConverter"
+                }
+            ]
         }
     }
 }

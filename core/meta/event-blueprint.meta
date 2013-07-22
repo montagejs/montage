@@ -1,5 +1,4 @@
 {
-
     "blueprint_owner_reference": {
         "prototype": "core/meta/blueprint-reference",
         "properties": {
@@ -10,7 +9,6 @@
             }
         }
     },
-
     "event_blueprint_name": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -22,7 +20,6 @@
             "helpKey": ""
         }
     },
-
     "event_owner_blueprint": {
         "prototype": "core/meta/association-blueprint",
         "properties": {
@@ -39,7 +36,6 @@
             }
         }
     },
-
     "event_blueprint_detailKeys": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -52,7 +48,6 @@
             "helpKey": ""
         }
     },
-
     "event_blueprint_helpKey": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -64,8 +59,7 @@
             "helpKey": ""
         }
     },
-
-    "root": {
+    "EventBlueprint": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "EventBlueprint",
@@ -102,8 +96,19 @@
                     }
                 ]
             },
-            "propertyValidationRules": {
-            }
+            "propertyValidationRules": {}
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "core/meta/event-blueprint",
+            "binderModuleId": "core/meta/event-blueprint.meta",
+            "blueprints": [
+                {
+                    "@": "EventBlueprint"
+                }
+            ]
         }
     }
 }

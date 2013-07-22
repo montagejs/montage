@@ -16,7 +16,7 @@
             "blueprint": {
                 "@": "root"
             },
-            "valueType":"enum",
+            "valueType": "enum",
             "enumValues": [
                 "hide",
                 "remove"
@@ -33,7 +33,7 @@
             }
         }
     },
-    "root": {
+    "Condition": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "Condition",
@@ -60,6 +60,18 @@
                     }
                 ]
             }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "ui/condition.reel",
+            "binderModuleId": "ui/condition.reel/condition.meta",
+            "blueprints": [
+                {
+                    "@": "Condition"
+                }
+            ]
         }
     }
 }

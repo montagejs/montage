@@ -1,5 +1,4 @@
 {
-
     "currenyConverter_currency": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -11,7 +10,6 @@
             "helpKey": ""
         }
     },
-
     "number_converter_blueprint_reference": {
         "prototype": "core/meta/blueprint-reference",
         "properties": {
@@ -22,8 +20,7 @@
             }
         }
     },
-
-    "root": {
+    "CurrencyConverter": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "CurrencyConverter",
@@ -45,8 +42,19 @@
                     }
                 ]
             },
-            "propertyValidationRules": {
-            }
+            "propertyValidationRules": {}
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "core/converter/currency-converter",
+            "binderModuleId": "core/converter/currency-converter.meta",
+            "blueprints": [
+                {
+                    "@": "CurrencyConverter"
+                }
+            ]
         }
     }
 }

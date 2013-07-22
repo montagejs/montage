@@ -1,52 +1,59 @@
 {
-    "blueprint_childcontroller_purchaseList":{
-        "prototype":"montage/core/meta/property-blueprint",
-        "properties":{
-            "name":"purchaseList",
-            "blueprint":{
-                "@":"root"
+    "blueprint_childcontroller_purchaseList": {
+        "prototype": "montage/core/meta/property-blueprint",
+        "properties": {
+            "name": "purchaseList",
+            "blueprint": {
+                "@": "root"
             },
-            "cardinality":-1,
-            "mandatory":false,
-            "denyDelete":false,
-            "readOnly":false,
-            "valueType":"string",
-            "enumValues":[
-            ],
-            "helpKey":""
+            "cardinality": -1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
         }
     },
-
-    "blueprint_parentcontroller_reference":{
-        "prototype":"montage/core/meta/blueprint-reference",
-        "properties":{
-            "valueReference":{
-                "blueprintName":"ParentController",
-                "blueprintModuleId":"meta/controller-blueprint-test/parent-controller.meta",
-                "prototypeName":"ParentController"
+    "blueprint_parentcontroller_reference": {
+        "prototype": "montage/core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "ParentController",
+                "blueprintModuleId": "meta/controller-blueprint-test/parent-controller.meta",
+                "prototypeName": "ParentController"
             }
         }
     },
-
-    "root":{
-        "prototype":"montage/core/meta/blueprint",
-        "properties":{
-            "name":"ChildController",
-            "blueprintModuleId":"meta/controller-blueprint-test/child-controller.meta",
-            "prototypeName":"ChildController",
-            "customPrototype":false,
-            "parent":{
-                "@":"blueprint_parentcontroller_reference"
+    "ChildController": {
+        "prototype": "montage/core/meta/blueprint",
+        "properties": {
+            "name": "ChildController",
+            "blueprintModuleId": "meta/controller-blueprint-test/child-controller.meta",
+            "prototypeName": "ChildController",
+            "customPrototype": false,
+            "parent": {
+                "@": "blueprint_parentcontroller_reference"
             },
-            "propertyBlueprints":[
+            "propertyBlueprints": [
                 {
-                    "@":"blueprint_childcontroller_purchaseList"
+                    "@": "blueprint_childcontroller_purchaseList"
                 }
             ],
-            "propertyBlueprintGroups":{
-            },
-            "propertyValidationRules":{
-            }
+            "propertyBlueprintGroups": {},
+            "propertyValidationRules": {}
+        }
+    },
+    "root": {
+        "prototype": "montage/core/meta/module-binder",
+        "properties": {
+            "moduleId": "meta/controller-blueprint-test/child-controller",
+            "binderModuleId": "meta/controller-blueprint-test/child-controller.meta",
+            "blueprints": [
+                {
+                    "@": "ChildController"
+                }
+            ]
         }
     }
 }

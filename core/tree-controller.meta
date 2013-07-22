@@ -1,5 +1,4 @@
 {
-
     "treeController_content": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -12,7 +11,6 @@
             "helpKey": ""
         }
     },
-
     "treeController_childrenPath": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -24,7 +22,6 @@
             "helpKey": ""
         }
     },
-
     "treeController_initiallyExpanded": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -36,7 +33,6 @@
             "helpKey": ""
         }
     },
-
     "treeController_noneExpanded": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -48,7 +44,6 @@
             "helpKey": ""
         }
     },
-
     "treeController_root": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -62,61 +57,6 @@
             "helpKey": ""
         }
     },
-
-    "root": {
-        "prototype": "core/meta/blueprint",
-        "properties": {
-            "name": "TreeController",
-            "blueprintModuleId": "core/tree-controller.meta",
-            "prototypeName": "TreeController",
-            "customPrototype": false,
-            "propertyBlueprints": [
-                {
-                    "@": "treeController_content"
-                },
-                {
-                    "@": "treeController_childrenPath"
-                },
-                {
-                    "@": "treeController_initiallyExpanded"
-                },
-                {
-                    "@": "treeController_allExpanded"
-                },
-                {
-                    "@": "treeController_noneExpanded"
-                },
-                {
-                    "@": "treeController_root"
-                }
-            ],
-            "propertyBlueprintGroups": {
-                "treeController": [
-                    {
-                        "@": "treeController_content"
-                    },
-                    {
-                        "@": "treeController_childrenPath"
-                    },
-                    {
-                        "@": "treeController_initiallyExpanded"
-                    },
-                    {
-                        "@": "treeController_allExpanded"
-                    },
-                    {
-                        "@": "treeController_noneExpanded"
-                    },
-                    {
-                        "@": "treeController_root"
-                    }
-                ]
-            },
-            "propertyValidationRules": {
-            }
-        }
-    },
-
     "treeControllerNode_content": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -129,7 +69,6 @@
             "helpKey": ""
         }
     },
-
     "treeControllerNode_expanded": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -141,7 +80,6 @@
             "helpKey": ""
         }
     },
-
     "treeControllerNode_depth": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -153,7 +91,6 @@
             "helpKey": ""
         }
     },
-
     "treeControllerNode_index": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -165,7 +102,6 @@
             "helpKey": ""
         }
     },
-
     "treeControllerNode_isFinal": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -177,7 +113,6 @@
             "helpKey": ""
         }
     },
-
     "treeControllerNode_parent": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -191,7 +126,6 @@
             "helpKey": ""
         }
     },
-
     "treeControllerNode_children": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -206,7 +140,6 @@
             "helpKey": ""
         }
     },
-
     "treeControllerNode_junctions": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -218,7 +151,6 @@
             "helpKey": ""
         }
     },
-
     "treeControllerNode": {
         "prototype": "core/meta/blueprint",
         "properties": {
@@ -280,9 +212,71 @@
                     }
                 ]
             },
-            "propertyValidationRules": {
-            }
+            "propertyValidationRules": {}
+        }
+    },
+    "TreeController": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "TreeController",
+            "blueprintModuleId": "core/tree-controller.meta",
+            "prototypeName": "TreeController",
+            "customPrototype": false,
+            "propertyBlueprints": [
+                {
+                    "@": "treeController_content"
+                },
+                {
+                    "@": "treeController_childrenPath"
+                },
+                {
+                    "@": "treeController_initiallyExpanded"
+                },
+                {
+                    "@": "treeController_allExpanded"
+                },
+                {
+                    "@": "treeController_noneExpanded"
+                },
+                {
+                    "@": "treeController_root"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "treeController": [
+                    {
+                        "@": "treeController_content"
+                    },
+                    {
+                        "@": "treeController_childrenPath"
+                    },
+                    {
+                        "@": "treeController_initiallyExpanded"
+                    },
+                    {
+                        "@": "treeController_allExpanded"
+                    },
+                    {
+                        "@": "treeController_noneExpanded"
+                    },
+                    {
+                        "@": "treeController_root"
+                    }
+                ]
+            },
+            "propertyValidationRules": {}
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "core/tree-controller",
+            "binderModuleId": "core/tree-controller.meta",
+            "blueprints": [
+                {
+                    "@": "TreeController"
+                }
+            ]
         }
     }
-
 }

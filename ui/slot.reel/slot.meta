@@ -29,7 +29,7 @@
             }
         }
     },
-    "root": {
+    "Slot": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "Slot",
@@ -56,6 +56,18 @@
                     }
                 ]
             }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "ui/slot.reel",
+            "binderModuleId": "ui/slot.reel/slot.meta",
+            "blueprints": [
+                {
+                    "@": "Slot"
+                }
+            ]
         }
     }
 }

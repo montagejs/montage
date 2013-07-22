@@ -1,106 +1,109 @@
 {
-
-    "derived_property_getterDefinition":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"getterDefinition",
-            "blueprint":{
-                "@":"root"
+    "derived_property_getterDefinition": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "getterDefinition",
+            "blueprint": {
+                "@": "root"
             },
-            "cardinality":1,
-            "mandatory":false,
-            "denyDelete":false,
-            "readOnly":false,
-            "valueType":"string",
-            "enumValues":[
-            ],
-            "helpKey":""
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
         }
     },
-
-    "derived_property_setterDefinition":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"setterDefinition",
-            "blueprint":{
-                "@":"root"
+    "derived_property_setterDefinition": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "setterDefinition",
+            "blueprint": {
+                "@": "root"
             },
-            "cardinality":1,
-            "mandatory":false,
-            "denyDelete":false,
-            "readOnly":false,
-            "valueType":"string",
-            "enumValues":[
-            ],
-            "helpKey":""
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
         }
     },
-
-    "derived_property_blueprint_dependencies":{
-         "prototype":"core/meta/property-blueprint",
-         "properties":{
-             "name":"valueType",
-             "blueprint":{
-                 "@":"root"
-             },
-             "cardinality":-1,
-             "mandatory":false,
-             "denyDelete":false,
-             "readOnly":false,
-             "valueType":"string",
-             "enumValues":[
-             ],
-             "helpKey":""
-         }
-     },
-
-    "property_blueprint_reference":{
-        "prototype":"core/meta/blueprint-reference",
-        "properties":{
-            "valueReference":{
-                "blueprintName":"PropertyBlueprint",
-                "blueprintModuleId":"core/meta/property-blueprint.meta",
-                "prototypeName":"PropertyBlueprint"
+    "derived_property_blueprint_dependencies": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "valueType",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": -1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "property_blueprint_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "PropertyBlueprint",
+                "blueprintModuleId": "core/meta/property-blueprint.meta",
+                "prototypeName": "PropertyBlueprint"
             }
         }
     },
-
-    "root":{
-        "prototype":"core/meta/blueprint",
-        "properties":{
-            "name":"DerivedPropertyBlueprint",
-            "blueprintModuleId":"core/meta/derived-property-blueprint.meta",
-            "prototypeName":"DerivedPropertyBlueprint",
-            "customPrototype":false,
-            "parent":{
-                "@":"property_blueprint_reference"
+    "DerivedPropertyBlueprint": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "DerivedPropertyBlueprint",
+            "blueprintModuleId": "core/meta/derived-property-blueprint.meta",
+            "prototypeName": "DerivedPropertyBlueprint",
+            "customPrototype": false,
+            "parent": {
+                "@": "property_blueprint_reference"
             },
-            "propertyBlueprints":[
+            "propertyBlueprints": [
                 {
-                    "@":"derived_property_blueprint_dependencies"
+                    "@": "derived_property_blueprint_dependencies"
                 },
                 {
-                    "@":"derived_property_getterDefinition"
+                    "@": "derived_property_getterDefinition"
                 },
                 {
-                    "@":"derived_property_setterDefinition"
+                    "@": "derived_property_setterDefinition"
                 }
             ],
-            "propertyBlueprintGroups":{
-                "association-blueprint":[
+            "propertyBlueprintGroups": {
+                "association-blueprint": [
                     {
-                        "@":"derived_property_blueprint_dependencies"
+                        "@": "derived_property_blueprint_dependencies"
                     },
                     {
-                        "@":"derived_property_getterDefinition"
+                        "@": "derived_property_getterDefinition"
                     },
                     {
-                        "@":"derived_property_setterDefinition"
+                        "@": "derived_property_setterDefinition"
                     }
                 ]
             },
-            "propertyValidationRules":{
-            }
+            "propertyValidationRules": {}
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "core/meta/derived-property-blueprint",
+            "binderModuleId": "core/meta/derived-property-blueprint.meta",
+            "blueprints": [
+                {
+                    "@": "DerivedPropertyBlueprint"
+                }
+            ]
         }
     }
 }

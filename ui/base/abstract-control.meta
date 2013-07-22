@@ -5,8 +5,10 @@
             "name": "detail",
             "valueType": "object",
             "readOnly": true,
-            "collectionValueType":"dict",
-            "blueprint": {"@": "root"}
+            "collectionValueType": "dict",
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "blueprint_parent": {
@@ -19,21 +21,39 @@
             }
         }
     },
-    "root": {
+    "AbstractControl": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "AbstractControl",
             "blueprintModuleId": "ui/base/abstract-control.meta",
             "prototypeName": "AbstractControl",
-            "parent": {"@": "blueprint_parent"},
+            "parent": {
+                "@": "blueprint_parent"
+            },
             "propertyBlueprints": [
-                {"@": "detail_property"}
+                {
+                    "@": "detail_property"
+                }
             ],
             "propertyBlueprintGroups": {
                 "Control": [
-                    {"@": "detail_property"}
+                    {
+                        "@": "detail_property"
+                    }
                 ]
             }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "ui/base/abstract-control",
+            "binderModuleId": "ui/base/abstract-control.meta",
+            "blueprints": [
+                {
+                    "@": "AbstractControl"
+                }
+            ]
         }
     }
 }

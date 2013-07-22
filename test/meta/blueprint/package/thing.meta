@@ -9,14 +9,27 @@
             }
         }
     },
-
-    "root": {
+    "Thing": {
         "prototype": "montage/core/meta/blueprint",
         "properties": {
             "name": "Thing",
             "blueprintModuleId": "thing.meta",
             "prototypeName": "Thing",
-            "parent": {"@": "blueprint_parent"}
+            "parent": {
+                "@": "blueprint_parent"
+            }
+        }
+    },
+    "root": {
+        "prototype": "montage/core/meta/module-binder",
+        "properties": {
+            "moduleId": "meta/blueprint/package/thing",
+            "binderModuleId": "meta/blueprint/package/thing.meta",
+            "blueprints": [
+                {
+                    "@": "Thing"
+                }
+            ]
         }
     }
 }

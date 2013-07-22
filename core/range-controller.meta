@@ -1,5 +1,4 @@
 {
-
     "rangeController_content": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -12,7 +11,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_sortPath": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -24,7 +22,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_reversed": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -36,7 +33,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_filterPath": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -48,7 +44,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_selectAddedContent": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -60,7 +55,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_deselectInvisibleContent": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -72,7 +66,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_clearSelectionOnOrderChange": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -84,7 +77,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_avoidsEmptySelection": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -96,7 +88,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_multiSelect": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -108,8 +99,7 @@
             "helpKey": ""
         }
     },
-
-    "root": {
+    "RangeController": {
         "prototype": "core/meta/blueprint",
         "properties": {
             "name": "RangeController",
@@ -176,8 +166,19 @@
                     }
                 ]
             },
-            "propertyValidationRules": {
-            }
+            "propertyValidationRules": {}
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "core/range-controller",
+            "binderModuleId": "core/range-controller.meta",
+            "blueprints": [
+                {
+                    "@": "RangeController"
+                }
+            ]
         }
     }
 }

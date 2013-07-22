@@ -1,55 +1,63 @@
 {
-
-    "association_target_blueprint":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"targetBlueprint",
-            "blueprint":{
-                "@":"root"
+    "association_target_blueprint": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "targetBlueprint",
+            "blueprint": {
+                "@": "root"
             },
-            "mandatory":true,
-            "valueType":"object",
-            "valueObjectPrototypeName":"Blueprint",
-            "valueObjectModuleId":"core/meta/blueprint",
-            "helpKey":""
+            "mandatory": true,
+            "valueType": "object",
+            "valueObjectPrototypeName": "Blueprint",
+            "valueObjectModuleId": "core/meta/blueprint",
+            "helpKey": ""
         }
     },
-
-    "property_blueprint_reference":{
-        "prototype":"core/meta/blueprint-reference",
-        "properties":{
-            "valueReference":{
-                "blueprintName":"PropertyBlueprint",
-                "blueprintModuleId":"core/meta/property-blueprint.meta",
-                "prototypeName":"PropertyBlueprint"
+    "property_blueprint_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "PropertyBlueprint",
+                "blueprintModuleId": "core/meta/property-blueprint.meta",
+                "prototypeName": "PropertyBlueprint"
             }
         }
     },
-
-    "root":{
-        "prototype":"core/meta/blueprint",
-        "properties":{
-            "name":"AssociationBlueprint",
-            "blueprintModuleId":"core/meta/association-blueprint.meta",
-            "prototypeName":"AssociationBlueprint",
-            "customPrototype":false,
-            "parent":{
-                "@":"property_blueprint_reference"
+    "AssociationBlueprint": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "AssociationBlueprint",
+            "blueprintModuleId": "core/meta/association-blueprint.meta",
+            "prototypeName": "AssociationBlueprint",
+            "customPrototype": false,
+            "parent": {
+                "@": "property_blueprint_reference"
             },
-            "propertyBlueprints":[
+            "propertyBlueprints": [
                 {
-                    "@":"association_target_blueprint"
+                    "@": "association_target_blueprint"
                 }
             ],
-            "propertyBlueprintGroups":{
-                "association-blueprint":[
+            "propertyBlueprintGroups": {
+                "association-blueprint": [
                     {
-                        "@":"association_target_blueprint"
+                        "@": "association_target_blueprint"
                     }
                 ]
             },
-            "propertyValidationRules":{
-            }
+            "propertyValidationRules": {}
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-binder",
+        "properties": {
+            "moduleId": "core/meta/association-blueprint",
+            "binderModuleId": "core/meta/association-blueprint.meta",
+            "blueprints": [
+                {
+                    "@": "AssociationBlueprint"
+                }
+            ]
         }
     }
 }

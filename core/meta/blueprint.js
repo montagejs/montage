@@ -8,16 +8,17 @@
  */
 var Montage = require("montage").Montage;
 var Promise = require("core/promise").Promise;
-var Deserializer = require("core/serialization").Deserializer;
 var ObjectProperty = require("core/meta/object-property").ObjectProperty;
 var Enum = require("core/enum").Enum;
-var BinderModule = require("core/meta/binder");
+var BinderModule = require("core/meta/binder"); // CYCLE
+var ModuleBinderModule = require("core/meta/module-binder"); // CYCLE
 var BlueprintReference = require("core/meta/blueprint-reference").BlueprintReference;
 var PropertyBlueprint = require("core/meta/property-blueprint").PropertyBlueprint;
 var AssociationBlueprint = require("core/meta/association-blueprint").AssociationBlueprint;
 var DerivedPropertyBlueprint = require("core/meta/derived-property-blueprint").DerivedPropertyBlueprint;
 var EventBlueprint = require("core/meta/event-blueprint").EventBlueprint;
 var PropertyValidationRule = require("core/meta/validation-rule").PropertyValidationRule;
+var MontageReviver = require("core/serialization/deserializer/montage-reviver").MontageReviver;
 
 var logger = require("core/logger").logger("blueprint");
 
@@ -33,10 +34,6 @@ var Defaults = {
  @class Blueprint
  */
 var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */ {
-
-    FileExtension: {
-        value: ".meta"
-    },
 
     constructor: {
         value: function Blueprint() {
@@ -967,46 +964,42 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      @param {Function} require function
      */
     getBlueprintWithModuleId: {
-        value: function(blueprintModuleId, targetRequire) {
+        value: Montage.deprecate(void 0, function (blueprintModuleId, targetRequire) {
+            var exportName = MontageReviver.parseObjectLocationId(blueprintModuleId.replace(/\.meta$/, "")).objectName;
+            return this.getBlueprint(blueprintModuleId, targetRequire, exportName);
+        }, "getBlueprintWithModuleId", "getBlueprint")
+    },
+
+    /**
+     * Gets a blueprint for the given exportName from the .meta module at
+     * blueprintModuleId, which is relative to targetRequire.
+     * @function
+     * @param {string} blueprintModuleId The module id of a .meta module
+     * @param {function} targetRequire The require that the module id is relative to
+     * @param {string} exportName The name of the export to get the blueprint
+     * for.
+     * @returns {Promise.<Blueprint>} A promise for the blueprint in the .meta module
+     */
+    getBlueprint: {
+        value: function(blueprintModuleId, targetRequire, exportName) {
             if (!targetRequire) {
                 throw new Error("Require needed to get blueprint " + blueprintModuleId);
             }
 
-            return targetRequire.async(blueprintModuleId)
-            .then(function (object) {
-                // Need to get the require from the module, because thats
-                // what all the moduleId references are relative to.
-                targetRequire = getModuleRequire(targetRequire, blueprintModuleId);
-                return new Deserializer().init(JSON.stringify(object), targetRequire).deserializeObject();
-            })
-            .then(function (blueprint) {
+            return ModuleBinderModule.ModuleBinder.getBinder(blueprintModuleId, targetRequire)
+            .then(function (binder) {
+                var blueprint = binder.getBlueprintForExport(exportName);
                 if (!blueprint) {
-                    throw new Error("No Blueprint found for " + blueprintModuleId);
+                    throw new Error("No Blueprint found for " + blueprintModuleId + "[" + exportName + "]");
                 }
 
-                // Access default through manager because we do not want to trigger the auto registration
-                var binder = (blueprint._binder ? blueprint._binder : BinderModule.Binder.manager.defaultBinder);
-
-                // Only check or add to a binder if the blueprint is referenced
-                // from the binder's package or a direct dependency. If it's
-                // from a dependency's dependency then the module ID will be
-                // incorrect
-                if (targetRequire.location === binder.require.location) {
-                    var existingBlueprint = binder.blueprintForPrototype(blueprint.prototypeName, blueprint.moduleId);
-
-                    if (existingBlueprint) {
-                        return existingBlueprint;
-                    } else {
-                        binder.addBlueprint(blueprint);
-                    }
-                }
-
+                // FIXME should be set by ModuleBinder
                 blueprint.blueprintInstanceModuleId = blueprintModuleId;
 
                 if (blueprint._parentReference) {
                     // Load parent "synchronously" so that all the properties
                     // through the blueprint chain are available
-                    return blueprint._parentReference.promise(targetRequire)
+                    return blueprint._parentReference.promise(binder.require)
                     .then(function(parentBlueprint) {
                             blueprint._parent = parentBlueprint;
                             return blueprint;
@@ -1030,21 +1023,3 @@ var UnknownBlueprint = Object.freeze(new Blueprint().initWithName("Unknown"));
 
 var UnknownPropertyBlueprint = Object.freeze(new PropertyBlueprint().initWithNameBlueprintAndCardinality("Unknown", null, 1));
 var UnknownEventBlueprint = Object.freeze(new EventBlueprint().initWithNameAndBlueprint("Unknown", null));
-
-// Adapted from mr/sandbox
-function getModuleRequire(parentRequire, moduleId) {
-    var topId = parentRequire.resolve(moduleId);
-    var module = parentRequire.getModuleDescriptor(topId);
-
-    while (module.redirect || module.mappingRedirect) {
-        if (module.redirect) {
-            topId = module.redirect;
-        } else {
-            parentRequire = module.mappingRequire;
-            topId = module.mappingRedirect;
-        }
-        module = parentRequire.getModuleDescriptor(topId);
-    }
-
-    return module.require;
-}
