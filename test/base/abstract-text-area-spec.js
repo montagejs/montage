@@ -98,6 +98,47 @@ describe("test/base/abstract-text-area-spec", function () {
 
             expect(aTextArea.element.value).toBe(aTextArea.value);
         });
+
+        it("should display false as 'false' in the element", function () {
+            aTextArea.value = false;
+            aTextArea.draw();
+            expect(aTextArea.element.value).toBe("false");
+        });
+
+        it("should display true as 'true' in the element", function () {
+            aTextArea.value = true;
+            aTextArea.draw();
+            expect(aTextArea.element.value).toBe("true");
+        });
+
+        it("should display undefined as an empty string in the element", function () {
+            aTextArea.value = (void 0);
+            aTextArea.draw();
+            expect(aTextArea.element.value).toBe("");
+        });
+
+        it("should display null as an empty string in the element", function () {
+            aTextArea.value = null;
+            aTextArea.draw();
+            expect(aTextArea.element.value).toBe("");
+        });
+
+        it("should display a number as a number in the element", function () {
+            aTextArea.value = 42;
+            aTextArea.draw();
+            expect(aTextArea.element.value).toBe("42");
+        });
+
+        it("should display the toString() result of an object in the element", function () {
+            aTextArea.value = {
+                toString: function () {
+                    return "foo";
+                }
+            };
+
+            aTextArea.draw();
+            expect(aTextArea.element.value).toBe("foo");
+        });
     });
 
     describe("events", function () {

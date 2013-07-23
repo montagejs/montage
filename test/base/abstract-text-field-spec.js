@@ -114,6 +114,47 @@ describe("test/base/abstract-text-field-spec", function () {
             expect(aTextField.element.value).toBe(aTextField.value);
         });
 
+        it("should display false as 'false' in the element", function () {
+            aTextField.value = false;
+            aTextField.draw();
+            expect(aTextField.element.value).toBe("false");
+        });
+
+        it("should display true as 'true' in the element", function () {
+            aTextField.value = true;
+            aTextField.draw();
+            expect(aTextField.element.value).toBe("true");
+        });
+
+        it("should display undefined as an empty string in the element", function () {
+            aTextField.value = (void 0);
+            aTextField.draw();
+            expect(aTextField.element.value).toBe("");
+        });
+
+        it("should display null as an empty string in the element", function () {
+            aTextField.value = null;
+            aTextField.draw();
+            expect(aTextField.element.value).toBe("");
+        });
+
+        it("should display a number as a number in the element", function () {
+            aTextField.value = 42;
+            aTextField.draw();
+            expect(aTextField.element.value).toBe("42");
+        });
+
+        it("should display the toString() result of an object in the element", function () {
+            aTextField.value = {
+                toString: function () {
+                    return "foo";
+                }
+            };
+
+            aTextField.draw();
+            expect(aTextField.element.value).toBe("foo");
+        });
+
         it("should draw a placeholder when set", function () {
             aTextField.placeholderValue = "a placeholder text";
 
