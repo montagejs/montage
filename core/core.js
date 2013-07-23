@@ -1034,9 +1034,9 @@ exports._blueprintDescriptor = {
         if (value === null) {
             _blueprintValue = null;
         } else if (typeof value.then === "function") {
-            throw new TypeError("Object blueprint should not be a promise '" + JSON.stringify(value) + "'");
+            throw new TypeError("Object blueprint should not be a promise");
         } else {
-            value.blueprintInstanceModuleId = self.blueprintModuleId;
+            value.blueprintInstanceModule = self.blueprintModule;
             _blueprintValue = require("core/promise").Promise.resolve(value);
         }
         Montage.defineProperty(self, "_blueprint", {
