@@ -96,7 +96,7 @@
       "helpKey":""}},
 
   "root":{
-    "prototype":"montage/core/meta/blueprint",
+    "prototype":"montage/core/meta/module-blueprint",
     "properties":{
       "name":"component2",
       "prototypeName":"component2",

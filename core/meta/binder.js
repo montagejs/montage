@@ -240,6 +240,7 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
      */
     blueprintForPrototype: {
         value: function(prototypeName, moduleId) {
+            throw new Error("FIXME");
             var key = moduleId + "." + prototypeName;
             var blueprint = this._blueprintForPrototypeTable[key];
             if (typeof blueprint === "undefined") {

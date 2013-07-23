@@ -21,13 +21,8 @@ var PropertyValidationRule = require("core/meta/validation-rule").PropertyValida
 
 var logger = require("core/logger").logger("blueprint");
 
-// Cache all loaded blueprints
-var CACHE = Object.create(null);
-
 var Defaults = {
     name:"default",
-    moduleId:"",
-    prototypeName:"",
     customPrototype:false
 };
 
@@ -80,15 +75,14 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
             if ((this._binder) && (!this.binder.isDefault)) {
                 serializer.setProperty("binder", this._binder, "reference");
             }
-            serializer.setProperty("blueprintModuleId", this.blueprintInstanceModuleId);
+
+            if (this.blueprintInstanceModuleId) {
+                serializer.setProperty("blueprintModuleId", this.blueprintInstanceModuleId);
+            }
             if (this._parentReference) {
                 serializer.setProperty("parent", this._parentReference);
             }
-            //  moduleId,prototypeName,customPrototype
-            this._setPropertyWithDefaults(serializer, "moduleId", this.moduleId);
-            if (this.prototypeName === this.name) {
-                this._setPropertyWithDefaults(serializer, "prototypeName", this.prototypeName);
-            }
+
             this._setPropertyWithDefaults(serializer, "customPrototype", this.customPrototype);
             //
             if (this._propertyBlueprints.length > 0) {
@@ -115,12 +109,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
             }
             this.blueprintInstanceModuleId = deserializer.getProperty("blueprintModuleId");
             this._parentReference = deserializer.getProperty("parent");
-            //  moduleId,prototypeName,customPrototype
-            this.moduleId = this._getPropertyWithDefaults(deserializer, "moduleId");
-            this.prototypeName = this._getPropertyWithDefaults(deserializer, "prototypeName");
-            if (this.prototypeName === "") {
-                this.prototypeName = this.name;
-            }
+
             this.customPrototype = this._getPropertyWithDefaults(deserializer, "customPrototype");
             //
             var value;
@@ -218,8 +207,10 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      */
     newInstancePrototype: {
         value: function() {
+            // FIXME this function is no missing all the data it needs
             var self = this;
             if (this.customPrototype) {
+                throw new Error("FIXME");
                 var results = Promise.defer();
                 require.async(this.moduleId,
                     function(exports) {
@@ -242,6 +233,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
                         }
                     });
                     this.ObjectProperty.applyWithBlueprint(newConstructor.prototype, this);
+                    console.warn("FIXME modifying exports at runtime");
                     exports[self.prototypeName] = newConstructor;
                 }
                 var constructor = exports[self.prototypeName];
@@ -350,22 +342,6 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
                 this._parent = null;
             }
         }
-    },
-
-    /**
-     @type {Property}
-     @default null
-     */
-    moduleId: {
-        value: ""
-    },
-
-    /**
-     @type {Property}
-     @default null
-     */
-    prototypeName: {
-        value: null
     },
 
     /**
@@ -925,54 +901,11 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
 
 }, {
-    /**
-     Gets a blueprint from a serialized file at the given module id.
-     @function
-     @param {String} blueprint module id
-     @param {Function} require function
-     */
+
     getBlueprintWithModuleId: {
-        value: function(moduleId, _require) {
-            if (moduleId.search(/\.meta$/) === -1) {
-                throw new Error(moduleId + " blueprint module id does not end in '.meta'");
-            }
-            if (!_require) {
-                throw new Error("Require needed to get blueprint " + moduleId);
-            }
-
-            var targetRequire;
-
-            var key = _require.location + "#" + moduleId;
-            if (key in CACHE) {
-                return CACHE[key];
-            }
-
-            return CACHE[key] = _require.async(moduleId)
-            .then(function (object) {
-                // Need to get the require from the module, because thats
-                // what all the moduleId references are relative to.
-                targetRequire = getModuleRequire(_require, moduleId);
-                return new Deserializer().init(JSON.stringify(object), targetRequire).deserializeObject();
-            }).then(function (blueprint) {
-                if (!Blueprint.prototype.isPrototypeOf(blueprint)) {
-                    throw new Error("Object in " + moduleId + " does not appear to be a blueprint");
-                }
-
-                if (blueprint._parentReference) {
-                    // Load parent "synchronously" so that all the properties
-                    // through the blueprint chain are available
-                    return blueprint._parentReference.promise(targetRequire) // MARK
-                    .then(function(parentBlueprint) {
-                        blueprint._parent = parentBlueprint;
-                        return blueprint;
-                    });
-                } else {
-                    return blueprint;
-                }
-
-                return blueprint;
-            });
-        }
+        value: Montage.deprecate(void 0, function (moduleId, _require) {
+            return require("./module-blueprint").ModuleBlueprint.getBlueprintWithModuleId(moduleId, _require);
+        }, "Blueprint.getBlueprintWithModuleId", "ModuleBlueprint.getBlueprintWithModuleId")
     },
 
     /*
@@ -1019,21 +952,3 @@ var UnknownBlueprint = Object.freeze(new Blueprint().initWithName("Unknown"));
 
 var UnknownPropertyBlueprint = Object.freeze(new PropertyBlueprint().initWithNameBlueprintAndCardinality("Unknown", null, 1));
 var UnknownEventBlueprint = Object.freeze(new EventBlueprint().initWithNameAndBlueprint("Unknown", null));
-
-// Adapted from mr/sandbox
-function getModuleRequire(parentRequire, moduleId) {
-    var topId = parentRequire.resolve(moduleId);
-    var module = parentRequire.getModuleDescriptor(topId);
-
-    while (module.redirect || module.mappingRedirect) {
-        if (module.redirect) {
-            topId = module.redirect;
-        } else {
-            parentRequire = module.mappingRequire;
-            topId = module.mappingRedirect;
-        }
-        module = parentRequire.getModuleDescriptor(topId);
-    }
-
-    return module.require;
-}

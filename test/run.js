@@ -61,6 +61,7 @@ require("montage-testing").run(require,[
         "meta/controller-blueprint-spec",
         "meta/converter-blueprint-spec",
         "meta/build-in-component-blueprint-spec",
+        "meta/module-blueprint-spec",
 
         "reel/template-spec",
         "document-resources-spec",

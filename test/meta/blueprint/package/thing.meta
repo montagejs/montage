@@ -4,14 +4,14 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "Thing",
-                "blueprintModuleId": "dependency/thing.meta",
+                "blueprintModule": {"%": "dependency/thing.meta"},
                 "prototypeName": "Thing"
             }
         }
     },
 
     "root": {
-        "prototype": "montage/core/meta/blueprint",
+        "prototype": "montage/core/meta/module-blueprint",
         "properties": {
             "name": "Thing",
             "blueprintModuleId": "thing.meta",

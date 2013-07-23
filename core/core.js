@@ -1002,7 +1002,7 @@ exports._blueprintDescriptor = {
             }
 
             if (!exports._blueprintDescriptor.BlueprintModulePromise) {
-                exports._blueprintDescriptor.BlueprintModulePromise = require.async("core/meta/blueprint").get("Blueprint");
+                exports._blueprintDescriptor.BlueprintModulePromise = require.async("core/meta/module-blueprint").get("ModuleBlueprint");
             }
             Montage.defineProperty(self, "_blueprint", {
                 enumerable: false,

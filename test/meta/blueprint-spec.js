@@ -217,7 +217,7 @@ describe("meta/blueprint-spec", function () {
                     expect(metadata.objectName).toBe("Binder");
                     expect(metadata.moduleId).toBe("core/meta/binder");
                     var personBlueprint = deserializedBinder.blueprintForPrototype("Person", "meta/blueprint/person");
-                    expect(personBlueprint).not.toBeNull();
+                    expect(personBlueprint).toBeTruthy();
                     expect(personBlueprint.propertyBlueprintForName("phoneNumbers")).not.toBeNull();
                 });
             });
@@ -234,33 +234,6 @@ describe("meta/blueprint-spec", function () {
                 var info = Montage.getInfoForObject(Person);
                 expect(info.moduleId).toBe("meta/blueprint/person");
                 expect(info.objectName).toBe("Person");
-            });
-        });
-
-        describe("cross package", function () {
-            it("correctly loads blueprints with the same internal module ID", function () {
-                return require.loadPackage({location: "./meta/blueprint/package"})
-                .then(function (require) {
-                    return Blueprint.getBlueprintWithModuleId("thing.meta", require)
-                    .then(function (blueprint) {
-                        expect(blueprint.parent).not.toBe(blueprint);
-                    });
-                });
-            });
-        });
-
-        describe("getBlueprintWithModuleId", function () {
-            it("caches the blueprints", function () {
-                return require.loadPackage({location: "./meta/blueprint/package"})
-                .then(function (require) {
-                    return Blueprint.getBlueprintWithModuleId("thing.meta", require)
-                    .then(function (blueprint1) {
-                        return Blueprint.getBlueprintWithModuleId("thing.meta", require)
-                        .then(function (blueprint2) {
-                            expect(blueprint1).toBe(blueprint2);
-                        });
-                    });
-                });
             });
         });
 

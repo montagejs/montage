@@ -4,7 +4,8 @@ var Montage = require("montage").Montage;
 
 var BinderHelper = require("meta/blueprint/binderhelper").BinderHelper;
 var binder = BinderHelper.companyBinder();
-var blueprint = binder.blueprintForPrototype("Company", "meta/blueprint/company");
+console.warn("FIXME blueprintForPrototype");
+var blueprint = binder.blueprints[1];//binder.blueprintForPrototype("Company", "meta/blueprint/company");
 
 var Company = exports.Company = blueprint.create(Montage, {
 
