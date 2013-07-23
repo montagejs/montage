@@ -5,12 +5,23 @@ var Montage = require("montage").Montage,
     MockDOM = require("mocks/dom"),
     MockComponent = require("mocks/component"),
     _document,
+    originalRootComponentPropertyDescriptor,
     WAITS_FOR_TIMEOUT = 2500;
 
 _document = MockDOM.document();
-Object.defineProperty(Component.prototype, "rootComponent", {
-    value: _document.rootComponent
-});
+
+function setupMockRootComponent() {
+    originalRootComponentPropertyDescriptor = Object.getOwnPropertyDescriptor(Component.prototype, "rootComponent");
+    Object.defineProperty(Component.prototype, "rootComponent", {
+        value: _document.rootComponent,
+        configurable: true
+    });
+}
+
+function setdownMockRootComponent() {
+    Object.defineProperty(Component.prototype, "rootComponent", originalRootComponentPropertyDescriptor);
+}
+
 AbstractConfirm.prototype.hasTemplate = false;
 
 describe("test/base/abstract-confirm-spec", function () {
@@ -32,7 +43,9 @@ describe("test/base/abstract-confirm-spec", function () {
     describe("properties", function () {
         var Confirm = AbstractConfirm.specialize( {}),
             aConfirm;
+
         beforeEach(function () {
+            setupMockRootComponent();
             aConfirm = new Confirm();
             aConfirm.element = MockDOM.element(_document);
             aConfirm._overlay = MockComponent.component();
@@ -40,6 +53,10 @@ describe("test/base/abstract-confirm-spec", function () {
             aConfirm._overlay.hide = function(){};
             aConfirm._okButton = MockComponent.component();
             aConfirm._cancelButton = MockComponent.component();
+        });
+
+        afterEach(function() {
+            setdownMockRootComponent();
         });
 
         describe("show", function () {
@@ -102,7 +119,12 @@ describe("test/base/abstract-confirm-spec", function () {
         var ConfirmSubtype;
 
         beforeEach(function() {
+            setupMockRootComponent();
             ConfirmSubtype = AbstractConfirm.specialize({});
+        });
+
+        afterEach(function() {
+            setdownMockRootComponent();
         });
 
         it("should create an instance to show the alert", function() {

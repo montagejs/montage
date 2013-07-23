@@ -5,21 +5,41 @@ var Montage = require("montage").Montage,
     MockDOM = require("mocks/dom"),
     MockComponent = require("mocks/component"),
     _document,
+    originalRootComponentPropertyDescriptor,
     WAITS_FOR_TIMEOUT = 2500;
 
 _document = MockDOM.document();
-Object.defineProperty(Component.prototype, "rootComponent", {
-    value: _document.rootComponent
-});
+
+function setupMockRootComponent() {
+    originalRootComponentPropertyDescriptor = Object.getOwnPropertyDescriptor(Component.prototype, "rootComponent");
+    Object.defineProperty(Component.prototype, "rootComponent", {
+        value: _document.rootComponent,
+        configurable: true
+    });
+}
+
+function setdownMockRootComponent() {
+    Object.defineProperty(Component.prototype, "rootComponent", originalRootComponentPropertyDescriptor);
+}
+
 AbstractAlert.prototype.hasTemplate = false;
 
 describe("test/base/abstract-alert-spec", function () {
     describe("creation", function () {
+        beforeEach(function() {
+            setupMockRootComponent();
+        });
+
+        afterEach(function() {
+            setdownMockRootComponent();
+        });
+
         it("cannot be instantiated directly", function () {
             expect(function () {
                 new AbstractAlert();
             }).toThrow();
         });
+
         it("can be instantiated as a subtype", function () {
             var AlertSubtype = AbstractAlert.specialize( {});
             var anAlertSubtype;
@@ -70,7 +90,12 @@ describe("test/base/abstract-alert-spec", function () {
             var AlertSubtype;
 
             beforeEach(function() {
+                setupMockRootComponent();
                 AlertSubtype = AbstractAlert.specialize({});
+            });
+
+            afterEach(function() {
+                setdownMockRootComponent();
             });
 
             it("should create an instance to show the alert", function() {
