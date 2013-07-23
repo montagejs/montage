@@ -1010,15 +1010,18 @@ exports._blueprintDescriptor = {
                     var info = Montage.getInfoForObject(self);
 
                     return Blueprint.getBlueprintWithModuleId(blueprintModuleId, info.require)
-                    .fail(function () {
-                        // FIXME throw typed errors, so that we only
-                        // generate a blueprint if there is no .meta file.
-                        // If the blueprint fails in deserialization then
-                        // we should propogate the error
-                        return Blueprint.createDefaultBlueprintForObject(self).then(function (blueprint) {
-                            blueprint.blueprintInstanceModuleId = blueprintModuleId;
-                            return blueprint;
-                        });
+                    .fail(function (error) {
+                        // FIXME only generate blueprint if the moduleId
+                        // requested does not exist. If any parents do not
+                        // exist then the error should still be thrown.
+                        if (error.message.indexOf("Can't XHR") !== -1) {
+                            return Blueprint.createDefaultBlueprintForObject(self).then(function (blueprint) {
+                                blueprint.blueprintInstanceModuleId = blueprintModuleId;
+                                return blueprint;
+                            });
+                        } else {
+                            throw error;
+                        }
                     });
                 })
             });
