@@ -8,7 +8,7 @@ var AbstractAlert = require("ui/base/abstract-alert").AbstractAlert,
  * @class Alert
  * @extends Component
  */
-exports.AbstractConfirm = AbstractAlert.specialize(/** @lends AbstractAlert# */ {
+var AbstractConfirm = exports.AbstractConfirm = AbstractAlert.specialize(/** @lends AbstractAlert# */ {
     constructor: {
         value: function AbstractConfirm() {
             if (this.constructor === AbstractConfirm) {
@@ -46,13 +46,13 @@ exports.AbstractConfirm = AbstractAlert.specialize(/** @lends AbstractAlert# */ 
     handleAction: {
         value: function(event) {
             if (event.target === this._okButton) {
-                this._userActionDeferred.resolve("ok");
+                this._userActionDeferred.resolve(AbstractConfirm.OKButton);
                 this._userActionDeferred = null;
                 this._overlay.hide();
             }
 
             if (event.target === this._cancelButton) {
-                this._userActionDeferred.resolve("cancel");
+                this._userActionDeferred.resolve(AbstractConfirm.CancelButton);
                 this._userActionDeferred = null;
                 this._overlay.hide();
             }
@@ -91,5 +91,13 @@ exports.AbstractConfirm = AbstractAlert.specialize(/** @lends AbstractAlert# */ 
                 return instance.show();
             });
         }
+    },
+
+    OKButton: {
+        value: "ok"
+    },
+
+    CancelButton: {
+        value: "cancel"
     }
 });
