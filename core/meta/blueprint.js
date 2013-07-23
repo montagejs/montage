@@ -21,6 +21,8 @@ var PropertyValidationRule = require("core/meta/validation-rule").PropertyValida
 
 var logger = require("core/logger").logger("blueprint");
 
+// Cache all loaded blueprints
+var CACHE = Object.create(null);
 
 var Defaults = {
     name:"default",
@@ -930,61 +932,45 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      @param {Function} require function
      */
     getBlueprintWithModuleId: {
-        value: function(blueprintModuleId, targetRequire) {
-            if (!targetRequire) {
-                throw new Error("Require needed to get blueprint " + blueprintModuleId);
+        value: function(moduleId, _require) {
+            if (moduleId.search(/\.meta$/) === -1) {
+                throw new Error(moduleId + " blueprint module id does not end in '.meta'");
+            }
+            if (!_require) {
+                throw new Error("Require needed to get blueprint " + moduleId);
             }
 
-            return targetRequire.async(blueprintModuleId)
+            var targetRequire;
+
+            var key = _require.location + "#" + moduleId;
+            if (key in CACHE) {
+                return CACHE[key];
+            }
+
+            return CACHE[key] = _require.async(moduleId)
             .then(function (object) {
                 // Need to get the require from the module, because thats
                 // what all the moduleId references are relative to.
-                targetRequire = getModuleRequire(targetRequire, blueprintModuleId);
+                targetRequire = getModuleRequire(_require, moduleId);
                 return new Deserializer().init(JSON.stringify(object), targetRequire).deserializeObject();
-            })
-            .then(function (blueprint) {
-                if (!blueprint) {
-                    throw new Error("No Blueprint found for " + blueprintModuleId);
+            }).then(function (blueprint) {
+                if (!Blueprint.prototype.isPrototypeOf(blueprint)) {
+                    throw new Error("Object in " + moduleId + " does not appear to be a blueprint");
                 }
-
-                // Access default through manager because we do not want to trigger the auto registration
-                var binder = (blueprint._binder ? blueprint._binder : BinderModule.Binder.manager.defaultBinder);
-
-                // Only check or add to a binder if the blueprint is referenced
-                // from the binder's package or a direct dependency. If it's
-                // from a dependency's dependency then the module ID will be
-                // incorrect
-                if (targetRequire.location === binder.require.location) {
-                    var existingBlueprint = binder.blueprintForPrototype(blueprint.prototypeName, blueprint.moduleId);
-
-                    if (existingBlueprint) {
-                        return existingBlueprint;
-                    } else {
-                        binder.addBlueprint(blueprint);
-                    }
-                }
-
-                blueprint.blueprintInstanceModuleId = blueprintModuleId;
 
                 if (blueprint._parentReference) {
                     // Load parent "synchronously" so that all the properties
                     // through the blueprint chain are available
-                    return blueprint._parentReference.promise(targetRequire)
+                    return blueprint._parentReference.promise(targetRequire) // MARK
                     .then(function(parentBlueprint) {
-                            blueprint._parent = parentBlueprint;
-                            return blueprint;
-                        }, function(error) {
-                            throw new Error("Cannot resolve parent blueprint " + blueprint._parentReference + " because " + error);
-                        }
-                    );
+                        blueprint._parent = parentBlueprint;
+                        return blueprint;
+                    });
                 } else {
                     return blueprint;
                 }
-            })
-            .fail(function (error) {
-                var e = new Error("Error deserializing Blueprint " + blueprintModuleId + " because " + error.message);
-                e.error = error;
-                throw e;
+
+                return blueprint;
             });
         }
     },

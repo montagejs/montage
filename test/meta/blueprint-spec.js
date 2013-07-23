@@ -249,6 +249,21 @@ describe("meta/blueprint-spec", function () {
             });
         });
 
+        describe("getBlueprintWithModuleId", function () {
+            it("caches the blueprints", function () {
+                return require.loadPackage({location: "./meta/blueprint/package"})
+                .then(function (require) {
+                    return Blueprint.getBlueprintWithModuleId("thing.meta", require)
+                    .then(function (blueprint1) {
+                        return Blueprint.getBlueprintWithModuleId("thing.meta", require)
+                        .then(function (blueprint2) {
+                            expect(blueprint1).toBe(blueprint2);
+                        });
+                    });
+                });
+            });
+        });
+
         describe("createDefaultBlueprintForObject", function () {
             it("should always return a promise", function () {
                 var blueprint = Blueprint.createDefaultBlueprintForObject({});
