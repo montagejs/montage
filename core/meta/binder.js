@@ -188,9 +188,6 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
                     }
                     this.blueprints.push(blueprint);
                     blueprint.binder = this;
-                    //
-                    var key = blueprint.moduleId + "." + blueprint.prototypeName;
-                    this._blueprintForPrototypeTable[key] = blueprint;
                 }
             }
             return blueprint;
@@ -209,9 +206,6 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
                 if (index >= 0) {
                     this.blueprints.splice(index, 1);
                     blueprint.binder = null;
-                    // Remove the cached entry
-                    var key = blueprint.moduleId + "." + blueprint.prototypeName;
-                    delete this._blueprintForPrototypeTable[key];
                 }
             }
             return blueprint;

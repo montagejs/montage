@@ -220,22 +220,18 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
                     }
                 );
             } else {
-                if (typeof exports[self.prototypeName] === "undefined") {
-                    var parentInstancePrototype = (this.parent ? this.parent.newInstancePrototype() : Montage );
-                    var newConstructor = Montage.create(parentInstancePrototype, {
-                        // Token class
-                        init: {
-                            value: function() {
-                                return this;
-                            }
+                var parentInstancePrototype = (this.parent ? this.parent.newInstancePrototype() : Montage );
+                var newConstructor = Montage.create(parentInstancePrototype, {
+                    // Token class
+                    init: {
+                        value: function() {
+                            return this;
                         }
-                    });
-                    this.ObjectProperty.applyWithBlueprint(newConstructor.prototype, this);
-                    console.warn("FIXME modifying exports at runtime");
-                    exports[self.prototypeName] = newConstructor;
-                }
-                var constructor = exports[self.prototypeName];
-                return (constructor ? constructor : null);
+                    }
+                });
+                this.ObjectProperty.applyWithBlueprint(newConstructor.prototype, this);
+
+                return (newConstructor ? newConstructor : null);
             }
         }
     },
@@ -339,6 +335,32 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
                 this._parentReference = null;
                 this._parent = null;
             }
+        }
+    },
+
+    /**
+     @type {Property}
+     @default null
+     */
+    moduleId: {
+        get: function () {
+            throw new Error("Blueprint#moduleId is deprecated, use ModuleBlueprint#module instead");
+        },
+        set: function () {
+            throw new Error("Blueprint#moduleId is deprecated, use ModuleBlueprint#module instead");
+        }
+    },
+
+    /**
+     @type {Property}
+     @default null
+     */
+    prototypeName: {
+        get: function () {
+            throw new Error("Blueprint#prototypeName is deprecated, use ModuleBlueprint#exportName instead");
+        },
+        set: function () {
+            throw new Error("Blueprint#prototypeName is deprecated, use ModuleBlueprint#exportName instead");
         }
     },
 

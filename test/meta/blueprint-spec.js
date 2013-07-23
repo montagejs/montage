@@ -88,14 +88,17 @@ describe("meta/blueprint-spec", function () {
             });
         });
         describe("blueprint to instance association", function () {
-            var binder = new Binder().initWithNameAndRequire("Binder", global.require);
-            var personBlueprint = new Blueprint().initWithName("Person");
-            personBlueprint.moduleId = "mymodule";
-            binder.addBlueprint(personBlueprint);
-            var companyBlueprint = new Blueprint().initWithName("Company");
-            companyBlueprint.prototypeName = "Firm";
-            companyBlueprint.moduleId = "mymodule";
-            binder.addBlueprint(companyBlueprint);
+            var binder, personBlueprint, companyBlueprint;
+            beforeEach(function () {
+                binder = new Binder().initWithNameAndRequire("Binder", global.require);
+                personBlueprint = new Blueprint().initWithName("Person");
+                personBlueprint.moduleId = "mymodule";
+                binder.addBlueprint(personBlueprint);
+                companyBlueprint = new Blueprint().initWithName("Company");
+                companyBlueprint.prototypeName = "Firm";
+                companyBlueprint.moduleId = "mymodule";
+                binder.addBlueprint(companyBlueprint);
+            });
             it("should be found with a prototypeName and moduleId", function () {
                 expect(binder.blueprintForPrototype("Person", "mymodule")).toBe(personBlueprint);
                 expect(binder.blueprintForPrototype("Firm", "mymodule")).toBe(companyBlueprint);
