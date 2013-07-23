@@ -92,16 +92,13 @@ describe("meta/blueprint-spec", function () {
             beforeEach(function () {
                 binder = new Binder().initWithNameAndRequire("Binder", global.require);
                 personBlueprint = new Blueprint().initWithName("Person");
-                personBlueprint.moduleId = "mymodule";
                 binder.addBlueprint(personBlueprint);
                 companyBlueprint = new Blueprint().initWithName("Company");
-                companyBlueprint.prototypeName = "Firm";
-                companyBlueprint.moduleId = "mymodule";
                 binder.addBlueprint(companyBlueprint);
             });
-            it("should be found with a prototypeName and moduleId", function () {
-                expect(binder.blueprintForPrototype("Person", "mymodule")).toBe(personBlueprint);
-                expect(binder.blueprintForPrototype("Firm", "mymodule")).toBe(companyBlueprint);
+            it("should be found with the blueprint name", function () {
+                expect(binder.blueprintForName("Person")).toBe(personBlueprint);
+                expect(binder.blueprintForName("Company")).toBe(companyBlueprint);
             });
         });
         describe("applying a basic blueprint to a prototype", function () {
@@ -219,7 +216,7 @@ describe("meta/blueprint-spec", function () {
                     expect(serializedBinder).not.toBeNull();
                     expect(metadata.objectName).toBe("Binder");
                     expect(metadata.moduleId).toBe("core/meta/binder");
-                    var personBlueprint = deserializedBinder.blueprintForPrototype("Person", "meta/blueprint/person");
+                    var personBlueprint = deserializedBinder.blueprintForName("Person");
                     expect(personBlueprint).toBeTruthy();
                     expect(personBlueprint.propertyBlueprintForName("phoneNumbers")).not.toBeNull();
                 });

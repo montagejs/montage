@@ -233,21 +233,20 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
      @returns blueprint
      */
     blueprintForPrototype: {
-        value: function(prototypeName, moduleId) {
-            throw new Error("FIXME");
-            var key = moduleId + "." + prototypeName;
-            var blueprint = this._blueprintForPrototypeTable[key];
-            if (typeof blueprint === "undefined") {
-                var aBlueprint, index;
-                for (index = 0; typeof (aBlueprint = this.blueprints[index]) !== "undefined"; index++) {
-                    if ((aBlueprint.prototypeName === prototypeName) && (aBlueprint.moduleId === moduleId)) {
-                        blueprint = aBlueprint;
-                        break;
-                    }
+        value: Montage.deprecate(void 0, function (prototypeName) {
+            return this.blueprintForName(prototypeName);
+        }, "blueprintForPrototype", "blueprintForName")
+    },
+
+    blueprintForName: {
+        value: function (name) {
+            var blueprints = this.blueprints,
+                length = blueprints.length;
+            for (var i = 0; i < length; i++) {
+                if (blueprints[i].name === name) {
+                    return blueprints[i];
                 }
-                this._blueprintForPrototypeTable[key] = blueprint;
             }
-            return blueprint;
         }
     },
 
