@@ -36,7 +36,7 @@ exports.BlueprintReference = RemoteReference.specialize( {
             }
             return [
                 "blueprint",
-                this._reference.blueprintName.toLowerCase(),
+                (this._reference.blueprintName || "unnamed").toLowerCase(),
                 "reference"
             ].join("_");
         }

@@ -282,7 +282,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
             // TODO convert UpperCase to lower-case instead of lowercase
             return [
                 "blueprint",
-                this.name.toLowerCase()
+                (this.name || "unnamed").toLowerCase()
             ].join("_");
         }
     },
@@ -945,6 +945,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
         value:function (object) {
             if (object) {
                 var target = Montage.getInfoForObject(object).isInstance ? Object.getPrototypeOf(object) : object;
+                var info = Montage.getInfoForObject(target);
 
                 // Create `new this()` so that subclassing works
                 var newBlueprint = new this();
