@@ -90,7 +90,7 @@ describe("test/base/abstract-confirm-spec", function () {
                 aConfirm.handleAction(event);
 
                 return promise.then(function(buttonPressed) {
-                    expect(buttonPressed).toBe("ok");
+                    expect(buttonPressed).toBe(Confirm.OKButton);
                 });
             });
 
@@ -109,7 +109,7 @@ describe("test/base/abstract-confirm-spec", function () {
                 aConfirm.handleAction(event);
 
                 return promise.then(function(buttonPressed) {
-                    expect(buttonPressed).toBe("cancel");
+                    expect(buttonPressed).toBe(Confirm.CancelButton);
                 });
             });
         });
