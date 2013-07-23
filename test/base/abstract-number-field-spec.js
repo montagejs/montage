@@ -219,28 +219,28 @@ describe("test/base/abstract-number-field-spec", function () {
 
         describe("textfield", function () {
             beforeEach(function () {
-                Bindings.defineBindings(aNumberField._numberFieldTextFieldComponent,{
-                    "value": {"<->": "value", source: aNumberField}
-                });
                 aNumberField.value = 6;
             });
             it("should reset the value to previous if invalid", function () {
                 aNumberField.value = 6;
                 aNumberField._numberFieldTextFieldComponent.value = "abc";
+                aNumberField.textFieldDidEndEditing();
                 expect(aNumberField.value).toEqual(6);
                 expect(aNumberField._numberFieldTextFieldComponent.value).toEqual(6);
             });
             it("should correctly handle leading digits", function () {
                 aNumberField.value = 6;
                 aNumberField._numberFieldTextFieldComponent.value = "4abc";
+                aNumberField.textFieldDidEndEditing();
                 expect(aNumberField.value).toEqual(4);
                 expect(aNumberField._numberFieldTextFieldComponent.value).toEqual(4);
             });
             it("should strip letters even in the middle of the value", function () {
                 aNumberField.value = 999;
                 aNumberField._numberFieldTextFieldComponent.value = "9a99";
-                expect(aNumberField.value).toEqual(999);
-                expect(aNumberField._numberFieldTextFieldComponent.value).toEqual(999);
+                aNumberField.textFieldDidEndEditing();
+                expect(aNumberField.value).toEqual(9);
+                expect(aNumberField._numberFieldTextFieldComponent.value).toEqual(9);
             });
         });
         describe("plus", function () {
