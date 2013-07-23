@@ -222,11 +222,11 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
      @function
      @param {String} name TODO
      @param {String} moduleID TODO
-     @returns this.addBlueprint(this.createBlueprint().initWithNameAndModuleId(name, moduleId))
+     @returns {Blueprint} The new blueprint
      */
     addBlueprintNamed: {
-        value: function(name, moduleId) {
-            return this.addBlueprint(new BlueprintModule.Blueprint().initWithNameAndModuleId(name, moduleId));
+        value: function(name) {
+            return this.addBlueprint(new BlueprintModule.Blueprint().initWithName(name));
         }
     },
 

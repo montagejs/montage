@@ -105,7 +105,7 @@ describe("meta/blueprint-spec", function () {
             var louis, personBlueprint;
             beforeEach(function () {
                 var binder = new Binder().initWithNameAndRequire("Binder", global.require);
-                personBlueprint = new Blueprint().initWithNameAndModuleId("Person", "mymodule");
+                personBlueprint = new Blueprint().initWithName("Person");
                 personBlueprint.addPropertyBlueprint(personBlueprint.newPropertyBlueprint("name", 1));
                 personBlueprint.addPropertyBlueprint(personBlueprint.newPropertyBlueprint("keywords", Infinity));
 
@@ -128,7 +128,7 @@ describe("meta/blueprint-spec", function () {
             var circle, shapeBlueprint;
             beforeEach(function () {
                 var binder = new Binder().initWithNameAndRequire("Binder", global.require);
-                shapeBlueprint = new Blueprint().initWithNameAndModuleId("Shape", "mymodule");
+                shapeBlueprint = new Blueprint().initWithName("Shape");
                 binder.addBlueprint(shapeBlueprint);
                 var propertyBlueprint = shapeBlueprint.newPropertyBlueprint("size", 1);
                 shapeBlueprint.addPropertyBlueprint(propertyBlueprint);

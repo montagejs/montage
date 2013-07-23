@@ -43,12 +43,15 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
     /**
      @function
-     @param {String} name TODO
-     @returns this.initWithNameAndModuleId(name, null)
+     @param {String} name The name of the blueprint
+     @returns this
      */
     initWithName: {
         value: function(name) {
-            return this.initWithNameAndModuleId(name, null);
+            this._name = (name !== null ? name : "default");
+            this.customPrototype = false;
+
+            return this;
         }
     },
 
@@ -59,14 +62,9 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      @returns itself
      */
     initWithNameAndModuleId: {
-        value: function(name, moduleId) {
-            this._name = (name !== null ? name : "default");
-            // The default is that the prototype name is the name
-            this.prototypeName = this.name;
-            this.moduleId = moduleId;
-            this.customPrototype = false;
-            return this;
-        }
+        value: Montage.deprecate(void 0, function (name) {
+            return this.initWithName(name);
+        }, "Blueprint#initWithNameAndModuleId", "ModuleBlueprint#initWithModuleAndExportName")
     },
 
     serializeSelf:{
