@@ -1016,7 +1016,6 @@ exports._blueprintDescriptor = {
                         // exist then the error should still be thrown.
                         if (error.message.indexOf("Can't XHR") !== -1) {
                             return Blueprint.createDefaultBlueprintForObject(self).then(function (blueprint) {
-                                blueprint.blueprintInstanceModuleId = blueprintModuleId;
                                 return blueprint;
                             });
                         } else {
