@@ -14,8 +14,8 @@
         "prototype": "montage/core/meta/module-blueprint",
         "properties": {
             "name": "Thing",
-            "blueprintModuleId": "thing.meta",
-            "prototypeName": "Thing",
+            "module": {"%": "./thing"},
+            "exportName": "Thing",
             "parent": {"@": "blueprint_parent"}
         }
     }

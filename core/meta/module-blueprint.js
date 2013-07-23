@@ -1,3 +1,5 @@
+var Montage = require("montage").Montage;
+var Promise = require("core/promise").Promise;
 var Blueprint = require("core/meta/blueprint").Blueprint;
 var Deserializer = require("core/serialization").Deserializer;
 var ModuleReference = require("core/module-reference").ModuleReference;
@@ -15,7 +17,7 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize({
      */
     initWithModuleAndExportName: {
         value: function(module, exportName) {
-            var self = Blueprint.prototype.initWithNameAndModuleId.call(this, exportName, null);
+            var self = Blueprint.prototype.initWithName.call(this, exportName);
 
             self.module = module;
             self.exportName = exportName;
@@ -36,7 +38,7 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize({
                 throw new Error("Cannot serialize blueprint without a module reference");
             }
             if (!this.exportName) {
-                throw new Error("Cannot serialize blueprint without a exportName");
+                throw new Error("Cannot serialize blueprint without an exportName");
             }
 
             this.super(serializer);
@@ -50,6 +52,13 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize({
             this.super(deserializer);
             this.module = deserializer.getProperty("module");
             this.exportName = deserializer.getProperty("exportName");
+
+            if (!this.module) {
+                throw new Error("Cannot deserialize blueprint without a module reference");
+            }
+            if (!this.exportName) {
+                throw new Error("Cannot deserialize blueprint without an exportName");
+            }
         }
     },
 
@@ -118,6 +127,25 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize({
 
                 return blueprint;
             });
+        }
+    },
+
+    createDefaultBlueprintForObject: {
+        value: function (object) {
+            var target = Montage.getInfoForObject(object).isInstance ? Object.getPrototypeOf(object) : object;
+            var info = Montage.getInfoForObject(target);
+            if (!info.objectName || !info.moduleId) {
+                return Promise.reject("Cannot create module-blueprint for an object that has no been loaded from a module");
+            }
+
+            return this.super(object)
+            .then(function (blueprint) {
+                blueprint.module = new ModuleReference().initWithIdAndRequire(info.moduleId, info.require);
+                blueprint.exportName = info.objectName;
+
+                return blueprint;
+            });
+
         }
     }
 });

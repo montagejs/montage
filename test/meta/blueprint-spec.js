@@ -242,7 +242,7 @@ describe("meta/blueprint-spec", function () {
                 var blueprint = Blueprint.createDefaultBlueprintForObject({});
                 expect(typeof blueprint.then).toBe("function");
                 return blueprint.then(function (blueprint) {
-                    expect(blueprint.name).toBe("Unknown");
+                    expect(Blueprint.prototype.isPrototypeOf(blueprint)).toBe(true);
                 });
             });
 

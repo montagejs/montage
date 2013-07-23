@@ -914,11 +914,10 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
         value:function (object) {
             if (object) {
                 var target = Montage.getInfoForObject(object).isInstance ? Object.getPrototypeOf(object) : object;
-                var info = Montage.getInfoForObject(target);
-                if (!info.objectName || !info.moduleId) {
-                    return Promise.resolve(UnknownBlueprint);
-                }
-                var newBlueprint = new Blueprint().initWithNameAndModuleId(info.objectName, info.moduleId);
+
+                // Create `new this()` so that subclassing works
+                var newBlueprint = new this();
+
                 for (var name in target) {
                     if ((name.charAt(0) !== "_") && (target.hasOwnProperty(name))) {
                         // We don't want to list private properties
@@ -938,8 +937,9 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
                         newBlueprint.parent = blueprint;
                         return newBlueprint;
                     });
+                } else {
+                    return Promise.resolve(newBlueprint);
                 }
-                return Promise.resolve(newBlueprint);
             } else {
                 return Promise.resolve(UnknownBlueprint);
             }

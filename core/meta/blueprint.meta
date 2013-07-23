@@ -154,11 +154,12 @@
     },
 
     "root":{
-        "prototype":"core/meta/blueprint",
+        "prototype":"core/meta/module-blueprint",
         "properties":{
             "name":"Blueprint",
             "blueprintModuleId":"core/meta/blueprint.meta",
-            "prototypeName":"Blueprint",
+            "module": {"%": "core/meta/blueprint"},
+            "exportName":"Blueprint",
             "customPrototype":false,
             "propertyBlueprints":[
                 {
