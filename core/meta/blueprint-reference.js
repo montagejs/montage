@@ -77,9 +77,7 @@ exports.BlueprintReference = RemoteReference.specialize( {
             // the value is a blueprint we need to serialize the binder and the blueprint reference
             var references = {};
             references.blueprintName = value.name;
-            references.blueprintModuleId = value.blueprintInstanceModuleId;
-            references.prototypeName = value.prototypeName;
-            references.moduleId = value.moduleId;
+            references.blueprintModule = value.blueprintInstanceModule;
             if ((value.binder) && (! value.binder.isDefault)) {
                 references.binderReference = BinderReference.referenceFromValue(value.binder);
             }
