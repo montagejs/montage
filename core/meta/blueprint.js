@@ -74,8 +74,8 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
                 serializer.setProperty("binder", this._binder, "reference");
             }
 
-            if (this.blueprintInstanceModuleId) {
-                serializer.setProperty("blueprintModuleId", this.blueprintInstanceModuleId);
+            if (this.blueprintInstanceModule) {
+                serializer.setProperty("blueprintModule", this.blueprintInstanceModule);
             }
             if (this._parentReference) {
                 serializer.setProperty("parent", this._parentReference);
@@ -105,7 +105,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
             if (binder) {
                 this._binder = binder;
             }
-            this.blueprintInstanceModuleId = deserializer.getProperty("blueprintModuleId");
+            this.blueprintInstanceModule = deserializer.getProperty("blueprintModule");
             this._parentReference = deserializer.getProperty("parent");
 
             this.customPrototype = this._getPropertyWithDefaults(deserializer, "customPrototype");
@@ -257,9 +257,18 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     /*
      * This is used for references only so that we can reload referenced blueprints
      */
-    blueprintInstanceModuleId: {
+    blueprintInstanceModule: {
         serializable: false,
         value: null
+    },
+
+    blueprintInstanceModuleId: {
+        get: function () {
+            throw new Error("blueprintInstanceModuleId is deprecated, use blueprintInstanceModule instead");
+        },
+        set: function () {
+            throw new Error("blueprintInstanceModuleId is deprecated, use blueprintInstanceModule instead");
+        }
     },
 
     /**

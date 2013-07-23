@@ -281,14 +281,12 @@ describe("meta/blueprint-spec", function () {
                     isInstance: { value: true }
                 });
 
-                return sub.blueprint.then(function (blueprint) {
-                    expect(blueprint.blueprintInstanceModuleId).toBe("pass.meta");
-                });
+                expect(sub.blueprintModuleId).toBe("pass.meta");
             });
 
             it("creates a blueprint when the parent has no blueprint", function () {
                 return Blueprint.blueprint.then(function (blueprint){
-                    expect(blueprint.blueprintInstanceModuleId).toBe("core/meta/blueprint.meta");
+                    expect(blueprint.blueprintInstanceModule.id).toBe("core/meta/blueprint.meta");
                 });
             });
         });

@@ -113,6 +113,8 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize({
                     throw new Error("Object in " + moduleId + " is not a module-blueprint");
                 }
 
+                blueprint.blueprintInstanceModule = new ModuleReference().initWithIdAndRequire(moduleId, _require);
+
                 if (blueprint._parentReference) {
                     // Load parent "synchronously" so that all the properties
                     // through the blueprint chain are available
