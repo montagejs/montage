@@ -9,14 +9,18 @@
             }
         }
     },
-
     "root": {
         "prototype": "montage/core/meta/module-blueprint",
         "properties": {
             "name": "Thing",
-            "module": {"%": "./thing"},
+            "module": {
+                "%": "thing"
+            },
             "exportName": "Thing",
-            "parent": {"@": "blueprint_parent"}
+            "parent": {
+                "@": "blueprint_parent"
+            },
+            "blueprintModule": {}
         }
     }
 }

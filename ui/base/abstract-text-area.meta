@@ -4,7 +4,9 @@
         "properties": {
             "name": "enabled",
             "valueType": "boolean",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "value_property": {
@@ -12,7 +14,9 @@
         "properties": {
             "name": "value",
             "valueType": "string",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "placeholderValue_property": {
@@ -20,7 +24,9 @@
         "properties": {
             "name": "placeholderValue",
             "valueType": "string",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "blueprint_parent": {
@@ -28,29 +34,50 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "Component",
-                "blueprintModuleId": "ui/component.meta",
-                "prototypeName": "Component"
+                "prototypeName": "Component",
+                "blueprintModule": {
+                    "%": "ui/component.meta"
+                }
             }
         }
     },
     "root": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/module-blueprint",
         "properties": {
             "name": "AbstractTextArea",
-            "blueprintModuleId": "ui/base/abstract-text-area.meta",
-            "prototypeName": "AbstractTextArea",
-            "parent": {"@": "blueprint_parent"},
+            "parent": {
+                "@": "blueprint_parent"
+            },
             "propertyBlueprints": [
-                {"@": "enabled_property"},
-                {"@": "value_property"},
-                {"@": "placeholderValue_property"}
+                {
+                    "@": "enabled_property"
+                },
+                {
+                    "@": "value_property"
+                },
+                {
+                    "@": "placeholderValue_property"
+                }
             ],
             "propertyBlueprintGroups": {
                 "Main": [
-                    {"@": "enabled_property"},
-                    {"@": "value_property"},
-                    {"@": "placeholderValue_property"}
+                    {
+                        "@": "enabled_property"
+                    },
+                    {
+                        "@": "value_property"
+                    },
+                    {
+                        "@": "placeholderValue_property"
+                    }
                 ]
+            },
+            "blueprintModule": {
+                "%": "ui/base/abstract-text-area.meta"
+            },
+            "exportName": "AbstractTextArea",
+            "module": {
+                "%": "ui/base/abstract-text-area"
             }
         }
     }

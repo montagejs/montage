@@ -1,5 +1,4 @@
 {
-
     "currenyConverter_currency": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -11,24 +10,22 @@
             "helpKey": ""
         }
     },
-
     "number_converter_blueprint_reference": {
         "prototype": "core/meta/blueprint-reference",
         "properties": {
             "valueReference": {
                 "blueprintName": "NumberConverter",
-                "blueprintModuleId": "core/converter/number-converter.meta",
-                "prototypeName": "NumberConverter"
+                "prototypeName": "NumberConverter",
+                "blueprintModule": {
+                    "%": "core/converter/number-converter.meta"
+                }
             }
         }
     },
-
     "root": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/module-blueprint",
         "properties": {
             "name": "CurrencyConverter",
-            "blueprintModuleId": "core/converter/currency-converter.meta",
-            "prototypeName": "CurrencyConverter",
             "customPrototype": false,
             "parent": {
                 "@": "number_converter_blueprint_reference"
@@ -45,7 +42,13 @@
                     }
                 ]
             },
-            "propertyValidationRules": {
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "core/converter/currency-converter.meta"
+            },
+            "exportName": "CurrencyConverter",
+            "module": {
+                "%": "core/converter/currency-converter"
             }
         }
     }

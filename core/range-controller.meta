@@ -1,5 +1,4 @@
 {
-
     "rangeController_content": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -12,7 +11,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_sortPath": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -24,7 +22,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_reversed": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -36,7 +33,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_filterPath": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -48,7 +44,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_selectAddedContent": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -60,7 +55,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_deselectInvisibleContent": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -72,7 +66,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_clearSelectionOnOrderChange": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -84,7 +77,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_avoidsEmptySelection": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -96,7 +88,6 @@
             "helpKey": ""
         }
     },
-
     "rangeController_multiSelect": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -108,13 +99,10 @@
             "helpKey": ""
         }
     },
-
     "root": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/module-blueprint",
         "properties": {
             "name": "RangeController",
-            "blueprintModuleId": "core/range-controller.meta",
-            "prototypeName": "RangeController",
             "customPrototype": false,
             "propertyBlueprints": [
                 {
@@ -176,7 +164,13 @@
                     }
                 ]
             },
-            "propertyValidationRules": {
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "core/range-controller.meta"
+            },
+            "exportName": "RangeController",
+            "module": {
+                "%": "core/range-controller"
             }
         }
     }

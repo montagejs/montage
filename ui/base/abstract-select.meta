@@ -4,7 +4,9 @@
         "properties": {
             "name": "enabled",
             "valueType": "boolean",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "contentController_property": {
@@ -12,7 +14,9 @@
         "properties": {
             "name": "contentController",
             "valueType": "object",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "content_property": {
@@ -20,7 +24,9 @@
         "properties": {
             "name": "content",
             "valueType": "object",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "labelPropertyName_property": {
@@ -28,7 +34,9 @@
         "properties": {
             "name": "labelPropertyName",
             "valueType": "string",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "value_property": {
@@ -36,7 +44,9 @@
         "properties": {
             "name": "value",
             "valueType": "object",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "values_property": {
@@ -44,7 +54,9 @@
         "properties": {
             "name": "values",
             "valueType": "object",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "multiSelect_property": {
@@ -52,7 +64,9 @@
         "properties": {
             "name": "multiSelect",
             "valueType": "boolean",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "blueprint_parent": {
@@ -60,37 +74,74 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "AbstractControl",
-                "blueprintModuleId": "ui/base/abstract-control.meta",
-                "prototypeName": "AbstractControl"
+                "prototypeName": "AbstractControl",
+                "blueprintModule": {
+                    "%": "ui/base/abstract-control.meta"
+                }
             }
         }
     },
     "root": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/module-blueprint",
         "properties": {
             "name": "AbstractRadioButton",
-            "blueprintModuleId": "ui/base/abstract-radio-button.meta",
-            "prototypeName": "AbstractRadioButton",
-            "parent": {"@": "blueprint_parent"},
+            "parent": {
+                "@": "blueprint_parent"
+            },
             "propertyBlueprints": [
-                {"@": "enabled_property"},
-                {"@": "contentController_property"},
-                {"@": "content_property"},
-                {"@": "labelPropertyName_property"},
-                {"@": "value_property"},
-                {"@": "values_property"},
-                {"@": "multiSelect_property"}
+                {
+                    "@": "enabled_property"
+                },
+                {
+                    "@": "contentController_property"
+                },
+                {
+                    "@": "content_property"
+                },
+                {
+                    "@": "labelPropertyName_property"
+                },
+                {
+                    "@": "value_property"
+                },
+                {
+                    "@": "values_property"
+                },
+                {
+                    "@": "multiSelect_property"
+                }
             ],
             "propertyBlueprintGroups": {
                 "Main": [
-                    {"@": "enabled_property"},
-                    {"@": "contentController_property"},
-                    {"@": "content_property"},
-                    {"@": "labelPropertyName_property"},
-                    {"@": "value_property"},
-                    {"@": "values_property"},
-                    {"@": "multiSelect_property"}
+                    {
+                        "@": "enabled_property"
+                    },
+                    {
+                        "@": "contentController_property"
+                    },
+                    {
+                        "@": "content_property"
+                    },
+                    {
+                        "@": "labelPropertyName_property"
+                    },
+                    {
+                        "@": "value_property"
+                    },
+                    {
+                        "@": "values_property"
+                    },
+                    {
+                        "@": "multiSelect_property"
+                    }
                 ]
+            },
+            "blueprintModule": {
+                "%": "ui/base/abstract-radio-button.meta"
+            },
+            "exportName": "AbstractSelect",
+            "module": {
+                "%": "ui/base/abstract-select"
             }
         }
     }

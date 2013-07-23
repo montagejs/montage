@@ -29,8 +29,10 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "Converter",
-                "blueprintModuleId": "core/converter/converter.meta",
-                "prototypeName": "Converter"
+                "prototypeName": "Converter",
+                "blueprintModule": {
+                    "%": "core/converter/converter.meta"
+                }
             }
         }
     },
@@ -39,17 +41,17 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "Component",
-                "blueprintModuleId": "ui/component.meta",
-                "prototypeName": "Component"
+                "prototypeName": "Component",
+                "blueprintModule": {
+                    "%": "ui/component.meta"
+                }
             }
         }
     },
     "root": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/module-blueprint",
         "properties": {
             "name": "Text",
-            "blueprintModuleId": "ui/text.reel/text.meta",
-            "prototypeName": "Text",
             "customPrototype": false,
             "parent": {
                 "@": "blueprint_component_reference"
@@ -72,7 +74,14 @@
                     }
                 ]
             },
-            "propertyValidationRules": {}
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "ui/text.reel/text.meta"
+            },
+            "exportName": "Text",
+            "module": {
+                "%": "ui/text.reel"
+            }
         }
     }
 }

@@ -1,77 +1,76 @@
 {
-
-    "blueprint_component_identifier":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"identifier",
-            "blueprint":{
-                "@":"root"
+    "blueprint_component_identifier": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "identifier",
+            "blueprint": {
+                "@": "root"
             },
-            "cardinality":1,
-            "valueType":"string",
-            "helpKey":""
+            "cardinality": 1,
+            "valueType": "string",
+            "helpKey": ""
         }
     },
-
-    "blueprint_component_element":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"element",
-            "blueprint":{
-                "@":"root"
+    "blueprint_component_element": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "element",
+            "blueprint": {
+                "@": "root"
             },
-            "cardinality":1,
-            "readOnly":true,
-            "valueType":"string",
-            "helpKey":""
+            "cardinality": 1,
+            "readOnly": true,
+            "valueType": "string",
+            "helpKey": ""
         }
     },
-
-    "blueprint_component_classList":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"classList",
-            "blueprint":{
-                "@":"root"
+    "blueprint_component_classList": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "classList",
+            "blueprint": {
+                "@": "root"
             },
-            "cardinality":-1,
-            "mandatory":false,
-            "denyDelete":false,
-            "readOnly":false,
-            "valueType":"string",
-            "collectionValueType":"set",
-            "enumValues":[
-            ],
-            "helpKey":""
+            "cardinality": -1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "collectionValueType": "set",
+            "enumValues": [],
+            "helpKey": ""
         }
     },
-
-    "root":{
-        "prototype":"core/meta/module-blueprint",
-        "properties":{
-            "name":"Component",
-            "blueprintModuleId":"ui/component.meta",
-            "prototypeName":"Component",
-            "customPrototype":false,
-            "propertyBlueprints":[
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "Component",
+            "customPrototype": false,
+            "propertyBlueprints": [
                 {
-                    "@":"blueprint_component_identifier"
+                    "@": "blueprint_component_identifier"
                 },
                 {
-                    "@":"blueprint_component_element"
+                    "@": "blueprint_component_element"
                 },
                 {
-                    "@":"blueprint_component_classList"
+                    "@": "blueprint_component_classList"
                 }
             ],
-            "propertyBlueprintGroups":{
-                "component":[
+            "propertyBlueprintGroups": {
+                "component": [
                     {
-                        "@":"blueprint_component_identifier"
+                        "@": "blueprint_component_identifier"
                     }
                 ]
             },
-            "propertyValidationRules":{
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "ui/component.meta"
+            },
+            "exportName": "Component",
+            "module": {
+                "%": "ui/component"
             }
         }
     }

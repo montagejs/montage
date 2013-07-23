@@ -24,17 +24,17 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "Component",
-                "blueprintModuleId": "ui/component.meta",
-                "prototypeName": "Component"
+                "prototypeName": "Component",
+                "blueprintModule": {
+                    "%": "ui/component.meta"
+                }
             }
         }
     },
     "root": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/module-blueprint",
         "properties": {
             "name": "Slot",
-            "blueprintModuleId": "ui/slot.reel/slot.meta",
-            "prototypeName": "Slot",
             "parent": {
                 "@": "blueprint_component_reference"
             },
@@ -55,6 +55,13 @@
                         "@": "blueprint_slot_content"
                     }
                 ]
+            },
+            "blueprintModule": {
+                "%": "ui/slot.reel/slot.meta"
+            },
+            "exportName": "Slot",
+            "module": {
+                "%": "ui/slot.reel"
             }
         }
     }

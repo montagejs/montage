@@ -4,7 +4,9 @@
         "properties": {
             "name": "enabled",
             "valueType": "boolean",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "value_property": {
@@ -12,7 +14,9 @@
         "properties": {
             "name": "value",
             "valueType": "object",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "min_property": {
@@ -20,7 +24,9 @@
         "properties": {
             "name": "min",
             "valueType": "number",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "max_property": {
@@ -28,7 +34,9 @@
         "properties": {
             "name": "max",
             "valueType": "number",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "step_property": {
@@ -36,7 +44,9 @@
         "properties": {
             "name": "step",
             "valueType": "number",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "blueprint_parent": {
@@ -44,33 +54,62 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "AbstractControl",
-                "blueprintModuleId": "ui/base/abstract-control.meta",
-                "prototypeName": "AbstractControl"
+                "prototypeName": "AbstractControl",
+                "blueprintModule": {
+                    "%": "ui/base/abstract-control.meta"
+                }
             }
         }
     },
     "root": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/module-blueprint",
         "properties": {
             "name": "AbstractSlider",
-            "blueprintModuleId": "ui/base/abstract-slider.meta",
-            "prototypeName": "AbstractSlider",
-            "parent": {"@": "blueprint_parent"},
+            "parent": {
+                "@": "blueprint_parent"
+            },
             "propertyBlueprints": [
-                {"@": "enabled_property"},
-                {"@": "value_property"},
-                {"@": "min_property"},
-                {"@": "max_property"},
-                {"@": "step_property"}
+                {
+                    "@": "enabled_property"
+                },
+                {
+                    "@": "value_property"
+                },
+                {
+                    "@": "min_property"
+                },
+                {
+                    "@": "max_property"
+                },
+                {
+                    "@": "step_property"
+                }
             ],
             "propertyBlueprintGroups": {
                 "Main": [
-                    {"@": "enabled_property"},
-                    {"@": "value_property"},
-                    {"@": "min_property"},
-                    {"@": "max_property"},
-                    {"@": "step_property"}
+                    {
+                        "@": "enabled_property"
+                    },
+                    {
+                        "@": "value_property"
+                    },
+                    {
+                        "@": "min_property"
+                    },
+                    {
+                        "@": "max_property"
+                    },
+                    {
+                        "@": "step_property"
+                    }
                 ]
+            },
+            "blueprintModule": {
+                "%": "ui/base/abstract-slider.meta"
+            },
+            "exportName": "AbstractSlider",
+            "module": {
+                "%": "ui/base/abstract-slider"
             }
         }
     }

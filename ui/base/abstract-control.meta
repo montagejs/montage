@@ -5,8 +5,10 @@
             "name": "detail",
             "valueType": "object",
             "readOnly": true,
-            "collectionValueType":"dict",
-            "blueprint": {"@": "root"}
+            "collectionValueType": "dict",
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "blueprint_parent": {
@@ -14,25 +16,38 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "Component",
-                "blueprintModuleId": "ui/component.meta",
-                "prototypeName": "Component"
+                "prototypeName": "Component",
+                "blueprintModule": {
+                    "%": "ui/component.meta"
+                }
             }
         }
     },
     "root": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/module-blueprint",
         "properties": {
             "name": "AbstractControl",
-            "blueprintModuleId": "ui/base/abstract-control.meta",
-            "prototypeName": "AbstractControl",
-            "parent": {"@": "blueprint_parent"},
+            "parent": {
+                "@": "blueprint_parent"
+            },
             "propertyBlueprints": [
-                {"@": "detail_property"}
+                {
+                    "@": "detail_property"
+                }
             ],
             "propertyBlueprintGroups": {
                 "Control": [
-                    {"@": "detail_property"}
+                    {
+                        "@": "detail_property"
+                    }
                 ]
+            },
+            "blueprintModule": {
+                "%": "ui/base/abstract-control.meta"
+            },
+            "exportName": "AbstractControl",
+            "module": {
+                "%": "ui/base/abstract-control"
             }
         }
     }

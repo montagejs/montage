@@ -4,7 +4,9 @@
         "properties": {
             "name": "enabled",
             "valueType": "boolean",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "checked_property": {
@@ -12,7 +14,9 @@
         "properties": {
             "name": "checked",
             "valueType": "boolean",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "active_property": {
@@ -20,7 +24,9 @@
         "properties": {
             "name": "active",
             "valueType": "boolean",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "radioButtonController_property": {
@@ -28,7 +34,9 @@
         "properties": {
             "name": "radioButtonController",
             "valueType": "object",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "blueprint_parent": {
@@ -36,33 +44,58 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "AbstractControl",
-                "blueprintModuleId": "ui/base/abstract-control.meta",
-                "prototypeName": "AbstractControl"
+                "prototypeName": "AbstractControl",
+                "blueprintModule": {
+                    "%": "ui/base/abstract-control.meta"
+                }
             }
         }
     },
     "root": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/module-blueprint",
         "properties": {
             "name": "AbstractRadioButton",
-            "blueprintModuleId": "ui/base/abstract-radio-button.meta",
-            "prototypeName": "AbstractRadioButton",
-            "parent": {"@": "blueprint_parent"},
+            "parent": {
+                "@": "blueprint_parent"
+            },
             "propertyBlueprints": [
-                {"@": "enabled_property"},
-                {"@": "checked_property"},
-                {"@": "active_property"},
-                {"@": "radioButtonController_property"}
+                {
+                    "@": "enabled_property"
+                },
+                {
+                    "@": "checked_property"
+                },
+                {
+                    "@": "active_property"
+                },
+                {
+                    "@": "radioButtonController_property"
+                }
             ],
             "propertyBlueprintGroups": {
                 "Main": [
-                    {"@": "enabled_property"},
-                    {"@": "checked_property"},
-                    {"@": "radioButtonController_property"}
+                    {
+                        "@": "enabled_property"
+                    },
+                    {
+                        "@": "checked_property"
+                    },
+                    {
+                        "@": "radioButtonController_property"
+                    }
                 ],
                 "Options": [
-                     {"@": "active_property"}
+                    {
+                        "@": "active_property"
+                    }
                 ]
+            },
+            "blueprintModule": {
+                "%": "ui/base/abstract-radio-button.meta"
+            },
+            "exportName": "AbstractRadioButton",
+            "module": {
+                "%": "ui/base/abstract-radio-button"
             }
         }
     }
