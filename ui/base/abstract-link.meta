@@ -4,7 +4,9 @@
         "properties": {
             "name": "enabled",
             "valueType": "boolean",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "src_property": {
@@ -12,7 +14,9 @@
         "properties": {
             "name": "src",
             "valueType": "string",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "label_property": {
@@ -20,7 +24,9 @@
         "properties": {
             "name": "label",
             "valueType": "string",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "textAlternative_property": {
@@ -28,7 +34,9 @@
         "properties": {
             "name": "textAlternative",
             "valueType": "string",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "active_property": {
@@ -36,7 +44,9 @@
         "properties": {
             "name": "active",
             "valueType": "boolean",
-            "blueprint": {"@": "root"}
+            "blueprint": {
+                "@": "root"
+            }
         }
     },
     "blueprint_parent": {
@@ -44,35 +54,64 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "AbstractControl",
-                "blueprintModuleId": "ui/base/abstract-control.meta",
-                "prototypeName": "AbstractControl"
+                "prototypeName": "AbstractControl",
+                "blueprintModule": {
+                    "%": "ui/base/abstract-control.meta"
+                }
             }
         }
     },
     "root": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/module-blueprint",
         "properties": {
             "name": "AbstractLink",
-            "blueprintModuleId": "ui/base/abstract-link.meta",
-            "prototypeName": "AbstractLink",
-            "parent": {"@": "blueprint_parent"},
+            "parent": {
+                "@": "blueprint_parent"
+            },
             "propertyBlueprints": [
-                {"@": "enabled_property"},
-                {"@": "src_property"},
-                {"@": "label_property"},
-                {"@": "textAlternative_property"},
-                {"@": "active_property"}
+                {
+                    "@": "enabled_property"
+                },
+                {
+                    "@": "src_property"
+                },
+                {
+                    "@": "label_property"
+                },
+                {
+                    "@": "textAlternative_property"
+                },
+                {
+                    "@": "active_property"
+                }
             ],
             "propertyBlueprintGroups": {
                 "Main": [
-                    {"@": "enabled_property"},
-                    {"@": "src_property"},
-                    {"@": "label_property"}
+                    {
+                        "@": "enabled_property"
+                    },
+                    {
+                        "@": "src_property"
+                    },
+                    {
+                        "@": "label_property"
+                    }
                 ],
                 "Options": [
-                    {"@": "active_property"},
-                    {"@": "textAlternative_property"}
+                    {
+                        "@": "active_property"
+                    },
+                    {
+                        "@": "textAlternative_property"
+                    }
                 ]
+            },
+            "blueprintModule": {
+                "%": "ui/base/abstract-link.meta"
+            },
+            "exportName": "AbstractLink",
+            "module": {
+                "%": "ui/base/abstract-link"
             }
         }
     }

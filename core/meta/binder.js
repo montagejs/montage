@@ -157,40 +157,6 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
         value: false
     },
 
-    /**
-     Gets a binder from a serialized file at the given module id.
-     @function
-     @param {String} binder module id
-     @param {Function} require function
-     */
-    getBinderWithModuleId: {
-        value: function(binderModuleId, targetRequire) {
-            var deferredBinder = Promise.defer();
-            if (!targetRequire) {
-                // This is probably wrong but at least we will try
-                targetRequire = this.require;
-            }
-
-            targetRequire.async(binderModuleId).then(function(object) {
-                try {
-                    new Deserializer().initWithObjectAndRequire(object, targetRequire, binderModuleId).deserializeObject(function(binder) {
-                        if (binder) {
-                            binder.binderInstanceModuleId = binderModuleId;
-                            Binder.manager.addBinder(this);
-                            deferredBinder.resolve(binder);
-                        } else {
-                            deferredBinder.reject(new Error("No Binder found " + binderModuleId));
-                        }
-                    }, targetRequire);
-                } catch (exception) {
-                    deferredBinder.reject(new Error("Error deserializing Binder " + binderModuleId + " " + JSON.stringfy(exception)));
-                }
-            }, deferredBinder.reject);
-
-            return deferredBinder.promise;
-        }
-    },
-
     _blueprints: {
         distinct: true,
         value: []
@@ -222,9 +188,6 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
                     }
                     this.blueprints.push(blueprint);
                     blueprint.binder = this;
-                    //
-                    var key = blueprint.moduleId + "." + blueprint.prototypeName;
-                    this._blueprintForPrototypeTable[key] = blueprint;
                 }
             }
             return blueprint;
@@ -243,9 +206,6 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
                 if (index >= 0) {
                     this.blueprints.splice(index, 1);
                     blueprint.binder = null;
-                    // Remove the cached entry
-                    var key = blueprint.moduleId + "." + blueprint.prototypeName;
-                    delete this._blueprintForPrototypeTable[key];
                 }
             }
             return blueprint;
@@ -256,11 +216,11 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
      @function
      @param {String} name TODO
      @param {String} moduleID TODO
-     @returns this.addBlueprint(this.createBlueprint().initWithNameAndModuleId(name, moduleId))
+     @returns {Blueprint} The new blueprint
      */
     addBlueprintNamed: {
-        value: function(name, moduleId) {
-            return this.addBlueprint(new BlueprintModule.Blueprint().initWithNameAndModuleId(name, moduleId));
+        value: function(name) {
+            return this.addBlueprint(new BlueprintModule.Blueprint().initWithName(name));
         }
     },
 
@@ -273,20 +233,20 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
      @returns blueprint
      */
     blueprintForPrototype: {
-        value: function(prototypeName, moduleId) {
-            var key = moduleId + "." + prototypeName;
-            var blueprint = this._blueprintForPrototypeTable[key];
-            if (typeof blueprint === "undefined") {
-                var aBlueprint, index;
-                for (index = 0; typeof (aBlueprint = this.blueprints[index]) !== "undefined"; index++) {
-                    if ((aBlueprint.prototypeName === prototypeName) && (aBlueprint.moduleId === moduleId)) {
-                        blueprint = aBlueprint;
-                        break;
-                    }
+        value: Montage.deprecate(void 0, function (prototypeName) {
+            return this.blueprintForName(prototypeName);
+        }, "blueprintForPrototype", "blueprintForName")
+    },
+
+    blueprintForName: {
+        value: function (name) {
+            var blueprints = this.blueprints,
+                length = blueprints.length;
+            for (var i = 0; i < length; i++) {
+                if (blueprints[i].name === name) {
+                    return blueprints[i];
                 }
-                this._blueprintForPrototypeTable[key] = blueprint;
             }
-            return blueprint;
         }
     },
 

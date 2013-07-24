@@ -8,7 +8,6 @@
             },
             "valueType": "object",
             "cardinality": -1
-
         }
     },
     "blueprint_repetition_contentController": {
@@ -67,17 +66,17 @@
         "properties": {
             "valueReference": {
                 "blueprintName": "Component",
-                "blueprintModuleId": "ui/component.meta",
-                "prototypeName": "Component"
+                "prototypeName": "Component",
+                "blueprintModule": {
+                    "%": "ui/component.meta"
+                }
             }
         }
     },
     "root": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/module-blueprint",
         "properties": {
             "name": "Repetition",
-            "blueprintModuleId": "ui/repetition.reel/repetition.meta",
-            "prototypeName": "Repetition",
             "parent": {
                 "@": "blueprint_component_reference"
             },
@@ -122,6 +121,13 @@
                         "@": "blueprint_repetition_clonesChildComponents"
                     }
                 ]
+            },
+            "blueprintModule": {
+                "%": "ui/repetition.reel/repetition.meta"
+            },
+            "exportName": "Repetition",
+            "module": {
+                "%": "ui/repetition.reel"
             }
         }
     }
