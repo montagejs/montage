@@ -255,6 +255,15 @@ describe('core/undo-manager-spec', function () {
             }).toThrow();
         });
 
+        it("must reject if no undo function was given", function () {
+            return undoManager.register("Something", Promise.resolve([]))
+            .then(function () {
+                throw new Error("should be rejected");
+            }, function (error) {
+                expect(error.message).toBe("Need undo function for 'Something' operation, not: undefined");
+            });
+        });
+
     });
 
     describe("performing an undo", function () {

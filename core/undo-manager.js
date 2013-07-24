@@ -491,6 +491,11 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
             if (label) {
                 entry.label = label;
             }
+
+            if (typeof undoFunction !== "function") {
+                throw new Error("Need undo function for '" + entry.label + "' operation, not: " + undoFunction);
+            }
+
             entry.undoFunction = undoFunction;
             entry.context = context;
             entry.args = operationInfo.slice(firstArgIndex);
