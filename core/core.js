@@ -650,43 +650,55 @@ Montage.defineProperty(Montage, "didCreate", {
 });
 
 var getSuper = function(object, method) {
-    var propertyNames, propertyName, property, i, propCount, func, superFunction, superProperty;
+    var propertyNames, propertyName, property, i, propCount, func, superFunction, superProperty, orgObject, proto;
+    if (typeof object._superCache === "undefined") {
+        object._superCache = {};
+    }
+    if (method.uuid in object._superCache) {
+        return object._superCache[method.uuid];
+    }
+    orgObject = object;
     while (typeof superFunction === "undefined" && object !== null) {
         propertyNames = Object.getOwnPropertyNames(object);
+        proto = Object.getPrototypeOf(object)
         i = 0;
         propCount = propertyNames.length;
         for (i; i < propCount; i++) {
             propertyName = propertyNames[i];
+            if (propertyName == "didCreate") {
+                continue;
+            }
             property = Object.getOwnPropertyDescriptor(object, propertyName);
             if ((func = property.value) != null) {
-                if (func === method || (func.deprecatedFunction && func.deprecatedFunction === method)) {
-                    superProperty = Object.getPropertyDescriptor(Object.getPrototypeOf(object), propertyName)
+                if (func === method || func.deprecatedFunction === method) {
+                    superProperty = Object.getPropertyDescriptor(proto, propertyName)
                     superFunction = superProperty ? superProperty.value : null;
                     break;
                 }
             } else if ((func = property.get) != null) {
-                if (func === method || (func.deprecatedFunction && func.deprecatedFunction === method)) {
-                    superProperty = Object.getPropertyDescriptor(Object.getPrototypeOf(object), propertyName)
+                if (func === method || func.deprecatedFunction === method) {
+                    superProperty = Object.getPropertyDescriptor(proto, propertyName)
                     superFunction = superProperty ? superProperty.get : null;
                     break;
                 }
             } else if ((func = property.set) != null) {
-                if (func === method || (func.deprecatedFunction && func.deprecatedFunction === method)) {
-                    superProperty = Object.getPropertyDescriptor(Object.getPrototypeOf(object), propertyName)
+                if (func === method || func.deprecatedFunction === method) {
+                    superProperty = Object.getPropertyDescriptor(proto, propertyName)
                     superFunction = superProperty ? superProperty.set : null;
                     break;
                 }
             }
         }
-        object = Object.getPrototypeOf(object)
+        object = proto;
     }
+    orgObject._superCache[method.uuid] = superFunction;
     return superFunction;
 }
 
 
 var superImplementation = function super_() {
     var superFunction = getSuper(this, superImplementation.caller);
-    return typeof superFunction === "function" ? getSuper(this, superImplementation.caller).bind(this) : Function.noop;
+    return typeof superFunction === "function" ? superFunction.bind(this) : Function.noop;
 };
 
 Montage.defineProperty(Montage, "super", {
