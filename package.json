@@ -23,8 +23,8 @@
     }
   },
   "dependencies": {
-    "collections": "~0.1.21",
-    "frb": "~0.2.7",
+    "collections": "~0.1.23",
+    "frb": "~0.2.10",
     "mousse": "~0.1.2",
     "htmlparser2": "~3.0.5"
   },
