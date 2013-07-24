@@ -921,5 +921,13 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                     .toBeDefined();
             });
         });
+
+        describe("repetition within a substitution", function () {
+            it("should see elements from the repetition inside the substitution", function () {
+                var elements = querySelectorAll(".textInSubstitution");
+                expect(elements.length).toBe(3);
+            });
+        });
+
     });
 });
