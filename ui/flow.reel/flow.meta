@@ -1,220 +1,214 @@
 {
-
-    "blueprint_flow_stride":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"stride",
-            "blueprint":{
-                "@":"root"
+    "blueprint_flow_stride": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "stride",
+            "blueprint": {
+                "@": "root"
             },
-            "valueType":"number",
-            "helpKey":""
+            "valueType": "number",
+            "helpKey": ""
         }
     },
-
-    "blueprint_flow_hasElasticScrolling":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"hasElasticScrolling",
-            "blueprint":{
-                "@":"root"
+    "blueprint_flow_hasElasticScrolling": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "hasElasticScrolling",
+            "blueprint": {
+                "@": "root"
             },
-            "valueType":"boolean",
-            "helpKey":""
+            "valueType": "boolean",
+            "helpKey": ""
         }
     },
-
-    "blueprint_flow_momentumDuration":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"momentumDuration",
-            "blueprint":{
-                "@":"root"
+    "blueprint_flow_momentumDuration": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "momentumDuration",
+            "blueprint": {
+                "@": "root"
             },
-            "valueType":"number",
-            "helpKey":""
+            "valueType": "number",
+            "helpKey": ""
         }
     },
-
-    "blueprint_flow_content":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"content",
-            "blueprint":{
-                "@":"root"
+    "blueprint_flow_content": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "content",
+            "blueprint": {
+                "@": "root"
             },
-            "cardinality":-1,
-            "valueType":"object",
-            "helpKey":""
+            "cardinality": -1,
+            "valueType": "object",
+            "helpKey": ""
         }
     },
-
-    "blueprint_flow_contentController":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"contentController",
-            "blueprint":{
-                "@":"root"
+    "blueprint_flow_contentController": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "contentController",
+            "blueprint": {
+                "@": "root"
             },
-            "valueType":"object",
-            "helpKey":""
+            "valueType": "object",
+            "helpKey": ""
         }
     },
-
-    "blueprint_flow_activeIndexes":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"activeIndexes",
-            "blueprint":{
-                "@":"root"
+    "blueprint_flow_activeIndexes": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "activeIndexes",
+            "blueprint": {
+                "@": "root"
             },
-            "cardinality":-1,
-            "valueType":"number",
-            "helpKey":""
+            "cardinality": -1,
+            "valueType": "number",
+            "helpKey": ""
         }
     },
-
-    "blueprint_flow_isSelectionEnabled":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"isSelectionEnabled",
-            "blueprint":{
-                "@":"root"
+    "blueprint_flow_isSelectionEnabled": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "isSelectionEnabled",
+            "blueprint": {
+                "@": "root"
             },
-            "valueType":"boolean",
-            "helpKey":""
+            "valueType": "boolean",
+            "helpKey": ""
         }
     },
-
-    "blueprint_flow_hasSelectedIndexScrolling":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"hasSelectedIndexScrolling",
-            "blueprint":{
-                "@":"root"
+    "blueprint_flow_hasSelectedIndexScrolling": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "hasSelectedIndexScrolling",
+            "blueprint": {
+                "@": "root"
             },
-            "valueType":"boolean",
-            "helpKey":""
+            "valueType": "boolean",
+            "helpKey": ""
         }
     },
-
-    "blueprint_flow_scrollingTransitionDuration":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"scrollingTransitionDuration",
-            "blueprint":{
-                "@":"root"
+    "blueprint_flow_scrollingTransitionDuration": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "scrollingTransitionDuration",
+            "blueprint": {
+                "@": "root"
             },
-            "valueType":"number",
-            "helpKey":""
+            "valueType": "number",
+            "helpKey": ""
         }
     },
-
-    "blueprint_flow_selectedIndexes":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"selectedIndexes",
-            "blueprint":{
-                "@":"root"
+    "blueprint_flow_selectedIndexes": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "selectedIndexes",
+            "blueprint": {
+                "@": "root"
             },
-            "cardinality":-1,
-            "valueType":"number",
-            "helpKey":""
+            "cardinality": -1,
+            "valueType": "number",
+            "helpKey": ""
         }
     },
-
-    "blueprint_component_reference":{
-        "prototype":"core/meta/blueprint-reference",
-        "properties":{
-            "valueReference":{
-                "blueprintName":"Component",
-                "blueprintModuleId":"ui/component.meta",
-                "prototypeName":"Component"
+    "blueprint_component_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Component",
+                "prototypeName": "Component",
+                "blueprintModule": {
+                    "%": "ui/component.meta"
+                }
             }
         }
     },
-
-    "root":{
-        "prototype":"core/meta/blueprint",
-        "properties":{
-            "name":"Flow",
-            "blueprintModuleId":"ui/flow.reel/flow.meta",
-            "prototypeName":"Flow",
-            "customPrototype":false,
-            "parent":{
-                "@":"blueprint_component_reference"
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "Flow",
+            "customPrototype": false,
+            "parent": {
+                "@": "blueprint_component_reference"
             },
-            "propertyBlueprints":[
+            "propertyBlueprints": [
                 {
-                    "@":"blueprint_flow_stride"
+                    "@": "blueprint_flow_stride"
                 },
                 {
-                    "@":"blueprint_flow_hasElasticScrolling"
+                    "@": "blueprint_flow_hasElasticScrolling"
                 },
                 {
-                    "@":"blueprint_flow_momentumDuration"
+                    "@": "blueprint_flow_momentumDuration"
                 },
                 {
-                    "@":"blueprint_flow_content"
+                    "@": "blueprint_flow_content"
                 },
                 {
-                    "@":"blueprint_flow_contentController"
+                    "@": "blueprint_flow_contentController"
                 },
                 {
-                    "@":"blueprint_flow_activeIndexes"
+                    "@": "blueprint_flow_activeIndexes"
                 },
                 {
-                    "@":"blueprint_flow_isSelectionEnabled"
+                    "@": "blueprint_flow_isSelectionEnabled"
                 },
                 {
-                    "@":"blueprint_flow_hasSelectedIndexScrolling"
+                    "@": "blueprint_flow_hasSelectedIndexScrolling"
                 },
                 {
-                    "@":"blueprint_flow_scrollingTransitionDuration"
+                    "@": "blueprint_flow_scrollingTransitionDuration"
                 },
                 {
-                    "@":"blueprint_flow_selectedIndexes"
+                    "@": "blueprint_flow_selectedIndexes"
                 }
             ],
-            "propertyBlueprintGroups":{
-                "behavior":[
+            "propertyBlueprintGroups": {
+                "behavior": [
                     {
-                        "@":"blueprint_flow_stride"
+                        "@": "blueprint_flow_stride"
                     },
                     {
-                        "@":"blueprint_flow_hasElasticScrolling"
+                        "@": "blueprint_flow_hasElasticScrolling"
                     },
                     {
-                        "@":"blueprint_flow_momentumDuration"
+                        "@": "blueprint_flow_momentumDuration"
                     }
                 ],
-                "data":[
+                "data": [
                     {
-                        "@":"blueprint_flow_content"
+                        "@": "blueprint_flow_content"
                     },
                     {
-                        "@":"blueprint_flow_contentController"
+                        "@": "blueprint_flow_contentController"
                     },
                     {
-                        "@":"blueprint_flow_activeIndexes"
+                        "@": "blueprint_flow_activeIndexes"
                     }
                 ],
-                "selection":[
+                "selection": [
                     {
-                        "@":"blueprint_flow_isSelectionEnabled"
+                        "@": "blueprint_flow_isSelectionEnabled"
                     },
                     {
-                        "@":"blueprint_flow_hasSelectedIndexScrolling"
+                        "@": "blueprint_flow_hasSelectedIndexScrolling"
                     },
                     {
-                        "@":"blueprint_flow_scrollingTransitionDuration"
+                        "@": "blueprint_flow_scrollingTransitionDuration"
                     },
                     {
-                        "@":"blueprint_flow_selectedIndexes"
+                        "@": "blueprint_flow_selectedIndexes"
                     }
                 ]
             },
-            "propertyValidationRules":{
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "ui/flow.reel/flow.meta"
+            },
+            "exportName": "Flow",
+            "module": {
+                "%": "ui/flow.reel"
             }
         }
     }
