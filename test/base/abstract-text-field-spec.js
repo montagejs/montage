@@ -114,6 +114,47 @@ describe("test/base/abstract-text-field-spec", function () {
             expect(aTextField.element.value).toBe(aTextField.value);
         });
 
+        it("should display false as 'false' in the element", function () {
+            aTextField.value = false;
+            aTextField.draw();
+            expect(aTextField.element.value).toBe("false");
+        });
+
+        it("should display true as 'true' in the element", function () {
+            aTextField.value = true;
+            aTextField.draw();
+            expect(aTextField.element.value).toBe("true");
+        });
+
+        it("should display undefined as an empty string in the element", function () {
+            aTextField.value = (void 0);
+            aTextField.draw();
+            expect(aTextField.element.value).toBe("");
+        });
+
+        it("should display null as an empty string in the element", function () {
+            aTextField.value = null;
+            aTextField.draw();
+            expect(aTextField.element.value).toBe("");
+        });
+
+        it("should display a number as a number in the element", function () {
+            aTextField.value = 42;
+            aTextField.draw();
+            expect(aTextField.element.value).toBe("42");
+        });
+
+        it("should display the toString() result of an object in the element", function () {
+            aTextField.value = {
+                toString: function () {
+                    return "foo";
+                }
+            };
+
+            aTextField.draw();
+            expect(aTextField.element.value).toBe("foo");
+        });
+
         it("should draw a placeholder when set", function () {
             aTextField.placeholderValue = "a placeholder text";
 
@@ -203,6 +244,111 @@ describe("test/base/abstract-text-field-spec", function () {
             });
         });
     });
+
+    describe("delegate methods", function () {
+        var TextField = AbstractTextField.specialize( {}),
+            aTextField, aTextFieldDelegate;
+
+        beforeEach(function () {
+            aTextField = new TextField();
+            aTextField.element = MockDOM.element();
+            aTextFieldDelegate = {};
+            aTextField.delegate = aTextFieldDelegate;
+        });
+
+        describe("shouldBeginEditing", function () {
+            beforeEach(function () {
+                aTextFieldDelegate.shouldBeginEditing = jasmine.createSpy();
+            });
+
+            it("should be called when acceptsActiveTarget consulted ", function() {
+                var accepts = aTextField.acceptsActiveTarget;
+                expect(aTextFieldDelegate.shouldBeginEditing).toHaveBeenCalled();
+            });
+
+            it("should be ignored if it returns undefined", function() {
+                aTextFieldDelegate.shouldBeginEditing.andReturn(void 0);
+                var accepts = aTextField.acceptsActiveTarget;
+                expect(accepts).toBeTruthy();
+            });
+
+            it("should be able to return false", function() {
+                aTextFieldDelegate.shouldBeginEditing.andReturn(false);
+                var accepts = aTextField.acceptsActiveTarget;
+                expect(accepts).toBeFalsy();
+            });
+
+            it("should be able to return true", function() {
+                aTextFieldDelegate.shouldBeginEditing.andReturn(true);
+                var accepts = aTextField.acceptsActiveTarget;
+                expect(accepts).toBeTruthy();
+            });
+        });
+
+        describe("didChange", function () {
+            beforeEach(function () {
+                aTextFieldDelegate.didChange = jasmine.createSpy();
+            });
+
+            it("should be ", function() {
+                aTextField.handleChange();
+                expect(aTextFieldDelegate.didChange).toHaveBeenCalled();
+            });
+        });
+
+        describe("didBeginEditing", function () {
+            beforeEach(function () {
+                aTextFieldDelegate.didBeginEditing = jasmine.createSpy();
+            });
+
+            it("should be called when textfield is focused", function() {
+                aTextField.handleFocus();
+                expect(aTextFieldDelegate.didBeginEditing).toHaveBeenCalled();
+            });
+        });
+
+        describe("shouldEndEditing", function () {
+            beforeEach(function () {
+                aTextFieldDelegate.shouldEndEditing = jasmine.createSpy();
+                aTextField.handleFocus();
+            });
+
+            it("should be called when textfield receives blur", function() {
+                aTextField.handleBlur();
+                expect(aTextFieldDelegate.shouldEndEditing).toHaveBeenCalled();
+            });
+
+            it("should be ignored if it returns undefined", function() {
+                aTextFieldDelegate.shouldEndEditing.andReturn(void 0);
+                aTextField.handleBlur();
+                expect(aTextField.hasFocus).toBeFalsy();
+            });
+
+            it("should be prevent textfield being unfocused if it returns false", function() {
+                aTextFieldDelegate.shouldEndEditing.andReturn(false);
+                aTextField.handleBlur();
+                expect(aTextField.hasFocus).toBeTruthy();
+            });
+
+            it("should not be prevent textfield being unfocused if it returns true", function() {
+                aTextFieldDelegate.shouldEndEditing.andReturn(true);
+                aTextField.handleBlur();
+                expect(aTextField.hasFocus).toBeFalsy();
+            });
+
+        });
+
+        describe("didEndEditing", function () {
+            beforeEach(function () {
+                aTextFieldDelegate.didEndEditing = jasmine.createSpy();
+            });
+
+            it("should be called when textfield receives blur", function() {
+                aTextField.handleBlur();
+                expect(aTextFieldDelegate.didEndEditing).toHaveBeenCalled();
+            });
+        });
+   });
     describe("blueprint", function () {
         it("can be created", function () {
             var blueprintPromise = AbstractTextField.blueprint;

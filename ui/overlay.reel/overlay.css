@@ -4,21 +4,6 @@
     z-index: 7000;
 }
 
-.montage-Overlay-modalMask {
-    display: none;
-    position: absolute;
-    z-index: 6999;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background-color: gray;
-}
-
-.montage-Overlay-modalMask--visible {
-    display: block;
-}
-
 .montage-Overlay--visible {
     display: block;
 }

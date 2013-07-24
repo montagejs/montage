@@ -51,6 +51,8 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
                 this._numberFieldMinusComponent.addEventListener("action", this, false);
                 this._numberFieldPlusComponent.addEventListener("action", this, false);
 
+                this._numberFieldTextFieldComponent.delegate = this;
+
                 // needs to be fixed for pointer handling
                 this.element.addEventListener("mousedown", this, false);
 
@@ -61,6 +63,23 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
                 this._rightKeyComposer = KeyComposer.createKey(this, "right", "increase");
                 this._leftKeyComposer = KeyComposer.createKey(this, "left", "decrease");
             }
+        }
+    },
+
+    textFieldShouldBeginEditing: {
+        value: function() {
+            return this.enabled;
+        }
+    },
+
+    textFieldDidChange: {
+        value: function() {
+        }
+    },
+
+    textFieldDidEndEditing: {
+        value: function() {
+            this.value = this._numberFieldTextFieldComponent.value;
         }
     },
 
@@ -146,6 +165,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
             if (!this.enabled) {
                 return;
             }
+            this.value = this._numberFieldTextFieldComponent.value;
             if(event.identifier === "increase") {
                 this.handlePlusAction();
             } else if (event.identifier === "decrease") {
@@ -262,10 +282,6 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
         }
     },
 
-    _valuePattern: {
-        value: /[^0-9\.]+/g
-    },
-
     /**
      * The value of the InputNumber
      * @type {number}
@@ -276,10 +292,6 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
             return this._value;
         },
         set: function (value) {
-            // this could be removed if the textfield allowed a formatter
-            if (typeof value === "string") {
-                value = value.replace(/[^0-9\.]+/g, "");
-            }
             if (! isNaN(value = parseFloat(value))) {
                 if (typeof this.min === 'number' && value < this.min) {
                     value = this.min;

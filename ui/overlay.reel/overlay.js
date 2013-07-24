@@ -29,10 +29,6 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
      * @param {Event} event
      */
 
-    modalMaskElement: {
-        value: null
-    },
-
     _pressComposer: {
         value: null
     },
@@ -78,27 +74,6 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
         value: null
     },
 
-    _isModal: {
-        value: null
-    },
-
-    isModal: {
-        set: function(value) {
-            if (value !== this._isModal) {
-                this._isModal = value;
-                if (value) {
-                    this.classList.add(CLASS_PREFIX + "--modal");
-                } else {
-                    this.classList.remove(CLASS_PREFIX + "--modal");
-                }
-                this.needsDraw = true;
-            }
-        },
-        get: function() {
-            return this._isModal;
-        }
-    },
-
     _isShown: {
         value: false
     },
@@ -139,7 +114,6 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 // escape possible offset parent container.
                 body = this.element.ownerDocument.body;
                 body.appendChild(this.element);
-                body.appendChild(this.modalMaskElement);
                 this.attachToParentComponent();
 
                 _window = this.element.ownerDocument.defaultView;
@@ -219,13 +193,6 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
 
     draw: {
         value: function() {
-            // Modal mask.
-            if (this.isModal) {
-                this.modalMaskElement.classList.add(CLASS_PREFIX + "-modalMask--visible");
-            } else {
-                this.modalMaskElement.classList.remove(CLASS_PREFIX + "-modalMask--visible");
-            }
-
             if (this._isShown) {
                 // The element is displayed when it is measurable.
                 if (this._isDisplayed) {

@@ -46,7 +46,14 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     },
 
     acceptsActiveTarget: {
-        value: true
+        get: function() {
+            var shouldBeginEditing = this.callDelegateMethod("shouldBeginEditing", this);
+            return (shouldBeginEditing !== false);
+        }
+    },
+
+    delegate: {
+        value: null
     },
 
     enabled: {
@@ -83,6 +90,16 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
         }
     },
 
+    _hasFocus: {
+        value: false
+    },
+
+    hasFocus: {
+        get: function() {
+            return this._hasFocus;
+        }
+    },
+
     _keyComposer: {
         value: null
     },
@@ -114,13 +131,16 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
             if (firstTime) {
                 this.element.addEventListener("input", this, false);
                 this.element.addEventListener("change", this, false);
+                this.element.addEventListener("focus", this, false);
+                this.element.addEventListener("blur", this, false);
             }
         }
     },
 
     draw: {
         value: function() {
-            this.element.value = this.value;
+            var value = this.value;
+            this.element.value = value || false === value ? value.toString() : "";
             if (this.placeholderValue != null) {
                 this.element.setAttribute("placeholder", this.placeholderValue);
             }
@@ -139,11 +159,35 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
         }
     },
 
+    handleFocus: {
+        value: function(event) {
+            if (this.acceptsActiveTarget) {
+                this._hasFocus = true;
+                this.callDelegateMethod("didBeginEditing", this);
+            } else {
+                this.element.blur();
+            }
+        }
+    },
+
+    handleBlur: {
+        value: function(event) {
+            var shouldEnd = this.callDelegateMethod("shouldEndEditing", this);
+            if (shouldEnd === false) {
+                this.element.focus();
+            } else {
+                this._hasFocus = false;
+                this.callDelegateMethod("didEndEditing", this);
+            }
+        }
+    },
+
     _updateValueFromDom: {
         value: function() {
             if (this._value !== this.element.value) {
                 this._value = this.element.value;
                 this.dispatchOwnPropertyChange("value", this._value);
+                this.callDelegateMethod("didChange", this);
             }
         }
     }
