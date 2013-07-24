@@ -650,14 +650,10 @@ Montage.defineProperty(Montage, "didCreate", {
 });
 
 var getSuper = function(object, method) {
-    var propertyNames, propertyName, property, i, propCount, func, superFunction, superProperty, orgObject, proto;
-    if (typeof object._superCache === "undefined") {
-        object._superCache = {};
+    var propertyNames, propertyName, property, i, propCount, func, superFunction, superProperty, proto;
+    if (typeof method._super !== "undefined") {
+        return method._super;
     }
-    if (method.uuid in object._superCache) {
-        return object._superCache[method.uuid];
-    }
-    orgObject = object;
     while (typeof superFunction === "undefined" && object !== null) {
         propertyNames = Object.getOwnPropertyNames(object);
         proto = Object.getPrototypeOf(object)
@@ -691,7 +687,7 @@ var getSuper = function(object, method) {
         }
         object = proto;
     }
-    orgObject._superCache[method.uuid] = superFunction;
+    method._super = superFunction;
     return superFunction;
 }
 
