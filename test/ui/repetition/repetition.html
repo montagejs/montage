@@ -522,7 +522,34 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "textfield10"},
                     "text": "right"
                 }
+            },
+
+            "substitution": {
+                "prototype": "montage/ui/substitution.reel",
+                "properties": {
+                    "element": {"#": "substitution"},
+                    "switchValue": "default"
+                }
+            },
+
+            "repetitionInSubstitution": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "repetitionInSubstitution"},
+                    "content": [1, 2, 3]
+                }
+            },
+
+            "textInSubstitution": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "textInSubstitution"}
+                },
+                "bindings": {
+                    "value": {"<-": "@repetitionInSubstitution.objectAtCurrentIteration"}
+                }
             }
+
     }</script>
 </head>
 <body>
@@ -683,5 +710,16 @@ POSSIBILITY OF SUCH DAMAGE.
         <span data-montage-id="textfield9" data-arg="leftSide"></span>
         <span data-montage-id="textfield10" data-arg="rightSide"></span>
     </div>
+
+    <h2>Repetition inside Substitution</h2>
+
+    <div data-montage-id="substitution">
+        <div data-arg="default">
+            <div data-montage-id="repetitionInSubstitution">
+                <span data-montage-id="textInSubstitution" class="textInSubstitution"></span>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
