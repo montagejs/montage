@@ -596,43 +596,29 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     */
     _installControlEventHandlers: {
         value: function() {
-            var handleLoadedmetadata    = this.handleLoadedmetadata.bind(this),
-                handleTimeupdate        = this.handleTimeupdate.bind(this),
-                handlePlay              = this.handlePlay.bind(this),
-                handlePlaying           = this.handlePlaying.bind(this),
-                handlePause             = this.handlePause.bind(this),
-                handleAbort             = this.handleAbort.bind(this),
-                handleError             = this.handleError.bind(this),
-                handleEmptied           = this.handleEmptied.bind(this),
-                handleEnded             = this.handleEnded.bind(this);
-
-            this.mediaController.addEventListener('loadedmetadata', handleLoadedmetadata, false);
-            this.mediaController.addEventListener('timeupdate', handleTimeupdate, false);
-            this.mediaController.addEventListener('play', handlePlay, false);
-            this.mediaController.addEventListener('playing', handlePlaying, false);
-            this.mediaController.addEventListener('pause', handlePause, false);
-            this.mediaController.addEventListener('abort', handleAbort, false);
-            this.mediaController.addEventListener('error', handleError, false);
-            this.mediaController.addEventListener('emptied', handleEmptied, false);
-            this.mediaController.addEventListener('ended', handleEnded, false);
-            
-            this._removeControlEventHandlers = function() {
-                this.mediaController.removeEventListener('loadedmetadata', handleLoadedmetadata);
-                this.mediaController.removeEventListener('timeupdate', handleTimeupdate);
-                this.mediaController.removeEventListener('play', handlePlay);
-                this.mediaController.removeEventListener('playing', handlePlaying);
-                this.mediaController.removeEventListener('pause', handlePause);
-                this.mediaController.removeEventListener('abort', handleAbort);
-                this.mediaController.removeEventListener('error', handleError);
-                this.mediaController.removeEventListener('emptied', handleEmptied);
-                this.mediaController.removeEventListener('ended', handleEnded);
-            };
-
+            this.mediaController.addEventListener('loadedmetadata', this);
+            this.mediaController.addEventListener('timeupdate', this);
+            this.mediaController.addEventListener('play', this);
+            this.mediaController.addEventListener('playing', this);
+            this.mediaController.addEventListener('pause', this);
+            this.mediaController.addEventListener('abort', this);
+            this.mediaController.addEventListener('error', this);
+            this.mediaController.addEventListener('emptied', this);
+            this.mediaController.addEventListener('ended', this);
         }
     },
     
     _removeControlEventHandlers: {
         value: function() {
+            this.mediaController.removeEventListener('loadedmetadata', this);
+            this.mediaController.removeEventListener('timeupdate', this);
+            this.mediaController.removeEventListener('play', this);
+            this.mediaController.removeEventListener('playing', this);
+            this.mediaController.removeEventListener('pause', this);
+            this.mediaController.removeEventListener('abort', this);
+            this.mediaController.removeEventListener('error', this);
+            this.mediaController.removeEventListener('emptied', this);
+            this.mediaController.removeEventListener('ended', this);
         }
     },
     /*-----------------------------------------------------------------------------
