@@ -1,0 +1,5 @@
+{
+    "mappings": {
+        "q": "../../node_modules/q"
+    }
+}
