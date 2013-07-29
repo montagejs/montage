@@ -44,12 +44,12 @@ describe("Require", function () {
         "transitive",
         "module-exports",
         "return",
-        "named-packages",
-        "named-mappings",
+        {name: "named-packages", node: false},
+        {name: "named-mappings", node: false},
         "named-parent-package",
-        "load-package",
-        "load-package-name",
-        "not-found",
+        {name: "load-package", node: false},
+        {name: "load-package-name", node: false},
+        {name: "not-found", node: false},
         "redirects",
         "redirects-package",
         "comments",
@@ -59,9 +59,16 @@ describe("Require", function () {
         "case-sensitive",
         "inject-dependency",
         "inject-mapping",
-        "script-injection-dep",
-        "script-injection"
+        {name: "script-injection-dep", node: false},
+        {name: "script-injection", node: false},
+        "read"
     ].forEach(function (test) {
+        if (typeof test === "object") {
+            if (test.node === false && typeof process !== "undefined") {
+                return;
+            }
+            test = test.name;
+        }
         it(test, function () {
             var spec = this;
             var done;

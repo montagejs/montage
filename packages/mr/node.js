@@ -5,7 +5,7 @@
     3-Clause BSD License
     https://github.com/motorola-mobility/montage/blob/master/LICENSE.md
 */
-
+/*jshint node:true */
 var Require = require("./require");
 var Promise = require("q");
 var FS = require("fs");
@@ -82,7 +82,7 @@ Require.Compiler = function Compiler(config) {
 
 Require.Loader = function Loader(config, load) {
     return function (location, module) {
-        return Require.read(location)
+        return config.read(location)
         .then(function (text) {
             module.type = "javascript";
             module.text = text;
@@ -100,7 +100,7 @@ Require.NodeLoader = function NodeLoader(config) {
             type: "native",
             exports: require(id),
             location: location
-        }
+        };
     };
 };
 
@@ -124,8 +124,9 @@ Require.makeLoader = function makeLoader(config) {
 };
 
 Require.findPackagePath = function findPackagePath(directory) {
-    if (directory == PATH.dirname(directory))
+    if (directory === PATH.dirname(directory)) {
         return Promise.reject(new Error("Can't find package"));
+    }
     var packageJson = PATH.join(directory, "package.json");
     return Promise.ninvoke(FS, "stat", packageJson)
     .then(function (stat) {
@@ -151,7 +152,7 @@ Require.findPackageLocationAndModuleId = function findPackageLocationAndModuleId
         return {
             location: Require.directoryPathToLocation(packageDirectory),
             id: modulePath
-        }
+        };
     }, function (error) {
         throw new Error("Can't find package: " + path);
     });
