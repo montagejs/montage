@@ -2973,7 +2973,11 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                     }
 
                     if (drawPerformanceLogger.isDebug) {
-                        drawPerformanceStartTime = window.performance.now();
+                        if (window.performance) {
+                            drawPerformanceStartTime = window.performance.now();
+                        } else {
+                            drawPerformanceStartTime = Date.now();
+                        }
                     }
                     self._frameTime = (timestamp ? timestamp : Date.now());
                     if (self._clearNeedsDrawTimeOut) {
@@ -3005,7 +3009,12 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                     self.drawIfNeeded();
 
                     if (drawPerformanceLogger.isDebug) {
-                        var drawPerformanceEndTime = window.performance.now();
+                        if (window.performance) {
+                            var drawPerformanceEndTime = window.performance.now();
+                        } else {
+                            var drawPerformanceEndTime = Date.now();
+                        }
+
                         console.log("Draw Cycle Time: ",
                             drawPerformanceEndTime - drawPerformanceStartTime,
                             ", Components: ", self._lastDrawComponentsCount);
