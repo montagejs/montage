@@ -200,6 +200,8 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                     // this is required for correct measurement
                     this.element.style.marginTop = "0";
                     this.element.style.marginLeft = "0";
+                    this._marginTop = 0;
+                    this._marginLeft = 0;
                     this._isDisplayed = true;
                     // Trigger the new draw cycle so we can finally measure the
                     // element.
@@ -207,6 +209,10 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 }
             } else {
                 this._isDisplayed = false;
+                this.element.style.marginTop = "0";
+                this.element.style.marginLeft = "0";
+                this._marginTop = 0;
+                this._marginLeft = 0;
             }
         }
     },
