@@ -110,7 +110,7 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
 
             if (firstTime) {
                 _window = this.element.ownerDocument.defaultView;
-                _window.addEventListener("resize", this);
+                _window.addEventListener("resize", this, false);
                 this.addComposerForElement(this._pressComposer, this.element.ownerDocument);
                 this._pressComposer.addEventListener("pressStart", this, false);
             }
