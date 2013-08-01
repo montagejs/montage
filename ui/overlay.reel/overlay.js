@@ -106,20 +106,12 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
 
     enterDocument: {
         value: function(firstTime) {
-            var body,
-                _window;
+            var _window;
 
             if (firstTime) {
-                // Need to move the element to be a child of the document to
-                // escape possible offset parent container.
-                body = this.element.ownerDocument.body;
-                body.appendChild(this.element);
-                this.attachToParentComponent();
-
                 _window = this.element.ownerDocument.defaultView;
-                _window.addEventListener("resize", this);
+                _window.addEventListener("resize", this, false);
                 this.addComposerForElement(this._pressComposer, this.element.ownerDocument);
-
                 this._pressComposer.addEventListener("pressStart", this, false);
             }
         }
@@ -186,6 +178,7 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
             // Only calculate the position if the element is part of the layout,
             // otherwise it's not possible to measure the element.
             if (this._isDisplayed && this._isShown) {
+                this._ownBoundingRect = this.element.getBoundingClientRect();
                 this._calculatePosition();
             }
         }
@@ -204,6 +197,11 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                     // This will make it possible to measure the element in the
                     // next draw cycle at willDraw without causing a flash.
                     this.element.style.visibility = "hidden";
+                    // this is required for correct measurement
+                    this.element.style.marginTop = "0";
+                    this.element.style.marginLeft = "0";
+                    this._marginTop = 0;
+                    this._marginLeft = 0;
                     this._isDisplayed = true;
                     // Trigger the new draw cycle so we can finally measure the
                     // element.
@@ -211,33 +209,30 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 }
             } else {
                 this._isDisplayed = false;
+                this.element.style.marginTop = "0";
+                this.element.style.marginLeft = "0";
+                this._marginTop = 0;
+                this._marginLeft = 0;
             }
         }
+    },
+
+    _marginTop: {
+        value: 0
+    },
+
+    _marginLeft: {
+        value: 0
     },
 
     _reposition: {
         value: function() {
             var position = this._drawPosition;
 
-            this.element.style.top = position.top + "px";
-            this.element.style.left = position.left + "px";
-        }
-    },
-
-    _getElementPosition: {
-        value: function(element) {
-            var left = 0,
-                top = 0;
-
-            do {
-                left += element.offsetLeft;
-                top += element.offsetTop;
-            } while (element = /* assignment */ element.offsetParent);
-
-            return {
-                top: top,
-                left: left
-            };
+            this._marginTop += position.top - this._ownBoundingRect.top;
+            this._marginLeft += position.left - this._ownBoundingRect.left;
+            this.element.style.marginTop = this._marginTop + "px";
+            this.element.style.marginLeft = this._marginLeft + "px";
         }
     },
 
@@ -266,16 +261,15 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
 
     _calculateAnchorPosition: {
         value: function() {
-            var anchor = this.anchor,
-                width = this.element.offsetWidth,
-                anchorPosition = this._getElementPosition(anchor),
-                anchorHeight = anchor.offsetHeight || 0,
-                anchorWidth = anchor.offsetWidth || 0,
+            var anchorElement = this.anchor instanceof Montage ? this.anchor.element : this.anchor,
+                width = this._ownBoundingRect.right - this._ownBoundingRect.left,
+                anchorBoundingRect = anchorElement.getBoundingClientRect(),
+                anchorWidth = anchorBoundingRect.right - anchorBoundingRect.left,
                 position;
 
             position = {
-                top: anchorPosition.top + anchorHeight,
-                left: anchorPosition.left + (anchorWidth / 2) - (width / 2)
+                top: anchorBoundingRect.bottom,
+                left: anchorBoundingRect.left + (anchorWidth / 2) - (width / 2)
             };
 
             if (position.left < 0) {
@@ -291,8 +285,8 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
             var _window = this.element.ownerDocument.defaultView,
                 viewportHeight = _window.innerHeight,
                 viewportWidth = _window.innerWidth,
-                height = this.element.offsetHeight,
-                width = this.element.offsetWidth;
+                height = this._ownBoundingRect.bottom - this._ownBoundingRect.top,
+                width = this._ownBoundingRect.right - this._ownBoundingRect.left;
 
             return {
                 top: (viewportHeight / 2 - (height / 2)),
