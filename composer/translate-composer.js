@@ -53,6 +53,19 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: false
     },
 
+    /**
+     * When stealChildrenPointer is set to true the translate composer is able
+     * to claim the pointer in place of its children when the time difference
+     * between touchstart and the first touchmove is bellow the
+     * stealChildrenPointerThreshold.
+     *
+     * This property should be set to true on translate composers that act as
+     * scrollers so that they can capture the pointer instead of its children
+     * when the user intends to scroll instead of interacting with one of the
+     * children.
+     * The intention of the user is deduced by the time difference between
+     * touchstart and the first touchmove.
+     */
     stealChildrenPointer: {
         value: false
     },
