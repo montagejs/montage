@@ -77,7 +77,9 @@ var AbstractTextArea = exports.AbstractTextArea = Component.specialize(
         value: function() {
             var value = this.value;
             this.element.value = value || false === value ? value.toString() : "";
-            this.element.setAttribute("placeholder", this._placeholderValue);
+            if (this._placeholderValue != null) {
+                this.element.setAttribute("placeholder", this._placeholderValue);
+            }
         }
     },
 
