@@ -19,7 +19,7 @@ exports.BlueprintReference = RemoteReference.specialize( {
 
     constructor: {
         value: function BlueprintReference() {
-            this.super();
+            this.superForValue("constructor")();
         }
     },
 

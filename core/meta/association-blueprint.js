@@ -18,7 +18,7 @@ exports.AssociationBlueprint = PropertyBlueprint.specialize( /** @lends Associat
 
     constructor: {
         value: function AssociationBlueprint() {
-            this.super();
+            this.superForValue("constructor")();
         }
     },
 

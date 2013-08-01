@@ -35,7 +35,7 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
 
     constructor: {
         value: function PropertyBlueprint() {
-            this.super();
+            this.superForValue("constructor")();
         }
     },
 

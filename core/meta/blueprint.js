@@ -40,7 +40,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
     constructor: {
         value: function Blueprint() {
-            this.super();
+            this.superForValue("constructor")();
         }
     },
 
