@@ -58,6 +58,26 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("carSpy");
                     expect(calledSpy).toContain("vehicleSpy");
                 });
+                it("calling forward on vehicle twice", function () {
+                    vehicle.forward();
+                    calledSpy = [];
+                    vehicle.forward();
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car twice", function () {
+                    car.forward();
+                    calledSpy = [];
+                    car.forward();
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle twice", function () {
+                    beetle.forward();
+                    calledSpy = [];
+                    beetle.forward();
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
             });
             describe("with one hop", function () {
                 beforeEach(function () {
@@ -86,6 +106,27 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("vehicleSpy");
                 });
                 it("calling forward on beetle", function () {
+                    beetle.forward();
+                    expect(calledSpy).toContain("beetleSpy");
+                    expect(calledSpy).not.toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on vehicle twice", function () {
+                    vehicle.forward();
+                    calledSpy = [];
+                    vehicle.forward();
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car twice", function () {
+                    car.forward();
+                    calledSpy = [];
+                    car.forward();
+                    expect(calledSpy).not.toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle twice", function () {
+                    beetle.forward();
+                    calledSpy = [];
                     beetle.forward();
                     expect(calledSpy).toContain("beetleSpy");
                     expect(calledSpy).not.toContain("carSpy");
@@ -130,6 +171,27 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("carSpy");
                     expect(calledSpy).toContain("vehicleSpy");
                 });
+                it("calling forward on vehicle twice", function () {
+                    vehicle.forward();
+                    calledSpy = [];
+                    vehicle.forward();
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car twice", function () {
+                    car.forward();
+                    calledSpy = [];
+                    car.forward();
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle twice", function () {
+                    beetle.forward();
+                    calledSpy = [];
+                    beetle.forward();
+                    expect(calledSpy).toContain("beetleSpy");
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
             });
         });
 
@@ -165,6 +227,26 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("carSpy");
                     expect(calledSpy).toContain("vehicleSpy");
                 });
+                it("calling forward on vehicle twice", function () {
+                    vehicle.forward;
+                    calledSpy = [];
+                    vehicle.forward;
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car twice", function () {
+                    car.forward;
+                    calledSpy = [];
+                    car.forward;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle twice", function () {
+                    beetle.forward;
+                    calledSpy = [];
+                    beetle.forward;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
             });
             describe("with one hop", function () {
                 beforeEach(function () {
@@ -195,6 +277,27 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("vehicleSpy");
                 });
                 it("calling forward on beetle", function () {
+                    expect(beetle.forward).toEqual("VehicleBeetle");
+                    expect(calledSpy).toContain("beetleSpy");
+                    expect(calledSpy).not.toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on vehicle twice", function () {
+                    vehicle.forward;
+                    calledSpy = [];
+                    expect(vehicle.forward).toEqual("Vehicle");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car twice", function () {
+                    car.forward;
+                    calledSpy = [];
+                    expect(car.forward).toEqual("Vehicle");
+                    expect(calledSpy).not.toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle twice", function () {
+                    beetle.forward;
+                    calledSpy = [];
                     expect(beetle.forward).toEqual("VehicleBeetle");
                     expect(calledSpy).toContain("beetleSpy");
                     expect(calledSpy).not.toContain("carSpy");
@@ -239,6 +342,27 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("carSpy");
                     expect(calledSpy).toContain("vehicleSpy");
                 });
+                it("calling forward on vehicle twice", function () {
+                    vehicle.forward;
+                    calledSpy = [];
+                    vehicle.forward;
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car twice", function () {
+                    car.forward;
+                    calledSpy = [];
+                    car.forward;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle twice", function () {
+                    beetle.forward;
+                    calledSpy = [];
+                    beetle.forward;
+                    expect(calledSpy).toContain("beetleSpy");
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
             });
             describe("with a value in between", function () {
                 beforeEach(function () {
@@ -270,6 +394,26 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).not.toContain("vehicleSpy");
                 });
                 it("calling forward on beetle", function () {
+                    beetle.forward;
+                    expect(calledSpy).toContain("beetleSpy");
+                    expect(calledSpy).not.toContain("vehicleSpy");
+                });
+                it("calling forward on vehicle twice", function () {
+                    vehicle.forward;
+                    calledSpy = [];
+                    vehicle.forward;
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car twice", function () {
+                    car.forward;
+                    calledSpy = [];
+                    car.forward;
+                    expect(calledSpy).not.toContain("carSpy");
+                    expect(calledSpy).not.toContain("vehicleSpy");
+                });
+                it("calling forward on beetle twice", function () {
+                    beetle.forward;
+                    calledSpy = [];
                     beetle.forward;
                     expect(calledSpy).toContain("beetleSpy");
                     expect(calledSpy).not.toContain("vehicleSpy");
@@ -309,6 +453,26 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("carSpy");
                     expect(calledSpy).toContain("vehicleSpy");
                 });
+                it("calling forward on vehicle twice", function () {
+                    vehicle.forward = true;
+                    calledSpy = [];
+                    vehicle.forward = true;
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car twice", function () {
+                    car.forward = true;
+                    calledSpy = [];
+                    car.forward = true;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle twice", function () {
+                    beetle.forward = true;
+                    calledSpy = [];
+                    beetle.forward = true;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
             });
             describe("with one hop", function () {
                 beforeEach(function () {
@@ -337,6 +501,27 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("vehicleSpy");
                 });
                 it("calling forward on beetle", function () {
+                    beetle.forward = true;
+                    expect(calledSpy).toContain("beetleSpy");
+                    expect(calledSpy).not.toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on vehicle twice", function () {
+                    vehicle.forward = true;
+                    calledSpy = [];
+                    vehicle.forward = true;
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car twice", function () {
+                    car.forward = true;
+                    calledSpy = [];
+                    car.forward = true;
+                    expect(calledSpy).not.toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle twice", function () {
+                    beetle.forward = true;
+                    calledSpy = [];
                     beetle.forward = true;
                     expect(calledSpy).toContain("beetleSpy");
                     expect(calledSpy).not.toContain("carSpy");
@@ -376,6 +561,27 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("vehicleSpy");
                 });
                 it("calling forward on beetle", function () {
+                    beetle.forward = true;
+                    expect(calledSpy).toContain("beetleSpy");
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on vehicle twice", function () {
+                    vehicle.forward = true;
+                    calledSpy = [];
+                    vehicle.forward = true;
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car twice", function () {
+                    car.forward = true;
+                    calledSpy = [];
+                    car.forward = true;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle twice", function () {
+                    beetle.forward = true;
+                    calledSpy = [];
                     beetle.forward = true;
                     expect(calledSpy).toContain("beetleSpy");
                     expect(calledSpy).toContain("carSpy");
@@ -429,6 +635,26 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("carSpy");
                     expect(calledSpy).toContain("vehicleSpy");
                 });
+                it("calling forward on vehicle twice", function () {
+                    vehicle.forward;
+                    calledSpy = [];
+                    vehicle.forward;
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car twice", function () {
+                    car.forward;
+                    calledSpy = [];
+                    car.forward;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle twice", function () {
+                    beetle.forward;
+                    calledSpy = [];
+                    beetle.forward;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
                 describe("binding on super method", function () {
                     beforeEach(function () {
                         Bindings.defineBinding(vehicle, "forward", {"<->": "foo"});
@@ -436,7 +662,6 @@ describe("test/core/super-spec", function () {
                     });
                     it("calling forward on vehicle", function () {
                         vehicle.forward;
-                        expect(calledSpy).toContain("vehicleSpy");
                         expect(calledSpy).toContain("vehicleSpy");
                         expect(backingValue).toEqual("BOO");
                     });
@@ -453,6 +678,33 @@ describe("test/core/super-spec", function () {
                         expect(calledSpy).toContain("carSpy");
                         expect(calledSpy).toContain("vehicleSpy");
                         expect(backingValue).toEqual("BOO");
+                    });
+                    it("calling forward on vehicle twice", function () {
+                        vehicle.forward;
+                        calledSpy = [];
+                        vehicle.foo = "BAH";
+                        vehicle.forward;
+                        expect(calledSpy).toContain("vehicleSpy");
+                        expect(backingValue).toEqual("BAH");
+                    });
+                    it("calling forward on car twice", function () {
+                        // checking if the binding is working
+                        expect(backingValue).toEqual("BOO");
+                        car.forward = true;
+                        calledSpy = [];
+                        car.forward = true;
+                        expect(calledSpy).toContain("carSpy");
+                        expect(calledSpy).toContain("vehicleSpy");
+
+                    });
+                    it("calling forward on beetle twice", function () {
+                        beetle.forward;
+                        calledSpy = [];
+                        vehicle.foo = "BAH";
+                        beetle.forward;
+                        expect(calledSpy).toContain("carSpy");
+                        expect(calledSpy).toContain("vehicleSpy");
+                        expect(backingValue).toEqual("BAH");
                     });
                 });
                 describe("binding on method itself", function () {
@@ -475,6 +727,30 @@ describe("test/core/super-spec", function () {
                         expect(calledSpy).toContain("carSpy");
                         expect(calledSpy).toContain("vehicleSpy");
                         expect(backingValue).toEqual("BOO");
+                    });
+                    it("calling forward on vehicle twice", function () {
+                        vehicle.forward;
+                        calledSpy = [];
+                        vehicle.forward;
+                        expect(calledSpy).toContain("vehicleSpy");
+                    });
+                    it("calling forward on car twice", function () {
+                        car.forward;
+                        calledSpy = [];
+                        car.foo = "BAH";
+                        car.forward;
+                        expect(calledSpy).toContain("carSpy");
+                        expect(calledSpy).toContain("vehicleSpy");
+                        expect(backingValue).toEqual("BAH");
+                    });
+                    it("calling forward on beetle twice", function () {
+                        beetle.forward;
+                        calledSpy = [];
+                        car.foo = "BAH";
+                        beetle.forward;
+                        expect(calledSpy).toContain("carSpy");
+                        expect(calledSpy).toContain("vehicleSpy");
+                        expect(backingValue).toEqual("BAH");
                     });
                 });
             });
@@ -522,6 +798,26 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("carSpy");
                     expect(calledSpy).toContain("vehicleSpy");
                 });
+                it("calling forward on Vehicle twice", function () {
+                    Vehicle.forward();
+                    calledSpy = [];
+                    Vehicle.forward();
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on Car twice", function () {
+                    Car.forward();
+                    calledSpy = [];
+                    Car.forward();
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on Beetle twice", function () {
+                    Beetle.forward();
+                    calledSpy = [];
+                    Beetle.forward();
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
             });
             describe("with one hop", function () {
                 beforeEach(function () {
@@ -558,6 +854,27 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("vehicleSpy");
                 });
                 it("calling forward on Beetle", function () {
+                    Beetle.forward();
+                    expect(calledSpy).toContain("beetleSpy");
+                    expect(calledSpy).not.toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on Vehicle twice", function () {
+                    Vehicle.forward();
+                    calledSpy = [];
+                    Vehicle.forward();
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on Car twice", function () {
+                    Car.forward();
+                    calledSpy = [];
+                    Car.forward();
+                    expect(calledSpy).not.toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on Beetle twice", function () {
+                    Beetle.forward();
+                    calledSpy = [];
                     Beetle.forward();
                     expect(calledSpy).toContain("beetleSpy");
                     expect(calledSpy).not.toContain("carSpy");
@@ -611,6 +928,27 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("carSpy");
                     expect(calledSpy).toContain("vehicleSpy");
                 });
+                it("calling forward on Vehicle twice", function () {
+                    Vehicle.forward();
+                    calledSpy = [];
+                    Vehicle.forward();
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on Car twice", function () {
+                    Car.forward();
+                    calledSpy = [];
+                    Car.forward();
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on Beetle twice", function () {
+                    Beetle.forward();
+                    calledSpy = [];
+                    Beetle.forward();
+                    expect(calledSpy).toContain("beetleSpy");
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
             });
         });
     });
@@ -658,6 +996,26 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("carSpy");
                     expect(calledSpy).toContain("vehicleSpy");
                 });
+                it("calling forward on vehicle twice", function () {
+                    vehicle.forward();
+                    calledSpy = [];
+                    vehicle.forward();
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car twice", function () {
+                    car.forward();
+                    calledSpy = [];
+                    car.forward();
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle twice", function () {
+                    beetle.forward();
+                    calledSpy = [];
+                    beetle.forward();
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
              });
 
             describe("getters", function () {
@@ -690,7 +1048,27 @@ describe("test/core/super-spec", function () {
                     beetle.forward;
                     expect(calledSpy).toContain("carSpy");
                     expect(calledSpy).toContain("vehicleSpy");
-                    });
+                });
+                it("calling forward on vehicle twice", function () {
+                    vehicle.forward;
+                    calledSpy = [];
+                    vehicle.forward;
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car twice", function () {
+                    car.forward;
+                    calledSpy = [];
+                    car.forward;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle twice", function () {
+                    beetle.forward;
+                    calledSpy = [];
+                    beetle.forward;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
             });
 
             describe("setters", function () {
@@ -721,6 +1099,26 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("vehicleSpy");
                 });
                 it("calling forward on beetle", function () {
+                    beetle.forward = true;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on vehicle twice", function () {
+                    vehicle.forward = true;
+                    calledSpy = [];
+                    vehicle.forward = true;
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on car twice", function () {
+                    car.forward = true;
+                    calledSpy = [];
+                    car.forward = true;
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on beetle twice", function () {
+                    beetle.forward = true;
+                    calledSpy = [];
                     beetle.forward = true;
                     expect(calledSpy).toContain("carSpy");
                     expect(calledSpy).toContain("vehicleSpy");
@@ -777,6 +1175,33 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("beetleConstructorSpy");
                     expect(foreignConstructor).toHaveBeenCalled();
                 });
+                it("calling forward on vehicle twice", function () {
+                    vehicle = new Vehicle();
+                    calledSpy = [];
+                    foreignConstructor.wasCalled = false;
+                    vehicle = new Vehicle();
+                    expect(calledSpy).toContain("vehicleConstructorSpy");
+                    expect(foreignConstructor).toHaveBeenCalled();
+                });
+                it("calling forward on car twice", function () {
+                    car = new Car();
+                    calledSpy = [];
+                    foreignConstructor.wasCalled = false;
+                    car = new Car();
+                    expect(calledSpy).toContain("vehicleConstructorSpy");
+                    expect(calledSpy).toContain("carConstructorSpy");
+                    expect(foreignConstructor).toHaveBeenCalled();
+                });
+                it("calling forward on beetle twice", function () {
+                    beetle = new Beetle();
+                    calledSpy = [];
+                    foreignConstructor.wasCalled = false;
+                    beetle = new Beetle();
+                    expect(calledSpy).toContain("vehicleConstructorSpy");
+                    expect(calledSpy).toContain("carConstructorSpy");
+                    expect(calledSpy).toContain("beetleConstructorSpy");
+                    expect(foreignConstructor).toHaveBeenCalled();
+                });
             });
         });
         describe("class", function () {
@@ -807,6 +1232,28 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("vehicleSpy");
                 });
                 it("calling forward on Beetle", function () {
+                    Beetle.forward();
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+           });
+            describe("methods", function () {
+                it("calling forward on Vehicle twice", function () {
+                    Vehicle.forward();
+                    calledSpy = [];
+                    Vehicle.forward();
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on Car twice", function () {
+                    Car.forward();
+                    calledSpy = [];
+                    Car.forward();
+                    expect(calledSpy).toContain("carSpy");
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+                it("calling forward on Beetle twice", function () {
+                    Beetle.forward();
+                    calledSpy = [];
                     Beetle.forward();
                     expect(calledSpy).toContain("carSpy");
                     expect(calledSpy).toContain("vehicleSpy");
