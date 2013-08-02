@@ -712,7 +712,15 @@ var superForImplementation = function (object, propertyType, propertyName) {
             value: {}
         });
     }
-    context = object._superContext[cacheId] || object;
+    if (object._superContext.hasOwnProperty(cacheId)) {
+        //console.log("Found super context");
+        context = object._superContext[cacheId];
+    } else {
+        //console.log("No super context");
+        context = object;
+    }
+
+    
     if (!context._superContext) {
         Montage.defineProperty(context, "_superContext", {
             value: {}
@@ -727,6 +735,14 @@ var superForImplementation = function (object, propertyType, propertyName) {
     }
     
     if (cacheContext._superCache[cacheId]) {
+        /*
+        console.log("Cache hit", cacheId);
+        console.log("Object", object.constructor.name);
+        console.log("Context", context.constructor.name);
+        console.log("CacheContext", cacheContext.constructor.name);
+        console.log("SuperContext", cacheContext._superCache[cacheId].context.constructor.name);
+        console.log("Func", cacheContext._superCache[cacheId].func._realFunc.name + "()");
+        */
         context._superContext[cacheId] = cacheContext._superCache[cacheId].context;
         return cacheContext._superCache[cacheId].func;
     }
@@ -747,14 +763,26 @@ var superForImplementation = function (object, propertyType, propertyName) {
     if (typeof superFunction === "function") {
         object._superContext[cacheId] = proto;
         var boundSuper = function() {
+            //console.log("Calling bound super");
             var res = superFunction.apply(object, arguments);
             delete object._superContext[cacheId];
             return res;
-        }
+        };
+        //boundSuper._realFunc = superFunction;
+        /*
         cacheContext._superCache[cacheId] = {
             func: boundSuper,
             context: proto
         };
+        */
+        /*
+        console.log("Caching", cacheId);
+        console.log("Object", object.constructor.name);
+        console.log("Super", superFunction.name + "()");
+        console.log("CacheContext", cacheContext.constructor.name);
+        console.log("Proto", proto.constructor.name);
+        console.log("Context", context.constructor.name);
+        */
         return boundSuper;
     } else {
         delete object._superContext[cacheId];
