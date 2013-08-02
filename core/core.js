@@ -654,6 +654,9 @@ var getSuper = function(object, method) {
     if (typeof method._super !== "undefined") {
         return method._super;
     }
+    if (!("_super" in method)) {
+        Montage.defineProperty(method, "_super", {});
+    }
     while (typeof superFunction === "undefined" && object !== null) {
         propertyNames = Object.getOwnPropertyNames(object);
         proto = Object.getPrototypeOf(object)
@@ -693,8 +696,80 @@ var getSuper = function(object, method) {
 
 
 var superImplementation = function super_() {
+    if (typeof superImplementation.caller !== "function") {
+        throw new TypeError("Can't get super without caller. Use this.namedSuper(methodname) if using strict mode.");
+    }
     var superFunction = getSuper(this, superImplementation.caller);
     return typeof superFunction === "function" ? superFunction.bind(this) : Function.noop;
+};
+
+var superForImplementation = function (object, propertyType, propertyName) {
+    var superFunction, superProperty, property, proto, context, cacheContext;
+    var cacheId = propertyName + "." + propertyType;
+
+    if (!object._superContext) {
+        Montage.defineProperty(object, "_superContext", {
+            value: {}
+        });
+    }
+    context = object._superContext[cacheId] || object;
+    if (!context._superContext) {
+        Montage.defineProperty(context, "_superContext", {
+            value: {}
+        });
+    }
+    cacheContext = context;
+
+    if (!cacheContext._superCache) {
+        Montage.defineProperty(cacheContext, "_superCache", {
+            value: {}
+        });
+    }
+    
+    if (cacheContext._superCache[cacheId]) {
+        context._superContext[cacheId] = cacheContext._superCache[cacheId].context;
+        return cacheContext._superCache[cacheId].func;
+    }
+
+    while (typeof superFunction === "undefined" && context !== null) {
+        proto = Object.getPrototypeOf(context);
+        if (context.hasOwnProperty(propertyName)) {
+            property = Object.getOwnPropertyDescriptor(context, propertyName);
+            if (typeof property[propertyType] === "function") {
+                superProperty = Object.getPropertyDescriptor(proto, propertyName)
+                superFunction = superProperty ? superProperty[propertyType] : null;
+                break;
+            }
+        }
+        context = proto;
+    }
+
+    if (typeof superFunction === "function") {
+        object._superContext[cacheId] = proto;
+        var boundSuper = function() {
+            var res = superFunction.apply(object, arguments);
+            delete object._superContext[cacheId];
+            return res;
+        }
+        cacheContext._superCache[cacheId] = {
+            func: boundSuper,
+            context: proto
+        };
+        return boundSuper;
+    } else {
+        delete object._superContext[cacheId];
+        return Function.noop;
+    }
+};
+
+var superForValueImplementation = function (propertyName) {
+    return superForImplementation(this, "value", propertyName);
+};
+var superForGetImplementation = function (propertyName) {
+    return superForImplementation(this, "get", propertyName);
+};
+var superForSetImplementation = function (propertyName) {
+    return superForImplementation(this, "set", propertyName);
 };
 
 Montage.defineProperty(Montage, "super", {
@@ -702,6 +777,27 @@ Montage.defineProperty(Montage, "super", {
 });
 Montage.defineProperty(Montage.prototype, "super", {
     get: superImplementation
+});
+
+Montage.defineProperty(Montage, "superForValue", {
+    value: superForValueImplementation
+});
+Montage.defineProperty(Montage.prototype, "superForValue", {
+    value: superForValueImplementation
+});
+
+Montage.defineProperty(Montage, "superForGet", {
+    value: superForGetImplementation
+});
+Montage.defineProperty(Montage.prototype, "superForGet", {
+    value: superForGetImplementation
+});
+
+Montage.defineProperty(Montage, "superForSet", {
+    value: superForSetImplementation
+});
+Montage.defineProperty(Montage.prototype, "superForSet", {
+    value: superForSetImplementation
 });
 
 /**
