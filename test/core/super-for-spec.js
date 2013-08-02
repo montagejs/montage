@@ -663,7 +663,6 @@ describe("test/core/super-for-spec", function () {
                     it("calling forward on vehicle", function () {
                         vehicle.forward;
                         expect(calledSpy).toContain("vehicleSpy");
-                        expect(calledSpy).toContain("vehicleSpy");
                         expect(backingValue).toEqual("BOO");
                     });
                     it("calling forward on car", function () {
@@ -684,7 +683,6 @@ describe("test/core/super-for-spec", function () {
                         vehicle.forward;
                         calledSpy = [];
                         vehicle.forward;
-                        expect(calledSpy).toContain("vehicleSpy");
                         expect(calledSpy).toContain("vehicleSpy");
                         expect(backingValue).toEqual("BOO");
                     });
