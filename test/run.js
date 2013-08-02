@@ -41,6 +41,7 @@ require("montage-testing").run(require,[
         "core/radio-button-controller-spec",
         "core/selector-spec",
         "core/super-spec",
+        "core/super-for-spec",
         "core/undo-manager-spec",
 
         "core/tree-controller-spec",
