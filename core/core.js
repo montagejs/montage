@@ -674,13 +674,15 @@ var getSuper = function(object, method) {
                     superFunction = superProperty ? superProperty.value : null;
                     break;
                 }
-            } else if ((func = property.get) != null) {
+            }
+            if ((func = property.get) != null) {
                 if (func === method || func.deprecatedFunction === method) {
                     superProperty = Object.getPropertyDescriptor(proto, propertyName)
                     superFunction = superProperty ? superProperty.get : null;
                     break;
                 }
-            } else if ((func = property.set) != null) {
+            } 
+            if ((func = property.set) != null) {
                 if (func === method || func.deprecatedFunction === method) {
                     superProperty = Object.getPropertyDescriptor(proto, propertyName)
                     superFunction = superProperty ? superProperty.set : null;
