@@ -73,6 +73,40 @@ describe("test/base/abstract-slider-spec", function () {
                 });
             });
         });
+        describe("active", function() {
+            it("should have correct default", function() {
+                expect(aSlider.active).toBeFalsy();
+            });
+            it("should be true after touchstart", function() {
+                aSlider.handleTouchstart();
+                expect(aSlider.active).toBeTruthy();
+            });
+            it("should be true after mousedown", function() {
+                aSlider.handleMousedown();
+                expect(aSlider.active).toBeTruthy();
+            });
+            it("should be false after mouseup", function() {
+                aSlider.handleMouseup();
+                expect(aSlider.active).toBeFalsy();
+            });
+            it("should be false after touchend", function() {
+                aSlider.handleTouchend();
+                expect(aSlider.active).toBeFalsy();
+            });
+            it("should be false after thumbTranslateEnd", function() {
+                aSlider.handleThumbTranslateEnd();
+                expect(aSlider.active).toBeFalsy();
+            });
+            it("should add active class when set to true", function() {
+                aSlider.active = true;
+                expect(aSlider.classList.contains("montage-Slider--active")).toBeTruthy();
+            });
+            it("should remove active class when set to false", function() {
+                aSlider.active = true;
+                aSlider.active = false;
+                expect(aSlider.classList.contains("montage-Slider--active")).toBeFalsy();
+            });
+        });
         describe("step", function() {
             it("should have correct default", function() {
                 expect(aSlider.step).toEqual("any");
