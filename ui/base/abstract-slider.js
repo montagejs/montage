@@ -126,7 +126,7 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
     draw: {
         value: function () {
             if(this.axis === "vertical") {
-                this._sliderThumbTrackElement.style[this._transform] = "translate3d(0," + this._valuePercentage + "%,0)";
+                this._sliderThumbTrackElement.style[this._transform] = "translate3d(0," + (100 - this._valuePercentage) + "%,0)";
             } else {
                 this._sliderThumbTrackElement.style[this._transform] = "translate3d(" + this._valuePercentage + "%,0,0)";
             }
