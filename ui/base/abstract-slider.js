@@ -40,6 +40,7 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
             this.axis = "horizontal";
 
             this.defineBinding( "classList.has('montage--disabled')", { "<-": "!enabled" });
+            this.defineBinding( "classList.has('montage-Slider--active')", { "<-": "active" });
         }
     },
 
@@ -144,28 +145,27 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
 
     handleTouchstart: {
         value: function (e) {
-            this.classList.add("montage-Slider--active");
+            this.active = true;
             this.element.focus();
         }
     },
 
     handleTouchend: {
         value: function (e) {
-            this.classList.remove("montage-Slider--active");
+            this.active = false;
         }
     },
 
     handleMousedown: {
         value: function (e) {
-            var self = this;
-            this.classList.add("montage-Slider--active");
+            this.active = true;
             this.element.focus();
         }
     },
 
     handleMouseup: {
         value: function (e) {
-            this.classList.remove("montage-Slider--active");
+            this.active = false;
         }
     },
 
@@ -193,7 +193,7 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
 
     handleThumbTranslateEnd: {
         value: function (e) {
-            this.classList.remove("montage-Slider--active");
+            this.active = false;
         }
     },
 
@@ -256,6 +256,15 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
     },
 
     // Properties
+
+    /**
+     * This property is true when the slider is being interacted with, either through mouse click or touch event, otherwise false.
+     * @type {boolean}
+     * @default false
+     */
+    active: {
+        value: false
+    },
 
     _value: {
         value: 50
