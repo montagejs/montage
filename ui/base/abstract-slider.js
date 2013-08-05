@@ -257,23 +257,13 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
 
     // Properties
 
-    _active: {
-        value: false
-    },
-
     /**
      * This property is true when the slider is being interacted with, either through mouse click or touch event, otherwise false.
      * @type {boolean}
      * @default false
      */
     active: {
-        get: function() {
-            return this._active;
-        },
-        set: function(value) {
-            this._active = value;
-            this.needsDraw = true;
-        }
+        value: false
     },
 
     _value: {
