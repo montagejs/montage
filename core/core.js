@@ -699,95 +699,73 @@ var getSuper = function(object, method) {
 
 var superImplementation = function super_() {
     if (typeof superImplementation.caller !== "function") {
-        throw new TypeError("Can't get super without caller. Use this.namedSuper(methodname) if using strict mode.");
+        throw new TypeError("Can't get super without caller. Use this.superForValue(methodname) if using strict mode.");
     }
     var superFunction = getSuper(this, superImplementation.caller);
     return typeof superFunction === "function" ? superFunction.bind(this) : Function.noop;
 };
 
 var superForImplementation = function (object, propertyType, propertyName) {
-    var superFunction, superProperty, property, proto, context, cacheContext;
-    var cacheId = propertyName + "." + propertyType;
+    var superFunction, superProperty, superObject, property, proto, cacheObject, boundSuper,
+        context = object, 
+        cacheId = propertyName + "." + propertyType;
 
     if (!object._superContext) {
         Montage.defineProperty(object, "_superContext", {
             value: {}
         });
     }
-    if (object._superContext.hasOwnProperty(cacheId)) {
-        //console.log("Found super context");
+    // is there a super context for this call? I.e. does the super() call originate in an ancestor of object?
+    // If so, we use that object as the starting point (context) when looking for the super method.
+    if (object._superContext[cacheId]) {
         context = object._superContext[cacheId];
-    } else {
-        //console.log("No super context");
-        context = object;
     }
 
-    
-    if (!context._superContext) {
-        Montage.defineProperty(context, "_superContext", {
-            value: {}
-        });
-    }
-    cacheContext = context;
+    cacheObject = context.constructor;
 
-    if (!cacheContext._superCache) {
-        Montage.defineProperty(cacheContext, "_superCache", {
-            value: {}
-        });
-    }
-    
-    if (cacheContext._superCache[cacheId]) {
-        /*
-        console.log("Cache hit", cacheId);
-        console.log("Object", object.constructor.name);
-        console.log("Context", context.constructor.name);
-        console.log("CacheContext", cacheContext.constructor.name);
-        console.log("SuperContext", cacheContext._superCache[cacheId].context.constructor.name);
-        console.log("Func", cacheContext._superCache[cacheId].func._realFunc.name + "()");
-        */
-        context._superContext[cacheId] = cacheContext._superCache[cacheId].context;
-        return cacheContext._superCache[cacheId].func;
+    // is the super for this method in the cache?
+    if (cacheObject._superCache && cacheObject._superCache[cacheId]) {
+        object._superContext[cacheId] = cacheObject._superCache[cacheId].context;
+        return cacheObject._superCache[cacheId].func;
     }
 
+    // search the prototype chain for a parent that has a matching method
     while (typeof superFunction === "undefined" && context !== null) {
-        proto = Object.getPrototypeOf(context);
+        superObject = Object.getPrototypeOf(context);
         if (context.hasOwnProperty(propertyName)) {
             property = Object.getOwnPropertyDescriptor(context, propertyName);
             if (typeof property[propertyType] === "function") {
-                superProperty = Object.getPropertyDescriptor(proto, propertyName)
+                superProperty = Object.getPropertyDescriptor(superObject, propertyName)
                 superFunction = superProperty ? superProperty[propertyType] : null;
                 break;
             }
         }
-        context = proto;
+        context = superObject;
     }
 
     if (typeof superFunction === "function") {
-        object._superContext[cacheId] = proto;
-        var boundSuper = function() {
-            //console.log("Calling bound super");
-            var res = superFunction.apply(object, arguments);
+        // we wrap the super method in a function that saves the context on the object
+        // and immediately clears it again after the super has been called. This is needed
+        // in case superFunction also calls superFor*() so superForImplementation() knows
+        // which object owns the calling method.
+        boundSuper = function() {
+            object._superContext[cacheId] = superObject;
+            var retVal = superFunction.apply(object, arguments);
             delete object._superContext[cacheId];
-            return res;
+            return retVal;
         };
-        //boundSuper._realFunc = superFunction;
-        /*
-        cacheContext._superCache[cacheId] = {
+        if (!cacheObject._superCache) {
+            Montage.defineProperty(cacheObject, "_superCache", {
+                value: {}
+            });
+        }
+        // cache the super and the object we found it on
+        cacheObject._superCache[cacheId] = {
             func: boundSuper,
-            context: proto
+            owner: superObject
         };
-        */
-        /*
-        console.log("Caching", cacheId);
-        console.log("Object", object.constructor.name);
-        console.log("Super", superFunction.name + "()");
-        console.log("CacheContext", cacheContext.constructor.name);
-        console.log("Proto", proto.constructor.name);
-        console.log("Context", context.constructor.name);
-        */
         return boundSuper;
     } else {
-        delete object._superContext[cacheId];
         return Function.noop;
     }
 };
