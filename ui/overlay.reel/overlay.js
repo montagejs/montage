@@ -140,6 +140,7 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
     show: {
         value: function() {
             if (!this._isShown) {
+                this.attachToParentComponent();
                 this.classList.add(CLASS_PREFIX + "--visible");
                 this._isShown = true;
                 this.needsDraw = true;
@@ -150,6 +151,7 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
     hide: {
         value: function() {
             if (this._isShown) {
+                // detachFromParentComponent happens at didDraw
                 this.classList.remove(CLASS_PREFIX + "--visible");
                 this._isShown = false;
                 this.needsDraw = true;
@@ -211,6 +213,14 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 }
             } else {
                 this._isDisplayed = false;
+            }
+        }
+    },
+
+    didDraw: {
+        value: function() {
+            if (!this._isShown) {
+                this.detachFromParentComponent();
             }
         }
     },

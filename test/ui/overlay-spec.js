@@ -1,8 +1,9 @@
 /*global require,exports,describe,it,expect */
-var Montage = require("montage").Montage;
-var Overlay = require("montage/ui/overlay.reel").Overlay;
-var MockDOM = require("mocks/dom");
-var Event = require("mocks/event");
+var Montage = require("montage").Montage,
+    Component = require("montage/ui/component").Component,
+    Overlay = require("montage/ui/overlay.reel").Overlay,
+    MockDOM = require("mocks/dom"),
+    Event = require("mocks/event");
 
 describe("ui/overlay-spec", function() {
     var anOverlay;
@@ -272,6 +273,18 @@ describe("ui/overlay-spec", function() {
 
             anOverlay._pressComposer._dispatchPressStart(event);
             expect(callback).toHaveBeenCalled();
+        });
+    });
+
+    describe("show", function() {
+        it("should enter the document", function() {
+            var componentA = new Component();
+            componentA.hasTemplate = false;
+            componentA.element = MockDOM.element();
+            componentA.element.appendChild(anOverlay.element);
+
+            anOverlay.show();
+            expect(anOverlay._needsEnterDocument).toBe(true);
         });
     });
 });
