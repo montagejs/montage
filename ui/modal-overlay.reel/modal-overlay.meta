@@ -1,0 +1,30 @@
+{
+    "blueprint_component_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Overlay",
+                "prototypeName": "Overlay",
+                "blueprintModule": {
+                    "%": "ui/overlay.reel/overlay.meta"
+                }
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "Modal Overlay",
+            "parent": {
+                "@": "blueprint_component_reference"
+            },
+            "blueprintModule": {
+                "%": "ui/modal-overlay.reel/modal-overlay.meta"
+            },
+            "exportName": "ModalOverlay",
+            "module": {
+                "%": "ui/modal-overlay.reel"
+            }
+        }
+    }
+}

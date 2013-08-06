@@ -1,0 +1,100 @@
+{
+    "blueprint_loader_anchor": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "anchor",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object"
+        }
+    },
+    "blueprint_loader_position": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "position",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object"
+        }
+    },
+    "blueprint_loader_delegate": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "delegate",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object"
+        }
+    },
+    "blueprint_loader_dismissOnExternalInteraction": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "dismissOnExternalInteraction",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean"
+        }
+    },
+    "blueprint_component_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Component",
+                "prototypeName": "Component",
+                "blueprintModule": {
+                    "%": "ui/component.meta"
+                }
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "Overlay",
+            "parent": {
+                "@": "blueprint_component_reference"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "blueprint_loader_mainModule"
+                },
+                {
+                    "@": "blueprint_loader_position"
+                },
+                {
+                    "@": "blueprint_loader_delegate"
+                },
+                {
+                    "@": "blueprint_loader_dismissOnExternalInteraction"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "Overlay": [
+                    {
+                        "@": "blueprint_loader_mainModule"
+                    },
+                    {
+                        "@": "blueprint_loader_position"
+                    },
+                    {
+                        "@": "blueprint_loader_delegate"
+                    },
+                    {
+                        "@": "blueprint_loader_dismissOnExternalInteraction"
+                    }
+                ]
+            },
+            "blueprintModule": {
+                "%": "ui/overlay.reel/overlay.meta"
+            },
+            "exportName": "Overlay",
+            "module": {
+                "%": "ui/overlay.reel"
+            }
+        }
+    }
+}
