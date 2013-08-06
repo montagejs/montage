@@ -820,11 +820,11 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
 
     _prepareForEnterDocument: {
         value: function() {
-            this._needsEnterDocument = true;
-
             // On their first draw components will have their needsDraw = true
             // when they loadComponentTree.
-            if (!this._firstDraw) {
+            if (this._firstDraw) {
+                this._needsEnterDocument = true;
+            } else {
                 this.needsDraw = true;
                 this.traverseComponentTree(function(component) {
                     if (component._needsEnterDocument) {
