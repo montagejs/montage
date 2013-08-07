@@ -1181,32 +1181,52 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     handleOrganizedContentRangeChange: {
         value: function (plus, minus, index) {
+            var iterations = this.iterations;
+            var contentForIteration = this._contentForIteration;
 
-            // Subtract iterations
-            var freedIterations = this.iterations.splice(index, minus.length);
-            freedIterations.forEach(function (iteration) {
-                // Notify these iterations that they have been recycled,
-                // particularly so they know to disable animations with the
-                // "no-transition" CSS class.
-                iteration.recycle();
-            });
-            // Add them back to the free list so they can be reused
-            this._freeIterations.addEach(freedIterations);
-            // Create more iterations if we will need them
-            while (this._freeIterations.length < plus.length) {
-                this._freeIterations.push(this._createIteration());
+            // This is an optimization for a common case with the Flow that
+            // avoids shifting around with the iterations and free iterations
+            // array.  If the number of added and removed content values are
+            // the same, which is what happens if a value is set at an index,
+            // it is unnecessary to splice the corresponding index in and out,
+            // and unnecessary to even check whether more iterations need to be
+            // allocated.
+            if (plus.length === minus.length) {
+
+                for (var i = 0; i < plus.length; i++, index++) {
+                    iterations[index].content = plus[i];
+                    contentForIteration.set(iterations[index], plus[i]);
+                }
+
+            } else {
+
+                // Subtract iterations
+                var freedIterations = iterations.splice(index, minus.length);
+                freedIterations.forEach(function (iteration) {
+                    // Notify these iterations that they have been recycled,
+                    // particularly so they know to disable animations with the
+                    // "no-transition" CSS class.
+                    iteration.recycle();
+                });
+                // Add them back to the free list so they can be reused
+                this._freeIterations.addEach(freedIterations);
+                // Create more iterations if we will need them
+                while (this._freeIterations.length < plus.length) {
+                    this._freeIterations.push(this._createIteration());
+                }
+                // Add iterations
+                iterations.swap(index, 0, plus.map(function (content, offset) {
+                    var iteration = this._freeIterations.pop();
+                    iteration.content = content;
+                    // This updates the "repetition.contentAtCurrentIteration"
+                    // bindings.
+                    contentForIteration.set(iteration, content);
+                    return iteration;
+                }, this));
+                // Update indexes for all subsequent iterations
+                this._updateIndexes(index);
+
             }
-            // Add iterations
-            this.iterations.swap(index, 0, plus.map(function (content, offset) {
-                var iteration = this._freeIterations.pop();
-                iteration.content = content;
-                // This updates the "repetition.contentAtCurrentIteration"
-                // bindings.
-                this._contentForIteration.set(iteration, content);
-                return iteration;
-            }, this));
-            // Update indexes for all subsequent iterations
-            this._updateIndexes(index);
 
             this.needsDraw = true;
 
