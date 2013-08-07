@@ -137,6 +137,50 @@ describe("ui/overlay-spec", function() {
         });
     });
 
+    describe("dismissOnExternalInteraction", function() {
+        it("should hide the overlay when a pressStart is fired outside the overlay and dismissOnExternalInteraction is true", function() {
+            var event = Event.event();
+
+            anOverlay.dismissOnExternalInteraction = true;
+            anOverlay.enterDocument(true);
+
+            anOverlay._isShown = true;
+            anOverlay._isDisplayed = true;
+            event.target = MockDOM.element();
+            anOverlay._pressComposer._dispatchPressStart(event);
+            expect(anOverlay._isShown).toBe(false);
+        });
+
+        it("should not hide the overlay when a pressStart is fired inside the overlay and dismissOnExternalInteraction is true", function() {
+            var event = Event.event();
+
+            anOverlay.dismissOnExternalInteraction = true;
+            anOverlay.enterDocument(true);
+
+            anOverlay._isShown = true;
+            anOverlay._isDisplayed = true;
+            event.target = MockDOM.element();
+            anOverlay.element.appendChild(event.target);
+
+            anOverlay._pressComposer._dispatchPressStart(event);
+            expect(anOverlay._isShown).toBe(true);
+        });
+
+        it("should not hide the overlay when a pressStart is fired outside the overlay and dismissOnExternalInteraction is false", function() {
+            var event = Event.event();
+
+            anOverlay.dismissOnExternalInteraction = false;
+            anOverlay.enterDocument(true);
+
+            anOverlay._isShown = true;
+            anOverlay._isDisplayed = true;
+            event.target = MockDOM.element();
+            anOverlay._pressComposer._dispatchPressStart(event);
+
+            expect(anOverlay._isShown).toBe(true);
+        });
+    });
+
     describe("enterDocument", function() {
         it("should move the element to be a child of the body", function() {
             anOverlay.enterDocument(true);
@@ -227,34 +271,6 @@ describe("ui/overlay-spec", function() {
             anOverlay.handleResize();
 
             expect(anOverlay.needsDraw).toBe(false);
-        });
-    });
-
-    describe("dismissal", function() {
-        it("should hide the overlay when a pressStart is fired outside the overlay", function() {
-            var event = Event.event();
-
-            anOverlay.enterDocument(true);
-
-            anOverlay._isShown = true;
-            anOverlay._isDisplayed = true;
-            event.target = MockDOM.element();
-            anOverlay._pressComposer._dispatchPressStart(event);
-            expect(anOverlay._isShown).toBe(false);
-        });
-
-        it("should not hide the overlay when a pressStart is fired inside the overlay", function() {
-            var event = Event.event();
-
-            anOverlay.enterDocument(true);
-
-            anOverlay._isShown = true;
-            anOverlay._isDisplayed = true;
-            event.target = MockDOM.element();
-            anOverlay.element.appendChild(event.target);
-
-            anOverlay._pressComposer._dispatchPressStart(event);
-            expect(anOverlay._isShown).toBe(true);
         });
     });
 
