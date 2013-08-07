@@ -50,12 +50,22 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function(testP
 
                 describe("activeTarget template methods", function () {
 
-                    it("should invoke willSurrenderActiveTarget before losing activeTarget status", function () {
+                    it("should invoke surrendersActiveTarget before losing activeTarget status", function () {
                         eventManager.activeTarget = proximalComponent;
-                        spyOn(proximalComponent, "willSurrenderActiveTarget");
+                        spyOn(proximalComponent, "surrendersActiveTarget");
 
                         eventManager.activeTarget = null;
-                        expect(proximalComponent.willSurrenderActiveTarget).toHaveBeenCalled();
+                        expect(proximalComponent.surrendersActiveTarget).toHaveBeenCalled();
+                    });
+
+                    it("must reject changing the activeTarget if the current activeTarget refuses to surrender", function () {
+                        eventManager.activeTarget = proximalComponent;
+                        spyOn(proximalComponent, "surrendersActiveTarget").andCallFake(function () {
+                            return false;
+                        });
+
+                        eventManager.activeTarget = null;
+                        expect(eventManager.activeTarget).toBe(proximalComponent);
                     });
 
                     it("should invoke willBecomeActiveTarget before gaining activeTarget status", function () {

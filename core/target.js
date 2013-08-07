@@ -54,11 +54,15 @@ exports.Target = Montage.specialize( {
     },
 
     /**
-     * Called prior to this target surrendering the activeTarget
+     * Ask this target to surrender its activeTarget status
+     *
      * @param {Target} newTarget the Target that is about to become the activeTarget
+     * @return {Boolean} Whether or not to surrender activeTarget status
      */
-    willSurrenderActiveTarget: {
-        value: Function.noop
+    surrendersActiveTarget: {
+        value: function (newTarget) {
+            return true;
+        }
     },
 
     /**
