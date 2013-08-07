@@ -2195,6 +2195,12 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
      *
      * This is particularly useful for things such as keyboard shortcuts or
      * menuAction events.
+     *
+     * Prior to setting the activeTarget manually the desired target should
+     * be checked to see if it `acceptsActiveTarget`. In the course of then
+     * setting that target as the activeTarget, the current activeTarget
+     * will be instructed to `surrendersActiveTarget`. If the activeTarget
+     * refuses to surrender, the change is rejected.
      */
     activeTarget: {
         get: function () {
@@ -2206,12 +2212,8 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 value = this.application;
             }
 
-            if (value === this._activeTarget) {
+            if (value === this._activeTarget || (this.activeTarget && !this.activeTarget.surrendersActiveTarget(value))) {
                 return;
-            }
-
-            if (this.activeTarget) {
-                this.activeTarget.willSurrenderActiveTarget(value);
             }
 
             value.willBecomeActiveTarget(this.activeTarget);
