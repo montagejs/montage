@@ -13,6 +13,10 @@ describe("ui/overlay-spec", function() {
         anOverlay.hasTemplate = false;
         anOverlay.element = MockDOM.element();
         anOverlay.modalMaskElement = MockDOM.element();
+
+        anOverlay._firstDraw = false;
+
+        anOverlay.enterDocument(true);
     });
 
     describe("position calculation", function() {
@@ -139,8 +143,6 @@ describe("ui/overlay-spec", function() {
 
     describe("enterDocument", function() {
         it("should move the element to be a child of the body", function() {
-            anOverlay.enterDocument(true);
-
             expect(anOverlay.element.ownerDocument.body.childNodes).toContain(anOverlay.element);
         });
     });
@@ -234,8 +236,6 @@ describe("ui/overlay-spec", function() {
         it("should hide the overlay when a pressStart is fired outside the overlay", function() {
             var event = Event.event();
 
-            anOverlay.enterDocument(true);
-
             anOverlay._isShown = true;
             anOverlay._isDisplayed = true;
             event.target = MockDOM.element();
@@ -245,8 +245,6 @@ describe("ui/overlay-spec", function() {
 
         it("should not hide the overlay when a pressStart is fired inside the overlay", function() {
             var event = Event.event();
-
-            anOverlay.enterDocument(true);
 
             anOverlay._isShown = true;
             anOverlay._isDisplayed = true;
@@ -263,8 +261,6 @@ describe("ui/overlay-spec", function() {
             var event = Event.event(),
                 callback = jasmine.createSpy();
 
-            anOverlay.enterDocument(true);
-
             anOverlay._isShown = true;
             anOverlay._isDisplayed = true;
             event.target = MockDOM.element();
@@ -276,7 +272,30 @@ describe("ui/overlay-spec", function() {
         });
     });
 
+    describe("pressComposer", function () {
+        var pressComposer;
+        beforeEach(function () {
+            pressComposer = anOverlay._pressComposer;
+        });
+
+        it("should not be loaded initially", function () {
+            expect(anOverlay.element.ownerDocument.hasEventListener("mousedown", pressComposer)).toBe(false);
+        });
+
+        it("should be loaded when showing", function () {
+            anOverlay.show();
+            expect(anOverlay.element.ownerDocument.hasEventListener("mousedown", pressComposer)).toBe(true);
+        });
+
+        it("should be unloaded when hiding", function () {
+            anOverlay.show();
+            anOverlay.hide();
+            expect(anOverlay.element.ownerDocument.hasEventListener("mousedown", pressComposer)).toBe(false);
+        });
+    });
+
     describe("show", function() {
+
         it("should enter the document", function() {
             var componentA = new Component();
             componentA.hasTemplate = false;
