@@ -5,6 +5,7 @@ var Montage = require("montage").Montage,
     Serialization = require("core/serialization/serialization").Serialization,
     MontageLabeler = require("core/serialization/serializer/montage-labeler").MontageLabeler,
     Promise = require("core/promise").Promise,
+    URL = require("core/mini-url"),
     logger = require("core/logger").logger("template"),
     defaultEventManager = require("core/event/event-manager").defaultEventManager,
     defaultApplication;
@@ -602,7 +603,7 @@ var Template = Montage.specialize( {
         value: function(_document) {
             var html = _document.documentElement.innerHTML;
 
-            this.document = this.createHtmlDocumentWithHtml(html);
+            this.document = this.createHtmlDocumentWithHtml(html, _document.baseURI);
         }
     },
 
@@ -707,10 +708,11 @@ var Template = Montage.specialize( {
     },
 
     createHtmlDocumentWithHtml: {
-        value: function(html) {
+        value: function(html, baseURI) {
             var htmlDocument = document.implementation.createHTMLDocument("");
 
             htmlDocument.documentElement.innerHTML = html;
+            this.normalizeRelativeURLs(htmlDocument, baseURI);
 
             return htmlDocument;
         }
@@ -727,7 +729,7 @@ var Template = Montage.specialize( {
             }
 
             return _require.async(moduleId).then(function(exports) {
-                return self.createHtmlDocumentWithHtml(exports.content);
+                return self.createHtmlDocumentWithHtml(exports.content, exports.directory);
             });
         }
     },
@@ -995,6 +997,7 @@ var Template = Montage.specialize( {
             var collisionTable;
 
             collisionTable = this._resolveElementIdCollisions(newNode);
+            this.normalizeRelativeURLs(newNode);
             oldNode.parentNode.replaceChild(newNode, oldNode);
 
             return collisionTable;
@@ -1006,6 +1009,7 @@ var Template = Montage.specialize( {
             var collisionTable;
 
             collisionTable = this._resolveElementIdCollisions(node);
+            this.normalizeRelativeURLs(node);
             reference.parentNode.insertBefore(node, reference);
 
             return collisionTable;
@@ -1017,6 +1021,7 @@ var Template = Montage.specialize( {
             var collisionTable;
 
             collisionTable = this._resolveElementIdCollisions(node);
+            this.normalizeRelativeURLs(node);
             parentNode.appendChild(node);
 
             return collisionTable;
@@ -1126,6 +1131,39 @@ var Template = Montage.specialize( {
                 (!doctype.publicId && doctype.systemId ? ' SYSTEM' : '') +
                 (doctype.systemId ? ' "' + doctype.systemId + '"' : '') +
                 '>';
+        }
+    },
+
+    normalizeRelativeURLs: {
+        value: function(parentNode, baseURL) {
+            baseURL = baseURL || this.getBaseUrl();
+
+            // Resolve component's images relative URLs if we have a valid baseURL
+            if (typeof baseURL === "string" && baseURL !== "" && baseURL !== 'about:blank') {
+                var nodes = parentNode.querySelectorAll('img, image'),  // We are only looking for DOM and SVG image elements
+                    absoluteUrlRegExp = /^[\w\-]+:|^\//,                // Check for "<protocol>:", "/" and "//"
+                    XLINK_NS = 'http://www.w3.org/1999/xlink';
+
+                for (var i = 0, ii = nodes.length; i < ii; i++) {
+                    var node = nodes[i],
+                        url;
+
+                    if (node.tagName === 'image') {
+                        // SVG image
+                        url = node.getAttributeNS(XLINK_NS, 'href');
+                        if (!absoluteUrlRegExp.test(url)) {
+                            node.setAttributeNS(XLINK_NS, 'href', URL.resolve(baseURL, url));
+                        }
+                    } else {
+                        // DOM image
+                        url = node.getAttribute('src');
+                        if (!absoluteUrlRegExp.test(url)) {
+                            node.setAttribute('src', URL.resolve(baseURL, url));
+                        }
+                    }
+                }
+            }
+
         }
     }
 
@@ -1378,7 +1416,7 @@ function instantiateDocument(_document, _require, instances) {
         rootElement = _document.documentElement;
 
     // Setup a template just like we'd do for a document in a template
-    clonedDocument = template.createHtmlDocumentWithHtml(html);
+    clonedDocument = template.createHtmlDocumentWithHtml(html, _document.location.href);
 
     return template.initWithDocument(clonedDocument, _require)
     .then(function() {

@@ -8,7 +8,8 @@ var Montage = require("montage").Montage,
     TemplateResources = require("montage/core/template").TemplateResources,
     Component = require("montage/ui/component").Component,
     Promise = require("montage/q"),
-    objects = require("serialization/testobjects-v2").objects;
+    objects = require("serialization/testobjects-v2").objects,
+    URL = require("montage/core/mini-url");
 
 var DelegateMethods = require("reel/template/delegate-methods").DelegateMethods;
 
@@ -169,6 +170,27 @@ describe("reel/template-spec", function() {
                 });
             });
         });
+
+        it("should resolve relative image's URL", function() {
+            var moduleId = "reel/template/template-relative-image.html",
+                expectedResult = {
+                    "src" : URL.resolve(document.baseURI, "reel/template/sample-image.jpeg")
+                }
+
+            return template.initWithModuleId(moduleId, require)
+            .then(function() {
+                var domImage = template.document.body.querySelector("img"),
+                    domSrc = domImage ? domImage.src : "",
+                    svgImage = template.document.body.querySelector("image"),
+                    svgSrc = svgImage ? svgImage.getAttributeNS('http://www.w3.org/1999/xlink', "href") : "";
+
+                expect(domSrc).toBe(expectedResult.src);
+                expect(svgSrc).toBe(expectedResult.src);
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
     });
 
     describe("objects", function() {
@@ -358,6 +380,94 @@ describe("reel/template-spec", function() {
             expect(reference.children.length).toBe(2);
             expect(reference.lastChild).toBe(node);
         });
+
+        it("should replace a node into the template and resolve relative Urls", function() {
+            var moduleId = "reel/template/modification.html",
+                htmlModification = require("reel/template/template-relative-image.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                expectedResult = {
+                    "src" : URL.resolve(document.baseURI, "reel/template/sample-image.jpeg")
+                }
+
+            return template.initWithModuleId(moduleId, require)
+            .then(function() {
+                htmlDocument.documentElement.innerHTML = htmlModification;
+
+                node = htmlDocument.getElementById("content");
+                reference = template.getElementById("title");
+
+                template.replaceNode(node, reference);
+
+                var domImage = template.document.body.querySelector("img"),
+                    domSrc = domImage ? domImage.src : "",
+                    svgImage = template.document.body.querySelector("image"),
+                    svgSrc = svgImage ? svgImage.getAttributeNS('http://www.w3.org/1999/xlink', "href") : "";
+
+                expect(domSrc).toBe(expectedResult.src);
+                expect(svgSrc).toBe(expectedResult.src);
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should insert a node to the template and resolve relative Urls", function() {
+            var moduleId = "reel/template/modification.html",
+                htmlModification = require("reel/template/template-relative-image.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                expectedResult = {
+                    "src" : URL.resolve(document.baseURI, "reel/template/sample-image.jpeg")
+                }
+
+            return template.initWithModuleId(moduleId, require)
+            .then(function() {
+                htmlDocument.documentElement.innerHTML = htmlModification;
+
+                node = htmlDocument.getElementById("content");
+                reference = template.getElementById("title");
+
+                template.insertNodeBefore(node, reference);
+
+                var domImage = template.document.body.querySelector("img"),
+                    domSrc = domImage ? domImage.src : "",
+                    svgImage = template.document.body.querySelector("image"),
+                    svgSrc = svgImage ? svgImage.getAttributeNS('http://www.w3.org/1999/xlink', "href") : "";
+
+                expect(domSrc).toBe(expectedResult.src);
+                expect(svgSrc).toBe(expectedResult.src);
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should append a node to the template and resolve relative Urls", function() {
+            var moduleId = "reel/template/modification.html",
+                htmlModification = require("reel/template/template-relative-image.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                expectedResult = {
+                    "src" : URL.resolve(document.baseURI, "reel/template/sample-image.jpeg")
+                }
+
+            return template.initWithModuleId(moduleId, require)
+            .then(function() {
+                htmlDocument.documentElement.innerHTML = htmlModification;
+
+                node = htmlDocument.getElementById("content");
+                reference = template.getElementById("title");
+
+                template.appendNode(node, reference);
+
+                var domImage = template.document.body.querySelector("img"),
+                    domSrc = domImage ? domImage.src : "",
+                    svgImage = template.document.body.querySelector("image"),
+                    svgSrc = svgImage ? svgImage.getAttributeNS('http://www.w3.org/1999/xlink', "href") : "";
+
+                expect(domSrc).toBe(expectedResult.src);
+                expect(svgSrc).toBe(expectedResult.src);
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
     });
 
     describe("instantiation", function() {
