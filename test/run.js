@@ -47,6 +47,7 @@ require("montage-testing").run(require,[
 
         "core/extras/function",
         "core/extras/string",
+        "core/extras/url",
 
         "events/active-target-spec",
         "events/eventmanager-spec",
