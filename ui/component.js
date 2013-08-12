@@ -2807,7 +2807,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
      * @function
      */
     requestAnimationFrame: {
-        value: (window.webkitRequestAnimationFrame ? window.webkitRequestAnimationFrame : window.mozRequestAnimationFrame),
+        value: (window.requestAnimationFrame || window.webkitRequestAnimationFrame 
+             || window.mozRequestAnimationFrame ||  window.msRequestAnimationFrame),
         enumerable: false
     },
 
@@ -2816,7 +2817,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
      * @function
      */
     cancelAnimationFrame: {
-        value: (window.webkitCancelRequestAnimationFrame ? window.webkitCancelRequestAnimationFrame : window.mozCancelRequestAnimationFrame),
+        value: (window.cancelAnimationFrame ||  window.webkitCancelAnimationFrame 
+             || window.mozCancelAnimationFrame || window.msCancelAnimationFrame),
         enumerable: false
     },
 
