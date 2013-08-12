@@ -712,7 +712,7 @@ var Template = Montage.specialize( {
             var htmlDocument = document.implementation.createHTMLDocument("");
 
             htmlDocument.documentElement.innerHTML = html;
-            this.normalizeRelativeURLs(htmlDocument, baseURI);
+            this.normalizeRelativeUrls(htmlDocument, baseURI);
 
             return htmlDocument;
         }
@@ -997,7 +997,7 @@ var Template = Montage.specialize( {
             var collisionTable;
 
             collisionTable = this._resolveElementIdCollisions(newNode);
-            this.normalizeRelativeURLs(newNode);
+            this.normalizeRelativeUrls(newNode, this.getBaseUrl());
             oldNode.parentNode.replaceChild(newNode, oldNode);
 
             return collisionTable;
@@ -1009,7 +1009,7 @@ var Template = Montage.specialize( {
             var collisionTable;
 
             collisionTable = this._resolveElementIdCollisions(node);
-            this.normalizeRelativeURLs(node);
+            this.normalizeRelativeUrls(node, this.getBaseUrl());
             reference.parentNode.insertBefore(node, reference);
 
             return collisionTable;
@@ -1021,7 +1021,7 @@ var Template = Montage.specialize( {
             var collisionTable;
 
             collisionTable = this._resolveElementIdCollisions(node);
-            this.normalizeRelativeURLs(node);
+            this.normalizeRelativeUrls(node, this.getBaseUrl());
             parentNode.appendChild(node);
 
             return collisionTable;
@@ -1134,15 +1134,15 @@ var Template = Montage.specialize( {
         }
     },
 
-    normalizeRelativeURLs: {
-        value: function(parentNode, baseURL) {
-            baseURL = baseURL || this.getBaseUrl();
-
-            // Resolve component's images relative URLs if we have a valid baseURL
-            if (typeof baseURL === "string" && baseURL !== "" && baseURL !== 'about:blank') {
-                var nodes = parentNode.querySelectorAll('img, image'),  // We are only looking for DOM and SVG image elements
-                    absoluteUrlRegExp = /^[\w\-]+:|^\//,                // Check for "<protocol>:", "/" and "//"
-                    XLINK_NS = 'http://www.w3.org/1999/xlink';
+    normalizeRelativeUrls: {
+        value: function(parentNode, baseUrl) {
+            // Resolve component's images relative URLs if we have a valid baseUrl
+            if (typeof baseUrl === "string" && baseUrl !== "" && baseUrl !== 'about:blank') {
+                // We are only looking for DOM and SVG image elements
+                var XLINK_NS = 'http://www.w3.org/1999/xlink',          // Namespace for SVG's xlink
+                    absoluteUrlRegExp = /^[\w\-]+:|^\//,                // Check for "<protocol>:", "/" and "//",
+                    nodes = ["IMG", "image"].indexOf(parentNode.tagName) !== -1 ?
+                        [parentNode] : parentNode.querySelectorAll('img, image');
 
                 for (var i = 0, ii = nodes.length; i < ii; i++) {
                     var node = nodes[i],
@@ -1152,13 +1152,13 @@ var Template = Montage.specialize( {
                         // SVG image
                         url = node.getAttributeNS(XLINK_NS, 'href');
                         if (!absoluteUrlRegExp.test(url)) {
-                            node.setAttributeNS(XLINK_NS, 'href', URL.resolve(baseURL, url));
+                            node.setAttributeNS(XLINK_NS, 'href', URL.resolve(baseUrl, url));
                         }
                     } else {
                         // DOM image
                         url = node.getAttribute('src');
                         if (!absoluteUrlRegExp.test(url)) {
-                            node.setAttribute('src', URL.resolve(baseURL, url));
+                            node.setAttribute('src', URL.resolve(baseUrl, url));
                         }
                     }
                 }

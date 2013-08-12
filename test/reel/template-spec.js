@@ -272,7 +272,7 @@ describe("reel/template-spec", function() {
                 expectedObjects = {
                     "owner": {
                         "properties": {
-                            "element": {"#": "owner"},
+                            "element": {"#": "owner"}
                         }
                     }
                 };
@@ -381,7 +381,7 @@ describe("reel/template-spec", function() {
             expect(reference.lastChild).toBe(node);
         });
 
-        it("should replace a node into the template and resolve relative Urls", function() {
+        it("should replace a node into the template and resolve any relative Urls", function() {
             var moduleId = "reel/template/modification.html",
                 htmlModification = require("reel/template/template-relative-image.html").content,
                 htmlDocument = document.implementation.createHTMLDocument(""),
@@ -391,6 +391,8 @@ describe("reel/template-spec", function() {
 
             return template.initWithModuleId(moduleId, require)
             .then(function() {
+                var node, reference;
+
                 htmlDocument.documentElement.innerHTML = htmlModification;
 
                 node = htmlDocument.getElementById("content");
@@ -410,7 +412,7 @@ describe("reel/template-spec", function() {
             });
         });
 
-        it("should insert a node to the template and resolve relative Urls", function() {
+        it("should insert a node to the template and resolve any relative Urls", function() {
             var moduleId = "reel/template/modification.html",
                 htmlModification = require("reel/template/template-relative-image.html").content,
                 htmlDocument = document.implementation.createHTMLDocument(""),
@@ -420,6 +422,8 @@ describe("reel/template-spec", function() {
 
             return template.initWithModuleId(moduleId, require)
             .then(function() {
+                var node, reference;
+
                 htmlDocument.documentElement.innerHTML = htmlModification;
 
                 node = htmlDocument.getElementById("content");
@@ -439,7 +443,7 @@ describe("reel/template-spec", function() {
             });
         });
 
-        it("should append a node to the template and resolve relative Urls", function() {
+        it("should append a node to the template and resolve any relative Urls", function() {
             var moduleId = "reel/template/modification.html",
                 htmlModification = require("reel/template/template-relative-image.html").content,
                 htmlDocument = document.implementation.createHTMLDocument(""),
@@ -449,12 +453,43 @@ describe("reel/template-spec", function() {
 
             return template.initWithModuleId(moduleId, require)
             .then(function() {
+                var node, reference;
+
                 htmlDocument.documentElement.innerHTML = htmlModification;
 
                 node = htmlDocument.getElementById("content");
                 reference = template.getElementById("title");
 
                 template.appendNode(node, reference);
+
+                var domImage = template.document.body.querySelector("img"),
+                    domSrc = domImage ? domImage.src : "",
+                    svgImage = template.document.body.querySelector("image"),
+                    svgSrc = svgImage ? svgImage.getAttributeNS('http://www.w3.org/1999/xlink', "href") : "";
+
+                expect(domSrc).toBe(expectedResult.src);
+                expect(svgSrc).toBe(expectedResult.src);
+            }).fail(function() {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should append a image to the template and resolve it's relative Url", function() {
+            var moduleId = "reel/template/modification.html",
+                htmlModification = require("reel/template/template-relative-image.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                expectedResult = {
+                    "src" : URL.resolve(document.baseURI, "reel/template/sample-image.jpeg")
+                }
+
+            return template.initWithModuleId(moduleId, require)
+            .then(function() {
+                var reference = template.getElementById("title");
+
+                htmlDocument.documentElement.innerHTML = htmlModification;
+
+                template.appendNode(htmlDocument.getElementById("dom_image"), reference);
+                template.appendNode(htmlDocument.getElementById("svg_image"), reference);
 
                 var domImage = template.document.body.querySelector("img"),
                     domSrc = domImage ? domImage.src : "",
