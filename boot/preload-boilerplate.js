@@ -27,7 +27,20 @@
     };
 
     return modules[0].require();
-})((function (global){return[[{"mr/boot/script-params":2,"mr/browser":3,"url":4,"q":6,"./config":1},function (require, exports, module){
+})((function (global){return[[{"./browser":1,"mr/preload":3},function (require, exports, module){
+
+// montage boot/preload
+// --------------------
+
+
+var bootstrap = require("./browser");
+var preload = require("mr/preload");
+
+module.exports = function bootstrapPreload(plan) {
+    return bootstrap(preload(plan));
+};
+
+}],[{"mr/boot/script-params":4,"mr/browser":5,"url":6,"q":9,"./config":2},function (require, exports, module){
 
 // montage boot/browser
 // --------------------
@@ -310,7 +323,7 @@ function initialize(montageRequire, applicationRequire, params) {
     })
 }
 
-}],[{"mr/require":5},function (require, exports, module){
+}],[{"mr/require":8},function (require, exports, module){
 
 // montage boot/config
 // -------------------
@@ -500,7 +513,47 @@ exports.makeCompiler = function (config) {
     );
 };
 
-}],[{"url":4},function (require, exports, module){
+}],[{"./script-injection":7,"q":9},function (require, exports, module){
+
+// mr preload
+// ----------
+
+
+var load = require("./script-injection");
+var Q = require("q");
+
+module.exports = function preload(plan) {
+
+    // Each bundle ends with a bundleLoaded(name) call.  We use these hooks to
+    // synchronize the preloader.
+    var bundleHooks = {};
+    var getHook = function (name) {
+        return bundleHooks[name] =
+            bundleHooks[name] ||
+                Q.defer();
+    };
+    global.bundleLoaded = function (name) {
+        getHook(name).resolve();
+    };
+
+    // preload bundles sequentially
+    var preloaded = plan.reduce(function (previous, bundleLocations) {
+        return previous.then(function () {
+            return Q.all(bundleLocations.map(function (bundleLocation) {
+                load(bundleLocation);
+                return getHook(bundleLocation).promise;
+            }));
+        });
+    }, Q())
+    .then(function () {
+        // remove evidence of the evil we have done to the global scope
+        delete global.bundleLoaded;
+    });
+
+    return preloaded;
+};
+
+}],[{"url":6},function (require, exports, module){
 
 // mr boot/script-params
 // ---------------------
@@ -570,7 +623,7 @@ function getParams(scriptName) {
     return params;
 }
 
-}],[{"./require":5,"url":4,"q":6},function (require, exports, module){
+}],[{"./require":8,"url":6,"q":9},function (require, exports, module){
 
 // mr browser
 // ----------
@@ -856,7 +909,26 @@ exports.resolve = function resolve(base, relative) {
     return resolved;
 };
 
-}],[{"q":6,"url":4},function (require, exports, module){
+}],[{},function (require, exports, module){
+
+// mr script-injection
+// -------------------
+
+
+module.exports = load;
+
+var head = document.querySelector("head");
+function load(location) {
+    var script = document.createElement("script");
+    script.src = URL.resolve(params.mrLocation, location);
+    script.onload = function () {
+        // remove clutter
+        script.parentNode.removeChild(script);
+    };
+    head.appendChild(script);
+};
+
+}],[{"q":9,"url":6},function (require, exports, module){
 
 // mr require
 // ----------
@@ -3545,4 +3617,4 @@ var qEndingLine = captureLine();
 return Q;
 
 });
-}]]})(this))().done()
+}]]})(this))

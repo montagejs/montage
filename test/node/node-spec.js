@@ -1,7 +1,11 @@
 var assert = require("assert");
-var montage = require("../../montage");
+var Require = require("../../node");
 
-montage.loadPackage("test/node/fixture")
+var URL = require("url");
+var location = Require.directoryPathToLocation(__dirname);
+location = URL.resolve(location, "fixture/");
+
+Require.loadPackage(location)
 .then(function (packageRequire) {
 
     // Test that HTML files can be loaded and parsed correctly
@@ -19,3 +23,4 @@ montage.loadPackage("test/node/fixture")
 
 })
 .done();
+
