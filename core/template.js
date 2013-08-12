@@ -14,6 +14,7 @@ var Template = Montage.specialize( {
     _SERIALIZATON_SCRIPT_TYPE: {value: "text/montage-serialization"},
     _ELEMENT_ID_ATTRIBUTE: {value: "data-montage-id"},
     PARAM_ATTRIBUTE: {value: "data-param"},
+    _NORMALIZED_TAG_NAMES: {value: ["IMG", "image"]},
 
     _require: {value: null},
     _resources: {value: null},
@@ -1141,8 +1142,8 @@ var Template = Montage.specialize( {
                 // We are only looking for DOM and SVG image elements
                 var XLINK_NS = 'http://www.w3.org/1999/xlink',          // Namespace for SVG's xlink
                     absoluteUrlRegExp = /^[\w\-]+:|^\//,                // Check for "<protocol>:", "/" and "//",
-                    nodes = ["IMG", "image"].indexOf(parentNode.tagName) !== -1 ?
-                        [parentNode] : parentNode.querySelectorAll('img, image');
+                    nodes = this._NORMALIZED_TAG_NAMES.indexOf(parentNode.tagName) !== -1 ?
+                        [parentNode] : parentNode.querySelectorAll(this._NORMALIZED_TAG_NAMES.join(','));
 
                 for (var i = 0, ii = nodes.length; i < ii; i++) {
                     var node = nodes[i],
