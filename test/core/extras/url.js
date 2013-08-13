@@ -20,7 +20,7 @@ describe("core/extras/url", function () {
             baseElem.href = "https://github.com/montagejs/montage/index.html"
             document.head.appendChild(baseElem);
 
-            expect(URL.resolve("https://github.com/montagejs/montage/index.html/", "../logo.jpeg")).toBe("https://github.com/montagejs/logo.jpeg");
+            expect(URL.resolve("https://github.com/montagejs/montage/index.html", "../logo.jpeg")).toBe("https://github.com/montagejs/logo.jpeg");
 
             document.head.removeChild(baseElem);
             if (savedBaseElem) {
