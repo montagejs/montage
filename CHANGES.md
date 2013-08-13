@@ -1,3 +1,30 @@
+# v0.13.3
+
+-  **Repetition**
+
+   Fix repetition to correctly add the `selected` class to iterations'
+   elements that are components too.
+
+-  **Overlay**
+
+   It enters and exists the document everytime it is shown or hidden.
+
+-  **AbstractSlider**
+
+   Add active state.
+   Add vertical mode.
+
+-  **AbstractTextArea**
+
+   Fix issue with null placeholder text.
+
+-  **Target**
+
+   Removed `willSurrenderActiveTarget` and added `surrendersActiveTarget`
+   that asks the target to surrender the activeTarget status.
+
+-  Several bug fixes
+
 # v0.13.2
 
 -   **Component**
