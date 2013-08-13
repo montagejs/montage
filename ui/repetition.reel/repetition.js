@@ -265,7 +265,7 @@ var Iteration = exports.Iteration = Montage.specialize({
 
             repetition._drawnIterations.splice(index, 0, this);
             repetition._updateDrawnIndexes(index);
-            repetition._dirtyClassListIterations.add(this);
+            repetition._addDirtyClassListIteration(this);
         }
     },
 
@@ -335,7 +335,7 @@ var Iteration = exports.Iteration = Montage.specialize({
         value: function () {
             if (!this.repetition)
                 return;
-            this.repetition._dirtyClassListIterations.add(this);
+            this.repetition._addDirtyClassListIteration(this);
             this.repetition.needsDraw = true;
         }
     },
@@ -1227,6 +1227,25 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         }
     },
 
+    _addDirtyClassListIteration: {
+        value: function (iteration) {
+            iteration.forEachElement(function (element) {
+                var component;
+                if (element && (component = element.component)) {
+                    // If the element has a component then use the component's
+                    // classList and let it handle drawing...
+                    component.classList[iteration.active ? "add" : "remove"]("active");
+                    component.classList[iteration.selected ? "add" : "remove"]("selected");
+                    component.classList.remove("no-transition");
+                } else {
+                    // ...otherwise we will handle the drawing of the classes
+                    // on plain elements ourselves
+                    this._dirtyClassListIterations.add(iteration);
+                }
+            }, this);
+        }
+    },
+
     /**
      * @private
      */
@@ -1357,18 +1376,13 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             this._dirtyClassListIterations.clear();
             iterations.forEach(function (iteration) {
                 iteration.forEachElement(function (element) {
-
-                    if (iteration.selected) {
-                        element.classList.add("selected");
-                    } else {
-                        element.classList.remove("selected");
+                    // Only update classes that don't have a component, they
+                    // are taken care of in _addDirtyClassListIteration
+                    if (element.component) {
+                        return;
                     }
-
-                    if (iteration.active) {
-                        element.classList.add("active");
-                    } else {
-                        element.classList.remove("active");
-                    }
+                    element.classList[iteration.active ? "add" : "remove"]("active");
+                    element.classList[iteration.selected ? "add" : "remove"]("selected");
 
                     // While we're at it, if the "no-transition" class has been
                     // added to this iteration, we will need to remove it in

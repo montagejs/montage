@@ -22,6 +22,23 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
             nameController = testPage.test.nameController;
         });
 
+        it("modifies the component's classList", function () {
+            var selectedIndex = 2;
+            var selectedListElement = querySelectorAll("ul>li")[selectedIndex];
+            var selectedListComponent = selectedListElement.component;
+            // need to trigger the getter so that the component classList
+            // is initialized
+            var classList = selectedListComponent.classList;
+            nameController.selection = [nameController.organizedContent[selectedIndex]];
+
+            testPage.waitForDraw();
+
+            runs(function () {
+                expect(selectedListComponent.classList.contains("selected")).toBeTruthy();
+                expect(selectedListElement.classList.contains("selected")).toBeTruthy();
+            });
+        });
+
         describe("making a selection through the repetition using the mouse", function () {
 
             it("should set the selection in the contentController as expected", function () {
@@ -112,7 +129,7 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
 
             it("should mark a newly added and newly selected object as selected", function () {
                 testPage.test.addAndSelect();
-                testPage.waitForDraw(2);
+                testPage.waitForDraw(3);
 
                 runs(function () {
                     var addedIndex = nameController.content.length - 1;
