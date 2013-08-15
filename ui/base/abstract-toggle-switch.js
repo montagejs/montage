@@ -98,7 +98,7 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
 
     draw: {
         value: function() {
-            this.element.setAttribute("aria-checked", this._value);
+            this.element.setAttribute("aria-checked", this._checked);
         }
     }
 
