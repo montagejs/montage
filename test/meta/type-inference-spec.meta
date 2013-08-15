@@ -1,0 +1,40 @@
+{
+    "root": {
+        "prototype": "montage/core/meta/blueprint",
+        "properties": {
+            "name": "TypeInferenceSpec",
+            "blueprintModuleId": "meta/type-inference-spec.meta",
+            "prototypeName": "TypeInferenceSpec",
+            "customPrototype": false,
+            "propertyBlueprints": [
+                {"@": "inferSpec_number"},
+                {"@": "inferSpec_strings"}
+            ],
+            "propertyBlueprintGroups": [
+            ],
+            "propertyValidationRules": [
+            ]
+        }
+    },
+    "inferSpec_number": {
+        "prototype": "montage/core/meta/property-blueprint",
+        "properties": {
+            "name": "number",
+            "blueprint": {"@": "root"},
+            "cardinality": 1,
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+    "inferSpec_strings": {
+        "prototype": "montage/core/meta/property-blueprint",
+        "properties": {
+            "name": "strings",
+            "blueprint": {"@": "root"},
+            "cardinality": -1,
+            "valueType": "string",
+            "collectionValueType": "list",
+            "helpKey": ""
+        }
+    }
+}

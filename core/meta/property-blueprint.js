@@ -12,7 +12,9 @@ var Enum = require("core/enum").Enum;
 var logger = require("core/logger").logger("blueprint");
 
 var ValueType = new Enum().initWithMembers("string", "number", "boolean", "date", "enum", "url", "object");
-var CollectionValueType = new Enum().initWithMembers("list", "set", "map");
+var CollectionValueType = new Enum().initWithMembers("array", "list", "set", "map");
+// TODO consider distinguishing linear collections from map collections because
+// map collections require an additional keyType.
 
 var Defaults = {
     name:"default",
