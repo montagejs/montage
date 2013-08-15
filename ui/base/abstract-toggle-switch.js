@@ -38,11 +38,42 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
             this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
 
-            this.defineBinding("classList.has('montage-ToggleSwitch--checked')", {"<-": "checked"});
+            this.defineBindings({
+                "classList.has('montage-ToggleSwitch--checked')": {
+                    "<-": "checked"
+                },
+                "classList.has('montage--disabled')": {
+                    "<-": "!enabled"
+                }
+            });
         }
     },
 
-    // TODO: enabled, preventFocus
+    /**
+     * Enables or disables the toggle switch from user input. When this property is set to ```false```,
+     * the "montage--disabled" CSS style is applied to the button's DOM element during the next draw cycle. When set to
+     * ```true``` the "montage--disabled" CSS class is removed from the element's class list.
+     * @type {boolean}
+     */
+    _enabled: {
+        value: true
+    },
+
+    enabled: {
+        get: function() {
+            return this._enabled;
+        },
+        set: function(value) {
+            this._enabled = value;
+            this.needsDraw = true;
+        }
+    },
+
+    acceptsActiveTarget: {
+        value: function() {
+            return this.enabled;
+        }
+    },
 
     _pressComposer: {
         value: null
@@ -74,6 +105,10 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
      */
     handlePress: {
         value: function(event) {
+            if(!this.enabled) {
+                return;
+            }
+
             this.checked = !this.checked;
             this.dispatchActionEvent();
         }
@@ -81,6 +116,10 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
 
     handleKeyup: {
         value: function(event) {
+            if(!this.enabled) {
+                return;
+            }
+
             // action event on spacebar
             if (event.keyCode === 32) {
                 this.checked = !this.checked;
@@ -91,14 +130,32 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
 
     enterDocument: {
         value: function(firstDraw) {
-            this.element.setAttribute("role", "checkbox");
+            if(!this._elementIsInput()){
+                this.element.setAttribute("role", "checkbox");
+            }
             this.element.addEventListener("keyup", this, false);
+        }
+    },
+
+    _elementIsInput: {
+        value: function(){
+            return this.element.tagName === "INPUT";
         }
     },
 
     draw: {
         value: function() {
-            this.element.setAttribute("aria-checked", this._checked);
+            if(this._elementIsInput()){
+                this.element.checked = this._checked;
+                if(this._enabled){
+                    this.element.removeAttribute("disabled");
+                } else {
+                    this.element.setAttribute("disabled", "disabled");
+                }
+            } else {
+                this.element.setAttribute("aria-checked", this._checked);
+                this.element.setAttribute("aria-disabled", !this._enabled);
+            }
         }
     }
 
