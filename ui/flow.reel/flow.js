@@ -75,8 +75,36 @@ var Flow = exports.Flow = Component.specialize( {
     // TODO doc
     /**
      */
-    _flowTranslateComposer: {
+    __flowTranslateComposer: {
         value: null
+    },
+
+    _flowTranslateComposer: {
+        get: function () {
+            return this.__flowTranslateComposer;
+        },
+        set: function (value) {
+            if (this.__flowTranslateComposer) {
+                this.__flowTranslateComposer.removeEventListener("translateStart", this, false);
+                this.__flowTranslateComposer.removeEventListener("translateEnd", this, false);
+            }
+            this.__flowTranslateComposer = value;
+            this.__flowTranslateComposer.addEventListener("translateStart", this, false);
+            this.__flowTranslateComposer.addEventListener("translateEnd", this, false);
+        }
+
+    },
+
+    handleTranslateStart: {
+        value: function () {
+            this.callDelegateMethod("didTranslateStart", this);
+        }
+    },
+
+    handleTranslateEnd: {
+        value: function () {
+            this.callDelegateMethod("didTranslateEnd", this);
+        }
     },
 
     _scrollingMode: {
