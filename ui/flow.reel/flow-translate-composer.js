@@ -284,6 +284,10 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
         }
     },
 
+    _translateEndTimeout: {
+        value: null
+    },
+
     // TODO doc
     /**
      */
@@ -294,13 +298,16 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
             // If this composers' component is claiming the "wheel" pointer then handle the event
             if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this.component)) {
                 var oldPageY = this._pageY;
-                this._dispatchTranslateStart();
+                if (this._translateEndTimeout === null) {
+                    this._dispatchTranslateStart();
+                }
                 this._pageY = this._pageY + ((event.wheelDeltaY * 20) / 100);
                 this._updateScroll();
                 this._dispatchTranslate();
                 window.clearTimeout(this._translateEndTimeout);
                 this._translateEndTimeout = window.setTimeout(function() {
                     self._dispatchTranslateEnd();
+                    self._translateEndTimeout = null;
                 }, 400);
 
                 // If we're not at one of the extremes (i.e. the scroll actually
