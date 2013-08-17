@@ -1338,6 +1338,10 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
         value: true
     },
 
+    isLimitedToSingleStride: {
+        value: false
+    },
+
     // TODO doc
     /**
      */
@@ -1356,6 +1360,14 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                 this._pageY = this.endY;
                 this._updateScroll();
                 this._scrollEnd = this.scroll;
+                if (this.isLimitedToSingleStride && this.translateStrideX) {
+                    if (this._scrollEnd > Math.floor(this._scrollStart) + this.translateStrideX) {
+                        this._scrollEnd = Math.floor(this._scrollStart) + this.translateStrideX;
+                    }
+                    if (this._scrollEnd < Math.ceil(this._scrollStart) - this.translateStrideX) {
+                        this._scrollEnd = Math.ceil(this._scrollStart) - this.translateStrideX;
+                    }
+                }
                 this._pageX = this.startX;
                 this._pageY = this.startY;
                 this._updateScroll();
