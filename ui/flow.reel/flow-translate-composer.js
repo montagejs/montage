@@ -1391,6 +1391,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     animateStride = true;
                 } else {
                     scroll = tmp * this.translateStrideX;
+                    this.animateMomentum = false;
                 }
             }
             this.minScroll = min;
