@@ -181,6 +181,8 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
 
             translateStartEvent.initCustomEvent("translateStart", true, true, null);
             translateStartEvent.scroll = this._scroll;
+            translateStartEvent.translateX = 0;
+            translateStartEvent.translateY = 0;
             this.dispatchEvent(translateStartEvent);
         }
     },
