@@ -312,7 +312,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
 
                 if (this.translateStrideX) {
                     window.clearTimeout(this._mousewheelStrideTimeout);
-                    if ((this._mousewheelStrideTimeout === null) && (Math.abs(event.wheelDeltaY) > Math.abs(this._previousDeltaY * 2))) {
+                    if ((this._mousewheelStrideTimeout === null) || (Math.abs(event.wheelDeltaY) > Math.abs(this._previousDeltaY * (this._mousewheelStrideTimeout === null ? 2 : 4)))) {
                         if (event.wheelDeltaY > 1) {
                             this.callDelegateMethod("previousStride", this);
                         } else {
