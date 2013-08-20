@@ -58,7 +58,7 @@ exports.CurrencyConverter = NumberConverter.specialize( /** @lends CurrencyConve
     convert: {
         value: function(amount) {
             var stringValue = this.super(amount);
-            if ((amount < 0) && useParensForNegative) {
+            if ((amount < 0) && this.useParensForNegative) {
                 stringValue = '(' + stringValue.substring(1, stringValue.length) + ')';
             }
 

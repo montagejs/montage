@@ -55,6 +55,7 @@ describe("converter-spec", function() {
         bytesConverter = new BytesConverter();
         dateConverter = new DateConverter();
         currencyConverter = new CurrencyConverter();
+        currencyConverter.shorten = true;
 
         dateConverter = new DateConverter();
         //dateConverter.pattern = 'YYYY-MM-DD';
@@ -250,6 +251,22 @@ describe("converter-spec", function() {
             currencyConverter.decimals = 5;
             var result = currencyConverter.convert(value);
             expect(result).toBe('-12.5002K $');
+        });
+        it("should not shorten when asked not to", function() {
+            var value = -12400;
+            currencyConverter.useParensForNegative = false;
+            currencyConverter.shorten = false;
+            var result = currencyConverter.convert(value);
+            expect(result).toBe("-12,400 $");
+        });
+        it("should allow putting currency before the number", function() {
+            var value = -12400;
+            currencyConverter.useParensForNegative = false;
+            currencyConverter.decimals = 0
+            currencyConverter.shorten = false;
+            currencyConverter.showCurrencyBeforeNumber = true;
+            var result = currencyConverter.convert(value);
+            expect(result).toBe("$ -12,400");
         });
     });
 
