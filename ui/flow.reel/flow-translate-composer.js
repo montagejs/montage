@@ -290,6 +290,15 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
         value: null
     },
 
+    _mousewheelStrideTimeout: {
+        value: null
+    },
+
+    _previousDeltaY: {
+        value: 0
+    },
+
+    // TODO Add wheel event listener for Firefox
     // TODO doc
     /**
      */
@@ -300,23 +309,45 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
             // If this composers' component is claiming the "wheel" pointer then handle the event
             if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this.component)) {
                 var oldPageY = this._pageY;
-                if (this._translateEndTimeout === null) {
-                    this._dispatchTranslateStart();
-                }
-                this._pageY = this._pageY + ((event.wheelDeltaY * 20) / 100);
-                this._updateScroll();
-                this._dispatchTranslate();
-                window.clearTimeout(this._translateEndTimeout);
-                this._translateEndTimeout = window.setTimeout(function() {
-                    self._dispatchTranslateEnd();
-                    self._translateEndTimeout = null;
-                }, 400);
 
-                // If we're not at one of the extremes (i.e. the scroll actually
-                // changed the translate) then we want to preventDefault to stop
-                // the page scrolling.
-                if (oldPageY !== this._pageY && this._shouldPreventDefault(event)) {
-                    event.preventDefault();
+                if (this.translateStrideX) {
+                    window.clearTimeout(this._mousewheelStrideTimeout);
+                    if ((this._mousewheelStrideTimeout === null) || (Math.abs(event.wheelDeltaY) > Math.abs(this._previousDeltaY * (this._mousewheelStrideTimeout === null ? 2 : 4)))) {
+                        if (event.wheelDeltaY > 1) {
+                            this.callDelegateMethod("previousStride", this);
+                        } else {
+                            if (event.wheelDeltaY < -1) {
+                                this.callDelegateMethod("nextStride", this);
+                            }
+                        }
+                    }
+                    this._mousewheelStrideTimeout = window.setTimeout(function() {
+                        self._mousewheelStrideTimeout = null;
+                        self._previousDeltaY = 0;
+                    }, 70);
+                    self._previousDeltaY = event.wheelDeltaY;
+                    if (this._shouldPreventDefault(event)) {
+                        event.preventDefault();
+                    }
+                } else {
+                    if (this._translateEndTimeout === null) {
+                        this._dispatchTranslateStart();
+                    }
+                    this._pageY = this._pageY + ((event.wheelDeltaY * 20) / 100);
+                    this._updateScroll();
+                    this._dispatchTranslate();
+                    window.clearTimeout(this._translateEndTimeout);
+                    this._translateEndTimeout = window.setTimeout(function() {
+                        self._dispatchTranslateEnd();
+                        self._translateEndTimeout = null;
+                    }, 400);
+
+                    // If we're not at one of the extremes (i.e. the scroll actually
+                    // changed the translate) then we want to preventDefault to stop
+                    // the page scrolling.
+                    if (oldPageY !== this._pageY && this._shouldPreventDefault(event)) {
+                        event.preventDefault();
+                    }
                 }
                 this.eventManager.forfeitPointer(this._WHEEL_POINTER, this.component);
             }
