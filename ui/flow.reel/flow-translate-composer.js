@@ -312,7 +312,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
 
                 if (this.translateStrideX) {
                     window.clearTimeout(this._mousewheelStrideTimeout);
-                    if ((this._mousewheelStrideTimeout === null) || (Math.abs(event.wheelDeltaY) > Math.abs(this._previousDeltaY * 2.5))) {
+                    if ((this._mousewheelStrideTimeout === null) && (Math.abs(event.wheelDeltaY) > Math.abs(this._previousDeltaY * 2))) {
                         if (event.wheelDeltaY > 1) {
                             this.callDelegateMethod("previousStride", this);
                         } else {
@@ -324,7 +324,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     this._mousewheelStrideTimeout = window.setTimeout(function() {
                         self._mousewheelStrideTimeout = null;
                         self._previousDeltaY = 0;
-                    }, 100);
+                    }, 70);
                     self._previousDeltaY = event.wheelDeltaY;
                     if (this._shouldPreventDefault(event)) {
                         event.preventDefault();
