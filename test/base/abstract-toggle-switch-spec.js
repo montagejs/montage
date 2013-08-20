@@ -43,6 +43,15 @@ describe("test/base/abstract-toggle-switch-spec", function() {
                 expect(aToggleSwitch.classList.contains("montage--disabled")).toBe(true);
             });
         });
+
+        describe("checked", function() {
+            it("should update classList to reflect when it is checked", function() {
+                aToggleSwitch.checked = false;
+                expect(aToggleSwitch.classList.contains("montage-ToggleSwitch--checked")).toBe(false);
+                aToggleSwitch.checked = true;
+                expect(aToggleSwitch.classList.contains("montage-ToggleSwitch--checked")).toBe(true);
+            });
+        });
     });
 
     describe("draw", function() {
