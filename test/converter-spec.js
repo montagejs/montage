@@ -268,6 +268,15 @@ describe("converter-spec", function() {
             var result = currencyConverter.convert(value);
             expect(result).toBe("$ -12,400");
         });
+        it("should allow putting currency before the number", function() {
+            var value = -12400;
+            currencyConverter.useParensForNegative = false;
+            currencyConverter.decimals = 0
+            currencyConverter.shorten = false;
+            currencyConverter.showCurrencyBeforeNumber = false;
+            var result = currencyConverter.convert(value);
+            expect(result).toBe("-12,400 $");
+        });
     });
 
 
