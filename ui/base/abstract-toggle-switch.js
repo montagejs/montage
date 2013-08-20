@@ -34,7 +34,7 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
             if(this.constructor === AbstractToggleSwitch) {
                 throw new Error("AbstractToggleSwitch cannot be instantiated.");
             }
-            AbstractControl.constructor.call(this); // super
+            this.super();
             this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
 
@@ -130,32 +130,15 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
 
     enterDocument: {
         value: function(firstDraw) {
-            if(!this._elementIsInput()){
-                this.element.setAttribute("role", "checkbox");
-            }
+            this.element.setAttribute("role", "checkbox");
             this.element.addEventListener("keyup", this, false);
-        }
-    },
-
-    _elementIsInput: {
-        value: function(){
-            return this.element.tagName === "INPUT";
         }
     },
 
     draw: {
         value: function() {
-            if(this._elementIsInput()){
-                this.element.checked = this._checked;
-                if(this._enabled){
-                    this.element.removeAttribute("disabled");
-                } else {
-                    this.element.setAttribute("disabled", "disabled");
-                }
-            } else {
-                this.element.setAttribute("aria-checked", this._checked);
-                this.element.setAttribute("aria-disabled", !this._enabled);
-            }
+            this.element.setAttribute("aria-checked", this._checked);
+            this.element.setAttribute("aria-disabled", !this._enabled);
         }
     }
 
