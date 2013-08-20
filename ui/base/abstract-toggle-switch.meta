@@ -1,0 +1,53 @@
+{
+    "checked_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "checked",
+            "valueType": "boolean",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "AbstractControl",
+                "prototypeName": "AbstractControl",
+                "blueprintModule": {
+                    "%": "ui/base/abstract-control.meta"
+                }
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "AbstractToggleSwitch",
+            "parent": {
+                "@": "blueprint_parent"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "checked_property"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "Main": [
+                    {
+                        "@": "checked_property"
+                    }
+                ]
+            },
+            "blueprintModule": {
+                "%": "ui/base/abstract-toggle-switch.meta"
+            },
+            "exportName": "AbstractToggleSwitch",
+            "module": {
+                "%": "ui/base/abstract-toggle-switch"
+            }
+        }
+    }
+}
+
