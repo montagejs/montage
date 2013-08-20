@@ -1672,6 +1672,24 @@ var Flow = exports.Flow = Component.specialize( {
         }
     },
 
+    previousStride: {
+        value: function () {
+            var currentPosition = Math.round(this.scroll / this.stride),
+                moveTo = (currentPosition - 1) * this.stride;
+
+            this.startScrollingIndexToOffset(0, -moveTo);
+        }
+    },
+
+    nextStride: {
+        value: function () {
+            var currentPosition = Math.round(this.scroll / this.stride),
+                moveTo = (currentPosition + 1) * this.stride;
+
+            this.startScrollingIndexToOffset(0, -moveTo);
+        }
+    },
+
     _isInputEnabled: { // TODO: Replace by pointerBehavior
         value: true
     },
