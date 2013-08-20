@@ -251,36 +251,37 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                 this._dispatchTranslateEnd();
             }
             this._releaseInterest();*/
+            if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                this.startTime = Date.now();
+                this.endX = this.startX = this._pageX;
+                this.endY = this.startY = this._pageY;
 
-            this.startTime = Date.now();
-            this.endX = this.startX = this._pageX;
-            this.endY = this.startY = this._pageY;
-
-            if ((this._hasMomentum) && ((event.velocity.speed>40) || this.translateStrideX || this.translateStrideY)) {
-                if (this._axis != "vertical") {
-                    this.momentumX = event.velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
+                if ((this._hasMomentum) && ((event.velocity.speed>40) || this.translateStrideX || this.translateStrideY)) {
+                    if (this._axis != "vertical") {
+                        this.momentumX = event.velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
+                    } else {
+                        this.momentumX = 0;
+                    }
+                    if (this._axis != "horizontal") {
+                        this.momentumY = event.velocity.y * this._pointerSpeedMultiplier * (this._invertYAxis ? 1 : -1);
+                    } else {
+                        this.momentumY=0;
+                    }
+                    this.endX = this.startX + (this.momentumX * this.__momentumDuration / 2000);
+                    this.endY = this.startY + (this.momentumY * this.__momentumDuration / 2000);
+                    this.startStrideXTime = null;
+                    this.startStrideYTime = null;
+                    this.animateMomentum = true;
                 } else {
-                    this.momentumX = 0;
+                    this.animateMomentum = false;
                 }
-                if (this._axis != "horizontal") {
-                    this.momentumY = event.velocity.y * this._pointerSpeedMultiplier * (this._invertYAxis ? 1 : -1);
-                } else {
-                    this.momentumY=0;
-                }
-                this.endX = this.startX + (this.momentumX * this.__momentumDuration / 2000);
-                this.endY = this.startY + (this.momentumY * this.__momentumDuration / 2000);
-                this.startStrideXTime = null;
-                this.startStrideYTime = null;
-                this.animateMomentum = true;
-            } else {
-                this.animateMomentum = false;
-            }
 
-            if (this.animateMomentum) {
-                this._animationInterval();
-            } else if (!this._isFirstMove) {
-                // Only dispatch a translateEnd if a translate start has occured
-                this._dispatchTranslateEnd();
+                if (this.animateMomentum) {
+                    this._animationInterval();
+                } else if (!this._isFirstMove) {
+                    // Only dispatch a translateEnd if a translate start has occured
+                    this._dispatchTranslateEnd();
+                }
             }
             this._releaseInterest();
         }
