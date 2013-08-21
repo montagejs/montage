@@ -559,6 +559,26 @@ describe("reel/template-spec", function() {
             });
         });
 
+        it("should call templateDidLoad on owner not used in serialization", function() {
+            var html = require("reel/template/delegate-methods-no-owner-template.html").content;
+
+            return template.initWithHtml(html, require)
+            .then(function() {
+                var instances = {
+                    owner: new DelegateMethods(),
+                    one: new DelegateMethods()
+                }
+                return template.instantiateWithInstances(instances, document)
+                .then(function(documentPart) {
+                    var objects = documentPart.objects;
+
+                    expect(instances.owner.templateDidLoadCount).toBe(1);
+                });
+            }).fail(function(reason) {
+                expect("test").toBe("executed");
+            });
+        })
+
         it("should not call templateDidLoad on external objects", function() {
             var html = require("reel/template/delegate-methods-template-external.html").content;
 
