@@ -457,7 +457,7 @@ var Template = Montage.specialize( {
         value: function(documentPart, instances) {
             var objects = documentPart.objects,
                 object,
-                owner = objects.owner,
+                owner = objects.owner || instances && instances.owner,
                 objectOwner;
 
             for (var label in objects) {
