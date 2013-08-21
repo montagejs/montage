@@ -73,7 +73,7 @@ var Serialization = Montage.specialize( {
         value: function(label) {
             var serializationObject = this.getSerializationObject();
 
-            if (label in serializationObject) {
+            if (serializationObject && label in serializationObject) {
                 return Object.keys(serializationObject[label]).length === 0;
             } else {
                 return false;

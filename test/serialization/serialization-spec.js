@@ -115,4 +115,36 @@ describe("reel/serialization/serialization-spec", function() {
         expect(labels).toContain("one");
         expect(labels).toContain("three");
     });
+
+    describe("isExternalObject", function() {
+        beforeEach(function() {
+            var object = {
+                    "one": {},
+
+                    "two": {
+                        "value": 2
+                    },
+
+                    "three": {}
+                },
+                labels;
+
+            serialization.initWithObject(object);
+        });
+        it("can determine an external object", function() {
+            expect(serialization.isExternalObject("one")).toBe(true);
+        });
+        it("can determine an internal object", function() {
+            expect(serialization.isExternalObject("two")).toBe(false);
+        });
+
+        describe("without a serialization object", function() {
+            beforeEach(function() {
+                serialization.initWithObject(null);
+            });
+            it("returns false", function() {
+                expect(serialization.isExternalObject("one")).toBe(false);
+            });
+        });
+    });
 });
