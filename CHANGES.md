@@ -1,3 +1,28 @@
+# v0.13.4
+
+-  **Montage**
+
+   window.Touch fix for desktop browsers (Chrome 29 in particular).
+
+-  **Template**
+
+   Fix templateDidLoad not being called on component templates with no
+   serialization.
+
+-  **Flow**
+
+   Fix flow animating without having the pointer.
+   Enhance mouse wheel heuristics.
+   Fix translateStart/End issues.
+
+-  **TextField**
+
+   Reject value change when user is editing.
+
+-  **Components**
+
+   Add AbstractToggleSwitch.
+
 # v0.13.3
 
 -  **Repetition**
