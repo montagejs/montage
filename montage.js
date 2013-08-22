@@ -31,6 +31,11 @@ POSSIBILITY OF SUCH DAMAGE.
 /*global BUNDLE */
 if (typeof window !== "undefined") {
 
+    // Workaround for window.Touch on desktop browsers
+    if (!("ontouchstart" in window)) {
+        window.Touch = null;
+    }
+
     document._montageTiming = {}
     document._montageTiming.loadStartTime = Date.now();
 
