@@ -145,7 +145,8 @@ Object.defineProperty(Montage, "specialize", {
             //constructor = prototypeProperties.didCreate.value;
         } else {
             constructor = function Anonymous() {
-                return parent.apply(this, arguments) || this;
+                return this.superForValue("constructor")() || this;
+                //return parent.apply(this, arguments) || this;
             };
         }
         if (PROTO_IS_SUPPORTED) {
@@ -259,7 +260,10 @@ Object.defineProperty(Montage, "specialize", {
             value: true,
             enumerable: false
         });
-
+        Montage.defineProperty(constructor, "_superCache", {
+            value: {},
+            enumerable: false
+        });
         constructor.prototype = prototype;
         Montage.defineProperty(prototype, "constructor", {
             value: constructor,
@@ -592,6 +596,26 @@ Object.defineProperty(Montage, "defineProperty", {
             })(prop, UNDERSCORE + prop, descriptor.value, obj);
 
         } else {
+            // clear the cache in any descendents that use this property for super()
+            var superDeps;
+            if (obj._superDependencies) {
+                if (typeof descriptor.value === "function" && (superDeps = obj._superDependencies[prop + ".value"])) {
+                    for (var i=0,j=superDeps.length;i<j;i++) {
+                        delete superDeps[i]._superCache[prop + ".value"];
+                    }
+                }
+                if (typeof descriptor.get === "function" && (superDeps = obj._superDependencies[prop + ".get"])) {
+                    for (var i=0,j=superDeps.length;i<j;i++) {
+                        delete superDeps[i]._superCache[prop + ".get"];
+                    }
+                }
+                if (typeof descriptor.set === "function" && (superDeps = obj._superDependencies[prop + ".set"])) {
+                    for (var i=0,j=superDeps.length;i<j;i++) {
+                        delete superDeps[i]._superCache[prop + ".set"];
+                    }
+                }
+            }
+
             return Object.defineProperty(obj, prop, descriptor);
         }
     }});
@@ -650,50 +674,48 @@ Montage.defineProperty(Montage, "didCreate", {
 });
 
 var getSuper = function(object, method) {
-    var propertyNames, propertyName, property, i, propCount, func, superFunction, superProperty, proto;
-    if (typeof method._super !== "undefined") {
-        return method._super;
-    }
-    if (!("_super" in method)) {
-        Montage.defineProperty(method, "_super", {});
-    }
-    while (typeof superFunction === "undefined" && object !== null) {
-        propertyNames = Object.getOwnPropertyNames(object);
-        proto = Object.getPrototypeOf(object)
-        i = 0;
-        propCount = propertyNames.length;
-        for (i; i < propCount; i++) {
-            propertyName = propertyNames[i];
-            if (propertyName == "didCreate") {
-                continue;
-            }
-            property = Object.getOwnPropertyDescriptor(object, propertyName);
-            if ((func = property.value) != null) {
-                if (func === method || func.deprecatedFunction === method) {
-                    superProperty = Object.getPropertyDescriptor(proto, propertyName)
-                    superFunction = superProperty ? superProperty.value : null;
-                    break;
+    var propertyNames, proto, i, propCount, propertyName, func, context, foundSuper;
+    if (!(method._superPropertyName && method._superPropertyType)) {
+        Montage.defineProperty(method, "_superPropertyType", {value:null});
+        Montage.defineProperty(method, "_superPropertyName", {value:null});
+        context = object;
+        while (!foundSuper && context !== null) {
+            propertyNames = Object.getOwnPropertyNames(context);
+            proto = Object.getPrototypeOf(context)
+            i = 0;
+            propCount = propertyNames.length;
+            for (i; i < propCount; i++) {
+                propertyName = propertyNames[i];
+                property = Object.getOwnPropertyDescriptor(context, propertyName);
+                if ((func = property.value) != null) {
+                    if (func === method || func.deprecatedFunction === method) {
+                        method._superPropertyType = "value";
+                        method._superPropertyName = propertyName;
+                        foundSuper = true;
+                        break;
+                    }
+                }
+                if ((func = property.get) != null) {
+                    if (func === method || func.deprecatedFunction === method) {
+                        method._superPropertyType = "get";
+                        method._superPropertyName = propertyName;
+                        foundSuper = true;
+                        break;
+                    }
+                } 
+                if ((func = property.set) != null) {
+                    if (func === method || func.deprecatedFunction === method) {
+                        method._superPropertyType = "set";
+                        method._superPropertyName = propertyName;
+                        foundSuper = true;
+                        break;
+                    }
                 }
             }
-            if ((func = property.get) != null) {
-                if (func === method || func.deprecatedFunction === method) {
-                    superProperty = Object.getPropertyDescriptor(proto, propertyName)
-                    superFunction = superProperty ? superProperty.get : null;
-                    break;
-                }
-            } 
-            if ((func = property.set) != null) {
-                if (func === method || func.deprecatedFunction === method) {
-                    superProperty = Object.getPropertyDescriptor(proto, propertyName)
-                    superFunction = superProperty ? superProperty.set : null;
-                    break;
-                }
-            }
+            context = proto;
         }
-        object = proto;
     }
-    method._super = superFunction;
-    return superFunction;
+    return superForImplementation(object, method._superPropertyType, method._superPropertyName)
 }
 
 
@@ -719,28 +741,57 @@ var superForImplementation = function (object, propertyType, propertyName) {
     // If so, we use that object as the starting point (context) when looking for the super method.
     if (object._superContext[cacheId]) {
         context = object._superContext[cacheId];
+    } else {
+        // find out where in the prototype chain the calling function belongs
+        context = object;
+        while (context !== null) {
+            if (context.hasOwnProperty(propertyName)) {
+                var property = Object.getOwnPropertyDescriptor(context, propertyName);
+                if (typeof property[propertyType] === "function") {
+                    break;
+                }
+            }
+            context = Object.getPrototypeOf(context);
+        }
     }
 
     cacheObject = context.constructor;
 
     // is the super for this method in the cache?
     if (cacheObject._superCache && cacheObject._superCache[cacheId]) {
-        object._superContext[cacheId] = cacheObject._superCache[cacheId].context;
-        return cacheObject._superCache[cacheId].func;
+        boundSuper = (function(cacheId, object, superObject, superFunction) {
+            return function() {
+                object._superContext[cacheId] = superObject;
+                var retVal = superFunction.apply(object, arguments);
+                delete object._superContext[cacheId];
+                return retVal;
+            };
+        })(cacheId, object, cacheObject._superCache[cacheId].owner, cacheObject._superCache[cacheId].func);
+        return boundSuper;
     }
 
     // search the prototype chain for a parent that has a matching method
-    while (typeof superFunction === "undefined" && context !== null) {
-        superObject = Object.getPrototypeOf(context);
-        if (context.hasOwnProperty(propertyName)) {
-            property = Object.getOwnPropertyDescriptor(context, propertyName);
+    superObject = context;
+    while (typeof superFunction === "undefined" && (superObject = Object.getPrototypeOf(superObject))) {
+        if (!superObject._superDependencies) {
+            Montage.defineProperty(superObject, "_superDependencies", {
+                value: {}
+            });
+        }
+        if (!superObject._superDependencies[cacheId]) {
+            superObject._superDependencies[cacheId] = [];
+        }
+        superObject._superDependencies[cacheId].push(cacheObject);
+        property = Object.getOwnPropertyDescriptor(superObject, propertyName);
+        if (property) {
             if (typeof property[propertyType] === "function") {
-                superProperty = Object.getPropertyDescriptor(superObject, propertyName)
-                superFunction = superProperty ? superProperty[propertyType] : null;
+                superFunction = property[propertyType];
+                break;
+            } else {
+                // parent has property but not the right type
                 break;
             }
         }
-        context = superObject;
     }
 
     if (typeof superFunction === "function") {
@@ -748,20 +799,24 @@ var superForImplementation = function (object, propertyType, propertyName) {
         // and immediately clears it again after the super has been called. This is needed
         // in case superFunction also calls superFor*() so superForImplementation() knows
         // which object owns the calling method.
-        boundSuper = function() {
-            object._superContext[cacheId] = superObject;
-            var retVal = superFunction.apply(object, arguments);
-            delete object._superContext[cacheId];
-            return retVal;
-        };
+        boundSuper = (function(cacheId, object, superObject, superFunction) {
+            return function() {
+                object._superContext[cacheId] = superObject;
+                var retVal = superFunction.apply(object, arguments);
+                delete object._superContext[cacheId];
+                return retVal;
+            };
+        })(cacheId, object, superObject, superFunction);
+
         if (!cacheObject._superCache) {
             Montage.defineProperty(cacheObject, "_superCache", {
                 value: {}
             });
         }
+
         // cache the super and the object we found it on
         cacheObject._superCache[cacheId] = {
-            func: boundSuper,
+            func: superFunction,
             owner: superObject
         };
         return boundSuper;
@@ -781,31 +836,39 @@ var superForSetImplementation = function (propertyName) {
 };
 
 Montage.defineProperty(Montage, "super", {
-    get: superImplementation
+    get: superImplementation,
+    enumerable: false
 });
 Montage.defineProperty(Montage.prototype, "super", {
-    get: superImplementation
+    get: superImplementation,
+    enumerable: false
 });
 
 Montage.defineProperty(Montage, "superForValue", {
-    value: superForValueImplementation
+    value: superForValueImplementation,
+    enumerable: false
 });
 Montage.defineProperty(Montage.prototype, "superForValue", {
-    value: superForValueImplementation
+    value: superForValueImplementation,
+    enumerable: false
 });
 
 Montage.defineProperty(Montage, "superForGet", {
-    value: superForGetImplementation
+    value: superForGetImplementation,
+    enumerable: false
 });
 Montage.defineProperty(Montage.prototype, "superForGet", {
-    value: superForGetImplementation
+    value: superForGetImplementation,
+    enumerable: false
 });
 
 Montage.defineProperty(Montage, "superForSet", {
-    value: superForSetImplementation
+    value: superForSetImplementation,
+    enumerable: false
 });
 Montage.defineProperty(Montage.prototype, "superForSet", {
-    value: superForSetImplementation
+    value: superForSetImplementation,
+    enumerable: false
 });
 
 /**
