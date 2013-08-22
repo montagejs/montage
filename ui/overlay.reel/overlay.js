@@ -101,6 +101,12 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
         value: function Overlay() {
             this.super();
             this._pressComposer = new PressComposer();
+            // The press composer is only loaded when the overlay is shown.
+            // This is because the composer is added to the document, and so
+            // interferes with the default actions of all clicks by calling
+            // preventDefault on click when the pointer is surrendered (which
+            // is whenever the overlay isn't shown).
+            this._pressComposer.lazyLoad = true;
         }
     },
 
@@ -140,7 +146,9 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
     show: {
         value: function() {
             if (!this._isShown) {
+                this.attachToParentComponent();
                 this.classList.add(CLASS_PREFIX + "--visible");
+                this._pressComposer.load();
                 this._isShown = true;
                 this.needsDraw = true;
             }
@@ -150,7 +158,9 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
     hide: {
         value: function() {
             if (this._isShown) {
+                // detachFromParentComponent happens at didDraw
                 this.classList.remove(CLASS_PREFIX + "--visible");
+                this._pressComposer.unload();
                 this._isShown = false;
                 this.needsDraw = true;
             }
@@ -211,6 +221,14 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 }
             } else {
                 this._isDisplayed = false;
+            }
+        }
+    },
+
+    didDraw: {
+        value: function() {
+            if (!this._isShown) {
+                this.detachFromParentComponent();
             }
         }
     },

@@ -56,6 +56,19 @@ describe("test/base/abstract-text-field-spec", function () {
 
                 expect(aTextField.value).toBe("A text");
             });
+
+            it("should set value when field not selected", function() {
+                aTextField._value = "initial";
+                aTextField.value = "updated";
+                expect(aTextField.value).toBe("updated");
+            });
+
+            it("should not set value when field selected", function() {
+                aTextField._value = "initial";
+                aTextField._hasFocus = true;
+                aTextField.value = "updated";
+                expect(aTextField.value).toBe("initial");
+            });
         });
 
         describe("enabled", function () {

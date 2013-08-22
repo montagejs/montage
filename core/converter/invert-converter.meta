@@ -1,31 +1,33 @@
 {
-
     "converter_blueprint_reference": {
         "prototype": "core/meta/blueprint-reference",
         "properties": {
             "valueReference": {
                 "blueprintName": "Converter",
-                "blueprintModuleId": "core/converter/converter.meta",
-                "prototypeName": "Converter"
+                "prototypeName": "Converter",
+                "blueprintModule": {
+                    "%": "core/converter/converter.meta"
+                }
             }
         }
     },
-
     "root": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/module-blueprint",
         "properties": {
             "name": "InvertConverter",
-            "blueprintModuleId": "core/converter/inverter-converter.meta",
-            "prototypeName": "InvertConverter",
             "customPrototype": false,
             "parent": {
                 "@": "converter_blueprint_reference"
             },
-            "propertyBlueprints": [
-            ],
-            "propertyBlueprintGroups": {
+            "propertyBlueprints": [],
+            "propertyBlueprintGroups": {},
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "core/converter/inverter-converter.meta"
             },
-            "propertyValidationRules": {
+            "exportName": "InvertConverter",
+            "module": {
+                "%": "core/converter/invert-converter"
             }
         }
     }

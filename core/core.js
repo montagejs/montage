@@ -1177,16 +1177,25 @@ exports._blueprintDescriptor = {
             }
 
             if (!exports._blueprintDescriptor.BlueprintModulePromise) {
-                exports._blueprintDescriptor.BlueprintModulePromise = require.async("core/meta/blueprint").get("Blueprint");
+                exports._blueprintDescriptor.BlueprintModulePromise = require.async("core/meta/module-blueprint").get("ModuleBlueprint");
             }
             Montage.defineProperty(self, "_blueprint", {
                 enumerable: false,
                 value: exports._blueprintDescriptor.BlueprintModulePromise.then(function (Blueprint) {
                     var info = Montage.getInfoForObject(self);
-                    return Blueprint.getBlueprintWithModuleId(blueprintModuleId, info.require).fail(function () {
-                        var blueprint = Blueprint.createDefaultBlueprintForObject(self);
-                        blueprint.blueprintInstanceModuleId = blueprintModuleId;
-                        return blueprint;
+
+                    return Blueprint.getBlueprintWithModuleId(blueprintModuleId, info.require)
+                    .fail(function (error) {
+                        // FIXME only generate blueprint if the moduleId
+                        // requested does not exist. If any parents do not
+                        // exist then the error should still be thrown.
+                        if (error.message.indexOf("Can't XHR") !== -1) {
+                            return Blueprint.createDefaultBlueprintForObject(self).then(function (blueprint) {
+                                return blueprint;
+                            });
+                        } else {
+                            throw error;
+                        }
                     });
                 })
             });
@@ -1200,9 +1209,9 @@ exports._blueprintDescriptor = {
         if (value === null) {
             _blueprintValue = null;
         } else if (typeof value.then === "function") {
-            throw new TypeError("Object blueprint should not be a promise '" + JSON.stringify(value) + "'");
+            throw new TypeError("Object blueprint should not be a promise");
         } else {
-            value.blueprintInstanceModuleId = self.blueprintModuleId;
+            value.blueprintInstanceModule = self.blueprintModule;
             _blueprintValue = require("core/promise").Promise.resolve(value);
         }
         Montage.defineProperty(self, "_blueprint", {

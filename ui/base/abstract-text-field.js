@@ -80,7 +80,7 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
 
     value: {
         set: function(value) {
-            if (value !== this._value) {
+            if (value !== this._value && !this.hasFocus) {
                 this._value = value;
                 this.needsDraw = true;
             }

@@ -1116,6 +1116,51 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
 
         });
 
+        describe("enter document", function() {
+            var componentA,
+                componentB,
+                componentC;
+
+            beforeEach(function() {
+                componentA = new Component();
+                componentB = new Component();
+                componentC = new Component();
+
+                componentA.hasTemplate = false;
+                componentB.hasTemplate = false;
+                componentC.hasTemplate = false;
+
+                componentA.element = MockDOM.element();
+                componentB.element = MockDOM.element();
+                componentC.element = MockDOM.element();
+
+                componentB.addChildComponent(componentC);
+
+                componentA._isComponentExpanded = true;
+                componentB._isComponentExpanded = true;
+                componentC._isComponentExpanded = true;
+
+                componentA._needsEnterDocument = false;
+                componentB._needsEnterDocument = false;
+                componentC._needsEnterDocument = false;
+
+                componentA._inDocument = true;
+                componentB._inDocument = false;
+                componentC._inDocument = false;
+
+                componentA._firstDraw = false;
+                componentB._firstDraw = false;
+                componentC._firstDraw = false;
+            });
+
+            it("should request enter document on all components of the sub component tree", function() {
+                componentA.addChildComponent(componentB);
+
+                expect(componentB._needsEnterDocument).toBe(true);
+                expect(componentC._needsEnterDocument).toBe(true);
+            });
+        });
+
         describe("exit document", function() {
             var componentA,
                 componentB,

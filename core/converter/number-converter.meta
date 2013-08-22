@@ -1,5 +1,4 @@
 {
-
     "numberConverter_shorten": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -11,7 +10,6 @@
             "helpKey": ""
         }
     },
-
     "numberConverter_decimals": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -23,7 +21,6 @@
             "helpKey": ""
         }
     },
-
     "numberConverter_round": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -35,7 +32,6 @@
             "helpKey": ""
         }
     },
-
     "numberConverter_allowFloat": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -47,7 +43,6 @@
             "helpKey": ""
         }
     },
-
     "numberConverter_allowNegative": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -59,24 +54,22 @@
             "helpKey": ""
         }
     },
-
     "converter_blueprint_reference": {
         "prototype": "core/meta/blueprint-reference",
         "properties": {
             "valueReference": {
                 "blueprintName": "Converter",
-                "blueprintModuleId": "core/converter/converter.meta",
-                "prototypeName": "Converter"
+                "prototypeName": "Converter",
+                "blueprintModule": {
+                    "%": "core/converter/converter.meta"
+                }
             }
         }
     },
-
     "root": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/module-blueprint",
         "properties": {
             "name": "NumberConverter",
-            "blueprintModuleId": "core/converter/number-converter.meta",
-            "prototypeName": "NumberConverter",
             "customPrototype": false,
             "parent": {
                 "@": "converter_blueprint_reference"
@@ -117,7 +110,13 @@
                     }
                 ]
             },
-            "propertyValidationRules": {
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "core/converter/number-converter.meta"
+            },
+            "exportName": "NumberConverter",
+            "module": {
+                "%": "core/converter/number-converter"
             }
         }
     }

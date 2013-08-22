@@ -75,8 +75,36 @@ var Flow = exports.Flow = Component.specialize( {
     // TODO doc
     /**
      */
-    _flowTranslateComposer: {
+    __flowTranslateComposer: {
         value: null
+    },
+
+    _flowTranslateComposer: {
+        get: function () {
+            return this.__flowTranslateComposer;
+        },
+        set: function (value) {
+            if (this.__flowTranslateComposer) {
+                this.__flowTranslateComposer.removeEventListener("translateStart", this, false);
+                this.__flowTranslateComposer.removeEventListener("translateEnd", this, false);
+            }
+            this.__flowTranslateComposer = value;
+            this.__flowTranslateComposer.addEventListener("translateStart", this, false);
+            this.__flowTranslateComposer.addEventListener("translateEnd", this, false);
+        }
+
+    },
+
+    handleTranslateStart: {
+        value: function () {
+            this.callDelegateMethod("didTranslateStart", this);
+        }
+    },
+
+    handleTranslateEnd: {
+        value: function () {
+            this.callDelegateMethod("didTranslateEnd", this);
+        }
     },
 
     _scrollingMode: {
@@ -667,6 +695,7 @@ var Flow = exports.Flow = Component.specialize( {
             this._scrollingStartTime = Date.now();
             this._isTransitioningScroll = true;
             this.needsDraw = true;
+            this.callDelegateMethod("didTranslateStart", this);
         }
     },
 
@@ -1106,6 +1135,7 @@ var Flow = exports.Flow = Component.specialize( {
                 } else {
                     this.scroll = this._scrollingDestination;
                     this._isTransitioningScroll = false;
+                    this._needsToCallDidTranslateEndDelegate = true;
                 }
             }
 
@@ -1267,6 +1297,10 @@ var Flow = exports.Flow = Component.specialize( {
             // Continue animation during elastic scrolling
             if (this._slideOffsetsLength) {
                 this.needsDraw = true;
+            }
+            if (this._needsToCallDidTranslateEndDelegate) {
+                this._needsToCallDidTranslateEndDelegate = false;
+                this.callDelegateMethod("didTranslateEnd", this);
             }
         }
     },
@@ -1635,6 +1669,24 @@ var Flow = exports.Flow = Component.specialize( {
             }
 
             this.needsDraw = true;
+        }
+    },
+
+    previousStride: {
+        value: function () {
+            var currentPosition = Math.round(this.scroll / this.stride),
+                moveTo = (currentPosition - 1) * this.stride;
+
+            this.startScrollingIndexToOffset(0, -moveTo);
+        }
+    },
+
+    nextStride: {
+        value: function () {
+            var currentPosition = Math.round(this.scroll / this.stride),
+                moveTo = (currentPosition + 1) * this.stride;
+
+            this.startScrollingIndexToOffset(0, -moveTo);
         }
     },
 

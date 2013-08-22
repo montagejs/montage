@@ -1,11 +1,9 @@
 {
-    "detail_property": {
+    "checked_property": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
-            "name": "detail",
-            "valueType": "object",
-            "readOnly": true,
-            "collectionValueType": "dict",
+            "name": "checked",
+            "valueType": "boolean",
             "blueprint": {
                 "@": "root"
             }
@@ -15,10 +13,10 @@
         "prototype": "core/meta/blueprint-reference",
         "properties": {
             "valueReference": {
-                "blueprintName": "Component",
-                "prototypeName": "Component",
+                "blueprintName": "AbstractControl",
+                "prototypeName": "AbstractControl",
                 "blueprintModule": {
-                    "%": "ui/component.meta"
+                    "%": "ui/base/abstract-control.meta"
                 }
             }
         }
@@ -26,29 +24,30 @@
     "root": {
         "prototype": "core/meta/module-blueprint",
         "properties": {
-            "name": "AbstractControl",
+            "name": "AbstractToggleSwitch",
             "parent": {
                 "@": "blueprint_parent"
             },
             "propertyBlueprints": [
                 {
-                    "@": "detail_property"
+                    "@": "checked_property"
                 }
             ],
             "propertyBlueprintGroups": {
-                "Control": [
+                "Main": [
                     {
-                        "@": "detail_property"
+                        "@": "checked_property"
                     }
                 ]
             },
             "blueprintModule": {
-                "%": "ui/base/abstract-control.meta"
+                "%": "ui/base/abstract-toggle-switch.meta"
             },
-            "exportName": "AbstractControl",
+            "exportName": "AbstractToggleSwitch",
             "module": {
-                "%": "ui/base/abstract-control"
+                "%": "ui/base/abstract-toggle-switch"
             }
         }
     }
 }
+

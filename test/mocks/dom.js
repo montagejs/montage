@@ -2,11 +2,71 @@ var Set = require("montage/collections/set"),
     defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager,
     Event = require("mocks/event");
 
-exports.element = function (_document) {
-    var eventListeners = {},
-        classList = new Set();
+var EventTarget = {
+    addEventListener: function (eventType, listener, useCapture) {
+        if (typeof listener !== "function" && typeof listener !== "object") {
+            throw new Error("Missing listener");
+        }
 
-    return {
+        if (!this._eventListeners[eventType]) {
+            this._eventListeners[eventType] = [];
+        }
+
+        this._eventListeners[eventType].push(listener);
+    },
+    removeEventListener: function (eventType, listener, useCapture) {
+        var listeners = this._eventListeners[eventType];
+        if (!listeners) {
+            return;
+        }
+        var listenerIndex = listeners.indexOf(listener);
+        if (listenerIndex === -1) {
+            return;
+        }
+        listeners.splice(listenerIndex, 1);
+    },
+    dispatchEvent: function(event) {
+        var type = event.type,
+            listeners,
+            names,
+            typedEvent;
+
+        if (this._eventListeners[type]) {
+            listeners = this._eventListeners[type];
+
+            // Clone the event so we can set a target on it.
+            typedEvent = event instanceof Event.MockEvent ? event : Event.fromEvent(event);
+            typedEvent.target = this;
+            typedEvent.currentTarget = this;
+
+            for (var i = 0, listener; listener = listeners[i]; i++) {
+                if (typeof listener === "function" && !listener.__isConstructor__) {
+                    listener(typedEvent);
+                } else {
+                    names = ["handle" + type[0].toUpperCase() + type.slice(1),
+                        "handleEvent"];
+
+                    for (var j = 0, name; name = names[j]; j++) {
+                        if (typeof listener[name] === "function") {
+                            listener[name](typedEvent);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    },
+    hasEventListener: function(eventType, listener) {
+        return !!(this._eventListeners[eventType] &&
+                  this._eventListeners[eventType].indexOf(listener) >= 0);
+    }
+};
+
+exports.element = function (_document) {
+    var classList = new Set();
+
+    var result = {
+        _eventListeners: {},
         classList: {
             add: function (className) {
                 classList.add.apply(classList, arguments);
@@ -67,117 +127,32 @@ exports.element = function (_document) {
         },
         focus: function () {},
         blur: function () {},
-        addEventListener: function (eventType, listener, useCapture) {
-            if (typeof listener !== "function" && typeof listener !== "object") {
-                throw new Error("Missing listener");
-            }
-
-            if (!eventListeners[eventType]) {
-                eventListeners[eventType] = [];
-            }
-
-            eventListeners[eventType].push(listener);
-        },
-        removeEventListener: function () {},
-        dispatchEvent: function(event) {
-            var type = event.type,
-                listeners,
-                names,
-                typedEvent;
-
-            if (eventListeners[type]) {
-                listeners = eventListeners[type];
-
-                // Clone the event so we can set a target on it.
-                typedEvent = event instanceof Event.MockEvent ? event : Event.fromEvent(event);
-                typedEvent.target = this;
-                typedEvent.currentTarget = this;
-
-                for (var i = 0, listener; listener = listeners[i]; i++) {
-                    if (typeof listener === "function" && !listener.__isConstructor__) {
-                        listener(typedEvent);
-                    } else {
-                        names = ["handle" + type[0].toUpperCase() + type.slice(1),
-                            "handleEvent"];
-
-                        for (var j = 0, name; name = names[j]; j++) {
-                            if (typeof listener[name] === "function") {
-                                listener[name](typedEvent);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        hasEventListener: function(eventType, listener) {
-            return !!(eventListeners[eventType] &&
-                      eventListeners[eventType].indexOf(listener) >= 0);
-        },
         ownerDocument: _document || exports.document(),
         tagName: "MOCK"
     };
+    Object.addEach(result, EventTarget);
+
+    return result;
 };
 
 exports.window = function () {
     var eventListeners = {};
 
-    return {
-        addEventListener: function (eventType, listener, useCapture) {
-            if (typeof listener !== "function" && typeof listener !== "object") {
-                throw new Error("Missing listener");
-            }
+    var result = {
+        _eventListeners: {}
+    };
+    Object.addEach(result, EventTarget);
 
-            if (!eventListeners[eventType]) {
-                eventListeners[eventType] = [];
-            }
-
-            eventListeners[eventType].push(listener);
-        },
-        removeEventListener: function () {},
-        dispatchEvent: function(event) {
-            var type = event.type,
-                listeners,
-                names,
-                typedEvent;
-
-            if (eventListeners[type]) {
-                listeners = eventListeners[type];
-
-                // Clone the event so we can set a target on it.
-                typedEvent = event instanceof Event.MockEvent ? event : Event.fromEvent(event);
-                typedEvent.target = this;
-                typedEvent.currentTarget = this;
-
-                for (var i = 0, listener; listener = listeners[i]; i++) {
-                    if (typeof listener === "function") {
-                        listener(typedEvent);
-                    } else {
-                        names = ["handle" + type[0].toUpperCase() + type.slice(1),
-                            "handleEvent"];
-
-                        for (var j = 0, name; name = names[j]; j++) {
-                            if (typeof listener[name] === "function") {
-                                listener[name](typedEvent);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        hasEventListener: function(eventType, listener) {
-            return !!(eventListeners[eventType] &&
-                eventListeners[eventType].indexOf(listener) >= 0);
-        }
-    }
+    return result;
 };
 
 exports.document = function() {
     var result = {
         defaultView: exports.window(),
-        body: null
+        body: null,
+        _eventListeners: {}
     };
+    Object.addEach(result, EventTarget);
 
     result.body = exports.element(result);
 

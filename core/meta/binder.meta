@@ -1,106 +1,103 @@
 {
-
-    "blueprints_reference":{
-        "prototype":"core/meta/blueprint-reference",
-        "properties":{
-            "valueReference":{
-                "blueprintName":"Blueprint",
-                "blueprintModuleId":"core/meta/blueprint.meta",
-                "prototypeName":"Blueprint"
+    "blueprints_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Blueprint",
+                "prototypeName": "Blueprint",
+                "blueprintModule": {
+                    "%": "core/meta/blueprint.meta"
+                }
             }
         }
     },
-
-    "binder_blueprints":{
-        "prototype":"core/meta/association-blueprint",
-        "properties":{
-            "name":"blueprints",
-            "blueprint":{
-                "@":"root"
+    "binder_blueprints": {
+        "prototype": "core/meta/association-blueprint",
+        "properties": {
+            "name": "blueprints",
+            "blueprint": {
+                "@": "root"
             },
-            "cardinality":-1,
-            "mandatory":false,
-            "denyDelete":false,
-            "readOnly":false,
-            "valueType":"set",
-            "enumValues":[
-            ],
-            "helpKey":"",
-            "targetBlueprint":{
-                "@":"blueprints_reference"
+            "cardinality": -1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "set",
+            "enumValues": [],
+            "helpKey": "",
+            "targetBlueprint": {
+                "@": "blueprints_reference"
             }
         }
     },
-
-
-    "binder_name":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"name",
-            "blueprint":{
-                "@":"root"
+    "binder_name": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "name",
+            "blueprint": {
+                "@": "root"
             },
-            "cardinality":1,
-            "mandatory":true,
-            "denyDelete":false,
-            "readOnly":true,
-            "valueType":"string",
-            "enumValues":[
-            ],
-            "helpKey":""
+            "cardinality": 1,
+            "mandatory": true,
+            "denyDelete": false,
+            "readOnly": true,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
         }
     },
-
-    "binder_binderInstanceModuleId":{
-        "prototype":"core/meta/property-blueprint",
-        "properties":{
-            "name":"binderInstanceModuleId",
-            "blueprint":{
-                "@":"root"
+    "binder_binderInstanceModuleId": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "binderInstanceModuleId",
+            "blueprint": {
+                "@": "root"
             },
-            "cardinality":1,
-            "mandatory":true,
-            "denyDelete":false,
-            "readOnly":false,
-            "valueType":"string",
-            "enumValues":[
-            ],
-            "helpKey":""
+            "cardinality": 1,
+            "mandatory": true,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
         }
     },
-
-    "root":{
-        "prototype":"core/meta/blueprint",
-        "properties":{
-            "name":"Binder",
-            "blueprintModuleId":"core/meta/binder.meta",
-            "prototypeName":"Binder",
-            "customPrototype":false,
-            "propertyBlueprints":[
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "Binder",
+            "customPrototype": false,
+            "propertyBlueprints": [
                 {
-                    "@":"binder_name"
+                    "@": "binder_name"
                 },
                 {
-                    "@":"binder_blueprints"
+                    "@": "binder_blueprints"
                 },
                 {
-                    "@":"binder_binderInstanceModuleId"
+                    "@": "binder_binderInstanceModuleId"
                 }
             ],
-            "propertyBlueprintGroups":{
-                "binder":[
+            "propertyBlueprintGroups": {
+                "binder": [
                     {
-                        "@":"binder_name"
+                        "@": "binder_name"
                     },
                     {
-                        "@":"binder_blueprints"
+                        "@": "binder_blueprints"
                     },
                     {
-                        "@":"binder_binderInstanceModuleId"
+                        "@": "binder_binderInstanceModuleId"
                     }
                 ]
             },
-            "propertyValidationRules":{
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "core/meta/binder.meta"
+            },
+            "exportName": "Binder",
+            "module": {
+                "%": "core/meta/binder"
             }
         }
     }

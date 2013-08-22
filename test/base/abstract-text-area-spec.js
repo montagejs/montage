@@ -139,6 +139,17 @@ describe("test/base/abstract-text-area-spec", function () {
             aTextArea.draw();
             expect(aTextArea.element.value).toBe("foo");
         });
+
+        it("should draw the placeholder value as an attribute of the element", function () {
+            aTextArea.placeholderValue = "placeholder value";
+            aTextArea.draw();
+            expect(aTextArea.element.getAttribute("placeholder")).toBe(aTextArea.placeholderValue);
+        });
+
+        it("should not draw the placeholder value as an attribute of the element if it doesn't exist", function () {
+            aTextArea.draw();
+            expect(aTextArea.element.hasAttribute("placeholder")).toBeFalsy();
+        });
     });
 
     describe("events", function () {

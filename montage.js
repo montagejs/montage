@@ -453,29 +453,29 @@ if (typeof window !== "undefined") {
 
         // mini-url library
         makeResolve: function () {
-            var baseElement = document.querySelector("base");
-            var existingBaseElement = baseElement;
-            if (!existingBaseElement) {
-                baseElement = document.createElement("base");
-                baseElement.href = "";
-            }
-            var head = document.querySelector("head");
-            var relativeElement = document.createElement("a");
+            var head = document.querySelector("head"),
+                baseElement = document.createElement("base"),
+                relativeElement = document.createElement("a");
+
+            baseElement.href = "";
+
             return function (base, relative) {
-                if (!existingBaseElement) {
+                var currentBaseElement = head.querySelector("base");
+                if (!currentBaseElement) {
                     head.appendChild(baseElement);
+                    currentBaseElement = baseElement;
                 }
                 base = String(base);
                 if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
                     throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
                 }
-                var restore = baseElement.href;
-                baseElement.href = base;
+                var restore = currentBaseElement.href;
+                currentBaseElement.href = base;
                 relativeElement.href = relative;
                 var resolved = relativeElement.href;
-                baseElement.href = restore;
-                if (!existingBaseElement) {
-                    head.removeChild(baseElement);
+                currentBaseElement.href = restore;
+                if (currentBaseElement === baseElement) {
+                    head.removeChild(currentBaseElement);
                 }
                 return resolved;
             };

@@ -820,11 +820,11 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
 
     _prepareForEnterDocument: {
         value: function() {
-            this._needsEnterDocument = true;
-
             // On their first draw components will have their needsDraw = true
             // when they loadComponentTree.
-            if (!this._firstDraw) {
+            if (this._firstDraw) {
+                this._needsEnterDocument = true;
+            } else {
                 this.needsDraw = true;
                 this.traverseComponentTree(function(component) {
                     if (component._needsEnterDocument) {
@@ -2807,7 +2807,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
      * @function
      */
     requestAnimationFrame: {
-        value: (window.webkitRequestAnimationFrame ? window.webkitRequestAnimationFrame : window.mozRequestAnimationFrame),
+        value: (window.requestAnimationFrame || window.webkitRequestAnimationFrame 
+             || window.mozRequestAnimationFrame ||  window.msRequestAnimationFrame),
         enumerable: false
     },
 
@@ -2816,7 +2817,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
      * @function
      */
     cancelAnimationFrame: {
-        value: (window.webkitCancelRequestAnimationFrame ? window.webkitCancelRequestAnimationFrame : window.mozCancelRequestAnimationFrame),
+        value: (window.cancelAnimationFrame ||  window.webkitCancelAnimationFrame 
+             || window.mozCancelAnimationFrame || window.msCancelAnimationFrame),
         enumerable: false
     },
 
@@ -2973,7 +2975,11 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                     }
 
                     if (drawPerformanceLogger.isDebug) {
-                        drawPerformanceStartTime = window.performance.now();
+                        if (window.performance) {
+                            drawPerformanceStartTime = window.performance.now();
+                        } else {
+                            drawPerformanceStartTime = Date.now();
+                        }
                     }
                     self._frameTime = (timestamp ? timestamp : Date.now());
                     if (self._clearNeedsDrawTimeOut) {
@@ -3005,7 +3011,12 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                     self.drawIfNeeded();
 
                     if (drawPerformanceLogger.isDebug) {
-                        var drawPerformanceEndTime = window.performance.now();
+                        if (window.performance) {
+                            var drawPerformanceEndTime = window.performance.now();
+                        } else {
+                            var drawPerformanceEndTime = Date.now();
+                        }
+
                         console.log("Draw Cycle Time: ",
                             drawPerformanceEndTime - drawPerformanceStartTime,
                             ", Components: ", self._lastDrawComponentsCount);

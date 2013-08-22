@@ -181,6 +181,8 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
 
             translateStartEvent.initCustomEvent("translateStart", true, true, null);
             translateStartEvent.scroll = this._scroll;
+            translateStartEvent.translateX = 0;
+            translateStartEvent.translateY = 0;
             this.dispatchEvent(translateStartEvent);
         }
     },
@@ -249,46 +251,107 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                 this._dispatchTranslateEnd();
             }
             this._releaseInterest();*/
+            if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                this.startTime = Date.now();
+                this.endX = this.startX = this._pageX;
+                this.endY = this.startY = this._pageY;
 
-            this.startTime = Date.now();
-            this.endX = this.startX = this._pageX;
-            this.endY = this.startY = this._pageY;
-
-            if ((this._hasMomentum) && ((event.velocity.speed>40) || this.translateStrideX || this.translateStrideY)) {
-                if (this._axis != "vertical") {
-                    this.momentumX = event.velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
+                if ((this._hasMomentum) && ((event.velocity.speed>40) || this.translateStrideX || this.translateStrideY)) {
+                    if (this._axis != "vertical") {
+                        this.momentumX = event.velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
+                    } else {
+                        this.momentumX = 0;
+                    }
+                    if (this._axis != "horizontal") {
+                        this.momentumY = event.velocity.y * this._pointerSpeedMultiplier * (this._invertYAxis ? 1 : -1);
+                    } else {
+                        this.momentumY=0;
+                    }
+                    this.endX = this.startX + (this.momentumX * this.__momentumDuration / 2000);
+                    this.endY = this.startY + (this.momentumY * this.__momentumDuration / 2000);
+                    this.startStrideXTime = null;
+                    this.startStrideYTime = null;
+                    this.animateMomentum = true;
                 } else {
-                    this.momentumX = 0;
+                    this.animateMomentum = false;
                 }
-                if (this._axis != "horizontal") {
-                    this.momentumY = event.velocity.y * this._pointerSpeedMultiplier * (this._invertYAxis ? 1 : -1);
-                } else {
-                    this.momentumY=0;
-                }
-                this.endX = this.startX + (this.momentumX * this.__momentumDuration / 2000);
-                this.endY = this.startY + (this.momentumY * this.__momentumDuration / 2000);
-                this.startStrideXTime = null;
-                this.startStrideYTime = null;
-                this.animateMomentum = true;
-            } else {
-                this.animateMomentum = false;
-            }
 
-            if (this.animateMomentum) {
-                this._animationInterval();
-            } else if (!this._isFirstMove) {
-                // Only dispatch a translateEnd if a translate start has occured
-                this._dispatchTranslateEnd();
+                if (this.animateMomentum) {
+                    this._animationInterval();
+                } else if (!this._isFirstMove) {
+                    // Only dispatch a translateEnd if a translate start has occured
+                    this._dispatchTranslateEnd();
+                }
             }
             this._releaseInterest();
         }
     },
 
+    _translateEndTimeout: {
+        value: null
+    },
+
+    _mousewheelStrideTimeout: {
+        value: null
+    },
+
+    _previousDeltaY: {
+        value: 0
+    },
+
+    // TODO Add wheel event listener for Firefox
     // TODO doc
     /**
      */
     handleMousewheel: {
-        value: function () {
+        value: function(event) {
+            var self = this;
+
+            // If this composers' component is claiming the "wheel" pointer then handle the event
+            if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this.component)) {
+                var oldPageY = this._pageY;
+
+                if (this.translateStrideX) {
+                    window.clearTimeout(this._mousewheelStrideTimeout);
+                    if ((this._mousewheelStrideTimeout === null) || (Math.abs(event.wheelDeltaY) > Math.abs(this._previousDeltaY * (this._mousewheelStrideTimeout === null ? 2 : 4)))) {
+                        if (event.wheelDeltaY > 1) {
+                            this.callDelegateMethod("previousStride", this);
+                        } else {
+                            if (event.wheelDeltaY < -1) {
+                                this.callDelegateMethod("nextStride", this);
+                            }
+                        }
+                    }
+                    this._mousewheelStrideTimeout = window.setTimeout(function() {
+                        self._mousewheelStrideTimeout = null;
+                        self._previousDeltaY = 0;
+                    }, 70);
+                    self._previousDeltaY = event.wheelDeltaY;
+                    if (this._shouldPreventDefault(event)) {
+                        event.preventDefault();
+                    }
+                } else {
+                    if (this._translateEndTimeout === null) {
+                        this._dispatchTranslateStart();
+                    }
+                    this._pageY = this._pageY + ((event.wheelDeltaY * 20) / 100);
+                    this._updateScroll();
+                    this._dispatchTranslate();
+                    window.clearTimeout(this._translateEndTimeout);
+                    this._translateEndTimeout = window.setTimeout(function() {
+                        self._dispatchTranslateEnd();
+                        self._translateEndTimeout = null;
+                    }, 400);
+
+                    // If we're not at one of the extremes (i.e. the scroll actually
+                    // changed the translate) then we want to preventDefault to stop
+                    // the page scrolling.
+                    if (oldPageY !== this._pageY && this._shouldPreventDefault(event)) {
+                        event.preventDefault();
+                    }
+                }
+                this.eventManager.forfeitPointer(this._WHEEL_POINTER, this.component);
+            }
         }
     },
 
@@ -1309,6 +1372,10 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
         value: true
     },
 
+    isLimitedToSingleStride: {
+        value: false
+    },
+
     // TODO doc
     /**
      */
@@ -1327,6 +1394,14 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                 this._pageY = this.endY;
                 this._updateScroll();
                 this._scrollEnd = this.scroll;
+                if (this.isLimitedToSingleStride && this.translateStrideX) {
+                    if (this._scrollEnd > Math.floor(this._scrollStart) + this.translateStrideX) {
+                        this._scrollEnd = Math.floor(this._scrollStart) + this.translateStrideX;
+                    }
+                    if (this._scrollEnd < Math.ceil(this._scrollStart) - this.translateStrideX) {
+                        this._scrollEnd = Math.ceil(this._scrollStart) - this.translateStrideX;
+                    }
+                }
                 this._pageX = this.startX;
                 this._pageY = this.startY;
                 this._updateScroll();
@@ -1360,6 +1435,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     animateStride = true;
                 } else {
                     scroll = tmp * this.translateStrideX;
+                    this.animateMomentum = false;
                 }
             }
             this.minScroll = min;

@@ -1,3 +1,74 @@
+# v0.13.3
+
+-  **Repetition**
+
+   Fix repetition to correctly add the `selected` class to iterations'
+   elements that are components too.
+
+-  **Overlay**
+
+   It enters and exists the document everytime it is shown or hidden.
+
+-  **AbstractSlider**
+
+   Add active state.
+   Add vertical mode.
+
+-  **AbstractTextArea**
+
+   Fix issue with null placeholder text.
+
+-  **Target**
+
+   Removed `willSurrenderActiveTarget` and added `surrendersActiveTarget`
+   that asks the target to surrender the activeTarget status.
+
+-  Several bug fixes
+
+# v0.13.2
+
+-   **Component**
+
+    Rename leaveDocument (mistake) to exitDocument
+
+-   **RangeController**
+
+    Check content exists before attempting to read contentConstructor
+
+-   **TreeController**
+
+    New APIs see dead18372cfdbce8238315f7e956c0f9c483ee36
+
+-   **Serialization**
+
+    Added 'module reference' type to be able to deserialize and require a CommonJS module.
+
+-   **Template**
+
+    Fixed an issue when using a 'clear' label in the serialization
+
+-   **Loader**
+
+    Better error reporting when missing/wrong 'main' module/object information
+
+-   **Repetition**
+
+    Fixed bugs in childComponents management so that they are properly cleaned up.
+
+    **Base Components**
+
+    Add delegate methods to AbstractTextField
+    Improvement to keyboard handling in AbstractNumberField
+
+-   **Flow**
+
+    Performance improvements.
+    Better support of Firefox/IE10
+
+-   **Documentation**
+
+    Improvements to the converter documentation.
+
 # v0.13.1
 
 -   **RangeController**

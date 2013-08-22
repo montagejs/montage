@@ -36,7 +36,7 @@ exports.BlueprintReference = RemoteReference.specialize( {
             }
             return [
                 "blueprint",
-                this._reference.blueprintName.toLowerCase(),
+                (this._reference.blueprintName || "unnamed").toLowerCase(),
                 "reference"
             ].join("_");
         }
@@ -45,7 +45,7 @@ exports.BlueprintReference = RemoteReference.specialize( {
     valueFromReference: {
         value: function(references, targetRequire) {
             var blueprintName = references.blueprintName;
-            var blueprintModuleId = references.blueprintModuleId;
+            var blueprintModule = references.blueprintModule;
             var prototypeName = references.prototypeName;
             var moduleId = references.moduleId;
 
@@ -55,36 +55,20 @@ exports.BlueprintReference = RemoteReference.specialize( {
                 binderPromise = BinderReference.valueFromReference(binderReference, require);
             }
 
-            var deferredBlueprint = Promise.defer();
-            binderPromise.then(function(binder) {
+            return binderPromise.then(function(binder) {
                 if (binder) {
-                    var blueprint = binder.blueprintForPrototype(prototypeName, moduleId);
-                    if (blueprint) {
-                        deferredBlueprint.resolve(blueprint);
-                    } else {
-                        try {
-                            BlueprintModule.Blueprint.getBlueprintWithModuleId(blueprintModuleId, targetRequire).then(function(blueprint) {
-                                if (blueprint) {
-                                    binder.addBlueprint(blueprint);
-                                    deferredBlueprint.resolve(blueprint);
-                                } else {
-                                    deferredBlueprint.reject(new Error("Error cannot find Blueprint " + blueprintModuleId));
-                                }
-                            }, deferredBlueprint.reject);
-                        } catch (exception) {
-                            deferredBlueprint.reject(new Error("Error cannot find Blueprint " + blueprintModuleId));
+                    return BlueprintModule.Blueprint.getBlueprintWithModuleId(blueprintModule.id, blueprintModule.require).then(function (blueprint) {
+                        if (blueprint) {
+                            binder.addBlueprint(blueprint);
+                            return blueprint;
+                        } else {
+                            throw new Error("Error cannot find Blueprint " + blueprintModule);
                         }
-                    }
-
+                    });
                 } else {
-                    try {
-                        deferredBlueprint = BlueprintModule.Blueprint.getBlueprintWithModuleId(blueprintModuleId, require);
-                    } catch (exception) {
-                        deferredBlueprint.reject(new Error("Error cannot find Blueprint " + blueprintModuleId));
-                    }
+                    return BlueprintModule.Blueprint.getBlueprintWithModuleId(blueprintModule, require);
                 }
             });
-            return deferredBlueprint.promise;
         }
     },
 
@@ -93,9 +77,7 @@ exports.BlueprintReference = RemoteReference.specialize( {
             // the value is a blueprint we need to serialize the binder and the blueprint reference
             var references = {};
             references.blueprintName = value.name;
-            references.blueprintModuleId = value.blueprintModuleId;
-            references.prototypeName = value.prototypeName;
-            references.moduleId = value.moduleId;
+            references.blueprintModule = value.blueprintInstanceModule;
             if ((value.binder) && (! value.binder.isDefault)) {
                 references.binderReference = BinderReference.referenceFromValue(value.binder);
             }

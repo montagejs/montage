@@ -88,24 +88,24 @@ describe("meta/blueprint-spec", function () {
             });
         });
         describe("blueprint to instance association", function () {
-            var binder = new Binder().initWithNameAndRequire("Binder", global.require);
-            var personBlueprint = new Blueprint().initWithName("Person");
-            personBlueprint.moduleId = "mymodule";
-            binder.addBlueprint(personBlueprint);
-            var companyBlueprint = new Blueprint().initWithName("Company");
-            companyBlueprint.prototypeName = "Firm";
-            companyBlueprint.moduleId = "mymodule";
-            binder.addBlueprint(companyBlueprint);
-            it("should be found with a prototypeName and moduleId", function () {
-                expect(binder.blueprintForPrototype("Person", "mymodule")).toBe(personBlueprint);
-                expect(binder.blueprintForPrototype("Firm", "mymodule")).toBe(companyBlueprint);
+            var binder, personBlueprint, companyBlueprint;
+            beforeEach(function () {
+                binder = new Binder().initWithNameAndRequire("Binder", global.require);
+                personBlueprint = new Blueprint().initWithName("Person");
+                binder.addBlueprint(personBlueprint);
+                companyBlueprint = new Blueprint().initWithName("Company");
+                binder.addBlueprint(companyBlueprint);
+            });
+            it("should be found with the blueprint name", function () {
+                expect(binder.blueprintForName("Person")).toBe(personBlueprint);
+                expect(binder.blueprintForName("Company")).toBe(companyBlueprint);
             });
         });
         describe("applying a basic blueprint to a prototype", function () {
             var louis, personBlueprint;
             beforeEach(function () {
                 var binder = new Binder().initWithNameAndRequire("Binder", global.require);
-                personBlueprint = new Blueprint().initWithNameAndModuleId("Person", "mymodule");
+                personBlueprint = new Blueprint().initWithName("Person");
                 personBlueprint.addPropertyBlueprint(personBlueprint.newPropertyBlueprint("name", 1));
                 personBlueprint.addPropertyBlueprint(personBlueprint.newPropertyBlueprint("keywords", Infinity));
 
@@ -128,7 +128,7 @@ describe("meta/blueprint-spec", function () {
             var circle, shapeBlueprint;
             beforeEach(function () {
                 var binder = new Binder().initWithNameAndRequire("Binder", global.require);
-                shapeBlueprint = new Blueprint().initWithNameAndModuleId("Shape", "mymodule");
+                shapeBlueprint = new Blueprint().initWithName("Shape");
                 binder.addBlueprint(shapeBlueprint);
                 var propertyBlueprint = shapeBlueprint.newPropertyBlueprint("size", 1);
                 shapeBlueprint.addPropertyBlueprint(propertyBlueprint);
@@ -216,8 +216,8 @@ describe("meta/blueprint-spec", function () {
                     expect(serializedBinder).not.toBeNull();
                     expect(metadata.objectName).toBe("Binder");
                     expect(metadata.moduleId).toBe("core/meta/binder");
-                    var personBlueprint = deserializedBinder.blueprintForPrototype("Person", "meta/blueprint/person");
-                    expect(personBlueprint).not.toBeNull();
+                    var personBlueprint = deserializedBinder.blueprintForName("Person");
+                    expect(personBlueprint).toBeTruthy();
                     expect(personBlueprint.propertyBlueprintForName("phoneNumbers")).not.toBeNull();
                 });
             });
@@ -237,14 +237,61 @@ describe("meta/blueprint-spec", function () {
             });
         });
 
-        describe("cross package", function () {
-            it("correctly loads blueprints with the same internal module ID", function () {
-                return require.loadPackage({location: "./meta/blueprint/package"})
-                .then(function (require) {
-                    return Blueprint.getBlueprintWithModuleId("thing.meta", require)
-                    .then(function (blueprint) {
-                        expect(blueprint.parent).not.toBe(blueprint);
-                    });
+        describe("createDefaultBlueprintForObject", function () {
+            it("should always return a promise", function () {
+                var blueprint = Blueprint.createDefaultBlueprintForObject({});
+                expect(typeof blueprint.then).toBe("function");
+                return blueprint.then(function (blueprint) {
+                    expect(Blueprint.prototype.isPrototypeOf(blueprint)).toBe(true);
+                });
+            });
+
+            it("has the correct module id for the parent", function () {
+                var ComponentBlueprintTest1 = require("meta/component-blueprint-test/component-blueprint-test-1.reel").ComponentBlueprintTest1;
+                return Blueprint.createDefaultBlueprintForObject(ComponentBlueprintTest1)
+                .then(function (blueprint) {
+                    expect(blueprint.parent.blueprintInstanceModule.resolve(require)).toEqual("montage/ui/component.meta");
+                });
+            });
+
+        });
+
+        describe("blueprint descriptor", function () {
+            it("does not work for objects that aren't in a module", function () {
+                var Sub = Blueprint.specialize();
+                var sub = new Sub();
+
+                expect(function () {
+                    var x = sub.blueprint;
+                }).toThrow();
+            });
+
+
+            it("uses the correct module ID for objects with no .meta", function () {
+                var Sub = Blueprint.specialize();
+                // fake object loaded from module
+                Object.defineProperty(Sub, "_montage_metadata", {
+                    value: {
+                        require: require,
+                        module: "pass",
+                        moduleId: "pass", // deprecated
+                        property: "Pass",
+                        objectName: "Pass", // deprecated
+                        isInstance: false
+                    }
+                });
+
+                var sub = new Sub();
+                sub._montage_metadata = Object.create(Sub._montage_metadata, {
+                    isInstance: { value: true }
+                });
+
+                expect(sub.blueprintModuleId).toBe("pass.meta");
+            });
+
+            it("creates a blueprint when the parent has no blueprint", function () {
+                return Blueprint.blueprint.then(function (blueprint){
+                    expect(blueprint.blueprintInstanceModule.id).toBe("core/meta/blueprint.meta");
                 });
             });
         });
