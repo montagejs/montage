@@ -821,6 +821,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             translateStartEvent.initCustomEvent("translateStart", true, true, null);
             translateStartEvent.translateX = x;
             translateStartEvent.translateY = y;
+            // Event needs to be the same shape as the one in flow-translate-composer
+            translateStartEvent.scroll = 0;
             this.dispatchEvent(translateStartEvent);
         }
     },
@@ -832,6 +834,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             translateEndEvent.initCustomEvent("translateEnd", true, true, null);
             translateEndEvent.translateX = this._translateX;
             translateEndEvent.translateY = this._translateY;
+            // Event needs to be the same shape as the one in flow-translate-composer
+            translateEndEvent.scroll = 0;
             this.dispatchEvent(translateEndEvent);
         }
     },
@@ -842,6 +846,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             translateEvent.initCustomEvent("translate", true, true, null);
             translateEvent.translateX = this._translateX;
             translateEvent.translateY = this._translateY;
+            // Event needs to be the same shape as the one in flow-translate-composer
+            translateEvent.scroll = 0;
             this.dispatchEvent(translateEvent);
         }
     },

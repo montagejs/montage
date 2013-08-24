@@ -196,6 +196,8 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
 
             translateEndEvent.initCustomEvent("translateEnd", true, true, null);
             translateEndEvent.scroll = this._scroll;
+            translateEndEvent.translateX = 0;
+            translateEndEvent.translateY = 0;
             this.dispatchEvent(translateEndEvent);
         }
     },
@@ -208,6 +210,8 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
             var translateEvent = document.createEvent("CustomEvent");
             translateEvent.initCustomEvent("translate", true, true, null);
             translateEvent.scroll = this._scroll;
+            translateEvent.translateX = 0;
+            translateEvent.translateY = 0;
             this.dispatchEvent(translateEvent);
         }
     },
