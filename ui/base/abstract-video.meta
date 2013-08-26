@@ -1,0 +1,108 @@
+{
+    "mediaElement_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "mediaElement",
+            "blueprint": {"@": "root"},
+            "valueType": "object"
+        }
+    },
+    "videoController_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "videoController",
+            "blueprint": {"@": "root"},
+            "valueType": "object"
+        }
+    },
+    "src_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "src",
+            "blueprint": {"@": "root"},
+            "valueType": "string"
+        }
+    },
+    "sources_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "sources",
+            "blueprint": {"@": "root"},
+            "valueType": "object"
+        }
+    },
+    "repeat_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "repeat",
+            "blueprint": {"@": "root"},
+            "valueType": "boolean"
+        }
+    },
+    "posterSrc_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "posterSrc",
+            "blueprint": {"@": "root"},
+            "valueType": "string"
+        }
+    },
+    "supportsFullScreen_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "supportsFullScreen",
+            "blueprint": {"@": "root"},
+            "valueType": "boolean"
+        }
+    },
+    "isFullScreen_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "isFullScreen",
+            "blueprint": {"@": "root"},
+            "readOnly": true,
+            "valueType": "boolean"
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Component",
+                "blueprintModuleId": "ui/component.meta",
+                "prototypeName": "Component"
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "AbstractVideo",
+            "blueprintModuleId": "ui/base/abstract-video.meta",
+            "prototypeName": "AbstractVideo",
+            "parent": {"@": "blueprint_parent"},
+            "propertyBlueprints": [
+                {"@": "mediaElement_property"},
+                {"@": "videoController_property"},
+                {"@": "src_property"},
+                {"@": "sources_property"},
+                {"@": "repeat_property"},
+                {"@": "posterSrc_property"},
+                {"@": "supportsFullScreen_property"},
+                {"@": "isFullScreen_property"}
+            ],
+            "propertyBlueprintGroups": {
+                "Main": [
+                    {"@": "mediaElement_property"},
+                    {"@": "videoController_property"},
+                    {"@": "src_property"},
+                    {"@": "sources_property"},
+                    {"@": "repeat_property"},
+                    {"@": "posterSrc_property"},
+                    {"@": "supportsFullScreen_property"},
+                    {"@": "isFullScreen_property"}
+                ]
+            }
+        }
+    }
+}
