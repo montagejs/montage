@@ -6,21 +6,9 @@
     "type": "git",
     "url": "https://github.com/montagejs/montage.git"
   },
-  "main": "montage",
-  "overlay": {
-    "browser": {
-      "main": "core/core",
-      "mappings": {
-        "mr": {
-          "name": "mr",
-          "location": "packages/mr"
-        },
-        "q": {
-          "name": "q",
-          "location": "packages/mr/packages/q"
-        }
-      }
-    }
+  "main": "core/core",
+  "browser": {
+      "url": "mr/mini-url.js"
   },
   "dependencies": {
     "collections": "~0.1.23",
@@ -36,6 +24,9 @@
     "jshint": "~2.0.1"
   },
   "scripts": {
+    "build": "npm run build-montage && npm run build-preload",
+    "build-montage": "mrs boot/browser.js -e '().done()'  > montage.js",
+    "build-preload": "mrs boot/preload.js > boot/preload-boilerplate.js",
     "test": "node test/node/node-spec.js",
     "jsdoc": "node ../montagejs.org/build/jsdoc/jsdoc.js -out $PWD/builds/jsdoc/ montage@npm-link"
   },
@@ -43,6 +34,7 @@
     "etc",
     "lab",
     "node.js",
+    "boot",
     "test",
     "tools"
   ]
