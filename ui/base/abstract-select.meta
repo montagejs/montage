@@ -84,7 +84,7 @@
     "root": {
         "prototype": "core/meta/module-blueprint",
         "properties": {
-            "name": "AbstractRadioButton",
+            "name": "AbstractSelect",
             "parent": {
                 "@": "blueprint_parent"
             },
@@ -137,7 +137,7 @@
                 ]
             },
             "blueprintModule": {
-                "%": "ui/base/abstract-radio-button.meta"
+                "%": "ui/base/abstract-select.meta"
             },
             "exportName": "AbstractSelect",
             "module": {
