@@ -50,25 +50,25 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
      -----------------------------------------------------------------------------*/
 
     /**
-     * @type {Property}
+     * @type {Number}
      * @default {Number} 0
      */
     STOPPED: { value: 0, writable: false },
 
     /**
-     * @type {Property}
+     * @type {Number}
      * @default {Number} 1
      */
     PLAYING: { value: 1, writable: false },
 
     /**
-     * @type {Property}
+     * @type {Number}
      * @default {Number} 2
      * */
     PAUSED: { value: 2, writable: false },
 
     /**
-     * @type {Property}
+     * @type {Number}
      * @default {Number} 3
      */
     EMPTY: { value: 3, writable: false },
@@ -198,7 +198,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
      -----------------------------------------------------------------------------*/
 
     /**
-     * @type {Property}
+     * @type {Number}
      * @default {Boolean} true
      */
     autoplay: {
@@ -347,7 +347,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
                 this.playbackRate = -4.0;
             }
         }
-    }
+    },
 
     /**
      * @function
