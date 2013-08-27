@@ -657,9 +657,12 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
         value: function MediaController() {
             this.super();
         }
-    },
+    }
 
-    blueprintModuleId: require("montage")._blueprintModuleIdDescriptor,
-    blueprint: require("montage")._blueprintDescriptor
+}, {
+
+    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+
+    blueprint:require("montage")._blueprintDescriptor
 
 });
