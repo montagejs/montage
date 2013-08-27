@@ -996,11 +996,13 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 this._element.addEventListener("mousedown", this, true);
                 this._element.addEventListener("mousedown", this, false);
 
-                var wheelEventName = "mousewheel";
-                if ("onwheel" in document.createElement("div")){
+                var wheelEventName;
+                if (typeof window.onwheel !== "undefined"){
                     wheelEventName = "wheel";
                     this.handleWheel = this.handleMousewheel;
                     this.captureWheel = this.captureMousewheel;
+                } else {
+                    wheelEventName = "mousewheel";
                 }
                 this._element.addEventListener(wheelEventName, this, false);
                 this._element.addEventListener(wheelEventName, this, true);
