@@ -1,4 +1,4 @@
-# v0.13.4
+### v0.13.4
 
 -  **Montage**
 
@@ -23,7 +23,7 @@
 
    Add AbstractToggleSwitch.
 
-# v0.13.3
+### v0.13.3
 
 -  **Repetition**
 
@@ -50,7 +50,7 @@
 
 -  Several bug fixes
 
-# v0.13.2
+### v0.13.2
 
 -   **Component**
 
@@ -94,7 +94,7 @@
 
     Improvements to the converter documentation.
 
-# v0.13.1
+### v0.13.1
 
 -   **RangeController**
 
@@ -117,7 +117,7 @@
 
     The slider now uses a translate3d to take advantage of gpu acceleration.
 
-# v0.13.0
+## v0.13.0
 
 -   **Directory Structure**
 
@@ -187,7 +187,7 @@
     In an effort to make basic components easier to create and more consistent, the abstract components now provide a super
     class that widget sets can specialize with their own template. This is how the [digit](https://github.com/montagejs/digit) widgets are implemented.
 
-# v0.12.0
+## v0.12.0
 
 -   **Core**
 
@@ -291,7 +291,7 @@
 
     Sample application have been moved to individual repositories.
 
-# v0.11.0
+## v0.11.0
 
 -   **New skeleton components**
 
@@ -303,7 +303,7 @@
 
 -   **Better support of different document context in serialization**
 
-# v0.10.0
+## v0.10.0
 
 -   **New property change API**
 
@@ -351,7 +351,7 @@
     element, clearing any existing content.
 
 
-# v0.9.0
+## v0.9.0
 
 -   **Draw  cycle changes**
 
@@ -383,7 +383,7 @@
     Backwards compatibility for id attribute based references in serilization is removed, you should now use the
     data-montage-id attribute.
 
-# v0.8.0
+## v0.8.0
 
 -   **Data binding shorthand in serializations**
 
@@ -468,7 +468,7 @@
         property has no effect on modal popups.
 
 
-# v0.7.0
+## v0.7.0
 
 -   **Adding `ownerComponent` property to the Component.**
     When the template is deserialized we populate the ownerComponent property of any component created within it's
@@ -530,7 +530,7 @@
     -   Better support for Firefox
     -   Better support for Opera
 
-# v0.6.0
+## v0.6.0
 
 -   Native Controls based on HTML5 input elements
 -   Composers to add aggregate events and time dependent behaviors as is needed for scroll momentum and bouncing.
@@ -538,7 +538,7 @@
 -   Condition Component API improvements to lazily load parts of your component tree and easily show or hide sections of your page.
 -   Misc bug fixes and optimizations mostly in the loading of the app and the require/package system..
 
-# v0.5.0
+## v0.5.0
 
 -   Added UndoManager.
     It stores actions that can later be undone or re-done,
@@ -568,7 +568,7 @@
     -   Scrollview
     -   Various other areas
 
-# v0.4.0
+## v0.4.0
 
 -   Packaging:
     -   All applications must be packages with ``package.json`` files.
@@ -632,7 +632,7 @@
     updated to either use the needed prototype directly or use
     ``Object.getPrototypeOf(...)``
 
-# v0.3.1
+### v0.3.1
 
 -   Added copyright notices to HTML, CSS, and JavaScript.
 -   Normalized files to Unix text encoding.
@@ -641,11 +641,11 @@
 -   Draw cycle improvements.
 -   Checkbox animations.
 
-# v0.3.0
+## v0.3.0
 
 -   Module namespace restructured.
 
-# v0.2.0
+## v0.2.0
 
 -   First version before breaking changes.
 -   New serialization format introduced.
