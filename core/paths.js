@@ -11,6 +11,7 @@ var bind = require("frb/bind");
 var compileObserver = require("frb/compile-observer");
 var Scope = require("frb/scope");
 var Observers = require("frb/observers");
+var observeProperty = Observers.observeProperty;
 var autoCancelPrevious = Observers.autoCancelPrevious;
 
 var pathChangeDescriptors = new WeakMap();
@@ -47,6 +48,12 @@ var pathPropertyDescriptors = {
             var syntax = parse(path);
             var observe = compileObserver(syntax);
             return observe(autoCancelPrevious(emit), new Scope(this));
+        }
+    },
+
+    observeProperty: {
+        value: function (name, emit, scope) {
+            return observeProperty(this, name, emit, scope);
         }
     },
 
