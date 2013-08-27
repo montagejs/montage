@@ -8,6 +8,7 @@ var Map = require("collections/map");
 var Set = require("collections/set");
 
 var Observers = require("frb/observers");
+var observeProperty = Observers.observeProperty;
 var observeKey = Observers.observeKey;
 
 /**
@@ -1078,8 +1079,8 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * @private
      */
     observeProperty: {
-        value: function (name, emit, scope) {
-            if (name === "contentAtCurrentIteration" || name === "objectAtCurrentIteration") {
+        value: function (key, emit, scope) {
+            if (key === "contentAtCurrentIteration" || key === "objectAtCurrentIteration") {
                 // delegate to the mapping from iterations to content for the
                 // current iteration
                 return observeKey(
@@ -1088,14 +1089,14 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                     emit,
                     scope
                 );
-            } else if (name === "currentIteration") {
+            } else if (key === "currentIteration") {
                 // Shortcut since this property is sticky -- won't change in
                 // the course of instantiating an iteration and should not
                 // dispatch a change notification when we instantiate the next.
                 return emit(this.currentIteration);
             } else {
                 // fall back to normal property observation
-                return this.super(name, emit, scope);
+                return observeProperty(this, key, emit, scope);
             }
         }
     },
@@ -1108,9 +1109,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * @private
      */
     makePropertyObservable: {
-        value: function (name) {
-            if (name !== "currentIteration") {
-                return this.super(name);
+        value: function (key) {
+            if (key !== "currentIteration") {
+                return Montage.makePropertyObservable.call(this, key);
             }
         }
     },

@@ -31,6 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
+    observeProperty = require("frb/observers").observeProperty,
     FlowBezierSpline = require("ui/flow.reel/flow-bezier-spline").FlowBezierSpline,
     RangeController = require("core/range-controller").RangeController;
 
@@ -1401,17 +1402,17 @@ var Flow = exports.Flow = Component.specialize( {
      * @private
      */
     observeProperty: {
-        value: function (name, emit, scope) {
+        value: function (key, emit, scope) {
             if (
-                name === "currentIteration" ||
-                name === "objectAtCurrentIteration" ||
-                name === "contentAtCurrentIteration"
+                key === "currentIteration" ||
+                key === "objectAtCurrentIteration" ||
+                key === "contentAtCurrentIteration"
             ) {
                 if (this._repetition) {
                     return this._repetition.observeProperty(key, emit, scope);
                 }
             } else {
-                return this.super(name, emit, scope);
+                return observeProperty(this, key, emit, scope);
             }
         }
     },
