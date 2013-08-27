@@ -1,5 +1,6 @@
 require("montage-testing").run(require,[
         // Please keep in alphabetical order
+
         "application-spec",
         "bitfield-spec",
         "claimed-pointer-spec",
@@ -23,6 +24,7 @@ require("montage-testing").run(require,[
         "base/abstract-text-area-spec",
         "base/abstract-text-field-spec",
         "base/abstract-toggle-button-spec",
+        "base/abstract-video-spec",
 
         "bindings/spec",
         "bindings/converter-spec",
@@ -37,6 +39,7 @@ require("montage-testing").run(require,[
         "core/dom-spec",
         "core/localizer-spec",
         "core/localizer/serialization-spec",
+        "core/media-controller-spec",
         "core/range-controller-spec",
         "core/radio-button-controller-spec",
         "core/selector-spec",
@@ -88,4 +91,5 @@ require("montage-testing").run(require,[
         "ui/slot-spec",
         "ui/substitution-spec",
         "ui/text/text-spec"
+
 ]);

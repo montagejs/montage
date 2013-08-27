@@ -1,0 +1,253 @@
+{
+    "mediaController_status": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "status",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+
+    "mediaController_STOPPED": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "STOPPED",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+
+    "mediaController_PLAYING": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "PLAYING",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+
+    "mediaController_PAUSED": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "PAUSED",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+
+    "mediaController_EMPTY": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "EMPTY",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+
+    "mediaController_mediaController": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "mediaController",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object",
+            "helpKey": ""
+        }
+    },
+
+    "mediaController_position": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "position",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+
+    "mediaController_duration": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "duration",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+
+    "mediaController_autoplay": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "autoplay",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+
+    "mediaController_playbackRate": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "playbackRate",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+
+    "mediaController_currentTime": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "currentTime",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+
+    "mediaController_volume": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "volume",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "number",
+            "helpKey": ""
+        }
+    },
+
+    "mediaController_mute": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "mute",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+
+    "root": {
+        "prototype": "core/meta/blueprint",
+        "properties": {
+            "name": "MediaController",
+            "blueprintModuleId": "core/media-controller.meta",
+            "prototypeName": "MediaController",
+            "customPrototype": false,
+            "propertyBlueprints": [
+                {
+                    "@": "mediaController_status"
+                },
+                {
+                    "@": "mediaController_STOPPED"
+                },
+                {
+                    "@": "mediaController_PLAYING"
+                },
+                {
+                    "@": "mediaController_PAUSED"
+                },
+                {
+                    "@": "mediaController_EMPTY"
+                },
+                {
+                    "@": "mediaController_mediaController"
+                },
+                {
+                    "@": "mediaController_position"
+                },
+                {
+                    "@": "mediaController_duration"
+                },
+                {
+                    "@": "mediaController_autoplay"
+                },
+                {
+                    "@": "mediaController_playbackRate"
+                },
+                {
+                    "@": "mediaController_currentTime"
+                },
+                {
+                    "@": "mediaController_volume"
+                },
+                {
+                    "@": "mediaController_mute"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "rangeController": [
+                    {
+                        "@": "mediaController_status"
+                    },
+                    {
+                        "@": "mediaController_STOPPED"
+                    },
+                    {
+                        "@": "mediaController_PLAYING"
+                    },
+                    {
+                        "@": "mediaController_PAUSED"
+                    },
+                    {
+                        "@": "mediaController_EMPTY"
+                    },
+                    {
+                        "@": "mediaController_mediaController"
+                    },
+                    {
+                        "@": "mediaController_position"
+                    },
+                    {
+                        "@": "mediaController_duration"
+                    },
+                    {
+                        "@": "mediaController_autoplay"
+                    },
+                    {
+                        "@": "mediaController_playbackRate"
+                    },
+                    {
+                        "@": "mediaController_currentTime"
+                    },
+                    {
+                        "@": "mediaController_volume"
+                    },
+                    {
+                        "@": "mediaController_mute"
+                    }
+                ]
+            },
+            "propertyValidationRules": {
+            }
+        }
+    }
+}
