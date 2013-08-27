@@ -274,17 +274,9 @@ var Template = Montage.specialize( {
 
                 resources = self.getResources();
                 if (!resources.resourcesLoaded() && resources.hasResources()) {
-                    // TODO: We were waiting for all resources to be
-                    // loaded before considering the template loaded.
-                    // Since we need the template to be loaded in order to load
-                    // the rest of the component tree this turns the loading of
-                    // each component tree level into a serial operation.
-                    // This is particularly bad for mobile devices like the
-                    // iPad where the network connection is a bottleneck making
-                    // the application load very slowly.
-                    // We need to adopt a different strategy where the resources
-                    // can be loaded in parallel, for now we preload the
-                    // resources but don't wait for them.
+                    // Start preloading the resources as soon as possible, no
+                    // need to wait for them as the draw cycle will take care
+                    // of that when loading the stylesheets into the document.
                     resources.loadResources(targetDocument);
                 }
                 return part;
