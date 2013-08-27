@@ -1,7 +1,7 @@
 /*global require, exports*/
 
 /**
- @module montage/ui/base/abstract-video.reel
+ * @module montage/ui/base/abstract-video.reel
  */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
@@ -11,29 +11,29 @@ var Montage = require("montage").Montage,
  * @class AbstractVideo
  * @extends Component
  */
-var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends AbstractVideo# */ {
+var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends AbstractVideo# */ {
 
     /**
      * @private
      */
     constructor: {
         value: function AbstractVideo() {
-            if(this.constructor === AbstractVideo) {
+            if (this.constructor === AbstractVideo) {
                 throw new Error("AbstractVideo cannot be instantiated.");
             }
             Component.constructor.call(this); // super
         }
     },
-    
+
     _mediaElement: {
         value: null
     },
-    
+
     mediaElement: {
-        get: function() {
+        get: function () {
             return this._mediaElement;
         },
-        set: function(element) {
+        set: function (element) {
             if (this._mediaElement) {
                 this._mediaElement.controller = null;
             }
@@ -43,21 +43,21 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
             }
         }
     },
-    
+
     _videoController: {
         value: null
     },
-    
+
     /**
-        The MediaController instance used by the video component.
-        @type {module:montage/core/media-controller.MediaController}
-        @default null
-    */
+     * The MediaController instance used by the video component.
+     * @type {module:montage/core/media-controller.MediaController}
+     * @default null
+     */
     videoController: {
-        get: function() {
+        get: function () {
             return this._videoController;
         },
-        set: function(controller) {
+        set: function (controller) {
             if (controller) {
                 this._videoController = controller;
                 if (this.mediaElement) {
@@ -66,10 +66,10 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
             }
         }
     },
-    
+
     /**
-    @private
-    */
+     * @private
+     */
     _src: {
         value: null
     },
@@ -78,17 +78,17 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
      * @default null
      */
     src: {
-        get: function() {
+        get: function () {
             return this._src;
         },
-        set: function(src) {
+        set: function (src) {
             this._src = src;
         }
     },
 
     /**
-    @private
-    */
+     * @private
+     */
     _sources: {
         value: []
     },
@@ -97,13 +97,13 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
      * @default null
      */
     sources: {
-        get: function() {
+        get: function () {
             return this._sources;
         },
-        set: function(sources) {
+        set: function (sources) {
             if (sources && sources.length) {
                 var mediaElement = this.element.ownerDocument.createElement("video");
-                for (var i=0;i<sources.length;i++) {
+                for (var i = 0; i < sources.length; i++) {
                     var mediaSrc = sources[i].src,
                         mediaType = sources[i].type;
                     if (mediaType && mediaElement.canPlayType(mediaType)) {
@@ -117,32 +117,31 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
     },
 
     /**
-    @function
-    */
+     * @function
+     */
     loadMedia: {
-        value: function() {
+        value: function () {
             this.mediaElement.src = this.src;
             this.mediaElement.load();
         }
     },
 
     /**
-    @private
-    */
+     * @private
+     */
     _repeat: {
-        value: false,
-        enumerable: false
+        value: false
     },
     /**
-        @type {Function}
-        @default {Boolean} false
-    */
+     * @type {Function}
+     * @default {Boolean} false
+     */
     repeat: {
-        get: function() {
+        get: function () {
             return this._repeat;
         },
 
-        set: function(repeat) {
+        set: function (repeat) {
             if (repeat !== this._repeat) {
                 this._repeat = repeat;
                 if (repeat) {
@@ -156,17 +155,17 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
     },
 
     /**
-    @function
-    */
+     * @function
+     */
     toggleRepeat: {
-        value: function() {
+        value: function () {
             this.repeat = !this.repeat;
         }
     },
 
     /**
-      @private
-    */
+     * @private
+     */
     _posterSrc: {
         value: null
     },
@@ -176,19 +175,19 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
      * @default null
      */
     posterSrc: {
-        get: function() {
+        get: function () {
             return this._posterSrc;
         },
-        set: function(posterSrc) {
+        set: function (posterSrc) {
             this._posterSrc = posterSrc;
         }
     },
 
     /**
-    @function
-    */
+     * @function
+     */
     showPoster: {
-        value: function() {
+        value: function () {
             if (this.posterSrc && this.mediaElement) {
                 this.mediaElement.poster = this.posterSrc;
             }
@@ -196,31 +195,33 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
     },
 
     /**
-        Specifies whether the full screen video is supported.
-        @type {Boolean}
-        @default true
-    */
-    supportsFullScreen: { value: true },
+     * Specifies whether the full screen video is supported.
+     * @type {Boolean}
+     * @default true
+     */
+    supportsFullScreen: {
+        value: true
+    },
 
     /**
-    @private
-    */
-    _isFullScreen: { 
-        value: false 
+     * @private
+     */
+    _isFullScreen: {
+        value: false
     },
 
     isFullScreen: {
-        get: function() {
+        get: function () {
             return this._isFullScreen;
         }
     },
-    
+
     /**
-    Toggles full-screen playback mode.
-    @function
-    */
+     * Toggles full-screen playback mode.
+     * @function
+     */
     toggleFullScreen: {
-        value: function() {
+        value: function () {
             if (this.supportsFullScreen) {
                 this._isFullScreen = !this._isFullScreen;
                 if (!this._isFullScreen) {
@@ -244,25 +245,25 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
     },
 
     /**
-    @private
-    */
+     * @private
+     */
     handleControllerStatusChange: {
-        value: function() {
+        value: function () {
             this.needsDraw = true;
         }
     },
 
     /**
-    @private
-    */
+     * @private
+     */
     handleControllerVolumeChange: {
-        value: function() {
+        value: function () {
             this.needsDraw = true;
         }
     },
 
     enterDocument: {
-        value: function(firstTime) {
+        value: function (firstTime) {
             if (firstTime) {
                 // look for src attribute on original element
                 if (this.originalElement.hasAttribute("src") && this.originalElement.getAttribute("src")) {
@@ -271,7 +272,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
                     // try to grab <source> child elements from original element
                     var sources = this.originalElement.getElementsByTagName("source"),
                         mediaSrc, mediaType;
-                    for (var i=0;i<sources.length;i++) {
+                    for (var i = 0; i < sources.length; i++) {
                         mediaSrc = sources[i].getAttribute("src");
                         mediaType = sources[i].getAttribute("type");
                         if (mediaType && !this.mediaElement.canPlayType(mediaType)) {
@@ -284,7 +285,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
 
                 // try to grab <track> child elements from original element
                 var tracks = this.originalElement.getElementsByTagName("track");
-                for (var i=0;i<tracks.length;i++) {
+                for (var i = 0; i < tracks.length; i++) {
                     var trackKind = tracks[i].getAttribute("kind");
                     if (trackKind == "captions" || trackKind == "subtitles") {
                         var track = document.createElement("track");
@@ -294,7 +295,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize( /** @lends Abs
                         track.srclang = tracks[i].getAttribute("srclang");
                         track.default = tracks[i].hasAttribute("default");
                         this.mediaElement.appendChild(track);
-                        this.mediaElement.textTracks[this.mediaElement.textTracks.length-1].mode = "showing";
+                        this.mediaElement.textTracks[this.mediaElement.textTracks.length - 1].mode = "showing";
                     }
                 }
 
