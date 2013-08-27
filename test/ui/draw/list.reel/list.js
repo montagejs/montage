@@ -4,8 +4,7 @@
     @requires montage/ui/component
 */
 var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component,
-    observeProperty = require("montage/frb/observers").observeProperty;
+    Component = require("montage/ui/component").Component;
 
 /**
  @class module:"matte/ui/list.reel".List
@@ -74,13 +73,13 @@ var List = exports.List = Component.specialize(/** @lends module:"matte/ui/list.
     // into the repetition, not the list
 
     observeProperty: {
-        value: function (key, emit, scope) {
-            if (key === "objectAtCurrentIteration" || key === "currentIteration") {
+        value: function (name, emit, scope) {
+            if (name === "objectAtCurrentIteration" || name === "currentIteration") {
                 if (this._repetition) {
-                    return this._repetition.observeProperty(key, emit, scope);
+                    return this._repetition.observeProperty(name, emit, scope);
                 }
             } else {
-                return observeProperty(this, key, emit, scope);
+                return this.super(name, emit, scope);
             }
         }
     }

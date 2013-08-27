@@ -2,8 +2,9 @@
 var Montage = require("core/core").Montage;
 
 var Bindings = exports.Bindings = require("frb");
+var PropertyChanges = require("collections/listen/property-changes");
 
-var bindingPropertyDescriptors = {
+Montage.defineProperties(Montage.prototype, {
 
     defineBinding: {
         value: function (targetPath, descriptor, commonDescriptor) {
@@ -39,8 +40,11 @@ var bindingPropertyDescriptors = {
         value: function () {
             return Bindings.getBindings(this);
         }
+    },
+
+    makePropertyObservable: {
+        value: PropertyChanges.prototype.makePropertyObservable
     }
 
-};
-Montage.defineProperties(Montage, bindingPropertyDescriptors);
-Montage.defineProperties(Montage.prototype, bindingPropertyDescriptors);
+});
+
