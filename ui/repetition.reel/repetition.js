@@ -129,7 +129,7 @@ var Iteration = exports.Iteration = Montage.specialize({
             // is drawn, it enqueue's selection change draw operations and
             // notifies the repetition it needs to be redrawn.
             // Dispatches handlePropertyChange with the "selected" key:
-            this.defineBinding("selected", {
+            this.defineBinding("content.defined() ? selected : null", {
                 "<->": "repetition.contentController._selection.has(content)"
             });
             // An iteration can be "on" or "off" the document.  When the
