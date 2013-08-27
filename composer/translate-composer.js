@@ -732,8 +732,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             // If this composers' component is claiming the "wheel" pointer then handle the event
             if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this.component)) {
                 var oldTranslateY = this._translateY;
+                var deltaY = event.wheelDeltaY || -event.deltaY || 0;
                 this._dispatchTranslateStart();
-                this.translateY = this._translateY - ((event.wheelDeltaY * 20) / 120);
+                this.translateY = this._translateY - ((deltaY * 20) / 120);
                 this._dispatchTranslate();
                 window.clearTimeout(this._translateEndTimeout);
                 this._translateEndTimeout = window.setTimeout(function() {
@@ -994,8 +995,15 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             } else {
                 this._element.addEventListener("mousedown", this, true);
                 this._element.addEventListener("mousedown", this, false);
-                this._element.addEventListener("mousewheel", this, false);
-                this._element.addEventListener("mousewheel", this, true);
+
+                var wheelEventName = "mousewheel";
+                if ("onwheel" in document.createElement("div")){
+                    wheelEventName = "wheel";
+                    this.handleWheel = this.handleMousewheel;
+                    this.captureWheel = this.captureMousewheel;
+                }
+                this._element.addEventListener(wheelEventName, this, false);
+                this._element.addEventListener(wheelEventName, this, true);
             }
 
             this.eventManager.isStoringPointerEvents = true;
