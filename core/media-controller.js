@@ -29,71 +29,79 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
-    @module montage/ui/controller/media-controller
-    @requires montage/core/core
-    @requires montage/ui/component
-    @requires montage/core/logger
-*/
+ * @module montage/ui/controller/media-controller
+ * @requires montage/core/core
+ * @requires montage/ui/component
+ * @requires montage/core/logger
+ */
 var Montage = require("montage").Montage;
 var Target = require("core/target").Target;
 var logger = require("core/logger").logger("mediacontroller");
 
 /**
- @class MediaController
- @classdesc Controls an audio/video media player.
- @extends Montage
-
+ * @class MediaController
+ * @classdesc Controls an audio/video media player.
+ * @extends Montage
  */
-var MediaController = exports.MediaController = Target.specialize( /** @lends MediaController# */ {
+var MediaController = exports.MediaController = Target.specialize(/** @lends MediaController# */ {
+
     /*-----------------------------------------------------------------------------
      MARK:   Constants
      -----------------------------------------------------------------------------*/
+
     /**
-        @type {Property}
-        @default {Number} 0
-    */
-    STOPPED: { enumerable: true, value: 0, writable: false },
+     * @type {Property}
+     * @default {Number} 0
+     */
+    STOPPED: { value: 0, writable: false },
+
     /**
-        @type {Property}
-        @default {Number} 1
-    */
-    PLAYING: { enumerable: true, value: 1, writable: false },
+     * @type {Property}
+     * @default {Number} 1
+     */
+    PLAYING: { value: 1, writable: false },
+
     /**
-        @type {Property}
-        @default {Number} 2
-    */
-    PAUSED:  { enumerable: true, value: 2, writable: false },
+     * @type {Property}
+     * @default {Number} 2
+     * */
+    PAUSED: { value: 2, writable: false },
+
     /**
-        @type {Property}
-        @default {Number} 3
-    */
-    EMPTY:   { enumerable: true, value: 3, writable: false },
+     * @type {Property}
+     * @default {Number} 3
+     */
+    EMPTY: { value: 3, writable: false },
+
     /**
-    @private
-    */
+     * @private
+     */
     _TIMEUPDATE_FREQUENCY: { value: 0.25   },  // Don't refresh too often.
+
+
     /*-----------------------------------------------------------------------------
      MARK:   Properties
      -----------------------------------------------------------------------------*/
+
     /**
-    @private
-    */
+     * @private
+     */
     _mediaController: {
         value: null
     },
     /**
-        @type {Function}
-        @default null
-    */
+     * @type {Function}
+     * @default null
+     */
     mediaController: {
-        get : function() {
+        get: function () {
             if (!this._mediaController) {
                 this._mediaController = new window.MediaController();
                 this._installControlEventHandlers();
             }
             return this._mediaController;
         },
-        set : function(controller) {
+        set: function (controller) {
             if (this._mediaController !== controller) {
                 if (this._mediaController) {
                     this._removeControlEventHandlers();
@@ -108,21 +116,22 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     /*-----------------------------------------------------------------------------
      MARK:   Status & Attributes
      -----------------------------------------------------------------------------*/
+
     /**
-    @private
-    */
+     * @private
+     */
     _status: {
         value: 3
     },
     /**
-    @type {Function}
-    @default {Number} 3
-    */
+     * @type {Function}
+     * @default {Number} 3
+     */
     status: {
-        get: function() {
+        get: function () {
             return this._status;
         },
-        set: function(status) {
+        set: function (status) {
             if (status !== this._status) {
                 if (logger.isDebug) {
                     logger.debug("MediaController:status: " + status);
@@ -131,41 +140,42 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             }
         }
     },
+
     /**
-    @private
-    */
+     * @private
+     */
     _position: {
-        value:null
+        value: null
     },
     /**
-    @type {Function}
-    @default null
-    */
+     * @type {Function}
+     * @default null
+     */
     position: {
-        set: function(time, shouldNotUpdate) {
+        set: function (time, shouldNotUpdate) {
             this._position = time;
             if (!shouldNotUpdate) {
                 this._pauseTime = null;
                 this.currentTime = time;
             }
         },
-        get: function() {
+        get: function () {
             return this._position;
         }
     },
 
     /**
-    @private
-    */
+     * @private
+     */
     _duration: {
         value: null
     },
     /**
-        @type {Function}
-        @default null
-    */
+     * @type {Function}
+     * @default null
+     */
     duration: {
-        set: function(time) {
+        set: function (time) {
             if (isNaN(time)) {
                 if (logger.isDebug) {
                     logger.debug("MediaController:setDuration: duration is not valid");
@@ -177,25 +187,29 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             }
             this._duration = time;
         },
-        get: function() {
+        get: function () {
             return this._duration;
         }
     },
+
+
     /*-----------------------------------------------------------------------------
      MARK:   Media Player Commands
      -----------------------------------------------------------------------------*/
+
     /**
-        @type {Property}
-        @default {Boolean} true
-    */
+     * @type {Property}
+     * @default {Boolean} true
+     */
     autoplay: {
         value: false
     },
+
     /**
-    @function
-    */
+     * @function
+     */
     play: {
-        value: function() {
+        value: function () {
             if (logger.isDebug) {
                 logger.debug("MediaController:play()");
             }
@@ -207,19 +221,19 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             this._pauseTime = null;
         }
     },
-    
+
     /**
-    @private
-    */
+     * @private
+     */
     _pauseTime: {
         value: null
     },
 
     /**
-    @function
-    */
+     * @function
+     */
     pause: {
-        value: function() {
+        value: function () {
             if (logger.isDebug) {
                 logger.debug("MediaController:pause()");
             }
@@ -228,11 +242,12 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             this.mediaController.pause();
         }
     },
+
     /**
-    @function
-    */
+     * @function
+     */
     unpause: {
-        value: function() {
+        value: function () {
             if (logger.isDebug) {
                 logger.debug("MediaController:unpause()");
             }
@@ -242,12 +257,13 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             this.mediaController.unpause();
         }
     },
+
     /**
-    @function
-    @returns {Boolean} !playing (true if it is now playing)
-    */
+     * @function
+     * @returns {Boolean} !playing (true if it is now playing)
+     */
     playPause: {
-        value: function() {
+        value: function () {
             if (logger.isDebug) {
                 logger.debug("MediaController:playPause()");
             }
@@ -265,21 +281,22 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             return !playing;    // true if it is now playing
         }
     },
+
     /**
-    @private
-    */
+     * @private
+     */
     _playbackRate: {
         value: 1
     },
     /**
-    @type {Function}
-    @default {Number} 1
-    */
+     * @type {Function}
+     * @default {Number} 1
+     */
     playbackRate: {
-        get: function() {
+        get: function () {
             return this._playbackRate;
         },
-        set: function(playbackRate) {
+        set: function (playbackRate) {
             if (this._playbackRate !== playbackRate) {
                 this._playbackRate = playbackRate;
                 this.mediaController.playbackRate = this._playbackRate;
@@ -288,14 +305,14 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     },
 
     /**
-        @type {Function}
-        @default {Number} 0
-    */
+     * @type {Function}
+     * @default {Number} 0
+     */
     currentTime: {
-        get: function() {
+        get: function () {
             return this.mediaController.currentTime;
         },
-        set: function(currentTime) {
+        set: function (currentTime) {
             if (this.status === this.EMPTY) {
                 return;
             }
@@ -312,16 +329,17 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
                     this.mediaController.currentTime = currentTime;
                 }
             }
-            catch(err) {
+            catch (err) {
                 logger.error("MediaController:Exception in set currentTime" + this.mediaController.currentTime);
             }
         }
     },
+
     /**
-    @function
-    */
+     * @function
+     */
     rewind: {
-        value: function() {
+        value: function () {
             if (this.status === this.PLAYING) {
                 if (logger.isDebug) {
                     logger.debug("MediaController:rewind()");
@@ -329,12 +347,13 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
                 this.playbackRate = -4.0;
             }
         }
-    },
+    }
+
     /**
-    @function
-    */
+     * @function
+     */
     fastForward: {
-        value: function() {
+        value: function () {
             if (this.status === this.PLAYING) {
                 if (logger.isDebug) {
                     logger.debug("MediaController:fastForward()");
@@ -343,11 +362,12 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             }
         }
     },
+
     /**
-    @function
-    */
+     * @function
+     */
     stop: {
-        value: function() {
+        value: function () {
             if (logger.isDebug) {
                 logger.debug("MediaController:stop()");
             }
@@ -365,16 +385,17 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     /*-----------------------------------------------------------------------------
      MARK:   Volume Commands
      -----------------------------------------------------------------------------*/
+
     /**
-        @type {Function}
-        @returns {Number} this.mediaController.volume * 100
-    */
+     * @type {Function}
+     * @returns {Number} this.mediaController.volume * 100
+     */
     volume: {
-        get: function() {
+        get: function () {
             return this.mediaController.volume * 100;
         },
 
-        set: function(vol) {
+        set: function (vol) {
             var volume = vol;
             if (typeof volume === 'undefined') {
                 volume = 50;
@@ -390,53 +411,57 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     },
 
     /**
-    @function
-    */
+     * @function
+     */
     volumeIncrease: {
-        value: function() {
+        value: function () {
             this.volume += 10;
         }
     },
 
     /**
-    @function
-    */
+     * @function
+     */
     volumeDecrease: {
-        value: function() {
+        value: function () {
             this.volume -= 10;
         }
     },
 
     /**
-    @function
-    */
+     * @function
+     */
     toggleMute: {
-        value: function() {
+        value: function () {
             this.mute = !this.mute;
         }
     },
+
     /**
-    @type {Function}
-    */
+     * @type {Function}
+     */
     mute: {
-        get: function() {
+        get: function () {
             return this.mediaController.muted;
         },
-        set: function(muted) {
+        set: function (muted) {
             if (muted !== this.mediaController.muted) {
                 this.mediaController.muted = muted;
             }
         }
     },
+
+
     /*-----------------------------------------------------------------------------
      MARK:   Event Handlers
      -----------------------------------------------------------------------------*/
-/**
-    @function
-    @returns itself
-    */
+
+    /**
+     * @function
+     * @returns itself
+     */
     handleLoadedmetadata: {
-        value: function() {
+        value: function () {
             if (logger.isDebug) {
                 logger.debug("MediaController:handleLoadedmetadata: PLAYING=" + (this.status === this.PLAYING) + " duration=" + this.mediaController.duration);
             }
@@ -457,32 +482,34 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             }
         }
     },
+
     /**
-    @private
-    */
+     * @private
+     */
     _lastCurrentTime: {
         value: 0
     },
+
     /**
-    @function
-    */
+     * @function
+     */
     handleTimeupdate: {
-        value: function() {
+        value: function () {
             if (this.status !== this.STOPPED) { // A last 'timeupdate' is sent after stop() which is unwanted because it restores the last position.
                 var currentTime = this.mediaController.currentTime;
                 //if (Math.abs(this._lastCurrentTime - currentTime) >= this._TIMEUPDATE_FREQUENCY) {
                 //    this._lastCurrentTime = currentTime;
-                    Object.getPropertyDescriptor(this, "position").set.call(this, currentTime, true);
+                Object.getPropertyDescriptor(this, "position").set.call(this, currentTime, true);
                 //}
             }
         }
     },
 
     /**
-    @function
-    */
+     * @function
+     */
     handlePlay: {
-        value: function() {
+        value: function () {
             if (logger.isDebug) {
                 logger.debug("MediaController:handlePlay");
             }
@@ -490,10 +517,10 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
         }
     },
     /**
-    @function
-    */
+     * @function
+     */
     handlePlaying: {
-        value: function() {
+        value: function () {
             if (logger.isDebug) {
                 logger.debug("MediaController:handlePlaying: PLAYING");
             }
@@ -501,10 +528,10 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
         }
     },
     /**
-    @function
-    */
+     * @function
+     */
     handlePause: {
-        value: function() {
+        value: function () {
             if (this.status !== this.STOPPED) {
                 if (logger.isDebug) {
                     logger.debug("MediaController:handlePause: PAUSED");
@@ -519,10 +546,10 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
         }
     },
     /**
-    @function
-    */
+     * @function
+     */
     handleEnded: {
-        value: function() {
+        value: function () {
             if (logger.isDebug) {
                 logger.debug("MediaController:handleEnded");
             }
@@ -533,10 +560,10 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
         }
     },
     /**
-    @function
-    */
+     * @function
+     */
     handleAbort: {
-        value: function() {
+        value: function () {
             if (logger.isDebug) {
                 logger.debug("MediaController:handleAbort: STOPPED");
             }
@@ -544,11 +571,11 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
         }
     },
     /**
-    @function
-    @param {Event} event TODO
-    */
+     * @function
+     * @param {Event} event TODO
+     */
     handleError: {
-        value: function(event) {
+        value: function (event) {
             if (logger.isDebug) {
                 logger.debug("MediaController:handleError: STOPPED");
             }
@@ -577,11 +604,12 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             }
         }
     },
+
     /**
-    @function
-    */
+     * @function
+     */
     handleEmptied: {
-        value: function() {
+        value: function () {
             if (logger.isDebug) {
                 logger.debug("MediaController:handleEmptied: STOPPED");
             }
@@ -590,10 +618,10 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
     },
 
     /**
-    @private
-    */
+     * @private
+     */
     _installControlEventHandlers: {
-        value: function() {
+        value: function () {
             this.mediaController.addEventListener('loadedmetadata', this);
             this.mediaController.addEventListener('timeupdate', this);
             this.mediaController.addEventListener('play', this);
@@ -605,9 +633,9 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             this.mediaController.addEventListener('ended', this);
         }
     },
-    
+
     _removeControlEventHandlers: {
-        value: function() {
+        value: function () {
             this.mediaController.removeEventListener('loadedmetadata', this);
             this.mediaController.removeEventListener('timeupdate', this);
             this.mediaController.removeEventListener('play', this);
@@ -619,6 +647,8 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
             this.mediaController.removeEventListener('ended', this);
         }
     },
+
+
     /*-----------------------------------------------------------------------------
      MARK:   Configuration
      -----------------------------------------------------------------------------*/
@@ -629,7 +659,7 @@ var MediaController = exports.MediaController = Target.specialize( /** @lends Me
         }
     },
 
-    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
-    blueprint:require("montage")._blueprintDescriptor
+    blueprintModuleId: require("montage")._blueprintModuleIdDescriptor,
+    blueprint: require("montage")._blueprintDescriptor
 
 });
