@@ -3,7 +3,8 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-/*global bootstrap */
+/*global bootstrap,montageDefine:true */
+/*jshint -W015, evil:true, camelcase:false */
 bootstrap("require/browser", function (require) {
 
 var Require = require("require");
@@ -90,10 +91,12 @@ var __FILE__String = "__FILE__",
 
 Require.Compiler = function (config) {
     return function(module) {
-        if (module.factory || module.text === void 0)
+        if (module.factory || module.text === void 0) {
             return module;
-        if (config.useScriptInjection)
+        }
+        if (config.useScriptInjection) {
             throw new Error("Can't use eval.");
+        }
 
         // Here we use a couple tricks to make debugging better in various browsers:
         // TODO: determine if these are all necessary / the best options
@@ -118,7 +121,7 @@ Require.Compiler = function (config) {
         // module.factory = new Function("require", "exports", "module", module.text + "\n//*/"+sourceURLComment);
 
         module.factory.displayName = displayName;
-    }
+    };
 };
 
 Require.XhrLoader = function (config) {
@@ -177,12 +180,14 @@ Require.ScriptLoader = function (config) {
             return getDefinition(hash, module.id).promise;
         })
         .then(function (definition) {
+            /*jshint -W089 */
             delete definitions[hash][module.id];
             for (var name in definition) {
                 module[name] = definition[name];
             }
             module.location = location;
             module.directory = URL.resolve(location, ".");
+            /*jshint +W089 */
         });
     };
 };

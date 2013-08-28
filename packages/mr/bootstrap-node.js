@@ -5,7 +5,7 @@
     3-Clause BSD License
     https://github.com/motorola-mobility/montage/blob/master/LICENSE.md
 */
-
+/*jshint node:true */
 var Require = require("./require");
 require("./node"); // patches Require
 var URL = require("url");
@@ -36,8 +36,9 @@ var bootstrap = function () {
 };
 
 function findPackage(directory, callback) {
-    if (directory == PATH.dirname(directory))
+    if (directory === PATH.dirname(directory)) {
         return callback("Can't find package");
+    }
     var packageJson = PATH.join(directory, "package.json");
     FS.stat(packageJson, function (error, stat) {
         if (error || !stat.isFile()) {
@@ -82,7 +83,7 @@ var loadFreeModule = function (program, command, args) {
     .done();
 };
 
-if (require.main == module) {
+if (require.main === module) {
     bootstrap();
 }
 
