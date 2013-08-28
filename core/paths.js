@@ -64,7 +64,9 @@ var pathPropertyDescriptors = {
             }
             var minus = [];
             return this.addPathChangeListener(path, function (plus) {
-                plus = plus || [];
+                if (!plus || !plus.addRangeChangeListener) {
+                    plus = [];
+                }
                 // Give copies to avoid modification by the listener.
                 dispatch(plus.slice(), minus.slice(), 0);
                 minus = plus;
