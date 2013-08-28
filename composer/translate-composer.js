@@ -717,7 +717,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: null
     },
 
-    captureMousewheel: {
+    captureWheel: {
         value: function(event) {
             if (!this.eventManager.componentClaimingPointer(this._WHEEL_POINTER)) {
                 this.eventManager.claimPointer(this._WHEEL_POINTER, this.component);
@@ -725,7 +725,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         }
     },
 
-    handleMousewheel: {
+    handleWheel: {
         value: function(event) {
             var self = this;
 
@@ -999,8 +999,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 var wheelEventName;
                 if (typeof window.onwheel !== "undefined"){
                     wheelEventName = "wheel";
-                    this.handleWheel = this.handleMousewheel;
-                    this.captureWheel = this.captureMousewheel;
                 } else {
                     wheelEventName = "mousewheel";
                 }
@@ -1022,3 +1020,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     }
 
 });
+
+TranslateComposer.prototype.handleMousewheel = TranslateComposer.prototype.handleWheel;
+TranslateComposer.prototype.captureMousewheel = TranslateComposer.prototype.captureWheel;
