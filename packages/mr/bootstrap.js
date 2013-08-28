@@ -30,6 +30,7 @@
             "promise": "packages/q/q.js"
         };
 
+        /*jshint -W089 */
         if (!global.preload) {
             for (var id in pending) {
                 load(pending[id]);
@@ -42,7 +43,7 @@
         global.bootstrap = function (id, factory) {
             definitions[id] = factory;
             delete pending[id];
-            for (var id in pending) {
+            for (id in pending) {
                 // this causes the function to exit if there are any remaining
                 // scripts loading, on the first iteration.  consider it
                 // equivalent to an array length check
@@ -53,6 +54,7 @@
             delete global.bootstrap;
             allModulesLoaded();
         };
+        /*jshint +W089 */
 
         // one module loaded for free, for use in require.js, browser.js
         global.bootstrap("mini-url", function (require, exports) {
@@ -108,14 +110,18 @@
                 if (mrLocation) {
                     if (script.dataset) {
                         for (name in script.dataset) {
-                            params[name] = script.dataset[name];
+                            if (script.dataset.hasOwnProperty(name)) {
+                                params[name] = script.dataset[name];
+                            }
                         }
                     } else if (script.attributes) {
                         var dataRe = /^data-(.*)$/,
                             letterAfterDash = /-([a-z])/g,
+                            /*jshint -W083 */
                             upperCaseChar = function (_, c) {
                                 return c.toUpperCase();
                             };
+                            /*jshint +W083 */
 
                         for (j = 0; j < script.attributes.length; j++) {
                             attr = script.attributes[j];
@@ -245,7 +251,7 @@
                     location: applicationLocation,
                     hash: params.applicationHash
                 })
-                .invoke('async', moduleId)
+                .invoke('async', moduleId);
             });
 
         })

@@ -44,8 +44,9 @@
 
 })(function (Require, Promise, URL) {
 
-    if (!this)
+    if (!this) {
         throw new Error("Require does not work in strict mode.");
+    }
 
     var globalEval = eval; // reassigning causes eval to not use lexical scope.
 
@@ -139,8 +140,9 @@
             // data-lock on a cycle of dependencies.
             loading = loading || {};
             // has this all happened before?  will it happen again?
-            if (has(loading, topId))
+            if (has(loading, topId)) {
                 return; // break the cycle of violence.
+            }
             loading[topId] = true; // this has happened before
             return load(topId, viaId)
             .then(function () {
@@ -234,20 +236,23 @@
         // too much performance evil for one function.
         function identify(id2, require2, seen) {
             var location = config.location;
-            if (require2.location === location)
+            if (require2.location === location) {
                 return id2;
+            }
 
             var internal = !!seen;
             seen = seen || {};
-            if (has(seen, location))
+            if (has(seen, location)) {
                 return null; // break the cycle of violence.
+            }
             seen[location] = true;
-
+            /*jshint -W089 */
             for (var name in config.mappings) {
                 var mapping = config.mappings[name];
                 location = mapping.location;
-                if (!config.hasPackage(location))
+                if (!config.hasPackage(location)) {
                     continue;
+                }
                 var candidate = config.getPackage(location);
                 var id1 = candidate.identify(id2, require2, seen);
                 if (id1 === null) {
@@ -265,6 +270,7 @@
                     "Can't identify " + id2 + " from " + require2.location
                 );
             }
+            /*jshint +W089 */
         }
 
         // Creates a unique require function for each module that encapsulates
@@ -344,7 +350,7 @@
 
             require.config = config;
 
-            require.read = Require.read;
+            require.read = config.read;
 
             return require;
         }
@@ -382,12 +388,12 @@
             } else {
                 descriptionLocation = URL.resolve(location, "package.json");
             }
-            descriptions[location] = Require.read(descriptionLocation)
+            descriptions[location] = (config.read || Require.read)(descriptionLocation)
             .then(function (json) {
                 try {
                     return JSON.parse(json);
                 } catch (error) {
-                    error.message = error.message + " in " + JSON.stringify(descriptionLocation)
+                    error.message = error.message + " in " + JSON.stringify(descriptionLocation);
                     throw error;
                 }
             });
@@ -409,8 +415,9 @@
 
         config.hasPackage = function (dependency) {
             dependency = normalizeDependency(dependency, config);
-            if (!dependency.location)
+            if (!dependency.location) {
                 return false;
+            }
             var location = dependency.location;
             return !!loadedPackages[location];
         };
@@ -494,8 +501,9 @@
                 dependency.name + "/"
             );
         }
-        if (!dependency.location)
+        if (!dependency.location) {
             return dependency; // partially completed
+        }
         // make sure the dependency location has a trailing slash so that
         // relative urls will resolve properly
         if (!/\/$/.test(dependency.location)) {
@@ -550,12 +558,14 @@
         var overlay = description.overlay || {};
         var layer;
         (config.overlays || Require.overlays).forEach(function (engine) {
+            /*jshint -W089 */
             if (overlay[engine]) {
                 var layer = overlay[engine];
                 for (var name in layer) {
                     description[name] = layer[name];
                 }
             }
+            /*jshint +W089 */
         });
         delete description.overlay;
 
@@ -611,8 +621,9 @@
         // dependencies, devDependencies if not in production
         [description.dependencies, !config.production ? description.devDependencies : null]
         .forEach(function (dependencies) {
-            if (!dependencies)
+            if (!dependencies) {
                 return;
+            }
             Object.keys(dependencies).forEach(function (name) {
                 if (!mappings[name]) {
                     // dependencies are equivalent to name and version mappings,
@@ -656,6 +667,7 @@
             source.unshift.apply(source, parts);
         }
         for (var i = 0, ii = source.length; i < ii; i++) {
+            /*jshint -W035 */
             var part = source[i];
             if (part === "" || part === ".") {
             } else if (part === "..") {
@@ -665,6 +677,7 @@
             } else {
                 target.push(part);
             }
+            /*jshint +W035 */
         }
         return target.join("/");
     }
@@ -804,10 +817,12 @@
                     id.indexOf(prefix) === 0 &&
                     id.charAt(prefix.length) === "/"
                 ) {
+                    /*jshint -W083 */
                     var mapping = mappings[prefix];
                     var rest = id.slice(prefix.length + 1);
                     return config.loadPackage(mapping, config)
                     .then(function (mappingRequire) {
+                        /*jshint +W083 */
                         module.mappingRedirect = rest;
                         module.mappingRequire = mappingRequire;
                         return mappingRequire.deepLoad(rest, config.location);

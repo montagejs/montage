@@ -1,6 +1,6 @@
 {
   "name": "mr",
-  "version": "0.13.1",
+  "version": "0.13.3",
   "description": "A refresh-only CommonJS module system for browsers, used in Montage",
   "keywords": [
     "montage",
@@ -12,7 +12,8 @@
   ],
   "main": "require",
   "scripts": {
-    "test": "node spec/phantom.js"
+    "test": "jasmine-node spec/node-spec.js && node spec/phantom.js && jshint .",
+    "integration": "mop-integration"
   },
   "bin": {
     "mr": "bin/mr"
@@ -31,7 +32,10 @@
     "wd": "~0.0.31",
     "joey": "~0.1.3",
     "istanbul": "~0.1.34",
-    "q-io": "~1.6.4"
+    "q-io": "~1.6.4",
+    "jshint": "~2.1.4",
+    "jasmine-node": "~1.10.2",
+    "mop-integration": "git://github.com/montagejs/mop-integration.git#master"
   },
   "exclude": [
     "README.md",
