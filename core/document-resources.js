@@ -177,7 +177,11 @@ var DocumentResources = Montage.specialize({
 
     normalizeUrl: {
         value: function(url, baseUrl) {
-            return URL.resolve(baseUrl || "http://", url);
+            if (!baseUrl) {
+                baseUrl = this._document.location.href;
+            }
+
+            return URL.resolve(baseUrl, url);
         }
     },
 
