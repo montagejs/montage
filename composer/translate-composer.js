@@ -717,7 +717,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: null
     },
 
-    captureMousewheel: {
+    captureWheel: {
         value: function(event) {
             if (!this.eventManager.componentClaimingPointer(this._WHEEL_POINTER)) {
                 this.eventManager.claimPointer(this._WHEEL_POINTER, this.component);
@@ -725,15 +725,16 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         }
     },
 
-    handleMousewheel: {
+    handleWheel: {
         value: function(event) {
             var self = this;
 
             // If this composers' component is claiming the "wheel" pointer then handle the event
             if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this.component)) {
                 var oldTranslateY = this._translateY;
+                var deltaY = event.wheelDeltaY || -event.deltaY || 0;
                 this._dispatchTranslateStart();
-                this.translateY = this._translateY - ((event.wheelDeltaY * 20) / 120);
+                this.translateY = this._translateY - ((deltaY * 20) / 120);
                 this._dispatchTranslate();
                 window.clearTimeout(this._translateEndTimeout);
                 this._translateEndTimeout = window.setTimeout(function() {
@@ -994,8 +995,15 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             } else {
                 this._element.addEventListener("mousedown", this, true);
                 this._element.addEventListener("mousedown", this, false);
-                this._element.addEventListener("mousewheel", this, false);
-                this._element.addEventListener("mousewheel", this, true);
+
+                var wheelEventName;
+                if (typeof window.onwheel !== "undefined"){
+                    wheelEventName = "wheel";
+                } else {
+                    wheelEventName = "mousewheel";
+                }
+                this._element.addEventListener(wheelEventName, this, false);
+                this._element.addEventListener(wheelEventName, this, true);
             }
 
             this.eventManager.isStoringPointerEvents = true;
@@ -1012,3 +1020,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     }
 
 });
+
+TranslateComposer.prototype.handleMousewheel = TranslateComposer.prototype.handleWheel;
+TranslateComposer.prototype.captureMousewheel = TranslateComposer.prototype.captureWheel;

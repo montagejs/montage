@@ -277,6 +277,28 @@ TestPageLoader.queueTest("translate-composer-test", function(testPage) {
                     });
                 });
             });
+            describe("scrolling", function() {
+                it ("should translate on a the wheel event used by this browser", function() {
+                    spyOn(test, 'handleTranslate').andCallThrough();
+                    test.translate_composer.addEventListener("translate", test.handleTranslate, false);
+
+                    var eventName = "mousewheel";
+                    var deltaPropertyName = "wheelDeltaY";
+                    if ("onwheel" in document.createElement("div")) {
+                        eventName = "wheel";
+                        deltaPropertyName = "deltaY";
+                    }
+
+                    var eventInfo = {target: test.example.element};
+                    eventInfo[deltaPropertyName] = 6;
+
+                    testPage.wheelEvent(eventInfo, eventName, function() {
+                       expect(test.handleTranslate.callCount).toBe(1);
+
+                       // test how much we scroll by, learn amounts
+                    });
+                });
+            });
 
         });
     });
