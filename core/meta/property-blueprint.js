@@ -51,7 +51,7 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
         value:function (name, blueprint, cardinality) {
             this._name = (name !== null ? name : Defaults["name"]);
             this._owner = blueprint;
-            this._cardinality = (cardinality > 0 ? cardinality : Defaults["cardinality"]);
+            this.cardinality = (cardinality > 0 ? cardinality : Defaults["cardinality"]);
             return this;
         }
     },
