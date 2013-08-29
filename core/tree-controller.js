@@ -233,6 +233,38 @@ var Node = exports.TreeControllerNode = Montage.specialize({
         }
     },
 
+    findNodeByContent: {
+        value: function (content) {
+            if (this.content === content) {
+                return this;
+            }
+            var node;
+            for (var i = 0; i < this.children.length; i++) {
+                if (node = this.children[i].findNodeByContent(content)) {
+                    break;
+                }
+            }
+            return node;
+        }
+    },
+
+    preOrderWalk: {
+        value: function (callback) {
+            callback(this);
+            for (var i = 0; i < this.children.length; i++) {
+                this.children[i].preOrderWalk(callback);
+            }
+        }
+    },
+
+    postOrderWalk: {
+        value: function (callback) {
+            for (var i = 0; i < this.children.length; i++) {
+                this.children[i].postOrderWalk(callback);
+            }
+            callback(this);
+        }
+    },
     /**
      * Propagates changes to `_childrenEntries` (by way of `_childrenContent.enumerate()`)
      * into `children`, by constructing the respective node for each child.
@@ -398,6 +430,30 @@ exports.TreeController = Montage.specialize({
      */
     Node: {
         value: Node
+    },
+
+    findNodeByContent: {
+        value: function() {
+            if (this.root) {
+                return  this.root.findNodeByContent.apply(this.root, arguments);
+            }
+        }
+    },
+
+    preOrderWalk: {
+        value: function(callback) {
+            if (this.root) {
+                this.root.preOrderWalk.apply(this.root, arguments);
+            }
+        }
+    },
+
+    postOrderWalk: {
+        value: function() {
+            if (this.root) {
+                this.root.postOrderWalk.apply(this.root, arguments);
+            }
+        }
     }
 
 }, {
