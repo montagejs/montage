@@ -75,6 +75,28 @@ describe("test/base/abstract-button-spec", function () {
                 expect(aButton.needsDraw).toBeTruthy();
             });
         });
+        describe("disabled property", function () {
+            var Button = AbstractButton.specialize( {}),
+                aButton;
+            beforeEach(function () {
+                aButton = new Button();
+                aButton.element = MockDOM.element();
+                aButton.element.tagName = "INPUT";
+                aButton.originalElement = aButton.element;
+            });
+            it("should be enabled after the corresponding property change", function () {
+                aButton.enabled = true;
+                aButton.enterDocument(true);
+                aButton.draw();
+                expect(aButton.element.disabled).toBeFalsy();
+            });
+            it("should be disabled after the corresponding property change", function () {
+                aButton.enabled = false;
+                aButton.enterDocument(true);
+                aButton.draw();
+                expect(aButton.element.disabled).toBeTruthy();
+            });
+        });
         describe("active target", function () {
             var Button = AbstractButton.specialize( {}),
                 aButton, anElement;

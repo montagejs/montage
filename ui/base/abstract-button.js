@@ -338,7 +338,10 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
                 } else {
                     this.element.setAttribute("tabindex", "-1");
                 }
+            }
 
+            if (this.isInputElement) {
+                this.element.disabled = !this.enabled;
             }
 
             this._drawLabel(this.label);
