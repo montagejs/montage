@@ -157,7 +157,7 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
         }
     },
 
-    receiveFocusFromLabel: {
+    activate: {
         value: function() {
             this.check();
         }

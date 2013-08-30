@@ -157,7 +157,7 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
         }
     },
 
-    receiveFocusFromLabel: {
+    activate: {
         value: function() {
             this.toggleChecked();
         }

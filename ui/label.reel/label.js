@@ -33,11 +33,15 @@ var Label = exports.Label = Text.specialize({
         value: null
     },
 
+    action: {
+        value: "activate"
+    },
+
     handlePress: {
         value: function(event) {
             this.super(event);
-            if(this.target && typeof this.target.receiveFocusFromLabel == "function") {
-                this.target.receiveFocusFromLabel(this);
+            if(this.target && typeof this.target[this.action] == "function") {
+                this.target[this.action]({ from: this });
             }
         }
     },
