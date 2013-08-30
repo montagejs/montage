@@ -14,7 +14,6 @@ var Template = Montage.specialize( {
     _SERIALIZATON_SCRIPT_TYPE: {value: "text/montage-serialization"},
     _ELEMENT_ID_ATTRIBUTE: {value: "data-montage-id"},
     PARAM_ATTRIBUTE: {value: "data-param"},
-    _NORMALIZED_TAG_NAMES: {value: ["IMG", "image"]},
 
     _require: {value: null},
     _resources: {value: null},
@@ -1142,8 +1141,8 @@ var Template = Montage.specialize( {
                 // We are only looking for DOM and SVG image elements
                 var XLINK_NS = 'http://www.w3.org/1999/xlink',          // Namespace for SVG's xlink
                     absoluteUrlRegExp = /^[\w\-]+:|^\//,                // Check for "<protocol>:", "/" and "//",
-                    nodes = this._NORMALIZED_TAG_NAMES.indexOf(parentNode.tagName) !== -1 ?
-                        [parentNode] : parentNode.querySelectorAll(this._NORMALIZED_TAG_NAMES.join(','));
+                    nodes = Template._NORMALIZED_TAG_NAMES.indexOf(parentNode.tagName) !== -1 ?
+                        [parentNode] : parentNode.querySelectorAll(Template._NORMALIZED_TAG_NAMES_SELECTOR);
 
                 for (var i = 0, ii = nodes.length; i < ii; i++) {
                     var node = nodes[i],
@@ -1198,6 +1197,23 @@ var Template = Montage.specialize( {
             }
 
             return template;
+        }
+    },
+
+    _NORMALIZED_TAG_NAMES: {
+        value: ["IMG", "image"]
+    },
+
+    __NORMALIZED_TAG_NAMES_SELECTOR: {
+        value: null
+    },
+
+    _NORMALIZED_TAG_NAMES_SELECTOR: {
+        get: function() {
+            if (!this.__NORMALIZED_TAG_NAMES_SELECTOR) {
+                this.__NORMALIZED_TAG_NAMES_SELECTOR = this._NORMALIZED_TAG_NAMES.join(",");
+            }
+            return this.__NORMALIZED_TAG_NAMES_SELECTOR;
         }
     }
 
