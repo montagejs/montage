@@ -92,6 +92,8 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
             if (firstTime) {
                 this.element.setAttribute("role", "checkbox");
             }
+
+            this.addEventListener("activate", this, false);
         }
     },
 
@@ -157,7 +159,7 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
         }
     },
 
-    receiveFocusFromLabel: {
+    handleActivate: {
         value: function() {
             this.toggleChecked();
         }

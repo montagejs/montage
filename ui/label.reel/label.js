@@ -36,9 +36,18 @@ var Label = exports.Label = Text.specialize({
     handlePress: {
         value: function(event) {
             this.super(event);
-            if(this.target && typeof this.target.receiveFocusFromLabel == "function") {
-                this.target.receiveFocusFromLabel(this);
+            if(this.target && typeof this.target.dispatchEvent == "function") {
+                this.target.dispatchEvent(this._createActivateEvent());
             }
+        }
+    },
+
+    _createActivateEvent: {
+        value: function() {
+            var event = document.createEvent("CustomEvent");
+            event.initCustomEvent("activate", true, true, null);
+            event.target = this.element;
+            return event;
         }
     },
 });
