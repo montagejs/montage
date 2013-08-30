@@ -1183,7 +1183,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
             });
 
             describe("dispatchEvent", function () {
-                it("returns true if the preventDefault was called on the event", function () {
+                it("returns false if the preventDefault was called on the event", function () {
                     target.addEventListener("test", function (event) {
                         event.preventDefault();
                     });
@@ -1191,7 +1191,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                     expect(target.dispatchEvent(testEvent)).toBe(false);
                 });
 
-                it("returns false if the preventDefault was not called on the event", function () {
+                it("returns true if the preventDefault was not called on the event", function () {
                     target.addEventListener("test", function (event) {
                     });
 
@@ -1200,7 +1200,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
             });
 
             describe("dispatchEventNamed", function () {
-                it("returns true if the preventDefault was called on the event", function () {
+                it("returns false if the preventDefault was called on the event", function () {
                     target.addEventListener("test", function (event) {
                         event.preventDefault();
                     });
@@ -1208,7 +1208,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                     expect(target.dispatchEventNamed("test", true, true)).toBe(false);
                 });
 
-                it("returns false if the preventDefault was not called on the event", function () {
+                it("returns true if the preventDefault was not called on the event", function () {
                     target.addEventListener("test", function (event) {
                     });
 
