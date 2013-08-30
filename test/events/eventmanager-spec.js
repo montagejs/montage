@@ -1173,5 +1173,48 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                 });
              });
         });
+
+        describe("Target", function () {
+            var target, testEvent;
+            beforeEach(function () {
+                target = new Target();
+                testEvent = document.createEvent("CustomEvent");
+                testEvent.initCustomEvent("test", true, true);
+            });
+
+            describe("dispatchEvent", function () {
+                it("returns true if the preventDefault was called on the event", function () {
+                    target.addEventListener("test", function (event) {
+                        event.preventDefault();
+                    });
+
+                    expect(target.dispatchEvent(testEvent)).toBe(false);
+                });
+
+                it("returns false if the preventDefault was not called on the event", function () {
+                    target.addEventListener("test", function (event) {
+                    });
+
+                    expect(target.dispatchEvent(testEvent)).toBe(true);
+                });
+            });
+
+            describe("dispatchEventNamed", function () {
+                it("returns true if the preventDefault was called on the event", function () {
+                    target.addEventListener("test", function (event) {
+                        event.preventDefault();
+                    });
+
+                    expect(target.dispatchEventNamed("test", true, true)).toBe(false);
+                });
+
+                it("returns false if the preventDefault was not called on the event", function () {
+                    target.addEventListener("test", function (event) {
+                    });
+
+                    expect(target.dispatchEventNamed("test", true, true)).toBe(true);
+                });
+            });
+        });
     });
 });
