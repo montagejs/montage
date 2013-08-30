@@ -1516,6 +1516,40 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
         value: false
     },
 
+    _arrayObjectPool: {
+        value: {
+            pool: null,
+            size: 10,
+            ix: 0
+        }
+    },
+
+    _getArray: {
+        value: function() {
+            if (this._arrayObjectPool.pool == null) {
+                this._arrayObjectPool.pool = [];
+                for (var i = 0; i < this._arrayObjectPool.size; i++) {
+                    this._arrayObjectPool.pool[i] = [];
+                }
+            }
+
+            if (this._arrayObjectPool.ix < this._arrayObjectPool.size) {
+                return this._arrayObjectPool.pool[this._arrayObjectPool.ix++];
+            } else {
+                return [];
+            }
+        }
+    },
+
+    _disposeArray: {
+        value: function(array) {
+            if (this._arrayObjectPool.ix > 0) {
+                array.length = 0;
+                this._arrayObjectPool.pool[--this._arrayObjectPool.ix] = array;
+            }
+        }
+    },
+
     /**
         If needsDraw property returns true this call adds the current component instance to the rootComponents draw list.
         Then it iterates on every child component in the component's drawList.
@@ -1557,7 +1591,7 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
             }
             if (this._drawList !== null && this._drawList.length > 0) {
                 oldDrawList = this._drawList;
-                this._drawList = [];
+                this._drawList = this._getArray();
                 childComponentListLength = oldDrawList.length;
                 for (i = 0; i < childComponentListLength; i++) {
                     childComponent = oldDrawList[i];
@@ -1572,6 +1606,7 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
                         childComponent._drawIfNeeded(level+1);
                     }
                 }
+                this._disposeArray(oldDrawList);
             }
         }
     },
@@ -2564,6 +2599,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
         value: function RootComponent() {
             this.super();
             this._drawTree = this._drawTree.bind(this);
+            this._readyToDrawListIndex = {};
         }
     },
     /**
@@ -3115,7 +3151,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                 composerList = this.composerList, composer, composerListLength;
             needsDrawList.length = 0;
             composerListLength = composerList.length;
-            this._readyToDrawListIndex = {};
+            this._readyToDrawListIndex.clear();
 
             // Process the composers first so that any components that need to be newly drawn due to composer changes
             // get added in this cycle
