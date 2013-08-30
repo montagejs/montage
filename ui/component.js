@@ -2563,6 +2563,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
     constructor: {
         value: function RootComponent() {
             this.super();
+            this._drawTree = this._drawTree.bind(this);
         }
     },
     /**
@@ -2957,82 +2958,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                 if (drawLogger.isDebug) {
                     drawLogger.debug(this, "requesting a draw");
                 }
-                var self = this, requestAnimationFrame = this.requestAnimationFrame;
-                var _drawTree = function(timestamp) {
-                    var drawPerformanceStartTime;
-
-                    // Before initiating a draw cycle through the components we
-                    // need to have a draw cycle just to add all the stylesheets
-                    // if any is requested to draw.
-                    // We need to do this because adding the stylesheets at the
-                    // same time the components draw won't make the styles
-                    // available at that first draw.
-                    if (self._needsStylesheetsDraw) {
-                        self.drawStylesheets();
-                        self.requestedAnimationFrame = null;
-                        self.drawTree();
-                        return;
-                    }
-
-                    if (drawPerformanceLogger.isDebug) {
-                        if (window.performance) {
-                            drawPerformanceStartTime = window.performance.now();
-                        } else {
-                            drawPerformanceStartTime = Date.now();
-                        }
-                    }
-                    self._frameTime = (timestamp ? timestamp : Date.now());
-                    if (self._clearNeedsDrawTimeOut) {
-                        self._clearNeedsDrawList();
-                    }
-                    if (drawLogger.isDebug) {
-                        // Detect any DOM modification since the previous draw
-                        var newSource = document.documentElement.innerHTML;
-                        if (self._oldSource && newSource !== self._oldSource) {
-                            var warning = ["DOM modified outside of the draw loop"];
-                            var out = self._diff(self._oldSource.split("\n"), newSource.split("\n"));
-                            for (var i = 0; i < out.n.length; i++) {
-                                // == null ok. Is also checking for undefined
-                                if (out.n[i].text == null) {
-                                    warning.push('+ ' + out.n[i]);
-                                } else {
-                                    // == null ok. Is also checking for undefined
-                                    for (var n = out.n[i].row + 1; n < out.o.length && out.o[n].text == null; n++) {
-                                        warning.push('- ' + out.o[n]);
-                                    }
-                                }
-                            }
-                            console.warn(warning.join("\n"));
-                        }
-
-                        console.group((timestamp ? drawLogger.toTimeString(new Date(timestamp)) + " " : "") + "Draw Fired");
-                    }
-
-                    self.drawIfNeeded();
-
-                    if (drawPerformanceLogger.isDebug) {
-                        if (window.performance) {
-                            var drawPerformanceEndTime = window.performance.now();
-                        } else {
-                            var drawPerformanceEndTime = Date.now();
-                        }
-
-                        console.log("Draw Cycle Time: ",
-                            drawPerformanceEndTime - drawPerformanceStartTime,
-                            ", Components: ", self._lastDrawComponentsCount);
-                    }
-
-                    if (drawLogger.isDebug) {
-                        console.groupEnd();
-                        self._oldSource = document.documentElement.innerHTML;
-                    }
-                    self._frameTime = null;
-                    if (self._scheduleComposerRequest) {
-                        self.drawTree();
-                    }
-                };
+                var requestAnimationFrame = this.requestAnimationFrame;
                 if (requestAnimationFrame) {
-                    this.requestedAnimationFrame = requestAnimationFrame.call(window, _drawTree);
+                    this.requestedAnimationFrame = requestAnimationFrame.call(window, this._drawTree);
                 } else {
                     // Shim based in Erik Möller's code at
                     // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
@@ -3049,6 +2977,82 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
             }
         },
         enumerable: false
+    },
+
+    _drawTree: {
+        value: function(timestamp) {
+            var drawPerformanceStartTime;
+
+            // Before initiating a draw cycle through the components we
+            // need to have a draw cycle just to add all the stylesheets
+            // if any is requested to draw.
+            // We need to do this because adding the stylesheets at the
+            // same time the components draw won't make the styles
+            // available at that first draw.
+            if (this._needsStylesheetsDraw) {
+                this.drawStylesheets();
+                this.requestedAnimationFrame = null;
+                this.drawTree();
+                return;
+            }
+
+            if (drawPerformanceLogger.isDebug) {
+                if (window.performance) {
+                    drawPerformanceStartTime = window.performance.now();
+                } else {
+                    drawPerformanceStartTime = Date.now();
+                }
+            }
+            this._frameTime = (timestamp ? timestamp : Date.now());
+            if (this._clearNeedsDrawTimeOut) {
+                this._clearNeedsDrawList();
+            }
+            if (drawLogger.isDebug) {
+                // Detect any DOM modification since the previous draw
+                var newSource = document.documentElement.innerHTML;
+                if (this._oldSource && newSource !== this._oldSource) {
+                    var warning = ["DOM modified outside of the draw loop"];
+                    var out = this._diff(this._oldSource.split("\n"), newSource.split("\n"));
+                    for (var i = 0; i < out.n.length; i++) {
+                        // == null ok. Is also checking for undefined
+                        if (out.n[i].text == null) {
+                            warning.push('+ ' + out.n[i]);
+                        } else {
+                            // == null ok. Is also checking for undefined
+                            for (var n = out.n[i].row + 1; n < out.o.length && out.o[n].text == null; n++) {
+                                warning.push('- ' + out.o[n]);
+                            }
+                        }
+                    }
+                    console.warn(warning.join("\n"));
+                }
+
+                console.group((timestamp ? drawLogger.toTimeString(new Date(timestamp)) + " " : "") + "Draw Fired");
+            }
+
+            this.drawIfNeeded();
+
+            if (drawPerformanceLogger.isDebug) {
+                if (window.performance) {
+                    var drawPerformanceEndTime = window.performance.now();
+                } else {
+                    var drawPerformanceEndTime = Date.now();
+                }
+
+                console.log("Draw Cycle Time: ",
+                    drawPerformanceEndTime - drawPerformanceStartTime,
+                    ", Components: ", this._lastDrawComponentsCount);
+            }
+
+            if (drawLogger.isDebug) {
+                console.groupEnd();
+                this._oldSource = document.documentElement.innerHTML;
+            }
+            this._frameTime = null;
+            if (this._scheduleComposerRequest) {
+                this.drawTree();
+            }
+        }
     },
 
     /**
@@ -3092,6 +3096,12 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
 
     _lastDrawComponentsCount: {
         value: null
+    },
+
+    _sortByLevel: {
+        value: function(component1, component2) {
+            return component1._treeLevel - component2._treeLevel;
+        }
     },
 
     /**
@@ -3139,10 +3149,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
             }
 
             // Sort the needsDraw list so that any newly added items are drawn in the correct order re: parent-child
-            var sortByLevel = function(component1, component2) {
-                return component1._treeLevel - component2._treeLevel;
-            };
-            needsDrawList.sort(sortByLevel);
+            needsDrawList.sort(this._sortByLevel);
 
             for (i = 0; i < j; i++) {
                 component = needsDrawList[i];
