@@ -91,7 +91,6 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
         value: function(firstTime) {
             if (firstTime) {
                 this.element.setAttribute("role", "radio");
-                this.addEventListener("activate", this, false);
             }
         }
     },
@@ -158,7 +157,7 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
         }
     },
 
-    handleActivate: {
+    receiveFocusFromLabel: {
         value: function() {
             this.check();
         }
