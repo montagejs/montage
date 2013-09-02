@@ -95,6 +95,22 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
         }
     },
 
+    _crossOrigin: {
+        value: null
+    },
+
+    crossOrigin: {
+        set: function(value) {
+            if (value !== this._crossOrigin) {
+                this._crossOrigin = value;
+                this.needsDraw = true;
+            }
+        },
+        get: function() {
+            return this._crossOrigin;
+        }
+    },
+
     _rebaseSrc: {
         value: function() {
             var url;
@@ -144,11 +160,27 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
 
     draw: {
         value: function() {
+            var src;
+
             if (this._isLoadingImage || this._isInvalidSrc) {
-                this.element.src = this.emptyImageSrc;
+                src = this.emptyImageSrc;
             } else {
-                this.element.src = this._src;
+                src = this._src;
             }
+
+            // data: procotol is considered local and fires a CORS exception
+            // when loaded in a non-localhost configuration because it doesn't
+            // have the necessary properties for a cross-request.
+            // From the spec it seems there is a special case for data: URLs
+            // but at least Chrome seems to behave differently.
+            // http://www.whatwg.org/specs/web-apps/current-work/multipage/fetching-resources.html#cors-settings-attribute
+            if (this._crossOrigin == null || src.slice(0, 5) === "data:") {
+                this.element.removeAttribute("crossorigin");
+            } else {
+                this.element.setAttribute("crossorigin", this._crossOrigin);
+            }
+
+            this.element.src = src;
             this.element.setAttribute("aria-label", this._textAlternative);
         }
     },
