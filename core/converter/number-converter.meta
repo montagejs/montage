@@ -32,6 +32,17 @@
             "helpKey": ""
         }
     },
+    "numberConverter_forceDecimals": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "forceDecimals",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
     "numberConverter_allowFloat": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -82,6 +93,9 @@
                     "@": "numberConverter_decimals"
                 },
                 {
+                    "@": "numberConverter_forceDecimals"
+                },
+                {
                     "@": "numberConverter_round"
                 },
                 {
@@ -98,6 +112,9 @@
                     },
                     {
                         "@": "numberConverter_decimals"
+                    },
+                    {
+                        "@": "numberConverter_forceDecimals"
                     },
                     {
                         "@": "numberConverter_round"
