@@ -123,6 +123,23 @@ describe("converter-spec", function() {
             expect(result).toBe('1,509,000.929');
         });
 
+        it("should, by default, not include trailing 0s after the decimal", function() {
+            var value = 12.2
+            numberConverter.decimals = 2;
+            numberConverter.shorten = false;
+            var result = numberConverter.convert(value);
+            expect(result).toBe('12.2');
+        });
+
+        it("should add trailing 0s in decimal places when forceDecimals is on", function() {
+            var value = 12.2
+            numberConverter.decimals = 2;
+            numberConverter.shorten = false;
+            numberConverter.forceDecimals = true;
+            var result = numberConverter.convert(value);
+            expect(result).toBe('12.20');
+        });
+
     });
 
     describe("Test formatting of file sizes and numbers representing bytes", function() {
@@ -255,6 +272,7 @@ describe("converter-spec", function() {
         it("should not shorten when asked not to", function() {
             var value = -12400;
             currencyConverter.useParensForNegative = false;
+            currencyConverter.decimals = 0
             currencyConverter.shorten = false;
             var result = currencyConverter.convert(value);
             expect(result).toBe("-12,400 $");
@@ -276,6 +294,14 @@ describe("converter-spec", function() {
             currencyConverter.showCurrencyBeforeNumber = false;
             var result = currencyConverter.convert(value);
             expect(result).toBe("-12,400 $");
+        });
+        it("should include all requested decimal places", function() {
+            var value = 12.2;
+            currencyConverter.decimals = 2;
+            currencyConverter.showCurrencyBeforeNumber = true;
+            currencyConverter.shorten = false;
+            var result = currencyConverter.convert(value);
+            expect(result).toBe("$ 12.20")
         });
     });
 
