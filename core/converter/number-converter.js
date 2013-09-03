@@ -298,6 +298,14 @@ var NumberConverter = exports.NumberConverter = Converter.specialize( /** @lends
 
     /**
      * @type {Property}
+     * @default {Boolean} false
+     */
+     forceDecimals: {
+        value: false
+     },
+
+    /**
+     * @type {Property}
      * @default {Number} null
      */
     round: {
@@ -336,11 +344,20 @@ var NumberConverter = exports.NumberConverter = Converter.specialize( /** @lends
             comma = comma || ',';
             period = period || '.';
             var split = num.toString().split('.');
+
             var numeric = split[0];
-            var decimal = split.length > 1 ? period + split[1] : '';
             while (this._reg.test(numeric)) {
                 numeric = numeric.replace(this._reg, '$1' + comma + '$2');
             }
+
+            var afterDecimal = split.length > 1 ? split[1] : '';
+            if (this.forceDecimals) {
+                while (afterDecimal.length < this.decimals) {
+                    afterDecimal += '0';
+                }
+            }
+            
+            var decimal = afterDecimal.length > 0 ? period + afterDecimal : '';
             return numeric + decimal;
         }
     },

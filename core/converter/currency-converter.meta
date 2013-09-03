@@ -22,6 +22,17 @@
             }
         }
     },
+    "currencyConverter_showCurrencyBeforeNumber": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "showCurrencyBeforeNumber",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
     "root": {
         "prototype": "core/meta/module-blueprint",
         "properties": {
@@ -33,12 +44,18 @@
             "propertyBlueprints": [
                 {
                     "@": "currenyConverter_currency"
+                },
+                {
+                    "@": "currencyConverter_showCurrencyBeforeNumber"
                 }
             ],
             "propertyBlueprintGroups": {
                 "currencyConverter": [
                     {
                         "@": "currenyConverter_currency"
+                    },
+                    {
+                        "@": "currencyConverter_showCurrencyBeforeNumber"
                     }
                 ]
             },

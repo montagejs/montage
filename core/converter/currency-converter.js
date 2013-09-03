@@ -50,6 +50,10 @@ exports.CurrencyConverter = NumberConverter.specialize( /** @lends CurrencyConve
         value: false
     },
 
+    forceDecimals: {
+        value: true
+    },
+
     /**
      * @function
      * @param {Number} amount
