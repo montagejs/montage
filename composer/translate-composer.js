@@ -17,7 +17,6 @@ var Montage = require("montage").Montage,
  * @class TranslateComposer
  * @extends Composer
  */
-
 var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @lends TranslateComposer# */ {
 
     /**
