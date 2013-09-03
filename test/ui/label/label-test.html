@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+        {
+            "test": {
+                "prototype": "ui/label/label-test",
+                "properties": {
+                    "label": {"@": "label"},
+                    "text": {"@": "text"}
+                }
+            },
+
+            "label": {
+                "prototype": "montage/ui/label.reel",
+                "properties": {
+                    "element": {"#": "label"}
+                }
+            },
+
+            "text": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "text"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+    <h1>Label test</h1>
+
+    <div data-montage-id="label"><div id="bar"></div></div>
+    <div data-montage-id="text"></div>
+
+</body>
+</html>

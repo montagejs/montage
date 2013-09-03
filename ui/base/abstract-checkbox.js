@@ -114,7 +114,7 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
             this.dispatchActionEvent();
             this.checked = !this.checked;
         }
-    }
+    },
 
     handlePressStart: {
         value: function(event) {
