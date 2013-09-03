@@ -46,6 +46,11 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         writable: false
     },
 
+    // When set to true, do not respond to events, claim pointers, or prevent default
+    enabled: {
+        value: true
+    },
+
     _externalUpdate: {
         value: true
     },
@@ -548,6 +553,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      */
     handleMousedown: {
         value: function(event) {
+            if (!this.enabled) return;
+
             this._observedPointer = "mouse";
 
             if (event.button === 0 && !this.eventManager.componentClaimingPointer(this._observedPointer)) {
@@ -559,6 +566,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     captureMousemove: {
         value: function(event) {
+            if (!this.enabled) return;
+
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 event.preventDefault();
                 if (this._isFirstMove) {
@@ -572,6 +581,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     captureMouseup: {
         value: function(event) {
+            if (!this.enabled) return;
+
             this._end(event);
         }
     },
@@ -605,6 +616,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     captureTouchstart: {
         value: function(event) {
+            if (!this.enabled) return;
+
             if (this._shouldPreventDefault(event)) {
                 event.preventDefault();
             }
@@ -624,7 +637,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     captureTouchmove: {
         value: function(event) {
             var timeToMove;
-
+            if (!this.enabled) return;
             if (this.stealChildrenPointer && this._isAxisMovement(event.targetTouches[0])) {
                 timeToMove = event.timeStamp - this.pointerStartEventPosition.timeStamp;
                 if (timeToMove < this.stealChildrenPointerThreshold) {
@@ -636,6 +649,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     handleTouchmove: {
         value: function(event) {
+            if (!this.enabled) return;
+
             var i = 0, len = event.changedTouches.length;
             while (i < len && event.changedTouches[i].identifier !== this._observedPointer) {
                 i++;
@@ -669,6 +684,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     captureTouchend: {
         value: function(event) {
+            if (!this.enabled) return;
+
             var i = 0, len = event.changedTouches.length;
             while (i < len && event.changedTouches[i].identifier !== this._observedPointer) {
                 i++;
@@ -755,6 +772,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     handleWheel: {
         value: function(event) {
+            if (!this.enabled) return;
+
             var self = this;
 
             // If this composers' component is claiming the "wheel" pointer then handle the event
