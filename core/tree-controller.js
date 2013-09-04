@@ -233,6 +233,9 @@ var Node = exports.TreeControllerNode = Montage.specialize({
         }
     },
 
+    /**
+     * Find and return the node having the given content.
+     */
     findNodeByContent: {
         value: function (content) {
             if (this.content === content) {
@@ -248,6 +251,10 @@ var Node = exports.TreeControllerNode = Montage.specialize({
         }
     },
 
+    /**
+     * Perform a traversal of the tree, execute the callback function for each node.
+     * The callback is called before continuing the walk on its children.
+     */
     preOrderWalk: {
         value: function (callback) {
             callback(this);
@@ -257,6 +264,10 @@ var Node = exports.TreeControllerNode = Montage.specialize({
         }
     },
 
+    /**
+     * Perform a traversal of the tree, execute the callback function for each node.
+     * The callback is called after continuing the walk on its children.
+     */
     postOrderWalk: {
         value: function (callback) {
             for (var i = 0; i < this.children.length; i++) {
@@ -265,6 +276,7 @@ var Node = exports.TreeControllerNode = Montage.specialize({
             callback(this);
         }
     },
+
     /**
      * Propagates changes to `_childrenEntries` (by way of `_childrenContent.enumerate()`)
      * into `children`, by constructing the respective node for each child.
@@ -432,14 +444,23 @@ exports.TreeController = Montage.specialize({
         value: Node
     },
 
+    /**
+     * Calls findNodeByContent on the root if it is defined.
+     */
     findNodeByContent: {
         value: function() {
             if (this.root) {
                 return  this.root.findNodeByContent.apply(this.root, arguments);
             }
+            else {
+                return null;
+            }
         }
     },
 
+    /**
+     * Calls preOrderWalk on the root if it is defined.
+     */
     preOrderWalk: {
         value: function(callback) {
             if (this.root) {
@@ -448,6 +469,9 @@ exports.TreeController = Montage.specialize({
         }
     },
 
+    /**
+     * Calls preOrderWalk on the root if it is defined.
+     */
     postOrderWalk: {
         value: function() {
             if (this.root) {
