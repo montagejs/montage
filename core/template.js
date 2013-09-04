@@ -1201,7 +1201,7 @@ var Template = Montage.specialize( {
     },
 
     _NORMALIZED_TAG_NAMES: {
-        value: ["IMG", "image"]
+        value: ["IMG", "image", "IFRAME"]
     },
 
     __NORMALIZED_TAG_NAMES_SELECTOR: {
