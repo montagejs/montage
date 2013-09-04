@@ -1,5 +1,6 @@
 
 var TreeController = require("montage/core/tree-controller").TreeController;
+var Object = require("../collections/shim-object");
 
 Error.stackTraceLimit = Infinity;
 
@@ -224,12 +225,12 @@ describe("core/tree-controller-spec", function () {
                 expect(node.content).toBe(seek);
             });
 
-            it("find node by content from treeController", function () {
+            it("find node by content from treeController with Object.equals", function () {
                 treeController = new TreeController();
                 treeController.content = tree;
                 root = treeController.root;
-                var seek = tree.children[1];
-                node = treeController.findNodeByContent(seek);
+                var seek = tree.children[1].children[0];
+                node = treeController.findNodeByContent(seek, Object.equals);
                 expect(node.content).toBe(seek);
             });
         });

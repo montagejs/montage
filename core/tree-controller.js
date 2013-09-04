@@ -2,6 +2,7 @@
 var Montage = require("core/core").Montage;
 var Map = require("collections/map");
 var WeakMap = require("collections/weak-map");
+var Object = require("collections/shim-object");
 
 // A tree controller is a view-model that tracks whether each node in a
 // corresponding data-model is expanded or collapsed.  It also produces a
@@ -237,8 +238,9 @@ var Node = exports.TreeControllerNode = Montage.specialize({
      * Find and return the node having the given content.
      */
     findNodeByContent: {
-        value: function (content) {
-            if (this.content === content) {
+        value: function (content, equals) {
+            equals = equals || Object.is;
+            if (equals(this.content, content)) {
                 return this;
             }
             var node;
