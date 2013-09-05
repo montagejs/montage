@@ -1,3 +1,10 @@
+### 0.13.4
+
+ - Update Q from v0.9.6 to v0.9.7
+ - Fix loading of bundles
+ - Wait for preload to finish before issuing requests for modules that might
+   be included in one of the bundles
+
 ### 0.13.3
 
  - Use `config.read` when running on Node

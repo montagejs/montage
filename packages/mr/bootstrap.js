@@ -32,8 +32,9 @@
 
         /*jshint -W089 */
         if (!global.preload) {
+            var mrLocation = resolve(window.location, params.mrLocation);
             for (var id in pending) {
-                load(pending[id]);
+                load(resolve(mrLocation, pending[id]));
             }
         }
 
@@ -176,9 +177,8 @@
     var resolve = makeResolve();
 
     var load = function (location) {
-        var params = getParams();
         var script = document.createElement("script");
-        script.src = resolve(params.mrLocation, location);
+        script.src = location;
         script.onload = function () {
             // remove clutter
             script.parentNode.removeChild(script);
