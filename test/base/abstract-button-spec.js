@@ -47,7 +47,8 @@ describe("test/base/abstract-button-spec", function () {
             it("should update the value if isInputElement is true", function () {
                 aButton.isInputElement = true;
                 aButton.label = "hello";
-                expect(aButton.value).toEqual( "hello");
+                aButton.draw();
+                expect(aButton.element.value).toEqual( "hello");
             });
         });
         describe("draw", function () {

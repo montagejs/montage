@@ -126,21 +126,8 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
                     this.error = e;
                 }
             }
-
             this._label = "" + value;
-            if (this.isInputElement) {
-                this.value = this._label;
-            }
-
             this.needsDraw = true;
-        }
-    },
-
-    _setLabelInitialValue: {
-        value: function(value) {
-            if (this._label === undefined) {
-                this._label = value;
-            }
         }
     },
 
@@ -282,28 +269,16 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
                 // Only take the value from the element if it hasn't been set
                 // elsewhere (i.e. in the serialization)
                 if (this.isInputElement) {
-                    // NOTE: This might not be the best way to do this
-                    // With an input element value and label are one and the same
-                    Object.defineProperty(this, "value", {
-                        get: function() {
-                            return this._label;
-                        },
-                        set: function(value) {
-                            this.label = value;
-                        }
-                    });
-
                     if (this._label === undefined) {
-                        this._label = this.originalElement.value;
+                        this.label = this.originalElement.value;
                     }
                 } else {
                     if (!this.originalElement.firstChild) {
                         this.originalElement.appendChild(document.createTextNode(""));
                     }
                     this._labelNode = this.originalElement.firstChild;
-                    this._setLabelInitialValue(this._labelNode.data)
                     if (this._label === undefined) {
-                        this._label = this._labelNode.data;
+                        this.label = this._labelNode.data;
                     }
                 }
 
@@ -323,7 +298,7 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
         enumerable: false,
         value: function(value) {
             if (this.isInputElement) {
-                this._element.setAttribute("value", value);
+                this._element.value = value;
             } else if (this._labelNode) {
                 this._labelNode.data = value;
             }
