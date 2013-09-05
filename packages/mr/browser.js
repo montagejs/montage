@@ -141,6 +141,27 @@ var getDefinition = function (hash, id) {
     definitions[hash][id] = definitions[hash][id] || Promise.defer();
     return definitions[hash][id];
 };
+
+var loadIfNotPreloaded = function (location, definition, preloaded) {
+    // The package.json might come in a preloading bundle. If so, we do not
+    // want to issue a script injection. However, if by the time preloading
+    // has finished the package.json has not arrived, we will need to kick off
+    // a request for the requested script.
+    if (preloaded && preloaded.isPending()) {
+        preloaded
+        .then(function () {
+            if (definition.isPending()) {
+                Require.loadScript(location);
+            }
+        })
+        .done();
+    } else if (definition.isPending()) {
+        // otherwise preloading has already completed and we don't have the
+        // module, so load it
+        Require.loadScript(location);
+    }
+};
+
 // global
 montageDefine = function (hash, id, module) {
     getDefinition(hash, id).resolve(module);
@@ -175,9 +196,10 @@ Require.ScriptLoader = function (config) {
                 location += ".load.js";
             }
 
-            Require.loadScript(location);
+            var definition = getDefinition(hash, module.id).promise;
+            loadIfNotPreloaded(location, definition, config.preloaded);
 
-            return getDefinition(hash, module.id).promise;
+            return definition;
         })
         .then(function (definition) {
             /*jshint -W089 */
@@ -199,23 +221,7 @@ Require.loadPackageDescription = function (dependency, config) {
         var definition = getDefinition(dependency.hash, "package.json").promise;
         var location = URL.resolve(dependency.location, "package.json.load.js");
 
-        // The package.json might come in a preloading bundle. If so, we do not
-        // want to issue a script injection. However, if by the time preloading
-        // has finished the package.json has not arrived, we will need to kick off
-        // a request for the package.json.load.js script.
-        if (config.preloaded && config.preloaded.isPending()) {
-            config.preloaded
-            .then(function () {
-                if (definition.isPending()) {
-                    Require.loadScript(location);
-                }
-            })
-            .done();
-        } else if (definition.isPending()) {
-            // otherwise preloading has already completed and we don't have the
-            // package description, so load it
-            Require.loadScript(location);
-        }
+        loadIfNotPreloaded(location, definition, config.preloaded);
 
         return definition.get("exports");
     } else {
