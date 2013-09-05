@@ -57,6 +57,7 @@ var Flow = exports.Flow = Component.specialize( {
             });
             // dispatches handle_numberOfIterationsChange
             this.addOwnPropertyChangeListener("_numberOfIterations", this);
+            window.addEventListener("resize", this, false);
         }
     },
 
@@ -979,6 +980,35 @@ var Flow = exports.Flow = Component.specialize( {
         }
     },
 
+    _isListeningToResize: {
+        value: true
+    },
+
+    isListeningToResize: {
+        get: function () {
+            return this._isListeningToResize;
+        },
+        set: function (value) {
+            var _value = !!value;
+
+            if (this._isListeningToResize !== _value) {
+                this._isListeningToResize = _value;
+                if (this._isListeningToResize) {
+                    window.addEventListener("resize", this, false);
+                } else {
+                    window.removeEventListener("resize", this, false);
+                }
+            }
+        }
+    },
+
+    handleResize: {
+        value: function () {
+            this._isCameraUpdated = true;
+            this.needsDraw = true;
+        }
+    },
+
     enterDocument: {
         value: function (firstTime) {
             if (firstTime) {
@@ -986,10 +1016,6 @@ var Flow = exports.Flow = Component.specialize( {
 
                 this._determineCssPrefixedProperties();
 
-                window.addEventListener("resize", function () {
-                    self._isCameraUpdated = true;
-                    self.needsDraw = true;
-                }, false);
                 /*"bindings": {
                 "value": {"<-": "@rangeController.content.indexOf(@rangeController.selection.0)"}
             }*/
