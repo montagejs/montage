@@ -1,7 +1,15 @@
-spec
+.DS_Store
+.idea
+.jshintignore
+.jshintrc
+.npmignore
+.tmp
+.travis.yml
+adhoc.html
+adhoc.js
 demo
-<<<<<<< HEAD
-node_modules
-=======
 docs
->>>>>>> 8d02b8d65d33436716291060ba28b5105fbf01f4
+lcov-report/
+lcov.info
+node_modules
+spec
