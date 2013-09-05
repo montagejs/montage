@@ -4,7 +4,6 @@ node_js:
 script: npm run $COMMAND
 env:
   - COMMAND=test
-# Re-enable once a version of Mop with mock fs support is releaed on npm
-#  - COMMAND=integration MR_VERSION=. MOP_VERSION=0.13
-#  - COMMAND=integration MR_VERSION=. MOP_VERSION=latest
+  - COMMAND=integration MR_VERSION=. MOP_VERSION=0.13
+  - COMMAND=integration MR_VERSION=. MOP_VERSION=latest
   - COMMAND=integration MR_VERSION=. MOP_VERSION="#master"
