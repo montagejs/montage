@@ -989,12 +989,15 @@ var Flow = exports.Flow = Component.specialize( {
             return this._isListeningToResize;
         },
         set: function (value) {
-            window.removeEventListener("resize", this, false);
-            if (value) {
-                window.addEventListener("resize", this, false);
-                this._isListeningToResize = true;
-            } else {
-                this._isListeningToResize = false;
+            var _value = !!value;
+
+            if (this._isListeningToResize !== _value) {
+                this._isListeningToResize = _value;
+                if (this._isListeningToResize) {
+                    window.addEventListener("resize", this, false);
+                } else {
+                    window.removeEventListener("resize", this, false);
+                }
             }
         }
     },
