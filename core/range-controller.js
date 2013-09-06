@@ -50,13 +50,52 @@ var RangeController = exports.RangeController = Montage.specialize( {
      */
     constructor: {
         value: function RangeController() {
+            var self = this;
+            // This function is used to replace the `splice` function on the
+            // selection array, to ensure that it always respects the
+            // multiSelect and avoidsEmptySelection properties.
+            //
+            // At one point this was done with a binding and a range change
+            // listener, but because one cannot modify the changing array in
+            // a range change listener, the consistency was postponed to the
+            // next tick. One tick's worth of inconsistency is forgivable, but
+            // in that time a repetition draw would occur to update the
+            // `selected` CSS classes. In the case of multiSelect == false the
+            // user would see the visual artifact of two items being selected
+            // at once, which *is* unacceptable.
+            //
+            // This method ensures that the selected array is always consistent
+            // with those properties. See the `selection` setter for the use
+            // of this function.
+            this._selectionSplice = function (start, howMany) {
+                var args = arguments;
+
+                var oldLength = this.length;
+                var minusLength =  Math.min(howMany, oldLength - start);
+                var plusLength = Math.max(arguments.length - 2, 0);
+                var diffLength = plusLength - minusLength;
+                var newLength = Math.max(oldLength + diffLength, start + plusLength);
+
+                if (!self.multiSelect && newLength > 1) {
+                    // Clear the array and use just the last element of the
+                    // new elements to be added or, if there are none to be
+                    // added (in the case of .slice(0, 0) in the selection
+                    // setter) then use the last element of the existing
+                    // content. This falls back to undefined if the array
+                    // is of zero length
+                    var element = plusLength ? arguments[plusLength + 1] : this[this.length - 1];
+                    args = [0, oldLength, element];
+                } else if (self.avoidsEmptySelection && newLength === 0) {
+                    args = Array.prototype.slice.call(arguments);
+                    // start
+                    args[0] = 1;
+                }
+
+                return self._originalSelectionSplice.apply(this, args);
+            };
 
             this.content = null;
-            this._selection = [];
             this.selection = [];
-            this.defineBinding("_selection.rangeContent()", {
-                "<->": "selection.rangeContent()"
-            });
 
             this.sortPath = null;
             this.filterPath = null;
@@ -99,7 +138,6 @@ var RangeController = exports.RangeController = Montage.specialize( {
                 ")"
             });
 
-            this._selection.addRangeChangeListener(this, "selection");
             this.addRangeAtPathChangeListener("content", this, "handleContentRangeChange");
             this.addPathChangeListener("sortPath", this, "handleOrderChange");
             this.addPathChangeListener("reversed", this, "handleOrderChange");
@@ -243,15 +281,43 @@ var RangeController = exports.RangeController = Montage.specialize( {
      * any collection that supports range change events like <code>Array</code>
      * or <code>SortedSet</code>.
      */
-    selection: {value: null},
+    selection: {
+        get: function () {
+            return this._selection;
+        },
+        set: function (value) {
+            if (value === this._selection) {
+                return;
+            }
 
-    /**
-     * Because the user can replace the selection object, we use a range
-     * content change listener on a hidden selection array that tracks the
-     * actual selection.
-     * @private
-     */
-    _selection: {value: null},
+            // restore the original splice of the old array
+            if (this._selection) {
+                this._selection.splice = this._originalSelectionSplice;
+            }
+
+            if (!value) {
+                value = [];
+            }
+
+            if (!value.isObservable && value.makeObservable) {
+                value.makeObservable();
+            }
+            this._originalSelectionSplice = value.splice;
+            value.splice = this._selectionSplice;
+
+            // Run a `splice` to make sure the array satisfies multiSelect and
+            // avoidsEmptySelection. If a new empty array is set and
+            // avoidsEmptySelection is true we want to keep an element from
+            // the current selection.
+            if (!value.length && this.avoidsEmptySelection) {
+                value.splice(0, 0, this._selection[0]);
+            } else {
+                value.splice(0, 0);
+            }
+
+            this._selection = value;
+        }
+    },
 
     /**
      * A managed interface for adding values to the selection, accounting for
@@ -262,10 +328,10 @@ var RangeController = exports.RangeController = Montage.specialize( {
      */
     select: {
         value: function (value) {
-            if (!this.multiSelect && this._selection.length >= 1) {
-                this._selection.clear();
+            if (!this.multiSelect && this.selection.length >= 1) {
+                this.selection.clear();
             }
-            this._selection.add(value);
+            this.selection.add(value);
         }
     },
 
@@ -278,8 +344,8 @@ var RangeController = exports.RangeController = Montage.specialize( {
      */
     deselect: {
         value: function (value) {
-            if (!this.avoidsEmptySelection || this._selection.length > 1) {
-                this._selection["delete"](value);
+            if (!this.avoidsEmptySelection || this.selection.length > 1) {
+                this.selection["delete"](value);
             }
         }
     },
@@ -293,8 +359,8 @@ var RangeController = exports.RangeController = Montage.specialize( {
      */
     clearSelection: {
         value: function () {
-            if (!this.avoidsEmptySelection || this._selection.length > 1) {
-                this._selection.clear();
+            if (!this.avoidsEmptySelection || this.selection.length > 1) {
+                this.selection.clear();
             }
         }
     },
@@ -493,35 +559,7 @@ var RangeController = exports.RangeController = Montage.specialize( {
             // remove all values from the selection that were removed (but
             // not added back)
             minus.deleteEach(plus);
-            this._selection.deleteEach(minus);
-        }
-    },
-
-    /**
-     * Dispatched by a range-at-path change listener on the selection, arragned
-     * in constructor.  Reacts to managed (as by the select or deselect methods)
-     * or unmanaged changes to the selection by enforcing the
-     * <code>avoidsEmptySelection</code> and
-     * <code>multiSelect</code> invariants.  However, it must
-     * schedule these changes for a separate event because it cannot interfere
-     * with the change operation in progress.
-     * @private
-     */
-    handleSelectionRangeChange: {
-        value: function (plus, minus, index) {
-            var self = this;
-            Promise.nextTick(function () {
-                var length = self._selection.length;
-                // Performing these in next tick avoids interfering with the
-                // plan in the dispatcher, highlighting the fact that there is
-                // a plan interference hazard inherent to the present
-                // implementation of collection event dispatch.
-                if (self.avoidsEmptySelection && length === 0) {
-                    self.select(minus[minus.length - 1]);
-                } else if (!self.multiSelect && length > 1) {
-                    self._selection.splice(0, self._selection.length, plus[plus.length - 1]);
-                }
-            });
+            this.selection.deleteEach(minus);
         }
     },
 
@@ -537,7 +575,7 @@ var RangeController = exports.RangeController = Montage.specialize( {
             if (this.deselectInvisibleContent) {
                 var diff = minus.clone(1);
                 diff.deleteEach(plus);
-                this._selection.deleteEach(minus);
+                this.selection.deleteEach(minus);
             }
         }
     },
@@ -550,7 +588,7 @@ var RangeController = exports.RangeController = Montage.specialize( {
     handleOrderChange: {
         value: function () {
             if (this.clearSelectionOnOrderChange) {
-                this._selection.clear();
+                this.selection.clear();
             }
         }
     },
@@ -566,21 +604,21 @@ var RangeController = exports.RangeController = Montage.specialize( {
             if (this.selectAddedContent) {
                 if (
                     !this.multiSelect &&
-                    this._selection.length >= 1
+                    this.selection.length >= 1
                 ) {
-                    this._selection.clear();
+                    this.selection.clear();
                 }
-                this._selection.add(value);
+                this.selection.add(value);
             }
         }
     },
 
     handleMultiSelectChange: {
         value: function() {
-            var length = this._selection.length;
+            var length = this.selection.length;
 
             if (!this.multiSelect && length > 1) {
-                this._selection.splice(0, length - 1);
+                this.selection.splice(0, length - 1);
             }
         }
     }
