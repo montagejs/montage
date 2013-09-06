@@ -1,3 +1,58 @@
+### v0.13.6
+
+-  **Montage**
+
+   Bump Mr version to 0.13.4. Fixes an issue caused by a Safari bug on the
+   very first load. Montage would not work at all because promises engine
+   couldn't work.
+
+-  **Template**
+
+   Fixed bug with relative url's not working in image and iframes elements.
+
+-  **NumberConverter**
+
+   New property "forceDecimals" that adds 0's to the decimal part of a number
+   to make sure it has the number of decimals specified in the "decimals"
+   property. It is set to `true` by default.
+
+-  **AbstractButton**
+
+   Fixed an issue with the `enabled` property that wouldn't be respected when
+   set to `false`.
+
+-  **TranslateComposer**
+
+   Added support to the standard `wheel` event. This was an issue in Firefox.
+
+-  **Blueprint**
+
+   Fixed a bug in the cardinality initialization.
+   Fixed a bug in the AbstractSelect blueprint.
+
+-  **Flow**
+
+   Fixed a bug in the Flow selection where an hidden iteration could become
+   deselected.
+
+-  **MediaController**
+
+   Overhaul change to the MediaController API.
+
+-  **AbstractVideo**
+
+   New abstract UI type - AbstractVideo - It provides an API and the base
+   code to implement a video ui widget. An example of its usage can be found
+   in the digit Video component.
+
+### v0.13.5
+
+-  **Flow**
+
+   Fixed a bug that was braking future usage of a TranslateComposer. If the
+   flow was the first component to be interacted with a slider (that uses the
+   TranslateComposer internally) wouldn't be able to slide.
+
 ### v0.13.4
 
 -  **Montage**
