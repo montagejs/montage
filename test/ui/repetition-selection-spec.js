@@ -129,7 +129,9 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
 
             it("should mark a newly added and newly selected object as selected", function () {
                 testPage.test.addAndSelect();
-                testPage.waitForDraw(3);
+                testPage.waitForDraw(2);
+                // It only needs 2 draws, but sometimes the draw doesn't happen in time...
+                waits(100);
 
                 runs(function () {
                     var addedIndex = nameController.content.length - 1;
