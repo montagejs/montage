@@ -26,6 +26,148 @@ describe("core/range-controller-spec", function() {
 
     });
 
+    describe("multiSelect", function () {
+
+        beforeEach(function () {
+            rangeController.selection = [0];
+            expect(rangeController.selection).toEqual([0]);
+        });
+
+        describe("when false", function () {
+            beforeEach(function () {
+                rangeController.multiSelect = false;
+            });
+
+            it("allows a selected item to be added", function () {
+                rangeController.selection.push(1);
+                expect(rangeController.selection).toEqual([1]);
+            });
+
+            it("does not allow multiple selected items to be added", function () {
+                rangeController.selection.push(1, 2);
+                expect(rangeController.selection).toEqual([2]);
+            });
+
+            it("allows a selected item to be set", function () {
+                rangeController.selection = [1];
+                expect(rangeController.selection).toEqual([1]);
+            });
+
+            it("does not allow multiple selected items to be set", function () {
+                rangeController.selection = [1, 2];
+                expect(rangeController.selection).toEqual([2]);
+            });
+
+        });
+
+        describe("when true", function () {
+            beforeEach(function () {
+                rangeController.multiSelect = true;
+            });
+
+            it("allows multiple selected items to be added", function () {
+                rangeController.selection.push(1, 2);
+                expect(rangeController.selection).toEqual([0, 1, 2]);
+            });
+
+            it("allows multiple selected items to be set", function () {
+                rangeController.selection = [1, 2];
+                expect(rangeController.selection).toEqual([1, 2]);
+            });
+        });
+
+    });
+
+    describe("avoidsEmptySelection", function () {
+        beforeEach(function () {
+            rangeController.multiSelect = true;
+            rangeController.selection = [0, 1];
+            expect(rangeController.selection).toEqual([0, 1]);
+        });
+
+        describe("when true", function () {
+            beforeEach(function () {
+                rangeController.avoidsEmptySelection = true;
+            });
+
+            it("allows a selected item to be removed", function () {
+                rangeController.selection.pop();
+                expect(rangeController.selection).toEqual([0]);
+            });
+
+            it("does not allow all items to be removed", function () {
+                rangeController.selection.splice(0, 2);
+                expect(rangeController.selection).toEqual([0]);
+            });
+
+            it("allows a selected item to be set", function () {
+                rangeController.selection = [1];
+                expect(rangeController.selection).toEqual([1]);
+            });
+
+            it("does not allow no selected items to be set", function () {
+                rangeController.selection = [];
+                expect(rangeController.selection).toEqual([0]);
+            });
+        });
+
+        describe("when false", function () {
+            beforeEach(function () {
+                rangeController.avoidsEmptySelection = false;
+            });
+
+            it("allows all selected items to be removed", function () {
+                rangeController.selection.splice(0, 2);
+                expect(rangeController.selection).toEqual([]);
+            });
+
+            it("allows no selected items to be set", function () {
+                rangeController.selection = [];
+                expect(rangeController.selection).toEqual([]);
+            });
+        });
+    });
+
+    describe("!multiSelect and avoidsEmptySelection", function () {
+
+        beforeEach(function () {
+            rangeController.avoidsEmptySelection = false;
+            rangeController.avoidsEmptySelection = true;
+            rangeController.selection = [0];
+        });
+
+        it("does not allow the selected item to be removed", function () {
+            rangeController.selection.pop();
+            expect(rangeController.selection).toEqual([0]);
+        });
+
+        it("does not allow another selected item to be added", function () {
+            rangeController.selection.push(1);
+            expect(rangeController.selection).toEqual([1]);
+        });
+
+        it("does not allow all items to be removed", function () {
+            rangeController.selection.splice(0, 2);
+            expect(rangeController.selection).toEqual([0]);
+        });
+
+        it("allows a selected item to be set", function () {
+            rangeController.selection = [1];
+            expect(rangeController.selection).toEqual([1]);
+        });
+
+        it("only allows one selected item to be set", function () {
+            rangeController.selection = [1, 2];
+            expect(rangeController.selection).toEqual([2]);
+        });
+
+        it("does not allow no selected items to be set", function () {
+            rangeController.selection = [];
+            expect(rangeController.selection).toEqual([0]);
+        });
+
+    });
+
     describe("addContent and contentConstructor", function () {
 
         it("should instantiate a configured content type", function () {
