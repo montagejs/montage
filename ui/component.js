@@ -676,7 +676,8 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
                 childComponent._prepareForEnterDocument();
                 childComponent._parentComponent = this;
 
-                if (childComponent.needsDraw) {
+                if (childComponent.needsDraw &&
+                    !this.rootComponent.isComponentWaitingNeedsDraw(childComponent)) {
                     childComponent._addToParentsDrawList();
                 }
             }
@@ -2642,6 +2643,14 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                 window.clearTimeout(this._clearNeedsDrawTimeOut);
                 this._clearNeedsDrawTimeOut = null;
             }
+        }
+    },
+
+    // TODO: implement this with a flag on the component
+    isComponentWaitingNeedsDraw: {
+        value: function(component) {
+            return component.uuid in this._cannotDrawList ||
+                this._needsDrawList.indexOf(component) >= 0;
         }
     },
 
