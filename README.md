@@ -14,14 +14,14 @@ MontageJS uses functional reactive bindings ([FRB](https://github.com/montagejs/
 For more information, see [FRB](https://github.com/montagejs/frb).
 
 ##CommonJS
-MontageJS fully supports [CommonJS](http://www.commonjs.org/) modules and is a part of the Node and NPM package ecosystem.
+MontageJS fully supports [CommonJS](http://www.commonjs.org/) modules and is a part of the Node and npm package ecosystem.
 
 For more information, see [CommonJS](https://github.com/montagejs/...[TBD]).
 
 #Requirements
 To get started with MontageJS, you will need the following:
 
-* Node.js and npm. MontageJS application development depends on npm, the Node package manager, which is distributed with Node.js.
+* Node.js and npm. MontageJS application development depends on npm, which is distributed with Node.js.
 * A recent stable release of Chrome, Safari or Firefox. MontageJS is intended to leverage the evolving web platform of modern browsers.
 * To contribute: A Git client and public SSH key. For details on installing Git and creating your key, see the setup guides on github.com.
 
