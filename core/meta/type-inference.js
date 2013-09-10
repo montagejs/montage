@@ -20,7 +20,7 @@
  * `Type` instances describing the value and parameters in scope.
  *
  * ```javascript
- * var Scope = requir("frb/scope");
+ * var Scope = require("frb/scope");
  * var valueType = Type.of([1, 2, 3]);
  * var scope = new Scope(valueType);
  * var result = TypeInference.infer("length", scope);
@@ -36,8 +36,8 @@
  * The type inferrer distinguishes arrays from tuples and records from objects.
  * A tuple has a fixed length and the type of the values at each index may be
  * different.  For example, enumeration produces entries with a number at index
- * 0 and a value from the content of the input at index 1.  An record is
- * similar in that it has a fixed structure.  Blueprints provide more advanced,
+ * 0 and a value from the content of the input at index 1.  A record is similar
+ * in that it has a fixed structure.  Blueprints provide more advanced,
  * explicit type information of objects.  The type inferrence engine has no way
  * to model objects used as maps and FRB has little use for such objects since
  * we cannot synchronously observe the creation or deletion of properties.  As
@@ -55,8 +55,8 @@
  * `Type.of` encouters an array, it describes its type as being a fixed-length
  * tuple with the types of the values at respective positions, which may be
  * homogenous or heterogenous.  This is fine for the purpose of type-inference
- * because a de-facto the type of a homogenous tuple "agrees with" the type of
- * an `ArrayType`, which is inherently homogenous.  An object that has no
+ * because the type of a homogenous tuple "agrees with" the type of an
+ * `ArrayType`, which is inherently homogenous.  An object that has no
  * blueprint is presumed to have a `RecordType` with the types of its
  * respective owned properties.  Records are compatible with any object,
  * including objects described by blueprints, as long as the types of the
@@ -90,8 +90,8 @@ var Scope = require("frb/scope");
 // 2.c. whether arbitrary indexes are allowed (for arrays) (already done)
 // 3.   Given an operator name and the types of all its arguments, we need to
 // be able to determine whether this combination of argument types is valid for
-// that operator AND the project the type of the result.  This can be done
-// already with what I have.
+// that operator AND then project the type of the result.  This can be done
+// already with what is here.
 // In summary, we could use a registry of operators with accepted argument
 // patterns.
 
@@ -112,14 +112,11 @@ var Scope = require("frb/scope");
 // TODO make argument length checks consistently display FRB stringify of given
 // syntax
 
-// TODO questions
-// 1.   Afonso, I need a type that encapsulates all the blueprints for a
-// serialization so I can look them up by label.  If something already exists,
-// let me know.  I presume we have a way of getting the prototypes for each
-// object by label, and it would only be a small jump to grab blueprint
-// promises for every component and wait for them all.  For "values" by label,
-// we might be able to extend Type.of(value) to resolve component references to
-// blueprints.
+// TODO infer the types of components by label.  Afonso points us in the
+// direction of `core/serialization/serialization`, which should allow us to
+// find the module identifier and exported name for the component having a
+// given label, and then we can attempt to get the blueprint property of its
+// constructor.
 
 // TODO specs that reveal argument length checks
 
@@ -269,6 +266,15 @@ var ValueType = exports.ValueType = Type.specialize({
     }
 });
 
+/*
+ * The `NullType` (and its singleton, `nullType` have a dual purpose.  For one,
+ * it is the concrete type for the values `null` and `undefined`.  However, it
+ * also stands for the type of any expression that has an *unknown* type.  It
+ * represents values that could be anything.  A type description is
+ * restrictive; each criterion narrows the domain of values that satisfy the
+ * type.  The null type has no restrictions and is conceptually the type
+ * that captures values of all types.
+ */
 var NullType = exports.NullType = ValueType.specialize({
     type: {
         value: "null",
@@ -311,7 +317,7 @@ var BooleanType = exports.BooleanType = ValueType.specialize({
         }
     },
     constructor: {
-        value: function NumberType(value) {
+        value: function BooleanType(value) {
             this.super(value);
         }
     }
