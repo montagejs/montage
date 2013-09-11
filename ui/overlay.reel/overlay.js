@@ -97,26 +97,6 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
         value: null
     },
 
-    _dismissOnExternalInteraction: {
-        value: true
-    },
-
-    dismissOnExternalInteraction: {
-        set: function(value) {
-            if (value !== this._dismissOnExternalInteraction) {
-                this._dismissOnExternalInteraction = value;
-                if (value) {
-                    this._pressComposer.addEventListener("pressStart", this, false);
-                } else {
-                    this._pressComposer.removeEventListener("pressStart", this, false);
-                }
-            }
-        },
-        get: function() {
-            return this._dismissOnExternalInteraction;
-        }
-    },
-
     constructor: {
         value: function Overlay() {
             this.super();
@@ -145,9 +125,7 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 _window = this.element.ownerDocument.defaultView;
                 _window.addEventListener("resize", this);
                 this.addComposerForElement(this._pressComposer, this.element.ownerDocument);
-                if (this._dismissOnExternalInteraction) {
-                    this._pressComposer.addEventListener("pressStart", this, false);
-                }
+                this._pressComposer.addEventListener("pressStart", this, false);
             }
         }
     },
@@ -201,11 +179,16 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
     handlePressStart: {
         value: function(event) {
             var targetElement = event.targetElement,
-                element = this.element;
+                element = this.element,
+                shouldDismissOverlay;
 
             if (!element.contains(targetElement)) {
-                this.hide();
-                this._dispatchDismissEvent();
+                shouldDismissOverlay = this.callDelegateMethod("shouldDismissOverlay", this, targetElement);
+
+                if (shouldDismissOverlay === void 0 || shouldDismissOverlay) {
+                    this.hide();
+                    this._dispatchDismissEvent();
+                }
             }
         }
     },

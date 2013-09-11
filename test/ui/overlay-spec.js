@@ -104,12 +104,14 @@ describe("ui/overlay-spec", function() {
     });
 
     describe("delegate", function() {
-        it("should call willPositionOverlay", function() {
-            var delegate = {
-                willPositionOverlay: jasmine.createSpy()
-            };
+        var delegate;
+        beforeEach(function () {
+            delegate = anOverlay.delegate = {};
+        });
 
-            anOverlay.delegate = delegate;
+        it("should call willPositionOverlay", function() {
+            delegate.willPositionOverlay = jasmine.createSpy();
+
             anOverlay.position = {
                 left: 100,
                 top: 50
@@ -119,6 +121,61 @@ describe("ui/overlay-spec", function() {
 
             expect(delegate.willPositionOverlay).toHaveBeenCalledWith(anOverlay, anOverlay.position);
         });
+
+        describe("shouldDismissOverlay", function() {
+            it("should hide the overlay when a pressStart is fired outside the overlay and it returns true", function() {
+                delegate.shouldDismissOverlay = jasmine.createSpy().andReturn(true);
+
+                var event = Event.event();
+
+                anOverlay.enterDocument(true);
+
+                anOverlay._isShown = true;
+                anOverlay._isDisplayed = true;
+                event.target = MockDOM.element();
+                anOverlay._pressComposer._dispatchPressStart(event);
+                expect(anOverlay._isShown).toBe(false);
+
+                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target);
+            });
+
+            it("should not be called when a pressStart is fired inside the overlay", function() {
+                delegate.shouldDismissOverlay = jasmine.createSpy().andReturn(true);
+
+                var event = Event.event();
+
+                anOverlay.dismissOnExternalInteraction = true;
+                anOverlay.enterDocument(true);
+
+                anOverlay._isShown = true;
+                anOverlay._isDisplayed = true;
+                event.target = MockDOM.element();
+                anOverlay.element.appendChild(event.target);
+
+                anOverlay._pressComposer._dispatchPressStart(event);
+                expect(anOverlay._isShown).toBe(true);
+
+                expect(delegate.shouldDismissOverlay).not.toHaveBeenCalled();
+            });
+
+            it("should not hide the overlay when a pressStart is fired outside the overlay and it returns false", function() {
+                delegate.shouldDismissOverlay = jasmine.createSpy().andReturn(false);
+
+                var event = Event.event();
+
+                anOverlay.enterDocument(true);
+
+                anOverlay._isShown = true;
+                anOverlay._isDisplayed = true;
+                event.target = MockDOM.element();
+                anOverlay._pressComposer._dispatchPressStart(event);
+
+                expect(anOverlay._isShown).toBe(true);
+
+                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target);
+            });
+        });
+
     });
 
     describe("_isDisplayed", function() {
@@ -138,50 +195,6 @@ describe("ui/overlay-spec", function() {
             anOverlay.draw();
 
             expect(anOverlay._isDisplayed).toBe(true);
-        });
-    });
-
-    describe("dismissOnExternalInteraction", function() {
-        it("should hide the overlay when a pressStart is fired outside the overlay and dismissOnExternalInteraction is true", function() {
-            var event = Event.event();
-
-            anOverlay.dismissOnExternalInteraction = true;
-            anOverlay.enterDocument(true);
-
-            anOverlay._isShown = true;
-            anOverlay._isDisplayed = true;
-            event.target = MockDOM.element();
-            anOverlay._pressComposer._dispatchPressStart(event);
-            expect(anOverlay._isShown).toBe(false);
-        });
-
-        it("should not hide the overlay when a pressStart is fired inside the overlay and dismissOnExternalInteraction is true", function() {
-            var event = Event.event();
-
-            anOverlay.dismissOnExternalInteraction = true;
-            anOverlay.enterDocument(true);
-
-            anOverlay._isShown = true;
-            anOverlay._isDisplayed = true;
-            event.target = MockDOM.element();
-            anOverlay.element.appendChild(event.target);
-
-            anOverlay._pressComposer._dispatchPressStart(event);
-            expect(anOverlay._isShown).toBe(true);
-        });
-
-        it("should not hide the overlay when a pressStart is fired outside the overlay and dismissOnExternalInteraction is false", function() {
-            var event = Event.event();
-
-            anOverlay.dismissOnExternalInteraction = false;
-            anOverlay.enterDocument(true);
-
-            anOverlay._isShown = true;
-            anOverlay._isDisplayed = true;
-            event.target = MockDOM.element();
-            anOverlay._pressComposer._dispatchPressStart(event);
-
-            expect(anOverlay._isShown).toBe(true);
         });
     });
 
