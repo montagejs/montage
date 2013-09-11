@@ -93,6 +93,18 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
         value: null
     },
 
+    /**
+     * A delegate that can implement `willPositionOverlay` and/or
+     * `shouldDismissOverlay`.
+     *
+     * * `willPositionOverlay(overlay, calculatedPostition)` is called when the
+     *   overlay is being shown, and should return an object with `top` and
+     *   `left` properties.
+     * * `shouldDismissOverlay(overlay, target)` is called when the user clicks
+     *   outside of the overlay. Usually this will hide the overlay. Return
+     *   `true` to hide the overlay, or `false` to leave the overlay visible.
+     * @type {Object}
+     */
     delegate: {
         value: null
     },
@@ -125,7 +137,6 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 _window = this.element.ownerDocument.defaultView;
                 _window.addEventListener("resize", this);
                 this.addComposerForElement(this._pressComposer, this.element.ownerDocument);
-
                 this._pressComposer.addEventListener("pressStart", this, false);
             }
         }
@@ -180,11 +191,16 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
     handlePressStart: {
         value: function(event) {
             var targetElement = event.targetElement,
-                element = this.element;
+                element = this.element,
+                shouldDismissOverlay;
 
             if (!element.contains(targetElement)) {
-                this.hide();
-                this._dispatchDismissEvent();
+                shouldDismissOverlay = this.callDelegateMethod("shouldDismissOverlay", this, targetElement);
+
+                if (shouldDismissOverlay === void 0 || shouldDismissOverlay) {
+                    this.hide();
+                    this._dispatchDismissEvent();
+                }
             }
         }
     },
