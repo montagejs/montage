@@ -90,6 +90,8 @@ exports.Target = Montage.specialize( {
 
             targettedEvent.target = this;
             defaultEventManager.handleEvent(targettedEvent);
+
+            return !event.defaultPrevented;
         }
     },
 
@@ -107,6 +109,8 @@ exports.Target = Montage.specialize( {
             var event = MutableEvent.fromType(type, canBubble, cancelable, detail);
             event.target = this;
             defaultEventManager.handleEvent(event);
+
+            return !event.defaultPrevented;
         }
     },
 
