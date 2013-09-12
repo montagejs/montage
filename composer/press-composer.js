@@ -277,13 +277,10 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     */
     _endInteraction: {
         value: function(event) {
-            if (!event || event.type === "touchend" || event.type === "touchcancel") {
-                document.removeEventListener("touchend", this);
-                document.removeEventListener("touchcancel", this);
-            } else if (!event || event.type === "click" || event.type === "mouseup") {
-                document.removeEventListener("click", this);
-                document.removeEventListener("mouseup", this);
-            }
+            document.removeEventListener("touchend", this);
+            document.removeEventListener("touchcancel", this);
+            document.removeEventListener("click", this);
+            document.removeEventListener("mouseup", this);
 
             if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 this.component.eventManager.forfeitPointer(this._observedPointer, this);
