@@ -36,6 +36,11 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         writable: false
     },
 
+    // When set to true, do not respond to events, claim pointers, or prevent default
+    enabled: {
+        value: true
+    },
+
     _externalUpdate: {
         value: true
     },
@@ -475,6 +480,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     captureMousedown: {
         value: function(event) {
+            if (!this.enabled) return;
+
             if (event.button !== 0) {
                 return;
             }
@@ -495,6 +502,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     */
     handleMousedown: {
         value: function(event) {
+            if (!this.enabled) return;
+
             if (event.button === 0 && !this.eventManager.componentClaimingPointer(this._observedPointer)) {
                 this.eventManager.claimPointer(this._observedPointer, this);
             }
@@ -506,6 +515,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     // initially
     handleMousemove: {
         value: function(event) {
+            if (!this.enabled) return;
+
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 event.preventDefault();
                 this._firstMove();
@@ -522,6 +533,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     captureMousemove: {
         value: function(event) {
+            if (!this.enabled) return;
+
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 event.preventDefault();
                 this._move(event.clientX, event.clientY);
@@ -538,6 +551,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     captureMouseup: {
         value: function(event) {
+            if (!this.enabled) return;
+
             this._end(event);
         }
     },
@@ -572,6 +587,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     captureTouchstart: {
         value: function(event) {
+            if (!this.enabled) return;
+            
             // If already scrolling, ignore any new touchstarts
             if (this._observedPointer !== null && this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 return;
@@ -586,6 +603,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     handleTouchstart: {
         value: function(event) {
+            if (!this.enabled) return;
+            
             if (!this.eventManager.componentClaimingPointer(this._observedPointer)) {
                 if (event.targetTouches && event.targetTouches.length === 1) {
                     if (this._shouldPreventDefault(event)) {
@@ -602,6 +621,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     // initially
     handleTouchmove: {
         value: function(event) {
+            if (!this.enabled) return;
+            
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 event.preventDefault();
                 this._firstMove();
@@ -619,6 +640,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     captureTouchmove: {
         value: function(event) {
+            if (!this.enabled) return;
 
             var i = 0, len = event.changedTouches.length;
             while (i < len && event.changedTouches[i].identifier !== this._observedPointer) {
@@ -639,6 +661,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     captureTouchend: {
         value: function(event) {
+            if (!this.enabled) return;
+            
             var i = 0, len = event.changedTouches.length;
             while (i < len && event.changedTouches[i].identifier !== this._observedPointer) {
                 i++;
@@ -727,6 +751,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     handleWheel: {
         value: function(event) {
+            if (!this.enabled) return;
+            
             var self = this;
 
             // If this composers' component is claiming the "wheel" pointer then handle the event
