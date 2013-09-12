@@ -11,7 +11,7 @@ exports.AbstractControl = Component.specialize( /** @lends AbstractControl# */ {
 
     dispatchActionEvent: {
         value: function() {
-            this.dispatchEvent(this.createActionEvent());
+            return this.dispatchEvent(this.createActionEvent());
         }
     },
 
