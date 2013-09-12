@@ -47,7 +47,8 @@ describe("test/base/abstract-button-spec", function () {
             it("should update the value if isInputElement is true", function () {
                 aButton.isInputElement = true;
                 aButton.label = "hello";
-                expect(aButton.value).toEqual( "hello");
+                aButton.draw();
+                expect(aButton.element.value).toEqual( "hello");
             });
         });
         describe("draw", function () {
@@ -123,6 +124,29 @@ describe("test/base/abstract-button-spec", function () {
                 aButton.element = anElement;
                 aButton.draw();
                 expect(anElement.setAttribute).not.toHaveBeenCalledWith("tabindex", "-1");
+            });
+        });
+
+        describe("converter", function() {
+            var Button = AbstractButton.specialize( {});
+            beforeEach(function () {
+                aButton = new Button();
+                aButton.element = MockDOM.element();
+                aButton.element.tagName = "INPUT";
+                aButton.originalElement = aButton.element;
+                aButton.element.firstChild = MockDOM.element();
+                aButton.converter = {
+                    convert: function(v) {
+                        return v.replace(/fail/gi, "pass");
+                    }
+                };
+            });
+            it("shouldn't go into infinite loop", function () {
+                aButton.element.value = "fail";
+                aButton.enterDocument(true);
+                aButton.draw();
+                aButton.label = "FAIL";
+                expect(aButton.element.value).toEqual("pass");
             });
         });
 
