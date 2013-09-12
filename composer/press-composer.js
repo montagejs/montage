@@ -68,9 +68,9 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     unload: {
         value: function() {
             if (window.Touch) {
-                this._element.removeEventListener("touchstart", this);
+                this._element.removeEventListener("touchstart", this, true);
             } else {
-                this._element.removeEventListener("mousedown", this);
+                this._element.removeEventListener("mousedown", this, true);
             }
         }
     },
