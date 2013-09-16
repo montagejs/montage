@@ -322,7 +322,8 @@ describe("translate-composer-test touch", function () {
             test = testPage.test;
         });
 
-        var inner, outer, outerComposer, innerComposer,outerListener,innerListener;
+        var inner, outer, outerComposer, innerComposer,outerListener,innerListener,
+            translateComposer, example;
         beforeEach(function () {
 
             inner = test.innermover;
@@ -335,6 +336,8 @@ describe("translate-composer-test touch", function () {
             outerListener = jasmine.createSpy("outerHandleTranslateEvent");
             outerComposer.addEventListener("translate", outerListener);
 
+            example = test.example;
+            translateComposer = test.translate_composer;
         });
 
         afterEach(function () {
@@ -371,6 +374,239 @@ describe("translate-composer-test touch", function () {
             });
         });
 
+        it ("should claim the pointer to the inner in a container->widget situation with a fast flick", function() {
+            outerComposer.axis = "both";
+            outerComposer.stealChildrenPointer = true;
+            outerComposer.stealChildrenPointerThreshold = 100;
+            innerComposer.axis = "both";
+            innerComposer.stealChildrenPointer = false;
+
+            var timeline = [{
+                fakeTimeStamp: true,
+                type: "touch", target: inner.element, identifier: 1,
+                steps: [
+                    { time: 0, touchstart: null },
+                    { time: 1, touchmove: { dx: 25, dy: 0} },
+                    { time: 2, touchend: null }
+                ]}];
+
+            testPage.fireEventsOnTimeline(timeline, function(time) {
+                if(time === 1) {
+                    var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
+                    expect(claimedByComponent).toBe(outerComposer);
+                }
+            });
+        });
+
+        it ("should claim the pointer to the inner in a container->widget situation with a fast flick but opposite directions", function() {
+            outerComposer.axis = "vertical";
+            outerComposer.stealChildrenPointer = true;
+            outerComposer.stealChildrenPointerThreshold = 100;
+            innerComposer.axis = "horizontal";
+            innerComposer.stealChildrenPointer = false;
+
+            var timeline = [{
+                fakeTimeStamp: true,
+                type: "touch", target: inner.element, identifier: 1,
+                steps: [
+                    { time: 0, touchstart: null },
+                    { time: 1, touchmove: { dx: 25, dy: 0} },
+                    { time: 2, touchend: null }
+                ]}];
+
+            testPage.fireEventsOnTimeline(timeline, function(time) {
+                if(time === 1) {
+                    var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
+                    expect(claimedByComponent).toBe(innerComposer);
+                }
+            });
+        });
+
+        it ("should claim the pointer to the inner in a container->container situation with a fast flick", function() {
+            outerComposer.axis = "vertical";
+            outerComposer.stealChildrenPointer = true;
+            outerComposer.stealChildrenPointerThreshold = 100;
+            innerComposer.axis = "vertical";
+            innerComposer.stealChildrenPointer = true;
+            innerComposer.stealChildrenPointerThreshold = 100;
+
+            var timeline = [{
+                fakeTimeStamp: true,
+                type: "touch", target: inner.element, identifier: 1,
+                steps: [
+                    { time: 0, touchstart: null },
+                    { time: 1, touchmove: { dx: 0, dy: 25} },
+                    { time: 2, touchend: null }
+                ]}];
+
+            testPage.fireEventsOnTimeline(timeline, function(time) {
+                if(time === 1) {
+                    var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
+                    expect(claimedByComponent).toBe(innerComposer);
+                }
+            });
+        });
+
+        it ("should claim the pointer to the outer in a container->container situation with a slow flick", function() {
+            outerComposer.axis = "vertical";
+            outerComposer.stealChildrenPointer = true;
+            outerComposer.stealChildrenPointerThreshold = 100;
+            innerComposer.axis = "vertical";
+            innerComposer.stealChildrenPointer = true;
+            innerComposer.stealChildrenPointerThreshold = 100;
+
+            var timeline = [{
+                fakeTimeStamp: true,
+                type: "touch", target: inner.element, identifier: 1,
+                steps: [
+                    { time: 0, touchstart: null },
+                    { time: 150, touchmove: { dx: 0, dy: 25} },
+                    { time: 151, touchend: null }
+                ]}];
+
+            testPage.fireEventsOnTimeline(timeline, function(time) {
+                if(time === 1) {
+                    var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
+                    expect(claimedByComponent).toBe(innerComposer);
+                }
+            });
+        });
+
+        it ("should claim the pointer to the outer in a container->container situation with a fast flick for the inner and outer", function() {
+            outerComposer.axis = "vertical";
+            outerComposer.stealChildrenPointer = true;
+            outerComposer.stealChildrenPointerThreshold = 50;
+            innerComposer.axis = "vertical";
+            innerComposer.stealChildrenPointer = true;
+            innerComposer.stealChildrenPointerThreshold = 100;
+
+            var timeline = [{
+                fakeTimeStamp: true,
+                type: "touch", target: inner.element, identifier: 1,
+                steps: [
+                    { time: 0, touchstart: null },
+                    { time: 1, touchmove: { dx: 0, dy: 25} },
+                    { time: 2, touchend: null }
+                ]}];
+
+            testPage.fireEventsOnTimeline(timeline, function(time) {
+                if(time === 1) {
+                    var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
+                    expect(claimedByComponent).toBe(outerComposer);
+                }
+            });
+        });
+
+        it ("should claim the pointer to the inner in a container->container situation with a slow flick for the outer and fast for the inner", function() {
+            outerComposer.axis = "vertical";
+            outerComposer.stealChildrenPointer = true;
+            outerComposer.stealChildrenPointerThreshold = 50;
+            innerComposer.axis = "vertical";
+            innerComposer.stealChildrenPointer = true;
+            innerComposer.stealChildrenPointerThreshold = 100;
+
+            var timeline = [{
+                fakeTimeStamp: true,
+                type: "touch", target: inner.element, identifier: 1,
+                steps: [
+                    { time: 0, touchstart: null },
+                    { time: 75, touchmove: { dx: 0, dy: 25} },
+                    { time: 76, touchend: null }
+                ]}];
+
+            testPage.fireEventsOnTimeline(timeline, function(time) {
+                if(time === 1) {
+                    var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
+                    expect(claimedByComponent).toBe(innerComposer);
+                }
+            });
+        });
+
+        it ("should claim the pointer in a widget situation with a slow flick", function() {
+            translateComposer.axis = "vertical";
+            translateComposer.stealChildrenPointer = false;
+
+            var timeline = [{
+                fakeTimeStamp: true,
+                type: "touch", target: example.element, identifier: 1,
+                steps: [
+                    { time: 0, touchstart: null },
+                    { time: 150, touchmove: { dx: 0, dy: 25} },
+                    { time: 151, touchend: null }
+                ]}];
+
+            testPage.fireEventsOnTimeline(timeline, function(time) {
+                if(time === 1) {
+                    var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
+                    expect(claimedByComponent).toBe(translateComposer);
+                }
+            });
+        });
+
+        it ("should claim the pointer in a widget situation with a fast flick", function() {
+            translateComposer.axis = "vertical";
+            translateComposer.stealChildrenPointer = false;
+
+            var timeline = [{
+                fakeTimeStamp: true,
+                type: "touch", target: example.element, identifier: 1,
+                steps: [
+                    { time: 0, touchstart: null },
+                    { time: 1, touchmove: { dx: 0, dy: 25} },
+                    { time: 2, touchend: null }
+                ]}];
+
+            testPage.fireEventsOnTimeline(timeline, function(time) {
+                if(time === 1) {
+                    var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
+                    expect(claimedByComponent).toBe(translateComposer);
+                }
+            });
+        });
+
+        it ("should claim the pointer in a container situation with a slow flick", function() {
+            translateComposer.axis = "vertical";
+            translateComposer.stealChildrenPointer = true;
+            translateComposer.stealChildrenPointerThreshold = 100;
+
+            var timeline = [{
+                fakeTimeStamp: true,
+                type: "touch", target: example.element, identifier: 1,
+                steps: [
+                    { time: 0, touchstart: null },
+                    { time: 150, touchmove: { dx: 0, dy: 25} },
+                    { time: 151, touchend: null }
+                ]}];
+
+            testPage.fireEventsOnTimeline(timeline, function(time) {
+                if(time === 1) {
+                    var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
+                    expect(claimedByComponent).toBe(translateComposer);
+                }
+            });
+        });
+
+        it ("should claim the pointer in a container situation with a fast flick", function() {
+            translateComposer.axis = "vertical";
+            translateComposer.stealChildrenPointer = true;
+            translateComposer.stealChildrenPointerThreshold = 100;
+
+            var timeline = [{
+                fakeTimeStamp: true,
+                type: "touch", target: example.element, identifier: 1,
+                steps: [
+                    { time: 0, touchstart: null },
+                    { time: 1, touchmove: { dx: 0, dy: 25} },
+                    { time: 2, touchend: null }
+                ]}];
+
+            testPage.fireEventsOnTimeline(timeline, function(time) {
+                if(time === 1) {
+                    var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
+                    expect(claimedByComponent).toBe(translateComposer);
+                }
+            });
+        });
     });
 
     it("should unload", function() {

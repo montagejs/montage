@@ -183,6 +183,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
             translateStartEvent.scroll = this._scroll;
             translateStartEvent.translateX = 0;
             translateStartEvent.translateY = 0;
+            translateStartEvent.pointer = this._observedPointer;
             this.dispatchEvent(translateStartEvent);
         }
     },
@@ -198,6 +199,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
             translateEndEvent.scroll = this._scroll;
             translateEndEvent.translateX = 0;
             translateEndEvent.translateY = 0;
+            translateEndEvent.pointer = this._observedPointer;
             this.dispatchEvent(translateEndEvent);
         }
     },
@@ -212,6 +214,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
             translateEvent.scroll = this._scroll;
             translateEvent.translateX = 0;
             translateEvent.translateY = 0;
+            translateEvent.pointer = this._observedPointer;
             this.dispatchEvent(translateEvent);
         }
     },
