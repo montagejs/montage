@@ -43,11 +43,6 @@ var Flow = exports.Flow = Component.specialize( {
     constructor: {
         value: function Flow() {
             this.super();
-            // The template has a binding from these visibleIndexes to
-            // the frustrum controller's visibleIndexes.  We manage the
-            // array within the flow and use it also in the flow
-            // translate composer.
-            this._visibleIndexes = [];
             // Tracks the elastic scrolling offsets relative to their
             // corresponding non-elastic scrolling positions on their
             // FlowBezierSpline.
@@ -1067,12 +1062,17 @@ var Flow = exports.Flow = Component.specialize( {
      */
     _updateVisibleIndexes: {
         value: function (newVisibleIndexes, newContentIndexes) {
-            var oldVisibleIndexes = this._visibleIndexes,
-                oldIndexesLength = oldVisibleIndexes && !isNaN(oldVisibleIndexes.length) ? oldVisibleIndexes.length : 0,
+            var oldVisibleIndexes,
+                oldIndexesLength,
                 holes = [],
                 j,
                 i;
 
+            if (typeof this._visibleIndexes === "undefined") {
+                this._visibleIndexes = [];
+            }
+            oldVisibleIndexes = this._visibleIndexes;
+            oldIndexesLength = oldVisibleIndexes && !isNaN(oldVisibleIndexes.length) ? oldVisibleIndexes.length : 0;
             // Search for viable holes, leave content at the same visible index
             // whenever possible.
             for (i = 0; i < oldIndexesLength; i++) {
