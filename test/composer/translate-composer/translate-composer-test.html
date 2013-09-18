@@ -36,7 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
     <script type="text/montage-serialization">{
 
-    "translate_composer": {
+    "translateComposer": {
         "prototype": "montage/composer/translate-composer",
         "properties": {
             "component": {"@": "example"},
@@ -61,7 +61,7 @@ POSSIBILITY OF SUCH DAMAGE.
             "hasTemplate": false
         }
     },
-    "outermover_composer": {
+    "outermoverComposer": {
         "prototype": "montage/composer/translate-composer",
         "properties": {
             "component": {"@": "outermover"},
@@ -81,7 +81,7 @@ POSSIBILITY OF SUCH DAMAGE.
         }
 
     },
-    "innermover_composer": {
+    "innermoverComposer": {
         "prototype": "montage/composer/translate-composer",
         "properties": {
             "component": {"@": "innermover"},
@@ -97,21 +97,21 @@ POSSIBILITY OF SUCH DAMAGE.
     "test": {
         "prototype": "composer/translate-composer/translate-composer-test",
         "properties": {
-            "translate_composer": {"@": "translate_composer"},
+            "translateComposer": {"@": "translateComposer"},
             "example": {"@": "example"},
             "innermover": {"@": "innermover"},
-            "innermover_composer": {"@": "innermover_composer"},
+            "innermoverComposer": {"@": "innermoverComposer"},
             "outermover": {"@": "outermover"},
-            "outermover_composer": {"@": "outermover_composer"}
+            "outermoverComposer": {"@": "outermoverComposer"}
 
         },
         "bindings": {
-            "x": {"<-": "@translate_composer.translateX"},
-            "y": {"<-": "@translate_composer.translateY"},
-            "inner_x": {"<-": "@innermover_composer.translateX"},
-            "inner_y": {"<-": "@innermover_composer.translateY"},
-            "outer_x": {"<-": "@outermover_composer.translateX"},
-            "outer_y": {"<-": "@outermover_composer.translateY"}
+            "x": {"<-": "@translateComposer.translateX"},
+            "y": {"<-": "@translateComposer.translateY"},
+            "inner_x": {"<-": "@innermoverComposer.translateX"},
+            "inner_y": {"<-": "@innermoverComposer.translateY"},
+            "outer_x": {"<-": "@outermoverComposer.translateX"},
+            "outer_y": {"<-": "@outermoverComposer.translateY"}
         }
     },
     "application": {
