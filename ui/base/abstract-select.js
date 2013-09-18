@@ -63,6 +63,9 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
             // Need to draw when "content" or "values" change
             this.addRangeAtPathChangeListener("content", this, "handleContentRangeChange");
             this.addRangeAtPathChangeListener("values", this, "handleValuesRangeChange");
+
+            this.addOwnPropertyChangeListener("multiple", this);
+
             this.classList.add("matte-Select");
         }
     },
@@ -150,6 +153,10 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
         value: false
     },
 
+    multiple: {
+        value: false
+    },
+
     _contentIsDirty: {
         value: true
     },
@@ -225,11 +232,23 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
         }
     },
 
+    handleMultipleChange: {
+        value: function() {
+            this.needsDraw = true;
+        }
+    },
+
     enterDocument: {
         value: function(firstDraw) {
             if(firstDraw) {
                 this.element.setAttribute("role", "listbox");
             }
+        }
+    },
+
+    draw: {
+        value: function() {
+            this.element.multiple = this.multiple;
         }
     }
 });
