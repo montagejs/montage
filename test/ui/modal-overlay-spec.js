@@ -13,19 +13,19 @@ describe("ui/modal-overlay-spec", function() {
         aModalOverlay.hasTemplate = false;
         aModalOverlay.element = MockDOM.element();
         aModalOverlay.modalMaskElement = MockDOM.element();
+        aModalOverlay.enterDocument(true);
 
         anotherModalOverlay = new ModalOverlay();
         anotherModalOverlay.hasTemplate = false;
         anotherModalOverlay.element = MockDOM.element();
         anotherModalOverlay.modalMaskElement = MockDOM.element();
+        anotherModalOverlay.enterDocument(true);
 
         ModalOverlay.prototype._queue = [];
     });
 
     describe("enterDocument", function() {
         it("should move the modal mask to be a child of the body", function() {
-            aModalOverlay.enterDocument(true);
-
             expect(aModalOverlay.element.ownerDocument.body.childNodes).toContain(aModalOverlay.modalMaskElement);
         });
     });

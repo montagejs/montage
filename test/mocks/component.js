@@ -77,6 +77,7 @@ exports.component = function () {
         },
         childComponents: [],
         addChildComponent: Component.prototype.addChildComponent,
+        removeChildComponent: Function.noop,
         _addToDrawList: function() {}
     };
 };

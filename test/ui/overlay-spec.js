@@ -319,6 +319,7 @@ describe("ui/overlay-spec", function() {
         });
 
         it("should be requested on window resize when shown", function() {
+            anOverlay.needsDraw = false;
             anOverlay._isShown = true;
             anOverlay.handleResize();
 
@@ -326,6 +327,7 @@ describe("ui/overlay-spec", function() {
         });
 
         it("should not be requested on window resize when hidden", function() {
+            anOverlay.needsDraw = false;
             anOverlay._isShown = false;
             anOverlay.handleResize();
 
