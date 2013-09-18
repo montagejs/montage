@@ -5,8 +5,7 @@
     @requires montage/composer/composer
     @requires montage/core/event/event-manager
 */
-var Montage = require("montage").Montage,
-    Composer = require("composer/composer").Composer,
+var Composer = require("composer/composer").Composer,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
 /**
@@ -56,7 +55,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     /**
      * When stealChildrenPointer is set to true the translate composer is able
      * to claim the pointer in place of its children when the time difference
-     * between touchstart and the first touchmove is bellow the
+     * between touchstart and the first touchmove is within the
      * stealChildrenPointerThreshold.
      *
      * This property should be set to true on translate composers that act as
@@ -83,7 +82,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     frame: {
-        value: function(timestamp) {
+        value: function() {
             if (this.isAnimating) {
                 this._animationInterval();
             }
@@ -160,7 +159,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             if (this._axis === "vertical") {
                 this._translateX = this._minTranslateX || 0;
             } else {
+                //jshint -W016
                 var tmp = isNaN(value) ? 0 : this._allowFloats ? parseFloat(value) : value >> 0;
+                //jshint +W016
 
                 if (this._minTranslateX !== null && tmp < this._minTranslateX) {
                     tmp = this._minTranslateX;
@@ -194,7 +195,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             if (this._axis === "horizontal") {
                 this._translateY = this._minTranslateY || 0;
             } else {
+                //jshint -W016
                 var tmp = isNaN(value) ? 0 : this._allowFloats ? parseFloat(value) : value >> 0;
+                //jshint +W016
 
                 if (this._minTranslateY !== null && tmp < this._minTranslateY) {
                     tmp = this._minTranslateY;
@@ -228,7 +231,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 value = parseFloat(value);
             }
 
-            if (this._minTranslateX != value) {
+            if (this._minTranslateX !== value) {
                 if (value !== null && this._translateX < value) {
                     this.translateX = value;
                 }
@@ -254,7 +257,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 value = parseFloat(value);
             }
 
-            if (this._maxTranslateX != value) {
+            if (this._maxTranslateX !== value) {
                 if (value !== null && this._translateX > value) {
                     this.translateX = value;
                 }
@@ -281,7 +284,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 value = parseFloat(value);
             }
 
-            if (this._minTranslateY != value) {
+            if (this._minTranslateY !== value) {
                 if (value !== null && this._translateY < value) {
                     this.translateY = value;
                 }
@@ -307,7 +310,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 value = parseFloat(value);
             }
 
-            if (this._maxTranslateY != value) {
+            if (this._maxTranslateY !== value) {
                 if (value !== null && this._translateY > value) {
                     this.translateY = value;
                 }
@@ -444,7 +447,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             return this.__momentumDuration;
         },
         set: function(value) {
+            //jshint -W016
             this.__momentumDuration = isNaN(value) ? 1 : value >> 0;
+            //jshint +W016
             if (this.__momentumDuration < 1) {
                 this.__momentumDuration = 1;
             }
@@ -699,7 +704,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     captureWheel: {
-        value: function(event) {
+        value: function() {
             if (!this.eventManager.componentClaimingPointer(this._WHEEL_POINTER)) {
                 this.eventManager.claimPointer(this._WHEEL_POINTER, this.component);
             }
@@ -756,11 +761,11 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             var pointerDelta;
 
             this._isSelfUpdate = true;
-            if (this._axis != "vertical") {
+            if (this._axis !== "vertical") {
                 pointerDelta = this._invertXAxis ? (this._pointerX - x) : (x - this._pointerX);
                 this.translateX += pointerDelta * this._pointerSpeedMultiplier;
             }
-            if (this._axis != "horizontal") {
+            if (this._axis !== "horizontal") {
                 pointerDelta = this._invertYAxis ? (this._pointerY - y) : (y - this._pointerY);
                 this.translateY += pointerDelta * this._pointerSpeedMultiplier;
             }
@@ -869,10 +874,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 if (t<this.__momentumDuration) {
                     this.posX=this.startX-((this.momentumX+this.momentumX*(this.__momentumDuration-t)/this.__momentumDuration)*t/1000)/2;
                     this.posY=this.startY-((this.momentumY+this.momentumY*(this.__momentumDuration-t)/this.__momentumDuration)*t/1000)/2;
-                    if (this.translateStrideX && (this.startStrideXTime === null) && ((this.__momentumDuration - t < this.translateStrideDuration) || (Math.abs(this.posX - this.endX) < this.translateStrideX * .75))) {
+                    if (this.translateStrideX && (this.startStrideXTime === null) && ((this.__momentumDuration - t < this.translateStrideDuration) || (Math.abs(this.posX - this.endX) < this.translateStrideX * 0.75))) {
                         this.startStrideXTime = time;
                     }
-                    if (this.translateStrideY && (this.startStrideYTime === null) && ((this.__momentumDuration - t < this.translateStrideDuration) || (Math.abs(this.posY - this.endY) < this.translateStrideY * .75))) {
+                    if (this.translateStrideY && (this.startStrideYTime === null) && ((this.__momentumDuration - t < this.translateStrideDuration) || (Math.abs(this.posY - this.endY) < this.translateStrideY * 0.75))) {
                         this.startStrideYTime = time;
                     }
                 } else {
@@ -882,7 +887,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             tmp = Math.round(this.endX / this.translateStrideX);
             if (this.startStrideXTime && (time - this.startStrideXTime > 0)) {
                 if (time - this.startStrideXTime < this.translateStrideDuration) {
-                    t = this._bezierTValue((time - this.startStrideXTime) / this.translateStrideDuration, .275, 0, .275, 1);
+                    t = this._bezierTValue((time - this.startStrideXTime) / this.translateStrideDuration, 0.275, 0, 0.275, 1);
                     this.posX = this.posX * (1 - t) + (tmp *  this.translateStrideX) * t;
                     animateStride = true;
                 } else {
@@ -892,7 +897,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             tmp = Math.round(this.endY / this.translateStrideY);
             if (this.startStrideYTime && (time - this.startStrideYTime > 0)) {
                 if (time - this.startStrideYTime < this.translateStrideDuration) {
-                    t = this._bezierTValue((time - this.startStrideYTime) / this.translateStrideDuration, .275, 0, .275, 1);
+                    t = this._bezierTValue((time - this.startStrideYTime) / this.translateStrideDuration, 0.275, 0, 0.275, 1);
                     this.posY = this.posY * (1 - t) + (tmp *  this.translateStrideY) * t;
                     animateStride = true;
                 } else {
@@ -927,12 +932,12 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             this.endY=this.posY=this.startY=this._translateY;
 
             if ((this._hasMomentum) && ((event.velocity.speed>40) || this.translateStrideX || this.translateStrideY)) {
-                if (this._axis != "vertical") {
+                if (this._axis !== "vertical") {
                     this.momentumX = event.velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
                 } else {
                     this.momentumX = 0;
                 }
-                if (this._axis != "horizontal") {
+                if (this._axis !== "horizontal") {
                     this.momentumY = event.velocity.y * this._pointerSpeedMultiplier * (this._invertYAxis ? 1 : -1);
                 } else {
                     this.momentumY=0;
