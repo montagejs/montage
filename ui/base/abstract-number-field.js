@@ -192,7 +192,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
     },
 
     _required: {
-        value: false
+        value: null
     },
 
     _min: {
@@ -310,6 +310,20 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
             if(this._numberFieldTextFieldComponent && this._value !==  this._numberFieldTextFieldComponent.value) {
                 this._numberFieldTextFieldComponent.value = this._value;
             }
+            this.element.value = this._value;
+        }
+    },
+
+    required: {
+        set: function(value) {
+            if (value === "" || value === "true") {
+                value = true;
+            }
+            this._required = value;
+            this.needsDraw = true;
+        },
+        get: function() {
+            return this._required;
         }
     },
 
@@ -323,7 +337,6 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
     },
 
     // Machinery
-
     _numberFieldTextFieldComponent: {
         value: null
     },
@@ -336,4 +349,12 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
         value: null
     }
 
+});
+
+
+// Standard <input type=number> tag attributes - http://www.w3.org/TR/html5/the-input-element.html#the-input-element
+AbstractNumberField.addAttributes({
+    min: null,
+    max: null,
+    step: null
 });
