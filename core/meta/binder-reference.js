@@ -17,7 +17,7 @@ exports.BinderReference = RemoteReference.create(RemoteReference, {
 
     constructor: {
         value: function BinderReference() {
-            this.super();
+            this.superForValue("constructor")();
         }
     },
 

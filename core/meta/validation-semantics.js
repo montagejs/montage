@@ -21,7 +21,7 @@ var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantic
 
     constructor: {
         value: function PropertyValidationSemantics() {
-            this.super();
+            this.superForValue("constructor")();
         }
     },
 
