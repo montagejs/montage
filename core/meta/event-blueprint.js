@@ -25,6 +25,7 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
     constructor: {
         value: function EventBlueprint() {
             this.superForValue("constructor")();
+            this._detailKeys = [];
         }
     },
 
@@ -140,9 +141,6 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
      */
     detailKeys:{
         get:function () {
-            if (!this._detailKeys) {
-                return [];
-            }
             return this._detailKeys;
         },
         set:function (value) {
