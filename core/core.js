@@ -28,7 +28,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-/*global Element */
+/*global Object,Element,Function,TypeError */
 /**
  @module montage
  @requires core/shim/object
@@ -596,22 +596,22 @@ Object.defineProperty(Montage, "defineProperty", {
             })(prop, UNDERSCORE + prop, descriptor.value, obj);
 
         } else {
-            // clear the cache in any descendents that use this property for super()
-            var superDeps;
+            // clear the cache in any descendants that use this property for super()
+            var superDependencies, i, j;
             if (obj._superDependencies) {
-                if (typeof descriptor.value === "function" && (superDeps = obj._superDependencies[prop + ".value"])) {
-                    for (var i=0,j=superDeps.length;i<j;i++) {
-                        delete superDeps[i]._superCache[prop + ".value"];
+                if (typeof descriptor.value === "function" && (superDependencies = obj._superDependencies[prop + ".value"])) {
+                    for (i=0,j=superDependencies.length;i<j;i++) {
+                        delete superDependencies[i]._superCache[prop + ".value"];
                     }
                 }
-                if (typeof descriptor.get === "function" && (superDeps = obj._superDependencies[prop + ".get"])) {
-                    for (var i=0,j=superDeps.length;i<j;i++) {
-                        delete superDeps[i]._superCache[prop + ".get"];
+                if (typeof descriptor.get === "function" && (superDependencies = obj._superDependencies[prop + ".get"])) {
+                    for (i=0,j=superDependencies.length;i<j;i++) {
+                        delete superDependencies[i]._superCache[prop + ".get"];
                     }
                 }
-                if (typeof descriptor.set === "function" && (superDeps = obj._superDependencies[prop + ".set"])) {
-                    for (var i=0,j=superDeps.length;i<j;i++) {
-                        delete superDeps[i]._superCache[prop + ".set"];
+                if (typeof descriptor.set === "function" && (superDependencies = obj._superDependencies[prop + ".set"])) {
+                    for (i=0,j=superDependencies.length;i<j;i++) {
+                        delete superDependencies[i]._superCache[prop + ".set"];
                     }
                 }
             }
@@ -681,7 +681,7 @@ var getSuper = function(object, method) {
         context = object;
         while (!foundSuper && context !== null) {
             propertyNames = Object.getOwnPropertyNames(context);
-            proto = Object.getPrototypeOf(context)
+            proto = Object.getPrototypeOf(context);
             i = 0;
             propCount = propertyNames.length;
             for (i; i < propCount; i++) {
@@ -702,7 +702,7 @@ var getSuper = function(object, method) {
                         foundSuper = true;
                         break;
                     }
-                } 
+                }
                 if ((func = property.set) != null) {
                     if (func === method || func.deprecatedFunction === method) {
                         method._superPropertyType = "set";
@@ -715,13 +715,13 @@ var getSuper = function(object, method) {
             context = proto;
         }
     }
-    return superForImplementation(object, method._superPropertyType, method._superPropertyName)
-}
+    return superForImplementation(object, method._superPropertyType, method._superPropertyName);
+};
 
 
 var superImplementation = function super_() {
     if (typeof superImplementation.caller !== "function") {
-        throw new TypeError("Can't get super without caller. Use this.superForValue(methodname) if using strict mode.");
+        throw new TypeError("Can't get super without caller. Use this.superForValue(methodName) if using strict mode.");
     }
     var superFunction = getSuper(this, superImplementation.caller);
     return typeof superFunction === "function" ? superFunction.bind(this) : Function.noop;
@@ -729,7 +729,7 @@ var superImplementation = function super_() {
 
 var superForImplementation = function (object, propertyType, propertyName) {
     var superFunction, superProperty, superObject, property, proto, cacheObject, boundSuper,
-        context = object, 
+        context = object,
         cacheId = propertyName + "." + propertyType;
 
     if (!object._superContext) {
@@ -746,7 +746,7 @@ var superForImplementation = function (object, propertyType, propertyName) {
         context = object;
         while (context !== null) {
             if (context.hasOwnProperty(propertyName)) {
-                var property = Object.getOwnPropertyDescriptor(context, propertyName);
+                property = Object.getOwnPropertyDescriptor(context, propertyName);
                 if (typeof property[propertyType] === "function") {
                     break;
                 }
