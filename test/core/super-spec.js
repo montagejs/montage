@@ -111,6 +111,36 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).not.toContain("vehicleSpy");
                 });
             });
+            describe("with a property that exists on Object.prototype", function () {
+                beforeEach(function () {
+                    Montage.defineProperty(Vehicle.prototype, "forward", {
+                        value: function () {
+                        }
+                    });
+                    Montage.defineProperty(Car.prototype, "forward", {
+                        value: function () {
+                            this.super();
+                        }
+                    });
+                    Montage.defineProperty(Vehicle.prototype, "toString", {
+                        value: function () {
+                            vehicleSpy();
+                        }
+                    });
+                    Montage.defineProperty(Car.prototype, "toString", {
+                        value: function () {
+                            this.super();
+                        }
+                    });
+                    vehicle = new Vehicle();
+                    car = new Car();
+                });
+                it("calling toString on car", function () {
+                    vehicle.forward();
+                    car.toString();
+                    expect(calledSpy).toContain("vehicleSpy");
+                });
+            });
             describe("with one hop", function () {
                 beforeEach(function () {
                     Montage.defineProperty(Vehicle.prototype, "forward", {
