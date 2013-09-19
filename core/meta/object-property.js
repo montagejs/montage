@@ -21,7 +21,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
 
     constructor: {
         value: function ObjectProperty() {
-            this.super();
+            this.superForValue("constructor")();
         }
     },
 

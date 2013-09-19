@@ -25,7 +25,7 @@ exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends Deri
 
     constructor: {
         value: function DerivedPropertyBlueprint() {
-            this.super();
+            this.superForValue("constructor")();
         }
     },
 

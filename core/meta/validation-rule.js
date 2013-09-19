@@ -20,7 +20,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
 
     constructor: {
         value: function PropertyValidationRule() {
-            this.super();
+            this.superForValue("constructor")();
         }
     },
 
