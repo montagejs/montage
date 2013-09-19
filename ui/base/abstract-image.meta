@@ -29,6 +29,21 @@
             }
         }
     },
+    "crossOrigin_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "crossOrigin",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "enum",
+            "enumValues": [
+                null,
+                "anonymous",
+                "use-credentials"
+            ]
+        }
+    },
     "blueprint_parent": {
         "prototype": "core/meta/blueprint-reference",
         "properties": {
@@ -57,6 +72,9 @@
                 },
                 {
                     "@": "height_property"
+                },
+                {
+                    "@": "crossOrigin_property"
                 }
             ],
             "propertyBlueprintGroups": {
@@ -71,6 +89,9 @@
                     },
                     {
                         "@": "height_property"
+                    },
+                    {
+                        "@": "crossOrigin_property"
                     }
                 ]
             },

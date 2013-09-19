@@ -87,7 +87,9 @@ exports.element = function (_document) {
         },
         className: "",
         style: {},
-        removeAttribute: function () {},
+        removeAttribute: function (attribute) {
+            delete this.__attributes__[attribute];
+        },
         __attributes__: {},
         setAttribute: function (attribute, value) {
             this.__attributes__[attribute] = value;
