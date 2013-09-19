@@ -1,11 +1,13 @@
 var Montage = require("montage").Montage,
     Bindings = require("montage/core/bindings").Bindings;
 
-describe("test/core/super-spec", function () {
+describe("test/core/super-for-spec", function () {
     var Vehicle, Car, Beetle,
         vehicle, car, beetle,
         vehicleSpy, carSpy, beetleSpy,
+        vehicleRedefinedSpy, carRedefinedSpy, beetleRedefinedSpy,
         vehicleConstructorSpy, carConstructorSpy, beetleConstructorSpy,
+        vehicleConstructorSpyCount, carConstructorSpyCount, beetleConstructorSpyCount,
         calledSpy;
     beforeEach(function () {
         calledSpy = [];
@@ -24,9 +26,9 @@ describe("test/core/super-spec", function () {
         vehicleRedefinedSpy = function () {calledSpy.push("vehicleRedefinedSpy")};
         carRedefinedSpy = function () {calledSpy.push("carRedefinedSpy")};
         beetleRedefinedSpy = function () {calledSpy.push("beetleRedefinedSpy")};
-        vehicleConstructorSpy = function () {calledSpy.push("vehicleConstructorSpy")};
-        carConstructorSpy = function () {calledSpy.push("carConstructorSpy")};
-        beetleConstructorSpy = function () {calledSpy.push("beetleConstructorSpy")};
+        vehicleConstructorSpy = jasmine.createSpy("vehicleConstructorSpy");
+        carConstructorSpy = jasmine.createSpy("carConstructorSpy");
+        beetleConstructorSpy = jasmine.createSpy("beetleConstructorSpy");
     });
     describe("instance", function () {
         describe("methods", function () {
@@ -39,7 +41,7 @@ describe("test/core/super-spec", function () {
                     });
                     Montage.defineProperty(Car.prototype, "forward", {
                         value: function () {
-                            this.super();
+                            this.superForValue("forward")();
                             carSpy();
                         }
                     });
@@ -111,36 +113,6 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).not.toContain("vehicleSpy");
                 });
             });
-            describe("with a property that exists on Object.prototype", function () {
-                beforeEach(function () {
-                    Montage.defineProperty(Vehicle.prototype, "forward", {
-                        value: function () {
-                        }
-                    });
-                    Montage.defineProperty(Car.prototype, "forward", {
-                        value: function () {
-                            this.super();
-                        }
-                    });
-                    Montage.defineProperty(Vehicle.prototype, "toString", {
-                        value: function () {
-                            vehicleSpy();
-                        }
-                    });
-                    Montage.defineProperty(Car.prototype, "toString", {
-                        value: function () {
-                            this.super();
-                        }
-                    });
-                    vehicle = new Vehicle();
-                    car = new Car();
-                });
-                it("calling toString on car", function () {
-                    vehicle.forward();
-                    car.toString();
-                    expect(calledSpy).toContain("vehicleSpy");
-                });
-            });
             describe("with one hop", function () {
                 beforeEach(function () {
                     Montage.defineProperty(Vehicle.prototype, "forward", {
@@ -150,7 +122,7 @@ describe("test/core/super-spec", function () {
                     });
                     Montage.defineProperty(Beetle.prototype, "forward", {
                         value: function () {
-                            this.super();
+                            this.superForValue("forward")();
                             beetleSpy();
                         }
                     });
@@ -226,13 +198,13 @@ describe("test/core/super-spec", function () {
                     });
                     Montage.defineProperty(Car.prototype, "forward", {
                         value: function () {
-                            this.super();
+                            this.superForValue("forward")();
                             carSpy();
                         }
                     });
                     Montage.defineProperty(Beetle.prototype, "forward", {
                         value: function () {
-                            this.super();
+                            this.superForValue("forward")();
                             beetleSpy();
                         }
                     });
@@ -324,7 +296,6 @@ describe("test/core/super-spec", function () {
                 });
             });
         });
-
         describe("getters", function () {
             describe("with direct super", function () {
                 beforeEach(function () {
@@ -335,7 +306,7 @@ describe("test/core/super-spec", function () {
                     });
                     Montage.defineProperty(Car.prototype, "forward", {
                         get: function () {
-                            this.super();
+                            this.superForGet("forward")();
                             carSpy();
                         }
                     });
@@ -428,7 +399,7 @@ describe("test/core/super-spec", function () {
                     });
                     Montage.defineProperty(Beetle.prototype, "forward", {
                         get: function () {
-                            var superValue = this.super();
+                            var superValue = this.superForGet("forward")();
                             beetleSpy();
                             return superValue+"Beetle";
                         }
@@ -517,13 +488,13 @@ describe("test/core/super-spec", function () {
                     });
                     Montage.defineProperty(Car.prototype, "forward", {
                         get: function () {
-                            this.super();
+                            this.superForGet("forward")();
                             carSpy();
                         }
                     });
                     Montage.defineProperty(Beetle.prototype, "forward", {
                         get: function () {
-                            this.super();
+                            this.superForGet("forward")();
                             beetleSpy();
                         }
                     });
@@ -650,7 +621,7 @@ describe("test/core/super-spec", function () {
                     });
                     Montage.defineProperty(Beetle.prototype, "forward", {
                         get: function () {
-                            this.super();
+                            this.superForGet("forward")();
                             beetleSpy();
                         }
                     });
@@ -694,7 +665,6 @@ describe("test/core/super-spec", function () {
                 });
             });
         });
-
         describe("setters", function () {
             describe("with direct super", function () {
                 beforeEach(function () {
@@ -705,7 +675,7 @@ describe("test/core/super-spec", function () {
                     });
                     Montage.defineProperty(Car.prototype, "forward", {
                         set: function () {
-                            this.super();
+                            this.superForSet("forward")();
                             carSpy();
                         }
                     });
@@ -797,7 +767,7 @@ describe("test/core/super-spec", function () {
                     });
                     Montage.defineProperty(Beetle.prototype, "forward", {
                         set: function () {
-                            this.super();
+                            this.superForSet("forward")();
                             beetleSpy();
                         }
                     });
@@ -885,13 +855,13 @@ describe("test/core/super-spec", function () {
                     });
                     Montage.defineProperty(Car.prototype, "forward", {
                         set: function () {
-                            this.super();
+                            this.superForSet("forward")();
                             carSpy();
                         }
                     });
                     Montage.defineProperty(Beetle.prototype, "forward", {
                         set: function () {
-                            this.super();
+                            this.superForSet("forward")();
                             beetleSpy();
                         }
                     });
@@ -1019,15 +989,14 @@ describe("test/core/super-spec", function () {
                             vehicleSpy();
                             backingValue = value;
                         }
-
                     });
                     Montage.defineProperty(Car.prototype, "forward", {
                         get: function () {
-                            this.super();
+                            this.superForGet("forward")();
                             carSpy();
                         },
                         set: function (value) {
-                            this.super(value);
+                            this.superForSet("forward")(value);
                             carSpy();
                             backingValue = value;
                         }
@@ -1118,7 +1087,6 @@ describe("test/core/super-spec", function () {
                         car.forward = true;
                         expect(calledSpy).toContain("carSpy");
                         expect(calledSpy).toContain("vehicleSpy");
-
                     });
                     it("calling forward on beetle", function () {
                         beetle.forward;
@@ -1129,10 +1097,9 @@ describe("test/core/super-spec", function () {
                     it("calling forward on vehicle twice", function () {
                         vehicle.forward;
                         calledSpy = [];
-                        vehicle.foo = "BAH";
                         vehicle.forward;
                         expect(calledSpy).toContain("vehicleSpy");
-                        expect(backingValue).toEqual("BAH");
+                        expect(backingValue).toEqual("BOO");
                     });
                     it("calling forward on car twice", function () {
                         // checking if the binding is working
@@ -1142,16 +1109,14 @@ describe("test/core/super-spec", function () {
                         car.forward = true;
                         expect(calledSpy).toContain("carSpy");
                         expect(calledSpy).toContain("vehicleSpy");
-
                     });
                     it("calling forward on beetle twice", function () {
                         beetle.forward;
                         calledSpy = [];
-                        vehicle.foo = "BAH";
                         beetle.forward;
                         expect(calledSpy).toContain("carSpy");
                         expect(calledSpy).toContain("vehicleSpy");
-                        expect(backingValue).toEqual("BAH");
+                        expect(backingValue).toEqual("BOO");
                     });
                 });
                 describe("binding on method itself", function () {
@@ -1184,7 +1149,7 @@ describe("test/core/super-spec", function () {
                     it("calling forward on car twice", function () {
                         car.forward;
                         calledSpy = [];
-                        car.foo = "BAH";
+                        car.foo = "BAH"
                         car.forward;
                         expect(calledSpy).toContain("carSpy");
                         expect(calledSpy).toContain("vehicleSpy");
@@ -1193,7 +1158,7 @@ describe("test/core/super-spec", function () {
                     it("calling forward on beetle twice", function () {
                         beetle.forward;
                         calledSpy = [];
-                        car.foo = "BAH";
+                        car.foo = "BAH"
                         beetle.forward;
                         expect(calledSpy).toContain("carSpy");
                         expect(calledSpy).toContain("vehicleSpy");
@@ -1209,7 +1174,7 @@ describe("test/core/super-spec", function () {
                         constructor: {
                             value: function Vehicle() {
                                 vehicleConstructorSpy();
-                                this.super();
+                                this.superForValue("constructor")();
                             }
                         }
                     });
@@ -1217,7 +1182,7 @@ describe("test/core/super-spec", function () {
                         constructor: {
                             value: function Car() {
                                 carConstructorSpy();
-                                this.super();
+                                this.superForValue("constructor")();
                             }
                         }
                     });
@@ -1225,25 +1190,43 @@ describe("test/core/super-spec", function () {
                         constructor: {
                             value: function Beetle() {
                                 beetleConstructorSpy();
-                                this.super();
+                                this.superForValue("constructor")();
                             }
                         }
                     });
                 });
                 it("calling constructor on vehicle", function () {
                     vehicle = new Vehicle();
-                    expect(calledSpy).toContain("vehicleConstructorSpy");
+                    expect(vehicleConstructorSpy.callCount).toEqual(1);
                 });
                 it("calling constructor on car", function () {
                     car = new Car();
-                    expect(calledSpy).toContain("vehicleConstructorSpy");
-                    expect(calledSpy).toContain("carConstructorSpy");
+                    expect(vehicleConstructorSpy.callCount).toEqual(1);
+                    expect(carConstructorSpy.callCount).toEqual(1);
                 });
                 it("calling constructor on beetle", function () {
                     beetle = new Beetle();
-                    expect(calledSpy).toContain("vehicleConstructorSpy");
-                    expect(calledSpy).toContain("carConstructorSpy");
-                    expect(calledSpy).toContain("beetleConstructorSpy");
+                    expect(vehicleConstructorSpy.callCount).toEqual(1);
+                    expect(carConstructorSpy.callCount).toEqual(1);
+                    expect(beetleConstructorSpy.callCount).toEqual(1);
+                });
+                it("calling constructor on vehicle twice", function () {
+                    vehicle = new Vehicle();
+                    vehicle = new Vehicle();
+                    expect(vehicleConstructorSpy.callCount).toEqual(2);
+                });
+                it("calling constructor on car twice", function () {
+                    car = new Car();
+                    car = new Car();
+                    expect(vehicleConstructorSpy.callCount).toEqual(2);
+                    expect(carConstructorSpy.callCount).toEqual(2);
+                });
+                it("calling constructor on beetle twice", function () {
+                    beetle = new Beetle();
+                    beetle = new Beetle();
+                    expect(vehicleConstructorSpy.callCount).toEqual(2);
+                    expect(carConstructorSpy.callCount).toEqual(2);
+                    expect(beetleConstructorSpy.callCount).toEqual(2);
                 });
             });
             describe("with no constructor on Beetle", function() {
@@ -1252,7 +1235,8 @@ describe("test/core/super-spec", function () {
                         constructor: {
                             value: function Vehicle() {
                                 vehicleConstructorSpy();
-                                this.super();
+                                console.log("VEHICLE()");
+                                this.superForValue("constructor")();
                             }
                         }
                     });
@@ -1260,7 +1244,8 @@ describe("test/core/super-spec", function () {
                         constructor: {
                             value: function Car() {
                                 carConstructorSpy();
-                                this.super();
+                                console.log("CAR()");
+                                this.superForValue("constructor")();
                             }
                         }
                     });
@@ -1268,8 +1253,14 @@ describe("test/core/super-spec", function () {
                 });
                 it("calling constructor on beetle", function () {
                     beetle = new Beetle();
-                    expect(calledSpy).toContain("vehicleConstructorSpy");
-                    expect(calledSpy).toContain("carConstructorSpy");
+                    expect(vehicleConstructorSpy.callCount).toEqual(1);
+                    expect(carConstructorSpy.callCount).toEqual(1);
+                });
+                it("calling constructor on beetle twice", function () {
+                    beetle = new Beetle();
+                    beetle = new Beetle();
+                    expect(vehicleConstructorSpy.callCount).toEqual(2);
+                    expect(carConstructorSpy.callCount).toEqual(2);
                 });
             });
             describe("with no constructor on Car", function() {
@@ -1278,7 +1269,7 @@ describe("test/core/super-spec", function () {
                         constructor: {
                             value: function Vehicle() {
                                 vehicleConstructorSpy();
-                                this.super();
+                                this.superForValue("constructor")();
                             }
                         }
                     });
@@ -1287,19 +1278,31 @@ describe("test/core/super-spec", function () {
                         constructor: {
                             value: function Beetle() {
                                 beetleConstructorSpy();
-                                this.super();
+                                this.superForValue("constructor")();
                             }
                         }
                     });
+                    calledSpy = [];
                 });
                 it("calling constructor on beetle", function () {
                     beetle = new Beetle();
-                    expect(calledSpy).toContain("vehicleConstructorSpy");
-                    expect(calledSpy).toContain("beetleConstructorSpy");
+                    expect(vehicleConstructorSpy.callCount).toEqual(1);
+                    expect(beetleConstructorSpy.callCount).toEqual(1);
                 });
                 it("calling constructor on car", function () {
                     beetle = new Car();
-                    expect(calledSpy).toContain("vehicleConstructorSpy");
+                    expect(vehicleConstructorSpy.callCount).toEqual(1);
+                });
+                it("calling constructor on beetle twice", function () {
+                    beetle = new Beetle();
+                    beetle = new Beetle();
+                    expect(vehicleConstructorSpy.callCount).toEqual(2);
+                    expect(beetleConstructorSpy.callCount).toEqual(2);
+                });
+                it("calling constructor on car twice", function () {
+                    beetle = new Car();
+                    beetle = new Car();
+                    expect(vehicleConstructorSpy.callCount).toEqual(2);
                 });
             });
         });
@@ -1322,7 +1325,7 @@ describe("test/core/super-spec", function () {
                     }, {
                         forward: {
                             value: function () {
-                                this.super();
+                                this.superForValue("forward")();
                                 carSpy();
                             }
                         }
@@ -1414,7 +1417,7 @@ describe("test/core/super-spec", function () {
                     }, {
                         forward: {
                             value: function () {
-                                this.super();
+                                this.superForValue("forward")();
                                 beetleSpy();
                             }
                         }
@@ -1496,7 +1499,7 @@ describe("test/core/super-spec", function () {
                     }, {
                         forward: {
                             value: function () {
-                                this.super();
+                                this.superForValue("forward")();
                                 carSpy();
                             }
                         }
@@ -1506,7 +1509,7 @@ describe("test/core/super-spec", function () {
                     }, {
                         forward: {
                             value: function () {
-                                this.super();
+                                this.superForValue("forward")();
                                 beetleSpy();
                             }
                         }
@@ -1619,7 +1622,7 @@ describe("test/core/super-spec", function () {
                     });
                     Montage.defineProperty(Car.prototype, "forward", {
                         value: function () {
-                            this.super();
+                            this.superForValue("forward")();
                             carSpy();
                         }
                     });
@@ -1672,7 +1675,7 @@ describe("test/core/super-spec", function () {
                     });
                     Montage.defineProperty(Car.prototype, "forward", {
                         get: function () {
-                            this.super();
+                            this.superForGet("forward")();
                             carSpy();
                         }
                     });
@@ -1726,7 +1729,7 @@ describe("test/core/super-spec", function () {
                     });
                     Montage.defineProperty(Car.prototype, "forward", {
                         set: function () {
-                            this.super();
+                            this.superForSet("forward")();
                             carSpy();
                         }
                     });
@@ -1769,7 +1772,6 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("vehicleSpy");
                 });
             });
-
             describe("constructors", function () {
                 var foreignConstructor;
                 beforeEach(function () {
@@ -1778,7 +1780,7 @@ describe("test/core/super-spec", function () {
                         constructor: {
                             value: function Vehicle() {
                                 vehicleConstructorSpy();
-                                this.super();
+                                this.superForValue("constructor")();
                             }
                         }
                     });
@@ -1786,7 +1788,7 @@ describe("test/core/super-spec", function () {
                         constructor: {
                             value: function Car() {
                                 carConstructorSpy();
-                                this.super();
+                                this.superForValue("constructor")();
                             }
                         }
                     });
@@ -1794,57 +1796,58 @@ describe("test/core/super-spec", function () {
                         constructor: {
                             value: function Beetle() {
                                 beetleConstructorSpy();
-                                this.super();
+                                this.superForValue("constructor")();
                             }
                         }
                     });
-
-
-
                 });
-                it("calling forward on vehicle", function () {
+                it("calling constructor on vehicle", function () {
                     vehicle = new Vehicle();
-                    expect(calledSpy).toContain("vehicleConstructorSpy");
+                    expect(vehicleConstructorSpy).toHaveBeenCalled();
                     expect(foreignConstructor).toHaveBeenCalled();
                 });
-                it("calling forward on car", function () {
+                it("calling constructor on car", function () {
                     car = new Car();
-                    expect(calledSpy).toContain("vehicleConstructorSpy");
-                    expect(calledSpy).toContain("carConstructorSpy");
+                    expect(vehicleConstructorSpy).toHaveBeenCalled();
+                    expect(carConstructorSpy).toHaveBeenCalled();
                     expect(foreignConstructor).toHaveBeenCalled();
                 });
-                it("calling forward on beetle", function () {
+                it("calling constructor on beetle", function () {
                     beetle = new Beetle();
-                    expect(calledSpy).toContain("vehicleConstructorSpy");
-                    expect(calledSpy).toContain("carConstructorSpy");
-                    expect(calledSpy).toContain("beetleConstructorSpy");
+                    expect(vehicleConstructorSpy).toHaveBeenCalled();
+                    expect(carConstructorSpy).toHaveBeenCalled();
+                    expect(beetleConstructorSpy).toHaveBeenCalled();
                     expect(foreignConstructor).toHaveBeenCalled();
                 });
-                it("calling forward on vehicle twice", function () {
+                it("calling constructor on vehicle twice", function () {
                     vehicle = new Vehicle();
-                    calledSpy = [];
                     foreignConstructor.wasCalled = false;
+                    vehicleConstructorSpy.wasCalled = false;
                     vehicle = new Vehicle();
-                    expect(calledSpy).toContain("vehicleConstructorSpy");
+                    expect(vehicleConstructorSpy).toHaveBeenCalled();
                     expect(foreignConstructor).toHaveBeenCalled();
                 });
-                it("calling forward on car twice", function () {
+                it("calling constructor on car twice", function () {
                     car = new Car();
-                    calledSpy = [];
                     foreignConstructor.wasCalled = false;
+                    vehicleConstructorSpy.wasCalled = false;
+                    carConstructorSpy.wasCalled = false;
                     car = new Car();
-                    expect(calledSpy).toContain("vehicleConstructorSpy");
-                    expect(calledSpy).toContain("carConstructorSpy");
+                    expect(vehicleConstructorSpy).toHaveBeenCalled();
+                    expect(carConstructorSpy).toHaveBeenCalled();
                     expect(foreignConstructor).toHaveBeenCalled();
                 });
-                it("calling forward on beetle twice", function () {
+                it("calling constructor on beetle twice", function () {
                     beetle = new Beetle();
                     calledSpy = [];
                     foreignConstructor.wasCalled = false;
+                    vehicleConstructorSpy.wasCalled = false;
+                    carConstructorSpy.wasCalled = false;
+                    beetleConstructorSpy.wasCalled = false;
                     beetle = new Beetle();
-                    expect(calledSpy).toContain("vehicleConstructorSpy");
-                    expect(calledSpy).toContain("carConstructorSpy");
-                    expect(calledSpy).toContain("beetleConstructorSpy");
+                    expect(vehicleConstructorSpy).toHaveBeenCalled();
+                    expect(carConstructorSpy).toHaveBeenCalled();
+                    expect(beetleConstructorSpy).toHaveBeenCalled();
                     expect(foreignConstructor).toHaveBeenCalled();
                 });
             });
@@ -1858,7 +1861,7 @@ describe("test/core/super-spec", function () {
                 });
                 Montage.defineProperty(Car, "forward", {
                     value: function () {
-                        this.super();
+                        this.superForValue("forward")();
                         carSpy();
                     }
                 });
@@ -1881,8 +1884,6 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("carSpy");
                     expect(calledSpy).toContain("vehicleSpy");
                 });
-           });
-            describe("methods", function () {
                 it("calling forward on Vehicle twice", function () {
                     Vehicle.forward();
                     calledSpy = [];
@@ -1903,7 +1904,7 @@ describe("test/core/super-spec", function () {
                     expect(calledSpy).toContain("carSpy");
                     expect(calledSpy).toContain("vehicleSpy");
                 });
-           });
+            });
         });
     });
 });

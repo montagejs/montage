@@ -24,7 +24,7 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
 
     constructor: {
         value: function EventBlueprint() {
-            this.super();
+            this.superForValue("constructor")();
         }
     },
     
