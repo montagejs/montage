@@ -42,21 +42,6 @@ TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", fu
             });
         });
 
-        it("can create new event blueprint", function () {
-            var newBlueprint = new Blueprint().initWithName(component1.identifier);
-            expect(newBlueprint).toBeTruthy();
-            var newEventBlueprint = newBlueprint.addEventBlueprintNamed("action");
-            newEventBlueprint.detailKeys = ["one", "two", "three"];
-            //debugger
-            component1.blueprint = newBlueprint;
-            var blueprintPromise = component1.blueprint;
-            return blueprintPromise.then(function (blueprint) {
-                var eventBlueprint = blueprint.eventBlueprintForName("action");
-                expect(eventBlueprint).toBeDefined();
-                expect(eventBlueprint.detailKeys.length).toBe(3);
-            });
-        });
-
         it("can serialize the component blueprint", function () {
             var serializer = new Serializer().initWithRequire(require);
 

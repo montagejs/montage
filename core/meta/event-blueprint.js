@@ -27,18 +27,17 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
             this.superForValue("constructor")();
         }
     },
-    
+
     /**
      Initialize a newly allocated property blueprint.
      @function
      @param {String} name name of the property blueprint to create
      @param {Blueprint} blueprint
-     @param {Number} cardinality name of the property blueprint to create
-     @returns itself
+     @return this
      */
     initWithNameAndBlueprint:{
-        value:function (name, blueprint, cardinality) {
-            this._name = (name !== null ? name : Defaults["name"]);
+        value:function (name, blueprint) {
+            this._name = (name !== null ? name : Defaults.name);
             this._owner = blueprint;
             return this;
         }

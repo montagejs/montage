@@ -747,7 +747,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
             if (eventBlueprint !== null && eventBlueprint.name !== null) {
                 var index = this._eventBlueprints.indexOf(eventBlueprint);
                 if (index < 0) {
-                    if ((eventBlueprint.owner !== null) && (eventBlueprint.owner !== this)) {
+                    if (eventBlueprint.owner && eventBlueprint.owner !== this) {
                         eventBlueprint.owner.removeEventBlueprint(eventBlueprint);
                     }
                     this._eventBlueprints.push(eventBlueprint);
