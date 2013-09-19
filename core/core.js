@@ -674,7 +674,7 @@ Montage.defineProperty(Montage, "didCreate", {
 });
 
 var getSuper = function(object, method) {
-    var propertyNames, proto, i, propCount, propertyName, func, context, foundSuper;
+    var propertyNames, proto, i, propCount, propertyName, func, context, foundSuper, property;
     if (!(method._superPropertyName && method._superPropertyType)) {
         Montage.defineProperty(method, "_superPropertyType", {value:null});
         Montage.defineProperty(method, "_superPropertyName", {value:null});
@@ -728,7 +728,7 @@ var superImplementation = function super_() {
 };
 
 var superForImplementation = function (object, propertyType, propertyName) {
-    var superFunction, superProperty, superObject, property, proto, cacheObject, boundSuper,
+    var superFunction, superObject, property, cacheObject, boundSuper,
         context = object,
         cacheId = propertyName + "." + propertyType;
 
