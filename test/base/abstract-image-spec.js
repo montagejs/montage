@@ -95,10 +95,10 @@ describe("test/base/abstract-image-spec", function () {
 
         it("should change the crossorigin attribute when crossOrigin is set", function () {
             anImage.src = "http://montagejs.org/images/logo-montage.png";
-            anImage.crossOrigin = "anoynmous";
+            anImage.crossOrigin = "anonymous";
             anImage._isLoadingImage = false;
             anImage.draw();
-            expect(anImage.element.getAttribute("crossorigin")).toBe("anoynmous");
+            expect(anImage.element.getAttribute("crossorigin")).toBe("anonymous");
         });
 
         it("should remove the crossorigin attribute when crossOrigin is null", function () {
