@@ -24,6 +24,52 @@ describe("core/range-controller-spec", function() {
             expect(rangeController.selection).toEqual([]);
         });
 
+        it("should allow selection is subset of content", function () {
+            rangeController.content = [0, 1, 2];
+            rangeController.selection = [1];
+            expect(rangeController.selection).toEqual([1]);
+        });
+
+        it("should not allow selection that is not subset of content", function () {
+            rangeController.content = [0, 1, 2];
+            rangeController.selection = [3];
+            expect(rangeController.selection).toEqual([]);
+        });
+
+        it("should not allow adding element to selection that is not in content", function () {
+            rangeController.content = [0, 1, 2];
+            rangeController.selection.push(3);
+            expect(rangeController.selection).toEqual([0, 1]);
+        });
+
+        it("should remove selection if selected content is removed", function () {
+            rangeController.content = [0, 1, 2];
+            rangeController.selection = [2];
+            rangeController.pop();
+            expect(rangeController.selection).toEqual([]);
+        });
+
+        it("should not remove selection if other content is removed", function () {
+            rangeController.content = [0, 1, 2];
+            rangeController.selection = [1];
+            rangeController.pop();
+            expect(rangeController.selection).toEqual([1]);
+        });
+
+        it("should remove selection if selection is not in new content", function () {
+            rangeController.content = [0, 1, 2];
+            rangeController.selection = [2];
+            rangeController.content = [0, 1, 3];
+            expect(rangeController.selection).toEqual([]);
+        });
+
+        it("should not remove selection if selection is in new content", function () {
+            rangeController.content = [0, 1, 2];
+            rangeController.selection = [1];
+            rangeController.content = [0, 1];
+            expect(rangeController.selection).toEqual([1]);
+        });
+
     });
 
     describe("multiSelect", function () {
