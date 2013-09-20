@@ -298,6 +298,9 @@ var RangeController = exports.RangeController = Montage.specialize( {
             if (!value) {
                 value = [];
             }
+            
+            // filter selection so only elements in content collection are selected
+            value = value.filter(this.has, this);
 
             if (!value.isObservable && value.makeObservable) {
                 value.makeObservable();
