@@ -3,7 +3,8 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Overlay = require("montage/ui/overlay.reel").Overlay,
     MockDOM = require("mocks/dom"),
-    Event = require("mocks/event");
+    Event = require("mocks/event"),
+    defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager;
 
 describe("ui/overlay-spec", function() {
     var anOverlay;
@@ -136,7 +137,7 @@ describe("ui/overlay-spec", function() {
                 anOverlay._pressComposer._dispatchPressStart(event);
                 expect(anOverlay._isShown).toBe(false);
 
-                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target);
+                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target, "pressStart");
             });
 
             it("should not be called when a pressStart is fired inside the overlay", function() {
@@ -172,7 +173,39 @@ describe("ui/overlay-spec", function() {
 
                 expect(anOverlay._isShown).toBe(true);
 
-                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target);
+                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target, "pressStart");
+            });
+
+            it("should hide the overlay when the escape key is pressed", function() {
+                delegate.shouldDismissOverlay = jasmine.createSpy().andReturn(true);
+
+                anOverlay.enterDocument(true);
+                anOverlay._isShown = true;
+                anOverlay._isDisplayed = true;
+
+                var event = Event.event();
+                event.type = "keypress";
+                event.target = MockDOM.element();
+                anOverlay.handleEscapeKeyPress(event);
+
+                expect(anOverlay._isShown).toBe(false);
+                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target, "keyPress");
+            });
+
+            it("should not the overlay when the delegate returns false", function() {
+                delegate.shouldDismissOverlay = jasmine.createSpy().andReturn(false);
+
+                anOverlay.enterDocument(true);
+                anOverlay._isShown = true;
+                anOverlay._isDisplayed = true;
+
+                var event = Event.event();
+                event.target = MockDOM.element();
+                anOverlay.dispatchEvent(event);
+                anOverlay.handleEscapeKeyPress(event);
+
+                expect(anOverlay._isShown).toBe(true);
+                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target, "keyPress");
             });
         });
 

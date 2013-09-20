@@ -12,6 +12,7 @@
  */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
+    KeyComposer = require("composer/key-composer").KeyComposer,
     PressComposer = require("composer/press-composer").PressComposer;
 
 /**
@@ -30,6 +31,10 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
      */
 
     _pressComposer: {
+        value: null
+    },
+
+    _keyComposer: {
         value: null
     },
 
@@ -100,9 +105,10 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
      * * `willPositionOverlay(overlay, calculatedPostition)` is called when the
      *   overlay is being shown, and should return an object with `top` and
      *   `left` properties.
-     * * `shouldDismissOverlay(overlay, target)` is called when the user clicks
-     *   outside of the overlay. Usually this will hide the overlay. Return
-     *   `true` to hide the overlay, or `false` to leave the overlay visible.
+     * * `shouldDismissOverlay(overlay, target, event)` is called when the user
+     *   clicks outside of the overlay or presses escape inside the overlay.
+     *   Usually this will hide the overlay. Return `true` to hide the overlay, 
+     *   or `false` to leave the overlay visible.
      * @type {Object}
      */
     delegate: {
@@ -133,8 +139,9 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
         value: function Overlay() {
             this.super();
             this._pressComposer = new PressComposer();
-            // The press composer is only loaded when the overlay is shown.
-            // This is because the composer is added to the document, and so
+
+            // The composers are only loaded when the overlay is shown.
+            // This is because the composers are added to the document, and so
             // interferes with the default actions of all clicks by calling
             // preventDefault on click when the pointer is surrendered (which
             // is whenever the overlay isn't shown).
@@ -161,6 +168,13 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 if (this._dismissOnExternalInteraction) {
                     this._pressComposer.addEventListener("pressStart", this, false);
                 }
+
+                this._keyComposer = new KeyComposer();
+                this._keyComposer.component = this;
+                this._keyComposer.keys = "escape";
+                this._keyComposer.identifier = "escape";
+                this.addComposer(this._keyComposer);
+                this._keyComposer.element = window;
             }
         }
     },
@@ -185,6 +199,9 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 this._pressComposer.load();
                 this._isShown = true;
                 this.needsDraw = true;
+
+                this.addEventListener("keyPress", this, false);
+                this._keyComposer.addEventListener("keyPress", null, false);
             }
         }
     },
@@ -195,8 +212,12 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 // detachFromParentComponent happens at didDraw
                 this.classList.remove(CLASS_PREFIX + "--visible");
                 this._pressComposer.unload();
+                this._keyComposer.unload();
                 this._isShown = false;
                 this.needsDraw = true;
+
+                this.removeEventListener("keyPress", this, false);
+                this._keyComposer.removeEventListener("keyPress", null, false);
             }
         }
     },
@@ -218,7 +239,32 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 shouldDismissOverlay;
 
             if (!element.contains(targetElement)) {
-                shouldDismissOverlay = this.callDelegateMethod("shouldDismissOverlay", this, targetElement);
+                shouldDismissOverlay = this.callDelegateMethod("shouldDismissOverlay", this, targetElement, "pressStart");
+
+                if (shouldDismissOverlay === void 0 || shouldDismissOverlay) {
+                    this.hide();
+                    this._dispatchDismissEvent();
+                }
+            }
+        }
+    },
+
+    handleKeyPress: {
+        value: function(event) {
+            var identifier = event.identifier;
+            switch (identifier) {
+            case "inputEscape":
+                this.handleEscapeKeyPress(event);
+                break;
+            }
+
+        }
+    },
+
+    handleEscapeKeyPress: {
+        value: function(event) {
+            if (this._isShown) {
+                var shouldDismissOverlay = this.callDelegateMethod("shouldDismissOverlay", this, event.target, "keyPress");
 
                 if (shouldDismissOverlay === void 0 || shouldDismissOverlay) {
                     this.hide();
