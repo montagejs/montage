@@ -1,4 +1,3 @@
-
 var Montage = require("montage").Montage;
 
 var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {

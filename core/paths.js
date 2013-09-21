@@ -1,4 +1,3 @@
-
 var Montage = require("core/core").Montage;
 var WeakMap = require("collections/weak-map");
 var Map = require("collections/map");

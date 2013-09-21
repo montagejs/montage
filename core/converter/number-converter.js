@@ -1,6 +1,3 @@
-/* <copyright>
-</copyright> */
-
 // Number and String formatting functions from Google Closure Library - http://code.google.com/closure/library/
 // /library/format/format.js
 

@@ -1,8 +1,3 @@
-/* <copyright>
-Copyright (c) 2012, António Afonso. All Rights Reserved.
-3-Clause BSD License
-http://opensource.org/licenses/BSD-3-Clause
-</copyright> */
 /**
     @external RegExp
 */

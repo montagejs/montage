@@ -1,5 +1,3 @@
-/* <copyright>
-</copyright> */
 /**
  * @module montage/core/converter/new-line-to-br-converter
  * @requires montage/core/core

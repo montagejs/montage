@@ -1,5 +1,3 @@
-/* <copyright>
-</copyright> */
 /**
  * @module montage/core/converter/invert-converter
  * @requires montage/core/core

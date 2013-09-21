@@ -1,5 +1,3 @@
-/* <copyright>
-</copyright> */
 /**
  * @module montage/core/converter/currency-converter
  * @requires montage/core/core

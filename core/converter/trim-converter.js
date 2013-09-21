@@ -1,5 +1,3 @@
-/* <copyright>
-</copyright> */
 /**
  * @module montage/core/converter/trim-converter
  * @requires montage/core/core
