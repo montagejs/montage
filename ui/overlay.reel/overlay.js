@@ -13,7 +13,8 @@
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     KeyComposer = require("composer/key-composer").KeyComposer,
-    PressComposer = require("composer/press-composer").PressComposer;
+    PressComposer = require("composer/press-composer").PressComposer,
+    defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
 /**
     @class module:Overlay
@@ -200,6 +201,9 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 this._isShown = true;
                 this.needsDraw = true;
 
+                this.nextTarget = defaultEventManager.activeTarget;
+                defaultEventManager.activeTarget = this;
+
                 this.addEventListener("keyPress", this, false);
                 this._keyComposer.addEventListener("keyPress", null, false);
             }
@@ -216,9 +220,29 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 this._isShown = false;
                 this.needsDraw = true;
 
+                defaultEventManager.activeTarget = this.nextTarget;
+
                 this.removeEventListener("keyPress", this, false);
                 this._keyComposer.removeEventListener("keyPress", null, false);
             }
+        }
+    },
+
+    isModal: {
+        value: true
+    },
+
+    /**
+    The overlay should only surrender focus if it is hidden, non-modal,
+    or if the other component is one of its descendants.
+    */
+    surrendersActiveTarget: {
+        value: function(component) {
+            if (!this.isShown || !this.isModal) {
+                return true;
+            }
+
+            return this.element.contains(component.element);
         }
     },
 
@@ -253,7 +277,7 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
         value: function(event) {
             var identifier = event.identifier;
             switch (identifier) {
-            case "inputEscape":
+            case "escape":
                 this.handleEscapeKeyPress(event);
                 break;
             }
