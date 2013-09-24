@@ -372,4 +372,108 @@ describe("document-resources-spec", function() {
             expect("test").toBe("executed");
         });
     });
+
+    it("should report styles as loaded when they're laoded", function() {
+        var resources = new DocumentResources(),
+            url = "resource.css";
+
+        return createPage("reel/template/page.html")
+        .then(function(page) {
+            var deferred = Promise.defer(),
+                style;
+
+            resources.initWithDocument(page.document);
+
+            style = page.document.createElement("link");
+            style.rel = "stylesheet";
+            style.href = url;
+            style.onload = function() {
+                expect(resources.areStylesLoaded).toBeTruthy();
+
+                deletePage(page);
+                deferred.resolve();
+            };
+
+            resources.addStyle(style);
+
+            return deferred.promise;
+        }).fail(function(reason) {
+            console.log(reason.stack);
+            expect("test").toBe("executed");
+        });
+    });
+
+    it("should report styles as not loaded when they're not loaded", function() {
+        var resources = new DocumentResources();
+
+        return createPage("reel/template/page.html")
+        .then(function(page) {
+            resources.initWithDocument(page.document);
+            resources._expectedStyles.push("resource.css");
+
+            expect(resources.areStylesLoaded).toBeFalsy();
+        }).fail(function(reason) {
+            console.log(reason.stack);
+            expect("test").toBe("executed");
+        });
+    });
+
+    describe("normalize url", function() {
+        it("should normalize a relative url", function() {
+            var resources = new DocumentResources(),
+                normalizedUrl,
+                url = "../resource.css",
+                expectedUrl;
+
+            return createPage("reel/template/page.html")
+            .then(function(page) {
+                expectedUrl = page.document.location.href.split("/").slice(0, -2).join("/") + "/resource.css";
+
+                resources.initWithDocument(page.document);
+                normalizedUrl = resources.normalizeUrl(url);
+
+                expect(normalizedUrl).toBe(expectedUrl);
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should normalize an absolute url", function() {
+            var resources = new DocumentResources(),
+                normalizedUrl,
+                url = "http://www.montagejs.org/resource.css",
+                expectedUrl = "http://www.montagejs.org/resource.css";
+
+            return createPage("reel/template/page.html")
+            .then(function(page) {
+                resources.initWithDocument(page.document);
+                normalizedUrl = resources.normalizeUrl(url);
+
+                expect(normalizedUrl).toBe(expectedUrl);
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should normalize an url with a base url", function() {
+            var resources = new DocumentResources(),
+                normalizedUrl,
+                url = "resource.css",
+                baseUrl = "http://www.montagejs.org/",
+                expectedUrl = "http://www.montagejs.org/resource.css";
+
+            return createPage("reel/template/page.html")
+            .then(function(page) {
+                resources.initWithDocument(page.document);
+                normalizedUrl = resources.normalizeUrl(url, baseUrl);
+
+                expect(normalizedUrl).toBe(expectedUrl);
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+    });
 });

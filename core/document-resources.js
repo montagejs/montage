@@ -7,10 +7,12 @@ var DocumentResources = Montage.specialize({
     _document: {value: null},
     _resources: {value: null},
     _preloaded: {value: null},
+    _expectedStyles: {value: null},
 
     constructor: {
         value: function DocumentResources() {
             this.super();
+            this._expectedStyles = [];
         }
     },
 
@@ -153,8 +155,7 @@ var DocumentResources = Montage.specialize({
 
     addStyle: {
         value: function(element) {
-            var self = this,
-                url = element.getAttribute("href"),
+            var url = element.getAttribute("href"),
                 documentHead;
 
             url = this.normalizeUrl(url);
@@ -169,13 +170,18 @@ var DocumentResources = Montage.specialize({
 
             documentHead = this._document.head;
 
+            this._expectedStyles.push(url);
             documentHead.insertBefore(element, documentHead.firstChild);
         }
     },
 
     normalizeUrl: {
         value: function(url, baseUrl) {
-            return URL.resolve(baseUrl || "http://", url);
+            if (!baseUrl) {
+                baseUrl = this._document.location.href;
+            }
+
+            return URL.resolve(baseUrl, url);
         }
     },
 
@@ -227,6 +233,25 @@ var DocumentResources = Montage.specialize({
             this.setResourcePreloadedPromise(url, deferred.promise);
 
             return deferred.promise;
+        }
+    },
+
+    areStylesLoaded: {
+        get: function() {
+            var styleSheets,
+                ix;
+
+            if (this._expectedStyles.length > 0) {
+                styleSheets = this._document.styleSheets;
+                for (var i = 0, styleSheet; styleSheet = styleSheets[i]; i++) {
+                    ix = this._expectedStyles.indexOf(styleSheet.href);
+                    if (ix >= 0) {
+                        this._expectedStyles.splice(ix, 1);
+                    }
+                }
+            }
+
+            return this._expectedStyles.length === 0;
         }
     }
 }, {

@@ -1667,13 +1667,11 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
             var part = this._templateDocumentPart,
                 resources,
                 styles,
-                _document,
-                documentHead;
+                _document;
 
             if (part) {
                 resources = part.template.getResources();
                 _document = this.element.ownerDocument;
-                documentHead = _document.head;
                 styles = resources.createStylesForDocument(_document);
 
                 for (var i = 0, style; (style = styles[i]); i++) {
@@ -2961,14 +2959,23 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                 var _drawTree = function(timestamp) {
                     var drawPerformanceStartTime;
 
-                    // Before initiating a draw cycle through the components we
-                    // need to have a draw cycle just to add all the stylesheets
-                    // if any is requested to draw.
-                    // We need to do this because adding the stylesheets at the
-                    // same time the components draw won't make the styles
-                    // available at that first draw.
+                    // Add all stylesheets needed by the components since last
+                    // draw.
                     if (self._needsStylesheetsDraw) {
                         self.drawStylesheets();
+                    }
+
+                    // Wait for all stylesheets to be loaded, do not proceeed
+                    // with the draw cycle until all needed stylesheets are
+                    // ready.
+                    // We need to do this because adding the stylesheets won't
+                    // make them immediately available for styling even if the
+                    // file is already loaded.
+                    if (!self._documentResources.areStylesLoaded) {
+                        if (drawPerformanceLogger.isDebug) {
+                            console.log("Draw Cycle Waiting Stylesheets: ", self._documentResources._expectedStyles.length);
+                        }
+
                         self.requestedAnimationFrame = null;
                         self.drawTree();
                         return;
