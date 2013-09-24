@@ -277,7 +277,8 @@ var Template = Montage.specialize( {
                     // Start preloading the resources as soon as possible, no
                     // need to wait for them as the draw cycle will take care
                     // of that when loading the stylesheets into the document.
-                    resources.loadResources(targetDocument);
+                    resources.loadResources(targetDocument)
+                    .done();
                 }
                 return part;
             });
