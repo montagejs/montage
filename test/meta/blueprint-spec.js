@@ -304,6 +304,14 @@ describe("meta/blueprint-spec", function () {
                 blueprint = new Blueprint().initWithName("test");
             });
 
+            describe("eventBlueprints", function () {
+                it("returns the same array", function () {
+                    blueprint.addEventBlueprintNamed("event");
+                    var eventBlueprints = blueprint.eventBlueprints;
+                    expect(blueprint.eventBlueprints).toBe(eventBlueprints);
+                });
+            });
+
             describe("adding", function () {
                 var eventBlueprint;
                 afterEach(function () {

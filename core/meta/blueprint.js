@@ -38,6 +38,8 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     constructor: {
         value: function Blueprint() {
             this.superForValue("constructor")();
+            this._eventBlueprints = [];
+            this.defineBinding("eventBlueprints", {"<-": "_eventBlueprints.concat(parent.eventBlueprints)"});
         }
     },
 
@@ -706,8 +708,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      @default {Array} new Array()
      */
     _eventBlueprints: {
-        value: [],
-        distinct: true
+        value: null,
     },
 
     /**
@@ -715,14 +716,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      @default {Array} new Array()
      */
     eventBlueprints: {
-        get: function() {
-            var eventBlueprints = [];
-            eventBlueprints = eventBlueprints.concat(this._eventBlueprints);
-            if (this.parent) {
-                eventBlueprints = eventBlueprints.concat(this.parent.eventBlueprints);
-            }
-            return eventBlueprints;
-        }
+        value: null
     },
 
     /**
