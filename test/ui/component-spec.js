@@ -1205,5 +1205,64 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                 expect(callOrder[1]).toBe(componentB);
             });
         });
+
+        describe("array object pool", function() {
+            var component;
+
+            beforeEach(function() {
+                component = new Component();
+                component._arrayObjectPool.pool = null;
+                component._arrayObjectPool.ix = 0;
+            });
+
+            it("should return an array", function() {
+                var array = component._getArray();
+
+                expect(Array.isArray(array)).toBeTruthy();
+            });
+
+            it("should return an empty array", function() {
+                var array = component._getArray();
+
+                expect(array.length).toBe(0);
+            });
+
+            it("should return different arrays", function() {
+                var array1 = component._getArray(),
+                    array2 = component._getArray();
+
+                expect(array1).not.toBe(array2);
+            });
+
+            it("should return disposed array", function() {
+                var array1 = component._getArray(),
+                    array2;
+
+                component._disposeArray(array1);
+                array2 = component._getArray();
+
+                expect(array1).toBe(array2);
+            });
+
+            it("should continue to return arrays after the pool is depleted", function() {
+                var array;
+
+                for (var i = 0; i <= component._arrayObjectPool.size; i++) {
+                    component._getArray();
+                }
+                array = component._getArray();
+
+                expect(Array.isArray(array)).toBeTruthy();
+            });
+
+            it("should dispose arrays when the pool is full", function() {
+                var array = [],
+                    ix = component._arrayObjectPool.ix;
+
+                component._disposeArray(array);
+
+                expect(component._arrayObjectPool.ix).toBe(ix);
+            });
+        });
     });
 });
