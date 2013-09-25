@@ -23,7 +23,7 @@ var Montage = require("montage").Montage,
 
 var CLASS_PREFIX = "montage-Overlay";
 
-exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
+exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     /**
      * Dispatched when the user dismiss the overlay by clicking outside of it.
      * @event dismiss

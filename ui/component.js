@@ -59,7 +59,7 @@ var Montage = require("montage").Montage,
  * @classdesc Base class for all Montage components.
  * @extends Montage
  */
-var Component = exports.Component = Target.specialize(/** @lends module:montage/ui/component.Component# */ {
+var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     DOM_ARG_ATTRIBUTE: {value: "data-arg"},
 
     constructor: {
@@ -755,8 +755,8 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
     /**
      * The child componet sof the component. This should not be edited directly.
      * @see Component#attachToParentComponent
-     * @type {Array}
-     * @default Array []
+     * @type {Array.<Component>}
+     * @readonly
     */
     childComponents: {
         enumerable: false,
