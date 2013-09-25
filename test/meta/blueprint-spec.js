@@ -296,5 +296,94 @@ describe("meta/blueprint-spec", function () {
             });
         });
 
+        describe("events", function () {
+            var EventBlueprint = require("montage/core/meta/event-blueprint").EventBlueprint;
+
+            var blueprint;
+            beforeEach(function () {
+                blueprint = new Blueprint().initWithName("test");
+            });
+
+            describe("eventBlueprints", function () {
+                it("returns the same array", function () {
+                    blueprint.addEventBlueprintNamed("event");
+                    var eventBlueprints = blueprint.eventBlueprints;
+                    expect(blueprint.eventBlueprints).toBe(eventBlueprints);
+                });
+            });
+
+            describe("adding", function () {
+                var eventBlueprint;
+                afterEach(function () {
+                    expect(blueprint.eventBlueprints.length).toEqual(1);
+                    expect(blueprint.eventBlueprints[0]).toBe(eventBlueprint);
+                });
+
+                it("adds an existing blueprint", function () {
+                    eventBlueprint = new EventBlueprint().initWithNameAndBlueprint("event");
+                    blueprint.addEventBlueprint(eventBlueprint);
+
+                    expect(eventBlueprint.owner).toBe(blueprint);
+                    expect(blueprint.eventBlueprintForName("event")).toBe(eventBlueprint);
+                });
+
+                it("only adds the blueprint once", function () {
+                    eventBlueprint = new EventBlueprint().initWithNameAndBlueprint("event");
+
+                    blueprint.addEventBlueprint(eventBlueprint);
+                    blueprint.addEventBlueprint(eventBlueprint);
+
+                    expect(eventBlueprint.owner).toBe(blueprint);
+                    expect(blueprint.eventBlueprintForName("event")).toBe(eventBlueprint);
+                });
+
+                it("creates a new blueprint with the given name", function () {
+                    eventBlueprint = blueprint.addEventBlueprintNamed("event");
+
+                    expect(eventBlueprint.owner).toBe(blueprint);
+                    expect(eventBlueprint.name).toEqual("event");
+                    expect(blueprint.eventBlueprintForName("event")).toBe(eventBlueprint);
+                });
+            });
+
+            it("creates a new event blueprint", function () {
+                var eventBlueprint = blueprint.newEventBlueprint("event");
+
+                expect(eventBlueprint.name).toEqual("event");
+                expect(eventBlueprint.owner).toBe(blueprint);
+            });
+
+            it("removes an existing blueprint", function () {
+                var eventBlueprint = blueprint.addEventBlueprintNamed("event");
+                blueprint.removeEventBlueprint(eventBlueprint);
+
+                expect(eventBlueprint.owner).toBe(null);
+                expect(blueprint.eventBlueprintForName("event")).toBe(null);
+            });
+
+
+            it("removes an existing blueprint from it's previous owner", function () {
+                var oldBlueprint = new Blueprint().initWithName("old");
+
+                var eventBlueprint = new EventBlueprint().initWithNameAndBlueprint("event", oldBlueprint);
+                blueprint.addEventBlueprint(eventBlueprint);
+
+                expect(eventBlueprint.owner).toBe(blueprint);
+                expect(blueprint.eventBlueprintForName("event")).toBe(eventBlueprint);
+
+                expect(oldBlueprint.eventBlueprintForName("event")).toBe(null);
+            });
+
+            it("lists event blueprints of the parent", function () {
+                var parentBlueprint = new Blueprint().initWithName("parent");
+                blueprint.parent = parentBlueprint;
+
+                var parentEvent = parentBlueprint.addEventBlueprintNamed("parentEvent");
+                var event = blueprint.addEventBlueprintNamed("event");
+
+                expect(blueprint.eventBlueprints.length).toEqual(2);
+                expect(blueprint.eventBlueprints).toEqual([event, parentEvent]);
+            });
+        });
     });
 });
