@@ -708,7 +708,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      @default {Array} new Array()
      */
     _eventBlueprints: {
-        value: null,
+        value: null
     },
 
     /**
