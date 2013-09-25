@@ -1519,7 +1519,7 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
     _arrayObjectPool: {
         value: {
             pool: null,
-            size: 10,
+            size: 200,
             ix: 0
         }
     },
