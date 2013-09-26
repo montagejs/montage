@@ -42,21 +42,48 @@ describe("meta/blueprint-spec", function () {
     });
 
     describe("Blueprint", function () {
-        describe("propertyBlueprints", function () {
-            var blueprint = new Blueprint().initWithName("Person");
-            var propertyBlueprint = blueprint.newPropertyBlueprint("foo", 1);
+        describe("properties", function () {
+            var blueprint, propertyBlueprint;
+            beforeEach(function () {
+                blueprint = new Blueprint().initWithName("Person");
+                propertyBlueprint = blueprint.newPropertyBlueprint("foo", 1);
+            });
+
+            describe("propertyBlueprints", function () {
+                it("returns the same array", function () {
+                    var propertyBlueprints = blueprint.propertyBlueprints;
+                    expect(blueprint.propertyBlueprints).toBe(propertyBlueprints);
+                });
+
+                it("should contain parent blueprints", function () {
+                    blueprint.addPropertyBlueprint(propertyBlueprint);
+
+                    var parent = new Blueprint().initWithName("Mammal");
+                    var parentPropertyBlueprint = parent.newPropertyBlueprint("bar", 1);
+                    parent.addPropertyBlueprint(parentPropertyBlueprint);
+
+                    blueprint.parent = parent;
+
+                    expect(blueprint.propertyBlueprints.toArray()).toEqual([propertyBlueprint, parentPropertyBlueprint]);
+                });
+            });
+
             it("should be able to add", function () {
                 blueprint.addPropertyBlueprint(propertyBlueprint);
                 expect(propertyBlueprint.owner).toBe(blueprint);
                 expect(blueprint.propertyBlueprintForName("foo")).toBe(propertyBlueprint);
+                expect(blueprint.propertyBlueprints.toArray()).toEqual([propertyBlueprint]);
             });
 
             it("should be able to remove", function () {
+                blueprint.addPropertyBlueprint(propertyBlueprint);
                 blueprint.removePropertyBlueprint(propertyBlueprint);
                 expect(propertyBlueprint.owner).toBe(null);
                 expect(blueprint.propertyBlueprintForName("foo")).toBeNull();
             });
+
         });
+
         describe("associations", function () {
 
             var personBlueprint = new Blueprint().initWithName("Person");
