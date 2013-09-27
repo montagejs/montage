@@ -191,6 +191,9 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
      * 3) If an anchor is set, the overlay is displayed below the anchor.
      * 4) If no positional hints are provided, the overlay is displayed at the
      *    center of the screen.
+     * 
+     * FIXME: We have to add key events on both this component and the keyComposer 
+     * because of a bug in KeyComposer.
      */
     show: {
         value: function() {
@@ -263,22 +266,12 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
             }
         }
     },
-
+    
     handleKeyPress: {
         value: function(event) {
-            var identifier = event.identifier;
-            switch (identifier) {
-            case "escape":
-                this.handleEscapeKeyPress(event);
-                break;
+            if (event.identifier === "escape") {
+                this.dismissOverlay(event);
             }
-
-        }
-    },
-
-    handleEscapeKeyPress: {
-        value: function(event) {
-            this.dismissOverlay(event);
         }
     },
 

@@ -4,6 +4,7 @@ var Montage = require("montage").Montage,
     Overlay = require("montage/ui/overlay.reel").Overlay,
     MockDOM = require("mocks/dom"),
     Event = require("mocks/event"),
+    defaultEventManager = require("montage/core/event/event-manager").defaultEventManager;
     defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager;
 
 describe("ui/overlay-spec", function() {
@@ -187,8 +188,9 @@ describe("ui/overlay-spec", function() {
 
                 var event = Event.event();
                 event.type = "keyPress";
+                event.identifier = "escape";
                 event.targetElement = MockDOM.element();
-                anOverlay.handleEscapeKeyPress(event);
+                anOverlay.handleKeyPress(event);
 
                 expect(anOverlay._isShown).toBe(false);
                 expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.targetElement, "keyPress");
@@ -204,13 +206,25 @@ describe("ui/overlay-spec", function() {
                 var event = Event.event();
                 event.type = "keyPress";
                 event.target = anOverlay;
+                event.identifier = "escape";
                 event.targetElement = MockDOM.element();
                 anOverlay.dispatchEvent(event);
-                anOverlay.handleEscapeKeyPress(event);
+                anOverlay.handleKeyPress(event);
 
                 expect(anOverlay._isShown).toBe(true);
                 expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.targetElement, "keyPress");
             });
+
+            it("should return activeTarget to the component that had it before", function() {
+                var previousTarget = new Component();
+                defaultEventManager.activeTarget = previousTarget;
+
+                anOverlay.enterDocument(true);
+                anOverlay.show();
+                expect(defaultEventManager.activeTarget).toBe(anOverlay);
+                anOverlay.hide();
+                expect(defaultEventManager.activeTarget).toBe(previousTarget);
+            })
         });
 
     });
