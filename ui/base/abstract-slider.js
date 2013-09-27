@@ -160,6 +160,7 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
         value: function (e) {
             this.active = true;
             this.element.focus();
+            e.preventDefault();
         }
     },
 
