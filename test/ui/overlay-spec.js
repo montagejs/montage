@@ -133,6 +133,7 @@ describe("ui/overlay-spec", function() {
 
                 anOverlay._isShown = true;
                 anOverlay._isDisplayed = true;
+                event.target = anOverlay;
                 event.target = MockDOM.element();
                 anOverlay._pressComposer._dispatchPressStart(event);
                 expect(anOverlay._isShown).toBe(false);
@@ -150,6 +151,7 @@ describe("ui/overlay-spec", function() {
 
                 anOverlay._isShown = true;
                 anOverlay._isDisplayed = true;
+                event.target = anOverlay;
                 event.target = MockDOM.element();
                 anOverlay.element.appendChild(event.target);
 
@@ -184,12 +186,12 @@ describe("ui/overlay-spec", function() {
                 anOverlay._isDisplayed = true;
 
                 var event = Event.event();
-                event.type = "keypress";
-                event.target = MockDOM.element();
+                event.type = "keyPress";
+                event.targetElement = MockDOM.element();
                 anOverlay.handleEscapeKeyPress(event);
 
                 expect(anOverlay._isShown).toBe(false);
-                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target, "keyPress");
+                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.targetElement, "keyPress");
             });
 
             it("should not the overlay when the delegate returns false", function() {
@@ -200,12 +202,14 @@ describe("ui/overlay-spec", function() {
                 anOverlay._isDisplayed = true;
 
                 var event = Event.event();
-                event.target = MockDOM.element();
+                event.type = "keyPress";
+                event.target = anOverlay;
+                event.targetElement = MockDOM.element();
                 anOverlay.dispatchEvent(event);
                 anOverlay.handleEscapeKeyPress(event);
 
                 expect(anOverlay._isShown).toBe(true);
-                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target, "keyPress");
+                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.targetElement, "keyPress");
             });
         });
 

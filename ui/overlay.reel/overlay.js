@@ -258,17 +258,8 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
 
     handlePressStart: {
         value: function(event) {
-            var targetElement = event.targetElement,
-                element = this.element,
-                shouldDismissOverlay;
-
-            if (!element.contains(targetElement)) {
-                shouldDismissOverlay = this.callDelegateMethod("shouldDismissOverlay", this, targetElement, "pressStart");
-
-                if (shouldDismissOverlay === void 0 || shouldDismissOverlay) {
-                    this.hide();
-                    this._dispatchDismissEvent();
-                }
+            if (!this.element.contains(event.targetElement)) {
+                this.dismissOverlay(event);
             }
         }
     },
@@ -287,14 +278,27 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
 
     handleEscapeKeyPress: {
         value: function(event) {
+            this.dismissOverlay(event);
+        }
+    },
+
+    /**
+     * User event has requested that we dismiss the overlay. Give the delegate an 
+     * opportunity to prevent it. Returns whether the overlay was hidden.
+    */
+    dismissOverlay: {
+        value: function(event) {
+            var shouldDismissOverlay = false;
             if (this._isShown) {
-                var shouldDismissOverlay = this.callDelegateMethod("shouldDismissOverlay", this, event.target, "keyPress");
+                shouldDismissOverlay = this.callDelegateMethod("shouldDismissOverlay", this, event.targetElement, event.type);
 
                 if (shouldDismissOverlay === void 0 || shouldDismissOverlay) {
                     this.hide();
                     this._dispatchDismissEvent();
                 }
             }
+
+            return shouldDismissOverlay;
         }
     },
 
