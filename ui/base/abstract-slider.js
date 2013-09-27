@@ -160,6 +160,12 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
         value: function (e) {
             this.active = true;
             this.element.focus();
+            // gh-1304
+            // I did some experimentation based on using -webkit-user-select on the body element. Apart form the obvious
+            // browser compatibility problems, it made existing text selection pop in and out as the slider is
+            // interacted with. I'm worried about the possible side effects, but this might be the only solution.
+            // The problem it solves is more pressing than the potential downside at this point.
+            e.preventDefault();
         }
     },
 
