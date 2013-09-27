@@ -1300,6 +1300,18 @@ var Flow = exports.Flow = Component.specialize( {
                     iteration = this._repetition._drawnIterations[i];
                     element = iteration.cachedFirstElement || iteration.firstElement;
                     if (indexTime !== null) {
+                        if (element.children[0]) {
+                            if (element.classList.contains("selected")) {
+                                element.children[0].classList.add("selected");
+                            } else {
+                                element.children[0].classList.remove("selected");
+                            }
+                            if (element.classList.contains("active")) {
+                                element.children[0].classList.add("active");
+                            } else {
+                                element.children[0].classList.remove("active");
+                            }
+                        }
                         pos = this._splinePaths[pathIndex].getPositionAtIndexTime(indexTime);
                         rotation = this._splinePaths[pathIndex].getRotationAtIndexTime(indexTime);
                         style =
