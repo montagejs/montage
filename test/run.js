@@ -13,9 +13,11 @@ require("montage-testing").run(require,[
         "state-chart-spec",
         "string-spec",
 
+        "base/abstract-alert-spec",
         "base/abstract-button-spec",
         "base/abstract-checkbox-spec",
         "base/abstract-control-spec",
+        "base/abstract-confirm-spec",
         "base/abstract-image-spec",
         "base/abstract-link-spec",
         "base/abstract-number-field-spec",
@@ -87,6 +89,7 @@ require("montage-testing").run(require,[
         "ui/condition-spec",
         "ui/firstdraw-spec",
         "ui/loader-spec",
+        "ui/modal-overlay-spec",
         "ui/overlay-spec",
         // Broken due to changes to repetition
         "ui/repetition-spec",
