@@ -64,11 +64,16 @@ var pathPropertyDescriptors = {
             }
             var minus = [];
             return this.addPathChangeListener(path, function (plus) {
-                plus = plus || [];
-                // Give copies to avoid modification by the listener.
-                dispatch(plus.slice(), minus.slice(), 0);
-                minus = plus;
-                return plus.addRangeChangeListener(dispatch);
+                if (plus && plus.toArray && plus.addRangeChangeListener) {
+                    // Give copies to avoid modification by the listener.
+                    dispatch(plus.toArray(), minus.toArray(), 0);
+                    minus = plus;
+                    return plus.addRangeChangeListener(dispatch);
+                } else {
+                    plus = [];
+                    dispatch(plus, minus, 0);
+                    minus = plus;
+                }
             });
         }
     },
