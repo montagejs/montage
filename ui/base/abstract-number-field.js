@@ -337,6 +337,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
     },
 
     // Machinery
+
     _numberFieldTextFieldComponent: {
         value: null
     },
