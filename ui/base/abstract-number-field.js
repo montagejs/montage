@@ -296,12 +296,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
         set: function (value) {
             this.super(value);
             value = this._value;
-            if (value) {
-                // snap to step intervals 
-                if (typeof this.step === 'number') {
-                    var steppedValue = Math.round(value / this.step) * this.step;
-                    value = steppedValue;
-                }
+            if (! isNaN(value = parseFloat(value))) {
                 if (typeof this.min === 'number' && value < this.min) {
                     value = this.min;
                 }
