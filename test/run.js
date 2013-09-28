@@ -13,9 +13,11 @@ require("montage-testing").run(require,[
         "state-chart-spec",
         "string-spec",
 
+        "base/abstract-alert-spec",
         "base/abstract-button-spec",
         "base/abstract-checkbox-spec",
         "base/abstract-control-spec",
+        "base/abstract-confirm-spec",
         "base/abstract-image-spec",
         "base/abstract-link-spec",
         "base/abstract-number-field-spec",
@@ -45,6 +47,7 @@ require("montage-testing").run(require,[
         "core/radio-button-controller-spec",
         "core/selector-spec",
         "core/super-spec",
+        "core/super-for-spec",
         "core/undo-manager-spec",
 
         "core/tree-controller-spec",
@@ -62,10 +65,11 @@ require("montage-testing").run(require,[
         "geometry/point-spec",
 
         "meta/blueprint-spec",
+        "meta/build-in-component-blueprint-spec",
         "meta/component-blueprint-spec",
         "meta/controller-blueprint-spec",
         "meta/converter-blueprint-spec",
-        "meta/build-in-component-blueprint-spec",
+        "meta/event-blueprint-spec",
         "meta/module-blueprint-spec",
 
         "reel/template-spec",
@@ -85,6 +89,7 @@ require("montage-testing").run(require,[
         "ui/condition-spec",
         "ui/firstdraw-spec",
         "ui/loader-spec",
+        "ui/modal-overlay-spec",
         "ui/overlay-spec",
         // Broken due to changes to repetition
         "ui/repetition-spec",

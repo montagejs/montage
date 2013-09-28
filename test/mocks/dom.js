@@ -1,6 +1,7 @@
 var Set = require("montage/collections/set"),
     defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager,
-    Event = require("mocks/event");
+    Event = require("mocks/event"),
+    Component = require("mocks/component");
 
 var EventTarget = {
     addEventListener: function (eventType, listener, useCapture) {
@@ -87,7 +88,9 @@ exports.element = function (_document) {
         },
         className: "",
         style: {},
-        removeAttribute: function () {},
+        removeAttribute: function (attribute) {
+            delete this.__attributes__[attribute];
+        },
         __attributes__: {},
         setAttribute: function (attribute, value) {
             this.__attributes__[attribute] = value;
@@ -159,11 +162,19 @@ exports.document = function() {
     var result = {
         defaultView: exports.window(),
         body: null,
-        _eventListeners: {}
+        _eventListeners: {},
+        createElement: function(tagName) {
+            return exports.element(this);
+        }
     };
     Object.addEach(result, EventTarget);
 
     result.body = exports.element(result);
+    // configure html element
+    result.body.parentNode = exports.element(result);
+    result.body.parentNode.parentNode = result;
+
+    result.rootComponent = Component.rootComponent(result);
 
     return result;
 };

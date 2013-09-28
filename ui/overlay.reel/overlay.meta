@@ -1,50 +1,45 @@
 {
-    "src_property": {
+    "blueprint_loader_anchor": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
-            "name": "src",
-            "valueType": "string",
-            "blueprint": {
-                "@": "root"
-            }
-        }
-    },
-    "width_property": {
-        "prototype": "core/meta/property-blueprint",
-        "properties": {
-            "name": "width",
-            "valueType": "number",
-            "blueprint": {
-                "@": "root"
-            }
-        }
-    },
-    "height_property": {
-        "prototype": "core/meta/property-blueprint",
-        "properties": {
-            "name": "height",
-            "valueType": "number",
-            "blueprint": {
-                "@": "root"
-            }
-        }
-    },
-    "crossOrigin_property": {
-        "prototype": "core/meta/property-blueprint",
-        "properties": {
-            "name": "crossOrigin",
+            "name": "anchor",
             "blueprint": {
                 "@": "root"
             },
-            "valueType": "enum",
-            "enumValues": [
-                null,
-                "anonymous",
-                "use-credentials"
-            ]
+            "valueType": "object"
         }
     },
-    "blueprint_parent": {
+    "blueprint_loader_position": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "position",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object"
+        }
+    },
+    "blueprint_loader_delegate": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "delegate",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object"
+        }
+    },
+    "blueprint_loader_dismissOnExternalInteraction": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "dismissOnExternalInteraction",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean"
+        }
+    },
+    "blueprint_component_reference": {
         "prototype": "core/meta/blueprint-reference",
         "properties": {
             "valueReference": {
@@ -59,48 +54,46 @@
     "root": {
         "prototype": "core/meta/module-blueprint",
         "properties": {
-            "name": "AbstractImage",
+            "name": "Overlay",
             "parent": {
-                "@": "blueprint_parent"
+                "@": "blueprint_component_reference"
             },
             "propertyBlueprints": [
                 {
-                    "@": "src_property"
+                    "@": "blueprint_loader_mainModule"
                 },
                 {
-                    "@": "width_property"
+                    "@": "blueprint_loader_position"
                 },
                 {
-                    "@": "height_property"
+                    "@": "blueprint_loader_delegate"
                 },
                 {
-                    "@": "crossOrigin_property"
+                    "@": "blueprint_loader_dismissOnExternalInteraction"
                 }
             ],
             "propertyBlueprintGroups": {
-                "Main": [
+                "Overlay": [
                     {
-                        "@": "src_property"
-                    }
-                ],
-                "Options": [
-                    {
-                        "@": "width_property"
+                        "@": "blueprint_loader_mainModule"
                     },
                     {
-                        "@": "height_property"
+                        "@": "blueprint_loader_position"
                     },
                     {
-                        "@": "crossOrigin_property"
+                        "@": "blueprint_loader_delegate"
+                    },
+                    {
+                        "@": "blueprint_loader_dismissOnExternalInteraction"
                     }
                 ]
             },
             "blueprintModule": {
-                "%": "ui/base/abstract-image.meta"
+                "%": "ui/overlay.reel/overlay.meta"
             },
-            "exportName": "AbstractImage",
+            "exportName": "Overlay",
             "module": {
-                "%": "ui/base/abstract-image"
+                "%": "ui/overlay.reel"
             }
         }
     }

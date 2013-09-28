@@ -8,7 +8,7 @@
     "noempty": true,
     "nonew": true,
     "undef": true,
-    "unused": "paramsignore",
+    "unused": true,
     "trailing": true,
     "indent": 4,
     "boss": true,

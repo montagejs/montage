@@ -24,21 +24,21 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
 
     constructor: {
         value: function EventBlueprint() {
-            this.super();
+            this.superForValue("constructor")();
+            this._detailKeys = [];
         }
     },
-    
+
     /**
      Initialize a newly allocated property blueprint.
      @function
      @param {String} name name of the property blueprint to create
      @param {Blueprint} blueprint
-     @param {Number} cardinality name of the property blueprint to create
-     @returns itself
+     @return this
      */
     initWithNameAndBlueprint:{
-        value:function (name, blueprint, cardinality) {
-            this._name = (name !== null ? name : Defaults["name"]);
+        value:function (name, blueprint) {
+            this._name = (name !== null ? name : Defaults.name);
             this._owner = blueprint;
             return this;
         }
@@ -141,9 +141,6 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
      */
     detailKeys:{
         get:function () {
-            if (!this._detailKeys) {
-                return [];
-            }
             return this._detailKeys;
         },
         set:function (value) {

@@ -37,7 +37,9 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
     constructor: {
         value: function Blueprint() {
-            this.super();
+            this.superForValue("constructor")();
+            this._eventBlueprints = [];
+            this.defineBinding("eventBlueprints", {"<-": "_eventBlueprints.concat(parent.eventBlueprints)"});
         }
     },
 
@@ -706,8 +708,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      @default {Array} new Array()
      */
     _eventBlueprints: {
-        value: [],
-        distinct: true
+        value: null
     },
 
     /**
@@ -715,14 +716,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      @default {Array} new Array()
      */
     eventBlueprints: {
-        get: function() {
-            var eventBlueprints = [];
-            eventBlueprints = eventBlueprints.concat(this._eventBlueprints);
-            if (this.parent) {
-                eventBlueprints = eventBlueprints.concat(this.parent.eventBlueprints);
-            }
-            return eventBlueprints;
-        }
+        value: null
     },
 
     /**
@@ -747,7 +741,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
             if (eventBlueprint !== null && eventBlueprint.name !== null) {
                 var index = this._eventBlueprints.indexOf(eventBlueprint);
                 if (index < 0) {
-                    if ((eventBlueprint.owner !== null) && (eventBlueprint.owner !== this)) {
+                    if (eventBlueprint.owner && eventBlueprint.owner !== this) {
                         eventBlueprint.owner.removeEventBlueprint(eventBlueprint);
                     }
                     this._eventBlueprints.push(eventBlueprint);

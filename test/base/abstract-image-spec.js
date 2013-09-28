@@ -68,6 +68,11 @@ describe("test/base/abstract-image-spec", function () {
             expect(anImage.needsDraw).toBeTruthy();
         });
 
+        it("should be requested after crossOrigin is changed", function () {
+            anImage.crossOrigin = "";
+            expect(anImage.needsDraw).toBeTruthy();
+        });
+
         it("should draw the empty image when src is changed and hasn't been loaded yet", function () {
             anImage.src = src1;
             anImage.draw();
@@ -86,6 +91,31 @@ describe("test/base/abstract-image-spec", function () {
             anImage._isLoadingImage = false;
             anImage.draw();
             expect(anImage.element.src).toBe(anImage.emptyImageSrc);
+        });
+
+        it("should change the crossorigin attribute when crossOrigin is set", function () {
+            anImage.src = "http://montagejs.org/images/logo-montage.png";
+            anImage.crossOrigin = "anonymous";
+            anImage._isLoadingImage = false;
+            anImage.draw();
+            expect(anImage.element.getAttribute("crossorigin")).toBe("anonymous");
+        });
+
+        it("should remove the crossorigin attribute when crossOrigin is null", function () {
+            anImage.element.setAttribute("crossorigin", "anonymous");
+            anImage.src = "http://montagejs.org/images/logo-montage.png";
+            anImage.crossOrigin = null;
+            anImage._isLoadingImage = false;
+            anImage.draw();
+            expect(anImage.element.hasAttribute("crossorigin")).toBe(false);
+        });
+
+        it("should remove the crossorigin attribute when src is using the data: protocol", function () {
+            anImage.src = src1;
+            anImage.crossOrigin = "anonymous";
+            anImage._isLoadingImage = false;
+            anImage.draw();
+            expect(anImage.element.hasAttribute("crossorigin")).toBe(false);
         });
     });
 
