@@ -81,8 +81,11 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     value: {
         set: function(value) {
             if (value !== this._value && !this.hasFocus) {
-                this._value = value;
-                this.needsDraw = true;
+                this.super(value);
+                if(this.error){
+                    //Override default AbstractControl behavior and set the value anyway, even if the conversion failed see: gh-970
+                    this._value = value;
+                }
             }
         },
         get: function() {

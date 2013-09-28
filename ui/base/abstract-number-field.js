@@ -2,7 +2,9 @@
 var Montage = require("montage").Montage,
     AbstractControl = require("ui/base/abstract-control").AbstractControl,
     KeyComposer = require("composer/key-composer").KeyComposer,
-    Dict = require("collections/dict");
+    Dict = require("collections/dict"),
+    NumberConverter = require('core/converter/number-converter').NumberConverter;
+
 
 var CLASS_PREFIX = "montage-NumberField";
 
@@ -15,7 +17,6 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
 {
 
     // Lifecycle
-
     constructor: {
         value: function AbstractNumberField() {
             if (this.constructor === AbstractNumberField) {
@@ -24,6 +25,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
             AbstractControl.constructor.call(this); // super
             this._propertyNamesUsed = {};
             this.defineBinding( "classList.has('montage--disabled')", { "<-": "!enabled" });
+            this.converter = new NumberConverter();
         }
     },
 
@@ -258,7 +260,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
                 }
             }
         }
-   },
+    },
 
     /**
      * The amount the value changes when using the plus/minus buttons. Can be any positive number.
@@ -292,7 +294,14 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
             return this._value;
         },
         set: function (value) {
-            if (! isNaN(value = parseFloat(value))) {
+            this.super(value);
+            value = this._value;
+            if (value) {
+                // snap to step intervals 
+                if (typeof this.step === 'number') {
+                    var steppedValue = Math.round(value / this.step) * this.step;
+                    value = steppedValue;
+                }
                 if (typeof this.min === 'number' && value < this.min) {
                     value = this.min;
                 }
@@ -352,10 +361,9 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
 
 });
 
-
 // Standard <input type=number> tag attributes - http://www.w3.org/TR/html5/the-input-element.html#the-input-element
 AbstractNumberField.addAttributes({
-    min: null,
-    max: null,
-    step: null
+    min: {dataType: 'number'},
+    max: {dataType: 'number'},
+    step: 1
 });
