@@ -1,0 +1,54 @@
+{
+    "okLabel_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "okLabel",
+            "valueType": "string",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "cancelLabel_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "cancelLabel",
+            "valueType": "string",
+            "blueprint": {"@": "root"}
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "AbstractAlert",
+                "prototypeName": "AbstractAlert",
+                "blueprintModule": {
+                    "%": "ui/base/abstract-alert.meta"
+                }
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "Abstract Confirm",
+            "parent": {"@": "blueprint_parent"},
+            "propertyBlueprints": [
+                {"@": "okLabel_property"},
+                {"@": "cancelLabel_property"}
+            ],
+            "propertyBlueprintGroups": {
+                "Options": [
+                    {"@": "okLabel_property"},
+                    {"@": "cancelLabel_property"}
+                ]
+            },
+            "blueprintModule": {
+                "%": "ui/base/abstract-confirm.meta"
+            },
+            "exportName": "AbstractConfirm",
+            "module": {
+                "%": "ui/base/abstract-confirm"
+            }
+        }
+    }
+}

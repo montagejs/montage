@@ -109,6 +109,26 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
         value: null
     },
 
+    _dismissOnExternalInteraction: {
+        value: true
+    },
+
+    dismissOnExternalInteraction: {
+        set: function(value) {
+            if (value !== this._dismissOnExternalInteraction) {
+                this._dismissOnExternalInteraction = value;
+                if (value) {
+                    this._pressComposer.addEventListener("pressStart", this, false);
+                } else {
+                    this._pressComposer.removeEventListener("pressStart", this, false);
+                }
+            }
+        },
+        get: function() {
+            return this._dismissOnExternalInteraction;
+        }
+    },
+
     constructor: {
         value: function Overlay() {
             this.super();
@@ -137,7 +157,10 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 _window = this.element.ownerDocument.defaultView;
                 _window.addEventListener("resize", this);
                 this.addComposerForElement(this._pressComposer, this.element.ownerDocument);
-                this._pressComposer.addEventListener("pressStart", this, false);
+
+                if (this._dismissOnExternalInteraction) {
+                    this._pressComposer.addEventListener("pressStart", this, false);
+                }
             }
         }
     },
