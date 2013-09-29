@@ -1,5 +1,6 @@
 
 var Montage = require("montage").Montage;
+var Map = require("montage/collections/map");
 
 describe("paths-spec", function () {
 
@@ -238,41 +239,88 @@ describe("paths-spec", function () {
             object.array.clear();
             foos.clear();
             expect(spy).wasNotCalled();
-
         });
 
     });
 
     describe("addRangeAtPathChangeListener", function () {
+        it("should watch for changes to an array at a path", function () {
+            var object = new Montage();
 
-        var object = new Montage();
+            var spy = jasmine.createSpy();
+            object.addRangeAtPathChangeListener("array", function (plus, minus, index) {
+                // slice gets rid of the observability prototype
+                spy(plus.slice(), minus.slice(), index);
+            });
+            expect(spy).toHaveBeenCalledWith([], [], 0);
 
-        var spy = jasmine.createSpy();
-        object.addRangeAtPathChangeListener("array", function (plus, minus, index) {
-            // slice gets rid of the observability prototype
-            spy(plus.slice(), minus.slice(), index);
+            spy = jasmine.createSpy();
+            object.array = [1];
+            expect(spy).toHaveBeenCalledWith([1], [], 0);
+
+            spy = jasmine.createSpy();
+            object.array.push(2);
+            expect(spy).toHaveBeenCalledWith([2], [], 1);
+
+            spy = jasmine.createSpy();
+            object.array.shift();
+            expect(object.array.slice()).toEqual([2]);
+            expect(spy).toHaveBeenCalledWith([], [1], 0);
+
+            spy = jasmine.createSpy();
+            object.array = ['a', 'b'];
+            expect(spy).toHaveBeenCalledWith(['a', 'b'], [2], 0);
+
+            object.array = [];
+            expect(spy).toHaveBeenCalledWith([], ['a', 'b'], 0);
         });
-        expect(spy).toHaveBeenCalledWith([], [], 0);
 
-        spy = jasmine.createSpy();
-        object.array = [1];
-        expect(spy).toHaveBeenCalledWith([1], [], 0);
+        it("should handle transient nully input", function () {
+            var object = new Montage();
 
-        spy = jasmine.createSpy();
-        object.array.push(2);
-        expect(spy).toHaveBeenCalledWith([2], [], 1);
+            var spy = jasmine.createSpy();
+            object.addRangeAtPathChangeListener("array", function (plus, minus, index) {
+                // slice gets rid of the observability prototype
+                spy(plus.slice(), minus.slice(), index);
+            });
+            expect(spy).toHaveBeenCalledWith([], [], 0);
 
-        spy = jasmine.createSpy();
-        object.array.shift();
-        expect(object.array.slice()).toEqual([2]);
-        expect(spy).toHaveBeenCalledWith([], [1], 0);
+            spy = jasmine.createSpy();
+            object.array = [1];
+            expect(spy).toHaveBeenCalledWith([1], [], 0);
 
-        spy = jasmine.createSpy();
-        object.array = ['a', 'b'];
-        expect(spy).toHaveBeenCalledWith(['a', 'b'], [2], 0);
+            spy = jasmine.createSpy();
+            object.array = {0: 'a', 1: 'b', length: 2};
+            expect(spy).toHaveBeenCalledWith([], [1], 0);
 
-        object.array = [];
-        expect(spy).toHaveBeenCalledWith([], ['a', 'b'], 0);
+            spy = jasmine.createSpy();
+            object.array = ['a', 'b'];
+            expect(spy).toHaveBeenCalledWith(['a', 'b'], [], 0);
+        });
+
+        it("should handle transient map input", function () {
+            var object = new Montage();
+
+            var spy = jasmine.createSpy();
+            object.addRangeAtPathChangeListener("array", function (plus, minus, index) {
+                // slice gets rid of the observability prototype
+                spy(plus.slice(), minus.slice(), index);
+            });
+            expect(spy).toHaveBeenCalledWith([], [], 0);
+
+            spy = jasmine.createSpy();
+            object.array = [1];
+            expect(spy).toHaveBeenCalledWith([1], [], 0);
+
+            spy = jasmine.createSpy();
+            object.array = new Map({bogus: 'fogus'});
+            expect(spy).toHaveBeenCalledWith([], [1], 0);
+
+            spy = jasmine.createSpy();
+            object.array = ['a', 'b'];
+            expect(spy).toHaveBeenCalledWith(['a', 'b'], [], 0);
+        });
+
     });
 
     describe("addRangeAtPathChangeListener II", function() {
@@ -316,5 +364,4 @@ describe("paths-spec", function () {
     });
 
 });
-
 
