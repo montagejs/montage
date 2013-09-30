@@ -170,37 +170,11 @@ var AbstractControl = exports.AbstractControl = Component.specialize( /** @lends
             this._errorMessage = v;
         }
     }
-
-
 });
 
-// Standard <input> tag attributes - http://www.w3.org/TR/html5/the-input-element.html#the-input-element
+// Subset of <input> tag attributes - http://www.w3.org/TR/html5/the-input-element.html#the-input-element
 AbstractControl.addAttributes({
-    accept: null,
-    alt: null,
-    autocomplete: null,
-    autofocus: {dataType: "boolean"},
-    contenteditable: {dataType: "boolean"},
     disabled: {dataType: 'boolean'},
-    form: null,
-    formaction: null,
-    formenctype: null,
-    formmethod: null,
-    formnovalidate: {dataType: 'boolean'},
-    formtarget: null,
-    height: null,
-    list: null,
-    maxlength: null,
-    multiple: {dataType: 'boolean'},
-    name: null,
-    pattern: null,
-    placeholder: null,
     readonly: {dataType: 'boolean'},
-    required: {dataType: 'boolean'},
-    size: null,
-    src: null,
-    style: null,
-    title: null,
-    width: null
-    // "type" is not bindable and "value" is handled as a special attribute
+    required: {dataType: 'boolean'}
 });
