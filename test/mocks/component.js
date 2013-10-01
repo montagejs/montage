@@ -88,6 +88,8 @@ exports.rootComponent = function (_document) {
     defaultEventManager.registerEventHandlerForElement(component, _document);
     component.element = _document;
     component.drawTree = function() {};
+    component.rootComponent = component;
+    component.isComponentWaitingNeedsDraw = function() { return false; }
 
     return component;
 };
