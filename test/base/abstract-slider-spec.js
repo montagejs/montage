@@ -2,6 +2,7 @@
 var Montage = require("montage").Montage;
 var AbstractSlider = require("montage/ui/base/abstract-slider").AbstractSlider;
 var MockDOM = require("mocks/dom");
+var MockEvent = require("mocks/event");
 
 AbstractSlider.prototype.hasTemplate = false;
 
@@ -78,19 +79,19 @@ describe("test/base/abstract-slider-spec", function () {
                 expect(aSlider.active).toBeFalsy();
             });
             it("should be true after touchstart", function() {
-                aSlider.handleTouchstart();
+                aSlider.handleTouchstart(MockEvent.event());
                 expect(aSlider.active).toBeTruthy();
             });
             it("should be true after mousedown", function() {
-                aSlider.handleMousedown();
+                aSlider.handleMousedown(MockEvent.event());
                 expect(aSlider.active).toBeTruthy();
             });
             it("should be false after mouseup", function() {
-                aSlider.handleMouseup();
+                aSlider.handleMouseup(MockEvent.event());
                 expect(aSlider.active).toBeFalsy();
             });
             it("should be false after touchend", function() {
-                aSlider.handleTouchend();
+                aSlider.handleTouchend(MockEvent.event());
                 expect(aSlider.active).toBeFalsy();
             });
             it("should be false after thumbTranslateEnd", function() {
