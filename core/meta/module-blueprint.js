@@ -4,6 +4,16 @@ var Blueprint = require("core/meta/blueprint").Blueprint;
 var Deserializer = require("core/serialization").Deserializer;
 var ModuleReference = require("core/module-reference").ModuleReference;
 
+// Increment for backwards incompatible format changes, where old versions of
+// deserializeSelf will no longer be able to handle the serialization.
+var MAJOR_VERSION = 1;
+// Increment for format changes compatible with the MAJOR_VERSION. This
+// includes any changes that add new properties to the serialization.
+var MINOR_VERSION = 0;
+// The version to assume when the `version` property does not appear in the
+// serialization.
+var MISSING_VERSION = "1.0";
+
 // Cache all loaded blueprints
 var BLUEPRINT_CACHE = Object.create(null);
 
@@ -42,6 +52,7 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize({
             }
 
             this.super(serializer);
+            serializer.setProperty("version", MAJOR_VERSION + "." + MINOR_VERSION);
             this._setPropertyWithDefaults(serializer, "module", this.module);
             this._setPropertyWithDefaults(serializer, "exportName", this.exportName);
         }
@@ -49,7 +60,19 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize({
 
     deserializeSelf: {
         value: function(deserializer) {
+            var version = deserializer.getProperty("version") || MISSING_VERSION;
+            version = version.split(".").map(function (n) { return parseInt(n, 10); });
+
+            if (version[0] > MAJOR_VERSION) {
+                throw new Error(
+                    "Cannot deserialize module-blueprint version " +
+                    version.join(".") + " with version " +
+                    MAJOR_VERSION + "." + MINOR_VERSION + " deserializer"
+                );
+            }
+
             this.super(deserializer);
+
             this.module = deserializer.getProperty("module");
             this.exportName = deserializer.getProperty("exportName");
 

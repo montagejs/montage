@@ -17,6 +17,7 @@ describe("meta/module-blueprint-spec", function () {
         "root": {
             "prototype": "montage/core/meta/module-blueprint",
             "properties": {
+                "version": "1.0",
                 "name": "One",
                 "propertyBlueprints": [
                     {"@": "blueprint_one_a"}
