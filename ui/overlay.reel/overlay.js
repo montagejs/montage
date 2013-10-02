@@ -99,6 +99,10 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
         value: null
     },
 
+    _previousActiveTarget: {
+        value: undefined
+    },
+
     /**
      * A delegate that can implement `willPositionOverlay` and/or
      * `shouldDismissOverlay`.
@@ -204,7 +208,7 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 this._isShown = true;
                 this.needsDraw = true;
 
-                this.nextTarget = defaultEventManager.activeTarget;
+                this._previousActiveTarget = defaultEventManager.activeTarget;
                 defaultEventManager.activeTarget = this;
 
                 this.addEventListener("keyPress", this, false);
@@ -223,7 +227,7 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 this._isShown = false;
                 this.needsDraw = true;
 
-                defaultEventManager.activeTarget = this.nextTarget;
+                defaultEventManager.activeTarget = this._previousActiveTarget || this.nextTarget;
 
                 this.removeEventListener("keyPress", this, false);
                 this._keyComposer.removeEventListener("keyPress", null, false);
