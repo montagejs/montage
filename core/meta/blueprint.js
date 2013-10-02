@@ -117,7 +117,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
             var value;
             value = deserializer.getProperty("propertyBlueprints");
             if (value) {
-                this._propertyBlueprints = value;
+                value.forEach(this.addPropertyBlueprint, this);
             }
             value = deserializer.getProperty("propertyBlueprintGroups");
             if (value) {
@@ -125,7 +125,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
             }
             value = deserializer.getProperty("eventBlueprints");
             if (value) {
-                this._eventBlueprints = value;
+                value.forEach(this.addEventBlueprint, this);
             }
             value = deserializer.getProperty("propertyValidationRules");
             if (value) {

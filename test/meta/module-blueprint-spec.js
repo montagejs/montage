@@ -10,14 +10,13 @@ describe("meta/module-blueprint-spec", function () {
         "blueprint_one_a": {
             "prototype": "montage/core/meta/property-blueprint",
             "properties": {
-                "name": "a",
-                "blueprint": {"@": "root"}
+                "name": "a"
             }
         },
         "root": {
             "prototype": "montage/core/meta/module-blueprint",
             "properties": {
-                "version": "1.0",
+                "version": "2.0",
                 "name": "One",
                 "propertyBlueprints": [
                     {"@": "blueprint_one_a"}
@@ -97,6 +96,53 @@ describe("meta/module-blueprint-spec", function () {
             });
         });
 
+        describe("version 1.0", function () {
+            var blueprintSerialization = JSON.stringify({
+                "blueprint_one_a": {
+                    "prototype": "montage/core/meta/property-blueprint",
+                    "properties": {
+                        "name": "a",
+                        "blueprint": {"@": "root"}
+                    }
+                },
+                "blueprint_one_event": {
+                    "prototype": "montage/core/meta/event-blueprint",
+                    "properties": {
+                        "name": "a",
+                        "blueprint": {"@": "root"}
+                    }
+                },
+                "root": {
+                    "prototype": "montage/core/meta/module-blueprint",
+                    "properties": {
+                        "name": "One",
+                        "propertyBlueprints": [
+                            {"@": "blueprint_one_a"}
+                        ],
+                        "eventBlueprints": [
+                            {"@": "blueprint_one_event"}
+                        ],
+                        "module": {"%": "meta/module-blueprint-spec"},
+                        "exportName": "One"
+                    }
+                }
+            });
+
+            it("can be deserialized", function () {
+                var ref = new ModuleReference().initWithIdAndRequire("meta/module-blueprint-spec", require);
+                blueprintOne = new ModuleBlueprint().initWithModuleAndExportName(ref, "One");
+                blueprintOne.addPropertyBlueprint(blueprintOne.newPropertyBlueprint("a", 1));
+
+                return new Deserializer().init(blueprintSerialization, require).deserializeObject()
+                .then(function (deserializedBlueprint) {
+                    expect(deserializedBlueprint.name).toEqual("One");
+                    var property = deserializedBlueprint.propertyBlueprintForName("a");
+                    expect(property.owner).toBe(deserializedBlueprint);
+                    var event = deserializedBlueprint.eventBlueprintForName("a");
+                    expect(event.owner).toBe(deserializedBlueprint);
+                });
+            });
+        });
 
     });
 
