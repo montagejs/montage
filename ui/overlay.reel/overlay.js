@@ -100,7 +100,7 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
     },
 
     _previousActiveTarget: {
-        value: undefined
+        value: null
     },
 
     /**
