@@ -84,28 +84,6 @@ var Iteration = exports.Iteration = Montage.specialize({
     active: {value: null},
 
     /**
-     * Whether this iteration appears first in the visible order of iterations.
-     */
-    isFirst: {value: null},
-
-    /**
-     * Whether this iteration appears last in the visible order of iterations.
-     */
-    isLast: {value: null},
-
-    /**
-     * Whether this iteration appears on the 0th position within the iteration,
-     * or every other position thereafter.
-     */
-    isEven: {value: null},
-
-    /**
-     * Whether this iteration appears on the 1st position within the iteration,
-     * or every other position thereafter.
-     */
-    isOdd: {value: null},
-
-    /**
      * A flag that indicates that the "no-transition" CSS class should be added
      * to every element in the iteration in the next draw, and promptly removed
      * the draw thereafter.
@@ -165,11 +143,6 @@ var Iteration = exports.Iteration = Montage.specialize({
             // cycle.
             // Dispatches handlePropertyChange with the "active" key:
             this.defineBinding("active", {"<->": "repetition.activeIterations.has(())"});
-
-            this.defineBinding("isFirst", {"<-": "index == 0"});
-            this.defineBinding("isLast", {"<-": "index == repetition.iterations.length - 1"});
-            this.defineBinding("isEven", {"<-": "index % 2 == 0"});
-            this.defineBinding("isOdd", {"<-": "index % 2 != 0"});
 
             this._noTransition = false;
 
