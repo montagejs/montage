@@ -8,9 +8,6 @@
  */
 var Montage = require("montage").Montage;
 var Promise = require("core/promise").Promise;
-var Deserializer = require("core/serialization").Deserializer;
-var ObjectProperty = require("core/meta/object-property").ObjectProperty;
-var Enum = require("core/enum").Enum;
 var BinderModule = require("core/meta/binder");
 var BlueprintReference = require("core/meta/blueprint-reference").BlueprintReference;
 var PropertyBlueprint = require("core/meta/property-blueprint").PropertyBlueprint;
@@ -18,8 +15,6 @@ var AssociationBlueprint = require("core/meta/association-blueprint").Associatio
 var DerivedPropertyBlueprint = require("core/meta/derived-property-blueprint").DerivedPropertyBlueprint;
 var EventBlueprint = require("core/meta/event-blueprint").EventBlueprint;
 var PropertyValidationRule = require("core/meta/validation-rule").PropertyValidationRule;
-
-var logger = require("core/logger").logger("blueprint");
 
 var Defaults = {
     name:"default",
