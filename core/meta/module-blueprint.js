@@ -9,7 +9,7 @@ var ModuleReference = require("core/module-reference").ModuleReference;
 var MAJOR_VERSION = 2;
 // Increment for format changes compatible with the MAJOR_VERSION. This
 // includes any changes that add new properties to the serialization.
-var MINOR_VERSION = 1;
+var MINOR_VERSION = 2;
 // The version to assume when the `version` property does not appear in the
 // serialization.
 var MISSING_VERSION = "1.0";
