@@ -15,11 +15,21 @@ var AssociationBlueprint = require("core/meta/association-blueprint").Associatio
 var DerivedPropertyBlueprint = require("core/meta/derived-property-blueprint").DerivedPropertyBlueprint;
 var EventBlueprint = require("core/meta/event-blueprint").EventBlueprint;
 var PropertyValidationRule = require("core/meta/validation-rule").PropertyValidationRule;
+var Set = require("collections/set");
 
 var Defaults = {
     name:"default",
     customPrototype:false
 };
+
+// These two functions are used for the property and event blueprint Sets to
+// ensure that there are no properties or events with duplicate names.
+function nameEquals(a, b) {
+    return a.name === b.name;
+}
+function nameHash(value) {
+    return value.name;
+}
 
 /**
  @class Blueprint
@@ -33,9 +43,9 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     constructor: {
         value: function Blueprint() {
             this.superForValue("constructor")();
-            this._eventBlueprints = [];
+            this._eventBlueprints = new Set(void 0, nameEquals, nameHash);
             this.defineBinding("eventBlueprints", {"<-": "_eventBlueprints.concat(parent.eventBlueprints)"});
-            this._propertyBlueprints = [];
+            this._propertyBlueprints = new Set(void 0, nameEquals, nameHash);
             this.defineBinding("propertyBlueprints", {"<-": "_propertyBlueprints.concat(parent.propertyBlueprints)"});
         }
     },
@@ -83,13 +93,13 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
             this._setPropertyWithDefaults(serializer, "customPrototype", this.customPrototype);
             //
             if (this._propertyBlueprints.length > 0) {
-                serializer.setProperty("propertyBlueprints", this._propertyBlueprints);
+                serializer.setProperty("propertyBlueprints", this._propertyBlueprints.toArray());
             }
             if (Object.getOwnPropertyNames(this._propertyBlueprintGroups).length > 0) {
                 serializer.setProperty("propertyBlueprintGroups", this._propertyBlueprintGroups);
             }
             if (this._eventBlueprints.length > 0) {
-                serializer.setProperty("eventBlueprints", this._eventBlueprints);
+                serializer.setProperty("eventBlueprints", this._eventBlueprints.toArray());
             }
             if (this._propertyValidationRules.length > 0) {
                 serializer.setProperty("propertyValidationRules", this._propertyValidationRules);
@@ -399,15 +409,6 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     },
 
     /**
-     @private
-     */
-    _propertyBlueprintsTable: {
-        value: {},
-        distinct: true,
-        writable: false
-    },
-
-    /**
      Add a new property blueprint to this blueprint.<br>
      If that property blueprint was associated with another blueprint it will be removed first.
      @function
@@ -416,16 +417,15 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      */
     addPropertyBlueprint: {
         value: function(propertyBlueprint) {
-            if (propertyBlueprint !== null && propertyBlueprint.name !== null) {
-                var index = this._propertyBlueprints.indexOf(propertyBlueprint);
-                if (index < 0) {
-                    if ((propertyBlueprint.owner !== null) && (propertyBlueprint.owner !== this)) {
-                        propertyBlueprint.owner.removePropertyBlueprint(propertyBlueprint);
-                    }
-                    this._propertyBlueprints.push(propertyBlueprint);
-                    this._propertyBlueprintsTable[propertyBlueprint.name] = propertyBlueprint;
-                    propertyBlueprint._owner = this;
+            if (
+                propertyBlueprint &&
+                propertyBlueprint.name &&
+                this._propertyBlueprints.add(propertyBlueprint)
+            ) {
+                if (propertyBlueprint.owner && propertyBlueprint.owner !== this) {
+                    propertyBlueprint.owner.removePropertyBlueprint(propertyBlueprint);
                 }
+                propertyBlueprint._owner = this;
             }
             return propertyBlueprint;
         }
@@ -439,13 +439,11 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      */
     removePropertyBlueprint: {
         value: function(propertyBlueprint) {
-            if (propertyBlueprint !== null && propertyBlueprint.name !== null) {
-                var index = this._propertyBlueprints.indexOf(propertyBlueprint);
-                if (index >= 0) {
-                    this._propertyBlueprints.splice(index, 1);
-                    delete this._propertyBlueprintsTable[propertyBlueprint.name];
-                    propertyBlueprint._owner = null;
-                }
+            if (propertyBlueprint &&
+                propertyBlueprint.name &&
+                this._propertyBlueprints.delete(propertyBlueprint)
+            ) {
+                propertyBlueprint._owner = null;
             }
             return propertyBlueprint;
         }
@@ -554,27 +552,15 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      */
     propertyBlueprintForName: {
         value: function(name) {
-            var propertyBlueprint = this._propertyBlueprintsTable[name];
-            if (typeof propertyBlueprint === "undefined") {
-                propertyBlueprint = UnknownPropertyBlueprint;
-                var anPropertyBlueprint, index;
-                for (index = 0; typeof (anPropertyBlueprint = this._propertyBlueprints[index]) !== "undefined"; index++) {
-                    if (anPropertyBlueprint.name === name) {
-                        propertyBlueprint = anPropertyBlueprint;
-                        break;
-                    }
-                }
-                this._propertyBlueprintsTable[name] = propertyBlueprint;
-            }
-            if (propertyBlueprint === UnknownPropertyBlueprint) {
+            var propertyBlueprint = this._propertyBlueprints.get({name: name});
+            if (!propertyBlueprint || propertyBlueprint === UnknownPropertyBlueprint) {
                 propertyBlueprint = null;
             }
-            if ((! propertyBlueprint) && (this.parent)) {
+            if (!propertyBlueprint && this.parent) {
                 propertyBlueprint = this.parent.propertyBlueprintForName(name);
             }
             return propertyBlueprint;
         }
-
     },
 
     /*
@@ -709,16 +695,6 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     },
 
     /**
-     @private
-     */
-    _eventBlueprintsTable: {
-        value: {},
-        distinct: true,
-        writable: false
-    },
-
-
-    /**
      Add a new property blueprint to this blueprint.<br>
      If that property blueprint was associated with another blueprint it will be removed first.
      @function
@@ -727,16 +703,15 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      */
     addEventBlueprint: {
         value: function(eventBlueprint) {
-            if (eventBlueprint !== null && eventBlueprint.name !== null) {
-                var index = this._eventBlueprints.indexOf(eventBlueprint);
-                if (index < 0) {
-                    if (eventBlueprint.owner && eventBlueprint.owner !== this) {
-                        eventBlueprint.owner.removeEventBlueprint(eventBlueprint);
-                    }
-                    this._eventBlueprints.push(eventBlueprint);
-                    this._eventBlueprintsTable[eventBlueprint.name] = eventBlueprint;
-                    eventBlueprint._owner = this;
+            if (
+                eventBlueprint &&
+                eventBlueprint.name &&
+                this._eventBlueprints.add(eventBlueprint)
+            ) {
+                if (eventBlueprint.owner && eventBlueprint.owner !== this) {
+                    eventBlueprint.owner.removeEventBlueprint(eventBlueprint);
                 }
+                eventBlueprint._owner = this;
             }
             return eventBlueprint;
         }
@@ -750,13 +725,11 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      */
     removeEventBlueprint: {
         value: function(eventBlueprint) {
-            if (eventBlueprint !== null && eventBlueprint.name !== null) {
-                var index = this._eventBlueprints.indexOf(eventBlueprint);
-                if (index >= 0) {
-                    this._eventBlueprints.splice(index, 1);
-                    delete this._eventBlueprintsTable[eventBlueprint.name];
-                    eventBlueprint._owner = null;
-                }
+            if (eventBlueprint &&
+                eventBlueprint.name &&
+                this._eventBlueprints.delete(eventBlueprint)
+            ) {
+                eventBlueprint._owner = null;
             }
             return eventBlueprint;
         }
@@ -793,27 +766,15 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      */
     eventBlueprintForName: {
         value: function(name) {
-            var eventBlueprint = this._eventBlueprintsTable[name];
-            if (typeof eventBlueprint === "undefined") {
-                eventBlueprint = UnknownEventBlueprint;
-                var anEventBlueprint, index;
-                for (index = 0; typeof (anEventBlueprint = this._eventBlueprints[index]) !== "undefined"; index++) {
-                    if (anEventBlueprint.name === name) {
-                        eventBlueprint = anEventBlueprint;
-                        break;
-                    }
-                }
-                this._eventBlueprintsTable[name] = eventBlueprint;
-            }
-            if (eventBlueprint === UnknownEventBlueprint) {
+            var eventBlueprint = this._eventBlueprints.get({name: name});
+            if (!eventBlueprint || eventBlueprint === UnknownEventBlueprint) {
                 eventBlueprint = null;
             }
-            if ((! eventBlueprint) && (this.parent)) {
+            if (!eventBlueprint && this.parent) {
                 eventBlueprint = this.parent.eventBlueprintForName(name);
             }
             return eventBlueprint;
         }
-
     },
 
 
