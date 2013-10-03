@@ -245,31 +245,6 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                     expect(clickSpy.handleClick).toHaveBeenCalled();
                 });
             });
-             //Firefox doesn't allow objects as DOM 0 event listener
-            if (global.navigator && global.navigator.userAgent.indexOf("Firefox") === -1) {
-                it("should not interfere with inline DOM 0 event listener objects", function() {
-                    var inlineClickSpy = {
-                        handleEvent: function(event) {
-                        }
-                    };
-                    spyOn(inlineClickSpy, 'handleEvent');
-
-                    testDocument.onclick = inlineClickSpy;
-
-                    var clickSpy = {
-                        handleClick: function(event) {
-                        }
-                    };
-                    spyOn(clickSpy, 'handleClick');
-                    testDocument.addEventListener("click", clickSpy, false);
-
-                    testPage.mouseEvent(new EventInfo().initWithElement(testDocument.documentElement), "click", function() {
-                        expect(clickSpy.handleClick).toHaveBeenCalled();
-                        expect(inlineClickSpy.handleEvent).toHaveBeenCalled();
-                    });
-                });
-            }
-
 
             it("should not interfere with inline DOM 0 event listener function", function() {
 
