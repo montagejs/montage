@@ -17,6 +17,18 @@ var MISSING_VERSION = "1.0";
 // Cache all loaded blueprints
 var BLUEPRINT_CACHE = Object.create(null);
 
+// Unversioned/vesion 1.0 blueprints included circular references between
+// serialized blueprints and property blueprints, and blueprints and event
+// blueprints. When the blueprint is deserializing this would occassionaly
+// cause a property or event blueprint to not be deserialized yet, meaning it
+// was lacking all of its properties, most importantly the `name` property.
+// This makes it impossible to add the property/event to the respective set
+// which unique on the `name`.
+//
+// This function adds `deserializedFromSerialization` to the blueprint, which
+// is called when all objects in a serialization have been deserialized. Only
+// at this point do we attempt to deserialize ourselves, now that all the
+// properties the sets need are available.
 function version1DeserializeSelf(deserializer) {
     this.deserializedFromSerialization = function () {
         Blueprint.deserializeSelf.call(this, deserializer);
