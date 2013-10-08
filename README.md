@@ -1,7 +1,5 @@
 #MontageJS Readme
 MontageJS is a new type of application framework powered by standard web technologies. Designed with an eye toward maintainability and performance, MontageJS simplifies the development of rich HTML5 applications by providing modular components, real-time two-way data binding, object serialization with DOM mapping, event handling, a managed component draw cycle, CommonJS dependency management, and many more conveniences to help build robust single-page web applications.
-
-> **Note**: MontageJS is still in alpha.
  
 ##Encapsulated Components
 MontageJS has a clean interface for creating custom user interface components. Each component can stand alone or be composed of other components. Each component is modeled as a stand-alone web application with its own HTML template, JavaScript, CSS, serialized component object model, and resources. With few exceptions, a component can stand on the web platform like any other web page. There are no fully JavaScript-driven templates in MontageJS. This separation of concerns allows designers to use the technologies they are comfortable with (without having to dig into the JavaScript) and developers to isolate and test individual components using familiar techniques.
