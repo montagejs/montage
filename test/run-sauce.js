@@ -53,9 +53,11 @@ require("montage-testing").run(require,[
 
         "core/tree-controller-spec",
 
+*/
         "core/extras/function",
         "core/extras/string",
         "core/extras/url",
+/*
 
         "events/active-target-spec",
         "events/eventmanager-spec",
@@ -76,16 +78,20 @@ require("montage-testing").run(require,[
         "reel/template-spec",
         "document-resources-spec",
 
+/*
         "serialization/serialization-spec",
         "serialization/montage-serializer-spec",
+/*
         "serialization/montage-deserializer-spec",
         "serialization/serialization-extractor-spec",
         "serialization/bindings-spec",
         "serialization/serialization-inspector-spec",
         "serialization/serialization-merger-spec",
 
+*/
         "trigger/trigger-spec",
 
+/**/
         "ui/component-spec",
         "ui/condition-spec",
         "ui/firstdraw-spec",
