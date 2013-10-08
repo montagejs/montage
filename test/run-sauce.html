@@ -11,6 +11,9 @@
     <script src="../node_modules/montage-testing/support/jasmine-jsreporter.js"></script>
     <script src="../node_modules/montage-testing/jasmine-additions.js" ></script>
 
-    <script src="../montage.js" data-module="run"></script>
+    <script src="../montage.js" data-module="run-sauce"></script>
+    <script>
+        jasmine.getEnv().addReporter(new jasmine.JSReporter());
+    </script>
 </body>
 </html>

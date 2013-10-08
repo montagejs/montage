@@ -33,7 +33,10 @@
     "mr": "~0.13.0",
     "q": "0.9.6",
     "q-io": "~1.7.2",
-    "jshint": "~2.0.1"
+    "jshint": "~2.0.1",
+    "grunt-saucelabs": "~4.1.2",
+    "grunt-contrib-connect": "~0.5.0",
+    "grunt-contrib-watch": "~0.5.3"
   },
   "scripts": {
     "test": "node test/node/node-spec.js",
