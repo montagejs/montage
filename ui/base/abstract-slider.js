@@ -465,7 +465,7 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
 
                 // ~~ is vastly faster then Math.floor
                 // http://jsperf.com/math-floor-vs-math-round-vs-parseint/8
-                this._valuePercentage = (~~(((this._value - this._min) * this._sliderMagnitude) / (this._max - this._min)) * 100 / this._sliderMagnitude);
+                this._valuePercentage = ~~(((this._value - this._min) * 100) / (this._max - this._min));
                 this.needsDraw = true;
             }
         }
