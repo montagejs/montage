@@ -136,41 +136,12 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
     },
 
     /**
-      Add an event listener to the composerKey.
-      @function
-      @param {string} type. Any of the following types: keyPress, longKeyPress and keyRelease.
-      @param {Object|function} listener. The listener object or function to call when dispatching the event.
-      @param {boolean} useCapture. Specify if the listener want to be called during the capture phase of the event.
+        @deprecated
+        The KeyComposer does not trigger any events. Instead, register for 
+        events on the component that will be active when the keys are pressed.
     */
     addEventListener: {
-        value: function(type, listener, useCapture) {
-            // Optimisation so that we don't dispatch an event if we do not need to
-            // console.log("--- addEventListener", this.identifier);
-            var component = this.component;
-
-            Composer.addEventListener.call(this, type, listener, useCapture);
-
-            if (type == KEYPRESS_EVENT_TYPE || type == LONGKEYPRESS_EVENT_TYPE || type == KEYRELEASE_EVENT_TYPE) {
-                this._shouldDispatchEvent = true;
-                if (type == LONGKEYPRESS_EVENT_TYPE) {
-                    this._shouldDispatchLongPress = true;
-                }
-
-                if (this._isLoaded) {
-                    if (!this._keyRegistered) {
-                        KeyManagerProxy.defaultKeyManager.registerKey(this);
-                        this._keyRegistered = true;
-                    }
-                } else if (component && typeof component.addComposer !== "function") {
-                    // this keyComposer is not associated with an element, let's make it a global key
-                    if (!this.element) {
-                        this.element = window;
-                    }
-                    // this keyComposer is not attached to a UI Component, let's load it manually
-                    this.load();
-                }
-            }
-        }
+        value: function() { }
     },
 
     /**
