@@ -34,14 +34,14 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
     * @private
     */
     _shouldDispatchEvent: {
-        value: false
+        value: true
     },
 
     /**
     * @private
     */
-    shouldDispatchLongPress: {
-        value: false
+    _shouldDispatchLongPress: {
+        value: true
     },
 
     /**
@@ -117,6 +117,9 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
                 KeyManagerProxy.defaultKeyManager.registerKey(this);
                 this._keyRegistered = true;
             }
+            if (!this.element) {
+                this.element = window;
+            }
         }
     },
 
@@ -175,7 +178,7 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
       @private
     */
     constructor: {
-        value: function() {
+        value: function KeyComposer () {
             // console.log("KEY CREATED")
             Composer.constructor.call(this);
         }
