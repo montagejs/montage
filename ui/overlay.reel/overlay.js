@@ -208,8 +208,10 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 this._isShown = true;
                 this.needsDraw = true;
 
-                this._previousActiveTarget = defaultEventManager.activeTarget;
-                defaultEventManager.activeTarget = this;
+                if (this.isModal) {
+                    this._previousActiveTarget = defaultEventManager.activeTarget;
+                    defaultEventManager.activeTarget = this;
+                }
 
                 this.addEventListener("keyPress", this, false);
                 this._keyComposer.addEventListener("keyPress", null, false);
@@ -227,7 +229,9 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
                 this._isShown = false;
                 this.needsDraw = true;
 
-                defaultEventManager.activeTarget = this._previousActiveTarget || this.nextTarget;
+                if (this.isModal) {
+                    defaultEventManager.activeTarget = this._previousActiveTarget;
+                }
 
                 this.removeEventListener("keyPress", this, false);
                 this._keyComposer.removeEventListener("keyPress", null, false);

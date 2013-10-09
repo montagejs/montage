@@ -224,6 +224,18 @@ describe("ui/overlay-spec", function() {
                 expect(defaultEventManager.activeTarget).toBe(anOverlay);
                 anOverlay.hide();
                 expect(defaultEventManager.activeTarget).toBe(previousTarget);
+            });
+
+            it("should not change the activeTarget if it's non-modal", function() {
+                var previousTarget = new Component();
+                defaultEventManager.activeTarget = previousTarget;
+
+                anOverlay.isModal = false;
+                anOverlay.enterDocument(true);
+                anOverlay.show();
+                expect(defaultEventManager.activeTarget).toBe(previousTarget);
+                anOverlay.hide();
+                expect(defaultEventManager.activeTarget).toBe(previousTarget);
             })
         });
 
