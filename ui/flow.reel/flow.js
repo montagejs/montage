@@ -73,8 +73,8 @@ var Flow = exports.Flow = Component.specialize( {
         value: null
     },
 
-    // TODO doc
     /**
+     * @private
      */
     __flowTranslateComposer: {
         value: null
