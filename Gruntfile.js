@@ -6,21 +6,9 @@ module.exports = function(grunt) {
     }, {
         browserName: "chrome",
         platform: "XP"
-    }],
-    others = [{
-        browserName: "chrome",
-        platform: "linux"
-    }, {
-        browserName: "internet explorer",
-        platform: "WIN8",
-        version: "10"
-    }, {
-        browserName: "internet explorer",
-        platform: "VISTA",
-        version: "9"
     }, {
         browserName: "opera",
-        platform: "Windows 2008",
+        platform: "Windows 7",
         version: "12"
     }];
 
@@ -38,9 +26,9 @@ module.exports = function(grunt) {
                 options: {
                     urls: ["http://127.0.0.1:9998/test/run-sauce.html"],
                     tunnelTimeout: 5,
-                    testReadyTimeout: 10000,
+                    testReadyTimeout: 20000,
                     testTimeout: 1000000,
-                    testInterval: 1000,
+                    testInterval: 5000,
                     build: process.env.TRAVIS_JOB_ID,
                     concurrency: 3,
                     browsers: browsers,

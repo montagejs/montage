@@ -193,9 +193,10 @@ exports.keyPressEvent = function(keys, target) {
     };
 
     var event = document.createEvent("KeyboardEvent");
-    event.initKeyboardEvent("keypress", true, true, window,
-        0, 0, 0, 0,
-        0, modifiersAndKeyCode.keyCode);
+    var initMethod = event.initKeyboardEvent ? "initKeyboardEvent" : "initKeyEvent";
+    event[initMethod]("keypress", true, true, window,
+            0, 0, 0, 0,
+            0, modifiersAndKeyCode.keyCode);
 
     // Clone the event so we can set a target and modifiers on it.
     var customEvent = {};
