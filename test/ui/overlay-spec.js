@@ -3,7 +3,9 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Overlay = require("montage/ui/overlay.reel").Overlay,
     MockDOM = require("mocks/dom"),
-    Event = require("mocks/event");
+    Event = require("mocks/event"),
+    defaultEventManager = require("montage/core/event/event-manager").defaultEventManager;
+    defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager;
 
 describe("ui/overlay-spec", function() {
     var anOverlay;
@@ -132,11 +134,12 @@ describe("ui/overlay-spec", function() {
 
                 anOverlay._isShown = true;
                 anOverlay._isDisplayed = true;
+                event.target = anOverlay;
                 event.target = MockDOM.element();
                 anOverlay._pressComposer._dispatchPressStart(event);
                 expect(anOverlay._isShown).toBe(false);
 
-                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target);
+                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target, "pressStart");
             });
 
             it("should not be called when a pressStart is fired inside the overlay", function() {
@@ -149,6 +152,7 @@ describe("ui/overlay-spec", function() {
 
                 anOverlay._isShown = true;
                 anOverlay._isDisplayed = true;
+                event.target = anOverlay;
                 event.target = MockDOM.element();
                 anOverlay.element.appendChild(event.target);
 
@@ -172,8 +176,55 @@ describe("ui/overlay-spec", function() {
 
                 expect(anOverlay._isShown).toBe(true);
 
-                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target);
+                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target, "pressStart");
             });
+
+            it("should hide the overlay when the escape key is pressed", function() {
+                delegate.shouldDismissOverlay = jasmine.createSpy().andReturn(true);
+
+                anOverlay.enterDocument(true);
+                anOverlay._isShown = true;
+                anOverlay._isDisplayed = true;
+
+                var event = Event.event();
+                event.type = "keyPress";
+                event.identifier = "escape";
+                event.targetElement = MockDOM.element();
+                anOverlay.handleKeyPress(event);
+
+                expect(anOverlay._isShown).toBe(false);
+                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.targetElement, "keyPress");
+            });
+
+            it("should not the overlay when the delegate returns false", function() {
+                delegate.shouldDismissOverlay = jasmine.createSpy().andReturn(false);
+
+                anOverlay.enterDocument(true);
+                anOverlay._isShown = true;
+                anOverlay._isDisplayed = true;
+
+                var event = Event.event();
+                event.type = "keyPress";
+                event.target = anOverlay;
+                event.identifier = "escape";
+                event.targetElement = MockDOM.element();
+                anOverlay.dispatchEvent(event);
+                anOverlay.handleKeyPress(event);
+
+                expect(anOverlay._isShown).toBe(true);
+                expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.targetElement, "keyPress");
+            });
+
+            it("should return activeTarget to the component that had it before", function() {
+                var previousTarget = new Component();
+                defaultEventManager.activeTarget = previousTarget;
+
+                anOverlay.enterDocument(true);
+                anOverlay.show();
+                expect(defaultEventManager.activeTarget).toBe(anOverlay);
+                anOverlay.hide();
+                expect(defaultEventManager.activeTarget).toBe(previousTarget);
+            })
         });
 
     });
