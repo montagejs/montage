@@ -244,12 +244,16 @@ exports.Overlay = Component.specialize( /** @lends module:Overlay# */ {
     or if the other component is one of its descendants.
     */
     surrendersActiveTarget: {
-        value: function(component) {
+        value: function(candidateActiveTarget) {
             if (!this.isShown || !this.isModal) {
                 return true;
             }
 
-            return this.element.contains(component.element);
+            if (candidateActiveTarget.element) {
+                return this.element.contains(candidateActiveTarget.element);
+            } else {
+                return false;
+            }
         }
     },
 
