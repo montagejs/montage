@@ -6,9 +6,9 @@ var Montage = require("montage").Montage,
  * A Target is any object that can be a candidate for dispatching and receiving events
  * throughout what is typically considered the "component tree" of a Montage application.
  *
- * @type {Target}
+ * @class Target
  */
-exports.Target = Montage.specialize( {
+exports.Target = Montage.specialize( /** @lends Target# */ {
 
     constructor: {
         value: function Target() {

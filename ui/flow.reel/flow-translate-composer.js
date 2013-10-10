@@ -4,10 +4,11 @@ var Montage = require("montage").Montage,
     Point = require("core/geometry/point").Point,
     convertPointFromPageToNode = require("core/dom").convertPointFromPageToNode;
 
-// TODO doc
 /**
+ * @class FlowTranslateComposer
+ * @extends TranslateComposer
  */
-var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.specialize( {
+var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.specialize( /** @lends FlowTranslateComposer# */ {
 
     constructor: {
         value: function FlowTranslateComposer() {

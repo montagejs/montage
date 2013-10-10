@@ -11,7 +11,7 @@ var CLASS_PREFIX = "montage-RadioButton";
  * @extends AbstractControl
  */
 var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.specialize(
-    /* @lends AbstractRadioButton# */
+    /** @lends AbstractRadioButton# */
 {
     /**
      * Dispatched when the radio button is activated through a mouse click,

@@ -4,10 +4,9 @@ var MontageAst = require("./montage-ast");
 
 /**
  * ElementReference
- *
- * @extends Value
+ * @class MontageBuilder
  */
-var MontageBuilder = Montage.specialize.call(Builder, {
+var MontageBuilder = Montage.specialize.call(Builder, /** @lends MontageBuilder# */ {
     constructor: {
         value: function MontageBuilder() {
             Builder.call(this);

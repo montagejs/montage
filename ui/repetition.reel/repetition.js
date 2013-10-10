@@ -16,8 +16,10 @@ var observeKey = Observers.observeKey;
  * corresponds to a value from the contentController.  When an iteration is
  * drawn, it is tied to the corresponding controller-model that carries which
  * object the iteration is coupled to, and whether it is selected.
+ *
+ * @class Iteration
  */
-var Iteration = exports.Iteration = Montage.specialize({
+var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */ {
 
     /**
      * The parent repetition component.
