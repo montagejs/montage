@@ -271,7 +271,7 @@ describe("document-resources-spec", function() {
             // The default is too much wait for in a test, change it to 500ms.
             resources._SCRIPT_TIMEOUT = 500;
 
-            return resources.preloadResource(url)
+            return resources.preloadResource(url, true)
             .then(function() {
                 var finalTime = new Date;
 
@@ -282,6 +282,38 @@ describe("document-resources-spec", function() {
         }).fail(function(reason) {
             console.log(reason.stack);
             expect("test").toBe("executed");
+        });
+    });
+
+    it("should avoid x-domain requests on file://", function() {
+        var resources = new DocumentResources(),
+            url = "file://example.html";
+
+        return createPage("reel/template/page.html")
+        .then(function(page) {
+            resources.initWithDocument(page.document);
+
+            return resources.preloadResource(url)
+            .then(function() {
+                expect(resources.isResourcePreloaded(url)).toBe(false);
+                deletePage(page);
+            });
+        });
+    });
+
+    it("should avoid x-domain requests on absolute urls", function() {
+        var resources = new DocumentResources(),
+            url = "http://montagejs.org/example.html";
+
+        return createPage("reel/template/page.html")
+        .then(function(page) {
+            resources.initWithDocument(page.document);
+
+            return resources.preloadResource(url)
+            .then(function() {
+                expect(resources.isResourcePreloaded(url)).toBe(false);
+                deletePage(page);
+            });
         });
     });
 
