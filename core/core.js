@@ -121,7 +121,10 @@ Montage.callDeprecatedFunction = function callDeprecatedFunction(scope, callback
     }
     Error.stackTraceLimit = depth;
     args = Array_prototype.slice.call(arguments, 4);
-    return callback.apply(scope ? scope : this, args);
+
+    if (typeof callback === "function") {
+        return callback.apply(scope ? scope : this, args);
+    }
 };
 
 var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;

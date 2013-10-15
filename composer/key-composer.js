@@ -141,7 +141,9 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
         events on the component that will be active when the keys are pressed.
     */
     addEventListener: {
-        value: function() { }
+        value: function() {
+            Montage.callDeprecatedFunction(this, null, "KeyComposer#addEventListener", "an event listener on the component");
+        }
     },
 
     /**
