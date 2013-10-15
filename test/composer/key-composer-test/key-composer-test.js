@@ -28,16 +28,9 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-var Component = require("montage/ui/component").Component;
+var Montage = require("montage").Montage;
 
-var KeyComposerTest = exports.KeyComposerTest = Component.specialize( {
-    constructor: {
-        value: function KeyComposerTest () {
-            this.super();
-            this.addEventListener("keyPress", this);
-            this.addEventListener("keyRelease", this);
-        }
-    },
+var KeyComposerTest = exports.KeyComposerTest = Montage.specialize( {
 
     keyPressCalled: {
         value: false

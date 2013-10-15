@@ -2,19 +2,14 @@
 var Montage = require("montage").Montage;
 var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 var KeyComposer = require("montage/composer/key-composer").KeyComposer;
-var defaultEventManager = require("montage/core/event/event-manager").defaultEventManager;
 
 TestPageLoader.queueTest("key-composer-test/key-composer-test", function(testPage) {
     var test,
         userAgent = navigator.userAgent,
-        command,
-        defaultEventManager;
+        command;
 
     beforeEach(function() {
         test = testPage.test;
-        if (!defaultEventManager && testPage.iframe && testpage.iframe.contentWindow.montageRequire) {
-            defaultEventManager = testPage.iframe.contentWindow.montageRequire("core/event/event-manager").defaultEventManager;
-        }
     });
 
     /* NOTE: The following tests wont work on Opera for Mac because of the way Opera handles modifiers on that platform
@@ -29,12 +24,10 @@ TestPageLoader.queueTest("key-composer-test/key-composer-test", function(testPag
     describe("composer/key-composer-spec", function() {
         describe("KeyComposer", function(){
             it("should fire keyPress, longKeyPress and keyRelease when pressing,  holding and releasing a composerKey", function() {
-                defaultEventManager.activeTarget = test.example;
-
                 var target = test.example.element,
-                    listener1 = testPage.addListener(test.example, null, "keyPress"),
-                    listener2 = testPage.addListener(test.example, null, "longKeyPress"),
-                    listener3 = testPage.addListener(test.example, null, "keyRelease");
+                    listener1 = testPage.addListener(test.key_composer1, null, "keyPress"),
+                    listener2 = testPage.addListener(test.key_composer1, null, "longKeyPress"),
+                    listener3 = testPage.addListener(test.key_composer1, null, "keyRelease");
 
                 testPage.keyEvent({target: target, modifiers: command, charCode: 0, keyCode: "J".charCodeAt(0)}, "keydown");
                 waits(1050);
@@ -51,8 +44,8 @@ TestPageLoader.queueTest("key-composer-test/key-composer-test", function(testPag
                     keyPressCalled = false,
                     keyReleaseCalled = false;
 
-                test.example.addEventListener("keyPress", function(){keyPressCalled = true});
-                test.example.addEventListener("keyRelease", function(){keyReleaseCalled = true});
+                test.key_composer1.addEventListener("keyPress", function(){keyPressCalled = true});
+                test.key_composer1.addEventListener("keyRelease", function(){keyReleaseCalled = true});
 
                 testPage.keyEvent({target: target, modifiers: command, charCode: 0, keyCode: "J".charCodeAt(0)}, "keydown");
                 waits(50);
@@ -64,7 +57,6 @@ TestPageLoader.queueTest("key-composer-test/key-composer-test", function(testPag
             });
 
             it("should fire keyPress and KeyRelease on pressing a global key whatever of the target", function() {
-                defaultEventManager.activeTarget = test;
                 var target = test.example.element.parentNode;
 
                 test.keyPressCalled = false;
@@ -80,7 +72,6 @@ TestPageLoader.queueTest("key-composer-test/key-composer-test", function(testPag
             });
 
             it("should not fire keyPress and KeyRelease on pressing shift+k+control (modifier pressed after the main key)", function() {
-                defaultEventManager.activeTarget = test;
                 var target = test.example.element.parentNode;
 
                 test.keyPressCalled = false;

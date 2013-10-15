@@ -34,7 +34,6 @@ require("montage-testing").run(require,[
         "bindings/self-spec",
 
         "composer/composer-spec",
-        "composer/key-composer-spec",
         "composer/press-composer-spec",
         "composer/translate-composer/translate-composer-spec",
 
