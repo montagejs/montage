@@ -339,7 +339,7 @@ describe("test/base/abstract-slider-spec", function () {
             it("should listen for translateStart only after prepareForActivationEvents", function() {
                 var listeners,
                     em = aSlider.eventManager;
-                aSlider._sliderThumbTrackElement = anElement;
+                aSlider._sliderThumbElement = anElement;
 
                 aSlider.enterDocument(true);
 
@@ -354,7 +354,7 @@ describe("test/base/abstract-slider-spec", function () {
             it("should listen for translate only after prepareForActivationEvents", function() {
                 var listeners,
                     em = aSlider.eventManager;
-                aSlider._sliderThumbTrackElement = anElement;
+                aSlider._sliderThumbElement = anElement;
 
                 aSlider.enterDocument(true);
 
@@ -369,7 +369,7 @@ describe("test/base/abstract-slider-spec", function () {
             it("should listen for translateEnd only after prepareForActivationEvents", function() {
                 var listeners,
                     em = aSlider.eventManager;
-                aSlider._sliderThumbTrackElement = anElement;
+                aSlider._sliderThumbElement = anElement;
 
                 aSlider.enterDocument(true);
 
