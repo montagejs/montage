@@ -134,6 +134,9 @@ var NONE = Event.NONE,
  @class EventManager
  */
 var EventManager = exports.EventManager = Montage.specialize(/** @lends EventManager# */ {
+    constructor: {
+        value: function EventManager() { }
+    },
 
     // Utility
     eventDefinitions: {
@@ -1060,6 +1063,58 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             this._stopListening();
         }
     },
+
+/**
+    @private
+    @array
+    A list of event types for which the event identifier should not
+    be based on the event target. Currently this is all events from 
+    KeyComposer, because their target is a component rather than the composer.
+    */
+    _eventTypesWithBrokenIdentifierSemantics: {
+        value: ["keyPress", "longKeyPress", "keyRelease"]
+    },
+
+/**
+    @function
+    */
+    identifierSpecificMethodNameForBubblePhaseOfEvent: {
+        enumerable: false,
+        value: (function(cache) {
+            return function(event) {
+                var eventType = event.type;
+                var identifier = this._eventTypesWithBrokenIdentifierSemantics.indexOf(eventType) >= 0 ?
+                    event.identifier :
+                    event.target.identifier;
+
+                if (!identifier) {
+                    return null;
+                }
+
+                var eventTypeKey = identifier ? eventType + "+" + identifier : eventType;
+                return cache[eventTypeKey] || (cache[eventTypeKey] = ("handle" + (identifier ? identifier.toCapitalized() : "") + eventType.toCapitalized()));
+            };
+        })({})
+    },
+
+    identifierSpecificMethodNameForCapturePhaseOfEvent: {
+        enumerable: false,
+        value: (function(cache) {
+            return function(event) {
+                var eventType = event.type;
+                var identifier = this._eventTypesWithBrokenIdentifierSemantics.indexOf(eventType) >= 0 ?
+                    event.identifier :
+                    event.target.identifier;
+
+                if (!identifier) {
+                    return null;
+                }
+
+                var eventTypeKey = identifier ? eventType + "+" + identifier : eventType;
+                return cache[eventTypeKey] || (cache[eventTypeKey] = "capture" + (identifier ? identifier.toCapitalized() : "") + eventType.toCapitalized());
+            };
+        })({})
+    },
 /**
     @function
     */
@@ -1073,9 +1128,6 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
         })({})
     },
 
-    _methodNameForCapturePhaseByEventType_: {
-        value:{}
-    },
     methodNameForCapturePhaseOfEventType: {
         enumerable: false,
         value: (function(_methodNameForCapturePhaseByEventType_) {
@@ -1798,17 +1850,8 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             }
 
             // use most specific handler method available, possibly based upon the identifier of the event target
-            if (mutableEvent.target.identifier) {
-                identifierSpecificCaptureMethodName = this.methodNameForCapturePhaseOfEventType(eventType, mutableEvent.target.identifier);
-            } else {
-                identifierSpecificCaptureMethodName = null;
-            }
-
-            if (mutableEvent.target.identifier) {
-                identifierSpecificBubbleMethodName = this.methodNameForBubblePhaseOfEventType(eventType, mutableEvent.target.identifier);
-            } else {
-                identifierSpecificBubbleMethodName = null;
-            }
+            identifierSpecificCaptureMethodName = this.identifierSpecificMethodNameForCapturePhaseOfEvent(mutableEvent);
+            identifierSpecificBubbleMethodName = this.identifierSpecificMethodNameForBubblePhaseOfEvent(mutableEvent);
 
             captureMethodName = this.methodNameForCapturePhaseOfEventType(eventType);
             bubbleMethodName = this.methodNameForBubblePhaseOfEventType(eventType);
