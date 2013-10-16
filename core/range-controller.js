@@ -583,7 +583,6 @@ var RangeController = exports.RangeController = Montage.specialize( {
     handleMultiSelectChange: {
         value: function() {
             if (this.selection) {
-                console.log(this.multiSelect);
                 var length = this.selection.length;
                 if (!this.multiSelect && length > 1) {
                     var last = this._selection.pop();
