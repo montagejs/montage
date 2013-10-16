@@ -250,7 +250,7 @@ var RangeController = exports.RangeController = Montage.specialize( {
             }
             if (value) {
                 this._selection = value;
-            } else if (this.avoidsEmptySelection) {
+            } else if (this._selection && this.avoidsEmptySelection) {
                 this._selection.clear(); // will obey avoidsEmptySelection
             } else {
                 this._selection = null;
@@ -507,20 +507,24 @@ var RangeController = exports.RangeController = Montage.specialize( {
     handleSelectionRangeChange : {
         value: function(plus, minus, index) {
             if (this.selection) {
-                var notInContent = [];
-                for (var i=0;i<plus.length;i++) {
-                    if (!this.content.has(plus[i])) {
-                        notInContent.push(plus[i]);
+                if (this.content) {
+                    var notInContent = [];
+                    for (var i=0;i<plus.length;i++) {
+                        if (!this.content.has(plus[i])) {
+                            notInContent.push(plus[i]);
+                        }
                     }
-                }
-                this._selection.deleteEach(notInContent);
-                if (!this.multiSelect && this._selection.length > 1) {
-                    var last = this._selection.pop();
+                    this._selection.deleteEach(notInContent);
+                    if (!this.multiSelect && this._selection.length > 1) {
+                        var last = this._selection.pop();
+                        this._selection.clear();
+                        this._selection.add(last);
+                    }
+                    if (this.avoidsEmptySelection && this._selection.length == 0) {
+                        this._selection.add(minus[0])
+                    }
+                } else {
                     this._selection.clear();
-                    this._selection.add(last);
-                }
-                if (this.avoidsEmptySelection && this._selection.length == 0) {
-                    this._selection.add(minus[0])
                 }
             }
         }
@@ -579,10 +583,12 @@ var RangeController = exports.RangeController = Montage.specialize( {
     handleMultiSelectChange: {
         value: function() {
             if (this.selection) {
+                console.log(this.multiSelect);
                 var length = this.selection.length;
                 if (!this.multiSelect && length > 1) {
-                    this.selection.clear();
-                    this.selection.splice(0, length - 1);
+                    var last = this._selection.pop();
+                    this._selection.clear();
+                    this._selection.add(last);
                 }
             }
         }
