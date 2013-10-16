@@ -51,52 +51,9 @@ var RangeController = exports.RangeController = Montage.specialize( {
     constructor: {
         value: function RangeController() {
             var self = this;
-            // This function is used to replace the `splice` function on the
-            // selection array, to ensure that it always respects the
-            // multiSelect and avoidsEmptySelection properties.
-            //
-            // At one point this was done with a binding and a range change
-            // listener, but because one cannot modify the changing array in
-            // a range change listener, the consistency was postponed to the
-            // next tick. One tick's worth of inconsistency is forgivable, but
-            // in that time a repetition draw would occur to update the
-            // `selected` CSS classes. In the case of multiSelect == false the
-            // user would see the visual artifact of two items being selected
-            // at once, which *is* unacceptable.
-            //
-            // This method ensures that the selected array is always consistent
-            // with those properties. See the `selection` setter for the use
-            // of this function.
-            this._selectionSplice = function (start, howMany) {
-                var args = arguments;
-
-                var oldLength = this.length;
-                var minusLength =  Math.min(howMany, oldLength - start);
-                var plusLength = Math.max(arguments.length - 2, 0);
-                var diffLength = plusLength - minusLength;
-                var newLength = Math.max(oldLength + diffLength, start + plusLength);
-
-                if (!self.multiSelect && newLength > 1) {
-                    // Clear the array and use just the last element of the
-                    // new elements to be added or, if there are none to be
-                    // added (in the case of .slice(0, 0) in the selection
-                    // setter) then use the last element of the existing
-                    // content. This falls back to undefined if the array
-                    // is of zero length
-                    var element = plusLength ? arguments[plusLength + 1] : this[this.length - 1];
-                    args = [0, oldLength, element];
-                } else if (self.avoidsEmptySelection && newLength === 0) {
-                    args = Array.prototype.slice.call(arguments);
-                    // start
-                    args[0] = 1;
-                }
-
-                return self._originalSelectionSplice.apply(this, args);
-            };
 
             this.content = null;
-            this.selection = [];
-
+            this.selection = null;
             this.sortPath = null;
             this.filterPath = null;
             this.visibleIndexes = null;
@@ -139,6 +96,7 @@ var RangeController = exports.RangeController = Montage.specialize( {
             });
 
             this.addRangeAtPathChangeListener("content", this, "handleContentRangeChange");
+            this.addRangeAtPathChangeListener("selection", this, "handleSelectionRangeChange");
             this.addPathChangeListener("sortPath", this, "handleOrderChange");
             this.addPathChangeListener("reversed", this, "handleOrderChange");
             this.addOwnPropertyChangeListener("multiSelect", this);
@@ -274,6 +232,7 @@ var RangeController = exports.RangeController = Montage.specialize( {
      */
     iterations: {value: null},
 
+    _selection: {value: null},
     /**
      * A subset of the <code>content</code> that are selected.  The user may
      * safely reassign this property and all iterations will react to the
@@ -289,36 +248,13 @@ var RangeController = exports.RangeController = Montage.specialize( {
             if (value === this._selection) {
                 return;
             }
-
-            // restore the original splice of the old array
-            if (this._selection) {
-                this._selection.splice = this._originalSelectionSplice;
-            }
-
-            if (!value) {
-                value = [];
-            }
-            
-            // filter selection so only elements in content collection are selected
-            value = value.filter(this.has, this);
-
-            if (!value.isObservable && value.makeObservable) {
-                value.makeObservable();
-            }
-            this._originalSelectionSplice = value.splice;
-            value.splice = this._selectionSplice;
-
-            // Run a `splice` to make sure the array satisfies multiSelect and
-            // avoidsEmptySelection. If a new empty array is set and
-            // avoidsEmptySelection is true we want to keep an element from
-            // the current selection.
-            if (!value.length && this.avoidsEmptySelection) {
-                value.splice(0, 0, this._selection[0]);
+            if (value) {
+                this._selection = value;
+            } else if (this.avoidsEmptySelection) {
+                this._selection.clear(); // will obey avoidsEmptySelection
             } else {
-                value.splice(0, 0);
+                this._selection = null;
             }
-
-            this._selection = value;
         }
     },
 
@@ -562,10 +498,34 @@ var RangeController = exports.RangeController = Montage.specialize( {
             // remove all values from the selection that were removed (but
             // not added back)
             minus.deleteEach(plus);
-            this.selection.deleteEach(minus);
+            if (this.selection) {
+                this.selection.deleteEach(minus);
+            }
         }
     },
 
+    handleSelectionRangeChange : {
+        value: function(plus, minus, index) {
+            if (this.selection) {
+                var notInContent = [];
+                for (var i=0;i<plus.length;i++) {
+                    if (!this.content.has(plus[i])) {
+                        notInContent.push(plus[i]);
+                    }
+                }
+                this._selection.deleteEach(notInContent);
+                if (!this.multiSelect && this._selection.length > 1) {
+                    var last = this._selection.pop();
+                    this._selection.clear();
+                    this._selection.add(last);
+                }
+                if (this.avoidsEmptySelection && this._selection.length == 0) {
+                    this._selection.add(minus[0])
+                }
+            }
+        }
+    },
+    
     /**
      * Dispatched by a range-at-path change listener arranged in constructor.
      * Synchronizes the <code>iterations</code> with changes to
@@ -575,7 +535,7 @@ var RangeController = exports.RangeController = Montage.specialize( {
      */
     handleOrganizedContentRangeChange: {
         value: function (plus, minus, index) {
-            if (this.deselectInvisibleContent) {
+            if (this.deselectInvisibleContent && this.selection) {
                 var diff = minus.clone(1);
                 diff.deleteEach(plus);
                 this.selection.deleteEach(minus);
@@ -590,7 +550,7 @@ var RangeController = exports.RangeController = Montage.specialize( {
      */
     handleOrderChange: {
         value: function () {
-            if (this.clearSelectionOnOrderChange) {
+            if (this.clearSelectionOnOrderChange && this.selection) {
                 this.selection.clear();
             }
         }
@@ -604,7 +564,7 @@ var RangeController = exports.RangeController = Montage.specialize( {
      */
     handleAdd: {
         value: function (value) {
-            if (this.selectAddedContent) {
+            if (this.selectAddedContent && this.selection) {
                 if (
                     !this.multiSelect &&
                     this.selection.length >= 1
@@ -618,10 +578,12 @@ var RangeController = exports.RangeController = Montage.specialize( {
 
     handleMultiSelectChange: {
         value: function() {
-            var length = this.selection.length;
-
-            if (!this.multiSelect && length > 1) {
-                this.selection.splice(0, length - 1);
+            if (this.selection) {
+                var length = this.selection.length;
+                if (!this.multiSelect && length > 1) {
+                    this.selection.clear();
+                    this.selection.splice(0, length - 1);
+                }
             }
         }
     }
