@@ -180,11 +180,10 @@ describe("test/base/abstract-select-spec", function () {
                 aSelect.content = content;
             });
 
-            it("TODO should only have one item in the content controller's selection when multiSelect is off", function() {
+            it("should only have one item in the content controller's selection when multiSelect is off", function() {
                 aSelect.multiSelect = false;
                 aSelect.values = [content[1], content[2]];
 
-                // RangeController only changes the selection asynchronously
                 expect(aSelect.contentController.selection.length).toBe(1);
             });
 
