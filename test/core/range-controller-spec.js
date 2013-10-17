@@ -7,7 +7,7 @@ describe("core/range-controller-spec", function() {
 
     beforeEach(function () {
         rangeController = RangeController.create().initWithContent([0, 1, 2]);
-        
+
     });
 
     describe("selection as array", function() {
@@ -16,14 +16,14 @@ describe("core/range-controller-spec", function() {
             var original = [1];
 
             rangeController.selection = original;
-            
+
             rangeController.selection = undefined;
             expect(rangeController.selection).not.toBe(original);
             expect(rangeController.selection).toBeNull();
-            
+
             rangeController.selection = original;
             expect(rangeController.selection).toBe(original);
-            
+
             rangeController.selection = null;
             expect(rangeController.selection).not.toBe(original);
             expect(rangeController.selection).toBeNull();
@@ -232,10 +232,10 @@ describe("core/range-controller-spec", function() {
             rangeController.selection = undefined;
             expect(rangeController.selection).not.toBe(original);
             expect(rangeController.selection).toBeNull();
-            
+
             rangeController.selection = original;
             expect(rangeController.selection).toBe(original);
-            
+
             rangeController.selection = null;
             expect(rangeController.selection).not.toBe(original);
             expect(rangeController.selection).toBeNull();
