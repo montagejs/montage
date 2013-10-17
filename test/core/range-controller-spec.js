@@ -105,6 +105,16 @@ describe("core/range-controller-spec", function() {
                     expect(rangeController.selection).toEqual([2]);
                 });
 
+                it("multiSelect splicing and setting", function() {
+                    rangeController.multiSelect = false;
+                    var selection = [1];
+                    rangeController.selection = selection;
+                    expect(rangeController.selection).toEqual([1]);
+                    selection.splice(1, 0, 2);
+                    expect(rangeController.selection).toEqual([2]);
+                    rangeController.selection = [0, 1];
+                    expect(rangeController.selection).toEqual([1]);
+                });
             });
 
             describe("when true", function () {
@@ -162,7 +172,29 @@ describe("core/range-controller-spec", function() {
                     rangeController.selection = [];
                     expect(rangeController.selection).toEqual([0]);
                 });
-            });
+
+                it("avoidsEmptySelection setting new selection", function() {
+                    rangeController.avoidsEmptySelection = true;
+                    rangeController.selection = [1];
+                    expect(rangeController.selection).toEqual([1]);
+                    rangeController.selection = [];
+                    expect(rangeController.selection).toEqual([1]);
+                    rangeController.selection = null;
+                    expect(rangeController.selection).toEqual([1]);
+                });
+
+                it("avoidsEmptySelection setting null and modifying array", function() {
+                    rangeController.avoidsEmptySelection = true;
+                    var sel = [1];
+                    rangeController.selection = sel;
+                    expect(rangeController.selection).toEqual([1]);
+                    rangeController.selection = null;
+                    expect(rangeController.selection).toEqual([1]);
+                    sel.clear();
+                    expect(rangeController.selection).toEqual([1]);
+                });
+
+                });
 
             describe("when false", function () {
                 beforeEach(function () {
