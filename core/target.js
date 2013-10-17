@@ -1,6 +1,7 @@
 var Montage = require("montage").Montage,
     defaultEventManager = require("core/event/event-manager").defaultEventManager,
-    MutableEvent = require("core/event/mutable-event").MutableEvent;
+    MutableEvent = require("core/event/mutable-event").MutableEvent,
+    Event = window.Event;
 
 /**
  * A Target is any object that can be a candidate for dispatching and receiving events
@@ -13,6 +14,29 @@ exports.Target = Montage.specialize( {
     constructor: {
         value: function Target() {
             this.super();
+        }
+    },
+
+    handleEvent: {
+        value: function (event) {
+            var methods = [];
+            // FIXME: event identifier?
+            if (event.eventPhase === Event.CAPTURING_PHASE) {
+                methods = [
+                    defaultEventManager.methodNameForCapturePhaseOfEventType(event.type),
+                    defaultEventManager.methodNameForCapturePhaseOfEventType(event.type, event.target.identifier)
+                ];
+            } else {
+                methods = [
+                    defaultEventManager.methodNameForBubblePhaseOfEventType(event.type),
+                    defaultEventManager.methodNameForBubblePhaseOfEventType(event.type, event.target.identifier)
+                ];
+            }
+            for (var i=0; i<methods.length; i++) {
+                if (typeof this[methods[i]] === "function") {
+                    return this[methods[i]](event);
+                }
+            }
         }
     },
 
