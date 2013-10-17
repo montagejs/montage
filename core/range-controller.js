@@ -529,7 +529,7 @@ var RangeController = exports.RangeController = Montage.specialize( {
             }
         }
     },
-    
+
     /**
      * Dispatched by a range-at-path change listener arranged in constructor.
      * Synchronizes the <code>iterations</code> with changes to
