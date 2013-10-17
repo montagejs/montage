@@ -50,11 +50,43 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
 
+    "outerComponent": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "hasTemplate": false,
+            "element": {"#": "outerComponent"}
+        }
+    },
+    "outer_press_composer": {
+        "prototype": "montage/composer/press-composer",
+        "properties": {
+            "component": {"@": "outerComponent"}
+        }
+    },
+
+    "innerComponent": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "hasTemplate": false,
+            "element": {"#": "innerComponent"}
+        }
+    },
+    "inner_press_composer": {
+        "prototype": "montage/composer/press-composer",
+        "properties": {
+            "component": {"@": "innerComponent"}
+        }
+    },
+
     "test": {
         "prototype": "composer/press-composer-test/press-composer-test",
         "properties": {
             "press_composer": {"@": "press_composer"},
-            "example": {"@": "example"}
+            "example": {"@": "example"},
+            "outerComponent": {"@": "outerComponent"},
+            "innerComponent": {"@": "innerComponent"},
+            "inner_press_composer": {"@": "inner_press_composer"},
+            "outer_press_composer": {"@": "outer_press_composer"}
         }
     },
     "application": {
@@ -73,6 +105,18 @@ POSSIBILITY OF SUCH DAMAGE.
         width: 50px;
         height: 50px;
     }
+
+    .outerComponent {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+    }
+
+    .innerComponent {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+    }
 </style>
 
 </head>
@@ -80,5 +124,9 @@ POSSIBILITY OF SUCH DAMAGE.
     <h1>Press Composer test</h1>
 
     <div data-montage-id="example" class="example"></div>
+
+    <div data-montage-id="outerComponent" class="outerComponent">
+        <div data-montage-id="innerComponent" class="innerComponent"></div>
+    </div>
 </body>
 </html>
