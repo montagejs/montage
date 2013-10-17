@@ -190,18 +190,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
             var i = 0, changedTouchCount;
 
             if (event.type === "touchstart") {
-                changedTouchCount = event.changedTouches.length;
-                for (; i < changedTouchCount; i++) {
-                    if (!this.component.eventManager.componentClaimingPointer(event.changedTouches[i].identifier)) {
-                        this._observedPointer = event.changedTouches[i].identifier;
-                        break;
-                    }
-                 }
-
-                if (this._observedPointer === null) {
-                    // All touches have been claimed
-                    return false;
-                }
+                this._observedPointer = event.changedTouches[0].identifier;
 
                 document.addEventListener("touchend", this, false);
                 document.addEventListener("touchcancel", this, false);
