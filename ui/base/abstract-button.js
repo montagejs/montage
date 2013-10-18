@@ -72,6 +72,7 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
      * @type {boolean}
      * @default false
      * @event longpress
+     * @memberof AbstractButton
      */
     preventFocus: {
         get: function () {

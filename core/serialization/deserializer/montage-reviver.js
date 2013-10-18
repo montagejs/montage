@@ -76,7 +76,10 @@ var ModuleLoader = Montage.specialize( {
     }
 });
 
-var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
+/**
+ * @class MontageReviver
+ */
+var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /** @lends MontageReviver# */ {
     moduleLoader: {value: null},
 
     /**
@@ -368,7 +371,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, {
         }
     }
 
-}, {
+}, /** @lends MontageReviver. */ {
     _unitRevivers: {value: Object.create(null)},
     _unitNames: {value: []},
 

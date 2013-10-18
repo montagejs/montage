@@ -2,11 +2,10 @@ var Montage = require("montage").Montage;
 var Value = require("mousse/serialization/ast").Value;
 
 /**
- * ElementReference
- *
+ * @class ElementReference
  * @extends Value
  */
-var ElementReference = Montage.specialize.call(Value, {
+var ElementReference = Montage.specialize.call(Value, /** @lends ElementReference# */ {
 
     constructor: {
         value: function ElementReference() {}
@@ -27,11 +26,10 @@ var ElementReference = Montage.specialize.call(Value, {
 });
 
 /**
- * ModuleReference
- *
+ * @class ModuleReference
  * @extends Value
  */
-var ModuleReference = Montage.specialize.call(Value, {
+var ModuleReference = Montage.specialize.call(Value, /** @lends ModuleReference# */ {
 
     constructor: {
         value: function ModuleReference() {}

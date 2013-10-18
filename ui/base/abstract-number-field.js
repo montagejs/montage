@@ -11,7 +11,7 @@ var CLASS_PREFIX = "montage-NumberField";
  * @extends AbstractControl
  */
 var AbstractNumberField = exports.AbstractNumberField = AbstractControl.specialize(
-    /* @lends AbstractNumberField# */
+    /** @lends AbstractNumberField# */
 {
 
     // Lifecycle

@@ -24,6 +24,9 @@ var GenericCollection = require("collections/generic-collection");
 // the same position.
 
 /**
+ * @class RangeController
+ * @extends Montage
+ *
  * A <code>RangeController</code> receives a <code>content</code> collection,
  * manages what portition of that content is visible and the order of its
  * appearance (<code>organizedContent</code>), and projects changes to the the
@@ -43,7 +46,7 @@ var GenericCollection = require("collections/generic-collection");
  * The <code>RangeController</code> is also responsible for managing which
  * content is selected and provides a variety of knobs for that purpose.
  */
-var RangeController = exports.RangeController = Montage.specialize( {
+var RangeController = exports.RangeController = Montage.specialize( /** @lends RangeController# */ {
 
     /**
      * @private

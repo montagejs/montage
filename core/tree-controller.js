@@ -3,16 +3,18 @@ var Montage = require("core/core").Montage;
 var Map = require("collections/map");
 var WeakMap = require("collections/weak-map");
 
-// A tree controller is a view-model that tracks whether each node in a
-// corresponding data-model is expanded or collapsed.  It also produces a
-// linearization of the visible iterations, transforming hierachical nesting
-// into a flat, incrementally-updated array of iterations with the
-// corresponding indentation depth.
-
-// Bind a root node from the data model to a tree controller and bind the tree
-// controller's iterations to a content controller for a repetition.
-
-var Node = exports.TreeControllerNode = Montage.specialize({
+/**
+ * @class TreeControllerNode
+ * @extends Montage
+ * @description A tree controller is a view-model that tracks whether each node in a
+ * corresponding data-model is expanded or collapsed.  It also produces a
+ * linearization of the visible iterations, transforming hierachical nesting
+ * into a flat, incrementally-updated array of iterations with the
+ * corresponding indentation depth.
+ * Bind a root node from the data model to a tree controller and bind the tree
+ * controller's iterations to a content controller for a repetition.
+ */
+var Node = exports.TreeControllerNode = Montage.specialize( /** @lends TreeControllerNode# */ {
 
     /**
      * The only meaningful user-defined state for this tree view, whether the
@@ -258,7 +260,11 @@ var Node = exports.TreeControllerNode = Montage.specialize({
 
 });
 
-exports.TreeController = Montage.specialize({
+
+/**
+ * @class TreeController
+ */
+exports.TreeController = Montage.specialize( /** @lends TreeController# */ {
 
     /**
      * The input of a tree controller, an object to serve at the root of the
@@ -394,7 +400,7 @@ exports.TreeController = Montage.specialize({
     },
 
     /**
-     * The type of the tree controller's nodes.
+     * @type TreeControllerNode
      */
     Node: {
         value: Node

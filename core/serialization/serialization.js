@@ -4,7 +4,10 @@ var Montage = require("core/core").Montage,
     parse = require("frb/parse"),
     stringify = require("frb/stringify");
 
-var Serialization = Montage.specialize( {
+/**
+ * @class Serialization
+ */
+var Serialization = Montage.specialize( /** @lends Serialization# */ {
     _serializationString: {value: null},
     _serializationObject: {value: null},
 
@@ -159,7 +162,10 @@ var Serialization = Montage.specialize( {
     }
 });
 
-var SerializationMerger = Montage.specialize(null, {
+/**
+ * @class SerializationMerger
+ */
+var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerger. */ {
     /**
      * Merges serialization2 into serialization1.
      *
@@ -235,7 +241,11 @@ var SerializationMerger = Montage.specialize(null, {
     }
 });
 
-var SerializationInspector = Montage.specialize( {
+
+/**
+ * @class SerializationInspector
+ */
+var SerializationInspector = Montage.specialize(/** @lends SerializationInspector# */ {
     initWithSerialization: {
         value: function(serialization) {
             this._serialization = serialization;
@@ -299,6 +309,7 @@ var SerializationInspector = Montage.specialize( {
     },
 
     /**
+     * @private
      * @param parentObject {Object} The parent object of the object to walk
      * @param key {String} The key of the object in the parent object
      * @param label {String} Optional label for when the object has no
@@ -534,6 +545,7 @@ var SerializationInspector = Montage.specialize( {
 
     /**
      * Visits all object references made in the binding parsing tree
+     * @private
      */
     _walksBindingReferences: {
         value: function(parseTree, visitor) {
@@ -552,7 +564,11 @@ var SerializationInspector = Montage.specialize( {
     }
 });
 
-var SerializationExtractor = Montage.specialize( {
+
+/**
+ * @class SerializationExtractor
+ */
+var SerializationExtractor = Montage.specialize( /** @lends SerializationExtractor# */ {
     _serialization: {value: null},
 
     initWithSerialization: {

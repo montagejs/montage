@@ -7,7 +7,11 @@ var ModuleReference = require("core/module-reference").ModuleReference;
 // Cache all loaded blueprints
 var BLUEPRINT_CACHE = Object.create(null);
 
-var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize({
+/**
+ * @class ModuleBlueprint
+ * @extends Blueprint
+ */
+var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize(/** @lends ModuleBlueprint# */ {
 
     /**
      @function
@@ -78,7 +82,7 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize({
         value: null
     }
 
-}, {
+}, /** @lends ModuleBlueprint. */ {
     /**
      Gets a blueprint from a serialized file at the given module id.
      @function

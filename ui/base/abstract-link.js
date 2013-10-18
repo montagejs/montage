@@ -1,8 +1,5 @@
 /*global require, exports, document, Error*/
 
-/**
- * It's dangerous to go alone! Take this.
- */
 var Montage = require("montage").Montage,
     AbstractControl = require("ui/base/abstract-control").AbstractControl,
     PressComposer = require("composer/press-composer").PressComposer;
@@ -14,7 +11,7 @@ var CLASS_PREFIX = "montage-Link";
  * @extends AbstractControl
  */
 var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
-/* @lends AbstractLink# */
+/** @lends AbstractLink# */
 {
     /**
      * Dispatched when the link is activated through a mouse click,

@@ -1098,11 +1098,11 @@ Montage.defineProperty(Montage, "equals", {
     value: Montage.prototype.equals
 });
 
-/*
+/**
     This method calls the method named with the identifier prefix if it exists.
     Example: If the name parameter is "shouldDoSomething" and the caller's identifier is "bob", then
     this method will try and call "bobShouldDoSomething"
-    @function callDelegateMethod
+    @function Montage.callDelegateMethod
     @param {string} name
 */
 Montage.defineProperty(Montage.prototype, "callDelegateMethod", {

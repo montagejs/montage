@@ -1,6 +1,10 @@
 var Montage = require("montage").Montage;
 
-exports.ModuleReference = Montage.specialize({
+/**
+ * @class ModuleReference
+ * @extends Montage
+ */
+exports.ModuleReference = Montage.specialize( /** @lends ModuleReference */ {
     constructor: {
         value: function ModuleReference() {
             return this.super();
