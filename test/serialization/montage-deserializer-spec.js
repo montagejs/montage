@@ -32,6 +32,7 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     logger = require("montage/core/logger").logger("deserializer-spec"),
     Deserializer = require("montage/core/serialization").Deserializer,
+    Alias = require("montage/core/serialization/alias").Alias,
     Bindings = require("montage/frb"),
     defaultEventManager = require("montage/core/event/event-manager").defaultEventManager,
     Promise = require("montage/core/promise").Promise,
@@ -327,6 +328,29 @@ describe("serialization/montage-deserializer-spec", function() {
             }).fail(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
+            });
+        });
+    });
+
+    describe("Alias deserialization", function() {
+        it("should deserialize an alias", function() {
+            var serialization = {
+                    ":templateProperty": {
+                        "alias": "@component:propertyName.path"
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(serializationString, require);
+
+            return deserializer.deserialize().then(function(objects) {
+                var alias = objects[":templateProperty"];
+
+                expect(Object.getPrototypeOf(alias)).toBe(Alias.prototype);
+                expect(alias.value).toBe("@component:propertyName.path");
+                expect(alias.componentName).toBe("component");
+                expect(alias.propertyName).toBe("propertyName");
+                expect(alias.path).toBe(".path");
             });
         });
     });
