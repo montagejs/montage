@@ -75,6 +75,7 @@ require("montage-testing").run(require,[
         "reel/template-spec",
         "document-resources-spec",
 
+        "serialization/alias-spec",
         "serialization/serialization-spec",
         "serialization/montage-serializer-spec",
         "serialization/montage-deserializer-spec",
