@@ -3,6 +3,7 @@ var MontageSerializerModule = require("./montage-serializer");
 var PropertiesSerializer = require("./properties-serializer").PropertiesSerializer;
 var SelfSerializer = require("./self-serializer").SelfSerializer;
 var UnitSerializer = require("./unit-serializer").UnitSerializer;
+var Alias = require("core/serialization/alias").Alias;
 var Visitor = require("mousse/serialization/visitor").Visitor;
 
 var MontageVisitor = Montage.specialize.call(Visitor, {
@@ -29,9 +30,12 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
 
     getTypeOf: {
         value: function(object) {
+            // Module and Alias are MontageObject's too so they need to be
+            // tested for before.
             if (object.isModuleReference) {
-                // this needs to be first as a ModuleReference is also a MontageObject
                 return "Module";
+            } else if (object instanceof Alias) {
+                return "Alias";
             } else if ("getInfoForObject" in object || "getInfoForObject" in object.constructor) {
                 return "MontageObject";
             } else if (object.thisIsAReferenceCreatedByMontageSerializer) {
@@ -81,6 +85,17 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
 
             referenceReference = this.builder.createModuleReference(moduleId);
             this.storeValue(referenceReference, reference, name);
+        }
+    },
+
+    visitAlias: {
+        value: function(malker, object) {
+            var label = this.labeler.getTemplatePropertyLabel(object);
+
+            var builderObject = this.builder.createCustomObject();
+
+            builderObject.setProperty("alias", object.value);
+            this.builder.top.setProperty(label, builderObject);
         }
     },
 

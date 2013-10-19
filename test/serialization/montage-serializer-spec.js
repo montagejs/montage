@@ -1,7 +1,8 @@
 var Montage = require("montage/core/core").Montage,
     MontageSerializer = require("montage/core/serialization").Serializer,
     objects = require("serialization/testobjects-v2").objects,
-    ModuleReference = require("montage/core/module-reference").ModuleReference;
+    ModuleReference = require("montage/core/module-reference").ModuleReference,
+    Alias = require("montage/core/serialization/alias").Alias;
 
     function fakeGetSerializablePropertyNames(object, returnValues) {
         getSerializablePropertyNames = Montage.getSerializablePropertyNames;
@@ -1941,6 +1942,76 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
+        });
+    });
+
+    describe("Template properties serialization", function() {
+        it("should serialize a template property alias", function() {
+            var object = {
+                    ":templateProperty": new Alias().init("@component:propertyName")
+                },
+                expectedSerialization,
+                serialization;
+
+            expectedSerialization = {
+                ":templateProperty": {
+                    "alias": "@component:propertyName"
+                }
+            };
+
+            serialization = serializer.serialize(object);
+            expect(JSON.parse(serialization))
+                .toEqual(expectedSerialization);
+        });
+
+        it("should not serialize a alias outside a template property", function() {
+            var object = {
+                    "property": new Alias().init("@component:propertyName")
+                };
+
+            expect(function() {
+                serializer.serialize(object);
+            }).toThrow();
+        });
+
+        it("should not serialize a value with a template property label", function() {
+            var object = {
+                ":property": 42
+            };
+
+            expect(function() {
+                serializer.serialize(object);
+            }).toThrow();
+        });
+
+        it("should not serialize an object literal with a template property label", function() {
+            var object = {
+                ":property": {}
+            };
+
+            expect(function() {
+                serializer.serialize(object);
+            }).toThrow();
+        });
+
+        it("should not serialize a regexp with a template property label", function() {
+            var object = {
+                ":property": /regexp/
+            };
+
+            expect(function() {
+                serializer.serialize(object);
+            }).toThrow();
+        });
+
+        it("should not serialize a montage object with a template property label", function() {
+            var object = {
+                ":property": objects.Empty
+            };
+
+            expect(function() {
+                serializer.serialize(object);
+            }).toThrow();
         });
     });
 });
