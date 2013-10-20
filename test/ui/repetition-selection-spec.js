@@ -5,7 +5,7 @@ var Montage = require("montage").Montage,
 TestPageLoader.queueTest("repetition/selection-test/selection-test", function(testPage) {
     describe("ui/repetition-selection-spec", function() {
 
-        var application, eventManager, delegate, nameController;
+        var application, eventManager, nameController, repetition;
 
         var querySelector = function(s) {
             return testPage.querySelector(s);
@@ -18,8 +18,8 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
             expect(testPage.loaded).toBeTruthy();
             application = testPage.window.document.application;
             eventManager = application.eventManager;
-            delegate = application.delegate;
             nameController = testPage.test.nameController;
+            repetition = testPage.test.repetition;
         });
 
         it("modifies the component's classList", function () {
@@ -30,6 +30,8 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
             // is initialized
             var classList = selectedListComponent.classList;
             nameController.selection = [nameController.organizedContent[selectedIndex]];
+
+            expect(repetition.selectedIndexes).toEqual([2]);
 
             testPage.waitForDraw();
 
@@ -46,6 +48,7 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
                 testPage.mouseEvent({target: listElementToSelect}, "mousedown", function () {
                     testPage.mouseEvent({target: listElementToSelect}, "mouseup", function () {
                         expect(nameController.selection[0]).toBe(nameController.organizedContent[0]);
+                        expect(repetition.selectedIndexes).toEqual([0]);
                     });
                 });
             });
@@ -55,6 +58,7 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
                 testPage.mouseEvent({target: listElementToSelect}, "mousedown", function () {
                     testPage.mouseEvent({target: listElementToSelect}, "mouseup", function () {
                         expect(listElementToSelect.classList.contains("selected")).toBeTruthy();
+                        expect(repetition.selectedIndexes).toEqual([1]);
                     });
                 });
             });
@@ -64,10 +68,12 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
                 testPage.mouseEvent({target: listElementToSelect}, "mousedown", function () {
                     testPage.mouseEvent({target: listElementToSelect}, "mouseup", function () {
                         expect(listElementToSelect.classList.contains("selected")).toBeTruthy();
+                        expect(repetition.selectedIndexes).toEqual([1]);
 
                         testPage.mouseEvent({target: listElementToSelect}, "mousedown", function () {
                             testPage.mouseEvent({target: listElementToSelect}, "mouseup", function () {
                                 expect(listElementToSelect.classList.contains("selected")).toBeTruthy();
+                                expect(repetition.selectedIndexes).toEqual([1]);
                             });
                         });
                     });
@@ -78,6 +84,7 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
                 testPage.mouseEvent({target: listElementToSelect}, "mousedown", function () {
                     testPage.mouseEvent({target: listElementToSelect}, "mouseup", function () {
                         expect(listElementToSelect.classList.contains("selected")).toBeTruthy();
+                        expect(repetition.selectedIndexes).toEqual([2]);
 
                         var secondListElementToSelect = querySelectorAll("ul>li")[1];
                         testPage.mouseEvent({target: secondListElementToSelect}, "mousedown", function () {
@@ -98,6 +105,7 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
                 var selectedIndex = 2;
                 var selectedListElement = querySelectorAll("ul>li")[selectedIndex];
                 nameController.selection = [nameController.organizedContent[selectedIndex]];
+                expect(repetition.selectedIndexes).toEqual([2]);
 
                 testPage.waitForDraw();
 
@@ -110,6 +118,7 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
                 var selectedIndex = 3;
                 var selectedListElement = querySelectorAll("ul>li")[selectedIndex];
                 nameController.selection = [nameController.organizedContent[selectedIndex]];
+                expect(repetition.selectedIndexes).toEqual([3]);
 
                 testPage.waitForDraw();
 
@@ -121,6 +130,7 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
                         testPage.mouseEvent({target: listElementToSelect}, "mouseup", function () {
                             expect(listElementToSelect.classList.contains("selected")).toBeTruthy();
                             expect(nameController.selection[0]).toBe(nameController.organizedContent[4]);
+                            expect(repetition.selectedIndexes).toEqual([4]);
                         });
                     });
 
@@ -130,11 +140,12 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function(te
             it("should mark a newly added and newly selected object as selected", function () {
                 testPage.test.addAndSelect();
                 testPage.waitForDraw(2);
+                var addedIndex = nameController.content.length - 1;
+                expect(repetition.selectedIndexes).toEqual([addedIndex]);
                 // It only needs 2 draws, but sometimes the draw doesn't happen in time...
                 waits(100);
 
                 runs(function () {
-                    var addedIndex = nameController.content.length - 1;
                     var selectedListElement = querySelectorAll("ul>li")[addedIndex];
                     expect(selectedListElement.classList.contains("selected")).toBeTruthy();
                 });
