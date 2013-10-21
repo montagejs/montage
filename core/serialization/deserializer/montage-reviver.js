@@ -399,16 +399,20 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
                 unitNames,
                 unitDeserializer;
 
-            for (var i = 0, unitsDesc; unitsDesc = unitsToDeserialize[i]; i++) {
-                unitNames = unitsDesc.unitNames;
+            try {
+                for (var i = 0, unitsDesc; unitsDesc = unitsToDeserialize[i]; i++) {
+                    unitNames = unitsDesc.unitNames;
 
-                for (var j = 0, unitName; unitName = unitNames[j]; j++) {
-                    if (unitName in unitsDesc.objectDesc) {
-                        unitDeserializer = new UnitDeserializer()
-                            .initWithContext(context);
-                        units[unitName](unitDeserializer, unitsDesc.object, unitsDesc.objectDesc[unitName]);
+                    for (var j = 0, unitName; unitName = unitNames[j]; j++) {
+                        if (unitName in unitsDesc.objectDesc) {
+                            unitDeserializer = new UnitDeserializer()
+                                .initWithContext(context);
+                            units[unitName](unitDeserializer, unitsDesc.object, unitsDesc.objectDesc[unitName]);
+                        }
                     }
                 }
+            } catch (ex) {
+                return Promise.reject(ex);
             }
         }
     }
