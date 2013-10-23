@@ -190,7 +190,11 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
             var i = 0, changedTouchCount;
 
             if (event.type === "touchstart") {
-                this._observedPointer = event.changedTouches[0].identifier;
+
+                changedTouchCount = event.changedTouches.length;
+                if (changedTouchCount === 1) {
+                    this._observedPointer = event.changedTouches[0].identifier;
+                }
 
                 document.addEventListener("touchend", this, false);
                 document.addEventListener("touchcancel", this, false);
