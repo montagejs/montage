@@ -211,5 +211,60 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function(tes
                 });
             });
         });
+
+        describe("Nested PressComposers", function() {
+            beforeEach(function() {
+                test.outer_press_composer._endInteraction();
+                test.inner_press_composer._endInteraction();
+            });
+
+            it("should fire pressStart for both composers", function() {
+                var inner_listener = testPage.addListener(test.inner_press_composer, null, "pressStart"),
+                    outer_listener = testPage.addListener(test.outer_press_composer, null, "pressStart");
+
+                if (window.Touch) {
+                    testPage.touchEvent({target: test.innerComponent.element}, "touchstart");
+                    testPage.touchEvent({target: test.innerComponent.element}, "touchend");
+                } else {
+                    testPage.mouseEvent({target: test.innerComponent.element}, "mousedown");
+                    testPage.mouseEvent({target: test.innerComponent.element}, "mouseup");
+                }
+
+                expect(inner_listener).toHaveBeenCalled();
+                expect(outer_listener).toHaveBeenCalled();
+            });
+
+            it("should fire press for inner composer", function() {
+                var inner_listener = testPage.addListener(test.inner_press_composer, null, "press"),
+                    outer_listener = testPage.addListener(test.outer_press_composer, null, "press");
+
+                if (window.Touch) {
+                    testPage.touchEvent({target: test.innerComponent.element}, "touchstart");
+                    testPage.touchEvent({target: test.innerComponent.element}, "touchend");
+                } else {
+                    testPage.mouseEvent({target: test.innerComponent.element}, "mousedown");
+                    testPage.mouseEvent({target: test.innerComponent.element}, "mouseup");
+                }
+
+                expect(inner_listener).toHaveBeenCalled();
+                expect(outer_listener).not.toHaveBeenCalled();
+            });
+
+            it("should fire pressCancel for outer composer", function() {
+                var inner_listener = testPage.addListener(test.inner_press_composer, null, "pressCancel"),
+                    outer_listener = testPage.addListener(test.outer_press_composer, null, "pressCancel");
+
+                if (window.Touch) {
+                    testPage.touchEvent({target: test.innerComponent.element}, "touchstart");
+                    testPage.touchEvent({target: test.innerComponent.element}, "touchend");
+                } else {
+                    testPage.mouseEvent({target: test.innerComponent.element}, "mousedown");
+                    testPage.mouseEvent({target: test.innerComponent.element}, "mouseup");
+                }
+
+                expect(outer_listener).toHaveBeenCalled();
+                expect(inner_listener).not.toHaveBeenCalled();
+            });
+        });
     });
 });
