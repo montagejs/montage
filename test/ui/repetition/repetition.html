@@ -113,7 +113,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "textfield1"}
                 },
                 "bindings": {
-                    "text": {"<-": "@repetition2.objectAtCurrentIteration.text"}
+                    "text": {"<-": "@repetition2:iteration.object.text"}
                 }
             },
             "repetition2": {
@@ -131,7 +131,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "textfield2"}
                 },
                 "bindings": {
-                    "text": {"<-": "@repetition3.objectAtCurrentIteration.text"}
+                    "text": {"<-": "@repetition3:iteration.object.text"}
                 }
             },
             "repetition3": {
@@ -140,7 +140,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list3a"}
                 },
                 "bindings": {
-                    "content": {"<-": "@repetition4.objectAtCurrentIteration"}
+                    "content": {"<-": "@repetition4:iteration.object"}
                 }
             },
             "repetition4": {
@@ -164,7 +164,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list4a"}
                 },
                 "bindings": {
-                    "content": {"<-": "@repetition5.objectAtCurrentIteration"}
+                    "content": {"<-": "@repetition5:iteration.object"}
                 }
             },
             "repetition5": {
@@ -196,7 +196,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list5a"}
                 },
                 "bindings": {
-                    "content": {"<-": "@repetition7.objectAtCurrentIteration"}
+                    "content": {"<-": "@repetition7:iteration.object"}
                 }
             },
             "repetition7": {
@@ -226,7 +226,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list6comp1"}
                 },
                 "bindings": {
-                    "listObjects": {"<-": "@repetition9.objectAtCurrentIteration.elements1"}
+                    "listObjects": {"<-": "@repetition9:iteration.object.elements1"}
                 }
             },
             "componentrep4": {
@@ -235,7 +235,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "list6comp2"}
                 },
                 "bindings": {
-                    "listObjects": {"<-": "@repetition9.objectAtCurrentIteration.elements2"}
+                    "listObjects": {"<-": "@repetition9:iteration.object.elements2"}
                 }
             },
             "repetition9": {
@@ -434,7 +434,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "textfield8"}
                 },
                 "bindings": {
-                    "text": {"<-": "@repetition17.objectAtCurrentIteration"}
+                    "text": {"<-": "@repetition17:iteration.object"}
                 }
             },
             "repetition18": {
@@ -546,7 +546,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "element": {"#": "textInSubstitution"}
                 },
                 "bindings": {
-                    "value": {"<-": "@repetitionInSubstitution.objectAtCurrentIteration"}
+                    "value": {"<-": "@repetitionInSubstitution:iteration.object"}
                 }
             }
 
