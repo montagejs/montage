@@ -4,6 +4,7 @@ var PropertiesDeserializer = require("./properties-deserializer").PropertiesDese
 var SelfDeserializer = require("./self-deserializer").SelfDeserializer;
 var UnitDeserializer = require("./unit-deserializer").UnitDeserializer;
 var ModuleReference = require("core/module-reference").ModuleReference;
+var Alias = require("core/serialization/alias").Alias;
 
 var Promise = require("core/promise").Promise;
 
@@ -144,9 +145,11 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
 
     reviveCustomObject: {
         value: function(value, context, label) {
-            //if ("prototype" in value || "object" in value) {
+            if ("alias" in value) {
+                return this.reviveAlias(value, context, label);
+            } else {
                 return this.reviveMontageObject(value, context, label);
-            //}
+            }
         }
     },
 
@@ -307,6 +310,16 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
             } else {
                 throw new Error("Error deserializing " + JSON.stringify(value) + ", might need \"prototype\" or \"object\" on label " + JSON.stringify(label));
             }
+        }
+    },
+
+    reviveAlias: {
+        value: function(value, context, label) {
+            var alias = new Alias();
+            alias.value = value.alias;
+
+            context.setObjectLabel(alias, label);
+            return alias;
         }
     },
 
