@@ -10,6 +10,30 @@ exports.MontageLabeler = Montage.specialize.call(Labeler, {
         }
     },
 
+    getTemplatePropertyLabel: {
+        value: function(object) {
+            var label = this.superForValue("getObjectLabel")(object);
+
+            if (label[0] !== ":") {
+                throw new Error("Template property's labels need to start with a colon (:), (\"" + label + "\").");
+            }
+
+            return label;
+        }
+    },
+
+    getObjectLabel: {
+        value: function(object) {
+            var label = this.super(object);
+
+            if (label[0] === ":") {
+                throw new Error("Labels starting with colon (:) can only be used for template properties, (\"" + label + "\").");
+            }
+
+            return label;
+        }
+    },
+
     getObjectName: {
         value: function(object) {
             var identifier = object.identifier,
