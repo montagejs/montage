@@ -1,14 +1,16 @@
 /**
-    @module montage/ui/text.reel
-    @requires montage
-    @requires montage/ui/component
-*/
-var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
+ * @module montage/ui/text.reel
+ */
+var Component = require("ui/component").Component;
 
 /**
- @class Text
- @extends Component
+ * A component that displays a string.
+ *
+ * The text component replaces the inner DOM of its element with a TextNode and
+ * it renders the [value]{@link Text#value} string in it.
+ *
+ * @class Text
+ * @extends Component
  */
 exports.Text = Component.specialize( /** @lends Text# */ {
 
@@ -27,10 +29,10 @@ exports.Text = Component.specialize( /** @lends Text# */ {
     },
 
     /**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+     * The string to be displayed, `null` is equivalent to the empty string.
+     * @type {string}
+     * @default null
+     */
     value: {
         get: function() {
             return this._value;
@@ -44,19 +46,20 @@ exports.Text = Component.specialize( /** @lends Text# */ {
     },
 
     /**
-        The Montage converted used to convert or format values displayed by this Text instance.
-        @type {Property}
-        @default null
+     * The Montage converted used to convert or format values displayed by this
+     * Text instance.
+     * @type {Converter}
+     * @default null
     */
     converter: {
         value: null
     },
 
     /**
-        The default string value assigned to the Text instance.
-        @type {Property}
-        @default {String} ""
-    */
+     * The default string value assigned to the Text instance.
+     * @type {string}
+     * @default ""
+     */
     defaultValue: {
         value: ""
     },
