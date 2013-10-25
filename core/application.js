@@ -1,6 +1,3 @@
-/* <copyright>
-</copyright> */
-
 /**
     @module montage/core/application
     @requires montage/core/core
