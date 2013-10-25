@@ -1,31 +1,27 @@
 /**
-	@module montage/ui/condition.reel
-    @requires montage/core/core
-    @requires montage/ui/component
-    @requires "montage/ui/slot.reel"
-    @requires montage/core/logger
-*/
-var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
+ * @module montage/ui/condition.reel
+ */
+var Component = require("ui/component").Component,
     logger = require("core/logger").logger("condition");
 /**
- @class Condition
- @extends Component
+ * The condition component shows its DOM content when its
+ * [condition]{@link Condition#condition} property is `true`, and hides its DOM
+ * content when it is `false`.
+ *
+ * Different strategies can be used to hide the DOM content. By default the
+ * condition will remove its content from the DOM but
+ * [removalStrategy]{@link Condition#removalStrategy} can be changed to alter
+ * this behavior.
+ *
+ * @class Condition
+ * @extends Component
  */
-
 exports.Condition = Component.specialize( /** @lends Condition# */ {
 
-/**
-    The Condition component does not have an HTML template, so this value is set to false.
-    @type {Property}
-    @default {Boolean} false
-*/
     hasTemplate: {
         value: false
     },
-/**
-  @private
-*/
+
     _condition: {
         value: true
     },
@@ -40,10 +36,14 @@ exports.Condition = Component.specialize( /** @lends Condition# */ {
         }
     },
 
-/**
-        @type {Function}
-        @default null
-    */
+    /**
+     * The boolean value that specifies if the contents of the condition are
+     * visible (`true`) or hidden (`false`).
+     * `null` is equivalent to `false`.
+     *
+     * @type {boolean}
+     * @default null
+     */
     condition: {
         set: function(value) {
 
@@ -86,15 +86,27 @@ exports.Condition = Component.specialize( /** @lends Condition# */ {
         }
     },
 
-    /**
-     @private
-     */
     _removalStrategy:{
         value: "remove"
     },
 
     // TODO should this strategy be part of another class?
     // TODO expose the options as an exported enum
+    /**
+     * The removal strategy specifies how the condition should remove its
+     * content when [condition]{@link Condition#condition} is `false`.
+     *
+     * A value of `remove` will make the condition remove its contents from
+     * the DOM.
+     *
+     * A value of `hide` will make the condition hide its contents through CSS
+     * using the `montage-invisible` class while keeping them on the DOM.
+     *
+     * Possible values are `remove`, `hide`.
+     *
+     * @type {string}
+     * @default "remove"
+     */
     removalStrategy:{
         get:function () {
             return this._removalStrategy;
@@ -115,9 +127,6 @@ exports.Condition = Component.specialize( /** @lends Condition# */ {
         }
     },
 
-    /**
-    @function
-    */
     draw: {
         value: function() {
 
