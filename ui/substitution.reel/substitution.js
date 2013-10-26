@@ -1,16 +1,54 @@
 /**
-	@module "montage/ui/substitution.reel"
-    @requires montage/ui/component
-    @requires "montage/ui/slot.reel"
-    @requires montage/core/logger
-*/
-var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
-    Slot = require("ui/slot.reel").Slot,
+ * @module "montage/ui/substitution.reel"
+ */
+var Slot = require("ui/slot.reel").Slot,
     Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("substitution");
 /**
- @class Substitution
+ * The substitution is a structural component and it should be used when there
+ * are different types of content (e.g.: different panels) at the same time but
+ * only one of them is shown at a time.
+ *
+ * A possible use case for the substitution is the implementation of a Tab
+ * component content pane.
+ *
+ * The different types of content of a substitution are configured by declaring
+ * them in the template as the DOM content of the substitution.
+ * Each type of content is given to the substitution as a template argument.
+ * Template arguments are declared by assigning the attribute `data-arg` to an
+ * element that is the immediate child of the substitution.
+ *
+ * ##### Example - Declaring the substitution content
+ * ```html
+ * <div data-montage-id="substitution">
+ *     <div data-arg="info" data-montage-id="infoPanel"></div>
+ *     <div data-arg="contacts" data-montage-id="contactsPanel"></div>
+ *     <div data-arg="review" data-montage-id="reviewPanel"></div>
+ * </div>
+ * ```
+ * `info`, `contacts` and `review` are the types of content declared and
+ * available as substitution content.
+ * The type of content displayed by the substitution is defined by the
+ * [switchValue]{@link Substitution#switchValue} property. The available values
+ * of this property in this example are: `info`, `contacts` and `review`.
+ *
+ * ##### Example - Other substitution template configurations
+ * ```html
+ * <div data-montage-id="substitution">
+ *     <div data-arg="info">
+ *         Name: John Doe
+ *     </div>
+ *     <div data-arg="contacts">
+ *         E-mail: ...
+ *         Mobile: ...
+ *     </div>
+ *     <div data-arg="review">
+ *         ...
+ *     </div>
+ * </div>
+ * ```
+ *
+ * @class Substitution
  */
 exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
 
@@ -47,6 +85,22 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
         value: null
     },
 
+    /**
+     * This method is used to dynamically add content to the substitution. This
+     * is usually done by declaring the content in the template as the DOM
+     * content of the substitution. However, in more advanced usages of the
+     * substitution, this information might not be available at writing time.
+     *
+     * Throws when the `element` given has a parent node.
+     *
+     * @method addSwitchElement
+     * @param {string} key The key that identifies the content given, similar to
+     *                 `data-arg` when declaring the content in the template.
+     * @param {Node} element The element that will be shown when the `key` is
+     *               the selected [switchValue]{@link Substitution#switchValue}.
+     *               This element needs to be detached from the DOM and cannot
+     *               have a parent node.
+     */
     addSwitchElement: {
         value: function(key, element) {
             if (element.parentNode) {
@@ -85,6 +139,13 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
         value: null
     },
 
+    /**
+     * The switch value selects which content the substitution should show.
+     * The possible values are the ones defined as template arguments of the
+     * substitution.
+     *
+     * @type {string}
+     */
     switchValue: {
         get: function() {
             return this._switchValue;
@@ -206,6 +267,18 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
         }
     },
 
+    /**
+     * By default the substitution doesn't expand the entire component tree of
+     * all its content, only of the content that needs to be shown.
+     * This is an optimization to avoid loading all the content at page load
+     * time.
+     *
+     * However, if for some reason it is desirable to load the entire content
+     * at page load time this property can be set to `true`.
+     *
+     * @type {boolean}
+     * @default false
+     */
     shouldLoadComponentTree: {
         value: false
     },
