@@ -32,11 +32,7 @@ if (typeof window.Touch === "undefined" && "ontouchstart" in window) {
 
         document.addEventListener("touchstart", onFirstTouchstart = function (event) {
             window.Touch = event.touches[0].constructor;
-            if (document.nativeRemoveEventListener) {
-                document.nativeRemoveEventListener("touchstart", onFirstTouchstart, true);
-            } else {
-                document.removeEventListener("touchstart", onFirstTouchstart, true);
-            }
+            document.removeEventListener("touchstart", onFirstTouchstart, true);
             if (defaultEventManager && defaultEventManager.isStoringPointerEvents) {
                 defaultEventManager.isStoringPointerEvents = false;
                 defaultEventManager.isStoringPointerEvents = true;
@@ -316,100 +312,6 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             // Setup the window as much as possible now without knowing whether
             // the DOM is ready or not
 
-            // Keep a reference to the original listener functions
-
-            // Note I think it may be implementation specific how these are implemented
-            // so I'd rather preserve any native optimizations a browser has for
-            // adding listeners to the document versus and element etc.
-            aWindow.Element.prototype.nativeAddEventListener = aWindow.Element.prototype.addEventListener;
-            Object.defineProperty(aWindow, "nativeAddEventListener", {
-                configurable: true,
-                value: aWindow.addEventListener
-            });
-            Object.getPrototypeOf(aWindow.document).nativeAddEventListener = aWindow.document.addEventListener;
-            aWindow.XMLHttpRequest.prototype.nativeAddEventListener = aWindow.XMLHttpRequest.prototype.addEventListener;
-            if (aWindow.Worker) {
-                aWindow.Worker.prototype.nativeAddEventListener = aWindow.Worker.prototype.addEventListener;
-            }
-            if (aWindow.MediaController) {
-                aWindow.MediaController.prototype.nativeAddEventListener = aWindow.MediaController.prototype.addEventListener;
-            }
-
-            aWindow.Element.prototype.nativeRemoveEventListener = aWindow.Element.prototype.removeEventListener;
-            Object.defineProperty(aWindow, "nativeRemoveEventListener", {
-                configurable: true,
-                value: aWindow.removeEventListener
-            });
-            Object.getPrototypeOf(aWindow.document).nativeRemoveEventListener = aWindow.document.removeEventListener;
-            aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener = aWindow.XMLHttpRequest.prototype.removeEventListener;
-            if (aWindow.Worker) {
-                aWindow.Worker.prototype.nativeRemoveEventListener = aWindow.Worker.prototype.removeEventListener;
-            }
-            if (aWindow.MediaController) {
-                aWindow.MediaController.prototype.nativeRemoveEventListener = aWindow.MediaController.prototype.removeEventListener;
-            }
-
-            // Redefine listener functions
-
-            Object.defineProperty(aWindow, "addEventListener", {
-                configurable: true,
-                value: (aWindow.XMLHttpRequest.prototype.addEventListener =
-                        aWindow.Element.prototype.addEventListener =
-                            Object.getPrototypeOf(aWindow.document).addEventListener =
-                                function(eventType, listener, useCapture) {
-                                    return aWindow.defaultEventManager.registerEventListener(this, eventType, listener, !!useCapture);
-                                })
-            });
-
-            if (aWindow.Worker) {
-                aWindow.Worker.prototype.addEventListener = aWindow.addEventListener;
-            }
-            if (aWindow.MediaController) {
-                aWindow.MediaController.prototype.addEventListener = aWindow.addEventListener;
-            }
-
-            Object.defineProperty(aWindow, "removeEventListener", {
-                configurable: true,
-                value: (aWindow.XMLHttpRequest.prototype.removeEventListener =
-                        aWindow.Element.prototype.removeEventListener =
-                            Object.getPrototypeOf(aWindow.document).removeEventListener =
-                                function(eventType, listener, useCapture) {
-                                    return aWindow.defaultEventManager.unregisterEventListener(this, eventType, listener, !!useCapture);
-                                })
-            });
-
-            if (aWindow.Worker) {
-                aWindow.Worker.prototype.removeEventListener = aWindow.removeEventListener;
-            }
-            if (aWindow.MediaController) {
-                aWindow.MediaController.prototype.removeEventListener = aWindow.removeEventListener;
-            }
-
-            // In some browsers (Firefox) each element has their own addEventLister/removeEventListener
-            // Methodology to find all elements found in Chainvas
-            if(aWindow.HTMLDivElement.prototype.addEventListener !== aWindow.Element.prototype.nativeAddEventListener) {
-                if (aWindow.HTMLElement &&
-                    'addEventListener' in aWindow.HTMLElement.prototype &&
-                    aWindow.Components &&
-                    aWindow.Components.interfaces
-                ) {
-                    var candidate, candidatePrototype;
-
-                    for(candidate in Components.interfaces) {
-                        if(candidate.match(/^nsIDOMHTML\w*Element$/)) {
-                            candidate = candidate.replace(/^nsIDOM/, '');
-                            if(candidate = window[candidate]) {
-                                candidatePrototype = candidate.prototype;
-                                candidatePrototype.nativeAddEventListener = candidatePrototype.addEventListener;
-                                candidatePrototype.addEventListener = aWindow.Element.prototype.addEventListener;
-                                candidatePrototype.nativeRemoveEventListener = candidatePrototype.removeEventListener;
-                                candidatePrototype.removeEventListener = aWindow.Element.prototype.removeEventListener;
-                            }
-                        }
-                    }
-                }
-            }
-
             /**
              HTML element event handler UUID
              @member external:Element#eventHandlerUUID
@@ -476,81 +378,14 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 return (aWindow !== element);
             });
 
+            aWindow.document.removeEventListener("touchstart", this._activationHandler, true);
+            aWindow.document.removeEventListener("mousedown", this._activationHandler, true);
+            aWindow.document.removeEventListener("focus", this._activationHandler, true);
+
             delete aWindow.defaultEventManager;
-
-            // Restore existing listener functions
-
-            aWindow.Element.prototype.addEventListener = aWindow.Element.prototype.nativeAddEventListener;
-            Object.defineProperty(aWindow, "addEventListener", {
-                configurable: true,
-                value: aWindow.nativeAddEventListener
-            });
-            Object.getPrototypeOf(aWindow.document).addEventListener = aWindow.document.nativeAddEventListener;
-            aWindow.XMLHttpRequest.prototype.addEventListener = aWindow.XMLHttpRequest.prototype.nativeAddEventListener;
-            if (aWindow.Worker) {
-                aWindow.Worker.prototype.addEventListener = aWindow.Worker.prototype.nativeAddEventListener;
-            }
-
-            aWindow.Element.prototype.removeEventListener = aWindow.Element.prototype.nativeRemoveEventListener;
-            Object.defineProperty(aWindow, "removeEventListener", {
-                configurable: true,
-                value: aWindow.nativeRemoveEventListener
-            });
-            Object.getPrototypeOf(aWindow.document).removeEventListener = aWindow.document.nativeRemoveEventListener;
-            aWindow.XMLHttpRequest.prototype.removeEventListener = aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener;
-            if (aWindow.Worker) {
-                aWindow.Worker.prototype.removeEventListener = aWindow.Worker.prototype.nativeRemoveEventListener;
-            }
-
-            // In some browsers (Firefox) each element has their own addEventLister/removeEventListener
-            // Methodology to find all elements found in Chainvas
-            if(aWindow.HTMLDivElement.prototype.nativeAddEventListener !== aWindow.Element.prototype.addEventListener) {
-                if (aWindow.HTMLElement &&
-                    'addEventListener' in aWindow.HTMLElement.prototype &&
-                    aWindow.Components &&
-                    aWindow.Components.interfaces
-                ) {
-                    var candidate, candidatePrototype;
-
-                    for(candidate in Components.interfaces) {
-                        if(candidate.match(/^nsIDOMHTML\w*Element$/)) {
-                            candidate = candidate.replace(/^nsIDOM/, '');
-                            if(candidate = window[candidate]) {
-                                candidatePrototype = candidate.prototype;
-                                candidatePrototype.addEventListener = candidatePrototype.nativeAddEventListener;
-                                delete candidatePrototype.nativeAddEventListener;
-                                candidatePrototype.removeEventListener = candidatePrototype.nativeRemoveEventListener;
-                                delete candidatePrototype.nativeRemoveEventListener;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Delete our references
-
-            delete aWindow.Element.prototype.nativeAddEventListener;
-            delete aWindow.nativeAddEventListener;
-
-            delete Object.getPrototypeOf(aWindow.document).nativeAddEventListener;
-            delete aWindow.XMLHttpRequest.prototype.nativeAddEventListener;
-            if (aWindow.Worker) {
-                delete aWindow.Worker.prototype.nativeAddEventListener;
-            }
-
-            delete aWindow.Element.prototype.nativeRemoveEventListener;
-            delete aWindow.nativeRemoveEventListener;
-
-            delete Object.getPrototypeOf(aWindow.document).nativeRemoveEventListener;
-            delete aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener;
-            if (aWindow.Worker) {
-                delete aWindow.Worker.prototype.nativeRemoveEventListener;
-            }
 
             delete aWindow.Element.prototype.eventHandlerUUID;
             delete aWindow.Element.prototype.component;
-
-            this._stopListeningToWindow(aWindow);
         }
     },
 /**
@@ -733,11 +568,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 }
 
             }
-
-            if (isNewTarget && typeof target.nativeAddEventListener === "function") {
-                this._observeTarget_forEventType_(target, eventType);
-            }
-
+            
             // console.log("EventManager.registeredEventListeners", this.registeredEventListeners)
 
             return returnResult;
@@ -815,7 +646,6 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     if (Object.keys(eventTypeRegistration).length === 0) {
                         // If no targets for this eventType; stop observing this event
                         delete this.registeredEventListeners[eventType];
-                        this._stopObservingTarget_forEventType_(target, eventType);
                     }
 
                 }
@@ -867,49 +697,6 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
         }
     },
-  /**
-  @private
-*/
-   _observedTarget_byEventType_: {value:{}},
-
-    // Individual Event Registration
-/**
-  @private
-*/
-    _observeTarget_forEventType_: {
-        enumerable: false,
-        value: function(target, eventType) {
-
-            var listenerTarget;
-
-            if ((listenerTarget = this.actualDOMTargetForEventTypeOnTarget(eventType, target)) && (!this._observedTarget_byEventType_[eventType] || !this._observedTarget_byEventType_[eventType][listenerTarget.uuid])) {
-                if (!this._observedTarget_byEventType_[eventType]) {
-                    this._observedTarget_byEventType_[eventType] = {};
-                }
-                this._observedTarget_byEventType_[eventType][listenerTarget.uuid] = this;
-
-                listenerTarget.nativeAddEventListener(eventType, this, true);
-            }
-            // console.log("started listening: ", eventType, listenerTarget)
-        }
-    },
-/**
-  @private
-*/
-    _stopObservingTarget_forEventType_: {
-        enumerable: false,
-        value: function(target, eventType) {
-
-            var listenerTarget;
-
-            listenerTarget = this.actualDOMTargetForEventTypeOnTarget(eventType, target);
-            if (listenerTarget) {
-                delete this._observedTarget_byEventType_[eventType][listenerTarget.uuid];
-                listenerTarget.nativeRemoveEventListener(eventType, this, true);
-            }
-            // console.log("stopped listening: ", eventType, window.uuid)
-        }
-    },
 
     _activationHandler: {
         enumerable: true,
@@ -957,12 +744,12 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             // before finding event handlers that were registered for these events
             if (aWindow.Touch) {
                 // TODO on iOS the touch doesn't capture up at the window, just the document; interesting
-                aWindow.document.nativeAddEventListener("touchstart", this._activationHandler, true);
+                aWindow.document.addEventListener("touchstart", this._activationHandler, true);
             } else {
-                aWindow.document.nativeAddEventListener("mousedown", this._activationHandler, true);
+                aWindow.document.addEventListener("mousedown", this._activationHandler, true);
                 //TODO also should accommodate mouseenter/mouseover possibly
             }
-            aWindow.document.nativeAddEventListener("focus", this._activationHandler, true);
+            aWindow.document.addEventListener("focus", this._activationHandler, true);
 
             if (this.application) {
 
@@ -977,44 +764,11 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
         }
     },
 /**
-  @private
-*/
-    _stopListeningToWindow: {
-        enumerable: false,
-        value: function(aWindow) {
-
-            var applicationLevelEvents = this.registeredEventListenersOnTarget_(this.application),
-                windowLevelEvents = this.registeredEventListenersOnTarget_(aWindow),
-                eventType;
-
-            for (eventType in applicationLevelEvents) {
-                this._stopObservingTarget_forEventType_(aWindow, eventType);
-            }
-
-            for (eventType in windowLevelEvents) {
-                this._stopObservingTarget_forEventType_(aWindow, eventType);
-            }
-        }
-    },
-/**
     @function
     */
     reset: {
         enumerable: false,
         value: function() {
-            var eventType,
-                eventRegistration,
-                targetUUID,
-                targetRegistration;
-
-            for (eventType in this.registeredEventListeners) {
-                eventRegistration = this.registeredEventListeners[eventType];
-                for (targetUUID in eventRegistration.targets) {
-                    targetRegistration = eventRegistration.targets[targetUUID];
-                    this._stopObservingTarget_forEventType_(targetRegistration.target, eventType);
-                }
-            }
-
             this.registeredEventListeners = {};
 
             // TODO for each component claiming a pointer, force them to surrender the pointer?
