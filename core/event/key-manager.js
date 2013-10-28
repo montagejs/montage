@@ -760,7 +760,9 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                     }
                 }
 
-                if (!onTarget) {
+                // Most components can't receive key events directly: the events target the window,
+                // but we should also fire them on composers of the activeTarget component
+                if (!onTarget && defaultEventManager.activeTarget != keyComposer.component) {
                     continue;
                 }
 
