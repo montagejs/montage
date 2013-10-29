@@ -85,16 +85,10 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
 
     prepareForActivationEvents: {
         value: function() {
-            // Due to a current issue with how the key manager works we need
-            // to listen on both the component and the key composer.
-            // The key composer dispatches the event on the activeTarget
-            // (the component), and we need to listen on the key composer so
-            // that the listeners are installed.
-            this.addEventListener("keyPress", this, false);
-            this._upKeyComposer.addEventListener("keyPress", null, false);
-            this._downKeyComposer.addEventListener("keyPress", null, false);
-            this._leftKeyComposer.addEventListener("keyPress", null, false);
-            this._rightKeyComposer.addEventListener("keyPress", null, false);
+            this._upKeyComposer.addEventListener("keyPress", this, false);
+            this._downKeyComposer.addEventListener("keyPress", this, false);
+            this._leftKeyComposer.addEventListener("keyPress", this, false);
+            this._rightKeyComposer.addEventListener("keyPress", this, false);
         }
     },
 

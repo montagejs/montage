@@ -790,7 +790,9 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                     }
                 }
 
-                if (!onTarget) {
+                // Most components can't receive key events directly: the events target the window,
+                // but we should also fire them on composers of the activeTarget component
+                if (!onTarget && defaultEventManager.activeTarget != keyComposer.component) {
                     continue;
                 }
 
@@ -826,7 +828,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                             longPressEvent.activeElement = event.target;
                             longPressEvent.identifier = keyComposer.identifier;
                             longPressEvent = MutableEvent.fromEvent(longPressEvent);
-                            defaultEventManager.activeTarget.dispatchEvent(longPressEvent);
+                            keyComposer.dispatchEvent(longPressEvent);
                             delete thisRef._longPressKeys[keyComposer.uuid];
                         }, this._longPressThreshold);
 
@@ -844,7 +846,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 if (this._opera) {
                     keyComposerEvent.type = eventType; // Opera modifes the capitalization of custom event's type when that one is similar to a native event's type
                 }
-                defaultEventManager.activeTarget.dispatchEvent(keyComposerEvent);
+                keyComposer.dispatchEvent(keyComposerEvent);
 
                 // console.log("keyComposer Event DISPATCHED:", keyComposerEvent, event.target, keyComposer);
                 if (keyComposerEvent.defaultPrevented) {

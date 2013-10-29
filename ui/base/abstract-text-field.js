@@ -116,13 +116,7 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
 
     prepareForActivationEvents: {
         value: function() {
-            // Due to a current issue with how the key manager works we need
-            // to listen on both the component and the key composer.
-            // The key composer dispatches the event on the activeTarget
-            // (the component), and we need to listen on the key composer so
-            // that the listeners are installed.
-            this.addEventListener("keyPress", this, false);
-            this._keyComposer.addEventListener("keyPress", null, false);
+            this._keyComposer.addEventListener("keyPress", this, false);
         }
     },
 
