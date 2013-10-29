@@ -213,8 +213,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
                     defaultEventManager.activeTarget = this;
                 }
 
-                this.addEventListener("keyPress", this, false);
-                this._keyComposer.addEventListener("keyPress", null, false);
+                this._keyComposer.addEventListener("keyPress", this, false);
             }
         }
     },
