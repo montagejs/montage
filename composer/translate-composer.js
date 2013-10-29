@@ -749,7 +749,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                     this._element.removeEventListener("touchmove", this, true);
                 } else {
                     document.addEventListener("mousemove", this, true);
-                    this._element.removeEventListener("mousemove", this, false);
+                    this._element.removeEventListener("mousemove", this, true);
                 }
 
             }
