@@ -215,20 +215,83 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
         }
     },
 
+    /**
+     * This function creates a collision table between labels1 and labels2.
+     * The collision table offers renames for the labels in the labels2 array
+     * that already exist in the labels1 array.
+     *
+     * This function knows how to deal with labels that refer to template
+     * properties. A label for a template property has the following syntax:
+     * <component label>:<label>.
+     * The collision table guarantees that template properties' labels will
+     * always be in sync with their corresponding component label.
+     *
+     * When a collision exist with a label for a template property the
+     * collision is solved by creating a new label for the component and
+     * adopting that new label: <new component label>:<label>. In this
+     * case the component label will also be part of the resulting collision
+     * table even if there was no original collision in labels1.
+     *
+     * Example:
+     * labels1: ["repetition:iteration"]
+     * labels2: ["repetition", "repetition:iteration"]
+     * collisionTable: {"repetition:iteration": "object:iteration",
+     *                  "repetition": "object"}
+     *
+     * @private
+     */
     _createCollisionTable: {
         value: function(labels1, labels2) {
             var labeler = new MontageLabeler(),
                 collisionTable = {},
-                hasCollision = false;
+                hasCollision = false,
+                componentLabel,
+                newLabel,
+                label,
+                ix;
 
             for (var i = 0; i < labels1.length; i++) {
-                labeler.setObjectLabel(null, labels1[i]);
+                label = labels1[i];
+
+                // If this label is a property template then we need to register
+                // the component name too, it could be that it's not present
+                // on labels1. We want to avoid the possibility of generating
+                // a label that conflicts with the component part of the template
+                // property.
+                ix = label.indexOf(":");
+                if (ix > 0) {
+                    labeler.setObjectLabel(null, label.slice(0, ix));
+                }
+                labeler.setObjectLabel(null, label);
             }
 
-            for (var i = 0, label; (label = labels2[i]); i++) {
-                if (labels1.indexOf(label) >= 0) {
-                    // All new labels will be "object<N>" because we give an
-                    // object.
+            for (var i = 0; (label = labels2[i]); i++) {
+                // If the label is a template property then check to see if
+                // the component label has been renamed already or if the entire
+                // label or component label have a collision to solve.
+                ix = label.indexOf(":");
+                if (ix > 0) {
+                    componentLabel = label.slice(0, ix);
+                    newLabel = collisionTable[componentLabel];
+
+                    if (newLabel) {
+                        collisionTable[label] = newLabel + ":" + label.slice(ix+1);
+                    } else if (labeler.isLabelDefined(componentLabel)) {
+                        // Renaming a label that is a property template is
+                        // the same as renaming the component part of the
+                        // label.
+                        newLabel = labeler.generateObjectLabel({});
+                        // Rename the component label too if it exists.
+                        if (labels2.indexOf(componentLabel) >= 0) {
+                            collisionTable[componentLabel] = newLabel;
+                        }
+                        collisionTable[label] = newLabel + label.slice(ix);
+                        hasCollision = true;
+                    }
+                }
+                // Also check if the label already has a new label, this can
+                // happen if a template property on that component was renamed.
+                else if (labeler.isLabelDefined(label) && !(label in collisionTable)) {
                     collisionTable[label] = labeler.generateObjectLabel({});
                     hasCollision = true;
                 }
