@@ -813,11 +813,22 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         value: function () {
             var self = this;
 
-            if (self.innerTemplate.hasParameters()) {
-                self._iterationTemplate = self.innerTemplate.clone();
-                self._expandIterationTemplateParameters();
+            var switchPath = this.getPath('switchPath');
+            if (switchPath) {
+                switchPath = this.getPath(switchPath); // Expand FRB expression.
+                var element = this._getDomArgument(this.element, switchPath);
+                if (!element) {
+                    throw new Error("Cannot find " + JSON.stringify(switchPath) + ""); // TODO: better error message
+                }
+                self._iterationTemplate = self.innerTemplate.createTemplateFromDomElement(element);
             } else {
-                self._iterationTemplate = self.innerTemplate;
+                //FIXME
+                if (self.innerTemplate.hasParameters()) {
+                    self._iterationTemplate = self.innerTemplate.clone();
+                    self._expandIterationTemplateParameters();
+                } else {
+                    self._iterationTemplate = self.innerTemplate;
+                }
             }
 
             // Erase the initial child component trees. The initial document

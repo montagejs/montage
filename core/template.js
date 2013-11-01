@@ -824,6 +824,16 @@ var Template = Montage.specialize( /** @lends Template# */ {
         }
     },
 
+    createTemplateFromDomElement: {
+        value: function(element) {
+            // Clone the element contents
+            var range = this.document.createRange();
+            range.selectNode(element);
+
+            return this.createTemplateFromRange(range);
+        }
+    },
+
     createTemplateFromRange: {
         value: function (range) {
             var fragment,
