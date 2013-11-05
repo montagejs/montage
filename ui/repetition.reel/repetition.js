@@ -975,7 +975,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 argumentsTemplate = owner._ownerDocumentPart.template;
                 objects = owner._ownerDocumentPart.objects;
 
-                expansionResult = template.expandParameters(argumentsTemplate, owner);
+                expansionResult = template.expandParameters(owner);
 
                 // Associate the new external objects with the objects in the
                 // instantiation of argumentsTemplate.

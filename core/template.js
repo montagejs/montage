@@ -878,10 +878,9 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     /**
-     * @param {Template} template The template object where the arguments reside
-     * @param {Object} delegate A delegate object that needs to implement
-     *        getTemplateParameterArgument(template, name) function that returns
-     *        the argument to replace with the `name` parameter.
+     * @param {TemplateArgumentProvider} templateArgumentProvider An object that
+     *        implements the interface needed to provide the arguments to the
+     *        parameters.
      * @returns {Object} A dictionary with four properties representing the
      *          objects and elements that were imported into the template:
      *          - labels: the labels of the objects added from template
@@ -895,7 +894,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      *
      */
     expandParameters: {
-        value: function(template, delegate) {
+        value: function(templateArgumentProvider) {
             var parameterElements,
                 argumentsElementIds = [],
                 collisionTable,
@@ -912,8 +911,8 @@ var Template = Montage.specialize( /** @lends Template# */ {
             // Expand elements.
             for (var parameterName in parameterElements) {
                 parameterElement = parameterElements[parameterName];
-                argumentElement = delegate.getTemplateParameterArgument(
-                    template, parameterName);
+                argumentElement = templateArgumentProvider.getTemplateArgumentElement(
+                    parameterName);
 
                 // Store all element ids of the argument, we need to create
                 // a serialization with the components that point to them.
@@ -935,8 +934,8 @@ var Template = Montage.specialize( /** @lends Template# */ {
             result.elementIdsCollisions = argumentElementsCollisionTable;
 
             // Expand objects.
-            argumentsSerialization = template
-                ._createSerializationWithElementIds(argumentsElementIds);
+            argumentsSerialization = templateArgumentProvider
+                .getTemplateArgumentSerialization(argumentsElementIds);
 
             argumentsSerialization.renameElementReferences(
                 argumentElementsCollisionTable);
@@ -1454,6 +1453,17 @@ function instantiateDocument(_document, _require, instances) {
     });
 }
 
+var TemplateArgumentProvider = Montage.specialize({
+    getTemplateArgumentElement: {
+        value: function(argumentName) {}
+    },
+
+    getTemplateArgumentSerialization: {
+        value: function(templatePropertyLabel) {}
+    }
+});
+
 exports.Template = Template;
+exports.TemplateArgumentProvider = TemplateArgumentProvider;
 exports.TemplateResources = TemplateResources;
 exports.instantiateDocument = instantiateDocument;

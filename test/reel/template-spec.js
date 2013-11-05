@@ -1180,24 +1180,29 @@ describe("reel/template-spec", function() {
 
     describe("expanding template parameters", function() {
         var parametersTemplate,
-            argumentsTemplate;
+            argumentsTemplate,
+            argumentsProvider;
 
         beforeEach(function() {
             parametersTemplate = new Template();
             argumentsTemplate = new Template();
+
+            argumentsProvider = {
+                getTemplateArgumentSerialization: function(elementIds) {
+                    return argumentsTemplate
+                        ._createSerializationWithElementIds(elementIds);
+                }
+            };
         });
 
         it("should expand a parameter with non-colliding element", function() {
             var parametersHtml = require("reel/template/template-star-parameter.html").content,
-                argumentsHtml = require("reel/template/template-arguments.html").content,
-                delegate;
+                argumentsHtml = require("reel/template/template-arguments.html").content;
 
-            delegate = {
-                getTemplateParameterArgument: function(template, name) {
-                    range = document.createRange();
-                    range.selectNodeContents(template.getElementById("list"));
-                    return range.extractContents();
-                }
+            argumentsProvider.getTemplateArgumentElement = function(name) {
+                range = document.createRange();
+                range.selectNodeContents(argumentsTemplate.getElementById("list"));
+                return range.extractContents();
             };
 
             return Promise.all([
@@ -1207,8 +1212,7 @@ describe("reel/template-spec", function() {
                 var repetition,
                     args;
 
-                parametersTemplate.expandParameters(
-                    argumentsTemplate, delegate);
+                parametersTemplate.expandParameters(argumentsProvider);
 
                 repetition = parametersTemplate.getElementById("repetition");
                 args = repetition.children[0].children;
@@ -1221,16 +1225,13 @@ describe("reel/template-spec", function() {
 
         it("should expand a parameter with colliding element", function() {
             var parametersHtml = require("reel/template/template-star-parameter.html").content,
-                argumentsHtml = require("reel/template/template-arguments.html").content,
-                delegate;
+                argumentsHtml = require("reel/template/template-arguments.html").content;
 
-            delegate = {
-                getTemplateParameterArgument: function(template, name) {
-                    range = document.createRange();
-                    range.selectNodeContents(
-                        template.getElementById("element-id-collision"));
-                    return range.extractContents();
-                }
+            argumentsProvider.getTemplateArgumentElement = function(name) {
+                range = document.createRange();
+                range.selectNodeContents(
+                    argumentsTemplate.getElementById("element-id-collision"));
+                return range.extractContents();
             };
 
             return Promise.all([
@@ -1240,8 +1241,7 @@ describe("reel/template-spec", function() {
                 var repetition,
                     args;
 
-                parametersTemplate.expandParameters(
-                    argumentsTemplate, delegate);
+                parametersTemplate.expandParameters(argumentsProvider);
 
                 repetition = parametersTemplate.getElementById("repetition");
                 args = repetition.children[0].children;
@@ -1253,16 +1253,13 @@ describe("reel/template-spec", function() {
 
         it("should expand multiple parameters with non-colliding element", function() {
             var parametersHtml = require("reel/template/template-parameters.html").content,
-                argumentsHtml = require("reel/template/template-arguments.html").content,
-                delegate;
+                argumentsHtml = require("reel/template/template-arguments.html").content;
 
-            delegate = {
-                getTemplateParameterArgument: function(template, name) {
-                    range = document.createRange();
-                    range.selectNodeContents(
-                        template.getElementById("multiple-elements-" + name));
-                    return range.extractContents();
-                }
+            argumentsProvider.getTemplateArgumentElement = function(name) {
+                range = document.createRange();
+                range.selectNodeContents(
+                    argumentsTemplate.getElementById("multiple-elements-" + name));
+                return range.extractContents();
             };
 
             return Promise.all([
@@ -1272,8 +1269,7 @@ describe("reel/template-spec", function() {
                 var repetition,
                     side;
 
-                parametersTemplate.expandParameters(
-                    argumentsTemplate, delegate);
+                parametersTemplate.expandParameters(argumentsProvider);
 
                 side = parametersTemplate.getElementById("leftSide");
                 expect(side.children.length).toBe(1);
@@ -1287,29 +1283,24 @@ describe("reel/template-spec", function() {
 
         it("should expand multiple parameters with colliding elements", function() {
             var parametersHtml = require("reel/template/template-parameters.html").content,
-                argumentsHtml = require("reel/template/template-arguments.html").content,
-                delegate;
+                argumentsHtml = require("reel/template/template-arguments.html").content;
 
-            delegate = {
-                getTemplateParameterArgument: function(template, name) {
-                    range = document.createRange();
-                    range.selectNodeContents(
-                        template.getElementById("multiple-elements-colliding-" + name));
-                    return range.extractContents();
-                }
+            argumentsProvider.getTemplateArgumentElement = function(name) {
+                range = document.createRange();
+                range.selectNodeContents(
+                    argumentsTemplate.getElementById("multiple-elements-colliding-" + name));
+                return range.extractContents();
             };
 
             return Promise.all([
                 parametersTemplate.initWithHtml(parametersHtml),
                 argumentsTemplate.initWithHtml(argumentsHtml)
             ]).then(function() {
-                var repetition,
-                    side,
+                var side,
                     leftSideElementId,
                     rightSideElementId;
 
-                parametersTemplate.expandParameters(
-                    argumentsTemplate, delegate);
+                parametersTemplate.expandParameters(argumentsProvider);
 
                 side = parametersTemplate.getElementById("leftSide");
                 leftSideElementId = parametersTemplate.getElementId(
@@ -1328,28 +1319,23 @@ describe("reel/template-spec", function() {
         it("should expand a parameter with element and non-colliding objects", function() {
             var parametersHtml = require("reel/template/template-star-parameter.html").content,
                 argumentsHtml = require("reel/template/template-arguments.html").content,
-                delegate,
                 serialization;
 
-            delegate = {
-                getTemplateParameterArgument: function(template, name) {
-                    range = document.createRange();
-                    range.selectNodeContents(
-                        template.getElementById("objects-no-collision"));
-                    return range.extractContents();
-                }
+            argumentsProvider.getTemplateArgumentElement = function(name) {
+                range = document.createRange();
+                range.selectNodeContents(
+                    argumentsTemplate.getElementById("objects-no-collision"));
+                return range.extractContents();
             };
 
             return Promise.all([
                 parametersTemplate.initWithHtml(parametersHtml),
                 argumentsTemplate.initWithHtml(argumentsHtml)
             ]).then(function() {
-                var repetition,
-                    args,
-                    expansionResult;
+                var expansionResult;
 
                 expansionResult = parametersTemplate.expandParameters(
-                    argumentsTemplate, delegate);
+                    argumentsProvider);
 
                 serialization = parametersTemplate.getSerialization();
                 labels = serialization.getSerializationLabels();
@@ -1365,25 +1351,20 @@ describe("reel/template-spec", function() {
                 delegate,
                 serialization;
 
-            delegate = {
-                getTemplateParameterArgument: function(template, name) {
-                    range = document.createRange();
-                    range.selectNodeContents(
-                        template.getElementById("objects-collision"));
-                    return range.extractContents();
-                }
+            argumentsProvider.getTemplateArgumentElement = function(name) {
+                range = document.createRange();
+                range.selectNodeContents(
+                    argumentsTemplate.getElementById("objects-collision"));
+                return range.extractContents();
             };
 
             return Promise.all([
                 parametersTemplate.initWithHtml(parametersHtml),
                 argumentsTemplate.initWithHtml(argumentsHtml)
             ]).then(function() {
-                var repetition,
-                    args,
-                    collisionTable;
+                var collisionTable;
 
-                collisionTable = parametersTemplate.expandParameters(
-                    argumentsTemplate, delegate);
+                parametersTemplate.expandParameters(argumentsProvider);
 
                 serialization = parametersTemplate.getSerialization();
                 labels = serialization.getSerializationLabelsWithElements(
@@ -1396,24 +1377,20 @@ describe("reel/template-spec", function() {
         it("should expand multiple parameters with elements and colliding objects", function() {
             var parametersHtml = require("reel/template/template-parameters.html").content,
                 argumentsHtml = require("reel/template/template-arguments.html").content,
-                delegate,
                 serialization;
 
-            delegate = {
-                getTemplateParameterArgument: function(template, name) {
-                    range = document.createRange();
-                    range.selectNodeContents(
-                        template.getElementById("multiple-objects-" + name));
-                    return range.extractContents();
-                }
+            argumentsProvider.getTemplateArgumentElement = function(name) {
+                range = document.createRange();
+                range.selectNodeContents(
+                    argumentsTemplate.getElementById("multiple-objects-" + name));
+                return range.extractContents();
             };
 
             return Promise.all([
                 parametersTemplate.initWithHtml(parametersHtml),
                 argumentsTemplate.initWithHtml(argumentsHtml)
             ]).then(function() {
-                var repetition,
-                    expansionResult,
+                var expansionResult,
                     labelsCollisions,
                     labels,
                     serializationObject,
@@ -1421,7 +1398,7 @@ describe("reel/template-spec", function() {
                     rightSide;
 
                 expansionResult = parametersTemplate.expandParameters(
-                    argumentsTemplate, delegate);
+                    argumentsProvider);
 
                 serialization = parametersTemplate.getSerialization();
                 serializationObject = serialization.getSerializationObject();

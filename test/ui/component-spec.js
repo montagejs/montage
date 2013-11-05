@@ -864,8 +864,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                     component._element = element;
                     originalArgument = element.querySelector(".section");
 
-                    section = component.getTemplateParameterArgument(template, "section");
-
+                    section = component.getTemplateArgumentElement("section");
 
                     expect(section).not.toBe(originalArgument);
                 });
@@ -889,7 +888,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                     component._ownerDocumentPart.template = template;
                     component._element = element;
 
-                    star = component.getTemplateParameterArgument(template, "*");
+                    star = component.getTemplateArgumentElement("*");
 
                     originalNodes = element.childNodes;
                     starNodes = star.childNodes;
@@ -916,7 +915,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                     component._ownerDocumentPart.template = template;
                     component._element = element;
 
-                    section = component.getTemplateParameterArgument(template, "section");
+                    section = component.getTemplateArgumentElement("section");
 
                     dataArgs = section.querySelectorAll("*[data-arg]");
 
@@ -940,7 +939,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                     component._ownerDocumentPart.template = template;
                     component._element = element;
 
-                    two = component.getTemplateParameterArgument(template, "two");
+                    two = component.getTemplateArgumentElement("two");
 
                     expect(two.className).toBe("two");
                 });
@@ -961,7 +960,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                     component._ownerDocumentPart.template = template;
                     component._element = element;
 
-                    one = component.getTemplateParameterArgument(template, "one");
+                    one = component.getTemplateArgumentElement("one");
 
                     expect(one).toBeDefined();
                 });

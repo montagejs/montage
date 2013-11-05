@@ -403,24 +403,37 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
-    getTemplateParameterArgument: {
-        value: function(template, name) {
-            var element,
+    /**
+     * TemplateArgumentProvider implementation
+     */
+
+    getTemplateArgumentElement: {
+        value: function(argumentName) {
+            var template = this._ownerDocumentPart.template,
+                element,
                 range,
                 argument;
 
-            if (name === "*") {
+            if (argumentName === "*") {
                 element = template.getElementById(this.getElementId());
 
                 range = template.document.createRange();
                 range.selectNodeContents(element);
                 argument = range.cloneContents();
             } else {
-                argument = this._getTemplateDomArgument(name).cloneNode(true);
+                argument = this._getTemplateDomArgument(argumentName).cloneNode(true);
                 argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
             }
 
             return argument;
+        }
+    },
+
+    getTemplateArgumentSerialization: {
+        value: function(elementIds) {
+            var template = this._ownerDocumentPart.template;
+
+            return template._createSerializationWithElementIds(elementIds);
         }
     },
 
