@@ -217,16 +217,17 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
                 serializationString2,
                 labels1,
                 labels2,
-                collisionTable;
+                collisionTable = {},
+                foundCollisions;
 
             labels1 = serialization1.getSerializationLabels();
             labels2 = serialization2.getSerializationLabels();
 
             // Check for name collisions and generate new labels
-            collisionTable = this._createCollisionTable(labels1, labels2);
+            foundCollisions = this._createCollisionTable(labels1, labels2, collisionTable);
 
             // Replace the labels with the new, non-colliding, ones
-            if (collisionTable) {
+            if (foundCollisions) {
                 // Clone serialization2 because we don't want to modify it.
                 serializationString2 = serialization2.getSerializationString();
                 serialization2 = new Serialization()
@@ -276,10 +277,9 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
      * @private
      */
     _createCollisionTable: {
-        value: function(labels1, labels2) {
+        value: function(labels1, labels2, collisionTable) {
             var labeler = new MontageLabeler(),
-                collisionTable = {},
-                hasCollision = false,
+                foundCollisions = false,
                 componentLabel,
                 newLabel,
                 label,
@@ -311,6 +311,7 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
 
                     if (newLabel) {
                         collisionTable[label] = newLabel + ":" + label.slice(ix+1);
+                        foundCollisions = true;
                     } else if (labeler.isLabelDefined(componentLabel)) {
                         // Renaming a label that is a property template is
                         // the same as renaming the component part of the
@@ -321,20 +322,18 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
                             collisionTable[componentLabel] = newLabel;
                         }
                         collisionTable[label] = newLabel + label.slice(ix);
-                        hasCollision = true;
+                        foundCollisions = true;
                     }
                 }
                 // Also check if the label already has a new label, this can
                 // happen if a template property on that component was renamed.
                 else if (labeler.isLabelDefined(label) && !(label in collisionTable)) {
                     collisionTable[label] = labeler.generateObjectLabel({});
-                    hasCollision = true;
+                    foundCollisions = true;
                 }
             }
 
-            if (hasCollision) {
-                return collisionTable;
-            }
+            return foundCollisions;
         }
     }
 });

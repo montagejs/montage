@@ -110,44 +110,47 @@ describe("reel/serialization/serialization-merger-spec", function() {
         it("should find no collisions", function() {
             var labels1 = ["foo"],
                 labels2 = ["bar"],
-                collisionTable;
+                foundCollisions;
 
-            collisionTable = SerializationMerger._createCollisionTable(labels1, labels2);
+            foundCollisions = SerializationMerger._createCollisionTable(labels1, labels2);
 
-            expect(collisionTable).not.toBeDefined();
+            expect(foundCollisions).toBe(false);
         });
 
         it("should find collisions", function() {
             var labels1 = ["foo"],
                 labels2 = ["foo", "bar"],
-                collisionTable;
+                collisionTable = {},
+                foundCollisions,
 
-            collisionTable = SerializationMerger._createCollisionTable(labels1, labels2);
+            foundCollisions = SerializationMerger._createCollisionTable(labels1, labels2, collisionTable);
 
-            expect(collisionTable).toBeDefined();
+            expect(foundCollisions).toBe(true);
             expect(collisionTable.foo).toBeDefined();
         });
 
         it("should find a collision from the template property", function() {
             var labels1 = ["repetition:iteration"],
                 labels2 = ["repetition"],
-                collisionTable;
+                collisionTable = {},
+                foundCollisions,
 
-            collisionTable = SerializationMerger._createCollisionTable(labels1, labels2);
+                foundCollisions = SerializationMerger._createCollisionTable(labels1, labels2, collisionTable);
 
-            expect(collisionTable).toBeDefined();
+            expect(foundCollisions).toBe(true);
             expect(collisionTable.repetition).toBeDefined();
         });
 
         it("should reuse the new label given to the component label", function() {
             var labels1 = ["repetition"],
                 labels2 = ["repetition", "repetition:iteration"],
-                collisionTable,
+                collisionTable = {},
+                foundCollisions,
                 newLabel;
 
-            collisionTable = SerializationMerger._createCollisionTable(labels1, labels2);
+            foundCollisions = SerializationMerger._createCollisionTable(labels1, labels2, collisionTable);
 
-            expect(collisionTable).toBeDefined();
+            expect(foundCollisions).toBe(true);
             newLabel = collisionTable["repetition:iteration"].split(":")[0];
             expect(collisionTable.repetition).toBe(newLabel);
         });
@@ -155,12 +158,13 @@ describe("reel/serialization/serialization-merger-spec", function() {
         it("should rename the component label when the template property is renamed", function() {
             var labels1 = ["repetition:iteration"],
                 labels2 = ["repetition:iteration", "repetition"],
-                collisionTable,
+                collisionTable = {},
+                foundCollisions,
                 newLabel;
 
-            collisionTable = SerializationMerger._createCollisionTable(labels1, labels2);
+            foundCollisions = SerializationMerger._createCollisionTable(labels1, labels2, collisionTable);
 
-            expect(collisionTable).toBeDefined();
+            expect(foundCollisions).toBe(true);
             newLabel = collisionTable["repetition:iteration"].split(":")[0];
             expect(collisionTable.repetition).toBe(newLabel);
         });
@@ -168,23 +172,25 @@ describe("reel/serialization/serialization-merger-spec", function() {
         it("should rename the template property when it finds its component label colides", function() {
             var labels1 = ["repetition"],
                 labels2 = ["repetition:iteration"],
-                collisionTable;
+                collisionTable = {},
+                foundCollisions;
 
-            collisionTable = SerializationMerger._createCollisionTable(labels1, labels2);
+            foundCollisions = SerializationMerger._createCollisionTable(labels1, labels2, collisionTable);
 
-            expect(collisionTable).toBeDefined();
+            expect(foundCollisions).toBe(true);
             expect(collisionTable["repetition:iteration"]).toBeDefined();
         });
 
         it("should rename the component to the same new label the template property got", function() {
             var labels1 = ["repetition"],
                 labels2 = ["repetition:iteration", "repetition"],
-                collisionTable,
+                collisionTable = {},
+                foundCollisions,
                 newLabel;
 
-            collisionTable = SerializationMerger._createCollisionTable(labels1, labels2);
+            foundCollisions = SerializationMerger._createCollisionTable(labels1, labels2, collisionTable);
 
-            expect(collisionTable).toBeDefined();
+            expect(foundCollisions).toBe(true);
             newLabel = collisionTable["repetition:iteration"].split(":")[0];
             expect(collisionTable.repetition).toBe(newLabel);
         });
