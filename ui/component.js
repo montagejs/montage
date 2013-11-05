@@ -361,7 +361,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 node,
                 elementId,
                 serialization,
-                labels;
+                labels,
+                template = this._ownerDocumentPart.template;
 
             candidates = element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "='" + name + "']");
 
@@ -371,12 +372,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             for (var i = 0, candidate; (candidate = candidates[i]); i++) {
                 node = candidate;
                 while ((node = node.parentNode) !== element) {
-                    elementId = this._template.getElementId(node);
+                    elementId = template.getElementId(node);
 
                     // Check if this node is an element of a component.
                     // TODO: Make this operation faster
                     if (elementId) {
-                        serialization = this._template.getSerialization();
+                        serialization = template.getSerialization();
                         labels = serialization.getSerializationLabelsWithElements(
                             elementId);
 

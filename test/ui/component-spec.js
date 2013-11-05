@@ -32,7 +32,8 @@ var Montage = require("montage").Montage,
     TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Component = require("montage/ui/component").Component,
     Serializer = require("montage/core/serialization").Serializer,
-    Template = require("montage/core/template").Template;
+    Template = require("montage/core/template").Template,
+    DocumentPart = require("montage/core/document-part").DocumentPart;
 var Bindings = require("montage/core/bindings").Bindings;
 var MockDOM = require("mocks/dom");
 
@@ -850,7 +851,8 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                         originalArgument;
 
                     element = template.getElementById("comp1");
-                    component._template = template;
+                    component._ownerDocumentPart = new DocumentPart();
+                    component._ownerDocumentPart.template = template;
                     component._element = element;
                     originalArgument = element.querySelector(".section");
 
@@ -875,7 +877,8 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                         starNodes;
 
                     element = template.getElementById("comp2");
-                    component._template = template;
+                    component._ownerDocumentPart = new DocumentPart();
+                    component._ownerDocumentPart.template = template;
                     component._element = element;
 
                     star = component.getTemplateParameterArgument(template, "*");
@@ -901,7 +904,8 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                         dataArgs;
 
                     element = template.getElementById("comp1");
-                    component._template = template;
+                    component._ownerDocumentPart = new DocumentPart();
+                    component._ownerDocumentPart.template = template;
                     component._element = element;
 
                     section = component.getTemplateParameterArgument(template, "section");
@@ -924,7 +928,8 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                         element;
 
                     element = template.getElementById("comp3");
-                    component._template = template;
+                    component._ownerDocumentPart = new DocumentPart();
+                    component._ownerDocumentPart.template = template;
                     component._element = element;
 
                     two = component.getTemplateParameterArgument(template, "two");
@@ -944,7 +949,8 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                         element;
 
                     element = template.getElementById("comp4");
-                    component._template = template;
+                    component._ownerDocumentPart = new DocumentPart();
+                    component._ownerDocumentPart.template = template;
                     component._element = element;
 
                     one = component.getTemplateParameterArgument(template, "one");
