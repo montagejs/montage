@@ -10,11 +10,13 @@ var Montage = require("core/core").Montage,
 var Serialization = Montage.specialize( /** @lends Serialization# */ {
     _serializationString: {value: null},
     _serializationObject: {value: null},
+    _serializationLabels: {value: null},
 
     initWithString: {
         value: function(string) {
             this._serializationString = string;
             this._serializationObject = null;
+            this._serializationLabels = null;
 
             return this;
         }
@@ -24,6 +26,7 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
         value: function(object) {
             this._serializationString = null;
             this._serializationObject = object;
+            this._serializationLabels = null;
 
             return this;
         }
@@ -61,9 +64,13 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
 
     getSerializationLabels: {
         value: function() {
-            var serializationObject = this.getSerializationObject();
+            if (!this._serializationLabels) {
+                this._serializationLabels = Object.keys(
+                    this.getSerializationObject()
+                );
+            }
 
-            return Object.keys(serializationObject);
+            return this._serializationLabels;
         }
     },
 
