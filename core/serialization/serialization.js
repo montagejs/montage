@@ -100,6 +100,18 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
         }
     },
 
+    isAlias: {
+        value: function(label) {
+            var serializationObject = this.getSerializationObject();
+
+            if (serializationObject && label in serializationObject) {
+                return "alias" in serializationObject[label];
+            } else {
+                return false;
+            }
+        }
+    },
+
     getSerializationLabelsWithElements: {
         value: function(elementIds) {
             var inspector = new SerializationInspector(),

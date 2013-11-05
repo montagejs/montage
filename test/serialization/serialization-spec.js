@@ -57,6 +57,35 @@ describe("reel/serialization/serialization-spec", function() {
         });
     });
 
+    describe("isAlias", function() {
+        it("should know that an object is an alias", function() {
+            var objects = {
+                    "one": {
+                        "alias": "@component:propertyName"
+                    },
+                    "component": {}
+                },
+                isAlias;
+
+            serialization.initWithObject(objects);
+            isAlias = serialization.isAlias("one");
+
+            expect(isAlias).toBe(true);
+        });
+
+        it("should know that an object is not an alias", function() {
+            var objects = {
+                    "one": {}
+                },
+                isAlias;
+
+            serialization.initWithObject(objects);
+            isAlias = serialization.isAlias("one");
+
+            expect(isAlias).toBe(false);
+        });
+    });
+
     it("should find the labels of objects with a specific element id", function() {
         var objects = {
                 "one": {
