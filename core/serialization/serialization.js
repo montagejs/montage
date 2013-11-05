@@ -29,6 +29,16 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
         }
     },
 
+    clone: {
+        value: function() {
+            var serialization = new Serialization();
+
+            serialization.initWithString(this.getSerializationString());
+
+            return serialization;
+        }
+    },
+
     getSerializationObject: {
         value: function() {
             if (!this._serializationObject) {

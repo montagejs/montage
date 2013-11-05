@@ -13,6 +13,24 @@ describe("reel/serialization/serialization-spec", function() {
         serialization = new Serialization();
     });
 
+    it("should clone", function() {
+        var objects = {
+                "one": {
+                    "properties": {
+                        "element": {"#": "oneId"}
+                    }
+                }
+            },
+            serializationClone;
+
+        serialization.initWithObject(objects);
+        serializationClone = serialization.clone();
+
+        expect(serializationClone).not.toBe(serialization);
+        expect(serializationClone.getSerializationObject()).not.toBe(serialization.getSerializationObject());
+        expect(serializationClone.getSerializationString()).toBe(serialization.getSerializationString());
+    });
+
     it("should find the labels of objects with a specific element id", function() {
         var objects = {
                 "one": {
