@@ -821,7 +821,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                     throw new Error("Cannot find " + JSON.stringify(switchPath) + ""); // TODO: better error message
                 }
                 self._iterationTemplate = self.innerTemplate.createTemplateFromDomElement(element);
-                self._iterationTemplate.instantiateWithInstances(null, element.ownerDocument);
+                self._iterationTemplate.setInstances(self.innerTemplate._instances);
             } else {
                 //FIXME
                 if (self.innerTemplate.hasParameters()) {
