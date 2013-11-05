@@ -82,6 +82,12 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
         }
     },
 
+    hasSerializationLabel: {
+        value: function(label) {
+            return label in this.getSerializationObject();
+        }
+    },
+
     isExternalObject: {
         value: function(label) {
             var serializationObject = this.getSerializationObject();

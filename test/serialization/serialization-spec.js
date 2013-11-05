@@ -31,6 +31,32 @@ describe("reel/serialization/serialization-spec", function() {
         expect(serializationClone.getSerializationString()).toBe(serialization.getSerializationString());
     });
 
+    describe("hasSerializationLabel", function() {
+        it("should know if a label exists in the serialization", function() {
+            var objects = {
+                    "one": {}
+                },
+                hasLabel;
+
+            serialization.initWithObject(objects);
+            hasLabel = serialization.hasSerializationLabel("one");
+
+            expect(hasLabel).toBe(true);
+        });
+
+        it("should know if a label does not exist in the serialization", function() {
+            var objects = {
+                    "one": {}
+                },
+                hasLabel;
+
+            serialization.initWithObject(objects);
+            hasLabel = serialization.hasSerializationLabel("two");
+
+            expect(hasLabel).toBe(false);
+        });
+    });
+
     it("should find the labels of objects with a specific element id", function() {
         var objects = {
                 "one": {
