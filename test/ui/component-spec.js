@@ -690,6 +690,14 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                 expect(names.length).toBe(2);
             });
 
+            it("should have correct DOM arguments even when they're wrapped by elements", function() {
+                var component = testPage.test.wrappedArguments,
+                    one;
+
+                one = component.extractDomArgument("one");
+                expect(one).toBeDefined();
+            });
+
             it("should satisfy the star parameter when no arguments are given", function() {
                 var templateArguments = {
 
@@ -956,6 +964,48 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                     one = component.getTemplateParameterArgument(template, "one");
 
                     expect(one).toBeDefined();
+                });
+            });
+
+            it("should clone an argument even if it's wrapped by an element", function() {
+                var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = new Template(),
+                    component = new Component();
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var one,
+                        element;
+
+                    element = template.getElementById("comp5");
+                    component._ownerDocumentPart = new DocumentPart();
+                    component._ownerDocumentPart.template = template;
+                    component._element = element;
+
+                    one = component.getTemplateArgumentElement("one");
+
+                    expect(one).toBeDefined();
+                });
+            });
+
+            it("should not clone an argument of a nested component when the component argument is wrapped by an element", function() {
+                var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = new Template(),
+                    component = new Component();
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var two,
+                        element;
+
+                    element = template.getElementById("comp6");
+                    component._ownerDocumentPart = new DocumentPart();
+                    component._ownerDocumentPart.template = template;
+                    component._element = element;
+
+                    two = component.getTemplateArgumentElement("two");
+
+                    expect(two.className).toBe("two");
                 });
             });
         });
