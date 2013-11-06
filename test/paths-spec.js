@@ -243,6 +243,67 @@ describe("paths-spec", function () {
 
     });
 
+    describe("addPathChangeListener on properties changed through bindings", function () {
+
+        var foo,
+            bar,
+            newValue;
+
+        beforeEach(function () {
+            foo = new Montage();
+            foo.value = "originalFoo";
+
+            bar = new Montage();
+            bar.value = "originalBar";
+
+            foo.defineBinding("value", {"<-": "value", source: bar});
+
+            newValue = "newBar";
+        });
+
+        it("should call the specified handler before the change", function () {
+            var originalValue = foo.value;
+            var changeObserver = {
+                handleBeforeChange: function () {}
+            };
+
+            foo.addBeforePathChangeListener("value", changeObserver, "handleBeforeChange");
+
+            //NOTE currently simply adding the listener calls the changeListener
+            // so I'm setting it after the fact, here
+            changeObserver.handleBeforeChange = function (value, path, object) {
+                expect(value).toBe(originalValue);
+                expect(object.getPath(path)).toBe(originalValue);
+            };
+
+            spyOn(changeObserver, "handleBeforeChange").andCallThrough();
+            bar.value = newValue;
+            expect(changeObserver.handleBeforeChange).toHaveBeenCalled();
+        });
+
+        it("should call the specified handler after the change", function () {
+            var changeObserver = {
+                handleChange: function() {}
+            };
+
+
+            foo.addPathChangeListener("value", changeObserver, "handleChange");
+
+            //NOTE currently simply adding the listener calls the changeListener
+            // so I'm setting it after the fact, here
+            changeObserver.handleChange = function (value, path, object) {
+                expect(value).toBe(newValue);
+                expect(object.getPath(path)).toBe(newValue);
+            };
+
+            spyOn(changeObserver, "handleChange").andCallThrough();
+
+            bar.value = newValue;
+            expect(changeObserver.handleChange).toHaveBeenCalled();
+        });
+
+    });
+
     describe("addRangeAtPathChangeListener", function () {
         it("should watch for changes to an array at a path", function () {
             var object = new Montage();
