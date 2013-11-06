@@ -413,6 +413,8 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
                         }
                         collisionTable[label] = newLabel + label.slice(ix);
                         foundCollisions = true;
+                    } else {
+                        labeler.setObjectLabel(null, componentLabel);
                     }
                 }
                 // Also check if the label already has a new label, this can
@@ -420,6 +422,8 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
                 else if (labeler.isLabelDefined(label) && !(label in collisionTable)) {
                     collisionTable[label] = labeler.generateObjectLabel({});
                     foundCollisions = true;
+                } else {
+                    labeler.setObjectLabel(null, label);
                 }
             }
 

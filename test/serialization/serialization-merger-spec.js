@@ -402,6 +402,24 @@ describe("reel/serialization/serialization-merger-spec", function() {
             newLabel = collisionTable["repetition:iteration"].split(":")[0];
             expect(collisionTable.repetition).toBe(newLabel);
         });
+
+        it("should not solve a conflict by using a label that exists in the source labels", function() {
+            var labels1 = ["owner"],
+                labels2 = ["object", "owner"],
+                collisionTable = {};
+
+            SerializationMerger._createCollisionTable(labels1, labels2, collisionTable);
+            expect(collisionTable.owner).not.toBe("object");
+        });
+
+        it("should not solve a conflict by using a template property label that exists in the source labels", function() {
+            var labels1 = ["owner:foo"],
+                labels2 = ["object:foo", "owner:foo"],
+                collisionTable = {};
+
+            SerializationMerger._createCollisionTable(labels1, labels2, collisionTable);
+            expect(collisionTable["owner:foo"]).not.toBe("object:foo");
+        });
     });
 
     xit("template", function() {
