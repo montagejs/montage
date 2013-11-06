@@ -355,15 +355,25 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
-    _getDomArgument: {
-        value: function(element, name) {
+    /**
+     * This function is used to get a Dom Argument out of the origin template
+     * (_ownerDocumentPart) of this component.
+     * It is not meant to be used with a live DOM, its main purpose it to help
+     * the TemplateArgumentProvider implementation.
+     *
+     * @private
+     */
+    _getTemplateDomArgument: {
+        value: function(name) {
             var candidates,
                 node,
+                element,
                 elementId,
                 serialization,
                 labels,
                 template = this._ownerDocumentPart.template;
 
+            element = template.getElementById(this.getElementId());
             candidates = element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "='" + name + "']");
 
             // Make sure that the argument we find is indeed part of element and
@@ -399,14 +409,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 range,
                 argument;
 
-            element = template.getElementById(this.getElementId());
-
             if (name === "*") {
+                element = template.getElementById(this.getElementId());
+
                 range = template.document.createRange();
                 range.selectNodeContents(element);
                 argument = range.cloneContents();
             } else {
-                argument = this._getDomArgument(element, name).cloneNode(true);
+                argument = this._getTemplateDomArgument(name).cloneNode(true);
                 argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
             }
 
