@@ -19,7 +19,8 @@ var Montage = require("montage").Montage,
     drawPerformanceLogger = require("core/logger").logger("Drawing performance"),
     drawLogger = require("core/logger").logger("drawing"),
     defaultEventManager = require("core/event/event-manager").defaultEventManager,
-    Set = require("collections/set");
+    Set = require("collections/set"),
+    Alias = require("core/serialization/alias").Alias;
 
 /**
  * @requires montage/ui/component-description
@@ -434,6 +435,35 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             var template = this._ownerDocumentPart.template;
 
             return template._createSerializationWithElementIds(elementIds);
+        }
+    },
+
+    /**
+     * @param {string} templatePropertyName "<componentLabel>:<propertyName>"
+     * @private
+     */
+    resolveTemplateArgumentTemplateProperty: {
+        value: function(templatePropertyName) {
+            var ix = templatePropertyName.indexOf(":"),
+                // componentName = templatePropertyName.slice(0, ix),
+                propertyName = templatePropertyName.slice(ix),
+                documentPart = this._templateDocumentPart,
+                aliasTemplatePropertyName,
+                aliasComponent,
+                alias;
+
+            if (documentPart) {
+                alias = documentPart.objects[propertyName];
+            }
+
+            if (alias instanceof Alias) {
+                aliasComponent = documentPart.objects[alias.componentName];
+                // Strip the @ prefix
+                aliasTemplatePropertyName = alias.value.slice(1);
+                return aliasComponent.resolveTemplateArgumentTemplateProperty(aliasTemplatePropertyName);
+            } else {
+                return templatePropertyName;
+            }
         }
     },
 

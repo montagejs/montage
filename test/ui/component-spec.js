@@ -33,7 +33,8 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     Serializer = require("montage/core/serialization").Serializer,
     Template = require("montage/core/template").Template,
-    DocumentPart = require("montage/core/document-part").DocumentPart;
+    DocumentPart = require("montage/core/document-part").DocumentPart,
+    Alias = require("montage/core/serialization/alias").Alias;
 var Bindings = require("montage/core/bindings").Bindings;
 var MockDOM = require("mocks/dom");
 
@@ -1258,6 +1259,50 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                 componentA.removeChildComponent(componentB);
                 expect(callOrder[0]).toBe(componentC);
                 expect(callOrder[1]).toBe(componentB);
+            });
+        });
+
+        describe("resolveTemplateArgumentTemplateProperty", function() {
+            it("should resolve to the same name when the template property is not an alias", function() {
+                var component = new Component(),
+                    templatePropertyLabel;
+
+                component._templateDocumentPart = new DocumentPart();
+                component._templateDocumentPart.objects = {
+                    ":cell": {}
+                };
+
+                templatePropertyLabel = component.resolveTemplateArgumentTemplateProperty("component:cell");
+
+                expect(templatePropertyLabel).toBe("component:cell");
+            });
+
+            it("should resolve an alias recursively until it finds a template property that is not an alias", function() {
+                var component = new Component(),
+                    templatePropertyLabel,
+                    foo = new Component(),
+                    bar = new Component();
+
+                component._templateDocumentPart = new DocumentPart();
+                component._templateDocumentPart.objects = {
+                    ":cell": new Alias().init("@foo:j"),
+                    "foo": foo
+                };
+
+                foo._templateDocumentPart = new DocumentPart();
+                foo._templateDocumentPart.objects = {
+                    ":j": new Alias().init("@bar:i"),
+                    "bar": bar
+                };
+
+                bar._templateDocumentPart = new DocumentPart();
+                bar._templateDocumentPart.objects = {
+                    ":i": {}
+                };
+
+                templatePropertyLabel = component.resolveTemplateArgumentTemplateProperty("component:cell");
+
+                expect(templatePropertyLabel).toBe("bar:i");
             });
         });
     });

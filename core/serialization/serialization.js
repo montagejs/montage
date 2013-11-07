@@ -789,6 +789,21 @@ var SerializationExtractor = Montage.specialize( /** @lends SerializationExtract
 
                     if (node.type === "reference") {
                         label = node.data;
+                        // We don't process template properties here, meaning
+                        // that if we have "table" and a reference like
+                        // "@table:cell" the latter will be considered an
+                        // external reference even though the component is in
+                        // scope.
+                        // We do this on purpose because it allow us to process
+                        // all template properties of the serialization without
+                        // having to walk the entire serialization tree looking
+                        // for them.
+                        // If for some reason we need to "correct" this behavior
+                        // then we also need to change the way we resolve
+                        // template properties' alias in
+                        // Template.expandParameters.
+                        // Instead of relying on willMergeObjectWithLabel we
+                        // need to walk the serialization looking for these.
                         if (references.indexOf(label) === -1 &&
                             labels.indexOf(label) === -1) {
                             references.push(label);
