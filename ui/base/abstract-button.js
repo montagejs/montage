@@ -1,38 +1,16 @@
  /*global require, exports*/
-
-/**
-    @module montage/ui/base/abstract-button.reel
-    @requires montage/core/core
-    @requires montage/ui/component
-    @requires montage/ui/native-control
-    @requires montage/composer/press-composer
-*/
 var Montage = require("montage").Montage,
     AbstractControl = require("ui/base/abstract-control").AbstractControl,
     PressComposer = require("composer/press-composer").PressComposer;
 
 /**
+ * @abstract
  * @class AbstractButton
  * @extends AbstractControl
  * @fires AbstractButton#action
  * @fires AbstractButton#longAction
  */
 var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @lends AbstractButton# */ {
-
-    /**
-     * Dispatched when the button is activated through a mouse click, finger tap,
-     * or when focused and the spacebar is pressed.
-     * @event action
-     * @memberof AbstractButton
-     * @property {Dict} detail - The detail object as defined in  {@link AbstractControl#detail}
-     */
-
-    /**
-     * Dispatched when the button is pressed for a period of time, set by  {@link AbstractButton#holdThreshold}.
-     * @event longAction
-     * @memberof AbstractButton
-     * @property {Dict} detail - The detail object as defined in {@link AbstractControl#detail}
-     */
 
     /**
      * @private
@@ -71,7 +49,6 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
      * Specifies whether the button should receive focus or not.
      * @type {boolean}
      * @default false
-     * @event longpress
      */
     preventFocus: {
         get: function () {
@@ -145,10 +122,10 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     },
 
     /**
-        The amount of time in milliseconds the user must press and hold the button a `longAction` event is dispatched. The default is 1 second.
-        @type {number}
-        @default 1000
-    */
+     * The amount of time in milliseconds the user must press and hold the button a {@link AbstractControl#longAction} event is dispatched. The default is 1 second.
+     * @type {number}
+     * @default 1000
+     */
     holdThreshold: {
         value: 1000
     },
@@ -357,3 +334,19 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
         }
     }
 });
+/**
+ * Dispatched when the button is activated through a mouse click, finger tap,
+ * or when focused and the space bar key is pressed.
+ * @event action
+ * @type {object}
+ * @memberof AbstractButton
+ * @property {Dict} detail - The detail object as defined in {@link AbstractControl#detail}
+ */
+
+/**
+ * Dispatched when the button is pressed for a period of time, set by {@link AbstractButton#holdThreshold}.
+ * @event longAction
+ * @type {object}
+ * @memberof AbstractButton
+ * @property {Dict} detail - The detail object as defined in {@link AbstractControl#detail}
+ */
