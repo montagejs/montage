@@ -445,7 +445,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     resolveTemplateArgumentTemplateProperty: {
         value: function(templatePropertyName) {
             var ix = templatePropertyName.indexOf(":"),
-                // componentName = templatePropertyName.slice(0, ix),
+                // componentLabel = templatePropertyName.slice(0, ix),
                 propertyName = templatePropertyName.slice(ix),
                 documentPart = this._templateDocumentPart,
                 aliasTemplatePropertyName,
@@ -457,7 +457,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             }
 
             if (alias instanceof Alias) {
-                aliasComponent = documentPart.objects[alias.componentName];
+                aliasComponent = documentPart.objects[alias.componentLabel];
                 // Strip the @ prefix
                 aliasTemplatePropertyName = alias.value.slice(1);
                 return aliasComponent.resolveTemplateArgumentTemplateProperty(aliasTemplatePropertyName);

@@ -58,13 +58,13 @@ exports.Alias = Montage.specialize({ /** @lends Alias# */
 
             this._value = value;
 
-            this._componentName = split[1];
+            this._componentLabel = split[1];
             this._propertyName = split[2];
             this._path = split[3];
         }
     },
 
-    _componentName: {
+    _componentLabel: {
         value: null
     },
 
@@ -77,9 +77,9 @@ exports.Alias = Montage.specialize({ /** @lends Alias# */
      * @type {string}
      * @readonly
      */
-    componentName: {
+    componentLabel: {
         get: function() {
-            return this._componentName;
+            return this._componentLabel;
         }
     },
 

@@ -344,7 +344,7 @@ describe("serialization/montage-deserializer-spec", function() {
 
                 expect(Object.getPrototypeOf(alias)).toBe(Alias.prototype);
                 expect(alias.value).toBe("@component:propertyName.path");
-                expect(alias.componentName).toBe("component");
+                expect(alias.componentLabel).toBe("component");
                 expect(alias.propertyName).toBe("propertyName");
                 expect(alias.path).toBe(".path");
             });
