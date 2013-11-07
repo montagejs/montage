@@ -563,7 +563,11 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 this._element.removeEventListener("touchmove", this, false);
             } else {
                 document.removeEventListener("mouseup", this, true);
-                document.removeEventListener("mousemove", this, true);
+                if (this._isFirstMove) {
+                    this._element.removeEventListener("mousemove", this, true);
+                } else {
+                    document.removeEventListener("mousemove", this, true);
+                }
             }
 
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
