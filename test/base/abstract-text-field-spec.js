@@ -213,13 +213,13 @@ describe("test/base/abstract-text-field-spec", function () {
             var listeners,
                 em = aTextField.eventManager;
 
-            listeners = em.registeredEventListenersForEventType_onTarget_("keyPress", aTextField);
+            listeners = em.registeredEventListenersForEventType_onTarget_("keyPress", aTextField._keyComposer);
 
             expect(listeners).toBeNull();
 
             aTextField.prepareForActivationEvents();
 
-            listeners = em.registeredEventListenersForEventType_onTarget_("keyPress", aTextField);
+            listeners = em.registeredEventListenersForEventType_onTarget_("keyPress", aTextField._keyComposer);
             expect(listeners[aTextField.uuid].listener).toBe(aTextField);
         });
 

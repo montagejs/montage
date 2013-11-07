@@ -85,6 +85,26 @@ TestPageLoader.queueTest("key-composer-test/key-composer-test", function(testPag
                     expect(test.keyReleaseCalled).toBeFalsy();
                 });
             });
+
+            describe("interacting with activeTarget", function() {
+                it("should fire window key events on composers of the activeTarget", function() {
+                    var target = test.example.element,
+                        listener1 = testPage.addListener(test.key_composer1, null, "keyPress"),
+                        listener2 = testPage.addListener(test.key_composer1, null, "longKeyPress"),
+                        listener3 = testPage.addListener(test.key_composer1, null, "keyRelease");
+
+                    testPage.window.montageRequire("core/event/event-manager").defaultEventManager.activeTarget = test.example;
+
+                    testPage.keyEvent({target: testPage.window, modifiers: command, charCode: 0, keyCode: "J".charCodeAt(0)}, "keydown");
+                    waits(1050);
+                    runs(function(){
+                        testPage.keyEvent({target: testPage.window, modifiers: command, charCode: 0, keyCode: "J".charCodeAt(0)}, "keyup");
+                        expect(listener1).toHaveBeenCalled();
+                        expect(listener2).toHaveBeenCalled();
+                        expect(listener3).toHaveBeenCalled();
+                    });
+                });
+            });
         });
     });
 });
