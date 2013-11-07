@@ -1418,6 +1418,130 @@ describe("reel/template-spec", function() {
                     .toBe("@" + labelsCollisions.leftSide + ".value");
             });
         });
+
+        it("should resolve a direct template property alias", function() {
+            var parametersHtml = require("reel/template/template-properties-parameters.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                serialization;
+
+            argumentsProvider.getTemplateArgumentElement = function() {
+                range = document.createRange();
+                range.selectNodeContents(
+                    argumentsTemplate.getElementById("template-properties"));
+                return range.extractContents();
+            };
+
+            argumentsProvider.resolveTemplateArgumentTemplateProperty = function() {
+                return "repetition:iteration";
+            };
+
+            return Promise.all([
+                parametersTemplate.initWithHtml(parametersHtml),
+                argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var serializationObject;
+
+                parametersTemplate.expandParameters(argumentsProvider);
+                serialization = parametersTemplate.getSerialization();
+                serializationObject = serialization.getSerializationObject();
+
+                expect(serializationObject.iterationItem.bindings).toEqual({
+                    "value": {"<-": "@repetition:iteration"}
+                });
+            });
+        });
+
+        it("should reject an unknown label to solve the template property alias", function() {
+            var parametersHtml = require("reel/template/template-properties-parameters.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                serialization;
+
+            argumentsProvider.getTemplateArgumentElement = function() {
+                range = document.createRange();
+                range.selectNodeContents(
+                    argumentsTemplate.getElementById("template-properties"));
+                return range.extractContents();
+            };
+
+            argumentsProvider.resolveTemplateArgumentTemplateProperty = function() {
+                return "unknown:iteration";
+            };
+
+            return Promise.all([
+                    parametersTemplate.initWithHtml(parametersHtml),
+                    argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                expect(function() {
+                    parametersTemplate.expandParameters(argumentsProvider);
+                }).toThrow();
+            });
+        });
+
+        it("should resolve to another template property alias", function() {
+            var parametersHtml = require("reel/template/template-properties-parameters.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                serialization;
+
+            argumentsProvider.getTemplateArgumentElement = function() {
+                range = document.createRange();
+                range.selectNodeContents(
+                    argumentsTemplate.getElementById("template-properties"));
+                return range.extractContents();
+            };
+
+            argumentsProvider.resolveTemplateArgumentTemplateProperty = function() {
+                return "list:iteration";
+            };
+
+            return Promise.all([
+                    parametersTemplate.initWithHtml(parametersHtml),
+                    argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var serializationObject;
+
+                parametersTemplate.expandParameters(argumentsProvider);
+                serialization = parametersTemplate.getSerialization();
+                serializationObject = serialization.getSerializationObject();
+
+                expect(serializationObject.iterationItem.bindings).toEqual({
+                    "value": {"<-": "@list:iteration"}
+                });
+            });
+        });
+
+        it("should resolve to the same label (not an alias)", function() {
+            var parametersHtml = require("reel/template/template-properties-parameters.html").content,
+                argumentsHtml = require("reel/template/template-arguments.html").content,
+                serialization,
+                templatePropertyAlias;
+
+            argumentsProvider.getTemplateArgumentElement = function() {
+                range = document.createRange();
+                range.selectNodeContents(
+                    argumentsTemplate.getElementById("template-properties"));
+                return range.extractContents();
+            };
+
+            argumentsProvider.resolveTemplateArgumentTemplateProperty = function(name) {
+                templatePropertyAlias = name;
+                return name;
+            };
+
+            return Promise.all([
+                    parametersTemplate.initWithHtml(parametersHtml),
+                    argumentsTemplate.initWithHtml(argumentsHtml)
+            ]).then(function() {
+                var serializationObject;
+
+                parametersTemplate.expandParameters(argumentsProvider);
+                serialization = parametersTemplate.getSerialization();
+                serializationObject = serialization.getSerializationObject();
+
+                expect(serializationObject.iterationItem.bindings).toEqual({
+                    "value": {"<-": "@" + templatePropertyAlias}
+                });
+            });
+        });
     });
 
     describe("cache", function() {
