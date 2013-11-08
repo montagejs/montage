@@ -9,23 +9,31 @@
         "prototype": "ui/repetition.reel",
         "properties": {
             "element": {"#": "repetition"},
-            "switchPath": "'user'"
+            "switchPath": "'user'",
+            "content": [
+                {"type": "admin", "name": "An Admin"},
+                {"type": "user", "name": "A User"}
+            ]
         }
     },
 
     "user": {
         "prototype": "ui/text.reel",
         "properties": {
-            "element": {"#": "user"},
-            "value": "user"
+            "element": {"#": "user"}
+        },
+        "bindings": {
+            "value": {"<-": "@repetition.content.some{type=='user'}.name"}
         }
     },
 
     "admin": {
         "prototype": "ui/text.reel",
         "properties": {
-            "element": {"#": "admin"},
-            "value": "admin"
+            "element": {"#": "admin"}
+        },
+        "bindings": {
+            "value": {"<-": "@repetition.content.some{type=='admin'}.name"}
         }
     }
 }
