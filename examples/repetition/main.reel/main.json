@@ -4,24 +4,13 @@
             "element": {"#": "component"}
         }
     },
-    
+
     "repetition": {
         "prototype": "ui/repetition.reel",
         "properties": {
             "element": {"#": "repetition"},
-            "switchPath": "'user'",
-            "content": [
-                {"type": "admin", "name": "An Admin"},
-                {"type": "user", "name": "A User"}
-            ]
-        }
-    },
-
-    "user": {
-        "prototype": "ui/text.reel",
-        "properties": {
-            "element": {"#": "user"},
-            "value": "user"
+            "switchPath": "'admin'",
+            "content": [{"name": "John"}, {"name": "Mary"}]
         }
     },
 
@@ -31,7 +20,17 @@
             "element": {"#": "admin"}
         },
         "bindings": {
-            "value": {"<-": "@repetition.content.some{type=='admin'}.name"}
+            "value": {"<-": "@repetition.objectAtCurrentIteration.name"}
+        }
+    },
+
+    "user": {
+        "prototype": "ui/text.reel",
+        "properties": {
+            "element": {"#": "user"}
+        },
+        "bindings": {
+            "value": {"<-": "@repetition.objectAtCurrentIteration.name"}
         }
     }
 }
