@@ -20,10 +20,8 @@
     "user": {
         "prototype": "ui/text.reel",
         "properties": {
-            "element": {"#": "user"}
-        },
-        "bindings": {
-            "value": {"<-": "@repetition.content.some{type=='user'}.name"}
+            "element": {"#": "user"},
+            "value": "user"
         }
     },
 
