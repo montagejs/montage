@@ -1,0 +1,31 @@
+{
+    "owner": {
+        "properties": {
+            "element": {"#": "component"}
+        }
+    },
+    
+    "repetition": {
+        "prototype": "ui/repetition.reel",
+        "properties": {
+            "element": {"#": "repetition"},
+            "switchPath": "'user'"
+        }
+    },
+
+    "user": {
+        "prototype": "ui/text.reel",
+        "properties": {
+            "element": {"#": "user"},
+            "value": "user"
+        }
+    },
+
+    "admin": {
+        "prototype": "ui/text.reel",
+        "properties": {
+            "element": {"#": "admin"},
+            "value": "admin"
+        }
+    }
+}
