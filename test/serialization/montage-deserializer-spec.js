@@ -91,14 +91,10 @@ describe("serialization/montage-deserializer-spec", function() {
                 },
                 serializationString = JSON.stringify(serialization);
 
-            deserializer.init(
-                serializationString, require);
+            deserializer.init(serializationString, require);
 
             return deserializer.deserializeObject().then(function(root) {
                 expect(root.oneprop.prop).toBe(42);
-            }).fail(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
             });
         });
 
@@ -351,6 +347,112 @@ describe("serialization/montage-deserializer-spec", function() {
                 expect(alias.componentName).toBe("component");
                 expect(alias.propertyName).toBe("propertyName");
                 expect(alias.path).toBe(".path");
+            });
+        });
+    });
+
+    describe("Template properties deserialization", function() {
+        it("should deserialize a template property as an alias", function() {
+            var serialization = {
+                    ":templateProperty": {
+                        "alias": "@component:propertyName"
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(serializationString, require);
+
+            return deserializer.deserialize()
+            .then(function() {
+                // promise needs to return undefined
+            });
+        });
+
+        it("should not deserialize a template property as an external object", function() {
+            var serialization = {
+                    ":templateProperty": {}
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(serializationString, require);
+
+            return deserializer.deserialize()
+            .then(function() {
+                expect("deserialization").toBe("failed");
+            }).fail(function() {
+                // it should fail
+            });
+        });
+
+        it("should not deserialize a montage object as a template property", function() {
+            var serialization = {
+                    ":templateProperty": {
+                        "prototype": "montage/ui/component"
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(serializationString, require);
+
+            return deserializer.deserialize()
+            .then(function() {
+                expect("deserialization").toBe("failed");
+            }).fail(function() {
+                // it should fail
+            });
+        });
+
+        it("should not deserialize a value as a template property", function() {
+            var serialization = {
+                    ":templateProperty": {
+                        "value": 42
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(serializationString, require);
+
+            return deserializer.deserialize()
+            .then(function() {
+                expect("deserialization").toBe("failed");
+            }).fail(function() {
+                // it should fail
+            });
+        });
+
+        it("should not deserialize a regexp as a template property", function() {
+            var serialization = {
+                    ":templateProperty": {
+                        "/": {"source": "regexp"}
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(serializationString, require);
+
+            return deserializer.deserialize()
+            .then(function() {
+                expect("deserialization").toBe("failed");
+            }).fail(function() {
+                // it should fail
+            });
+        });
+
+        it("should not deserialize a literal object as a template property", function() {
+            var serialization = {
+                    ":templateProperty": {
+                        "value": {}
+                    }
+                },
+                serializationString = JSON.stringify(serialization);
+
+            deserializer.init(serializationString, require);
+
+            return deserializer.deserialize()
+            .then(function() {
+                expect("deserialization").toBe("failed");
+            }).fail(function() {
+                // it should fail
             });
         });
     });

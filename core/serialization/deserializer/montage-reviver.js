@@ -115,6 +115,35 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
         }
     },
 
+    _checkLabel: {
+        value: function(label, isTemplateProperty) {
+            if (isTemplateProperty && label[0] !== ":") {
+                return new Error("Aliases can only be defined in template properties (start with a colon (:)), \"" + label + "\".");
+            } else if (!isTemplateProperty && label[0] === ":") {
+                return new Error("Only aliases are allowed as template properties (start with a colon (:), \"" + label + "\".");
+            }
+        }
+    },
+
+    reviveRootObject: {
+        value: function(value, context, label) {
+            var error,
+                isAlias = "alias" in value;
+
+            // Only aliases are allowed as template properties, everything else
+            // should be rejected as an error.
+            error = this._checkLabel(label, isAlias);
+            if (error) {
+                return Promise.reject(error);
+            }
+
+            // TODO: this.super returns noop here in some situations (just run
+            // montage-deserializer-spec to reproduce
+            //return this.super(value, context, label);
+            return Reviver.prototype.reviveRootObject.apply(this, arguments);
+        }
+    },
+
     reviveElement: {
         value: function(value, context, label) {
             var elementId = value["#"],
