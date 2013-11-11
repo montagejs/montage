@@ -16,6 +16,10 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
         }
     },
 
+    stealChildrenPointer: {
+        value: true
+    },
+
     _scrollingMode: {
         value: "linear"
     },
