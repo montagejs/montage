@@ -811,13 +811,29 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     _setupIterationTemplate: {
         value: function () {
-            var self = this;
+            var self = this,
+                iterationTemplate,
+                serialization,
+                serializationObject,
+                label;
+
+            // We need to clone the innerTemplate because this repetition
+            // might be used in different contexts and with different template
+            // arguments making it having diferent external objects in its
+            // instances.
+            iterationTemplate = this.innerTemplate.clone();
+            serialization = iterationTemplate.getSerialization();
+            serializationObject = serialization.getSerializationObject();
+            label = Montage.getInfoForObject(this).label;
+
+            this._iterationLabel = label + ":iteration";
+            serializationObject[this._iterationLabel] = {};
+            iterationTemplate.setObjects(serializationObject);
+
+            self._iterationTemplate = iterationTemplate;
 
             if (self.innerTemplate.hasParameters()) {
-                self._iterationTemplate = self.innerTemplate.clone();
                 self._expandIterationTemplateParameters();
-            } else {
-                self._iterationTemplate = self.innerTemplate;
             }
 
             // Erase the initial child component trees. The initial document
@@ -959,6 +975,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     // Instantiating an iteration template:
     // ----
 
+    _iterationLabel: {
+        value: null
+    },
     /**
      * We can only create one iteration at a time because it is an asynchronous
      * operation and the "repetition.currentIteration" property may be bound
@@ -986,11 +1005,20 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
             this._iterationCreationPromise = this._iterationCreationPromise
             .then(function() {
-                var _document = self.element.ownerDocument;
+                var _document = self.element.ownerDocument,
+                    instances,
+                    promise;
 
                 self.currentIteration = iteration;
 
-                var promise = self._iterationTemplate.instantiate(_document)
+                // We need to extend the instances of the template to add the
+                // iteration object that is specific to each iteration template
+                // instance.
+                instances = self._iterationTemplate.getInstances();
+                instances = Object.create(instances);
+                instances[self._iterationLabel] = iteration;
+
+                promise = self._iterationTemplate.instantiateWithInstances(instances, _document)
                 .then(function (part) {
                     part.loadComponentTree().then(function() {
                         iteration._fragment = part.fragment;
