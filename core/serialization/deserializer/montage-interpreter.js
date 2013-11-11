@@ -87,6 +87,12 @@ var MontageContext = Montage.specialize.call(Context, {
         }
     },
 
+    hasObject: {
+        value: function(label) {
+            return label in this._serialization;
+        }
+    },
+
     getRequire: {
         value: function () {
             return this._require;
