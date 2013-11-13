@@ -440,7 +440,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
         value: function() {
             var dismissEvent = document.createEvent("CustomEvent");
 
-            dismissEvent.initCustomEvent("dismiss", true, true);
+            dismissEvent.initCustomEvent("dismiss", true, true, null);
 
             this.dispatchEvent(dismissEvent);
         }
