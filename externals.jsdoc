@@ -1,0 +1,53 @@
+/**
+ * Provided by Montage.
+ * @external AbstractButton
+ * @see http://montagejs.org/api/AbstractButton.html
+ */
+
+/**
+ * Provided by Montage.
+ * @external Text
+ * @see http://montagejs.org/api/Text.html
+ */
+
+/**
+ * Provided by Montage.
+ * @external AbstractTextField
+ * @see http://montagejs.org/api/AbstractTextField.html
+ */
+
+/**
+ * Provided by Montage.
+ * @external AbstractImage
+ * @see http://montagejs.org/api/AbstractImage.html
+ */
+
+/**
+ * Provided by Montage.
+ * @external AbstractCheckbox
+ * @see http://montagejs.org/api/AbstractCheckbox.html
+ */
+
+/**
+ * Provided by Montage.
+ * @external AbstractNumberField
+ * @see http://montagejs.org/api/AbstractNumberField.html
+ */
+
+/**
+ * Provided by Montage.
+ * @external AbstractRadioButton
+ * @see http://montagejs.org/api/AbstractRadioButton.html
+ */
+
+/**
+ * Provided by Montage.
+ * @external AbstractTextArea
+ * @see http://montagejs.org/api/AbstractTextArea.html
+ */
+
+/**
+ * Provided by Montage.
+ * @external AbstractSelect
+ * @see http://montagejs.org/api/AbstractSelect.html
+ */
