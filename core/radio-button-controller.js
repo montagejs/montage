@@ -1,7 +1,16 @@
 var Montage = require("montage").Montage,
     RangeController = require("core/range-controller").RangeController;
 
-exports.RadioButtonController = Montage.specialize( {
+/**
+ * The radio button controller intermediates between a set of options and their 
+ * visual representation as radio buttons. The controller maintains the 
+ * invariant that only one radio button at a time may be selected and provides 
+ * a value property with the currently-selected option.
+ *
+ * @class RadioButtonController
+ * @extends Montage
+ */
+exports.RadioButtonController = Montage.specialize(/** @lends RadioButtonController# */ {
 
     _radioButtons: {
         value: null
@@ -11,6 +20,10 @@ exports.RadioButtonController = Montage.specialize( {
         value: null
     },
 
+    /**
+     * The list of possible options.
+     * @type Array.<Object>
+     */
     content: {
         get: function () {
             return this.getPath("contentController.content");
@@ -25,6 +38,10 @@ exports.RadioButtonController = Montage.specialize( {
         value: null
     },
 
+    /**
+     * The radio button component corresponding to the currently-selected option.
+     * @type {Component|null}
+     */
     selectedRadioButton: {
         value: null
     },
@@ -33,6 +50,9 @@ exports.RadioButtonController = Montage.specialize( {
         value: null
     },
 
+    /** 
+     * The currently-selected option.
+    */
     value: {
         set: function(value) {
             if (this._value !== value) {
@@ -72,6 +92,11 @@ exports.RadioButtonController = Montage.specialize( {
         }
     },
 
+    /**
+     * Add a radio button to be managed by this controller.
+     * @param {RadioButton} radioButton
+     * @returns {undefined}
+     */
     registerRadioButton: {
         value: function(radioButton) {
             if (this._radioButtons.indexOf(radioButton) === -1) {
@@ -81,6 +106,11 @@ exports.RadioButtonController = Montage.specialize( {
         }
     },
 
+    /**
+     * Remove a radio button from being managed by this controller.
+     * @param {RadioButton} radioButton
+     * @returns {undefined}
+     */
     unregisterRadioButton: {
         value: function(radioButton) {
             var ix = this._radioButtons.indexOf(radioButton);
