@@ -115,6 +115,32 @@ describe("core/range-controller-spec", function() {
                     rangeController.selection = [0, 1];
                     expect(rangeController.selection).toEqual([1]);
                 });
+
+                it("results in correct calls to range change listeners", function () {
+                    var spy = jasmine.createSpy();
+                    rangeController.selection.addRangeChangeListener(spy);
+
+                    rangeController.selection.add(2);
+
+                    expect(spy).toHaveBeenCalled();
+                    var args = spy.mostRecentCall.args;
+                    expect(args[0]).toEqual([2]);
+                    expect(args[1]).toEqual([0]);
+                    expect(args[2]).toEqual(0);
+                });
+
+                it("correctly updates another RangeController's content", function () {
+                    rangeController.selection = [1];
+
+                    // from Repetition#content setter
+                    var object = new RangeController().initWithContent(rangeController.selection);
+                    expect(object.organizedContent).toEqual([1]);
+
+                    rangeController.selection.push(2);
+
+                    expect(rangeController.selection).toEqual([2]);
+                    expect(object.organizedContent).toEqual([2]);
+                });
             });
 
             describe("when true", function () {
