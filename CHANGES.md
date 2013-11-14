@@ -1,3 +1,21 @@
+### v0.13.8
+
+-  **Montage**
+
+   Remove reference to alpha state in readme.
+
+### v0.13.7
+
+-  **Montage**
+
+   FRB and Collections are up-reved to address an issue in Chrome 30's introduction of ES6 Array methods.
+
+-  **PressComposer**
+
+   Fix issue with capturing the pointer in touch to make nested composers work better.
+   PressComposer now only works with a one touch press gesture.
+   Removed touch listeners on correct phase to stop leaking listeners.
+
 ### v0.13.6
 
 -  **Montage**
