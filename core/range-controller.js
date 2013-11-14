@@ -1,5 +1,4 @@
 var Montage = require("montage").Montage;
-var Promise = require("core/promise").Promise;
 var GenericCollection = require("collections/generic-collection");
 
 // The content controller is responsible for determining which content from a
@@ -48,9 +47,6 @@ var GenericCollection = require("collections/generic-collection");
  */
 var RangeController = exports.RangeController = Montage.specialize( /** @lends RangeController# */ {
 
-    /**
-     * @private
-     */
     constructor: {
         value: function RangeController() {
             var self = this;
@@ -133,6 +129,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Whether to reverse the order of the sorted content.
+     * @type {boolean}
      */
     reversed: {value: null},
 
@@ -140,6 +137,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * An FRB expression that determines how to filter content like
      * "name.startsWith('A')" to see only names starting with 'A'.  If the
      * <code>filterPath</code> is null, all content is accepted.
+     * @type {string}
      */
     filterPath: {value: null},
 
@@ -155,6 +153,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * binding (indirectly) to the scroll offset of a large list.
      * If <code>start</code> or <code>length</code> is null, all content is
      * accepted.
+     * @type {(number|null)}
      */
     start: {value: null},
 
@@ -163,6 +162,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * (indirectly) to the scroll height.
      * If <code>start</code> or <code>length</code> is null, all content is
      * accepted.
+     * @type {(number|null)}
      */
     length: {value: null},
 
@@ -174,6 +174,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * Whether to select new content automatically.
      *
      * Off by default.
+     * @type {boolean}
      */
     selectAddedContent: {value: false},
     // TODO make this work
@@ -183,6 +184,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * <code>organizedContent</code>.
      *
      * Off by default.
+     * @type {boolean}
      */
     deselectInvisibleContent: {value: false},
 
@@ -192,6 +194,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * knobs change.
      *
      * Off by default.
+     * @type {boolean}
      */
     clearSelectionOnOrderChange: {value: false},
 
@@ -200,6 +203,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * removed from the selection.
      *
      * Off by default.
+     * @type {boolean}
      */
     avoidsEmptySelection: {value: false},
 
@@ -208,6 +212,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * new selection is made.
      *
      * Off by default.
+     * @type {boolean}
      */
     multiSelect: {value: false},
 
@@ -225,6 +230,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     /**
      * An array incrementally projected from <code>content</code> through sort,
      * reversed, filter, visibleIndexes, start, and length.
+     * @type {Array.<Object>}
      */
     organizedContent: {value: null},
 
@@ -232,6 +238,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * An array of iterations corresponding to each of the values in
      * <code>organizedContent</code>, providing an interface for getting or
      * setting whether each is selected.
+     * @type {Array.<Iteration>}
      */
     iterations: {value: null},
 
@@ -277,7 +284,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
         }
     },
 
-    /*
+    /**
      * A managed interface for removing values from the selection, accounting
      * for <code>avoidsEmptySelection</code>.
      * You can however directly manipulate the selection, but that will update
@@ -292,7 +299,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
         }
     },
 
-    /*
+    /**
      * A managed interface for clearing the selection, accounting for
      * <code>avoidsEmptySelection</code>.
      * You can however directly manipulate the selection, but that will update
@@ -311,7 +318,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * Proxies adding content to the underlying collection, accounting for
      * <code>selectAddedContent</code>.
      * @param value
-     * @returns whether the value was added
+     * @return {boolean} whether the value was added
      */
     add: {
         value: function (value) {
@@ -332,7 +339,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * Proxies pushing content to the underlying collection, accounting for
      * <code>selectAddedContent</code>.
      * @param ...values
-     * @returns whether the value was added
+     * @return {boolean} whether the value was added
      */
     push: {
         value: function () {
@@ -346,7 +353,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Proxies popping content from the underlying collection.
-     * @returns the popped values
+     * @return the popped values
      */
     pop: {
         value: function () {
@@ -356,7 +363,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Proxies shifting content from the underlying collection.
-     * @returns the shifted values
+     * @return the shifted values
      */
     shift: {
         value: function () {
@@ -368,7 +375,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * Proxies unshifting content to the underlying collection, accounting for
      * <code>selectAddedContent</code>.
      * @param ...values
-     * @returns whether the value was added
+     * @return {boolean} whether the value was added
      */
     unshift: {
         value: function () {
@@ -383,6 +390,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     /**
      * Proxies splicing values into the underlying collection.  Accounts for
      * <code>selectAddedContent</code>
+     * @return the resulting content
      */
     splice: {
         value: function () {
@@ -397,6 +405,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     /**
      * Proxies swapping values in the underlying collection.  Accounts for
      * <code>selectAddedContent</code>
+     * @return the resulting content
      */
     swap: {
         value: function (index, length, values) {
@@ -417,6 +426,11 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
         }
     },
 
+    /**
+     * Does the value exist in the content?
+     * @param {object} the value to test for
+     * @return {boolean}
+     */
     has: {
         value: function(value) {
             if (this.content) {
@@ -429,6 +443,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Proxies adding each value into the underlying collection.
+     * @param {...object} values
      */
     addEach: {
         value: GenericCollection.prototype.addEach
@@ -436,6 +451,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Proxies deleting each value out from the underlying collection.
+     * @param {...object} values
      */
     deleteEach: {
         value: GenericCollection.prototype.deleteEach
@@ -596,7 +612,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
         }
     }
 
-}, {
+}, /** @lends RangeController. */ {
 
     blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
 
