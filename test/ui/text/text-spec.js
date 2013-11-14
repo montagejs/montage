@@ -11,7 +11,7 @@ TestPageLoader.queueTest("text-test", function(testPage) {
     describe("ui/text/text-spec", function() {
 
         describe("Text", function() {
-            it("wipes out it's content in initialization", function() {
+            it("wipes out its content in initialization", function() {
                 expect(testPage.getElementById("bar")).toBeNull();
             });
         });

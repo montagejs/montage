@@ -117,19 +117,24 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
         }
     },
 
-    /**
-     Handle press event from press composer
-     */
-    handlePress: {
-        value: function(/* event */) {
-            this.active = false;
-
+    check: {
+        value: function() {
             if (!this.enabled || this.checked) {
                 return;
             }
 
             this.dispatchActionEvent();
             this.checked = true;
+        }
+    },
+
+    /**
+     Handle press event from press composer
+     */
+    handlePress: {
+        value: function(/* event */) {
+            this.active = false;
+            this.check();
         }
     },
 
@@ -149,6 +154,12 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
             this._pressComposer.addEventListener("pressStart", this, false);
             this._pressComposer.addEventListener("press", this, false);
             this._pressComposer.addEventListener("pressCancel", this, false);
+        }
+    },
+
+    activate: {
+        value: function() {
+            this.check();
         }
     }
 });

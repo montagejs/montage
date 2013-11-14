@@ -105,6 +105,17 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
         }
     },
 
+    toggleChecked: {
+        value: function() {
+            if (!this.enabled) {
+                return;
+            }
+
+            this.dispatchActionEvent();
+            this.checked = !this.checked;
+        }
+    },
+
     handlePressStart: {
         value: function(event) {
             this.active = true;
@@ -123,13 +134,7 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
     handlePress: {
         value: function(/* event */) {
             this.active = false;
-
-            if (!this.enabled) {
-                return;
-            }
-
-            this.dispatchActionEvent();
-            this.checked = !this.checked;
+            this.toggleChecked();
         }
     },
 
@@ -149,6 +154,12 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
             this._pressComposer.addEventListener("pressStart", this, false);
             this._pressComposer.addEventListener("press", this, false);
             this._pressComposer.addEventListener("pressCancel", this, false);
+        }
+    },
+
+    activate: {
+        value: function() {
+            this.toggleChecked();
         }
     }
 });
