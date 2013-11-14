@@ -1,3 +1,66 @@
+### v1.0
+
+-  **Montage**
+
+    Better JSDoc annotations.
+   `super()` methods are now cached for better performance.
+   `addRangeAtPathChangeListener()` is more tolerant changes along the path
+
+-  **Target**
+
+   dispatchEvent() now return a boolean to signify whether or not the defaults were prevented.
+
+-  **Component**
+
+   Some cleanup to the component's draw list handling.
+
+-  **Template**
+
+   Better handling of css loading.
+   Better handling of errors in deserialization.
+
+-  **Blueprint**
+
+   Added event blueprints.
+
+-  **KeyComposer**
+
+   Fixed issue that caused the KeyComposer to not work unless "keyPress" events were listened to in two places.
+   KeyComposer fires the key event on the itself rather than the activeTarget directly.
+
+-  **RangeController**
+
+   Can now track selection with an Array, Set or SortedSet.
+
+-  **Repetition**
+
+   Added aliases and template properties so that binding to `@repetition:iteration` is possible. Using aliases this
+   can be exposed by the owner template.
+   Some never used properties were removed for performance improvements.
+   Fixed a bug in selection where a selected object could not be part of the content array.
+
+-  **Overlay**
+
+   Added ModalOverlay to force user response
+   Added AbstractAlert and AbstractConfirm.
+   Better handling of activeTarget
+   Dismisses with escape key.
+   Overlay can now have a delegate that affects it's position and behavior.
+
+-  **AbstractImage**
+
+   Now handles cross origin via the `crossOrigin` property.
+
+-  **AbstractSlider**
+
+   Can now move continuously rather than the 1% minimum step.
+   Fixed bug for initial knob position.
+   Uses a simplified dom structure.
+
+-  **AbstractButton**
+
+   Now only has a label property, value is gone.
+
 ### v0.13.6
 
 -  **Montage**
