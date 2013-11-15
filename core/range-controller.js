@@ -46,6 +46,45 @@ var GenericCollection = require("collections/generic-collection");
  * The <code>RangeController</code> is also responsible for managing which
  * content is selected and provides a variety of knobs for that purpose.
  */
+var Selection = function(content, rangeController) {
+    var self = content.clone();
+    self.makeObservable();
+    self.rangeController = rangeController;
+
+    // A custom version of splice to ensure that changes here obey the
+    // invariants of the owning rangeController:
+    //  - if rC.multiSelect is false, only allow one item in set.
+    //  - if rC.avoidsEmtySelection is true, require at least one item in set.
+    //  - only add items that are present in rC.content
+    //  - enforce uniqueness of items
+    var oldSplice = self.splice;
+    self.splice = function(start, howMany) {
+        var plus = [].slice.call(arguments, 2).filter(function(item){
+            return this.has(item);
+        }, this.rangeController.content || []);
+        // TODO: enforce uniqueness, somehow?
+        var oldLength = this.length;
+        var minusLength = Math.min(howMany, oldLength - start);
+        var plusLength = Math.max(plus.length, 0);
+        var diffLength = plusLength - minusLength;
+        var newLength = Math.max(oldLength + diffLength, start + plusLength);
+        var args;
+
+        if (!this.rangeController.multiSelect && newLength > 1) {
+            // use the last-supplied item as the sole element of the set
+            var last = plusLength ? plus[plusLength-1] : this.one();
+            args = [0, oldLength, last];
+        } else if (this.rangeController.avoidsEmptySelection && newLength === 0) {
+            args = [1, howMany];
+        } else {
+            args = [start, howMany].concat(plus);
+        }
+        return oldSplice.apply(this, args);
+    };
+    return self;
+};
+
+
 var RangeController = exports.RangeController = Montage.specialize( /** @lends RangeController# */ {
 
     /**
@@ -53,10 +92,9 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      */
     constructor: {
         value: function RangeController() {
-            var self = this;
-
             this.content = null;
-            this.selection = null;
+            this._selection = new Selection([], this);
+
             this.sortPath = null;
             this.filterPath = null;
             this.visibleIndexes = null;
@@ -99,7 +137,6 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
             });
 
             this.addRangeAtPathChangeListener("content", this, "handleContentRangeChange");
-            this.addRangeAtPathChangeListener("selection", this, "handleSelectionRangeChange");
             this.addPathChangeListener("sortPath", this, "handleOrderChange");
             this.addPathChangeListener("reversed", this, "handleOrderChange");
             this.addOwnPropertyChangeListener("multiSelect", this);
@@ -248,16 +285,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
             return this._selection;
         },
         set: function (value) {
-            if (value === this._selection) {
-                return;
-            }
-            if (value) {
-                this._selection = value;
-            } else if (this._selection && this.avoidsEmptySelection) {
-                this._selection.clear(); // will obey avoidsEmptySelection
-            } else {
-                this._selection = null;
-            }
+            // FIXME: remove when not called
+            this._selection.splice.apply(this._selection, [0, this._selection.length].concat(value.toArray()));
         }
     },
 
@@ -503,32 +532,6 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
             minus.deleteEach(plus);
             if (this.selection) {
                 this.selection.deleteEach(minus);
-            }
-        }
-    },
-
-    handleSelectionRangeChange : {
-        value: function(plus, minus, index) {
-            if (this.selection) {
-                if (this.content) {
-                    var notInContent = [];
-                    for (var i=0;i<plus.length;i++) {
-                        if (!this.content.has(plus[i])) {
-                            notInContent.push(plus[i]);
-                        }
-                    }
-                    this._selection.deleteEach(notInContent);
-                    if (!this.multiSelect && this._selection.length > 1) {
-                        var last = this._selection.pop();
-                        this._selection.clear();
-                        this._selection.add(last);
-                    }
-                    if (this.avoidsEmptySelection && this._selection.length == 0) {
-                        this._selection.add(minus[0])
-                    }
-                } else {
-                    this._selection.clear();
-                }
             }
         }
     },

@@ -7,344 +7,49 @@ describe("core/range-controller-spec", function() {
 
     beforeEach(function () {
         rangeController = RangeController.create().initWithContent([0, 1, 2]);
-
+        top.debug = false;
     });
 
-    describe("selection as array", function() {
-
-        it("when set to null/undefined clears the selection", function () {
-            var original = [1];
-
-            rangeController.selection = original;
-
-            rangeController.selection = undefined;
-            expect(rangeController.selection).not.toBe(original);
-            expect(rangeController.selection).toBeNull();
-
-            rangeController.selection = original;
-            expect(rangeController.selection).toBe(original);
-
-            rangeController.selection = null;
-            expect(rangeController.selection).not.toBe(original);
-            expect(rangeController.selection).toBeNull();
+    describe("selection", function() {
+        describe("constrained by uniqueness", function() {
+            it("TODO should not allow duplicates");
+            it("TODO should allow new item if duplicate deleted in same splice");
         });
 
-        describe("selection content constraints", function() {
-            it("should allow selection is subset of content", function () {
-                rangeController.content = [0, 1, 2];
-                rangeController.selection = [1];
-                expect(rangeController.selection).toEqual([1]);
-            });
-
-            it("should not allow selection that is not subset of content", function () {
-                rangeController.selection = [3];
-                expect(rangeController.selection).toEqual([]);
-            });
-
-            it("should not allow adding element to selection that is not in content", function () {
-                rangeController.selection = [];
-                rangeController.selection.add(3);
-                expect(rangeController.selection).toEqual([]);
-            });
-
-            it("should remove selection if selected content is removed", function () {
-                rangeController.selection = [2];
-                rangeController.pop();
-                expect(rangeController.selection).toEqual([]);
-            });
-
-            it("should not remove selection if other content is removed", function () {
-                rangeController.selection = [1];
-                rangeController.pop();
-                expect(rangeController.selection).toEqual([1]);
-            });
-
-            it("should remove selection if selection is not in new content", function () {
-                rangeController.selection = [2];
-                rangeController.content = [0, 1, 3];
-                expect(rangeController.selection).toEqual([]);
-            });
-
-            it("should not remove selection if selection is in new content", function () {
-                rangeController.selection = [1];
-                rangeController.content = [0, 1];
-                expect(rangeController.selection).toEqual([1]);
-            });
-        });
-
-        describe("multiSelect", function () {
-
-            beforeEach(function () {
-                rangeController.selection = [0];
-                expect(rangeController.selection).toEqual([0]);
-            });
-
-            describe("when false", function () {
-                beforeEach(function () {
-                    rangeController.multiSelect = false;
-                });
-
-                it("allows a selected item to be added", function () {
-                    rangeController.selection.add(1);
-                    expect(rangeController.selection).toEqual([1]);
-                });
-
-                it("does not allow multiple selected items to be added", function () {
-                    rangeController.selection.add(1)
-                    rangeController.selection.add(2);
-                    expect(rangeController.selection).toEqual([2]);
-                });
-
-                it("allows a selected item to be set", function () {
-                    rangeController.selection = [1];
-                    expect(rangeController.selection).toEqual([1]);
-                });
-
-                it("does not allow multiple selected items to be set", function () {
-                    rangeController.selection = [1, 2];
-                    expect(rangeController.selection).toEqual([2]);
-                });
-
-                it("multiSelect splicing and setting", function() {
-                    rangeController.multiSelect = false;
-                    var selection = [1];
-                    rangeController.selection = selection;
-                    expect(rangeController.selection).toEqual([1]);
-                    selection.splice(1, 0, 2);
-                    expect(rangeController.selection).toEqual([2]);
-                    rangeController.selection = [0, 1];
-                    expect(rangeController.selection).toEqual([1]);
-                });
-
-                it("results in correct calls to range change listeners", function () {
-                    var spy = jasmine.createSpy();
-                    rangeController.selection.addRangeChangeListener(spy);
-
-                    rangeController.selection.add(2);
-
-                    expect(spy).toHaveBeenCalled();
-                    var args = spy.mostRecentCall.args;
-                    expect(args[0]).toEqual([2]);
-                    expect(args[1]).toEqual([0]);
-                    expect(args[2]).toEqual(0);
-                });
-
-                it("correctly updates another RangeController's content", function () {
-                    rangeController.selection = [1];
-
-                    // from Repetition#content setter
-                    var object = new RangeController().initWithContent(rangeController.selection);
-                    expect(object.organizedContent).toEqual([1]);
-
-                    rangeController.selection.push(2);
-
-                    expect(rangeController.selection).toEqual([2]);
-                    expect(object.organizedContent).toEqual([2]);
-                });
-            });
-
-            describe("when true", function () {
-                beforeEach(function () {
-                    rangeController.multiSelect = true;
-                });
-
-                it("allows multiple selected items to be added", function () {
-                    rangeController.selection.add(1);
-                    rangeController.selection.add(2);
-                    expect(rangeController.selection).toEqual([0, 1, 2]);
-                });
-
-                it("allows multiple selected items to be set", function () {
-                    rangeController.selection = [1, 2];
-                    expect(rangeController.selection).toEqual([1, 2]);
-                });
-            });
-
-        });
-
-        describe("avoidsEmptySelection", function () {
-            beforeEach(function () {
-                rangeController.multiSelect = true;
-                rangeController.selection = [0, 1];
-                expect(rangeController.selection).toEqual([0, 1]);
-            });
-
-            describe("when true", function () {
-                beforeEach(function () {
-                    rangeController.avoidsEmptySelection = true;
-                });
-
-                it("allows a selected item to be removed", function () {
-                    rangeController.selection.pop();
-                    expect(rangeController.selection).toEqual([0]);
-                });
-
-                it("does not allow selection to be cleared", function () {
-                    rangeController.selection.clear();
-                    expect(rangeController.selection).toEqual([0]);
-                });
-
-                it("does not allow selection to be set to null", function () {
-                    rangeController.selection = null;
-                    expect(rangeController.selection).toEqual([0]);
-                });
-
-                it("allows a selected item to be set", function () {
-                    rangeController.selection = [1];
-                    expect(rangeController.selection).toEqual([1]);
-                });
-
-                it("does not allow no selected items to be set", function () {
-                    rangeController.selection = [];
-                    expect(rangeController.selection).toEqual([0]);
-                });
-
-                it("avoidsEmptySelection setting new selection", function() {
-                    rangeController.avoidsEmptySelection = true;
-                    rangeController.selection = [1];
-                    expect(rangeController.selection).toEqual([1]);
-                    rangeController.selection = [];
-                    expect(rangeController.selection).toEqual([1]);
-                    rangeController.selection = null;
-                    expect(rangeController.selection).toEqual([1]);
-                });
-
-                it("avoidsEmptySelection setting null and modifying array", function() {
-                    rangeController.avoidsEmptySelection = true;
-                    var sel = [1];
-                    rangeController.selection = sel;
-                    expect(rangeController.selection).toEqual([1]);
-                    rangeController.selection = null;
-                    expect(rangeController.selection).toEqual([1]);
-                    sel.clear();
-                    expect(rangeController.selection).toEqual([1]);
-                });
-
-                });
-
-            describe("when false", function () {
-                beforeEach(function () {
-                    rangeController.avoidsEmptySelection = false;
-                });
-
-                it("allows selection to be cleared", function () {
-                    rangeController.selection.clear();
-                    expect(rangeController.selection).toEqual([]);
-                });
-
-                it("allows no selected items to be set", function () {
-                    rangeController.selection = [];
-                    expect(rangeController.selection).toEqual([]);
-                });
-            });
-        });
-
-        describe("!multiSelect and avoidsEmptySelection", function () {
-
-            beforeEach(function () {
-                rangeController.avoidsEmptySelection = false;
-                rangeController.avoidsEmptySelection = true;
-                rangeController.selection = [0];
-            });
-
-            it("does not allow the selected item to be removed", function () {
-                rangeController.selection.pop();
-                expect(rangeController.selection).toEqual([0]);
-            });
-
-            it("does not allow another selected item to be added", function () {
+        describe("constrained to content", function() {
+            it("should allow selection if subset of content", function() {
                 rangeController.selection.add(1);
-                expect(rangeController.selection).toEqual([1]);
-            });
-
-            it("does not allow all selection to be cleared", function () {
-                rangeController.selection.clear();
-                expect(rangeController.selection).toEqual([0]);
-            });
-
-            it("allows a selected item to be set", function () {
-                rangeController.selection = [1];
-                expect(rangeController.selection).toEqual([1]);
-            });
-
-            it("only allows one selected item to be set", function () {
-                rangeController.selection = [1, 2];
-                expect(rangeController.selection).toEqual([2]);
-            });
-
-            it("does not allow no selected items to be set", function () {
-                rangeController.selection = [];
-                expect(rangeController.selection).toEqual([0]);
-            });
-
-        });
-
-    });
-
-    describe("selection as set", function() {
-
-        it("when set to null/undefined clears the selection", function () {
-            var original = new Set([1]);
-            rangeController.selection = original;
-
-            rangeController.selection = undefined;
-            expect(rangeController.selection).not.toBe(original);
-            expect(rangeController.selection).toBeNull();
-
-            rangeController.selection = original;
-            expect(rangeController.selection).toBe(original);
-
-            rangeController.selection = null;
-            expect(rangeController.selection).not.toBe(original);
-            expect(rangeController.selection).toBeNull();
-        });
-
-        describe("selection content constraints", function() {
-            it("should allow selection is subset of content", function () {
-                rangeController.selection = new Set([1]);
                 expect(rangeController.selection.toArray()).toEqual([1]);
             });
-
-            it("should not allow selection that is not subset of content", function () {
-                rangeController.selection = new Set([3]);
+            it("should disallow selection if not in content", function() {
+                rangeController.selection.add(5);
                 expect(rangeController.selection.toArray()).toEqual([]);
             });
-
-            it("should not allow adding element to selection that is not in content", function () {
-                rangeController.selection = new Set([]);
-                rangeController.selection.add(3);
-                expect(rangeController.selection.toArray()).toEqual([]);
-            });
-
-            it("should remove selection if selected content is removed", function () {
-                rangeController.selection = new Set([2]);
+            it("should remove selection if selected content is removed", function() {
+                rangeController.selection.add(2);
                 rangeController.pop();
                 expect(rangeController.selection.toArray()).toEqual([]);
             });
-
             it("should not remove selection if other content is removed", function () {
-                rangeController.selection = new Set([1]);
+                rangeController.selection.add(1);
                 rangeController.pop();
                 expect(rangeController.selection.toArray()).toEqual([1]);
             });
-
             it("should remove selection if selection is not in new content", function () {
-                rangeController.selection = new Set([2]);
+                rangeController.selection.add(2);
                 rangeController.content = [0, 1, 3];
                 expect(rangeController.selection.toArray()).toEqual([]);
             });
 
             it("should not remove selection if selection is in new content", function () {
-                rangeController.selection = new Set([1]);
+                rangeController.selection.add(1);
                 rangeController.content = [0, 1];
                 expect(rangeController.selection.toArray()).toEqual([1]);
             });
         });
-
-        describe("multiSelect", function () {
-
+        describe("constrained by multiSelect", function() {
             beforeEach(function () {
-                rangeController.selection = new Set([0]);
+                rangeController.selection.add(0);
                 expect(rangeController.selection.toArray()).toEqual([0]);
             });
 
@@ -364,41 +69,65 @@ describe("core/range-controller-spec", function() {
                     expect(rangeController.selection.toArray()).toEqual([2]);
                 });
 
-                it("allows a selected item to be set", function () {
-                    rangeController.selection = new Set([1]);
+                it("TODO: test two-way bindings with multiple values");
+
+                it("multiSelect splicing and setting", function() {
+                    rangeController.selection.splice(1, 0, 2);
+                    expect(rangeController.selection.toArray()).toEqual([2]);
+                    rangeController.selection.splice(0, 1, 0, 1);
                     expect(rangeController.selection.toArray()).toEqual([1]);
                 });
 
-                it("does not allow multiple selected items to be set", function () {
-                    rangeController.selection = new Set([1, 2]);
-                    expect(rangeController.selection.toArray()).toEqual([2]);
+                it("results in correct calls to range change listeners", function () {
+                    var spy = jasmine.createSpy();
+                    rangeController.selection.addRangeChangeListener(spy);
+
+                    rangeController.selection.add(2);
+
+                    expect(spy).toHaveBeenCalled();
+                    var args = spy.mostRecentCall.args;
+                    expect(args[0]).toEqual([2]);
+                    expect(args[1]).toEqual([0]);
+                    expect(args[2]).toEqual(0);
                 });
 
+                it("correctly updates another RangeController's content", function () {
+                    rangeController.selection.add(1);
+                    expect(rangeController.selection.toArray()).toEqual([1]);
+
+                    // from Repetition#content setter
+                    var object = new RangeController().initWithContent(rangeController.selection);
+                    expect(object.organizedContent).toEqual([1]);
+
+                    rangeController.selection.push(2);
+
+                    expect(rangeController.selection.toArray()).toEqual([2]);
+                    expect(object.organizedContent.toArray()).toEqual([2]);
+                });
             });
 
-            describe("when true", function () {
-                beforeEach(function () {
+            describe("when true", function() {
+                beforeEach(function() {
                     rangeController.multiSelect = true;
                 });
 
-                it("allows multiple selected items to be added", function () {
+                it("allows multiple selected items to be added", function() {
                     rangeController.selection.add(1);
                     rangeController.selection.add(2);
                     expect(rangeController.selection.toArray()).toEqual([0, 1, 2]);
                 });
 
-                it("allows multiple selected items to be set", function () {
-                    rangeController.selection = new Set([1, 2]);
+                it("allows multiple selected items to be set", function() {
+                    rangeController.selection.splice(0, 1, 1, 2);
                     expect(rangeController.selection.toArray()).toEqual([1, 2]);
                 });
             });
-
         });
 
-        describe("avoidsEmptySelection", function () {
+        describe("constrained by avoidsEmptySelection", function() {
             beforeEach(function () {
                 rangeController.multiSelect = true;
-                rangeController.selection = new Set([0, 1]);
+                rangeController.selection.splice(0, 0, 0, 1);
                 expect(rangeController.selection.toArray()).toEqual([0, 1]);
             });
 
@@ -417,18 +146,13 @@ describe("core/range-controller-spec", function() {
                     expect(rangeController.selection.toArray()).toEqual([0]);
                 });
 
-                it("does not allow selection to be set to null", function () {
-                    rangeController.selection = null;
-                    expect(rangeController.selection.toArray()).toEqual([0]);
-                });
-
                 it("allows a selected item to be set", function () {
-                    rangeController.selection = new Set([1]);
+                    rangeController.selection.splice(0, 100, 1);
                     expect(rangeController.selection.toArray()).toEqual([1]);
                 });
 
-                it("does not allow no selected items to be set", function () {
-                    rangeController.selection = new Set([]);
+                it("does not allow splice to clear selection", function () {
+                    rangeController.selection.splice(0, 100);
                     expect(rangeController.selection.toArray()).toEqual([0]);
                 });
             });
@@ -443,19 +167,19 @@ describe("core/range-controller-spec", function() {
                     expect(rangeController.selection.toArray()).toEqual([]);
                 });
 
-                it("allows no selected items to be set", function () {
-                    rangeController.selection = new Set([]);
+                it("allows splice to clear selection", function () {
+                    rangeController.selection.splice(0, 100);
                     expect(rangeController.selection.toArray()).toEqual([]);
                 });
             });
         });
 
-        describe("!multiSelect and avoidsEmptySelection", function () {
-
+        describe("constrained to always have one selection", function() {
             beforeEach(function () {
                 rangeController.avoidsEmptySelection = false;
                 rangeController.avoidsEmptySelection = true;
-                rangeController.selection = new Set([0]);
+                rangeController.selection.add(0);
+                expect(rangeController.selection.toArray()).toEqual([0]);
             });
 
             it("does not allow the selected item to be removed", function () {
@@ -473,24 +197,21 @@ describe("core/range-controller-spec", function() {
                 expect(rangeController.selection.toArray()).toEqual([0]);
             });
 
-            it("allows a selected item to be set", function () {
-                rangeController.selection = new Set([1]);
-                expect(rangeController.selection.toArray()).toEqual([1]);
-            });
-
             it("only allows one selected item to be set", function () {
-                rangeController.selection = new Set([1, 2]);
+                rangeController.selection.splice(0, 0, 1, 2);
                 expect(rangeController.selection.toArray()).toEqual([2]);
             });
 
             it("does not allow no selected items to be set", function () {
-                rangeController.selection = new Set([]);
+                rangeController.selection.splice(0, 100);
                 expect(rangeController.selection.toArray()).toEqual([0]);
             });
-
         });
 
+
     });
+
+    xit("Test what happens if two selections are two-way bound and their owners have different settings. I assume total chaos.");
 
     describe("addContent and contentConstructor", function () {
 
