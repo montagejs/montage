@@ -4,12 +4,15 @@
 var Component = require("ui/component").Component;
 
 /**
- * A component that displays a string.
+ * A Text component shows plain text. Any text can be safely displayed without
+ * escaping, but the browser will treat all sequences of white space as a
+ * single space.
  *
  * The text component replaces the inner DOM of its element with a TextNode and
  * it renders the [value]{@link Text#value} string in it.
  *
  * @class Text
+ * @classdesc A component that displays a string of plain text.
  * @extends Component
  */
 exports.Text = Component.specialize( /** @lends Text# */ {
@@ -29,7 +32,7 @@ exports.Text = Component.specialize( /** @lends Text# */ {
     },
 
     /**
-     * The string to be displayed, `null` is equivalent to the empty string.
+     * The string to be displayed. `null` is equivalent to the empty string.
      * @type {string}
      * @default null
      */
@@ -46,9 +49,10 @@ exports.Text = Component.specialize( /** @lends Text# */ {
     },
 
     /**
-     * The Montage converted used to convert or format values displayed by this
-     * Text instance.
-     * @type {Converter}
+     * An optional converter for transforming the `value` into the
+     * corresponding rendered text.
+     * Converters are called at time of draw.
+     * @type {?Converter}
      * @default null
     */
     converter: {
@@ -58,7 +62,7 @@ exports.Text = Component.specialize( /** @lends Text# */ {
     /**
      * The default string value assigned to the Text instance.
      * @type {string}
-     * @default ""
+     * @default "" empty string
      */
     defaultValue: {
         value: ""

@@ -1,3 +1,10 @@
+
+/**
+ * Patches [Montage]{@link Montage#} with methods pertaining to FRB “path”
+ * expressions.
+ * @module
+ */
+
 var Montage = require("core/core").Montage;
 var WeakMap = require("collections/weak-map");
 var Map = require("collections/map");
@@ -14,8 +21,14 @@ var autoCancelPrevious = Observers.autoCancelPrevious;
 
 var pathChangeDescriptors = new WeakMap();
 
-var pathPropertyDescriptors = {
+var pathPropertyDescriptors = { /** @lends Montage# */
 
+    /**
+     * Evaluates an FRB expression on this object
+     * @method
+     * @param {string} path an FRB expression
+     * @return the result of the query
+     */
     getPath: {
         value: function (path, parameters, document, components) {
             return evaluate(
@@ -28,6 +41,14 @@ var pathPropertyDescriptors = {
         }
     },
 
+    /**
+     * Assigns a value to the FRB expression from this object.  Not all
+     * expressions can be assigned to.  Property chains will work, but will
+     * silently fail if the target object does not exist.
+     * @method
+     * @param {string} path an FRB expression designating the value to replace
+     * @param value the new value
+     */
     setPath: {
         value: function (path, value, parameters, document, components) {
             return assign(
@@ -41,6 +62,18 @@ var pathPropertyDescriptors = {
         }
     },
 
+    /**
+     * Observes changes to the value of an FRB expression.  The content of the
+     * emitted value may react to changes, particularly if it is an array.
+     * @method
+     * @param {string} path an FRB expression
+     * @param {function} emit a function that receives new values in response
+     * to changes.  The emitter may return a `cancel` function if it manages
+     * event listeners that must be collected when the value changes.
+     * @return {function} a canceler function that will remove all involved
+     * change listeners, prevent new values from being observed, and prevent
+     * previously emitted values from reacting to any further changes.
+     */
     observePath: {
         value: function (path, emit) {
             var syntax = parse(path);
@@ -49,6 +82,21 @@ var pathPropertyDescriptors = {
         }
     },
 
+    /**
+     * Observes changes to the content of the value for an FRB expression.
+     * The handler will receive “ranged content change” messages.  When a
+     * change listener is added, the handler will be immediately invoked with
+     * the initial content added at index 0 for the expression.
+     * @method
+     * @param {string} path an FRB expression that produces content changes
+     * @param handler a function that accepts `plus`, `minus`, and `index`
+     * arguments, or a handler object with a designated method by that
+     * signature.  `plus` and `minus` are arrays of values that were added
+     * or removed.  `index` is the offset at which the `minus` was removed,
+     * then the `plus` was added.
+     * @param {?string} methodName the name of the method on the handler object
+     * that should receive change messages.
+     */
     addRangeAtPathChangeListener: {
         value: function (path, handler, methodName) {
             methodName = methodName || "handleRangeChange";
@@ -80,6 +128,9 @@ var pathPropertyDescriptors = {
     // TODO removeRangeAtPathChangeListener
     // TODO add/removeMapAtPathChangeListener
 
+    /**
+     * @method
+     */
     getPathChangeDescriptors: {
         value: function () {
             if (!pathChangeDescriptors.has(this)) {
@@ -89,6 +140,12 @@ var pathPropertyDescriptors = {
         }
     },
 
+    /**
+     * @method
+     * @param {string} path an FRB expression
+     * @param handler a function that will receive a value change notification,
+     * or an object with a method that will receive the change notifications
+     */
     getPathChangeDescriptor: {
         value: function (path, handler, beforeChange) {
             var descriptors = Montage.getPathChangeDescriptors.call(this);
@@ -119,6 +176,9 @@ var pathPropertyDescriptors = {
         }
     },
 
+    /**
+     * @method
+     */
     addPathChangeListener: {
         value: function (path, handler, methodName, beforeChange) {
             var self = this;
@@ -171,6 +231,9 @@ var pathPropertyDescriptors = {
         }
     },
 
+    /**
+     * @method
+     */
     removePathChangeListener: {
         value: function (path, handler, beforeChange) {
             handler = handler || Function.noop;
@@ -202,12 +265,18 @@ var pathPropertyDescriptors = {
         }
     },
 
+    /**
+     * @method
+     */
     addBeforePathChangeListener: {
         value: function (path, handler, methodName) {
             return Montage.addPathChangeListener.call(this, path, handler, methodName, true);
         }
     },
 
+    /**
+     * @method
+     */
     removeBeforePathChangeListener: {
         value: function (path, handler, methodName) {
             return Montage.removePathChangeListener.call(this, path, handler, true);

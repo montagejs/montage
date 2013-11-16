@@ -1475,14 +1475,14 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     },
 
     // TODO doc
-    /**
+    /*
      */
     _scroll: {
         value: 0
     },
 
     // TODO doc
-    /**
+    /*
      */
     _elasticScrollingRange: {
         value: 20
@@ -1516,28 +1516,28 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     },
 
     // TODO doc
-    /**
+    /*
      */
     _slideOffsetsLength: {
         value: 0
     },
 
     // TODO doc
-    /**
+    /*
      */
     _maxSlideOffsetIndex: {
         value: -1
     },
 
     // TODO doc
-    /**
+    /*
      */
     _minSlideOffsetIndex: {
         value: 2e9
     },
 
     // TODO doc
-    /**
+    /*
      */
     _updateSlideOffset: {
         value: function (index, value) {
@@ -1563,7 +1563,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     },
 
     // TODO doc
-    /**
+    /*
      */
     _incrementSlideOffset: {
         value: function (index, value) {
@@ -1572,7 +1572,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     },
 
     // TODO doc
-    /**
+    /*
      */
     _removeSlideOffset: {
         value: function (index) {
@@ -1608,7 +1608,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     },
 
     // TODO doc
-    /**
+    /*
      */
     _getSlideOffset: {
         value: function (index) {

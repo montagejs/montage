@@ -2,12 +2,14 @@ var Montage = require("montage").Montage,
     RangeController = require("core/range-controller").RangeController;
 
 /**
- * The radio button controller intermediates between a set of options and their 
- * visual representation as radio buttons. The controller maintains the 
- * invariant that only one radio button at a time may be selected and provides 
+ * The radio button controller intermediates between a set of options and their
+ * visual representation as radio buttons. The controller maintains the
+ * invariant that only one radio button at a time may be selected and provides
  * a value property with the currently-selected option.
  *
  * @class RadioButtonController
+ * @classdesc Manages the selection of mutually-exclusive [RadioButton]{@link
+ * AbstractRadioButton}s.
  * @extends Montage
  */
 exports.RadioButtonController = Montage.specialize(/** @lends RadioButtonController# */ {
@@ -40,7 +42,7 @@ exports.RadioButtonController = Montage.specialize(/** @lends RadioButtonControl
 
     /**
      * The radio button component corresponding to the currently-selected option.
-     * @type {Component|null}
+     * @type {?Component}
      */
     selectedRadioButton: {
         value: null
@@ -50,7 +52,7 @@ exports.RadioButtonController = Montage.specialize(/** @lends RadioButtonControl
         value: null
     },
 
-    /** 
+    /**
      * The currently-selected option.
     */
     value: {
@@ -94,6 +96,7 @@ exports.RadioButtonController = Montage.specialize(/** @lends RadioButtonControl
 
     /**
      * Add a radio button to be managed by this controller.
+     * @method
      * @param {RadioButton} radioButton
      * @returns {undefined}
      */
@@ -108,6 +111,7 @@ exports.RadioButtonController = Montage.specialize(/** @lends RadioButtonControl
 
     /**
      * Remove a radio button from being managed by this controller.
+     * @method
      * @param {RadioButton} radioButton
      * @returns {undefined}
      */

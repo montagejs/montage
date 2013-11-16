@@ -43,8 +43,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * The delegate of this component
-     * @type {Object}
+     * A delegate is an object that has helper methods specific to particular
+     * components.
+     * For example, a TextField may consult its `deletate`'s
+     * `shouldBeginEditing()` method, or inform its `delegate` that it
+     * `didBeginEditing()`.
+     * Look for details on the documentation of individual components'
+     * `delegate` properties.
+     *
+     * @type {?Object}
      * @default null
     */
     delegate: {
@@ -52,9 +59,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * This property is populated by the template. It is a map of
-     * all the instances present in the template's serialization keyed by their
-     * label.
+     * This property is populated by the template. It is a map of all the
+     * instances present in the template's serialization keyed by their label.
      *
      * @type {Object}
      * @default null
@@ -334,8 +340,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * available
      *
      * @function
-     * @param {String} name The name of the argument
-     * @returns The element
+     * @param {String} name The name of the argument, or `"*"` for the entire
+     * content.
+     * @returns the element
      */
     extractDomArgument: {
         value: function(name) {
@@ -667,7 +674,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * @private
      * @deprecated
      * @function
-     * @param {Component} childComponent The childComponent
+     * @param {Component} childComponent
      */
     // TODO update all calls to use addChildComponent and remove this method.
     _addChildComponent: {
@@ -2052,7 +2059,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      *   pointer if it desires.
      *
      *   @function
-     *   @param {string} pointer The pointerIdentifier that the demanding
+     *   @param {string} pointer The `pointerIdentifier` that the demanding
      *                     component is asking this component to surrender
      *   @param {Object} demandingComponent The component that is asking this
      *                   component to surrender the specified pointer
@@ -2078,7 +2085,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     /**
      * Adds the passed in composer to the component's composer list.
      * @function
-     * @param {Composer} composer Composer object
+     * @param {Composer} composer
      */
     addComposer: {  // What if the same composer instance is added to more than one component?
         value: function(composer) {
@@ -2090,8 +2097,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * Adds the passed in composer to the component's composer list and
      * sets the element of the composer to the passed in element.
      * @function
-     * @param {Composer} composer Composer object
-     * @param {Element} element Element
+     * @param {Composer} composer
+     * @param {Element} element
      */
     addComposerForElement: {
         value: function(composer, element) {
@@ -2114,7 +2121,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * frame method called during the next draw cycle.  It causes a draw cycle to be scheduled
      * iff one has not already been scheduled.
      * @function
-     * @param {Composer} composer Composer object
+     * @param {Composer} composer
      */
     scheduleComposer: {
         value: function(composer) {
@@ -2126,7 +2133,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * Removes the passed in composer from this component's composer list.  It takes care
      * of calling the composers unload method before removing it from the list.
      * @function
-     * @param {Composer} composer Composer object
+     * @param {Composer} composer
      */
     removeComposer: {
         value: function(composer) {
@@ -2282,7 +2289,16 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * Adds a property to the component with the specified name. This method is used internally by the framework convert a DOM element's standard attributes into bindable properties. It creates an accessor property (getter/setter) with the same name as the specified property, as well as a "backing" data property whose name is prepended with an underscore (_). The backing variable is assigned the value from the property descriptor. For example, if the name  "title" is passed as the first parameter, a "title" accessor property is created as well a data property named "_title".
+     * Adds a property to the component with the specified name.
+     * This method is used internally by the framework convert a DOM element's
+     * standard attributes into bindable properties.
+     * It creates an accessor property (getter/setter) with the same name as
+     * the specified property, as well as a "backing" data property whose name
+     * is prepended with an underscore (_).
+     * The backing variable is assigned the value from the property descriptor.
+     * For example, if the name "title" is passed as the first parameter, a
+     * "title" accessor property is created as well a data property named
+     * "_title".
      * @function
      * @param {String} name The property name to add.
      * @param {Object} descriptor An object that specifies the new properties default attributes such as configurable and enumerable.
@@ -2329,6 +2345,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             };
 
             // Define _ property
+            // TODO this.constructor.defineProperty
             Montage.defineProperty(this.prototype, _name, {value: null});
             // Define property getter and setter
             Montage.defineProperty(this.prototype, name, newDescriptor);
@@ -2371,7 +2388,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * This function is called when the component element is added to the
      * document's DOM tree.
      *
-     * @function enterDocument
+     * @method Component#enterDocument
      * @param {boolean} firstTime `true` if it's the first time the component
      *                  enters the document.
      */
@@ -2664,7 +2681,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
 
     /**
      * @function
-     * @param {Object} component Component object
+     * @param {Object} component
      */
     componentBlockDraw: {
         value: function(component) {
@@ -2687,8 +2704,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
 
     /**
      * @function
-     * @param {Object} component Component object
-     * @param {Number} value Component value
+     * @param {Object} component
+     * @param {Number} value
      */
     componentCanDraw: {
         value: function(component, value) {
@@ -2736,7 +2753,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
 
     /**
      * @function
-     * @param {Component} componentId The component ID
+     * @param {Component} componentId
      */
     removeFromCannotDrawList: {
         value: function(component) {
@@ -2800,7 +2817,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
      * in the next draw cycle and requests a draw cycle if one has not been
      * requested yet.
      * @function
-     * @param {Composer} composer Composer object
+     * @param {Composer} composer
      */
     addToComposerList: {
         value: function(composer) {
