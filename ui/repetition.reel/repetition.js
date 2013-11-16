@@ -412,13 +412,16 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
  * The repetition provides the
  * [objectAtCurrentIteration]{@link Repetition#objectAtCurrentIteration} and
  * [currentIteration]{@link Repetition#currentIteration} properties that can be
- * bound to by the contents of the repetition.
+ * bound to by the contents of the repetition during the instantiation of the
+ * iteration.
  *
  * The repetition strives to avoid moving iterations on, off, or around on the
  * document, prefering to inject or retract iterations between ones that remain
  * in their respective order, or even just rebind existing iterations to
  * alternate content instead of injecting and retracting in the same position.
  * @class Repetition
+ * @classdesc A component that repeats its inner template for each value in
+ * some content.
  * @extends Component
  */
 var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition# */{

@@ -3,6 +3,7 @@
  */
 var Component = require("ui/component").Component,
     logger = require("core/logger").logger("condition");
+
 /**
  * The condition component shows its DOM content when its
  * [condition]{@link Condition#condition} property is `true`, and hides its DOM
@@ -14,6 +15,8 @@ var Component = require("ui/component").Component,
  * this behavior.
  *
  * @class Condition
+ * @classdesc A component that shows or hides its inner template in response to
+ * changes to some condition.
  * @extends Component
  */
 exports.Condition = Component.specialize( /** @lends Condition# */ {

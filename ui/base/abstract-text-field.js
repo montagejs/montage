@@ -14,7 +14,7 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     /** @lends AbstractTextField# */
 {
     /**
-     * Dispatched when the textfield is activated through a enter.
+     * Dispatched when the textfield is activated when the user presses enter.
      * @event action
      * @memberof AbstractTextField
      * @param {Event} event

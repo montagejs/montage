@@ -4,6 +4,7 @@
 var Slot = require("ui/slot.reel").Slot,
     Promise = require("core/promise").Promise,
     logger = require("core/logger").logger("substitution");
+
 /**
  * The substitution is a structural component and it should be used when there
  * are different types of content (e.g.: different panels) at the same time but
@@ -49,6 +50,9 @@ var Slot = require("ui/slot.reel").Slot,
  * ```
  *
  * @class Substitution
+ * @classdesc A structural component that reveals one of its template arguments
+ * at a time.
+ * @extends Slot
  */
 exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
 
@@ -93,7 +97,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
      *
      * Throws when the `element` given has a parent node.
      *
-     * @method addSwitchElement
+     * @method
      * @param {string} key The key that identifies the content given, similar to
      *                 `data-arg` when declaring the content in the template.
      * @param {Node} element The element that will be shown when the `key` is
