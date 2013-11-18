@@ -286,7 +286,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
         },
         set: function (value) {
             // FIXME: remove when not called
-            this._selection.splice.apply(this._selection, [0, this._selection.length].concat(value.toArray()));
+            var args = [0, this._selection.length].concat(value.toArray());
+            this._selection.splice.apply(this._selection, args);
         }
     },
 

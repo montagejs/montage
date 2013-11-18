@@ -43,10 +43,10 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
                     "<->": "contentController.content"
                 },
                 "values": {
-                    "<->": "contentController.selection"
+                    "<->": "contentController.selection.rangeContent()"
                 },
                 "value": {
-                    "<->": "values.0"
+                    "<->": "values.one()"
                 },
                 "contentController.multiSelect": {
                     "<-": "multiSelect"
@@ -224,6 +224,8 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
 
     handleValuesRangeChange: {
         value: function() {
+            // FIXME: seems like the bindings should handle this? But they don't.
+            this.value = this.values.one();
             this.needsDraw = true;
         }
     },
