@@ -7,7 +7,6 @@ describe("core/range-controller-spec", function() {
 
     beforeEach(function () {
         rangeController = RangeController.create().initWithContent([0, 1, 2]);
-        top.debug = false;
     });
 
     describe("selection", function() {
