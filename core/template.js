@@ -811,13 +811,15 @@ var Template = Montage.specialize( /** @lends Template# */ {
 
     createTemplateFromElement: {
         value: function(elementId) {
-            var element,
-                range;
+            var element = this.getElementById(elementId);
+            return this.createTemplateFromDomElement(element);
+        }
+    },
 
-            element = this.getElementById(elementId);
-
+    createTemplateFromDomElement: {
+        value: function(element) {
             // Clone the element contents
-            range = this.document.createRange();
+            var range = this.document.createRange();
             range.selectNode(element);
 
             return this.createTemplateFromRange(range);

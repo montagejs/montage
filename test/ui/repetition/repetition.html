@@ -524,6 +524,31 @@ POSSIBILITY OF SUCH DAMAGE.
                 }
             },
 
+            "repetitionSwitchPath": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "repetitionSwitchPath"},
+                    "switchPath": "'pass'",
+                    "content": [1]
+                }
+            },
+
+            "repetitionSwitchPathPass": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "repetitionSwitchPathPass"},
+                    "value": "PASS"
+                }
+            },
+
+            "repetitionSwitchPathFail": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "repetitionSwitchPathFail"},
+                    "value": "FAIL. You must not see this."
+                }
+            },
+
             "substitution": {
                 "prototype": "montage/ui/substitution.reel",
                 "properties": {
@@ -709,6 +734,13 @@ POSSIBILITY OF SUCH DAMAGE.
     <div data-montage-id="namedParameters" class="namedParameters">
         <span data-montage-id="textfield9" data-arg="leftSide"></span>
         <span data-montage-id="textfield10" data-arg="rightSide"></span>
+    </div>
+
+    <h2>switchPath</h2>
+
+    <div data-montage-id="repetitionSwitchPath" class="repetitionSwitchPath">
+        <span data-montage-id="repetitionSwitchPathFail" data-arg="fail"></span>
+        <span data-montage-id="repetitionSwitchPathPass" data-arg="pass"></span>
     </div>
 
     <h2>Repetition inside Substitution</h2>
