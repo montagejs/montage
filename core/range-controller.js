@@ -24,6 +24,62 @@ var GenericCollection = require("collections/generic-collection");
 // the same position.
 
 /**
+ * @class RangeSelection
+ * A `RangeSelection` is a special kind of `Array` that knows about a `RangeController`
+ * and maintains invariants about itself relative to the properties of the 
+ * `RangeController`. A `RangeSelection` should only be modified using the `splice`
+ * method. Changes by directly using other `Array` methods can break the invariants.
+ * @private
+ */
+var RangeSelection = function(content, rangeController) {
+    var self = content.clone();
+    self.makeObservable();
+    self.rangeController = rangeController;
+
+    /**
+     * @method splice
+     * @param {number} start
+     * @param {number} howMany
+     * @param {object...} itemsToAdd
+     * A custom version of splice to ensure that changes obey the RangeController
+     * invariants:
+     *  - if rC.multiSelect is false, only allow one item in set.
+     *  - if rC.avoidsEmtySelection is true, require at least one item in set.
+     *  - only add items that are present in rC.content
+     *  - enforce uniqueness of items
+     */
+    var oldSplice = self.splice;
+    Object.defineProperty(self, "splice", {
+        configurable: false,
+        value: function(start, howMany) {
+            start = start >= 0 ? start : this.length + start;
+            var plus = [].slice.call(arguments, 2).filter(function(item){
+                return this.has(item);
+            }, this.rangeController.content || []);
+            // TODO: enforce uniqueness, somehow?
+            var oldLength = this.length;
+            var minusLength = Math.min(howMany, oldLength - start);
+            var plusLength = Math.max(plus.length, 0);
+            var diffLength = plusLength - minusLength;
+            var newLength = Math.max(oldLength + diffLength, start + plusLength);
+            var args;
+
+            if (!this.rangeController.multiSelect && newLength > 1) {
+                // use the last-supplied item as the sole element of the set
+                var last = plusLength ? plus[plusLength-1] : this.one();
+                args = [0, oldLength, last];
+            } else if (this.rangeController.avoidsEmptySelection && newLength === 0) {
+                args = [1, howMany];
+            } else {
+                args = [start, howMany].concat(plus);
+            }
+            return oldSplice.apply(this, args);
+        }
+    });
+    return self;
+};
+
+/**
  * @class RangeController
  * @extends Montage
  *
@@ -53,10 +109,9 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      */
     constructor: {
         value: function RangeController() {
-            var self = this;
-
             this.content = null;
-            this.selection = null;
+            this._selection = new RangeSelection([], this);
+
             this.sortPath = null;
             this.filterPath = null;
             this.visibleIndexes = null;
@@ -99,7 +154,6 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
             });
 
             this.addRangeAtPathChangeListener("content", this, "handleContentRangeChange");
-            this.addRangeAtPathChangeListener("selection", this, "handleSelectionRangeChange");
             this.addPathChangeListener("sortPath", this, "handleOrderChange");
             this.addPathChangeListener("reversed", this, "handleOrderChange");
             this.addOwnPropertyChangeListener("multiSelect", this);
@@ -236,6 +290,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     iterations: {value: null},
 
     _selection: {value: null},
+
     /**
      * A subset of the <code>content</code> that are selected.  The user may
      * safely reassign this property and all iterations will react to the
@@ -247,17 +302,18 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
         get: function () {
             return this._selection;
         },
-        set: function (value) {
-            if (value === this._selection) {
-                return;
-            }
-            if (value) {
-                this._selection = value;
-            } else if (this._selection && this.avoidsEmptySelection) {
-                this._selection.clear(); // will obey avoidsEmptySelection
-            } else {
-                this._selection = null;
-            }
+        /**
+         * @name RangeController#set:selection
+         * @method
+         * @param {Collection} a collection of values to be set as the selection.
+         * @deprecated: setting the `selection` will not replace it with the provided.
+         * collection. Instead, it will empty the selection and then shallow-copy the
+         * contents of the argument into the existing selection array. This is done to
+         * maintain the complicated invariants about what the selection can be.
+         */
+        set: function (collection) {
+            var args = [0, this._selection.length].concat(collection.toArray());
+            this._selection.splice.apply(this._selection, args);
         }
     },
 
@@ -503,32 +559,6 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
             minus.deleteEach(plus);
             if (this.selection) {
                 this.selection.deleteEach(minus);
-            }
-        }
-    },
-
-    handleSelectionRangeChange : {
-        value: function(plus, minus, index) {
-            if (this.selection) {
-                if (this.content) {
-                    var notInContent = [];
-                    for (var i=0;i<plus.length;i++) {
-                        if (!this.content.has(plus[i])) {
-                            notInContent.push(plus[i]);
-                        }
-                    }
-                    this._selection.deleteEach(notInContent);
-                    if (!this.multiSelect && this._selection.length > 1) {
-                        var last = this._selection.pop();
-                        this._selection.clear();
-                        this._selection.add(last);
-                    }
-                    if (this.avoidsEmptySelection && this._selection.length == 0) {
-                        this._selection.add(minus[0])
-                    }
-                } else {
-                    this._selection.clear();
-                }
             }
         }
     },
