@@ -207,7 +207,45 @@ describe("core/range-controller-spec", function() {
             });
         });
 
+        describe("negative splice inputs", function () {
+            it("can be spliced with a negative start", function () {
+                rangeController.multiSelect = true;
+                rangeController.selection = [0, 1, 2];
 
+                // expect(rangeController.selection).toEqual([0, 1, 2]);
+                expect(rangeController.selection.length).toEqual(3);
+                expect(rangeController.selection[0]).toEqual(0);
+                expect(rangeController.selection[1]).toEqual(1);
+                expect(rangeController.selection[2]).toEqual(2);
+
+                var removed = rangeController.selection.splice(-1, 1);
+                expect(removed).toEqual([2]);
+
+                // expect(rangeController.selection).toEqual([0, 1]);
+                expect(rangeController.selection.length).toEqual(2);
+                expect(rangeController.selection[0]).toEqual(0);
+                expect(rangeController.selection[1]).toEqual(1);
+            });
+
+            it("can be spliced with a negative start, and howMany more than length", function () {
+                rangeController.multiSelect = true;
+                rangeController.avoidsEmptySelection = true;
+                rangeController.selection = [0, 1, 2];
+
+                // expect(rangeController.selection).toEqual([0, 1, 2]);
+                expect(rangeController.selection.length).toEqual(3);
+                expect(rangeController.selection[0]).toEqual(0);
+                expect(rangeController.selection[1]).toEqual(1);
+                expect(rangeController.selection[2]).toEqual(2);
+
+                var removed = rangeController.selection.splice(-3, 5);
+                expect(removed).toEqual([1, 2]);
+
+                // expect(rangeController.selection).toEqual([0]);
+                expect(rangeController.selection.length).toEqual(1);
+                expect(rangeController.selection[0]).toEqual(0);
+            });
+        });
     });
 
     xit("Test what happens if two selections are two-way bound and their owners have different settings. I assume total chaos.");
