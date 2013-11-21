@@ -869,10 +869,19 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             serializationObject[this._iterationLabel] = {};
             iterationTemplate.setObjects(serializationObject);
 
-            self._iterationTemplate = iterationTemplate;
-
-            if (self.innerTemplate.hasParameters()) {
-                self._expandIterationTemplateParameters();
+            var switchPath = this.getPath('switchPath');
+            if (switchPath) {
+                switchPath = this.getPath(switchPath); // Expand FRB expression.
+                var element = this._getDomArgument(this.element, switchPath);
+                if (!element) {
+                    throw new Error("Cannot find " + JSON.stringify(switchPath) + ""); // TODO: better error message
+                }
+                self._iterationTemplate = self.innerTemplate.createTemplateFromDomElement(element);
+                self._iterationTemplate.setInstances(self.innerTemplate._instances);
+            } else {
+                self._iterationTemplate = iterationTemplate;
+                if (self.innerTemplate.hasParameters())
+                    self._expandIterationTemplateParameters();
             }
 
             // Erase the initial child component trees. The initial document
