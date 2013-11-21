@@ -52,6 +52,7 @@ var RangeSelection = function(content, rangeController) {
     Object.defineProperty(self, "splice", {
         configurable: false,
         value: function(start, howMany) {
+            start = start >= 0 ? start : this.length + start;
             var plus = [].slice.call(arguments, 2).filter(function(item){
                 return this.has(item);
             }, this.rangeController.content || []);
