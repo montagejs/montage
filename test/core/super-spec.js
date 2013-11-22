@@ -1906,4 +1906,34 @@ describe("test/core/super-spec", function () {
            });
         });
     });
+
+    describe("Parent method calls child method recursively", function () {
+        // can't use spies because they mess up super()
+        var vehicleCalls = 0;
+        var carCalls = 0;
+
+        var Vehicle = Montage.specialize({
+            speak: {
+                value: function(count) {
+                    vehicleCalls++;
+                    this.speak(count-1);
+                }
+            }
+        });
+        var Car = Vehicle.specialize({
+            speak: {
+                value: function(count) {
+                    carCalls++;
+                    if (count <= 0) return;
+                    this.super(count);
+                }
+            }
+        });
+
+        var car = new Car();
+        car.speak(2); // should call: Car 2, Vehicle 2, Car 1, Vehicle 1, Car 0
+
+        expect(vehicleCalls).toBe(2);
+        expect(carCalls).toBe(3);
+    });
 });
