@@ -243,6 +243,17 @@ describe("paths-spec", function () {
 
     });
 
+    describe("addBeforePathChangeListener", function () {
+        it("should watch changes to a value before it changes", function () {
+            var object = new Montage();
+            var spy = jasmine.createSpy();
+
+            object.addBeforePathChangeListener("foo", spy);
+            object.foo = 10;
+            expect(spy.mostRecentCall.args).toEqual([undefined, "foo", object]);
+        });
+    });
+
     describe("addRangeAtPathChangeListener", function () {
         it("should watch for changes to an array at a path", function () {
             var object = new Montage();
