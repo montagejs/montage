@@ -43,8 +43,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * The delegate of this component
-     * @type {Object}
+     * A delegate is an object that has helper methods specific to particular
+     * components.
+     * For example, a TextField may consult its `deletate`'s
+     * `shouldBeginEditing()` method, or inform its `delegate` that it
+     * `didBeginEditing()`.
+     * Look for details on the documentation of individual components'
+     * `delegate` properties.
+     *
+     * @type {?Object}
      * @default null
     */
     delegate: {
@@ -52,10 +59,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * The templateObjects property is populated by the template. It is a map of all the instances present in the
-     * template's serialization keyed by their label. If the templateObjects is initialized prior to template load then
-     * if one it's keys matches a label in the serialization that value is used rather than the what is defined in the
-     * template.
+     * This property is populated by the template. It is a map of all the
+     * instances present in the template's serialization keyed by their label.
+     *
      * @type {Object}
      * @default null
      */
@@ -77,6 +83,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      *
      * To interrupt the propagation path a Target that accepts a falsy
      * nextTarget needs to be set at a component's nextTarget.
+     *
+     * @type {Target}
      */
     nextTarget: {
         get: function () {
@@ -126,6 +134,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     /**
      * The gate controlling the canDraw() response of the component.
      * @type {Gate}
+     * @private
      */
     canDrawGate: {
         get: function() {
@@ -138,9 +147,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         enumerable: false
     },
 
-    /**
-     * @private
-     */
     _blockDrawGate: {
         value: null
     },
@@ -162,17 +168,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
-    /**
-     * @private
-     */
     _firstDraw: {
         enumerable: false,
         value: true
     },
 
-    /**
-     * @private
-     */
     _completedFirstDraw: {
         enumerable: false,
         value: false
@@ -191,17 +191,53 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * The element of the component as defined in it's template.
+     * The element of the component as defined in the template.
      * ```json
      * {
      *    "component": {
      *        "properties": {
-     *            "element": {"#": "datamontageid"}
+     *            "element": {"#": "dataMontageId"}
      *        }
      *    }
      * }
      * ```
-     * At prepareForDraw the element is replaced by the template if the component has one.
+     * DOM arguments can be passed to the component as direct children of the
+     * element. By default the entire content of the element is considered the
+     * single DOM argument of the component.
+     * Multiple arguments can be given by assigning a `data-arg` attribute to
+     * each element that represents an argument.
+     *
+     * ```html
+     * <div data-montage-id="component">
+     *     <h1 data-arg="title"></h1>
+     *     <div data-arg="content">
+     *         <span data-montage-id="text"></span>
+     *     <div>
+     * </div>
+     * ```
+     *
+     * If the component has a template then this element is replaced by the
+     * element that is referenced in its template just before the component
+     * enters the document.
+     * ```json
+     * {
+     *    "owner": {
+     *        "properties": {
+     *            "element": {"#": "dataMontageId"}
+     *        }
+     *    }
+     * }
+     * ```
+     *
+     * The component element has a `component` property that points back to the
+     * component. This property is specially useful to extrapolate the component
+     * tree from the DOM tree. It can also be used for debugging purposes, on
+     * the webkit inspector when an element is selected it's possible to find
+     * its component by using the `$0.component` command on the console.
+     *
+     * The element of a component can only be assigned once, it's not possible
+     * to change it.
+     *
      * @type {DOMElement}
      * @default null
      */
@@ -295,11 +331,18 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * When a Dom Argument is extracted from a Component it is no longer
+     * This function extracts a DOM argument that was in the element assigned
+     * to the component.
+     * The star (`*`) argument refers to the entire content of the element when
+     * no `data-arg` was given.
+     *
+     * When a DOM argument is extracted from a Component it is no longer
      * available
      *
-     * @param {String} name The name of the argument
-     * @returns The element
+     * @function
+     * @param {String} name The name of the argument, or `"*"` for the entire
+     * content.
+     * @returns the element
      */
     extractDomArgument: {
         value: function(name) {
@@ -416,6 +459,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     /**
      * @function
      * @returns targetElementController
+     * @private
      */
     elementControllerFromEvent: {
         enumerable: false,
@@ -446,13 +490,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * The parent component is found by walking up the DOM tree from the node returned by the <i>element</i> property.
-     * If we find a parentNode that has a controller then we return this controller.
-     * Returns undefined if this is the rootComponent.
-     * @function
-     * @returns undefined or cachedParentComponent
+     * The parent component is the component that is found by walking up the
+     * DOM tree, starting at the component's `element`. Each component element
+     * has a `component` property that points back to the component object, this
+     * way it's possible to know which component an element represents.
+     *
+     * This value is null for the {@link RootComponent}.
+     *
+     * @type {Component}
      */
-    // TODO store the value and delete it after draw
     parentComponent: {
         enumerable: false,
         get: function() {
@@ -585,6 +631,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
+     * The template object of the component.
+     *
      * @type {Template}
      * @default null
      */
@@ -594,9 +642,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * Specifies whether the component has an HTML template file associated with it.
-     * @type {Boolean}
-     * @default {Boolean} true
+     * Specifies whether the component has an HTML template file associated with
+     * it.
+     * @type {boolean}
+     * @default true
      */
     hasTemplate: {
         enumerable: false,
@@ -625,7 +674,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * @private
      * @deprecated
      * @function
-     * @param {Component} childComponent The childComponent
+     * @param {Component} childComponent
      */
     // TODO update all calls to use addChildComponent and remove this method.
     _addChildComponent: {
@@ -634,11 +683,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
-    /**
-     * Description TODO
-     * @function
-     * @param {Component} childComponent The childComponent
-     */
     addChildComponent: {
         value: function (childComponent) {
             if (this.childComponents.indexOf(childComponent) === -1) {
@@ -654,9 +698,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
-    /**
-     * @function
-     */
     attachToParentComponent: {
         value: function() {
             this.detachFromParentComponent();
@@ -695,10 +736,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
-    /**
-     * @function
-     * @param {Component} childComponent The childComponent
-     */
     removeChildComponent: {
         value: function(childComponent) {
             var childComponents = this.childComponents,
@@ -723,8 +760,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * The child componet sof the component. This should not be edited directly.
-     * @see Component#attachToParentComponent
+     * The child components of the component.
+     * This property is readonly and should never be changed.
+     *
      * @type {Array.<Component>}
      * @readonly
     */
@@ -779,7 +817,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * Lifecycle method called when this component exits the document
+     * Lifecycle method called when this component is removed from the
+     * document's DOM tree.
+     * @function
      */
     exitDocument: {
         value: function () {
@@ -809,7 +849,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * The owner component is the owner of the template form which this component was instantiated.
+     * The owner component is the owner of the template form which this
+     * component was instantiated.
      * @type {Component}
      * @default null
      */
@@ -827,25 +868,16 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         value: {}
     },
 
-    /**
-     * @private
-     */
     _isComponentExpanded: {
         enumerable: false,
         value: null
     },
 
-    /**
-     * @private
-     */
     _isTemplateLoaded: {
         enumerable: false,
         value: null
     },
 
-    /**
-     * @private
-     */
     _isTemplateInstantiated: {
         enumerable: false,
         value: null
@@ -854,6 +886,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     /**
      * Remove all bindings and starts buffering the needsDraw.
      * @function
+     * @private
      */
     cleanupDeletedComponentTree: {
         value: function(cancelBindings) {
@@ -874,9 +907,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
-    /**
-     * @private
-     */
     _newDomContent: {
         enumerable: false,
         value: null
@@ -1025,6 +1055,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * If ```canDraw()``` returns false, then the component is re-added to the parent's draw list and draw isn't called.
      * @function
      * @returns {Boolean} true or false
+     * @private this method is evil
      */
     canDraw: {
         value: function() {
@@ -1125,6 +1156,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * @function
      * @param {Component#traverseComponentTree~visitor} visitor  visitor
      * @param {Component#traverseComponentTree~callback} callback callback object
+     * @private
      */
     traverseComponentTree: {value: function traverseComponentTree(visitor, callback) {
         var self = this;
@@ -1180,9 +1212,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
 
     /**
-    * @function
-    * @param {Component#expandComponent~callback} callback  TODO
-    */
+     * @function
+     * @param {Component#expandComponent~callback} callback  TODO
+     * @private
+     */
     _expandComponentDeferred: {value: null},
     expandComponent: {
         value: function expandComponent() {
@@ -1450,12 +1483,13 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     blueprint: require("montage")._blueprintDescriptor,
 
     /**
-    Callback for the ```canDrawGate```.
-    Propagates to the parent and adds the component to the draw list.
-    @function
-    @param {Gate} gate
-    @see Component#canDrawGate
-    */
+     * Callback for the ```canDrawGate```.
+     * Propagates to the parent and adds the component to the draw list.
+     * @function
+     * @param {Gate} gate
+     * @see Component#canDrawGate
+     * @private
+     */
     gateDidBecomeTrue: {
         value: function(gate) {
             if (gate === this._canDrawGate) {
@@ -1765,8 +1799,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * Called by the {EventManager} before dispatching a ```touchstart``` or ```mousedown```.
-     * The component can implement this method to add event listeners for these events before they are dispatched.
+     * Called by the {@link EventManager} before dispatching a `touchstart` or
+     * `mousedown`.
+     *
+     * The component can implement this method to add event listeners for these
+     * events before they are dispatched.
      * @function
      */
     prepareForActivationEvents: {
@@ -1825,18 +1862,19 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
-    /**
-     * Provides the component a chance to prepare for it being drawn for the first time. For a component with an HTML template, this method is invoked when the template been loaded and applied to the DOM.
-     * @function
-     * @see http://montagejs.org/docs/Component-draw-cycle.html
-     */
+    // TODO: remove
     prepareForDraw: {
         enumerable: false,
         value: null
     },
 
     /**
-     * This is the prescribed location for components to update its DOM structure or modify its styles.
+     * This method is part of the draw cycle and is the prescribed location for
+     * components to update its DOM structure or modify its styles.
+     *
+     * Components should not read the DOM during this phase of the draw cycle
+     * as it could force an unwanted reflow from the browser.
+     *
      * @function
      * @see http://montagejs.org/docs/Component-draw-cycle.html
      */
@@ -1847,7 +1885,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * Provides the component an opportunity to query the DOM for any necessary calculations before drawing. If the execution of this method sets needsDraw to true on other components, those components will be added to the current draw cycle.
+     * This method is part of the draw cycle and it provides the component an
+     * opportunity to query the DOM for any necessary calculations before
+     * drawing.
+     * If the execution of this method sets needsDraw to true on other
+     * components, those components will be added to the current draw cycle.
+     *
+     * Components should not change the DOM during this phase of the draw cycle
+     * as it could force an unwanted reflow from the browser.
+     *
      * @function
      * @see http://montagejs.org/docs/Component-draw-cycle.html
      */
@@ -1857,7 +1903,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * Provides the component an opportunity to query the DOM for any necessary calculations after drawing.
+     * This method is part of the draw cycle and it provides the component an
+     * opportunity to query the DOM for any necessary calculations after
+     * drawing.
+     * If the execution of this method sets needsDraw to true on other
+     * components, those components will be added to the current draw cycle.
+     *
+     * Components should not change the DOM during this phase of the draw cycle
+     * as it could force an unwanted reflow from the browser.
+     *
      * @function
      * @see http://montagejs.org/docs/Component-draw-cycle.html
      */
@@ -1875,9 +1929,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         value: false
     },
 
-    /**
-     * @private
-     */
     _addToParentsDrawList: {
         enumerable: false,
         value: function() {
@@ -1898,9 +1949,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
-    /**
-     * @private
-     */
     _needsDraw: {
         value: false
     },
@@ -1910,17 +1958,20 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * The purpose of this property is to trigger the adding of the component to the draw list and maintain whether draw needs to be called as a consequence of drawIfNeeded.
-     * If needsDraw is set to true, and the component can draw but is not yet added to the parent Draw List, then ```addToDrawList()``` is called on the parentComponent with this as the argument.
-     * If the component cannot draw then it's recorded in the component's ```blockDrawGate``` that a draw was requested.
+     * The purpose of this property is to trigger the adding of the component to
+     * the draw list. The draw list consists of all the components that will be
+     * drawn on the next draw cycle.
      *
-     * Two actions are required for a component to load:
+     * The draw cycle itself is triggered by the `requestAnimationFrame` API
+     * where available, otherwise a shim implemented with `setTimeout` is used.
      *
-     * - it needs an element
-     * - a draw must have been requested
+     * When it happens, the draw cycle will call, in succession, and when they
+     * exist, the methods: `willDraw`, `draw`, and `didDraw`.
      *
-     * @type {Boolean}
-     * @default {Boolean} false
+     * At the end of the draw cycle this property is set back to `false`.
+     *
+     * @type {boolean}
+     * @default false
      */
     needsDraw: {
         enumerable: false,
@@ -1957,9 +2008,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         value: null
     },
 
-    /**
-     * @private
-     */
     __addToDrawList: {
         enumerable: false,
         value: function(childComponent) {
@@ -1996,15 +2044,26 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     // Pointer Claiming
 
     /**
-        Ask this component to surrender the specified pointer to the demandingComponent.
-        The component can decide whether or not it should do this given the pointer and demandingComponent involved.
-        Some components may decide not to surrender control ever, while others may do so in certain situations.
-        Returns true if the pointer was surrendered, false otherwise.
-        The demandingComponent is responsible for claiming the surrendered pointer if it desires.
-        @function
-        @param {Property} pointer The pointerIdentifier that the demanding component is asking this component to surrender
-        @param {Object} demandingComponent The component that is asking this component to surrender the specified pointer
-        @returns {Boolean} true
+     *   Ask this component to surrender the specified pointer to the
+     *   demandingComponent.
+     *
+     *   The component can decide whether or not it should do this given the
+     *   pointer and demandingComponent involved.
+     *
+     *   Some components may decide not to surrender control ever, while others
+     *   may do so in certain situations.
+     *
+     *   Returns true if the pointer was surrendered, false otherwise.
+     *
+     *   The demandingComponent is responsible for claiming the surrendered
+     *   pointer if it desires.
+     *
+     *   @function
+     *   @param {string} pointer The `pointerIdentifier` that the demanding
+     *                     component is asking this component to surrender
+     *   @param {Object} demandingComponent The component that is asking this
+     *                   component to surrender the specified pointer
+     *   @returns {boolean} true
      */
     surrenderPointer: {
         value: function(pointer, demandingComponent) {
@@ -2026,7 +2085,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     /**
      * Adds the passed in composer to the component's composer list.
      * @function
-     * @param {Composer} composer Composer object
+     * @param {Composer} composer
      */
     addComposer: {  // What if the same composer instance is added to more than one component?
         value: function(composer) {
@@ -2038,8 +2097,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * Adds the passed in composer to the component's composer list and
      * sets the element of the composer to the passed in element.
      * @function
-     * @param {Composer} composer Composer object
-     * @param {Element} element Element
+     * @param {Composer} composer
+     * @param {Element} element
      */
     addComposerForElement: {
         value: function(composer, element) {
@@ -2062,7 +2121,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * frame method called during the next draw cycle.  It causes a draw cycle to be scheduled
      * iff one has not already been scheduled.
      * @function
-     * @param {Composer} composer Composer object
+     * @param {Composer} composer
      */
     scheduleComposer: {
         value: function(composer) {
@@ -2074,7 +2133,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * Removes the passed in composer from this component's composer list.  It takes care
      * of calling the composers unload method before removing it from the list.
      * @function
-     * @param {Composer} composer Composer object
+     * @param {Composer} composer
      */
     removeComposer: {
         value: function(composer) {
@@ -2115,17 +2174,16 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         value: null
     },
 
-    /**
-     * @private
-     */
     _waitForLocalizerMessages: {
         value: false
     },
 
     /**
      * Whether to wait for the localizer to load messages before drawing.
-     * Make sure to set the localizer before setting to ```true```.
-     * @type Boolean
+     * Make sure to set the [localizer]{@link Component#localizer} before
+     * setting to ```true```.
+     *
+     * @type {boolean}
      * @default false
      * @example
      * // require localizer
@@ -2144,9 +2202,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      *     // ...
      *
      *     // no draw happens until the localizer's messages have been loaded
-     *     prepareForDraw: {
-     *         value: function() {
-     *             this._greeting = _("hello", "Hello {name}!");
+     *     enterDocument: {
+     *         value: function(firstTime) {
+     *             if (firstTime) {
+     *                 this._greeting = _("hello", "Hello {name}!");
+     *             }
      *         }
      *     },
      *     draw: {
@@ -2229,10 +2289,20 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     * Adds a property to the component with the specified name. This method is used internally by the framework convert a DOM element's standard attributes into bindable properties. It creates an accessor property (getter/setter) with the same name as the specified property, as well as a "backing" data property whose name is prepended with an underscore (_). The backing variable is assigned the value from the property descriptor. For example, if the name  "title" is passed as the first parameter, a "title" accessor property is created as well a data property named "_title".
+     * Adds a property to the component with the specified name.
+     * This method is used internally by the framework convert a DOM element's
+     * standard attributes into bindable properties.
+     * It creates an accessor property (getter/setter) with the same name as
+     * the specified property, as well as a "backing" data property whose name
+     * is prepended with an underscore (_).
+     * The backing variable is assigned the value from the property descriptor.
+     * For example, if the name "title" is passed as the first parameter, a
+     * "title" accessor property is created as well a data property named
+     * "_title".
      * @function
      * @param {String} name The property name to add.
      * @param {Object} descriptor An object that specifies the new properties default attributes such as configurable and enumerable.
+     * @private
      */
     defineAttribute: {
         value: function(name, descriptor) {
@@ -2275,6 +2345,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             };
 
             // Define _ property
+            // TODO this.constructor.defineProperty
             Montage.defineProperty(this.prototype, _name, {value: null});
             // Define property getter and setter
             Montage.defineProperty(this.prototype, name, newDescriptor);
@@ -2285,6 +2356,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * Add the specified properties as properties of this component.
      * @function
      * @param {object} properties An object that contains the properties you want to add.
+     * @private
      */
     addAttributes: {
         value: function(properties) {
@@ -2312,11 +2384,17 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
+    /**
+     * This function is called when the component element is added to the
+     * document's DOM tree.
+     *
+     * @method Component#enterDocument
+     * @param {boolean} firstTime `true` if it's the first time the component
+     *                  enters the document.
+     */
+
 // callbacks
 
-    /**
-     * @private
-     */
     _enterDocument: {
         value: function(firstTime) {
             var originalElement;
@@ -2381,9 +2459,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
-    /**
-     * @private
-     */
     _draw: {
         value: function() {
             var element = this.element, descriptor;
@@ -2433,11 +2508,16 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     /**
-     The classList of the component's element, the purpose is to mimic the element's API but to also respect the draw.
-     It can also be bound to by binding each class as a property.
-     example to toggle the complete class: "classList.has('complete')" : { "<-" : "@owner.isCompete"}
-     @type {Property}
-     @default null
+     * The classList of the component's element, the purpose is to mimic the
+     * element's API but to also respects the draw cycle.
+     *
+     * It can also be bound to by binding each class as a property.
+     * example to toggle the complete class:
+     * ```json
+     * "classList.has('complete')" : { "<-" : "@owner.isComplete"}
+     * ```
+     * @type {Set}
+     * @default null
      */
     classList: {
         get: function () {
@@ -2601,7 +2681,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
 
     /**
      * @function
-     * @param {Object} component Component object
+     * @param {Object} component
      */
     componentBlockDraw: {
         value: function(component) {
@@ -2624,8 +2704,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
 
     /**
      * @function
-     * @param {Object} component Component object
-     * @param {Number} value Component value
+     * @param {Object} component
+     * @param {Number} value
      */
     componentCanDraw: {
         value: function(component, value) {
@@ -2673,7 +2753,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
 
     /**
      * @function
-     * @param {Component} componentId The component ID
+     * @param {Component} componentId
      */
     removeFromCannotDrawList: {
         value: function(component) {
@@ -2737,7 +2817,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
      * in the next draw cycle and requests a draw cycle if one has not been
      * requested yet.
      * @function
-     * @param {Composer} composer Composer object
+     * @param {Composer} composer
      */
     addToComposerList: {
         value: function(composer) {

@@ -5,6 +5,7 @@ var Montage = require("montage").Montage,
 
 /**
  * @class AbstractControl
+ * @classdesc A basis for common behavior of control components.
  * @extends Component
  */
 exports.AbstractControl = Component.specialize( /** @lends AbstractControl# */ {
@@ -21,7 +22,9 @@ exports.AbstractControl = Component.specialize( /** @lends AbstractControl# */ {
 
     /**
      * The data property of the action event.
-     * example to toggle the complete class: "detail.get('selectedItem')" : { "<-" : "@repetition.objectAtCurrentIteration"}
+     *
+     * Example to toggle the complete class: `"detail.get('selectedItem')" : {
+     * "<-" : "@repetition.objectAtCurrentIteration"}`
      * @type {Dict}
      * @default null
      */

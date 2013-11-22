@@ -3,17 +3,29 @@
 var Montage = require("core/core").Montage;
 
 /**
- * Represents a alias to a template property.
+ * A component can expose internal components to external usage using aliases.
+ * For example, a [Repetition]{@link Repetition} exposes
+ * `@repetition:iteration` and a table might expose the current cell as
+ * `@table:cell`, aliasing the internal `@cells:iteration`.
+ *
+ * An alias declaration in a component sheet (serialization) looks like:
+ *
+ *     {
+ *         ":cell": {
+ *             "alias": "repetition:iteration"
+ *         }
+ *     }
+ *
+ * An `Alias` is a representation of one of these declarations.
  * An alias can only point to another template property and can be optionally
  * followed by a path.
  *
- * Examples: @repetition:iteration
- *           @table:cell.index
- *
  * @class Alias
+ * @classdesc Models a label alias in a component sheet (serialization).
  * @extends Montage
  */
 exports.Alias = Montage.specialize({ /** @lends Alias# */
+
     _value: {
         value: null
     },
@@ -25,10 +37,12 @@ exports.Alias = Montage.specialize({ /** @lends Alias# */
         // alias = @$1:$2$3
         value: /@([_a-zA-Z$][0-9_a-zA-Z$]*):([_a-zA-Z$][0-9_a-zA-Z$]*)([\.:].*$)?/
     },
+
     /**
      * The alias string as found in the serialization.
      *
-     * @type {String}
+     * @name Alias#value
+     * @type {string}
      */
     value: {
         get: function() {
@@ -59,7 +73,8 @@ exports.Alias = Montage.specialize({ /** @lends Alias# */
      * template property is located.
      * Derived from the alias.
      *
-     * @type {String}
+     * @name Alias#componentName
+     * @type {string}
      * @readonly
      */
     componentName: {
@@ -77,7 +92,8 @@ exports.Alias = Montage.specialize({ /** @lends Alias# */
      * template to define this property.
      * Derived from the alias.
      *
-     * @type {String}
+     * @name Alias#propertyName
+     * @type {string}
      * @readonly
      */
     propertyName: {
@@ -94,7 +110,8 @@ exports.Alias = Montage.specialize({ /** @lends Alias# */
      * The path that follows the property name reference.
      * Derived from the alias.
      *
-     * @type {String}
+     * @name Alias#path
+     * @type {string}
      * @readonly
      */
     path: {

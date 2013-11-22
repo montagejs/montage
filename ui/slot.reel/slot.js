@@ -6,8 +6,10 @@
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 /**
- @class Slot
- @extends Component
+ * @class Slot
+ * @classdesc A structural component that serves as a place-holder for some
+ * other component.
+ * @extends Component
  */
 exports.Slot = Component.specialize( /** @lends Slot# */ {
 
@@ -23,10 +25,17 @@ exports.Slot = Component.specialize( /** @lends Slot# */ {
         }
     },
 
-/**
-        @type {Property}
-        @default null
-    */
+    /**
+     * An optional helper object.  The slot consults
+     * `delegate.slotElementForComponent(component):Element` if available for
+     * the element it should use when placing a particular component on the
+     * document.  The slot informs `delegate.slotDidSwitchContent(slot,
+     * newContent, newComponent, oldContent, oldComponent)` if the content has
+     * finished changing.  The component arguments are the `component`
+     * properties of the corresponding content, or fall back to `null`.
+     * @type {?Object}
+     * @default null
+     */
     delegate: {
         value: null
     },
@@ -44,8 +53,10 @@ exports.Slot = Component.specialize( /** @lends Slot# */ {
     },
 
     /**
-        @type {Function}
-        @default null
+     * The component that resides in this slot and in its place in the
+     * template.
+     * @type {Component}
+     * @default null
     */
     content: {
         get: function() {
@@ -85,9 +96,12 @@ exports.Slot = Component.specialize( /** @lends Slot# */ {
         }
     },
 
-/**
-        @type {Function}
-        @default null
+    /**
+     * Informs the `delegate` that `slotDidSwitchContent(slot, newContent,
+     * oldContent)`
+     * @method
+     * @param newContent
+     * @param oldContent
     */
     contentDidChange: {
         value: function(newContent, oldContent) {

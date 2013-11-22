@@ -236,7 +236,7 @@ exports.resolveObject = function (source, relative) {
     return source;
 };
 
-/**** relativeObject
+/*
     returns an object representing a relative URL to
     a given target URL from a source URL.
 */
@@ -295,14 +295,14 @@ exports.relativeObject = function (source, target) {
     return target;
 };
 
-/**
+/*
  * @returns a URL resovled to a relative URL from a source URL.
  */
 exports.resolve = function (source, relative) {
     return exports.format(exports.resolveObject(source, relative));
 };
 
-/**
+/*
  * @returns a relative URL to a target from a source.
  */
 exports.relative = function (source, target) {

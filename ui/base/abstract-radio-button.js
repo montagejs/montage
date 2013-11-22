@@ -8,11 +8,13 @@ var CLASS_PREFIX = "montage-RadioButton";
 
 /**
  * @class AbstractRadioButton
+ * @classdesc Provides common implementation details for radio buttons.
  * @extends AbstractControl
  */
 var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.specialize(
     /** @lends AbstractRadioButton# */
 {
+
     /**
      * Dispatched when the radio button is activated through a mouse click,
      * finger tap, or when focused and the spacebar is pressed.
@@ -45,6 +47,10 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
         }
     },
 
+    /**
+     * Whether the user is pressing the radio button.
+     * @type {boolean}
+     */
     active: {
         value: false
     },
@@ -53,6 +59,10 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
         value: null
     },
 
+    /**
+     * Whether this radio button is checked.
+     * @type {boolean}
+     */
     checked: {
         set: function(value) {
             this._checked = value;
@@ -62,6 +72,10 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
         }
     },
 
+    /**
+     * Whether this radio button is enabled.
+     * @type {boolean}
+     */
     enabled: {
         value: true
     },
@@ -70,6 +84,11 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
         value: null
     },
 
+    /**
+     * The radio button controller that ensures that only one radio button in
+     * its `content` is `checked` at any time.
+     * @type {RadioButtonController}
+     */
     radioButtonController: {
         set: function(value) {
             if (this._radioButtonController) {
@@ -118,7 +137,8 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
     },
 
     /**
-     Handle press event from press composer
+     * Handle press event from press composer.
+     * @private
      */
     handlePress: {
         value: function(/* event */) {
@@ -134,8 +154,8 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
     },
 
     /**
-     Called when all interaction is over.
-     @private
+     * Called when all interaction is over.
+     * @private
      */
     handlePressCancel: {
         value: function(/* event */) {
@@ -151,4 +171,5 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
             this._pressComposer.addEventListener("pressCancel", this, false);
         }
     }
+
 });

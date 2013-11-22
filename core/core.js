@@ -46,7 +46,11 @@ var Object_prototype = Object.prototype;
 var CONSTRUCTOR_COMPATIBILITY = true;
 
 /**
- @class Montage
+ * The Montage constructor provides conveniences for sub-typing
+ * ([specialize]{@link Montage.specialize}) and common methods for Montage
+ * prototype chains.
+ * @class Montage
+ * @classdesc The basis of all types using the MontageJS framework.
  */
 var Montage = exports.Montage = function Montage() {};
 
@@ -98,6 +102,23 @@ var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;
 var PROTO_PROPERTIES_BLACKLIST = {"_montage_metadata": 1, "__state__": 1};
 var FUNCTION_PROPERTIES = Object.getOwnPropertyNames(Function);
 
+/**
+ * Customizes a type with idiomatic JavaScript constructor and prototype
+ * inheritance, using ECMAScript 5 property descriptors with customizations
+ * for common usage in MontageJS.
+ *
+ * See {@link Montage.defineProperty}
+ * @method Montage.specialize
+ * @param {Object} prototypeProperties a object mapping property names to
+ * customized Montage property descriptors, to be applied to the new
+ * prototype
+ * @param {?Object} constructorProperties a object mapping property names to
+ * customized Montage property descriptors, to be applied to the new
+ * constructor
+ * @return {function} a constructor function for the new type, which
+ * derrives prototypically from `this`, with a prototype that inherits
+ * `this.prototype`, with the given property descriptors applied.
+ */
 Object.defineProperty(Montage, "specialize", {
     value: function specialize(prototypeProperties, constructorProperties) {
         var constructor, prototype, names, propertyName, property, i, constructorProperty,
@@ -259,23 +280,7 @@ if (!PROTO_IS_SUPPORTED) {
     };
 }
 
-/**
-    Creates a new Montage object.
-    @function Montage.create
-    @param {Object} aPrototype The prototype object to create the new object from. If not specified, the prototype is the Montage prototype.
-    @param {Object} [propertyDescriptor] An object that contains the initial properties and values for the new object.
-    @returns The new object
-    @example
-    <caption>Creating a "empty" Montage object, using Montage as the prototype</caption>
-    var alpha = Montage.create();
-    @example
-    <caption>Creating a new Montage component with a property descriptor object.</caption>
-    var Button = Component.specialize( {
-        state: {
-            value: null
-        }
-    });
-*/
+// DEPRECATED
 Object.defineProperty(Montage, "create", {
     configurable: true,
     value: function(aPrototype, propertyDescriptors) {
@@ -307,8 +312,8 @@ var extendedPropertyAttributes = [SERIALIZABLE];
 
 // Extended property attributes, the property name format is "_" + attributeName + "AttributeProperties"
 /**
-@member external:Object#extendedPropertyAttributes
-*/
+ * @member external:Object#extendedPropertyAttributes
+ */
 extendedPropertyAttributes.forEach(function(name) {
     Object.defineProperty(Object.prototype, UNDERSCORE + name + ATTRIBUTE_PROPERTIES, {
         enumerable: false,
@@ -319,19 +324,34 @@ extendedPropertyAttributes.forEach(function(name) {
 });
 
 /**
-    Defines a property on a Montage object.
-    @function Montage.defineProperty
-    @param {Object} obj The object on which to define the property.
-    @param {String} prop The name of the property to define, or modify.
-    @param {Object} descriptor A descriptor object that defines the properties being defined or modified.
-    @example
-    Montage.defineProperty(Object.prototype, "_eventListenerDescriptors", {
-        enumerable: true | false,
-        serializable: "reference" | "value" | "auto" | false,
-        value: null,
-        writable: true | false
-    });
-*/
+ * Defines a property on an object using a Montage property descriptor.
+ * Montage property descriptors extend and slightly vary ECMAScript 5 property
+ * descriptors.
+ *
+ *  - `value`
+ *  - `get`
+ *  - `set`
+ *  - `enumerable` is `true` by default, but `false` if `value` is a function
+ *  - `writable` is `true` by default, but `false` if the `name` begins with
+ *    an underscore, `_`.
+ *  - `configurable` is `true` by default
+ *  - `distinct` is deprecated, but conveys the intention that the `value`
+ *    should be duplicated for each instance, but the means of cloning is
+ *    ill-defined and temperamental.
+ *
+ * @function Montage.defineProperty
+ * @method Montage.defineProperty
+ * @param {Object} object The object on which to define the property.
+ * @param {string} name The name of the property to define, or modify.
+ * @param {Object} descriptor A descriptor object that defines the properties being defined or modified.
+ * @example
+ * Montage.defineProperty(Object.prototype, "_eventListenerDescriptors", {
+ *     enumerable: true | false,
+ *     serializable: "reference" | "value" | "auto" | false,
+ *     value: null,
+ *     writable: true | false
+ * });
+ */
 Object.defineProperty(Montage, "defineProperty", {
 
     value: function(obj, prop, descriptor) {
@@ -342,7 +362,7 @@ Object.defineProperty(Montage, "defineProperty", {
         var isValueDescriptor = (VALUE in descriptor);
 
         if (DISTINCT in descriptor && !isValueDescriptor) {
-            throw ("Cannot use distinct attribute on non-value property '" + prop + "'");
+            throw new TypeError("Cannot use distinct attribute on non-value property '" + prop + "'");
         }
 
 
@@ -591,11 +611,14 @@ Object.defineProperty(Montage, "defineProperty", {
     }});
 
 /**
-    Description Defines one or more new properties to an object, or modifies existing properties on the object.
-    @function Montage.defineProperties
-    @param {Object} obj The object to which the properties are added.
-    @param {Object} properties An object that contains one or more property descriptor objects.
-*/
+ * Defines one or more new properties to an object, or modifies existing
+ * properties on the object.
+ * @see {@link Montage.defineProperty}
+ * @function Montage.defineProperties
+ * @param {Object} object The object to which the properties are added.
+ * @param {Object} properties An object that maps names to Montage property
+ * descriptors.
+ */
 Object.defineProperty(Montage, "defineProperties", {value: function(obj, properties) {
     if (typeof properties !== "object" || properties === null) {
         throw new TypeError("Properties must be an object, not '" + properties + "'");
@@ -805,19 +828,45 @@ var superForSetImplementation = function (propertyName) {
     return superForImplementation(this, "set", propertyName);
 };
 
+/**
+ * Calls the method with the same name as the caller from the parent of the
+ * constructor that contains the caller, falling back to a no-op if no such
+ * method exists.
+ * @method Montage.super
+ * @return {function} this constructor’s parent constructor.
+ */
 Montage.defineProperty(Montage, "super", {
     get: superImplementation,
     enumerable: false
 });
+
+/**
+ * Calls the method with the same name as the caller from the parent of the
+ * prototype that contains the caller, falling back to a no-op if no such
+ * method exists.
+ */
 Montage.defineProperty(Montage.prototype, "super", {
     get: superImplementation,
     enumerable: false
 });
 
+/**
+ * Calls the method with the given name from the parent of the constructor that
+ * contains the caller, falling backto no-op if no such method exists.
+ * @param {string} name
+ * @param ...arguments to forward to the parent method
+ */
 Montage.defineProperty(Montage, "superForValue", {
     value: superForValueImplementation,
     enumerable: false
 });
+
+/**
+ * Calls the method with the given name from the parent of the prototype that
+ * contains the caller, falling backto no-op if no such method exists.
+ * @param {string} name
+ * @param ...arguments to forward to the parent method
+ */
 Montage.defineProperty(Montage.prototype, "superForValue", {
     value: superForValueImplementation,
     enumerable: false
@@ -1052,7 +1101,7 @@ Montage.defineProperty(Montage.prototype, "identifier", {
 
 /**
     Returns true if two objects are equal, otherwise returns false.
-    @function Montage.equals
+    @function Montage#equals
     @param {Object} anObject The object to compare for equality.
     @returns {Boolean} Returns <code>true</code> if the calling object and
     <code>anObject</code> are identical and their <code>uuid</code> properties
