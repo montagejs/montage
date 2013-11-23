@@ -133,11 +133,10 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
 
     draw: {
         value: function() {
-            var value = this.value,
-                typeofValue = typeof value;
-            if (value === null || typeofValue === "undefined") {
+            var value = this.value;
+            if (value === null ||  typeof value === "undefined") {
                 this.element.value = "";
-            } else if (typeofValue === "boolean" || typeofValue === "object" || typeofValue === "number") {
+            } else if ( typeof value === "boolean" ||  typeof value === "object" ||  typeof value === "number") {
                 this.element.value = value.toString();
             } else {
                 this.element.value = value;
