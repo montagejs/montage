@@ -1041,11 +1041,12 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     _createIteration: {
         value: function () {
             var self = this,
-                switchPath = this.getPath('switchPath'),
+                switchPath,
                 iteration;
 
-            if (switchPath) {
-                switchPath = this.getPath(switchPath); // Expand FRB expression.
+            iteration = new this.Iteration().initWithRepetition(this);
+            if (this.switchPath) {
+                switchPath = iteration.getPath(this.switchPath); // Expand FRB expression.
                 var element = this._getDomArgument(this.element, switchPath);
                 if (!element) {
                     throw new Error("Cannot find " + JSON.stringify(switchPath) + ""); // TODO: better error message
@@ -1053,8 +1054,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 self._iterationTemplate = self.innerTemplate.createTemplateFromDomElement(element);
                 self._iterationTemplate.setInstances(self.innerTemplate._instances);
             }
-
-            iteration = new this.Iteration().initWithRepetition(this);
 
             this._iterationCreationPromise = this._iterationCreationPromise
             .then(function() {
