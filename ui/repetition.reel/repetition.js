@@ -819,8 +819,11 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
             // We need to clone the innerTemplate because this repetition
             // might be used in different contexts and with different template
-            // arguments making it having diferent external objects in its
+            // arguments making it having different external objects in its
             // instances.
+            //
+            // NV: when switchPath specified, iterationTemplate gets overwritten in _createIteration method
+            // We might want to avoid cloning at this case.
             iterationTemplate = this.innerTemplate.clone();
             serialization = iterationTemplate.getSerialization();
             serializationObject = serialization.getSerializationObject();
@@ -830,20 +833,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             serializationObject[this._iterationLabel] = {};
             iterationTemplate.setObjects(serializationObject);
 
-            var switchPath = this.getPath('switchPath');
-            if (switchPath) {
-                switchPath = this.getPath(switchPath); // Expand FRB expression.
-                var element = this._getDomArgument(this.element, switchPath);
-                if (!element) {
-                    throw new Error("Cannot find " + JSON.stringify(switchPath) + ""); // TODO: better error message
-                }
-                self._iterationTemplate = self.innerTemplate.createTemplateFromDomElement(element);
-                self._iterationTemplate.setInstances(self.innerTemplate._instances);
-            } else {
-                self._iterationTemplate = iterationTemplate;
-                if (self.innerTemplate.hasParameters())
-                    self._expandIterationTemplateParameters();
-            }
+            self._iterationTemplate = iterationTemplate;
+            if (self.innerTemplate.hasParameters())
+                self._expandIterationTemplateParameters();
 
             // Erase the initial child component trees. The initial document
             // children will be purged on first draw.  We use the innerTemplate
@@ -1010,7 +1002,20 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     _createIteration: {
         value: function () {
             var self = this,
-                iteration = new this.Iteration().initWithRepetition(this);
+                switchPath = this.getPath('switchPath'),
+                iteration;
+
+            if (switchPath) {
+                switchPath = this.getPath(switchPath); // Expand FRB expression.
+                var element = this._getDomArgument(this.element, switchPath);
+                if (!element) {
+                    throw new Error("Cannot find " + JSON.stringify(switchPath) + ""); // TODO: better error message
+                }
+                self._iterationTemplate = self.innerTemplate.createTemplateFromDomElement(element);
+                self._iterationTemplate.setInstances(self.innerTemplate._instances);
+            }
+
+            iteration = new this.Iteration().initWithRepetition(this);
 
             this._iterationCreationPromise = this._iterationCreationPromise
             .then(function() {
