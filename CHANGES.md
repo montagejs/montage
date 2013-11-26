@@ -1,3 +1,14 @@
+### v0.13.8
+
+-  **AbstractTextField**
+
+   Correctly handle setting TextField to 0. This specific value was being
+   ignored.
+
+-  **AbstractSlider**
+
+   Improve implementation to only use two elements.
+
 ### v0.13.7
 
 -  **Montage**
