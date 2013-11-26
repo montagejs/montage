@@ -1,7 +1,8 @@
 {
     "owner": {
         "properties": {
-            "element": {"#": "component"}
+            "element": {"#": "component"},
+            "rep": {"@": "repetition"}
         }
     },
 
@@ -9,8 +10,11 @@
         "prototype": "montage/ui/repetition.reel",
         "properties": {
             "element": {"#": "repetition"},
-            "switchPath": "'admin'",
-            "content": [{"name": "John"}, {"name": "Mary"}]
+            "switchPath": "rep.isEven() ? 'admin' : 'user'",
+            "content": [
+                {"name": "John"},
+                {"name": "Mary"}
+            ]
         }
     },
 
