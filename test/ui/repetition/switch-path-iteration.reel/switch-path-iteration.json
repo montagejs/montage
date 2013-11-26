@@ -1,0 +1,36 @@
+{
+    "owner": {
+        "properties": {
+            "element": {"#": "component"}
+        }
+    },
+
+    "repetition": {
+        "prototype": "montage/ui/repetition.reel",
+        "properties": {
+            "element": {"#": "repetition"},
+            "switchPath": "'admin'",
+            "content": [{"name": "John"}, {"name": "Mary"}]
+        }
+    },
+
+    "admin": {
+        "prototype": "montage/ui/text.reel",
+        "properties": {
+            "element": {"#": "admin"}
+        },
+        "bindings": {
+            "value": {"<-": "@repetition.objectAtCurrentIteration.name"}
+        }
+    },
+
+    "user": {
+        "prototype": "montage/ui/text.reel",
+        "properties": {
+            "element": {"#": "user"}
+        },
+        "bindings": {
+            "value": {"<-": "@repetition.objectAtCurrentIteration.name"}
+        }
+    }
+}
