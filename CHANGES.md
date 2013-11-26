@@ -4,6 +4,15 @@
 
    Remove reference to alpha state in readme.
 
+-  **AbstractTextField**
+
+   Correctly handle setting TextField to 0. This specific value was being
+   ignored.
+
+-  **AbstractSlider**
+
+   Improve implementation to only use two elements.
+
 ### v0.13.7
 
 -  **Montage**
