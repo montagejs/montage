@@ -1,3 +1,15 @@
+### v0.13.7
+
+-  **Montage**
+
+   Uprev Collections and FRB.
+
+-  **PressComposer**
+
+   Make it only work for actions with a single touch.
+   Fix issue with nested PressComposers, only the most outer one would capture
+   the event.
+
 ### v0.13.6
 
 -  **Montage**
