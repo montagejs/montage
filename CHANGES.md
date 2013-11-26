@@ -12,7 +12,8 @@
 
 -  **PressComposer**
 
-   Fix issue with capturing the pointer in touch to make nested composers work better.
+   Fix issue with capturing the pointer in touch to make nested composers work better only the most outer one would
+   capture the event.
    PressComposer now only works with a one touch press gesture.
    Removed touch listeners on correct phase to stop leaking listeners.
 
