@@ -69,7 +69,11 @@ var RangeSelection = function(content, rangeController) {
                 var last = plusLength ? plus[plusLength-1] : this.one();
                 args = [0, oldLength, last];
             } else if (this.rangeController.avoidsEmptySelection && newLength === 0) {
-                args = [1, howMany];
+                if (this.rangeController.content.has(this[0])) {
+                    args = [1, this.length-1];
+                } else {
+                    args = [0, this.length, this.rangeController.content.one()];
+                }
             } else {
                 args = [start, howMany].concat(plus);
             }

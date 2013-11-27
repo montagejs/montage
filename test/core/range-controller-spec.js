@@ -154,6 +154,15 @@ describe("core/range-controller-spec", function() {
                     rangeController.selection.splice(0, 100);
                     expect(rangeController.selection.toArray()).toEqual([0]);
                 });
+
+                it("does not have an empty selection when selected content is removed", function () {
+                    rangeController.multiSelect = false;
+                    rangeController.selection = [0];
+
+                    rangeController.content.delete(0);
+                    expect(rangeController.selection.length).toBe(1);
+                    expect(rangeController.selection.toArray()).not.toEqual([0]);
+                });
             });
 
             describe("when false", function () {
