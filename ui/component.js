@@ -19,7 +19,8 @@ var Montage = require("montage").Montage,
     drawPerformanceLogger = require("core/logger").logger("Drawing performance"),
     drawLogger = require("core/logger").logger("drawing"),
     defaultEventManager = require("core/event/event-manager").defaultEventManager,
-    Set = require("collections/set");
+    Set = require("collections/set"),
+    Map = require("collections/map");
 
 /**
  * @requires montage/ui/component-description
@@ -2496,6 +2497,82 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             }
             // classList
             this._drawClassListIntoComponent();
+        }
+    },
+
+    /**
+     * A class name automatically added to the component and used as a prefix
+     * of its style classes. Defaults to the component's name if not overridden.
+     *
+     * See _styleClassName for more information on the format of style class names.
+     */
+    componentClassName: {
+        get: function () {
+            return Montage.getInfoForObject(this).objectName;
+        }
+    },
+
+    _styles: {
+        value: null
+    },
+
+    /**
+     * styles: a map of the component's style properties on each style axis.
+     *
+     * The setter method should not be used. It is there so that when the deserializer
+     * sets `styles` to the object provided in the serialization, we can coerce it to
+     * an observable Map instead.
+     */
+    styles: {
+        get: function () {
+            if (this._styles === null) {
+                this._styles = new Map();
+                this._subscribeToStylesMapChanges();
+            }
+
+            return this._styles;
+        },
+        set: function (values) {
+            this.styles.addEach(values);
+        }
+    },
+
+    _subscribeToStylesMapChanges: {
+        value: function() {
+            this._unsubscribeToStylesBeforeMapChanges = this._styles.addBeforeMapChangeListener(this, "styles");
+            this._unsubscribeToStylesMapChanges = this._styles.addMapChangeListener(this, "styles");
+        }
+    },
+
+    _sanitizeForClassName: {
+        value: function(value) {
+            return String(value).replace(/\s/g, '-')
+        }
+    },
+
+    /**
+     * The class names added to a component for its styles are of the format
+     * {componentClassName}--{axis}-{value}, e.g.: digit-Button--size-large
+     *
+     * See componentClassName to customize the prefix.
+     */
+    _styleClassName: {
+        value: function(axis, value) {
+            return this._sanitizeForClassName(this.componentClassName) + "--" + 
+                this._sanitizeForClassName(axis) + "-" + 
+                this._sanitizeForClassName(value);
+        }
+    },
+
+    handleStylesMapWillChange: {
+        value: function (value, key, map) {
+            this.classList.remove(this._styleClassName(key, map.get(key)));
+        }
+    },
+
+    handleStylesMapChange: {
+        value: function (value, key, map) {
+            this.classList.add(this._styleClassName(key, value));
         }
     },
 

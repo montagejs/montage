@@ -1116,6 +1116,37 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
 
         });
 
+        describe("using styles map", function() {
+            describe("via serialization", function() {
+                it("should add appropriate classes from the template", function() {
+                    expect(test.componentStyles.styles.get("in-properties")).toBe(true);
+                    var className = test.componentStyles._styleClassName('in-properties', true);
+                    expect(test.componentStyles.classList.has(className)).toBe(true);
+                });
+            });
+            describe("via bindings", function() {
+                it("should add appropriate classes for the initial value", function() {
+                    expect(test.componentStyles.styles.get("in-bindings")).toBe("a");
+                    var className = test.componentStyles._styleClassName('in-bindings', "a");
+                    expect(test.componentStyles.classList.has(className)).toBe(true);
+                });
+                it("should update in response to bindings changes", function() {
+                    test.componentStyles.inBindings = "b";
+                    expect(test.componentStyles.styles.get("in-bindings")).toBe("b");
+                    var className = test.componentStyles._styleClassName('in-bindings', "b");
+                    expect(test.componentStyles.classList.has(className)).toBe(true);
+                });
+            });
+            describe("via API", function() {
+                it("should add appropriate classes when the styles map is changed programmatically", function() {
+                    test.componentStyles.styles.set("in-program", true);
+                    expect(test.componentStyles.styles.get("in-program")).toBe(true);
+                    var className = test.componentStyles._styleClassName('in-program', "true");
+                    expect(test.componentStyles.classList.has(className)).toBe(true);
+                });
+            });
+        })
+
         describe("enter document", function() {
             var componentA,
                 componentB,
