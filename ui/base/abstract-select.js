@@ -45,9 +45,11 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
                 "values": {
                     "<->": "contentController.selection.rangeContent()"
                 },
-                "value": {
-                    "<->": "values.one()"
-                },
+                // FIXME: due to issues with 2 way bindings with rangeContent()
+                // we aren't currently able to have this "value" binding.
+                // "value": {
+                //     "<->": "values.one()"
+                // },
                 "contentController.multiSelect": {
                     "<-": "multiSelect"
                 },
@@ -62,6 +64,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
 
             // Need to draw when "content" or "values" change
             this.addRangeAtPathChangeListener("content", this, "handleContentRangeChange");
+            // TODO: "value" <-> "values.one()"
             this.addRangeAtPathChangeListener("values", this, "handleValuesRangeChange");
             this.classList.add("matte-Select");
         }
@@ -127,6 +130,10 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
         set: function(value) {
             if (value !== this._value) {
                 this._value = value;
+                // TODO: "value" <-> "values.one()"
+                if (this.values[0] !== value) {
+                    this.values.splice(0, this.values.length, value);
+                }
                 this.needsDraw = true;
             }
         }
@@ -217,6 +224,16 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
 
     handleContentRangeChange: {
         value: function() {
+            // When the content changes we need to update the "value" if none is
+            // set (new content) or if the previous "value" was removed in this
+            // range change.
+            // FIXME: we only operate on the selection and not on the "values"
+            // to avoid issues with 2-way binding to rangeContent().
+            if (this.contentController.selection.length === 0 &&
+                this.contentController.organizedContent.length > 0) {
+                this.contentController.selection.push(this.contentController.organizedContent[0]);
+            }
+
             this._contentIsDirty = true;
             this.needsDraw = true;
         }
@@ -224,8 +241,10 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
 
     handleValuesRangeChange: {
         value: function() {
-            // FIXME: seems like the bindings should handle this? But they don't.
-            this.value = this.values.one();
+            // TODO: "value" <-> "values.one()"
+            if (this.values.length > 0) {
+                this.value = this.values.one();
+            }
             this.needsDraw = true;
         }
     },
