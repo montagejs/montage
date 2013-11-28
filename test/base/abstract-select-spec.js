@@ -204,6 +204,14 @@ describe("test/base/abstract-select-spec", function () {
                 expect(aSelect.values[0]).toBe(content[1]);
                 expect(aSelect.values[1]).toBe(content[2]);
             });
+
+            it("should copy the contents when setting a new value", function() {
+                // This is needed to bind to a rangeContent()
+                aSelect.values = [content[1]];
+                aSelect.contentController.selection.push(content[2]);
+
+                expect(aSelect.values).toEqual([content[1], content[2]]);
+            });
         });
 
         describe("multiSelect", function() {
