@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "montage-testing": "~0.2.0",
-    "mr": "~0.13.0",
+    "mr": "~0.14.1",
     "q": "0.9.6",
     "q-io": "~1.7.2",
     "jshint": "~2.0.1"
