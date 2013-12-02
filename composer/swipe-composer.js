@@ -8,69 +8,46 @@ var Montage = require("montage").Montage,
 
 /**
  * @class SwipeComposer
- * @classdesc Detects a swipe gesture.
+ * @classdesc `Composer` for detecting swipe gestures.
  * @extends Composer
  */
 exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
 
-/**
-    @function
-    @param {Element}
-    */
     load: {
         value: function() {
             document.addEventListener("touchstart", this, true);
         }
     },
 
-/**
-    @function
-    */
     unload: {
         value: function() {
             document.removeEventListener("touchstart", this, true);
         }
     },
 
-    /**
-     TODO
-     @private
-     */
     _startX: {
         enumerable: false,
         value: 0
     },
 
-    /**
-     TODO
-     @private
-     */
     _startY: {
         enumerable: false,
         value: 0
     },
 
-    /**
-     TODO
-     @private
-     */
     _deltaX: {
         enumerable: false,
         value: 0
     },
 
-    /**
-     TODO
-     @private
-     */
     _deltaY: {
         enumerable: false,
         value: 0
     },
 
     /**
-     TODO
-     @private
+     * The number of pixels a gesture must continue to be recognized as a swipe.
+     * @type {number}
      */
     _threshold: {
         enumerable: false,
@@ -78,28 +55,20 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
     },
 
     /**
-     TODO
-     @private
+     * The maximum angle (in degrees) away from horizontal or vertical
+     * for a gesture to be recognized as a swipe.
+     * @type {number}
      */
     _thresholdSwipeAngle: {
         enumerable: false,
         value: 20
     },
 
-    /**
-     TODO
-     @private
-     */
     _startTimestamp: {
         enumerable: false,
         value: 0
     },
 
-    /**
-     TODO
-     @function
-     @param {Event} event The event.
-     */
     captureTouchstart: {
         value: function(event) {
             this._reset();
@@ -114,10 +83,6 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
         }
     },
 
-    /**
-     TODO
-     @private
-     */
     _reset: {
         enumerable: false,
         value: function() {
@@ -129,20 +94,11 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
         }
     },
 
-    /**
-     TODO
-     @private
-     */
     _startSwipeAngle: {
         enumerable: false,
         value: null
     },
 
-    /**
-     TODO
-     @function
-     @param {Event} event The event.
-     */
     captureTouchcancel: {
         value: function(event) {
             document.removeEventListener("touchmove", this, true);
@@ -151,11 +107,6 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
         }
     },
 
-    /**
-     TODO
-     @function
-     @param {Event} event The event.
-     */
     captureTouchmove: {
         value: function(event) {
             event.preventDefault();
@@ -215,10 +166,6 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
         }
     },
 
-    /**
-     TODO
-     @private
-     */
     _findSwipeAngle: {
         enumerable: false,
         value: function(dX, dY) {
@@ -227,11 +174,6 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
         }
     },
 
-    /**
-     TODO
-     @function
-     @param {Event} event The event.
-     */
     captureTouchend: {
         value: function(event) {
 
@@ -282,10 +224,6 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
         }
     },
 
-    /**
-     TODO
-     @private
-     */
     _findVelocity: {
         enumerable: false,
         value: function(deltaTime) {
