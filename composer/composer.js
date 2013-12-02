@@ -7,7 +7,10 @@ var Montage = require("montage").Montage,
 /**
  * @class Composer
  * @extends Target
- * @summary The Composer prototype is the base class for all composers in Montage. There are two types of composers. One type, called _gesture_ composers listen for and aggregrate low-level events into higher order events (for example, [PressComposer]{@link PressComposer}. The second type of composer is called _calculation_ composers
+ * @summary The Composer prototype is the base class for all composers in Montage. There are two types of 
+ * composers. One type, called a _gesture_ composer, listens for and aggregrate low-level events into higher 
+ * level events (for example, [PressComposer]{@link PressComposer}. The second type of composer is called 
+ * a _calculation_ composer.
  */
 exports.Composer = Target.specialize( /** @lends Composer# */ {
 
@@ -15,11 +18,11 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
         value: null
     },
 
-/**
-    The Montage component that the composer will listen for mouse events on.
-    @type {Component}
-    @default null
-*/
+    /**
+     * The Montage component that the composer will listen for mouse events on.
+     * @type {Component}
+     * @default null
+     */
     component: {
         get: function() {
             return this._component;
@@ -33,11 +36,12 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
         value: null
     },
 
-/**
-    The DOM element that the composer will listen for events on. If no element is specified then the composer will use the element associated with its <code>component</code> property.
-    @type {Component}
-    @default null
-*/
+    /**
+     * The DOM element that the composer will listen for events on. If no element is specified then the 
+     * composer will use the element associated with its <code>component</code> property.
+     * @type {Component}
+     * @default null
+     */
     element: {
         get: function() {
             return this._element;
@@ -49,11 +53,13 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
 
 
     /**
-     * This property controls when a composer's <code>load()</code> method is called, which is where the composer create event listeners. If `false`
-     * the composer's <code>load()</code> method is called immediately as part of the next draw
-     * cycle after <code>addComposer()</code> has been called on its associated component.  If
-     * `true`, the loading of the composer is delayed until its associated component
-     * has had its <code>prepareForActivationEvents()</code> called. Delaying the creation of event listeners until necessary can improve performance.
+     * This property controls when a composer's <code>load()</code> method is called, which is where the 
+     * composer creates event listeners: 
+     * - If `false`the composer's <code>load()</code> method is called immediately as part of the next draw 
+     * cycle after <code>addComposer()</code> has been called on its associated component.  
+     * - If `true`, the loading of the composer is delayed until its associated component has had its 
+     * <code>prepareForActivationEvents()</code> called. Delaying the creation of event listeners until 
+     * necessary can improve performance.
      * @default false
      */
     lazyLoad: {
@@ -65,9 +71,11 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
     },
 
     /**
-        This property should be set to 'true' when the composer wants to have its <code>frame()</code> method executed during the next draw cycle.Setting this property to 'true' will cause Montage to schedule a new draw cycle if one has not already been.
-        @type {boolean}
-        @default false
+     * This property should be set to 'true' when the composer wants to have its <code>frame()</code> method 
+     * executed during the next draw cycle. Setting this property to 'true' will cause Montage to schedule a 
+     * new draw cycle if one has not already been scheduled.
+     * @type {boolean}
+     * @default false
      */
     needsFrame: {
         set: function(value) {
@@ -86,9 +94,10 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
     },
 
     /**
-        This method will be invoked by the framework at the beginning of a draw cycle. This is where a composer implement its update logic.
-        @function
-        @param {Date} timestamp The time that the draw cycle started
+     * This method will be invoked by the framework at the beginning of a draw cycle. This is where a 
+     * composer implement its update logic.
+     * @function
+     * @param {Date} timestamp The time that the draw cycle started
      */
     frame: {
         value: function(timestamp) {
@@ -98,8 +107,8 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
 
 
     /*
-        Invoked by the framework to default the composer's element to the component's element if necessary.
-        @private
+     * Invoked by the framework to default the composer's element to the component's element if necessary.
+     * @private
      */
     _resolveDefaults: {
         value: function() {
@@ -110,8 +119,8 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
     },
 
     /*
-        Invoked by the framework to load this composer
-        @private
+     * Invoked by the framework to load this composer
+     * @private
      */
     _load: {
         value: function() {
@@ -123,9 +132,9 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
     },
 
     /**
-        Called when a composer should be loaded.  Any event listeners that the composer needs to install should
-        be installed in this method.
-        @function
+     * Called when a composer should be loaded. Any event listeners that the composer needs to install should
+     * be installed in this method.
+     * @function
      */
     load: {
         value: function() {
@@ -134,9 +143,9 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
     },
 
     /**
-        Called when a component removes a composer.  Any event listeners that the composer needs to remove should
-        be removed in this method and any additional cleanup should be performed.
-        @function
+     * Called when a component removes a composer. Any event listeners that the composer needs to remove should
+     * be removed in this method and any additional cleanup should be performed.
+     * @function
      */
     unload: {
         value: function() {
@@ -145,9 +154,9 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
     },
 
     /*
-        Called when a composer is part of a template serialization.  It's responsible for calling addComposer on
-        the component.
-        @private
+     * Called when a composer is part of a template serialization. It's responsible for calling `addComposer` on
+     * the component.
+     * @private
      */
     deserializedFromTemplate: {
         value: function() {
