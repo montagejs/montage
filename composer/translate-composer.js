@@ -23,11 +23,12 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             this.super();
         }
     },
+
     /**
-    These elements perform some native action when clicked/touched and so we
-    should not preventDefault when a mousedown/touchstart happens on them.
-    @private
-    */
+     * These elements perform some native action when clicked/touched and so we
+     * should not preventDefault when a mousedown/touchstart happens on them.
+     * @private
+     */
     _NATIVE_ELEMENTS: {
         value: ["A", "IFRAME", "EMBED", "OBJECT", "VIDEO", "AUDIO", "CANVAS",
             "LABEL", "INPUT", "BUTTON", "SELECT", "TEXTAREA", "KEYGEN",
@@ -64,6 +65,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * children.
      * The intention of the user is deduced by the time difference between
      * touchstart and the first touchmove.
+     * 
+     * @type {boolean}
      */
     stealChildrenPointer: {
         value: false
@@ -76,6 +79,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * devices
      * iPad: 127.5
      * Nexus 10 (4.2.2): 153.5
+     * 
+     * @type {number}
      */
     stealChildrenPointerThreshold: {
         value: 130
@@ -95,10 +100,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     /**
-        How many pixels to translate by for each pixel of cursor movement.
-        @type {Number}
-        @default 1
-    */
+     * How many pixels to translate by for each pixel of cursor movement.
+     * @type {Number}
+     * @default 1
+     */
     pointerSpeedMultiplier: {
         get: function() {
             return this._pointerSpeedMultiplier;
@@ -123,11 +128,12 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     _allowFloats: {
         value: false
     },
+
     /**
-        Allow (@link translateX} and {@link translateY} to be floats.
-        @type {Boolean}
-        @default false
-    */
+     * Allow (@link translateX} and {@link translateY} to be floats?
+     * @type {Boolean}
+     * @default false
+     */
     allowFloats: {
         get: function() {
             return this._allowFloats;
@@ -144,13 +150,14 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     _translateX: {
         value: 0
     },
+
     /**
-        Amount of translation in the X (left/right) direction. Can be inverted with
-        {@link invertXAxis}, and restricted to a range with
-        {@link minTranslateX} and {@link maxTranslateX}.
-        @type {Number}
-        @default 0
-    */
+     * Amount of translation in the X (left/right) direction. Can be inverted with
+     * {@link invertXAxis}, and restricted to a range with
+     * {@link minTranslateX} and {@link maxTranslateX}.
+     * @type {Number}
+     * @default 0
+     */
     translateX: {
         get: function() {
             return this._translateX;
@@ -180,13 +187,14 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     _translateY: {
         value: 0
     },
+    
     /**
-        Amount of translation in the Y (up/down) direction. Can be inverted with
-        {@link invertYAxis}, and restricted to a range with
-        {@link minTranslateY} and {@link maxTranslateY}.
-        @type {Number}
-        @default 0
-    */
+     * Amount of translation in the Y (up/down) direction. Can be inverted with
+     * {@link invertYAxis}, and restricted to a range with
+     * {@link minTranslateY} and {@link maxTranslateY}.
+     * @type {Number}
+     * @default 0
+     */
     translateY: {
         get: function() {
             return this._translateY;
@@ -216,11 +224,12 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     _minTranslateX: {
         value: null
     },
+
     /**
-        The minimum value {@link translateX} can take. If set to null then
-        there is no minimum.
-        @type {number|null}
-        @default null
+     * The minimum value {@link translateX} can take. If set to null then
+     * there is no minimum.
+     * @type {number|null}
+     * @default null
     */
     minTranslateX: {
         get: function() {
@@ -239,15 +248,17 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             }
         }
     },
+    
     _maxTranslateX: {
         value: null
     },
+
     /**
-        The maximum value {@link translateX} can take. If set to null then
-        there is no maximum.
-        @type {number|null}
-        @default null
-    */
+     * The maximum value {@link translateX} can take. If set to null then
+     * there is no maximum.
+     * @type {number|null}
+     * @default null
+     */
     maxTranslateX: {
         get: function() {
             return this._maxTranslateX;
@@ -269,12 +280,13 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     _minTranslateY: {
         value: null
     },
+
     /**
-        The minimum value {@link translateY} can take. If set to null then
-        there is no minimum.
-        @type {number|null}
-        @default null
-    */
+     * The minimum value {@link translateY} can take. If set to null then
+     * there is no minimum.
+     * @type {number|null}
+     * @default null
+     */
     minTranslateY: {
         get: function() {
             return this._minTranslateY;
@@ -292,15 +304,17 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             }
         }
     },
+
     _maxTranslateY: {
         value: null
     },
+
     /**
-        The maximum value {@link translateY} can take. If set to null then
-        there is no maximum.
-        @type {number|null}
-        @default null
-    */
+     * The maximum value {@link translateY} can take. If set to null then
+     * there is no maximum.
+     * @type {number|null}
+     * @default null
+     */
     maxTranslateY: {
         get: function() {
             return this._maxTranslateY;
@@ -322,13 +336,14 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     _axis: {
         value: "both"
     },
-    /**
-        Which axis translation is restricted to.
 
-        Can be "vertical", "horizontal" or "both".
-        @type {String}
-        @default "both"
-    */
+    /**
+     * Which axis translation is restricted to.
+     *
+     * Can be "vertical", "horizontal" or "both".
+     * @type {String}
+     * @default "both"
+     */
     axis: {
         get: function() {
             return this._axis;
@@ -349,15 +364,15 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     /**
-        Invert direction of translation on both axes.
-
-        This inverts the effect of cursor motion on both axes. For example
-        if set to true moving the mouse up will increase the value of
-        translateY instead of decreasing it.
-
-        Depends on invertXAxis and invertYAxis.
-        @type {Boolean}
-        @default false
+     * Invert direction of translation on both axes.
+     *
+     * This inverts the effect of cursor motion on both axes. For example
+     * if set to true moving the mouse up will increase the value of
+     * translateY instead of decreasing it.
+     *
+     * Depends on invertXAxis and invertYAxis.
+     * @type {Boolean}
+     * @default false
     */
     invertAxis: {
         depends: ["invertXAxis", "invertYAxis"],
@@ -369,16 +384,18 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             this.invertYAxis = value;
         }
     },
+
     _invertXAxis: {
         value: false
     },
-    /**
-        Invert direction of translation along the X axis.
 
-        This inverts the effect of left/right cursor motion on translateX.
-        @type {Boolean}
-        @default false
-    */
+    /**
+     * Invert direction of translation along the X axis.
+     *
+     * This inverts the effect of left/right cursor motion on translateX.
+     * @type {Boolean}
+     * @default false
+     */
     invertXAxis: {
         get: function() {
             return this._invertXAxis;
@@ -387,16 +404,18 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             this._invertXAxis = !!value;
         }
     },
+    
     _invertYAxis: {
         value: false
     },
-    /**
-        Invert direction of translation along the Y axis.
 
-        This inverts the effect of up/down cursor motion on translateX.
-        @type {Boolean}
-        @default false
-    */
+    /**
+     * Invert direction of translation along the Y axis.
+     *
+     * This inverts the effect of up/down cursor motion on translateX.
+     * @type {Boolean}
+     * @default false
+     */
     invertYAxis: {
         get: function() {
             return this._invertYAxis;
@@ -407,11 +426,11 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     /**
-        How fast the cursor has to be moving before translating starts. Only
-        applied when another component has claimed the pointer.
-        @type {Number}
-        @default 500
-    */
+     *  How fast the cursor has to be moving before translating starts. Only
+     *  applied when another component has claimed the pointer.
+     *  @type {Number}
+     *  @default 500
+     */
     startTranslateSpeed: {
         value: 500
     },
@@ -425,10 +444,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     /**
-        Whether to keep translating after the user has releases the cursor.
-        @type {Boolean}
-        @default true
-    */
+     * Whether to keep translating after the user has releases the cursor.
+     * @type {Boolean}
+     * @default true
+     */
     hasMomentum: {
         get: function() {
             return this._hasMomentum;
@@ -503,11 +522,11 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     /**
-    Returns if we should preventDefault on a touchstart/mousedown event.
-    @param {Event} The event
-    @returns {Boolean} Whether preventDefault should be called
-    @private
-    */
+     * Returns if we should preventDefault on a touchstart/mousedown event.
+     * @param {Event} The event
+     * @returns {Boolean} Whether preventDefault should be called
+     * @private
+     **/
     _shouldPreventDefault: {
         value: function(event) {
             return !!event.target.tagName && TranslateComposer._NATIVE_ELEMENTS.indexOf(event.target.tagName) === -1 && !event.target.isContentEditable;
@@ -515,12 +534,12 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     /**
-    Handle the mousedown that bubbled back up from beneath the element
-    If nobody else claimed this pointer, we should handle it now
-    @function
-    @param {Event} event TODO
-    @private
-    */
+     * Handle the mousedown that bubbled back up from beneath the element
+     * If nobody else claimed this pointer, we should handle it now
+     * @function
+     * @param {Event} event TODO
+     * @private
+     */
     handleMousedown: {
         value: function(event) {
             this._observedPointer = "mouse";
@@ -1003,6 +1022,12 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         }
     },
 
+    /* 
+     * Add an event listener to receive events generated by the `TranslateComposer`.
+     * @param {string} event type 
+     * @param {object|function} listener object or function
+     * @param {boolean} use capture instead of bubble
+     */
     addEventListener: {
         value: function(type, listener, useCapture) {
             Composer.addEventListener.call(this, type, listener, useCapture);
