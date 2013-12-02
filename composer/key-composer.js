@@ -20,6 +20,9 @@ var KEYPRESS_EVENT_TYPE = "keyPress",
  * @class KeyComposer
  * @summary A `Composer` that makes it easy to listen for specific key combinations and react to them.
  * @extends Composer
+ * @fires keyPress
+ * @fires longKeyPress
+ * @fires keyRelease
  * @example
  * keyComposer = KeyComposer.createKey(textComponent, "command+z", "undo");
  * keyComposer.addEventListener("keyPress", undoManager);
