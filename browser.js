@@ -34,10 +34,6 @@ function xhrSuccess(req) {
 // http://dl.dropbox.com/u/131998/yui/misc/get/browser-capabilities.html
 Require.read = function (url) {
 
-    if (URL.resolve(window.location, url).indexOf(FILE_PROTOCOL) === 0) {
-        throw new Error("XHR does not function for file: protocol");
-    }
-
     var request = new XMLHttpRequest();
     var response = Promise.defer();
 
@@ -66,7 +62,7 @@ Require.read = function (url) {
         request.onload = request.load = onload;
         request.onerror = request.error = onerror;
     } catch (exception) {
-        response.reject(exception.message, exception);
+        response.reject(exception);
     }
 
     request.send();
@@ -239,14 +235,11 @@ Require.makeLoader = function (config) {
     }
     return Require.MappingsLoader(
         config,
-        Require.ExtensionsLoader(
+        Require.LocationLoader(
             config,
-            Require.PathsLoader(
+            Require.MemoizedLoader(
                 config,
-                Require.MemoizedLoader(
-                    config,
-                    Loader(config)
-                )
+                Loader(config)
             )
         )
     );
