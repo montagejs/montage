@@ -219,7 +219,9 @@ var pathPropertyDescriptors = { /** @lends Montage# */
             }
 
             var observe = compileObserver(syntax);
-            var cancel = observe(autoCancelPrevious(emit), new Scope(this));
+            var scope = new Scope(this);
+            scope.beforeChange = beforeChange;
+            var cancel = observe(autoCancelPrevious(emit), scope);
 
             descriptor.cancel = cancel;
 
