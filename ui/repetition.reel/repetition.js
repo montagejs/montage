@@ -1007,7 +1007,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
             iteration = new this.Iteration().initWithRepetition(this);
             if (this.switchPath) {
-                switchPath = iteration.getPath(this.switchPath); // Expand FRB expression.
+                switchPath = this.getPath(this.switchPath); // Expand FRB expression.
                 var element = this._getDomArgument(this.element, switchPath);
                 if (!element) {
                     throw new Error("Cannot find " + JSON.stringify(switchPath) + ""); // TODO: better error message
