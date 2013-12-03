@@ -18,7 +18,7 @@ var KEYPRESS_EVENT_TYPE = "keyPress",
 
 /**
  * @class KeyComposer
- * @summary A `Composer` that makes it easy to listen for specific key combinations and react to them.
+ * @classdesc A `Composer` that makes it easy to listen for specific key combinations and react to them.
  * @extends Composer
  * @fires keyPress
  * @fires longKeyPress
@@ -30,55 +30,40 @@ var KEYPRESS_EVENT_TYPE = "keyPress",
  */
 var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyComposer# */ {
 
-    /**
-     * @private
-     */
     _isLoaded: {
         value: false
     },
 
-    /**
-     * @private
-     */
     _shouldDispatchEvent: {
         value: false
     },
 
-    /**
-     * @private
-     */
     shouldDispatchLongPress: {
         value: false
     },
 
-    /**
-     @private
-     */
     _longPressTimeout: {
         value: null
     },
 
-    /**
-     * @private
-     */
     _keyRegistered: {
         value: false
     },
 
-    /**
-     * @private
-     */
     _keys:{
         value: null
     },
 
     /**
-     * The sequence of keys to compose.
+     * The keyboard shortcut to listen to. One alphanumeric character or named non-alphanumeric key,
+     * possibly with modifiers connected by '+'. The full list of normalized keys and modifiers is in `KeyManager`.
+     * @example "j", "shift+j", "command+shift+j", "backspace", "win+pipe"
      * @type {string}
      * @default null
      */
     keys: {
         get: function() {
+            console.log(this._keys);
             return this._keys;
         },
         set: function(keys) {
@@ -92,16 +77,8 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
         }
     },
 
-    /**
-     * @private
-     */
     _identifier: { value: null },
 
-    /**
-     * The keyComposer's identifier.
-     * @type {string}
-     * @default null
-     */
     identifier: {
        get: function() {
            return this._identifier;
@@ -111,9 +88,6 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
         }
     },
 
-    /**
-     * @private
-     */
     load: {
         value: function() {
             // Only register the key if somebody is listening for, else let do it later
@@ -126,10 +100,6 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
         }
     },
 
-    /**
-     * unload method
-     * @private
-     */
     unload: {
         value: function() {
             this._isLoaded = false;
@@ -140,10 +110,10 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
 
     /**
      * Listen to find out when this `KeyComposer` detects a matching key press.
-     * @function
-     * @param {string} type. Any of the following types: keyPress, longKeyPress and keyRelease.
-     * @param {Object|function} listener. The listener object or function to call when dispatching the event.
-     * @param {boolean} useCapture. Specify if the listener want to be called during the capture phase of the event.
+     * @method
+     * @param {string} type Any of the following types: keyPress, longKeyPress and keyRelease.
+     * @param {Object|function} listener The listener object or function to call when dispatching the event.
+     * @param {boolean} useCapture Specify if the listener want to be called during the capture phase of the event.
      */
     addEventListener: {
         value: function(type, listener, useCapture) {
@@ -176,9 +146,6 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
         }
     },
 
-    /**
-     * @private
-     */
     constructor: {
         value: function() {
             // console.log("KEY CREATED")

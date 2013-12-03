@@ -15,6 +15,9 @@ var Montage = require("montage").Montage,
  * @fires press
  * @fires longPress
  * @fires pressCancel
+ * @classdesc The `PressComposer` abstracts away handling mouse and touch events
+ * that represent presses, allowing generic detection of presses, long presses, and 
+ * cancelled presses.
  */
 var PressComposer = exports.PressComposer = Composer.specialize(/** @lends PressComposer# */ {
 
@@ -37,6 +40,12 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     /**
      * Dispatched when a press lasts for longer than (@link longPressThreshold}
+     * On a long press, the sequence of events will be:
+     * - pressStart: as soon as the composer recognizes it is a press.
+     * - longPress: `longPressThreshold` after the pressStart, if the press has not yet ended.
+     * - press: when the press ends, if it isn't cancelled.
+     *
+     * Handlers of the `longPress` event can call `cancelPress` to prevent `press` being triggered.
      *
      * @event longPress
      * @memberof PressComposer
@@ -76,7 +85,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     },
 
     /**
-     * Delegate that implements <code>surrenderPointer</code>. See Component for
+     * Delegate that implements `surrenderPointer`. See Component for
      * explanation of what this method should do.
      *
      * @type {Object}
@@ -92,7 +101,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
      *
      * Can be used in a "longPress" event handler to prevent the "press" event
      * being fired.
-     * @returns Boolean true if a press was canceled, false if the composer was
+     * @returns boolean true if a press was canceled, false if the composer was
      * already in a unpressed or canceled state.
      */
     cancelPress: {
@@ -146,8 +155,8 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         value: 1000
     },
     /**
-     * How long a press has to last for a longPress event to be dispatched
-     * @type number
+     * How long a press has to last (in milliseconds) for a longPress event to be dispatched
+     * @type number 
      */
     longPressThreshold: {
         get: function() {
@@ -285,12 +294,12 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     /**
      * Checks if we are observing one of the changed touches. Returns the index
      * of the changed touch if one matches, otherwise returns false. Make sure
-     * to check against <code>!== false</code> or <code>=== false</code> as the
+     * to check against `!== false` or `=== false` as the
      * matching index might be 0.
      * 
      * @function
      * @private
-     * @returns {Number|Boolean} The index of the matching touch, or false
+     * @returns {number|boolean} The index of the matching touch, or false
      */
     _changedTouchisObserved: {
         value: function(changedTouches) {
@@ -464,7 +473,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 /*
  * @class PressEvent
  * @inherits MutableEvent
- * @summary The event dispatched by the `PressComposer`, providing access to 
+ * @classdesc The event dispatched by the `PressComposer`, providing access to 
  * the raw DOM event and proxying its properties.
  */
 var PressEvent = (function(){

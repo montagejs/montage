@@ -9,12 +9,15 @@ var Composer = require("composer/composer").Composer,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
 /**
- * Provides translateX and translateY properties that are updated when the
- * user clicks/touches and drags on the given element. Should be used wherever
- * a user interacts with an element by dragging it.
  *
  * @class TranslateComposer
  * @extends Composer
+ * @emits translate
+ * @emits translateStart
+ * @emits translateEnd
+ * @classdesc Abstracts listening for touch and mouse events representing a drag.
+ * The emitted events provide translateX and translateY properties that are updated when the
+ * user drags on the given element. Should be used wherever a user interacts with an element by dragging.
  */
 var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @lends TranslateComposer# */ {
 
@@ -101,7 +104,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     /**
      * How many pixels to translate by for each pixel of cursor movement.
-     * @type {Number}
+     * @type {number}
      * @default 1
      */
     pointerSpeedMultiplier: {
@@ -131,7 +134,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     /**
      * Allow (@link translateX} and {@link translateY} to be floats?
-     * @type {Boolean}
+     * @type {boolean}
      * @default false
      */
     allowFloats: {
@@ -155,7 +158,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * Amount of translation in the X (left/right) direction. Can be inverted with
      * {@link invertXAxis}, and restricted to a range with
      * {@link minTranslateX} and {@link maxTranslateX}.
-     * @type {Number}
+     * @type {number}
      * @default 0
      */
     translateX: {
@@ -192,7 +195,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * Amount of translation in the Y (up/down) direction. Can be inverted with
      * {@link invertYAxis}, and restricted to a range with
      * {@link minTranslateY} and {@link maxTranslateY}.
-     * @type {Number}
+     * @type {number}
      * @default 0
      */
     translateY: {
@@ -228,7 +231,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     /**
      * The minimum value {@link translateX} can take. If set to null then
      * there is no minimum.
-     * @type {number|null}
+     * @type {?number}
      * @default null
     */
     minTranslateX: {
@@ -256,7 +259,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     /**
      * The maximum value {@link translateX} can take. If set to null then
      * there is no maximum.
-     * @type {number|null}
+     * @type {?number}
      * @default null
      */
     maxTranslateX: {
@@ -284,7 +287,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     /**
      * The minimum value {@link translateY} can take. If set to null then
      * there is no minimum.
-     * @type {number|null}
+     * @type {?number}
      * @default null
      */
     minTranslateY: {
@@ -312,7 +315,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     /**
      * The maximum value {@link translateY} can take. If set to null then
      * there is no maximum.
-     * @type {number|null}
+     * @type {?number}
      * @default null
      */
     maxTranslateY: {
@@ -341,7 +344,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * Which axis translation is restricted to.
      *
      * Can be "vertical", "horizontal" or "both".
-     * @type {String}
+     * @type {string}
      * @default "both"
      */
     axis: {
@@ -371,7 +374,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * translateY instead of decreasing it.
      *
      * Depends on invertXAxis and invertYAxis.
-     * @type {Boolean}
+     * @type {boolean}
      * @default false
     */
     invertAxis: {
@@ -393,7 +396,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * Invert direction of translation along the X axis.
      *
      * This inverts the effect of left/right cursor motion on translateX.
-     * @type {Boolean}
+     * @type {boolean}
      * @default false
      */
     invertXAxis: {
@@ -413,7 +416,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * Invert direction of translation along the Y axis.
      *
      * This inverts the effect of up/down cursor motion on translateX.
-     * @type {Boolean}
+     * @type {boolean}
      * @default false
      */
     invertYAxis: {
@@ -428,7 +431,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     /**
      *  How fast the cursor has to be moving before translating starts. Only
      *  applied when another component has claimed the pointer.
-     *  @type {Number}
+     *  @type {number}
      *  @default 500
      */
     startTranslateSpeed: {
@@ -445,7 +448,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     /**
      * Whether to keep translating after the user has releases the cursor.
-     * @type {Boolean}
+     * @type {boolean}
      * @default true
      */
     hasMomentum: {
@@ -522,9 +525,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     /**
-     * Returns if we should preventDefault on a touchstart/mousedown event.
+     * Determines if the composer will call `preventDefault` on the DOM events it interprets.
      * @param {Event} The event
-     * @returns {Boolean} Whether preventDefault should be called
+     * @returns {boolean} whether preventDefault should be called
      * @private
      **/
     _shouldPreventDefault: {
@@ -537,7 +540,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * Handle the mousedown that bubbled back up from beneath the element
      * If nobody else claimed this pointer, we should handle it now
      * @function
-     * @param {Event} event TODO
+     * @param {Event} event
      * @private
      */
     handleMousedown: {
