@@ -54,7 +54,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
     /**
      * A constant 2d vector used to transform a drag vector into a
      * scroll vector, applicable only in the "linear"
-     * <code>scrollingMode</code>.
+     * `scrollingMode`.
      *
      * Bound to the eponymous property of the Flow that owns it.
      */

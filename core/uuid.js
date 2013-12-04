@@ -1,25 +1,25 @@
 /* <notice>
- Code from node-uuid: https://github.com/broofa/node-uuid/raw/master/uuid.js<br/>
- MIT license https://github.com/broofa/node-uuid/blob/master/LICENSE.md<br/>
+ Code from node-uuid: https://github.com/broofa/node-uuid/raw/master/uuid.js
+ MIT license https://github.com/broofa/node-uuid/blob/master/LICENSE.md
  </notice> */
 
 /**
-	@module montage/core/uuid
-    @requires montage/core/core
+ * @module montage/core/uuid
+ * @requires montage/core/core
 */
+
 /**
-    @class Uuid
-    @extends Montage
+ * @class Uuid
+ * @extends Montage
  */
 var CHARS = '0123456789ABCDEF'.split(''),
     FORMAT = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.split(''),
     Uuid = exports.Uuid = Object.create(Object.prototype, /** @lends Uuid# */ {
         /**
-            Returns a univerally unique ID (UUID).
-            @function
-            @param {Property} argument
-            @returns {String} The UUID.
-        */
+         * Returns a univerally unique ID (UUID).
+         * @function Uuid.generate
+         * @returns {string} The UUID.
+         */
         generate: {
             enumerable: false,
             value: generate
@@ -27,7 +27,7 @@ var CHARS = '0123456789ABCDEF'.split(''),
     });
 
 exports.generate = generate;
-function generate(argument) {
+function generate() {
     var c = CHARS, id = FORMAT, r;
 
     id[0] = c[(r = Math.random() * 0x100000000) & 0xf];
@@ -67,3 +67,4 @@ function generate(argument) {
 
     return id.join('');
 }
+

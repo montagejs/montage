@@ -1,10 +1,10 @@
 "use strict";
 /**
- @module montage/core/meta/validation-semantics
- @requires montage/core/core
- @requires core/exception
- @requires core/promise
- @requires core/logger
+ * @module montage/core/meta/validation-semantics
+ * @requires montage/core/core
+ * @requires core/exception
+ * @requires core/promise
+ * @requires core/logger
  */
 var Montage = require("montage").Montage;
 // TODO kriskowal: massage selectors and FRB together
@@ -14,8 +14,8 @@ var Semantics = Montage;
 var logger = require("core/logger").logger("blueprint");
 
 /**
- @class PropertyValidationSemantics
- @extends Semantics
+ * @class PropertyValidationSemantics
+ * @extends Semantics
  */
 var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantics.create(Semantics, /** @lends PropertyValidationSemantics# */ {
 
@@ -26,10 +26,10 @@ var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantic
     },
 
     /**
-     Create a new semantic evaluator with the blueprint.
-     @function
-     @param {Blueprint} blueprint
-     @returns itself
+     * Create a new semantic evaluator with the blueprint.
+     * @method
+     * @param {Blueprint} blueprint
+     * @returns itself
      */
     initWithBlueprint: {
         value: function(blueprint) {
@@ -38,14 +38,11 @@ var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantic
         }
     },
 
-    /*
-     * @private
-     */
     _blueprint: {
         value: null
     },
 
-    /*
+    /**
      * Component description attached to this validation rule.
      */
     blueprint: {
@@ -55,8 +52,9 @@ var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantic
     },
 
     /**
-     * Compile the syntax tree into a function that can be used for evaluating this selector.
-     * @function
+     * Compile the syntax tree into a function that can be used for evaluating
+     * this selector.
+     * @method
      * @param {Selector} selector syntax
      * @returns function
      */
@@ -95,3 +93,4 @@ for (var operator in Semantics.operators) {
 for (var evaluator in Semantics.evaluators) {
     PropertyValidationSemantics.evaluators[evaluator] = Semantics.evaluators[evaluator];
 }
+

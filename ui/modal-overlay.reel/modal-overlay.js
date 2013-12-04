@@ -11,6 +11,7 @@ var CLASS_PREFIX = "montage-ModalOverlay";
  * @extends Component
  */
 exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay# */ {
+
     constructor: {
         value: function ModalOverlay() {
             this.super();
@@ -72,9 +73,10 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay# */ {
                 }
                 queue.push(this);
 
-            // The overlay is scheduled to draw so we just return the previously
-            // created promise. If the overlay is currently being shown (head of
-            // the queue) then we add it again to the queue.
+                // The overlay is scheduled to draw so we just return the
+                // previously created promise. If the overlay is currently
+                // being shown (head of the queue) then we add it again to the
+                // queue.
             } else {
                 if (ix === 0) {
                     this._showPromise = Promise.defer();
@@ -119,4 +121,6 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay# */ {
             }
         }
     }
+
 });
+

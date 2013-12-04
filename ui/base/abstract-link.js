@@ -13,6 +13,7 @@ var CLASS_PREFIX = "montage-Link";
 var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
 /** @lends AbstractLink# */
 {
+
     /**
      * Dispatched when the link is activated through a mouse click,
      * finger tap.
@@ -21,9 +22,6 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
      * @param {Event} event
      */
 
-    /**
-     * private
-     */
     constructor: {
         value: function AbstractLink() {
             if(this.constructor ===  AbstractLink) {
@@ -140,7 +138,8 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
     },
 
     /**
-     Handle press event from press composer
+     * Handles press event from press composer.
+     * @private
      */
     handlePress: {
         value: function(/* event */) {
@@ -155,8 +154,8 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
     },
 
     /**
-     Called when all interaction is over.
-     @private
+     * Called when all interaction is over.
+     * @private
      */
     handlePressCancel: {
         value: function(/* event */) {
@@ -172,4 +171,6 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
             this._pressComposer.addEventListener("pressCancel", this, false);
         }
     }
+
 });
+

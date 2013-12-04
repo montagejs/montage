@@ -5,17 +5,19 @@
 */
 var Montage = require("montage").Montage;
 var Point = require("core/geometry/point").Point;
+
 /**
- @class CubicBezier
- @extends Montage
+ * @class CubicBezier
+ * @extends Montage
  */
 
 var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezier# */{
-/**
-    @function
-    @param {Array} controlPoints Control points.
-    @returns itself
-    */
+
+    /**
+     * @method
+     * @param {Array} controlPoints Control points.
+     * @returns itself
+     */
     init: {
         enumerable: false,
         value: function(controlPoints) {
@@ -33,11 +35,13 @@ var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezi
             return this;
         }
     },
-/**
-    @function
-    @param {Number} t Control point.
-    @returns itself or new Point().init(this.p0.x * b1 + this.p1.x * b2 + this.p2.x * b3 + this.p3.x * b4,
-                this.p0.y * b1 + this.p1.y * b2 + this.p2.y * b3 + this.p3.y * b4)
+
+    /**
+     * @method
+     * @param {number} t Control point.
+     * @returns itself or `new Point().init(this.p0.x * b1 + this.p1.x * b2 +
+     * this.p2.x * b3 + this.p3.x * b4, this.p0.y * b1 + this.p1.y * b2 +
+     * this.p2.y * b3 + this.p3.y * b4)`
     */
     position: {
         enumerable: false,
@@ -56,11 +60,12 @@ var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezi
                 this.p0.y * b1 + this.p1.y * b2 + this.p2.y * b3 + this.p3.y * b4);
         }
     },
-/**
-    @function
-    @param {Number} t Control point.
-    @returns CubicBezier.create(CubicBezier).init([this.p0, this.p01, this.p012, this.p0123])
-    */
+
+    /**
+     * @method
+     * @param {number} t Control point.
+     * @returns CubicBezier.create(CubicBezier).init([this.p0, this.p01, this.p012, this.p0123])
+     */
     split: {
         enumerable: false,
         value: function(t) {
@@ -68,11 +73,14 @@ var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezi
             return CubicBezier.create(CubicBezier).init([this.p0, this.p01, this.p012, this.p0123]);
         }
     },
-/**
-    @function
-    @param {Number} t Control point.
-    @returns CubicBezier.create(CubicBezier).init([new Point().init(this.p01.x / xScale, this.p01.y / yScale), new Point().init(this.p012.x / xScale, this.p012.y / yScale)])
-    */
+
+    /**
+     * @method
+     * @param {number} t Control point.
+     * @returns `CubicBezier.create(CubicBezier).init([new
+     * Point().init(this.p01.x / xScale, this.p01.y / yScale), new
+     * Point().init(this.p012.x / xScale, this.p012.y / yScale)])`
+     */
     splitToTimingFunction: {
         enumerable: false,
         value: function(t) {
@@ -83,10 +91,11 @@ var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezi
             return CubicBezier.create(CubicBezier).init([new Point().init(this.p01.x / xScale, this.p01.y / yScale), new Point().init(this.p012.x / xScale, this.p012.y / yScale)]);
         }
     },
-/**
-    @function
-    @param {Number} t Control point.
-    */
+
+    /**
+     * @method
+     * @param {number} t Control point.
+     */
     makeScaffolding: {
         enumerable: false,
         value: function(t) {
@@ -114,40 +123,46 @@ var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezi
             });
         }
     },
-/**
-        First control point in bezier curve.
-        @type {Property}
-        @default {Number} new Point().init(0, 0)
-    */
+
+    /**
+     * First control point in bezier curve.
+     * @type {Property}
+     * @default {number} new Point().init(0, 0)
+     */
     p0: {
         enumerable: true,
         value: new Point().init(0, 0)
     },
-/**
-        Second control point in bezier curve.
-        @type {Property}
-        @default {Number} new Point().init(0, 0)
-    */
+
+    /**
+     * Second control point in bezier curve.
+     * @type {Property}
+     * @default {number} new Point().init(0, 0)
+     */
     p1: {
         enumerable: true,
         value: new Point().init(0, 0)
     },
-/**
-        Third control point in bezier curve.
-        @type {Property}
-        @default {Number} new Point().init(1, 1)
-    */
+
+    /**
+     * Third control point in bezier curve.
+     * @type {Property}
+     * @default {number} new Point().init(1, 1)
+     */
     p2: {
         enumerable: true,
         value: new Point().init(1, 1)
     },
-/**
-        Fourth control point in bezier curve.
-        @type {Property}
-        @default {Number}M ontage.create(Point).init(1, 1)
-    */
+
+    /**
+     * Fourth control point in bezier curve.
+     * @type {Property}
+     * @default {number}M ontage.create(Point).init(1, 1)
+     */
     p3: {
         enumerable: true,
         value: new Point().init(1, 1)
     }
+
 });
+

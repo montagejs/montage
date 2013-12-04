@@ -1,10 +1,11 @@
 "use strict";
+
 /**
- @module montage/data/object-property
- @requires montage/data/pledge
- @requires montage/core/core
- @requires montage/core/exception
- @requires montage/core/logger
+ * @module montage/data/object-property
+ * @requires montage/data/pledge
+ * @requires montage/core/core
+ * @requires montage/core/exception
+ * @requires montage/core/logger
  */
 var Montage = require("montage").Montage;
 var Exception = require("core/exception").Exception;
@@ -14,8 +15,8 @@ var Binder = require("core/meta/blueprint").Binder;
 var logger = require("core/logger").logger("object-property");
 
 /**
- @class ObjectProperty
- @extends Montage
+ * @class ObjectProperty
+ * @extends Montage
  */
 var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
 
@@ -26,8 +27,8 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     @function
-     @returns itself
+     * @method
+     * @returns this
      */
     init:{
         serializable:false,
@@ -38,11 +39,14 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     Add all the properties defined in the blueprint to the target prototype.<br>
-     If the blueprint is null, this method will make a best attempt to locate it.
-     @function
-     @param {Property} prototype TODO
-     @param {Object} blueprint TODO
+     * Add all the properties defined in the blueprint to the target prototype.
+     *
+     * If the blueprint is null, this method will make a best attempt to locate
+     * it.
+     *
+     * @method
+     * @param {Property} prototype TODO
+     * @param {Object} blueprint TODO
      */
     apply:{
         value:function (prototype, blueprint) {
@@ -63,11 +67,13 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     Add all the properties defined in the blueprint to the target prototype.<br/>
-     <b>Note:<b/>This method will explore the blueprint hierarchy recursively.
-     @function
-     @param {Property} prototype TODO
-     @param {Object} blueprint TODO
+     * Add all the properties defined in the blueprint to the target prototype.
+     *
+     * **Note:** This method will explore the blueprint hierarchy recursively.
+     *
+     * @method
+     * @param {Property} prototype TODO
+     * @param {Object} blueprint TODO
      */
     applyWithBlueprint:{
         value:function (prototype, blueprint) {
@@ -79,11 +85,13 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
             }
         }
     },
+
     /**
-     Add all the properties defined in the blueprint to the target prototype.
-     @function
-     @param {Property} prototype TODO
-     @param {Object} blueprint TODO
+     * Add all the properties defined in the blueprint to the target prototype.
+     *
+     * @method
+     * @param {Property} prototype TODO
+     * @param {Object} blueprint TODO
      */
     addProperties:{
         value:function (prototype, blueprint) {
@@ -109,11 +117,13 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
             Montage.defineProperty(prototype, "blueprintSet", { serializable:false, enumerable:false, value:this.blueprintSet});
         }
     },
+
     /**
-     Add one property defined in the attribute to the target prototype.
-     @function
-     @param {Property} prototype TODO
-     @param {Object} attribute TODO
+     * Add one property defined in the attribute to the target prototype.
+     *
+     * @method
+     * @param {Property} prototype TODO
+     * @param {Object} attribute TODO
      */
     addProperty:{
         value:function (prototype, attribute) {
@@ -122,10 +132,11 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
             this.addPropertyStoredValue(prototype, attribute);
         }
     },
+
     /**
-     @function
-     @param {Property} prototype TODO
-     @param {Object} attribute TODO
+     * @method
+     * @param {Property} prototype TODO
+     * @param {Object} attribute TODO
      */
     addPropertyStorage:{
         value:function (prototype, attribute) {
@@ -156,9 +167,9 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     @function
-     @param {Property} prototype TODO
-     @param {Object} attribute TODO
+     * @method
+     * @param {Property} prototype TODO
+     * @param {Object} attribute TODO
      */
     addPropertyDefinition:{
         value:function (prototype, attribute) {
@@ -187,12 +198,14 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     This is the get function called on the target object to access properties.<br>
-     @function
-     @param {Object} propertyName TODO
-     @returns {Array} [storageKey]
+     * This is the get function called on the target object to access
+     * properties.
+     *
+     * @method
+     * @param {Object} propertyName TODO
+     * @returns {Array} [storageKey]
      */
-    blueprintGet:{
+    blueprintGet: {
         value:function (propertyName) {
             var propertyBlueprint = this.blueprint.propertyBlueprintForName(propertyName);
             var storageKey = "_" + propertyBlueprint.name;
@@ -203,11 +216,13 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     This is the get function called on the target object to set properties.<br>
-     @function
-     @param {Object} propertyName TODO
-     @param {Property} value TODO
-     @returns {Array} [storageKey]
+     * This is the get function called on the target object to set
+     * properties.
+     *
+     * @method
+     * @param {Object} propertyName TODO
+     * @param {Property} value TODO
+     * @returns {Array} [storageKey]
      */
     blueprintSet:{
         value:function (propertyName, value) {
@@ -224,9 +239,9 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     @function
-     @param {Property} prototype TODO
-     @param {Object} attribute TODO
+     * @method
+     * @param {Property} prototype TODO
+     * @param {Object} attribute TODO
      */
     addPropertyStoredValue:{
         value:function (prototype, attribute) {
@@ -257,10 +272,10 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     Adds a relationship management methods to the managed object.
-     @function
-     @param {Property} prototype TODO
-     @param {Object} attribute relationship to add
+     * Adds a relationship management methods to the managed object.
+     * @method
+     * @param {Property} prototype TODO
+     * @param {Object} attribute relationship to add
      */
     addAssociation:{
         value:function (prototype, attribute) {
@@ -272,9 +287,9 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
 
 
     /**
-     @function
-     @param {Property} prototype TODO
-     @param {Object} attribute TODO
+     * @method
+     * @param {Property} prototype TODO
+     * @param {Object} attribute TODO
      */
     addAssociationDefinition:{
         value:function (prototype, attribute) {
@@ -287,9 +302,9 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     @function
-     @param {Property} prototype TODO
-     @param {Object} attribute TODO
+     * @method
+     * @param {Property} prototype TODO
+     * @param {Object} attribute TODO
      */
     addToOneAssociationDefinition:{
         value:function (prototype, attribute) {
@@ -328,9 +343,9 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     @function
-     @param {Property} prototype TODO
-     @param {Object} attribute TODO
+     * @method
+     * @param {Property} prototype TODO
+     * @param {Object} attribute TODO
      */
     addToManyAssociationDefinition:{
         value:function (prototype, attribute) {
@@ -369,10 +384,10 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     Adds a derived attribute to the managed object.
-     @function
-     @param {Property} prototype TODO
-     @param {Object} attribute TODO
+     * Adds a derived attribute to the managed object.
+     * @method
+     * @param {Property} prototype TODO
+     * @param {Object} attribute TODO
      */
     addDerivedProperty:{
         value:function (prototype, attribute) {
@@ -380,3 +395,4 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     }
 
 });
+

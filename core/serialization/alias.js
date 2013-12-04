@@ -127,4 +127,6 @@ exports.Alias = Montage.specialize({ /** @lends Alias# */
             return this;
         }
     }
+
 });
+

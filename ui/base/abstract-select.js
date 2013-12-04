@@ -1,7 +1,7 @@
 /*global require, exports*/
 
 /**
- @module montage/ui/base/abstract-select.reel
+ * @module montage/ui/base/abstract-select.reel
  */
 var Montage = require("montage").Montage,
     AbstractControl = require("ui/base/abstract-control").AbstractControl,
@@ -18,7 +18,8 @@ var Montage = require("montage").Montage,
 var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @lends AbstractSelect# */ {
 
     /**
-     * Dispatched when the select is changed through a mouse click or finger tap.
+     * Dispatched when the select is changed through a mouse click or finger
+     * tap.
      * @event action
      * @memberof AbstractSelect
      * @param {Event} event
@@ -68,9 +69,10 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
     },
 
     /**
-     * Enables or disables the Select from user input. When this property is set to `false`,
-     * the "montage--disabled" CSS style is applied to the select's DOM element during the next draw cycle. When set to
-     * `true` the "disabled" CSS class is removed from the element's class list.
+     * Enables or disables the Select from user input. When this property is
+     * set to `false`, the "montage--disabled" CSS style is applied to the
+     * select's DOM element during the next draw cycle. When set to `true` the
+     * "disabled" CSS class is removed from the element's class list.
      * @type {boolean}
      */
     enabled: {
@@ -168,7 +170,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
     // Handlers
 
     /**
-     Called when the user starts interacting with the component.
+     * Called when the user starts interacting with the component.
      */
     handlePressStart: {
         value: function(event) {
@@ -183,7 +185,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
     },
 
     /**
-     Called when the user has interacted with the select.
+     * Called when the user has interacted with the select.
      */
     handlePress: {
         value: function(event) {
@@ -199,8 +201,8 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
     },
 
     /**
-     Called when all interaction is over.
-     @private
+     * Called when all interaction is over.
+     * @private
      */
     handlePressCancel: {
         value: function(event) {
@@ -237,4 +239,6 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
             }
         }
     }
+
 });
+

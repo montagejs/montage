@@ -10,8 +10,9 @@ var CLASS_PREFIX = "montage-TextArea";
  * @extends Component
  */
 var AbstractTextArea = exports.AbstractTextArea = Component.specialize(
-    /** @lends AbstractTextArea# */
+/** @lends AbstractTextArea# */
 {
+
     constructor: {
         value: function AbstractTextArea() {
             if(this.constructor === AbstractTextArea) {
@@ -103,4 +104,6 @@ var AbstractTextArea = exports.AbstractTextArea = Component.specialize(
             }
         }
     }
+
 });
+

@@ -14,9 +14,10 @@ var BinderModule = require("core/meta/binder");
 var logger = require("core/logger").logger("blueprint");
 
 /**
- @class BinderManager
- @classdesc A blueprint binder manager is a singleton that is responsible for loading and dispaching binders and blueprints.
- @extends Montage
+ * @class BinderManager
+ * @classdesc A blueprint binder manager is a singleton that is responsible for
+ * loading and dispaching binders and blueprints.
+ * @extends Montage
  */
 
 var BinderManager = exports.BinderManager = Montage.specialize( /** @lends BinderManager# */ {
@@ -28,24 +29,18 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
         }
     },
 
-    /**
-     @private
-     */
     _binders: {
         value: null
     },
 
 
-    /**
-     @private
-     */
     _binderTable: {
         value: null
     },
 
     /**
-     Return the list of binder registered on the manager
-     @type {Array<Binder>}
+     * Return the list of binder registered on the manager.
+     * @type {Array.<Binder>}
      */
     binders: {
         get: function() {
@@ -54,9 +49,9 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     },
 
     /**
-     Add a new blueprint binder.
-     @function
-     @param {Property} binder TODO
+     * Add a new blueprint binder.
+     * @method
+     * @param {Property} binder TODO
      */
     addBinder: {
         value: function(binder) {
@@ -75,8 +70,8 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     },
 
     /**
-     @function
-     @param {Property} binder TODO
+     * @method
+     * @param {Property} binder TODO
      */
     removeBinder: {
         value: function(binder) {
@@ -92,8 +87,9 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
         }
     },
 
-    /*
-     * Returns the blueprint binder associated with the name
+    /**
+     * Gets the blueprint binder associated with the name.
+     * @param {string} name
      */
     binderForName: {
         value: function(name) {
@@ -102,11 +98,12 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     },
 
     /**
-     Search through the binders for a blueprint that extends that prototype.
-     @function
-     @param {Property} prototypeName TODO
-     @param {Property} moduleId TODO
-     @returns The requested blueprint or null if this prototype is not managed.
+     * Search through the binders for a blueprint that extends that prototype.
+     * @method
+     * @param {Property} prototypeName TODO
+     * @param {Property} moduleId TODO
+     * @returns The requested blueprint or null if this prototype is not
+     * managed.
      */
     blueprintForPrototype: {
         value: function(prototypeName, moduleId) {
@@ -164,3 +161,4 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     }
 
 });
+

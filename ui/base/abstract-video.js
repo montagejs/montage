@@ -67,14 +67,12 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
         }
     },
 
-    /**
-     * @private
-     */
     _src: {
         value: null
     },
+
     /**
-     * @type {String}
+     * @type {string}
      * @default null
      */
     src: {
@@ -117,7 +115,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
     },
 
     /**
-     * @function
+     * @method
      */
     loadMedia: {
         value: function () {
@@ -126,15 +124,13 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
         }
     },
 
-    /**
-     * @private
-     */
     _repeat: {
         value: false
     },
+
     /**
      * @type {Function}
-     * @default {Boolean} false
+     * @default {boolean} false
      */
     repeat: {
         get: function () {
@@ -155,7 +151,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
     },
 
     /**
-     * @function
+     * @method
      */
     toggleRepeat: {
         value: function () {
@@ -163,15 +159,12 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
         }
     },
 
-    /**
-     * @private
-     */
     _posterSrc: {
         value: null
     },
 
     /**
-     * @type {String}
+     * @type {string}
      * @default null
      */
     posterSrc: {
@@ -184,7 +177,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
     },
 
     /**
-     * @function
+     * @method
      */
     showPoster: {
         value: function () {
@@ -196,20 +189,20 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
 
     /**
      * Specifies whether the full screen video is supported.
-     * @type {Boolean}
+     * @type {boolean}
      * @default true
      */
     supportsFullScreen: {
         value: true
     },
 
-    /**
-     * @private
-     */
     _isFullScreen: {
         value: false
     },
 
+    /**
+     * @type {boolean}
+     */
     isFullScreen: {
         get: function () {
             return this._isFullScreen;
@@ -218,7 +211,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
 
     /**
      * Toggles full-screen playback mode.
-     * @function
+     * @method
      */
     toggleFullScreen: {
         value: function () {
@@ -244,18 +237,12 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
         }
     },
 
-    /**
-     * @private
-     */
     handleControllerStatusChange: {
         value: function () {
             this.needsDraw = true;
         }
     },
 
-    /**
-     * @private
-     */
     handleControllerVolumeChange: {
         value: function () {
             this.needsDraw = true;
@@ -309,4 +296,6 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
             }
         }
     }
+
 });
+

@@ -1,14 +1,5 @@
 /**
  * @module "ui/overlay.reel"
- * This component uses a "trick" to measure its element when it is shown.
- * Since the element is "display: none" when it's hidden it's not possible to
- * measure it at willDraw in order to calculate the correct position to center it.
- * The solution used is to have two draws when it is shown. The first draw only
- * makes the element part of the layout of the browser while still being invisible
- * to the user, this is achieved by setting "visiblity: hidden" and the --visible
- * class that has a "display: block". A second draw is then forced.
- * On the second draw the element is now measurable and the visibility is set
- * back to "visible". This mechanism is controlled by the _isDisplayed flag.
  */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
@@ -23,7 +14,19 @@ var Montage = require("montage").Montage,
 
 var CLASS_PREFIX = "montage-Overlay";
 
+/*
+ * This component uses a "trick" to measure its element when it is shown.
+ * Since the element is "display: none" when it's hidden it's not possible to
+ * measure it at willDraw in order to calculate the correct position to center it.
+ * The solution used is to have two draws when it is shown. The first draw only
+ * makes the element part of the layout of the browser while still being invisible
+ * to the user, this is achieved by setting "visiblity: hidden" and the --visible
+ * class that has a "display: block". A second draw is then forced.
+ * On the second draw the element is now measurable and the visibility is set
+ * back to "visible". This mechanism is controlled by the _isDisplayed flag.
+ */
 exports.Overlay = Component.specialize( /** @lends Overlay# */ {
+
     /**
      * Dispatched when the user dismiss the overlay by clicking outside of it.
      * @event dismiss
@@ -107,12 +110,12 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
      * A delegate that can implement `willPositionOverlay` and/or
      * `shouldDismissOverlay`.
      *
-     * * `willPositionOverlay(overlay, calculatedPostition)` is called when the
+     * - `willPositionOverlay(overlay, calculatedPostition)` is called when the
      *   overlay is being shown, and should return an object with `top` and
      *   `left` properties.
-     * * `shouldDismissOverlay(overlay, target, event)` is called when the user
+     * - `shouldDismissOverlay(overlay, target, event)` is called when the user
      *   clicks outside of the overlay or presses escape inside the overlay.
-     *   Usually this will hide the overlay. Return `true` to hide the overlay, 
+     *   Usually this will hide the overlay. Return `true` to hide the overlay,
      *   or `false` to leave the overlay visible.
      * @type {Object}
      */
@@ -188,15 +191,15 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
      * Show the overlay. The overlay is displayed at the position determined by
      * the following conditions:
      *
-     * 1) If a delegate is provided and the willPositionOverlay function is
+     * 1. If a delegate is provided and the willPositionOverlay function is
      *    implemented, the position is always determined by the delegate.
-     * 2) If "position" is set, the overlay is always displayed at this
+     * 2. If "position" is set, the overlay is always displayed at this
      *    location.
-     * 3) If an anchor is set, the overlay is displayed below the anchor.
-     * 4) If no positional hints are provided, the overlay is displayed at the
+     * 3. If an anchor is set, the overlay is displayed below the anchor.
+     * 4. If no positional hints are provided, the overlay is displayed at the
      *    center of the screen.
-     * 
-     * FIXME: We have to add key events on both this component and the keyComposer 
+     *
+     * FIXME: We have to add key events on both this component and the keyComposer
      * because of a bug in KeyComposer.
      */
     show: {
@@ -243,9 +246,9 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     /**
-    The overlay should only surrender focus if it is hidden, non-modal,
-    or if the other component is one of its descendants.
-    */
+     * The overlay should only surrender focus if it is hidden, non-modal, or
+     * if the other component is one of its descendants.
+     */
     surrendersActiveTarget: {
         value: function(candidateActiveTarget) {
             if (!this.isShown || !this.isModal) {
@@ -277,7 +280,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
             }
         }
     },
-    
+
     handleKeyPress: {
         value: function(event) {
             if (event.identifier === "escape") {
@@ -287,9 +290,9 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     /**
-     * User event has requested that we dismiss the overlay. Give the delegate an 
-     * opportunity to prevent it. Returns whether the overlay was hidden.
-    */
+     * User event has requested that we dismiss the overlay. Give the delegate
+     * an opportunity to prevent it. Returns whether the overlay was hidden.
+     */
     dismissOverlay: {
         value: function(event) {
             var shouldDismissOverlay = false;
@@ -445,4 +448,6 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
             this.dispatchEvent(dismissEvent);
         }
     }
+
 });
+

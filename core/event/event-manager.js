@@ -101,7 +101,7 @@ var NONE = Event.NONE,
     FUNCTION_TYPE = "function";
 
 /**
- @class EventManager
+ * @class EventManager
  */
 var EventManager = exports.EventManager = Montage.specialize(/** @lends EventManager# */ {
 
@@ -209,7 +209,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
         enumerable: false
     },
 /**
-        @type {String}
+        @type {string}
         @default null
     */
     delegate: {
@@ -221,16 +221,13 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             this._delegate = delegate;
         }
     },
-/**
-  @private
-*/
     _application: {
         value: null,
         enumerable: false
     },
 /**
     The application object associated with the event manager.
-    @type {String}
+    @type {string}
     @default null
     */
     application: {
@@ -251,16 +248,11 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
     // Simple array of all windows this event Manager may be listening to
 
- /**
-  @private
-*/
     _registeredWindows: {
         value: null,
         enumerable: false
     },
-/**
-  @private
-*/
+
     _windowsAwaitingFinalRegistration: {
         value: {},
         enumerable: false
@@ -270,7 +262,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 /**
     @function
     @param {Window} aWindow
-    @returns this registerWindow(aWindow)
+    @returns this.registerWindow(aWindow)
     */
     initWithWindow: {
         enumerable: false,
@@ -444,9 +436,8 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             }
         }
     },
-/**
-  @private
-*/
+
+
     _finalizeWindowRegistration: {
         enumerable: false,
         value: function(aWindow) {
@@ -867,15 +858,11 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
         }
     },
-  /**
-  @private
-*/
+
+
    _observedTarget_byEventType_: {value:{}},
 
     // Individual Event Registration
-/**
-  @private
-*/
     _observeTarget_forEventType_: {
         enumerable: false,
         value: function(target, eventType) {
@@ -893,9 +880,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             // console.log("started listening: ", eventType, listenerTarget)
         }
     },
-/**
-  @private
-*/
+
     _stopObservingTarget_forEventType_: {
         enumerable: false,
         value: function(target, eventType) {
@@ -917,9 +902,6 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
     },
 
     // Toggle listening for EventManager
-/**
-  @private
-*/
     _listenToWindow: {
         enumerable: false,
         value: function(aWindow) {
@@ -976,9 +958,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
         }
     },
-/**
-  @private
-*/
+
     _stopListeningToWindow: {
         enumerable: false,
         value: function(aWindow) {
@@ -996,9 +976,10 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             }
         }
     },
-/**
-    @function
-    */
+
+    /**
+     * @function
+     */
     reset: {
         enumerable: false,
         value: function() {
@@ -1021,18 +1002,20 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             this._claimedPointers = {};
         }
     },
-/**
-    @function
-    */
+
+    /**
+     * @method
+     */
     unload: {
         enumerable: false,
         value: function() {
             this._stopListening();
         }
     },
-/**
-    @function
-    */
+
+    /**
+     * @method
+     */
     methodNameForBubblePhaseOfEventType: {
         enumerable: false,
         value: (function(_methodNameForBubblePhaseByEventType_) {
@@ -1057,31 +1040,32 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
     },
 
     // Claimed pointer information
-/**
-  @private
-*/
     _claimedPointers: {
         enumerable: false,
         distinct: true,
         value: {}
     },
-/**
-    The component claiming the specified pointer component
-    @function
-    @param {String} pointer The pointer identifier in question
-    @returns component
-    */
+
+    /**
+     * The component claiming the specified pointer component
+     * @function
+     * @param {string} pointer The pointer identifier in question
+     * @returns component
+     */
     componentClaimingPointer: {
         value: function(pointer) {
             return this._claimedPointers[pointer];
         }
     },
-/**
-    Whether or not the specified pointer identifier is claimed by the specified component.
-    @function
-    @param {String} pointer The pointer identifier in question
-    @param {String} component The component to interrogate regarding ownership of the specified pointer
-    @returns boolean
+
+    /**
+     * Whether or not the specified pointer identifier is claimed by the
+     * specified component.
+     * @function
+     * @param {string} pointer The pointer identifier in question
+     * @param {string} component The component to interrogate regarding
+     * ownership of the specified pointer
+     * @returns boolean
     */
     isPointerClaimedByComponent: {
         value: function(pointer, component) {
@@ -1093,21 +1077,26 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             return this._claimedPointers[pointer] === component;
         }
     },
-/**
-    Claims that a pointer, referred to by the specified pointer identifier, is claimed by the specified component.
-    This does not give the component exclusive use of the pointer per se, but does indicate that the component
-    is acting in a manner where it expects to be the only one performing major actions in response to this pointer.
-    Other components should respect the claimant's desire to react to this pointer in order to prevent an entire
-    hierarchy of components from reacting to a pointer in potentially conflicting ways.
 
-    If the pointer is currently claimed by another component that component is asked to surrender the pointer,
-    which is may or may not agree to do.
-
-    @function
-    @param {String} pointer The pointer identifier to claim
-    @param {String} component The component that is claiming the specified pointer
-    @returns boolean Whether or not the pointer was successfully claimed.
-    */
+    /**
+     * Claims that a pointer, referred to by the specified pointer identifier,
+     * is claimed by the specified component.  This does not give the component
+     * exclusive use of the pointer per se, but does indicate that the
+     * component is acting in a manner where it expects to be the only one
+     * performing major actions in response to this pointer.  Other components
+     * should respect the claimant's desire to react to this pointer in order
+     * to prevent an entire hierarchy of components from reacting to a pointer
+     * in potentially conflicting ways.
+     *
+     * If the pointer is currently claimed by another component that component
+     * is asked to surrender the pointer, which is may or may not agree to do.
+     *
+     * @function
+     * @param {string} pointer The pointer identifier to claim
+     * @param {string} component The component that is claiming the specified
+     * pointer.
+     * @returns boolean Whether or not the pointer was successfully claimed.
+     */
     claimPointer: {
         value: function(pointer, component) {
 
@@ -1143,13 +1132,15 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
         }
     },
-/**
-    Forfeits the specified pointer identifier from the specified component.
-    The specified component must be the current claimant.
-    @function
-    @param {String} pointer The pointer identifier in question
-    @param {String} component The component that is trying to forfeit the specified pointer
-    */
+
+    /**
+     * Forfeits the specified pointer identifier from the specified component.
+     * The specified component must be the current claimant.
+     * @function
+     * @param {string} pointer The pointer identifier in question
+     * @param {string} component The component that is trying to forfeit the
+     * specified pointer
+     */
     forfeitPointer: {
         value: function(pointer, component) {
             if (component === this._claimedPointers[pointer]) {
@@ -1160,11 +1151,12 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
         }
     },
-/**
-    Forfeits all pointers from the specified component.
-    @function
-    @param {Component} component
-    */
+
+    /**
+     * Forfeits all pointers from the specified component.
+     * @function
+     * @param {Component} component
+     */
     forfeitAllPointers: {
         value: function(component) {
 
@@ -1183,17 +1175,15 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
     },
 
     // Pointer Storage for calculating velocities
-/**
-  @private
-*/
     _isStoringPointerEvents: {
         enumerable: false,
         value: false
     },
- /**
-        @type {Function}
-        @default {Boolean} false
-    */
+
+    /**
+     * @type {Function}
+     * @default {boolean} false
+     */
     isStoringPointerEvents: {
         enumerable: true,
         get: function () {
@@ -1220,18 +1210,16 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             }
         }
     },
-/**
-  @private
-*/
+
     _isStoringMouseEventsWhileDraggingOnly: {
         enumerable: false,
         value: true
     },
 
-/**
-        @type {Function}
-        @default {Boolean} true
-    */
+    /**
+     * @type {Function}
+     * @default {boolean} true
+     */
     isStoringMouseEventsWhileDraggingOnly: {
         enumerable: true,
         get: function () {
@@ -1241,16 +1229,12 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             this._isStoringMouseEventsWhileDraggingOnly = (value === true) ? true : false;
         }
     },
-/**
-  @private
-*/
+
     _isMouseDragging: {
         enumerable: false,
         value: false
     },
-/**
-  @private
-*/
+
     _pointerStorage: {
         enumerable: false,
         value: {
@@ -1288,8 +1272,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                 switch (event.type) {
                     case "mousedown":
                         defaultEventManager._isMouseDragging = true;
-                        // TODO not sure if we are supposed to gave a break here or not. There wasn't
-                        // but I'd like a comment to assuage my fears that it was omitted by mistake
+                        // roll into mousemove. break omitted intentionally.
                     case "mousemove":
                         if (defaultEventManager._isStoringMouseEventsWhileDraggingOnly) {
                             if (defaultEventManager._isMouseDragging) {

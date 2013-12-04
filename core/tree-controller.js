@@ -170,9 +170,9 @@ var Node = exports.TreeControllerNode = Montage.specialize( /** @lends TreeContr
     /**
      * Creates a tree controller node.
      * @param content
-     * @param {String} childenPath
+     * @param {string} childenPath
      * @param {Node} parent
-     * @param {Number} depth
+     * @param {number} depth
      * @param {[Number, Node]|null} entry
      */
     constructor: {

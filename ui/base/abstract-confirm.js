@@ -9,6 +9,7 @@ var AbstractAlert = require("ui/base/abstract-alert").AbstractAlert,
  * @extends Component
  */
 var AbstractConfirm = exports.AbstractConfirm = AbstractAlert.specialize(/** @lends AbstractAlert# */ {
+
     constructor: {
         value: function AbstractConfirm() {
             if (this.constructor === AbstractConfirm) {
@@ -58,7 +59,9 @@ var AbstractConfirm = exports.AbstractConfirm = AbstractAlert.specialize(/** @le
             }
         }
     }
+
 }, {
+
     show: {
         value: function(message, title, okLabel, cancelLabel) {
             var instance,
@@ -100,4 +103,6 @@ var AbstractConfirm = exports.AbstractConfirm = AbstractAlert.specialize(/** @le
     CancelButton: {
         value: "cancel"
     }
+
 });
+

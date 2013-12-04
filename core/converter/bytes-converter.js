@@ -32,12 +32,14 @@ var stringToNumBytes = function(stringValue) {
 
 /**
  * Converts number of bytes to string representation. Binary conversion.
- * Default is to return the additional 'B' suffix, e.g. '10.5KB' to minimize confusion with counts that are scaled by powers of 1000.
+ * Default is to return the additional 'B' suffix, e.g. '10.5KB' to minimize
+ * confusion with counts that are scaled by powers of 1000.
  * @function
- * @param {Number} val Value to be converted.
- * @param {Number} opt_decimals The number of decimals to use.  Defaults to 2.
- * @param {Boolean} opt_suffix If true, include trailing 'B' in returned string. Default is true.
- * @return {String} String representation of number of bytes.
+ * @param {number} val Value to be converted.
+ * @param {?number} decimals=2 The number of decimals to use.  Defaults to 2.
+ * @param {?boolean} suffix=true If true, include trailing 'B' in returned
+ * string. Default is true.
+ * @return {string} String representation of number of bytes.
  * @private
  */
 var numBytesToString = function(val, opt_decimals, opt_suffix) {
@@ -51,9 +53,9 @@ var numBytesToString = function(val, opt_decimals, opt_suffix) {
 /**
  * Formats a number of bytes in human readable form: 54, 450K, 1.3M, 5G etc.
  * @function
- * @param {Number} bytes The number of bytes to show.
- * @param {Number} opt_decimals The number of decimals to use.  Defaults to 2.
- * @return {String} The human readable form of the byte size.
+ * @param {number} bytes The number of bytes to show.
+ * @param {number} decimals=2 The number of decimals to use.  Defaults to 2.
+ * @return {string} The human readable form of the byte size.
  * @private
  */
 var fileSize = function(bytes, opt_decimals) {
@@ -62,7 +64,8 @@ var fileSize = function(bytes, opt_decimals) {
 
 /**
  * @class BytesConverter
- * @classdesc Converts a numeric value to byte format (for example, 2048 is converted to 2MB).
+ * @classdesc Converts a numeric value to byte format (for example, 2048 is
+ * converted to 2MB).
  * @extends Converter
  */
 exports.BytesConverter = Converter.specialize( /** @lends BytesConverter# */ {
@@ -70,18 +73,19 @@ exports.BytesConverter = Converter.specialize( /** @lends BytesConverter# */ {
     /**
      * The number of decimals to include in the formatted value. Default is 2.
      * @type {Property}
-     * @default {Number} 2
+     * @default {number} 2
      */
     decimals: {
         value: 2
     },
+
     /**
      * Converts the specified value to byte format.
-     * @function
+     * @method
      * @param {Property} v The value to format.
-     * @returns {String} The value converted to byte format.
+     * @returns {string} The value converted to byte format.
      * @example
-     * var Converter= require("core/converter/converter").Converter;
+     * var Converter = require("core/converter/converter").Converter;
      * var BytesConverter = require("core/converter/converter").BytesConverter;
      * var bytes = "12341234";
      * var byteconverter = new BytesConverter();
@@ -95,11 +99,12 @@ exports.BytesConverter = Converter.specialize( /** @lends BytesConverter# */ {
             return fileSize(v, this.decimals);
         }
     },
+
     /**
      * Reverts a formatted byte string to a standard number.
-     * @function
-     * @param {String} v The value to revert.
-     * @returns {String} v
+     * @method
+     * @param {string} v The value to revert.
+     * @returns {string} v
      * @see BytesConverter#convert
      * @example
      * var Converter= require("core/converter/converter").Converter;

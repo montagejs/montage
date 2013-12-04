@@ -8,10 +8,12 @@ var Montage = require("montage").Montage;
 
 
 /**
- The BitField object compactly stores multiple values as a short series of bits. This implementation is limited to 32 fields.
- @class BitField
- @classdesc Compactly stores multiple values as a short series of bits.
- @extends Montage
+ * The BitField object compactly stores multiple values as a short series of
+ * bits.
+ * This implementation is limited to 32 fields.
+ * @class BitField
+ * @classdesc Compactly stores multiple values as a short series of bits.
+ * @extends Montage
  */
 var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
 
@@ -22,22 +24,23 @@ var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
     },
 
     /**
-     Creates a new BitField object containing the fields provided in the propertyDescriptor parameter.
-     @function
-     @param {Object} propertyDescriptor An object containing one or more property name/value pairs. Each pair is added to the new BitField.
-     @returns {Object} A new BitField object that contains fields described by the property descriptor.
-     @example var bitField = new BitField();
-     bitField = new BitField().initWithDescriptor({
-     likes_golf: {
-     value: false
-     },
-     likes_basketball: {
-     value: true
-     },
-     likes_baseball: {
-     value: false
-     },
-     });
+     * Creates a new BitField object containing the fields provided in the propertyDescriptor parameter.
+     * @method
+     * @param {Object} propertyDescriptor An object containing one or more property name/value pairs. Each pair is added to the new BitField.
+     * @returns {Object} A new BitField object that contains fields described by the property descriptor.
+     * @example
+     * var bitField = new BitField();
+     * bitField = new BitField().initWithDescriptor({
+     *     likes_golf: {
+     *         value: false
+     *     },
+     *     likes_basketball: {
+     *         value: true
+     *     },
+     *     likes_baseball: {
+     *         value: false
+     *     },
+     * });
      */
     initWithDescriptor: {
         enumerable: false,
@@ -52,10 +55,10 @@ var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
     },
 
     /**
-     Adds a new field to a BitField instance.
-     @function
-     @param {String} aFieldName The name of the field to add.
-     @param {Mixed} defaultValue The new field's default value.
+     * Adds a new field to a BitField instance.
+     * @method
+     * @param {string} aFieldName The name of the field to add.
+     * @param {Mixed} defaultValue The new field's default value.
      */
     addField: {
         enumerable: false,
@@ -93,9 +96,9 @@ var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
     },
 
     /**
-     Removes a field from the bitfield.
-     @function
-     @param {String} aFieldName The name of the field to remove.
+     * Removes a field from the bitfield.
+     * @method
+     * @param {string} aFieldName The name of the field to remove.
      */
     removeField: {
         enumerable: false,
@@ -108,9 +111,9 @@ var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
     },
 
     /**
-     The BitField object's delegate.
-     @type {Property}
-     @default null
+     * The BitField object's delegate.
+     * @type {Property}
+     * @default null
      */
     delegate: {
         enumerable: false,
@@ -118,8 +121,8 @@ var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
     },
 
     /**
-     @function
-     @returns Nothing
+     * @method
+     * @returns Nothing
      */
     callDelegateMethod: {
         value: function() {
@@ -130,10 +133,10 @@ var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
         },
         enumerable: false
     },
-/**
-        @type {Function}
-        @default {Number} 0
-    */
+    /**
+     * @type {Function}
+     * @default {number} 0
+     */
     value: {
         enumerable: false,
         get: function() {
@@ -141,47 +144,41 @@ var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
         }
     },
 
-    /**
-     @private
-     */
     _fieldCount: {
         enumerable: false,
         value: 0
     },
-/**
-  @private
-*/
+
     _value: {
         enumerable: false,
         value: 0
     },
-/**
-  @private
-*/
+
+
     _trueValue: {
         enumerable: false,
         value: 0
     },
-/**
-    @function
-    */
+
+    /**
+     * @method
+     */
     reset: {
         enumerable: false,
         value: function() {
             this._value = 0x0;
         }
     },
-/**
-  @private
-*/
+
     _fields: {
         enumerable: false,
         value: {}
     },
-/**
-    @function
-    @returns result
-    */
+
+    /**
+     * @method
+     * @returns result
+     */
     toString: {
         value: function() {
             var fieldNames = this._fields,
@@ -194,4 +191,6 @@ var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
             return result;
         }
     }
+
 });
+

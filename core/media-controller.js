@@ -20,26 +20,26 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
      -----------------------------------------------------------------------------*/
 
     /**
-     * @type {Number}
-     * @default {Number} 0
+     * @type {number}
+     * @default {number} 0
      */
     STOPPED: { value: 0, writable: false },
 
     /**
-     * @type {Number}
-     * @default {Number} 1
+     * @type {number}
+     * @default {number} 1
      */
     PLAYING: { value: 1, writable: false },
 
     /**
-     * @type {Number}
-     * @default {Number} 2
+     * @type {number}
+     * @default {number} 2
      * */
     PAUSED: { value: 2, writable: false },
 
     /**
-     * @type {Number}
-     * @default {Number} 3
+     * @type {number}
+     * @default {number} 3
      */
     EMPTY: { value: 3, writable: false },
 
@@ -95,7 +95,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
     /**
      * @type {Function}
-     * @default {Number} 3
+     * @default {number} 3
      */
     status: {
         get: function () {
@@ -168,15 +168,15 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
      -----------------------------------------------------------------------------*/
 
     /**
-     * @type {Number}
-     * @default {Boolean} true
+     * @type {number}
+     * @default {boolean} true
      */
     autoplay: {
         value: false
     },
 
     /**
-     * @function
+     * @method
      */
     play: {
         value: function () {
@@ -192,15 +192,12 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
         }
     },
 
-    /**
-     * @private
-     */
     _pauseTime: {
         value: null
     },
 
     /**
-     * @function
+     * @method
      */
     pause: {
         value: function () {
@@ -214,7 +211,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @function
+     * @method
      */
     unpause: {
         value: function () {
@@ -229,8 +226,8 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @function
-     * @returns {Boolean} !playing (true if it is now playing)
+     * @method
+     * @returns {boolean} !playing (true if it is now playing)
      */
     playPause: {
         value: function () {
@@ -260,7 +257,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
     /**
      * @type {Function}
-     * @default {Number} 1
+     * @default {number} 1
      */
     playbackRate: {
         get: function () {
@@ -276,7 +273,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
 
     /**
      * @type {Function}
-     * @default {Number} 0
+     * @default {number} 0
      */
     currentTime: {
         get: function () {
@@ -306,7 +303,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @function
+     * @method
      */
     rewind: {
         value: function () {
@@ -320,7 +317,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @function
+     * @method
      */
     fastForward: {
         value: function () {
@@ -334,7 +331,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @function
+     * @method
      */
     stop: {
         value: function () {
@@ -358,7 +355,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
 
     /**
      * @type {Function}
-     * @returns {Number} this.mediaController.volume * 100
+     * @returns {number} this.mediaController.volume * 100
      */
     volume: {
         get: function () {
@@ -381,7 +378,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @function
+     * @method
      */
     volumeIncrease: {
         value: function () {
@@ -390,7 +387,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @function
+     * @method
      */
     volumeDecrease: {
         value: function () {
@@ -399,7 +396,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @function
+     * @method
      */
     toggleMute: {
         value: function () {
@@ -427,7 +424,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
      -----------------------------------------------------------------------------*/
 
     /**
-     * @function
+     * @method
      * @returns itself
      */
     handleLoadedmetadata: {
@@ -461,7 +458,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @function
+     * @method
      */
     handleTimeupdate: {
         value: function () {
@@ -476,7 +473,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @function
+     * @method
      */
     handlePlay: {
         value: function () {
@@ -486,8 +483,9 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
             this.status = this.PLAYING;
         }
     },
+
     /**
-     * @function
+     * @method
      */
     handlePlaying: {
         value: function () {
@@ -497,8 +495,9 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
             this.status = this.PLAYING;
         }
     },
+
     /**
-     * @function
+     * @method
      */
     handlePause: {
         value: function () {
@@ -515,8 +514,9 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
             }
         }
     },
+
     /**
-     * @function
+     * @method
      */
     handleEnded: {
         value: function () {
@@ -529,8 +529,9 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
             this.status = this.STOPPED;
         }
     },
+
     /**
-     * @function
+     * @method
      */
     handleAbort: {
         value: function () {
@@ -540,8 +541,9 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
             this.status = this.STOPPED;
         }
     },
+
     /**
-     * @function
+     * @method
      * @param {Event} event TODO
      */
     handleError: {
@@ -576,7 +578,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @function
+     * @method
      */
     handleEmptied: {
         value: function () {
@@ -636,3 +638,4 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     blueprint:require("montage")._blueprintDescriptor
 
 });
+

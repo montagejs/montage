@@ -1,12 +1,13 @@
 /*global require, exports, window*/
 
 /**
- @module montage/ui/base/abstract-slider.reel
- @requires montage/core/core
- @requires montage/ui/component
- @requires montage/ui/native-control
- @requires montage/composer/press-composer
+ * @module montage/ui/base/abstract-slider.reel
+ * @requires montage/core/core
+ * @requires montage/ui/component
+ * @requires montage/ui/native-control
+ * @requires montage/composer/press-composer
  */
+
 var AbstractControl = require("ui/base/abstract-control").AbstractControl,
     TranslateComposer = require("composer/translate-composer").TranslateComposer,
     KeyComposer = require("composer/key-composer").KeyComposer,
@@ -372,9 +373,10 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
     },
 
     /**
-     * Enables or disables the Button from user input. When this property is set to ```false```,
-     * the "disabled" CSS style is applied to the button's DOM element during the next draw cycle. When set to
-     * ```true``` the "disabled" CSS class is removed from the element's class list.
+     * Enables or disables the Button from user input. When this property is
+     * set to `false`, the "disabled" CSS style is applied to the button's DOM
+     * element during the next draw cycle. When set to `true` the "disabled"
+     * CSS class is removed from the element's class list.
      * @type {boolean}
      */
     enabled: {
@@ -495,4 +497,6 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
             }
         }
     }
+
 });
+

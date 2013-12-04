@@ -1702,8 +1702,8 @@ Promise.prototype.done = function (fulfilled, rejected, progress) {
  * Causes a promise to be rejected if it does not get fulfilled before
  * some milliseconds time out.
  * @param {Any*} promise
- * @param {Number} milliseconds timeout
- * @param {String} custom error message (optional)
+ * @param {number} milliseconds timeout
+ * @param {string} custom error message (optional)
  * @returns a promise for the resolution of the given promise if it is
  * fulfilled before the timeout, otherwise rejected.
  */
@@ -1732,7 +1732,7 @@ Promise.prototype.timeout = function (ms, message) {
  * Returns a promise for the given value (or promised value), some
  * milliseconds after it resolved. Passes rejections immediately.
  * @param {Any*} promise
- * @param {Number} milliseconds
+ * @param {number} milliseconds
  * @returns a promise for the resolution of the given promise after milliseconds
  * time has elapsed since the resolution of the given promise.
  * If the given promise rejects, that is passed immediately.
@@ -1849,7 +1849,7 @@ Promise.prototype.nbind = function (/*thisp, ...args*/) {
  * Calls a method of a Node-style object that accepts a Node-style
  * callback with a given array of arguments, plus a provided callback.
  * @param object an object that has the named method
- * @param {String} name name of the method of object
+ * @param {string} name name of the method of object
  * @param {Array} args arguments to pass to the method; the callback
  * will be provided by Q and appended to these arguments.
  * @returns a promise for the value or error
@@ -1873,7 +1873,7 @@ Promise.prototype.npost = function (name, args) {
  * callback, forwarding the given variadic arguments, plus a provided
  * callback argument.
  * @param object an object that has the named method
- * @param {String} name name of the method of object
+ * @param {string} name name of the method of object
  * @param ...args arguments to pass to the method; the callback will
  * be provided by Q and appended to these arguments.
  * @returns a promise for the value or error

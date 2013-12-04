@@ -104,3 +104,4 @@ exports.Text = Component.specialize( /** @lends Text# */ {
     }
 
 });
+

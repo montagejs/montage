@@ -1,12 +1,12 @@
 /**
- @module montage/core/event/action-event-listener
- @requires montage/core/core
+ * @module montage/core/event/action-event-listener
+ * @requires montage/core/core
  */
 var Montage = require("montage").Montage;
 
 /**
- @class ActionEventListener
- @extends Montage
+ * @class ActionEventListener
+ * @extends Montage
  */
 var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** @lends ActionEventListener# */ {
 
@@ -36,8 +36,9 @@ var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** 
     },
 
     /**
-     * Returns a new ActionEventListener instance with the specified handler and action.
-     * @function
+     * Returns a new ActionEventListener instance with the specified handler
+     * and action.
+     * @method
      * @param {Object} handler The event handler
      * @param {String|Function} action The event handler action
      * @returns {ActionEventListener} The initialized ActionEventListener
@@ -70,7 +71,8 @@ var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** 
     serializeProperties: {
         value: function(serializer) {
             serializer.set("handler", this.handler, "reference");
-            //TODO accepting an actual function is less than ideal from the serialization standpoint
+            // TODO accepting an actual function is less than ideal from the
+            // serialization standpoint
             serializer.set("action", this.action);
         }
     }
@@ -81,5 +83,5 @@ var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** 
 
     blueprint: require("montage")._blueprintDescriptor
 
-
 });
+

@@ -208,7 +208,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
     /**
      * Injects this iteration to the document between its top and bottom
      * boundaries.
-     * @param {Number} index The drawn index at which to place the iteration.
+     * @param {number} index The drawn index at which to place the iteration.
      * @private
      */
     injectIntoDocument: {

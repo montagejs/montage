@@ -17,32 +17,32 @@ var NumberConverter = require("core/converter/number-converter").NumberConverter
 exports.CurrencyConverter = NumberConverter.specialize( /** @lends CurrencyConverter# */ {
 
     /**
-     * @type {String}
-     * @default {String} '$'
+     * @type {string}
+     * @default {string} '$'
      */
     currency: {
         value: '$'
     },
 
     /**
-     * @type {Number}
-     * @default {Number} 2
+     * @type {number}
+     * @default {number} 2
      */
     decimals: {
         value: 2
     },
 
     /**
-     * @type {Boolean}
-     * @default {Boolean} false
+     * @type {boolean}
+     * @default {boolean} false
      */
     useParensForNegative: {
         value: false
     },
 
     /**
-     * @type {Boolean}
-     * @default {Boolean} false
+     * @type {boolean}
+     * @default {boolean} false
      */
     showCurrencyBeforeNumber: {
         value: false
@@ -53,9 +53,9 @@ exports.CurrencyConverter = NumberConverter.specialize( /** @lends CurrencyConve
     },
 
     /**
-     * @function
-     * @param {Number} amount
-     * @returns {String} The formatted currency value.
+     * @method
+     * @param {number} amount
+     * @returns {string} The formatted currency value.
      */
     convert: {
         value: function(amount) {
@@ -74,3 +74,4 @@ exports.CurrencyConverter = NumberConverter.specialize( /** @lends CurrencyConve
     }
 
 });
+

@@ -1,7 +1,7 @@
 /*global require, exports*/
 
 /**
- @module montage/ui/base/abstract-toggle-button.reel
+ * @module montage/ui/base/abstract-toggle-button.reel
  */
 var Montage = require("montage").Montage,
     AbstractControl = require("ui/base/abstract-control").AbstractControl,
@@ -25,8 +25,8 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
      */
 
     /**
-     * Dispatched when the toggle button is pressed for a period of time, set by
-     * {@link holdThreshold}.
+     * Dispatched when the toggle button is pressed for a period of time, set
+     * by {@link holdThreshold}.
      * @event longAction
      * @memberof AbstractToggleButton
      * @param {Event} event
@@ -71,9 +71,10 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     },
 
     /**
-     * Enables or disables the Button from user input. When this property is set to ```false```,
-     * the "montage--disabled" CSS style is applied to the button's DOM element during the next draw cycle. When set to
-     * ```true``` the "montage--disabled" CSS class is removed from the element's class list.
+     * Enables or disables the Button from user input. When this property is
+     * set to `false`, the "montage--disabled" CSS style is applied to the
+     * button's DOM element during the next draw cycle. When set to `true` the
+     * "montage--disabled" CSS class is removed from the element's class list.
      * @type {boolean}
      */
     enabled: {
@@ -100,10 +101,10 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     },
 
     /**
-     The displayed text on the button when it is pressed.
-
-     @type {string}
-     @default undefined
+     * The displayed text on the button when it is pressed.
+     *
+     * @type {string}
+     * @default undefined
      */
     pressedLabel: {
         get: function() {
@@ -120,10 +121,9 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     },
 
     /**
-     The displayed text on the button when it is unpressed.
-
-     @type {string}
-     @default undefined
+     * The displayed text on the button when it is unpressed.
+     * @type {string}
+     * @default undefined
      */
     unpressedLabel: {
         get: function() {
@@ -136,9 +136,10 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     },
 
     /**
-     The amount of time in milliseconds the user must press and hold the button a `longAction` event is dispatched. The default is 1 second.
-     @type {number}
-     @default 1000
+     * The amount of time in milliseconds the user must press and hold the
+     * button a `longAction` event is dispatched. The default is 1 second.
+     * @type {number}
+     * @default 1000
      */
     holdThreshold: {
         value: 1000
@@ -157,9 +158,10 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     },
 
     /**
-     This property is true when the button is being interacted with, either through mouse click or touch event, otherwise false.
-     @type {boolean}
-     @default false
+     * This property is true when the button is being interacted with, either
+     * through mouse click or touch event, otherwise false.
+     * @type {boolean}
+     * @default false
      */
     active: {
         get: function() {
@@ -210,7 +212,8 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     // Handlers
 
     /**
-     Called when the user starts interacting with the component.
+     * Called when the user starts interacting with the component.
+     * @private
      */
     handlePressStart: {
         value: function(event) {
@@ -225,7 +228,8 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     },
 
     /**
-     Called when the user has interacted with the button.
+     * Called when the user has interacted with the button.
+     * @private
      */
     handlePress: {
         value: function(event) {
@@ -267,7 +271,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     },
 
     /**
-     Called when all interaction is over.
+     * Called when all interaction is over.
      @private
      */
     handlePressCancel: {
@@ -290,8 +294,8 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     },
 
     /**
-     If this is an input element then the label is handled differently.
-     @private
+     * If this is an input element then the label is handled differently.
+     * @private
      */
     isInputElement: {
         value: false
@@ -315,9 +319,9 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     },
 
     /**
-     Draws the label to the DOM.
-     @function
-     @private
+     * Draws the label to the DOM.
+     * @method
+     * @private
      */
     _drawLabel: {
         enumerable: false,
@@ -341,4 +345,6 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
             this.element.setAttribute("aria-pressed", this.pressed);
         }
     }
+
 });
+

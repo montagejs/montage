@@ -286,5 +286,7 @@ var pathPropertyDescriptors = { /** @lends Montage# */
     }
 
 };
+
 Montage.defineProperties(Montage, pathPropertyDescriptors);
 Montage.defineProperties(Montage.prototype, pathPropertyDescriptors);
+

@@ -10,13 +10,8 @@ var Promise = require("core/promise").Promise;
 
 var logger = require("core/logger").logger("blueprint");
 
-exports.RemoteReference = Montage.specialize( {
+exports.RemoteReference = Montage.specialize({
 
-    /**
-      constructor method
-      @function
-      @private
-    */
     constructor: {
         value: function RemoteReference() {
             this.superForValue("constructor")();
@@ -53,23 +48,14 @@ exports.RemoteReference = Montage.specialize( {
         }
     },
 
-    /*
-     * @private
-     */
     _value: {
         value: null
     },
 
-    /*
-     * @private
-     */
     _reference: {
         value: null
     },
 
-    /*
-     * @private
-     */
     _promise: {
         value: null
     },
@@ -87,9 +73,13 @@ exports.RemoteReference = Montage.specialize( {
         }
     },
 
-    /*
-     * Takes the serialized reference and return a promise for the value.<br/>
+    /**
+     * Takes the serialized reference and return a promise for the value.
+     *
      * The default implementation does nothing and must be overwritten by subtypes
+     *
+     * @param references
+     * @param isRequire
      */
     valueFromReference: {
         value: function(reference, iRequire) {
@@ -97,9 +87,11 @@ exports.RemoteReference = Montage.specialize( {
         }
     },
 
-    /*
-     * Take the value and creates a reference string for serialization.<br/>
-     * The default implementation does nothing and must be overwritten by subtypes
+    /**
+     * Take the value and creates a reference string for serialization.
+     *
+     * The default implementation does nothing and must be overwritten by
+     * subtypes.
      */
     referenceFromValue: {
         value: function(value) {
@@ -112,3 +104,4 @@ exports.RemoteReference = Montage.specialize( {
     blueprint: require("montage")._blueprintDescriptor
 
 });
+

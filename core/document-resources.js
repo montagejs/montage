@@ -94,8 +94,8 @@ var DocumentResources = Montage.specialize({
 
     // TODO: this should probably be in TemplateResources, need to come up with
     //       a better scheme for know what has been loaded in what document.
-    //       This change would make addStyle sync and up to whoever is adding to
-    //       listen for its proper loading.
+    //       This change would make addStyle sync and up to whoever is adding
+    //       to listen for its proper loading.
     _importScript: {
         value: function(script) {
             var self = this,
@@ -109,9 +109,9 @@ var DocumentResources = Montage.specialize({
             if (url) {
                 self._addResource(url);
                 // We wait until all scripts are loaded, this is important
-                // because templateDidLoad might need to access objects that are
-                // defined in these scripts, the downsize is that it takes more
-                // time for the template to be considered loaded.
+                // because templateDidLoad might need to access objects that
+                // are defined in these scripts, the downsize is that it takes
+                // more time for the template to be considered loaded.
                 scriptLoaded = function(event) {
                     //if (event.type === "load") {
                         self.setResourcePreloaded(url);
@@ -207,8 +207,9 @@ var DocumentResources = Montage.specialize({
                 skipPreload = true;
             }
 
-            // If we force the preloading then we ignore the logic that prevents
-            // x-domain requests. A server might be configured with CORS.
+            // If we force the preloading then we ignore the logic that
+            // prevents x-domain requests. A server might be configured with
+            // CORS.
             if (skipPreload && force) {
                 skipPreload = false;
             }
@@ -293,3 +294,4 @@ var DocumentResources = Montage.specialize({
 });
 
 exports.DocumentResources = DocumentResources;
+

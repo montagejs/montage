@@ -59,12 +59,13 @@ exports.ModuleReference = Montage.specialize( /** @lends ModuleReference */ {
     /**
      * Resolves this module reference so that it can be required from
      * otherRequire.
-     * @function
+     * @method
      * @param {function} otherRequire Require from another package that has
      * the package of this module as a dependency.
      * @returns {string} The module id to pass to otherRequire that results
      * in this module.
-     * @throws {Error} If there is no mapping from this require inside otherRequire.
+     * @throws {Error} If there is no mapping from this require inside
+     * otherRequire.
      * @example
      * var ref = new ModuleReference().initWithIdAndRequire("core/uuid", montageRequire);
      * ref.resolve(applicationRequire); // => "montage/core/uuid"
@@ -88,3 +89,4 @@ exports.ModuleReference = Montage.specialize( /** @lends ModuleReference */ {
         value: true
     }
 });
+

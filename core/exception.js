@@ -1,33 +1,37 @@
 var Montage = require("montage").Montage;
 var logger = require("core/logger").logger("exception");
 /**
-	@module montage/core/exception
-    @requires montage/core/core
-    @requires montage/core/logger
+ * @module montage/core/exception
+ * @requires montage/core/core
+ * @requires montage/core/logger
 */
+
 /**
-    @class Exception
-    @extends Montage
+ * @class Exception
+ * @extends Montage
 */
 var Exception = exports.Exception = Montage.specialize(/** @lends Exception# */ {
-/**
-        @type {Property}
-        @default {String} null
-    */
+
+    /**
+     * @type {Property}
+     * @default {string} null
+     */
     message: {
         value: null
     },
-/**
-        @type {Property}
-        @default {String} null
-    */
+
+    /**
+     * @type {Property}
+     * @default {string} null
+     */
     target: {
         value: null
     },
-/**
-        @type {Property}
-        @default {Function} null
-    */
+
+    /**
+     * @type {Property}
+     * @default {Function} null
+     */
     method: {
         value: null
     },
@@ -38,36 +42,38 @@ var Exception = exports.Exception = Montage.specialize(/** @lends Exception# */ 
         }
     },
 
-   /**
-    @function
-    @param {String} message The message to be initialized.
-    @returns this.initWithMessageTargetAndMethod(message, null, null)
-    */
+    /**
+     * @method
+     * @param {string} message The message to be initialized.
+     * @returns this.initWithMessageTargetAndMethod(message, null, null)
+     */
     initWithMessage : {
         enumerable: true,
         value: function(message) {
             return this.initWithMessageTargetAndMethod(message, null, null);
         }
     },
-/**
-    @function
-    @param {String} message The message to be initialized.
-    @param {String} target The target to be initialized.
-    @returns this.initWithMessageTargetAndMethod(message, target, null)
-    */
+
+    /**
+     * @method
+     * @param {string} message The message to be initialized.
+     * @param {string} target The target to be initialized.
+     * @returns this.initWithMessageTargetAndMethod(message, target, null)
+     */
     initWithMessageAndTarget : {
         enumerable: true,
         value: function(message, target) {
             return this.initWithMessageTargetAndMethod(message, target, null);
         }
     },
-/**
-    @function
-    @param {String} message The message to be initialized.
-    @param {String} target The target to be initialized.
-    @param {Function} method The method to be initialized.
-    @returns itself
-    */
+
+    /**
+     * @method
+     * @param {string} message The message to be initialized.
+     * @param {string} target The target to be initialized.
+     * @param {Function} method The method to be initialized.
+     * @returns itself
+     */
     initWithMessageTargetAndMethod : {
         enumerable: true,
         value: function(message, target, method) {
@@ -80,10 +86,11 @@ var Exception = exports.Exception = Montage.specialize(/** @lends Exception# */ 
             return this;
         }
     },
-/**
-    @function
-    @returns The exception
-    */
+
+    /**
+     * @method
+     * @returns The exception
+     */
     toString: {
         enumerable: false,
         value: function() {
@@ -92,3 +99,4 @@ var Exception = exports.Exception = Montage.specialize(/** @lends Exception# */ 
     }
 
 });
+

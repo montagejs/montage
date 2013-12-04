@@ -30,11 +30,11 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
     },
 
     /**
-     Initialize a newly allocated property blueprint.
-     @function
-     @param {String} name name of the property blueprint to create
-     @param {Blueprint} blueprint
-     @return this
+     * Initialize a newly allocated property blueprint.
+     * @function
+     * @param {string} name name of the property blueprint to create
+     * @param {Blueprint} blueprint
+     * @return this
      */
     initWithNameAndBlueprint:{
         value:function (name, blueprint) {
@@ -79,14 +79,11 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
         }
     },
 
-    /*
-     * @private
-     */
     _owner:{
         value:null
     },
 
-    /*
+    /**
      * Component description attached to this property blueprint.
      */
     owner:{
@@ -95,17 +92,15 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
         }
     },
 
-    /**
-     @private
-     */
     _name:{
         value:null
     },
 
     /**
-     Name of the object. The name is used to define the property on the object.
-     @function
-     @returns {String} this._name
+     * Name of the object. The name is used to define the property on the
+     * object.
+     * @function
+     * @returns {string} this._name
      */
     name:{
         serializable:false,
@@ -115,11 +110,11 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
     },
 
     /**
-     The identifier is the name of the blueprint, dot, the name of the
-     event blueprint, and is used to make the serialization of property blueprints more
-     readable.
-     @type {Property}
-     @default {String} this.name
+     * The identifier is the name of the blueprint, dot, the name of the event
+     * blueprint, and is used to make the serialization of property blueprints
+     * more readable.
+     * @type {Property}
+     * @default {string} this.name
      */
     identifier:{
         get:function () {
@@ -160,3 +155,4 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
     blueprint:require("montage")._blueprintDescriptor
 
 });
+

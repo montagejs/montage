@@ -1,20 +1,20 @@
 /**
-    Defines standardized shims for the intrinsic String object.
-    @see {external:String}
-    @module montage/core/shim/string
-*/
+ * Defines standardized shims for the intrinsic String object.
+ * @see {external:String}
+ * @module montage/core/shim/string
+ */
 
 /**
-    @external String
-*/
+ * @external String
+ */
 
 /**
-    Returns whether this string begins with a given substring.
-
-    @function external:String#startsWith
-    @param {String} substring a potential substring of this string
-    @returns {Boolean} whether this string starts with the given substring
-*/
+ * Returns whether this string begins with a given substring.
+ *
+ * @function external:String#startsWith
+ * @param {string} substring a potential substring of this string
+ * @returns {boolean} whether this string starts with the given substring
+ */
 if (!String.prototype.startsWith) {
     Object.defineProperty(String.prototype, 'startsWith', {
         value: function (start) {
@@ -27,12 +27,12 @@ if (!String.prototype.startsWith) {
 }
 
 /**
-    Returns whether this string ends with a given substring.
-
-    @function external:String#endsWith
-    @param {String} substring a potential substring of this string
-    @returns {Boolean} whether this string ends with the given substring
-*/
+ * Returns whether this string ends with a given substring.
+ *
+ * @function external:String#endsWith
+ * @param {string} substring a potential substring of this string
+ * @returns {boolean} whether this string ends with the given substring
+ */
 if (!String.prototype.endsWith) {
     Object.defineProperty(String.prototype, 'endsWith', {
         value: function (end) {

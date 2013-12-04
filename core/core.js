@@ -1,4 +1,3 @@
-/*global Object,Element,Function,TypeError */
 /**
  @module montage
  @requires core/shim/object
@@ -35,14 +34,17 @@ var Array_prototype = Array.prototype;
 
 var Object_prototype = Object.prototype;
 
-// The CONSTRUCTOR_COMPATIBILITY flag marks areas that allow the migration from Montage.create to Constructor.specialize
-// The following is done:
-// - Any properties defined on the prototype that are used on the constructor fire a deperecation warning prompting the
-//   developer to move them to the second argument of specialize().
+// The CONSTRUCTOR_COMPATIBILITY flag marks areas that allow the migration from
+// Montage.create to Constructor.specialize The following is done:
+// - Any properties defined on the prototype that are used on the constructor
+//   fire a deperecation warning prompting the developer to move them to the
+//   second argument of specialize().
 // - Adds a create method to the constructor can be used as Proto.create().
-// - Adds support for 'didCreate' so that it can be used interchangeably with the 'constructor' property.
-// - When calling Montage.create with a function as the first argument we use the function as a constructor or call
-//   specialize on it to create a subtype.
+// - Adds support for 'didCreate' so that it can be used interchangeably with
+//   the 'constructor' property.
+// - When calling Montage.create with a function as the first argument we use
+//   the function as a constructor or call specialize on it to create a
+//   subtype.
 var CONSTRUCTOR_COMPATIBILITY = true;
 
 /**
@@ -343,7 +345,8 @@ extendedPropertyAttributes.forEach(function(name) {
  * @method Montage.defineProperty
  * @param {Object} object The object on which to define the property.
  * @param {string} name The name of the property to define, or modify.
- * @param {Object} descriptor A descriptor object that defines the properties being defined or modified.
+ * @param {Object} descriptor A descriptor object that defines the properties
+ * being defined or modified.
  * @example
  * Montage.defineProperty(Object.prototype, "_eventListenerDescriptors", {
  *     enumerable: true | false,
@@ -891,11 +894,12 @@ Montage.defineProperty(Montage.prototype, "superForSet", {
 });
 
 /**
-    Returns the names of serializable properties belonging to Montage object.
-    @function Montage.getSerializablePropertyNames
-    @param {Object} anObject A Montage object.
-    @returns {Array} An array containing the names of the serializable properties belonging to <code>anObject</code>.
-*/
+ * Returns the names of serializable properties belonging to Montage object.
+ * @function Montage.getSerializablePropertyNames
+ * @param {Object} anObject A Montage object.
+ * @returns {Array} An array containing the names of the serializable
+ * properties belonging to `anObject`.
+ */
 Montage.defineProperty(Montage, "getSerializablePropertyNames", {value: function(anObject) {
 
     var propertyNames = [],
@@ -916,8 +920,9 @@ Montage.defineProperty(Montage, "getSerializablePropertyNames", {value: function
     Returns the attribute of a property belonging to an object.
     @function Montage.getPropertyAttribute
     @param {Object} anObject A object.
-    @param {String} propertyName The name of a property belonging to <code>anObject</code>.
-    @param {String} attributeName The name of a property's attribute.
+    @param {string} propertyName The name of a property belonging to
+    `anObject`.
+    @param {string} attributeName The name of a property's attribute.
     @returns attributes array
 */
 Montage.defineProperty(Montage, "getPropertyAttribute", {value: function(anObject, propertyName, attributeName) {
@@ -933,7 +938,7 @@ Montage.defineProperty(Montage, "getPropertyAttribute", {value: function(anObjec
 /**
     @function Montage.getPropertyAttributes
     @param {Object} anObject An object.
-    @param {String} attributeName The attribute name.
+    @param {string} attributeName The attribute name.
     @returns {Object} TODO getPropertyAttributes returns description
 */
 Montage.defineProperty(Montage, "getPropertyAttributes", {value: function(anObject, attributeName) {
@@ -1100,29 +1105,30 @@ Montage.defineProperty(Montage.prototype, "identifier", {
 });
 
 /**
-    Returns true if two objects are equal, otherwise returns false.
-    @function Montage#equals
-    @param {Object} anObject The object to compare for equality.
-    @returns {Boolean} Returns <code>true</code> if the calling object and
-    <code>anObject</code> are identical and their <code>uuid</code> properties
-    are also equal. Otherwise, returns <code>false</code>.
-*/
+ * Returns true if two objects are equal, otherwise returns false.
+ * @method Montage#equals
+ * @param {Object} anObject The object to compare for equality.
+ * @returns {boolean} Returns `true` if the calling object and
+ * `anObject` are identical and their `uuid` properties
+ * are also equal. Otherwise, returns `false`.
+ */
 Montage.defineProperty(Montage.prototype, "equals", {
     value: function(anObject) {
         if (!anObject) return false;
         return this === anObject || this.uuid === anObject.uuid;
     }
 });
+
 Montage.defineProperty(Montage, "equals", {
     value: Montage.prototype.equals
 });
 
 /**
-    This method calls the method named with the identifier prefix if it exists.
-    Example: If the name parameter is "shouldDoSomething" and the caller's identifier is "bob", then
-    this method will try and call "bobShouldDoSomething"
-    @function Montage.callDelegateMethod
-    @param {string} name
+ * This method calls the method named with the identifier prefix if it exists.
+ * Example: If the name parameter is "shouldDoSomething" and the caller's identifier is "bob", then
+ * this method will try and call "bobShouldDoSomething"
+ * @method Montage#callDelegateMethod
+ * @param {string} name
 */
 Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
     value: function(name) {
@@ -1239,3 +1245,4 @@ exports._blueprintDescriptor = {
         });
     }
 };
+
