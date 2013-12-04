@@ -36,6 +36,23 @@
             "bindings": {
                 "value": {"<-": "@leftSide.value"}
             }
+        },
+
+        "templateProperties": {
+            "prototype": "montage/ui/component",
+            "properties": {
+                "element": {"#": "template-properties"}
+            }
+        },
+
+        "iterationItem": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "iterationItem"}
+            },
+            "bindings": {
+                "value": {"<-": "@templateProperties:cell"}
+            }
         }
     }</script>
 </head>
@@ -79,6 +96,10 @@
     </div>
     <div data-montage-id="multiple-objects-rightSide">
         <h2 data-montage-id="rightSide">Right Side</h2>
+    </div>
+
+    <div data-montage-id="template-properties">
+        <h2 data-montage-id="iterationItem"></h2>
     </div>
 </body>
 </html>

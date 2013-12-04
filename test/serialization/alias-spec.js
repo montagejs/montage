@@ -22,29 +22,17 @@ describe("serialization/alias-spec", function() {
                 }).toThrow();
             });
 
-            it("should reject missing property name with path", function() {
+            it("should reject a template property with path", function() {
                 expect(function() {
-                    alias.value = "@component.path";
+                    alias.value = "@component:propertyName.path";
                 }).toThrow();
             });
         });
 
         describe("valid alias syntax", function() {
-            it("should accept a template property with no path", function() {
+            it("should accept a template property", function() {
                 expect(function() {
                     alias.value = "@component:propertyName";
-                }).not.toThrow();
-            });
-
-            it("should accept a template property with a path", function() {
-                expect(function() {
-                    alias.value = "@component:propertyName.path";
-                }).not.toThrow();
-            });
-
-            it("should accept a template property with a path to another template property", function() {
-                expect(function() {
-                    alias.value = "@component:propertyName:path";
                 }).not.toThrow();
             });
 

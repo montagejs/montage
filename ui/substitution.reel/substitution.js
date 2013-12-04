@@ -233,7 +233,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
                 promises = [];
 
             if (!element) {
-                element = this._getDomArgument(substitutionElement, value);
+                element = this._getSubstitutionDomArgument(value);
             }
 
             for (var i = 0; i < childComponents.length; i++) {
@@ -267,6 +267,53 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
             } else {
                 this._switchComponentTreeLoaded[value] = true;
                 this.needsDraw = true;
+            }
+        }
+    },
+
+   /**
+    * This function is used to get the dom arguments before the first draw,
+    * _domArguments are only available at the first draw.
+    * We need it before so we can start loading the component tree as soon as
+    * possible without having to wait for the first draw.
+    * @private
+    */
+    _getSubstitutionDomArgument: {
+        value: function(name) {
+            var candidates,
+                node,
+                element,
+                elementId,
+                serialization,
+                labels,
+                template = this._ownerDocumentPart.template;
+
+            element = this.element;
+            candidates = element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "='" + name + "']");
+
+            // Make sure that the argument we find is indeed part of element and
+            // not an argument from an inner component.
+            nextCandidate:
+            for (var i = 0, candidate; (candidate = candidates[i]); i++) {
+                node = candidate;
+                while ((node = node.parentNode) !== element) {
+                    elementId = template.getElementId(node);
+
+                    // Check if this node is an element of a component.
+                    // TODO: Make this operation faster
+                    if (elementId) {
+                        serialization = template.getSerialization();
+                        labels = serialization.getSerializationLabelsWithElements(
+                            elementId);
+
+                        if (labels.length > 0) {
+                            // This candidate is inside another component so
+                            // skip it.
+                            continue nextCandidate;
+                        }
+                    }
+                }
+                return candidate;
             }
         }
     },

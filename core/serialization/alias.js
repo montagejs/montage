@@ -33,9 +33,8 @@ exports.Alias = Montage.specialize({ /** @lends Alias# */
     _aliasRegExp: {
         // $1: component name
         // $2: property name
-        // $3: path (starts with a dot or colon)
-        // alias = @$1:$2$3
-        value: /@([_a-zA-Z$][0-9_a-zA-Z$]*):([_a-zA-Z$][0-9_a-zA-Z$]*)([\.:].*$)?/
+        // alias = @$1:$2
+        value: /@([_a-zA-Z$][0-9_a-zA-Z$]*):([_a-zA-Z$][0-9_a-zA-Z$]*)$/
     },
 
     /**
@@ -58,13 +57,12 @@ exports.Alias = Montage.specialize({ /** @lends Alias# */
 
             this._value = value;
 
-            this._componentName = split[1];
+            this._componentLabel = split[1];
             this._propertyName = split[2];
-            this._path = split[3];
         }
     },
 
-    _componentName: {
+    _componentLabel: {
         value: null
     },
 
@@ -77,9 +75,9 @@ exports.Alias = Montage.specialize({ /** @lends Alias# */
      * @type {string}
      * @readonly
      */
-    componentName: {
+    componentLabel: {
         get: function() {
-            return this._componentName;
+            return this._componentLabel;
         }
     },
 
@@ -99,24 +97,6 @@ exports.Alias = Montage.specialize({ /** @lends Alias# */
     propertyName: {
         get: function() {
             return this._propertyName;
-        }
-    },
-
-    _path: {
-        value: null
-    },
-
-    /**
-     * The path that follows the property name reference.
-     * Derived from the alias.
-     *
-     * @name Alias#path
-     * @type {string}
-     * @readonly
-     */
-    path: {
-        get: function() {
-            return this._path;
         }
     },
 

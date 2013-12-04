@@ -19,7 +19,8 @@ var Montage = require("montage").Montage,
     drawPerformanceLogger = require("core/logger").logger("Drawing performance"),
     drawLogger = require("core/logger").logger("drawing"),
     defaultEventManager = require("core/event/event-manager").defaultEventManager,
-    Set = require("collections/set");
+    Set = require("collections/set"),
+    Alias = require("core/serialization/alias").Alias;
 
 /**
  * @requires montage/ui/component-description
@@ -355,14 +356,25 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
-    _getDomArgument: {
-        value: function(element, name) {
+    /**
+     * This function is used to get a Dom Argument out of the origin template
+     * (_ownerDocumentPart) of this component.
+     * It is not meant to be used with a live DOM, its main purpose it to help
+     * the TemplateArgumentProvider implementation.
+     *
+     * @private
+     */
+    _getTemplateDomArgument: {
+        value: function(name) {
             var candidates,
                 node,
+                element,
                 elementId,
                 serialization,
-                labels;
+                labels,
+                template = this._ownerDocumentPart.template;
 
+            element = template.getElementById(this.getElementId());
             candidates = element.querySelectorAll("*[" + this.DOM_ARG_ATTRIBUTE + "='" + name + "']");
 
             // Make sure that the argument we find is indeed part of element and
@@ -371,12 +383,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             for (var i = 0, candidate; (candidate = candidates[i]); i++) {
                 node = candidate;
                 while ((node = node.parentNode) !== element) {
-                    elementId = this._template.getElementId(node);
+                    elementId = template.getElementId(node);
 
                     // Check if this node is an element of a component.
                     // TODO: Make this operation faster
                     if (elementId) {
-                        serialization = this._template.getSerialization();
+                        serialization = template.getSerialization();
                         labels = serialization.getSerializationLabelsWithElements(
                             elementId);
 
@@ -392,24 +404,66 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
-    getTemplateParameterArgument: {
-        value: function(template, name) {
-            var element,
+    /**
+     * TemplateArgumentProvider implementation
+     */
+
+    getTemplateArgumentElement: {
+        value: function(argumentName) {
+            var template = this._ownerDocumentPart.template,
+                element,
                 range,
                 argument;
 
-            element = template.getElementById(this.getElementId());
+            if (argumentName === "*") {
+                element = template.getElementById(this.getElementId());
 
-            if (name === "*") {
                 range = template.document.createRange();
                 range.selectNodeContents(element);
                 argument = range.cloneContents();
             } else {
-                argument = this._getDomArgument(element, name).cloneNode(true);
+                argument = this._getTemplateDomArgument(argumentName).cloneNode(true);
                 argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
             }
 
             return argument;
+        }
+    },
+
+    getTemplateArgumentSerialization: {
+        value: function(elementIds) {
+            var template = this._ownerDocumentPart.template;
+
+            return template._createSerializationWithElementIds(elementIds);
+        }
+    },
+
+    /**
+     * @param {string} templatePropertyName "<componentLabel>:<propertyName>"
+     * @private
+     */
+    resolveTemplateArgumentTemplateProperty: {
+        value: function(templatePropertyName) {
+            var ix = templatePropertyName.indexOf(":"),
+                // componentLabel = templatePropertyName.slice(0, ix),
+                propertyName = templatePropertyName.slice(ix),
+                documentPart = this._templateDocumentPart,
+                aliasTemplatePropertyName,
+                aliasComponent,
+                alias;
+
+            if (documentPart) {
+                alias = documentPart.objects[propertyName];
+            }
+
+            if (alias instanceof Alias) {
+                aliasComponent = documentPart.objects[alias.componentLabel];
+                // Strip the @ prefix
+                aliasTemplatePropertyName = alias.value.slice(1);
+                return aliasComponent.resolveTemplateArgumentTemplateProperty(aliasTemplatePropertyName);
+            } else {
+                return templatePropertyName;
+            }
         }
     },
 

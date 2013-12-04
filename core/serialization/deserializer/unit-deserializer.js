@@ -24,7 +24,7 @@ var UnitDeserializer = Montage.specialize(/** @lends UnitDeserializer# */ {
 
     /**
      * A valid template property reference is one that references a component
-     * that exists and has the format: @<component>:<property>[.path].
+     * that exists and has the format: @<component>:<property>.
      */
     isValidTemplatePropertyReference: {
         value: function(label) {
@@ -49,7 +49,7 @@ var UnitDeserializer = Montage.specialize(/** @lends UnitDeserializer# */ {
             if (this._context.hasObject(label)) {
                 // All labels that exist are immediately resolved into an object
                 // even if they are a valid template property reference. This
-                // "trick" can be used to speed up template property's look ups.
+                // "trick" can be used to speed up template property lookups.
                 return this._context.getObject(label);
             } else if (this.isValidTemplatePropertyReference(label)) {
                 // Ignore valid template property references that are not

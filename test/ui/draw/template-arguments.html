@@ -37,6 +37,27 @@
             "properties": {
                 "element": {"#": "comp4"}
             }
+        },
+
+        "comp5": {
+            "prototype": "montage/ui/component.reel",
+            "properties": {
+                "element": {"#": "comp5"}
+            }
+        },
+
+        "comp6": {
+            "prototype": "montage/ui/component.reel",
+            "properties": {
+                "element": {"#": "comp6"}
+            }
+        },
+
+        "otherComp2": {
+            "prototype": "montage/ui/component.reel",
+            "properties": {
+                "element": {"#": "otherComp2"}
+            }
         }
     }</script>
 </head>
@@ -67,6 +88,28 @@
             <div data-arg="one"></div>
             <div data-arg="two"></div>
         </div>
+    </div>
+
+    <div data-montage-id="comp5">
+        <table>
+            <tr>
+                <td data-arg="one"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div data-montage-id="comp6">
+        <table>
+            <tr>
+                <td data-arg="one" class="one">
+                    <div data-montage-id="otherComp2">
+                        <div data-arg="one"></div>
+                        <div data-arg="two"></div>
+                    </div>
+                </td>
+                <td data-arg="two" class="two"></td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>

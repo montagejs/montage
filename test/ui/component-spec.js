@@ -32,7 +32,9 @@ var Montage = require("montage").Montage,
     TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Component = require("montage/ui/component").Component,
     Serializer = require("montage/core/serialization").Serializer,
-    Template = require("montage/core/template").Template;
+    Template = require("montage/core/template").Template,
+    DocumentPart = require("montage/core/document-part").DocumentPart,
+    Alias = require("montage/core/serialization/alias").Alias;
 var Bindings = require("montage/core/bindings").Bindings;
 var MockDOM = require("mocks/dom");
 
@@ -689,6 +691,14 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                 expect(names.length).toBe(2);
             });
 
+            it("should have correct DOM arguments even when they're wrapped by elements", function() {
+                var component = testPage.test.wrappedArguments,
+                    one;
+
+                one = component.extractDomArgument("one");
+                expect(one).toBeDefined();
+            });
+
             it("should satisfy the star parameter when no arguments are given", function() {
                 var templateArguments = {
 
@@ -850,12 +860,12 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                         originalArgument;
 
                     element = template.getElementById("comp1");
-                    component._template = template;
+                    component._ownerDocumentPart = new DocumentPart();
+                    component._ownerDocumentPart.template = template;
                     component._element = element;
                     originalArgument = element.querySelector(".section");
 
-                    section = component.getTemplateParameterArgument(template, "section");
-
+                    section = component.getTemplateArgumentElement("section");
 
                     expect(section).not.toBe(originalArgument);
                 });
@@ -875,10 +885,11 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                         starNodes;
 
                     element = template.getElementById("comp2");
-                    component._template = template;
+                    component._ownerDocumentPart = new DocumentPart();
+                    component._ownerDocumentPart.template = template;
                     component._element = element;
 
-                    star = component.getTemplateParameterArgument(template, "*");
+                    star = component.getTemplateArgumentElement("*");
 
                     originalNodes = element.childNodes;
                     starNodes = star.childNodes;
@@ -901,10 +912,11 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                         dataArgs;
 
                     element = template.getElementById("comp1");
-                    component._template = template;
+                    component._ownerDocumentPart = new DocumentPart();
+                    component._ownerDocumentPart.template = template;
                     component._element = element;
 
-                    section = component.getTemplateParameterArgument(template, "section");
+                    section = component.getTemplateArgumentElement("section");
 
                     dataArgs = section.querySelectorAll("*[data-arg]");
 
@@ -924,10 +936,11 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                         element;
 
                     element = template.getElementById("comp3");
-                    component._template = template;
+                    component._ownerDocumentPart = new DocumentPart();
+                    component._ownerDocumentPart.template = template;
                     component._element = element;
 
-                    two = component.getTemplateParameterArgument(template, "two");
+                    two = component.getTemplateArgumentElement("two");
 
                     expect(two.className).toBe("two");
                 });
@@ -944,12 +957,55 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                         element;
 
                     element = template.getElementById("comp4");
-                    component._template = template;
+                    component._ownerDocumentPart = new DocumentPart();
+                    component._ownerDocumentPart.template = template;
                     component._element = element;
 
-                    one = component.getTemplateParameterArgument(template, "one");
+                    one = component.getTemplateArgumentElement("one");
 
                     expect(one).toBeDefined();
+                });
+            });
+
+            it("should clone an argument even if it's wrapped by an element", function() {
+                var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = new Template(),
+                    component = new Component();
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var one,
+                        element;
+
+                    element = template.getElementById("comp5");
+                    component._ownerDocumentPart = new DocumentPart();
+                    component._ownerDocumentPart.template = template;
+                    component._element = element;
+
+                    one = component.getTemplateArgumentElement("one");
+
+                    expect(one).toBeDefined();
+                });
+            });
+
+            it("should not clone an argument of a nested component when the component argument is wrapped by an element", function() {
+                var templateHtml = require("ui/draw/template-arguments.html").content,
+                    template = new Template(),
+                    component = new Component();
+
+                return template.initWithHtml(templateHtml)
+                .then(function() {
+                    var two,
+                        element;
+
+                    element = template.getElementById("comp6");
+                    component._ownerDocumentPart = new DocumentPart();
+                    component._ownerDocumentPart.template = template;
+                    component._element = element;
+
+                    two = component.getTemplateArgumentElement("two");
+
+                    expect(two.className).toBe("two");
                 });
             });
         });
@@ -1203,6 +1259,50 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                 componentA.removeChildComponent(componentB);
                 expect(callOrder[0]).toBe(componentC);
                 expect(callOrder[1]).toBe(componentB);
+            });
+        });
+
+        describe("resolveTemplateArgumentTemplateProperty", function() {
+            it("should resolve to the same name when the template property is not an alias", function() {
+                var component = new Component(),
+                    templatePropertyLabel;
+
+                component._templateDocumentPart = new DocumentPart();
+                component._templateDocumentPart.objects = {
+                    ":cell": {}
+                };
+
+                templatePropertyLabel = component.resolveTemplateArgumentTemplateProperty("component:cell");
+
+                expect(templatePropertyLabel).toBe("component:cell");
+            });
+
+            it("should resolve an alias recursively until it finds a template property that is not an alias", function() {
+                var component = new Component(),
+                    templatePropertyLabel,
+                    foo = new Component(),
+                    bar = new Component();
+
+                component._templateDocumentPart = new DocumentPart();
+                component._templateDocumentPart.objects = {
+                    ":cell": new Alias().init("@foo:j"),
+                    "foo": foo
+                };
+
+                foo._templateDocumentPart = new DocumentPart();
+                foo._templateDocumentPart.objects = {
+                    ":j": new Alias().init("@bar:i"),
+                    "bar": bar
+                };
+
+                bar._templateDocumentPart = new DocumentPart();
+                bar._templateDocumentPart.objects = {
+                    ":i": {}
+                };
+
+                templatePropertyLabel = component.resolveTemplateArgumentTemplateProperty("component:cell");
+
+                expect(templatePropertyLabel).toBe("bar:i");
             });
         });
     });

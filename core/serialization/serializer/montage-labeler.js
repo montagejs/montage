@@ -51,5 +51,11 @@ exports.MontageLabeler = Montage.specialize.call(Labeler, {
 
             return objectName;
         }
+    },
+
+    isLabelDefined: {
+        value: function(label) {
+            return label in this._objects;
+        }
     }
 });

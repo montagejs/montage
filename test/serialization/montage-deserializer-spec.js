@@ -332,7 +332,7 @@ describe("serialization/montage-deserializer-spec", function() {
         it("should deserialize an alias", function() {
             var serialization = {
                     ":templateProperty": {
-                        "alias": "@component:propertyName.path"
+                        "alias": "@component:propertyName"
                     }
                 },
                 serializationString = JSON.stringify(serialization);
@@ -343,10 +343,9 @@ describe("serialization/montage-deserializer-spec", function() {
                 var alias = objects[":templateProperty"];
 
                 expect(Object.getPrototypeOf(alias)).toBe(Alias.prototype);
-                expect(alias.value).toBe("@component:propertyName.path");
-                expect(alias.componentName).toBe("component");
+                expect(alias.value).toBe("@component:propertyName");
+                expect(alias.componentLabel).toBe("component");
                 expect(alias.propertyName).toBe("propertyName");
-                expect(alias.path).toBe(".path");
             });
         });
     });

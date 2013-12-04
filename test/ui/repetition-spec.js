@@ -920,6 +920,52 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                 expect(template.getElementById("textfield10"))
                     .toBeDefined();
             });
+
+            describe("property templates", function() {
+                it("should expand template with an alias to repetition:iteration", function() {
+                    var elements = querySelectorAll(".aliasRepetitionIteration .text100");
+
+                    expect(elements[0].component.value).toBe("1");
+                    expect(elements[1].component.value).toBe("2");
+                });
+
+                it("should expand template with an alias to nested repetition:iteration", function() {
+                    var elements = querySelectorAll(".aliasNestedRepetitionIteration .text110");
+
+                    expect(elements[0].component.value).toBe("1-a");
+                    expect(elements[1].component.value).toBe("1-b");
+                    expect(elements[2].component.value).toBe("2-a");
+                    expect(elements[3].component.value).toBe("2-b");
+                });
+
+                it("should expand template with a chained alias to repetition:iteration", function() {
+                    var elements = querySelectorAll(".aliasChainedRepetitionIteration .text120");
+
+                    expect(elements[0].component.value).toBe("1");
+                    expect(elements[1].component.value).toBe("2");
+                });
+
+                it("should expand the correct alias to repetition:iteration", function() {
+                    var elements = querySelectorAll(".aliasMixedRepetitionIteration .header");
+
+                    expect(elements[0].component.value).toBe("a1");
+                    expect(elements[1].component.value).toBe("a2");
+
+                    elements = querySelectorAll(".aliasMixedRepetitionIteration .innerText");
+
+                    expect(elements[0].component.value).toBe("b1");
+                    expect(elements[1].component.value).toBe("b2");
+                    expect(elements[2].component.value).toBe("b1");
+                    expect(elements[3].component.value).toBe("b2");
+
+                    elements = querySelectorAll(".aliasMixedRepetitionIteration .outerText");
+
+                    expect(elements[0].component.value).toBe("a1");
+                    expect(elements[1].component.value).toBe("a1");
+                    expect(elements[2].component.value).toBe("a2");
+                    expect(elements[3].component.value).toBe("a2");
+                });
+            });
         });
 
         describe("repetition within a substitution", function () {
