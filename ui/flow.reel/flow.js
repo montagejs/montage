@@ -1095,7 +1095,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     },
 
     willDraw: {
-        value: function () {
+        value: function (timestamp) {
             var intersections,
                 index,
                 i,
@@ -1130,6 +1130,44 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 }
             }
 
+            var time = timestamp,
+                // "iterations" is the number of iterations for the numerical methods
+                // integration of elastic scrolling. The higher the iterations, the more
+                // precise it is, but slower to compute. Setting it to 6 provides
+                // a good balance between precision and performance.
+                iterations = 6,
+                interval1 = this.lastDrawTime ? (time - this.lastDrawTime) * .018 * this._elasticScrollingSpeed : 0,
+                interval = 1 - (interval1 / iterations),
+                offset1, offset2, resultOffset,
+                min = this._minSlideOffsetIndex,
+                max = this._maxSlideOffsetIndex,
+                position,
+                step;
+
+            this.lastDrawTime = time;
+            if (this._hasElasticScrolling) {
+                for (j = 0; j < iterations; j++) {
+                    for (i = this._draggedSlideIndex - 1; i >= min; i--) {
+                        offset1 = this._getSlideOffset(i);
+                        offset2 = this._getSlideOffset(i + 1);
+                        resultOffset = (offset1 - offset2) * interval + offset2;
+                        if (resultOffset > 0) {
+                            resultOffset = 0;
+                        }
+                        this._updateSlideOffset(i, resultOffset);
+                    }
+                    for (i = this._draggedSlideIndex + 1; i <= max; i++) {
+                        offset1 = this._getSlideOffset(i);
+                        offset2 = this._getSlideOffset(i - 1);
+                        resultOffset = (offset1 - offset2) * interval + offset2;
+                        if (resultOffset < 0) {
+                            resultOffset = 0;
+                        }
+                        this._updateSlideOffset(i, resultOffset);
+                    }
+                }
+            }
+
             // Compute which slides are in view
             this._width = this._element.clientWidth;
             this._height = this._element.clientHeight;
@@ -1150,23 +1188,31 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                     }
                     offset =  this._scroll - paths[k].headOffset;
                     for (i = 0; i < intersections.length; i++) {
-                        startIndex = Math.ceil(intersections[i][0] + offset);
-                        endIndex = Math.ceil(intersections[i][1] + offset);
-                        if (startIndex < 0) {
-                            startIndex = 0;
+                        step = iterations / 2;
+                        j = step;
+                        while (step > 1) {
+                            index = (j|0) * pathsLength + k;
+                            position = (j|0) + this._getSlideOffset(index) - offset;
+                            step /= 2;
+                            if (position >= intersections[i][0]) {
+                                j -= step;
+                            } else {
+                                j += step;
+                            }
                         }
-                        if (endIndex > iterations) {
-                            endIndex = iterations;
+                        j = (j - 1) | 0;
+                        if (j < 0) {
+                            j = 0;
                         }
-                        for (j = startIndex; j < endIndex; j++) {
+                        do {
                             index = j * pathsLength + k;
-                            // If the content index is not yet in the visible
-                            // indexes, add it.
-                            if (typeof newContentIndexes[index] === "undefined") {
+                            position = j + this._getSlideOffset(index) - offset;
+                            if ((position >= intersections[i][0]) && (position <= intersections[i][1]) && (typeof newContentIndexes[index] === "undefined")) {
                                 newContentIndexes[index] = newVisibleIndexes.length;
                                 newVisibleIndexes.push(index);
                             }
-                        }
+                            j++;
+                        } while (position <= intersections[i][1]);
                     }
                 }
                 this._needsComputeVisibleRange = false;
@@ -1195,44 +1241,8 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 visibleIndexes = this._visibleIndexes,
                 indexTime,
                 rotation,
-                offset,
-                epsilon = .00001;
+                offset;
 
-            var time = timestamp,
-                // "iterations" is the number of iterations for the numerical methods
-                // integration of elastic scrolling. The higher the iterations, the more
-                // precise it is, but slower to compute. Setting it to 6 provides
-                // a good balance between precision and performance.
-                iterations = 6,
-                interval1 = this.lastDrawTime ? (time - this.lastDrawTime) * .018 * this._elasticScrollingSpeed : 0,
-                interval = 1 - (interval1 / iterations),
-                offset1, offset2, resultOffset,
-                min = this._minSlideOffsetIndex,
-                max = this._maxSlideOffsetIndex;
-
-            this.lastDrawTime = time;
-            if (this._hasElasticScrolling) {
-                for (j = 0; j < iterations; j++) {
-                    for (i = this._draggedSlideIndex - 1; i >= min; i--) {
-                        offset1 = this._getSlideOffset(i);
-                        offset2 = this._getSlideOffset(i + 1);
-                        resultOffset = (offset1 - offset2) * interval + offset2;
-                        if (resultOffset > 0) {
-                            resultOffset = 0;
-                        }
-                        this._updateSlideOffset(i, resultOffset);
-                    }
-                    for (i = this._draggedSlideIndex + 1; i <= max; i++) {
-                        offset1 = this._getSlideOffset(i);
-                        offset2 = this._getSlideOffset(i - 1);
-                        resultOffset = (offset1 - offset2) * interval + offset2;
-                        if (resultOffset < 0) {
-                            resultOffset = 0;
-                        }
-                        this._updateSlideOffset(i, resultOffset);
-                    }
-                }
-            }
             if (this._isTransitioningScroll) {
                 this.needsDraw = true;
             }
