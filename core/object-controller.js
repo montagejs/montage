@@ -59,8 +59,6 @@ var ObjectController = exports.ObjectController = Montage.specialize( /** @lends
         value: null
     },
 
-}, {
-
     blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
 
     blueprint:require("montage")._blueprintDescriptor
