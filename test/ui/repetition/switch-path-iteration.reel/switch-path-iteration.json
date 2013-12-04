@@ -9,7 +9,7 @@
         "prototype": "montage/ui/repetition.reel",
         "properties": {
             "element": {"#": "repetition"},
-            "switchPath": "objectAtCurrentIteration.isAdmin ? 'admin' : 'user'",
+            "switchPath": "isAdmin ? 'admin' : 'user'",
             "content": [
                 {"name": "John"},
                 {"name": "Mary"}
