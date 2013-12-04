@@ -1045,21 +1045,27 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 iteration;
 
             iteration = new this.Iteration().initWithRepetition(this);
-            if (self.switchPath) {
-                switchPath = Montage.getPath.call(iteration.object, self.switchPath);
-                var element = self._getDomArgument(self.element, switchPath);
-                if (!element) {
-                    throw new Error("Cannot find " + JSON.stringify(switchPath) + ""); // TODO: better error message
-                }
-                self._iterationTemplate = self.innerTemplate.createTemplateFromDomElement(element);
-                self._iterationTemplate.setInstances(self.innerTemplate._instances);
-            }
+
 
             this._iterationCreationPromise = this._iterationCreationPromise
             .then(function() {
                 var _document = self.element.ownerDocument,
+                    switchPath,
                     instances,
                     promise;
+
+                if (self.switchPath) {
+                    if (!iteration.object) {
+                        console.warn('No iteration.object', iteration.object);
+                    }
+                    switchPath = Montage.getPath.call(iteration.object, self.switchPath);
+                    var element = self._getDomArgument(self.element, switchPath);
+                    if (!element) {
+                        throw new Error("Cannot find " + JSON.stringify(switchPath) + ""); // TODO: better error message
+                    }
+                    self._iterationTemplate = self.innerTemplate.createTemplateFromDomElement(element);
+                    self._iterationTemplate.setInstances(self.innerTemplate._instances);
+                }
 
                 self.currentIteration = iteration;
 
@@ -1074,11 +1080,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 .then(function (part) {
                     part.loadComponentTree().then(function() {
                         iteration._fragment = part.fragment;
-
-                        if (self.switchPath) {
-                            switchPath = Montage.getPath.call(iteration.object, self.switchPath);
-                            console.log('switchPath', switchPath, iteration.object);
-                        }
 
                         // It is significant that _childComponents are assigned
                         // *after* the component tree has finished loading
