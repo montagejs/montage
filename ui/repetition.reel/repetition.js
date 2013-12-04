@@ -1045,9 +1045,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 iteration;
 
             iteration = new this.Iteration().initWithRepetition(this);
-            if (this.switchPath) {
-                switchPath = this.getPath(this.switchPath); // Expand FRB expression.
-                var element = this._getDomArgument(this.element, switchPath);
+            if (self.switchPath) {
+                switchPath = Montage.getPath.call(iteration.object, self.switchPath);
+                var element = self._getDomArgument(self.element, switchPath);
                 if (!element) {
                     throw new Error("Cannot find " + JSON.stringify(switchPath) + ""); // TODO: better error message
                 }
@@ -1074,6 +1074,12 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 .then(function (part) {
                     part.loadComponentTree().then(function() {
                         iteration._fragment = part.fragment;
+
+                        if (self.switchPath) {
+                            switchPath = Montage.getPath.call(iteration.object, self.switchPath);
+                            console.log('switchPath', switchPath, iteration.object);
+                        }
+
                         // It is significant that _childComponents are assigned
                         // *after* the component tree has finished loading
                         // because this signals to the iteration that it should
