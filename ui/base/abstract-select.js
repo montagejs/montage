@@ -37,7 +37,6 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
             this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
             this.contentController = new RangeController();
-            this._values = [];
 
             this.defineBindings({
                 "content": {
@@ -46,9 +45,11 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
                 "values": {
                     "<->": "contentController.selection.rangeContent()"
                 },
-                "value": {
-                    "<->": "values.one()"
-                },
+                // FIXME: due to issues with 2 way bindings with rangeContent()
+                // we aren't currently able to have this "value" binding.
+                // "value": {
+                //     "<->": "values.one()"
+                // },
                 "contentController.multiSelect": {
                     "<-": "multiSelect"
                 },
@@ -63,6 +64,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
 
             // Need to draw when "content" or "values" change
             this.addRangeAtPathChangeListener("content", this, "handleContentRangeChange");
+            // TODO: "value" <-> "values.one()"
             this.addRangeAtPathChangeListener("values", this, "handleValuesRangeChange");
             this.classList.add("matte-Select");
         }
@@ -129,6 +131,10 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
         set: function(value) {
             if (value !== this._value) {
                 this._value = value;
+                // TODO: "value" <-> "values.one()"
+                if (this.values[0] !== value) {
+                    this.values.splice(0, this.values.length, value);
+                }
                 this.needsDraw = true;
             }
         }
@@ -143,10 +149,22 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
             return this._values;
         },
         set: function(value) {
-            if (!value) {
-                value = [];
+            // When a property is bound to a rangeContent() we can't change the
+            // reference of the property because the binding will not work
+            // anymore (MON-444).
+            if (this._values) {
+                // We can't change the value reference because it is bound to a
+                // rangeContent(), instead we just replace its entire contents
+                // with the contents of the value given.
+                var args = [0, this._values.length].concat(value);
+                this._values.splice.apply(this._values, args);
+            } else {
+                // This is the only time when we actually set the values
+                // property. It is the value given when establishing the binding
+                // to rangeContent() in the constructor.
+                this._values = value;
             }
-            this._values = value;
+
             this.needsDraw = true;
         }
     },
@@ -219,6 +237,16 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
 
     handleContentRangeChange: {
         value: function() {
+            // When the content changes we need to update the "value" if none is
+            // set (new content) or if the previous "value" was removed in this
+            // range change.
+            // FIXME: we only operate on the selection and not on the "values"
+            // to avoid issues with 2-way binding to rangeContent().
+            if (this.contentController.selection.length === 0 &&
+                this.contentController.organizedContent.length > 0) {
+                this.contentController.selection.push(this.contentController.organizedContent[0]);
+            }
+
             this._contentIsDirty = true;
             this.needsDraw = true;
         }
@@ -226,8 +254,10 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
 
     handleValuesRangeChange: {
         value: function() {
-            // FIXME: seems like the bindings should handle this? But they don't.
-            this.value = this.values.one();
+            // TODO: "value" <-> "values.one()"
+            if (this.values.length > 0) {
+                this.value = this.values.one();
+            }
             this.needsDraw = true;
         }
     },
