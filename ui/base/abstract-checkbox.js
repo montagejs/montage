@@ -10,6 +10,7 @@ var CLASS_PREFIX = "montage-Checkbox";
  * @extends AbstractControl
  */
 var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /** @lends AbstractCheckbox# */ {
+
     /**
      * Dispatched when the checkbox is activated through a mouse click,
      * finger tap, or when focused and the spacebar is pressed.
@@ -118,7 +119,7 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
     },
 
     /**
-     Handle press event from press composer
+     * Handle press event from press composer
      */
     handlePress: {
         value: function(/* event */) {
@@ -134,8 +135,8 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
     },
 
     /**
-     Called when all interaction is over.
-     @private
+     * Called when all interaction is over.
+     * @private
      */
     handlePressCancel: {
         value: function(/* event */) {
@@ -151,4 +152,6 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
             this._pressComposer.addEventListener("pressCancel", this, false);
         }
     }
+
 });
+

@@ -15,9 +15,9 @@ var Montage = require("montage").Montage,
  * @fires press
  * @fires longPress
  * @fires pressCancel
- * @classdesc The `PressComposer` abstracts away handling mouse and touch events
- * that represent presses, allowing generic detection of presses, long presses, and 
- * cancelled presses.
+ * @classdesc The `PressComposer` abstracts away handling mouse and touch
+ * events that represent presses, allowing generic detection of presses, long
+ * presses, and cancelled presses.
  */
 var PressComposer = exports.PressComposer = Composer.specialize(/** @lends PressComposer# */ {
 
@@ -42,10 +42,12 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
      * Dispatched when a press lasts for longer than (@link longPressThreshold}
      * On a long press, the sequence of events will be:
      * - pressStart: as soon as the composer recognizes it is a press.
-     * - longPress: `longPressThreshold` after the pressStart, if the press has not yet ended.
+     * - longPress: `longPressThreshold` after the pressStart, if the press has
+     *   not yet ended.
      * - press: when the press ends, if it isn't cancelled.
      *
-     * Handlers of the `longPress` event can call `cancelPress` to prevent `press` being triggered.
+     * Handlers of the `longPress` event can call `cancelPress` to prevent
+     * `press` being triggered.
      *
      * @event longPress
      * @memberof PressComposer
@@ -155,8 +157,9 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         value: 1000
     },
     /**
-     * How long a press has to last (in milliseconds) for a longPress event to be dispatched
-     * @type number 
+     * How long a press has to last (in milliseconds) for a longPress event to
+     * be dispatched
+     * @type number
      */
     longPressThreshold: {
         get: function() {
@@ -206,7 +209,8 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 document.addEventListener("touchcancel", this, false);
             } else if (event.type === "mousedown") {
                 this._observedPointer = "mouse";
-                // Needed to cancel the press if mouseup'd when not on the component
+                // Needed to cancel the press if mouseup'd when not on the
+                // component
                 document.addEventListener("mouseup", this, false);
                 // Needed to preventDefault if another component has claimed
                 // the pointer
@@ -226,7 +230,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     /**
      * Decides what should be done based on an interaction.
-     * 
+     *
      * @param {Event} event The event that caused this to be called.
      * @private
      */
@@ -296,8 +300,8 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
      * of the changed touch if one matches, otherwise returns false. Make sure
      * to check against `!== false` or `=== false` as the
      * matching index might be 0.
-     * 
-     * @function
+     *
+     * @method
      * @private
      * @returns {number|boolean} The index of the matching touch, or false
      */
@@ -473,7 +477,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 /*
  * @class PressEvent
  * @inherits MutableEvent
- * @classdesc The event dispatched by the `PressComposer`, providing access to 
+ * @classdesc The event dispatched by the `PressComposer`, providing access to
  * the raw DOM event and proxying its properties.
  */
 var PressEvent = (function(){

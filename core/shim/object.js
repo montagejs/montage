@@ -1,23 +1,24 @@
 /**
-    Defines standardized shims for the intrinsic <code>Object</code>.
-    @see {external:Object}
-    @module montage/core/shim/object
-*/
-/**
-    @external Object
-*/
+ * Defines standardized shims for the intrinsic `Object`.
+ * @see {external:Object}
+ * @module montage/core/shim/object
+ */
 
 /**
-    Creates a new object that inherits prototypically directly from a given
-    prototype, optionally defining some properties.
-    @function external:Object.create
-    @param {Object} prototype the prototype to inherit, or
-    <code>null</code> for no prototype, which makes "__proto__" the only
-    special property name.
-    @param {Object} descriptor a property descriptor
-    @returns a new object inheriting from the given prototype and having
-    the given property descriptor.
-*/
+ * @external Object
+ */
+
+/**
+ * Creates a new object that inherits prototypically directly from a given
+ * prototype, optionally defining some properties.
+ * @function external:Object.create
+ * @param {Object} prototype the prototype to inherit, or
+ * `null` for no prototype, which makes "__proto__" the only
+ * special property name.
+ * @param {Object} descriptor a property descriptor
+ * @returns a new object inheriting from the given prototype and having
+ * the given property descriptor.
+ */
 if (!Object.create) {
     Object._creator = function _ObjectCreator() {
         this.__proto__ = _ObjectCreator.prototype;

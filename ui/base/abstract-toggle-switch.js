@@ -1,11 +1,11 @@
 /*global require, exports*/
 
 /**
-    @module montage/ui/base/abstract-toggle-switch.reel
-    @requires montage/core/core
-    @requires montage/ui/component
-    @requires montage/ui/native-control
-    @requires montage/composer/press-composer
+ * @module montage/ui/base/abstract-toggle-switch.reel
+ * @requires montage/core/core
+ * @requires montage/ui/component
+ * @requires montage/ui/native-control
+ * @requires montage/composer/press-composer
 */
 var Montage = require("montage").Montage,
     AbstractControl = require("ui/base/abstract-control").AbstractControl,
@@ -26,9 +26,6 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
      * @property {Dict} detail - The detail object as defined in {@link AbstractControl#detail}
      */
 
-    /** 
-     * @private
-     */
     constructor: {
         value: function AbstractToggleSwitch() {
             if(this.constructor === AbstractToggleSwitch) {
@@ -49,16 +46,18 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
         }
     },
 
-    /**
-     * Enables or disables the toggle switch from user input. When this property is set to ```false```,
-     * the "montage--disabled" CSS style is applied to the button's DOM element during the next draw cycle. When set to
-     * ```true``` the "montage--disabled" CSS class is removed from the element's class list.
-     * @type {boolean}
-     */
     _enabled: {
         value: true
     },
 
+    /**
+     * Enables or disables the toggle switch from user input. When this
+     * property is set to `false`, the "montage--disabled" CSS style is applied
+     * to the button's DOM element during the next draw cycle. When set to
+     * `true` the "montage--disabled" CSS class is removed from the element's
+     * class list.
+     * @type {boolean}
+     */
     enabled: {
         get: function() {
             return this._enabled;
@@ -143,3 +142,4 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
     }
 
 });
+

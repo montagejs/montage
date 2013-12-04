@@ -1,30 +1,33 @@
 
-// A promise does not have bindable properties.  This controller tracks the
-// state of a promise with bindable properties so you can create a substitution
-// that binds the viewed component with the state of the promise.
-
-// -    "pending" with "progress"
-//          when in the pending state, bind the substituted component to the
-//          progress value, which is null when indeterminate or a 0-1 value
-//          when determinate.  Most promises are indeterminate due to the
-//          complexities of composing progress information into meaningful
-//          data.
-// -    "fulfilled" with "value"
-//          when in the fulfilled state, bind the substituted component to the
-//          value.
-// -    "rejected" with "error"
-//          when in the rejected state, bind the substituted component to the
-//          given error, if you can surface that error to the user.
-// -    "state" (one of "pending", "fulfilled", or "rejected")
-//          suitable for substitutions that will always render an indeterminate
-//          progress in the "pending" state.
-// -    "progressState" (one of "determinate", "indeterminate", "fuilfilled", "rejected")
-//          suitable for substitutions that provide alternative view for
-//          determinate and indeterminate progress.
-
 var Montage = require("montage").Montage;
 var Promise = require("core/promise").Promise;
 
+/**
+ * A promise does not have bindable properties. This controller tracks the
+ * state of a promise with bindable properties so you can create a substitution
+ * that binds the viewed component with the state of the promise.
+ *
+ * -    "pending" with "progress"
+ *          when in the pending state, bind the substituted component to the
+ *          progress value, which is null when indeterminate or a 0-1 value
+ *          when determinate. Most promises are indeterminate due to the
+ *          complexities of composing progress information into meaningful
+ *          data.
+ * -    "fulfilled" with "value"
+ *          when in the fulfilled state, bind the substituted component to the
+ *          value.
+ * -    "rejected" with "error"
+ *          when in the rejected state, bind the substituted component to the
+ *          given error, if you can surface that error to the user.
+ * -    "state" (one of "pending", "fulfilled", or "rejected")
+ *          suitable for substitutions that will always render an indeterminate
+ *          progress in the "pending" state.
+ * -    "progressState" (one of "determinate", "indeterminate", "fuilfilled", "rejected")
+ *          suitable for substitutions that provide alternative view for
+ *          determinate and indeterminate progress.
+ *
+ * @classdesc Provides bindable properties for the state of a promise
+ */
 var PromiseController = exports.PromiseController = Montage.specialize( {
 
     constructor: {
@@ -44,14 +47,72 @@ var PromiseController = exports.PromiseController = Montage.specialize( {
         }
     },
 
+    /**
+     * The promise whose state is interesting.
+     * @type {Promise}
+     */
+    promise: {value: null},
+
+    /**
+     * One of "pending", "fulfilled", "rejected".
+     * @type {string}
+     */
+    state: {value: null},
+
+    /**
+     * One of "determinate", "indeterminate", "fulfilled", "rejected".
+     * @type {string}
+     */
+    progressState: {value: null},
+
+    /**
+     * Whether `promise` is in a pending state, in progress.
+     * @type {boolean}
+     */
+    pending: {value: null},
+
+    /**
+     * Whether `promise` is in a fulfilled state, with a `value`.
+     * @type {boolean}
+     */
+    fulfilled: {value: null},
+
+    /**
+     * Whether `promise` is in a rejected state, with a `error`.
+     * @type {boolean}
+     */
+    rejected: {value: null},
+
+    /**
+     * Whether `promise` is in a determinate progress sate, meaning that it has
+     * provided a `progress` ratio with its most recent progress event.
+     * @type {boolean}
+     */
+    determinate: {value: null},
+
+    /**
+     * The last known progress value emitted by the promise.
+     */
+    progress: {value: null},
+
+    /**
+     * The fulfillment value of the promise, if any.
+     */
+    value: {value: null},
+
+    /**
+     * The error from the promise, if it was rejected.
+     */
+    error: {value: null},
+
     handlePromiseChange: {
         value: function (promise) {
             var self = this;
             promise = Promise.resolve(promise); // coerce
 
-            // when a promise controller changes hands, the previous "then"
-            // call might send updates.  Resetting the previous promise
-            // prevents those updates from being applied to the controller.
+            // When a promise controller changes hands, the previous "then"
+            // call might send updates. Resetting the previous promise prevents
+            // those updates from being applied to the controller.
             if (self.reset) {
                 self.reset();
             }
@@ -89,7 +150,7 @@ var PromiseController = exports.PromiseController = Montage.specialize( {
                     if (reset)
                         return;
                     self.progress = progress;
-                    self.determinate = progress != null;
+                    self.determinate = typeof progress === "number";
                 }
             );
 

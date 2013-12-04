@@ -32,37 +32,37 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
 
     // Configuration Properties
 
-/**
-    The main module to require
-*/
+    /**
+     * The main module to require
+     */
     mainModule: {
         value: "ui/main.reel"
     },
 
-/**
-    The name of the object to read from the mainModule exports
-*/
+    /**
+     * The name of the object to read from the mainModule exports
+     */
     mainName: {
         value: "Main"
     },
 
-/**
-    Whether or not to include framework modules in the collection of required and initialized modules
-*/
+    /**
+     * Whether or not to include framework modules in the collection of required and initialized modules
+     */
     includeFrameworkModules: {
         value: false
     },
 
-/**
-    The minimum amount of time the bootstrapping indicator must be shown for
-*/
+    /**
+     * The minimum amount of time the bootstrapping indicator must be shown for
+     */
     minimumBootstrappingDuration: {
         value: 1500
     },
 
-/**
-    The minimum amount of time the loading indicator must be shown for
-*/
+    /**
+     * The minimum amount of time the loading indicator must be shown for
+     */
     minimumLoadingDuration: {
         value: 2000
     },
@@ -71,9 +71,8 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
         value: null
     },
 
-/**
-    The initialized modules...FIXME
-*/
+    /**
+     */
     initializedModules: {
         dependencies: ["includeFrameworkModules"],
         enumerable: false,
@@ -93,9 +92,8 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
         value: null
     },
 
-/**
-    The required modules for this application ... FIXME
-*/
+    /**
+     */
     requiredModules: {
         dependencies: ["includeFrameworkModules"],
         enumerable: false,
@@ -117,9 +115,8 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
         value: PRELOADING
     },
 
-/**
-    Current loading stage.
-*/
+    /**
+     */
     currentStage: {
         get: function() {
             return this._currentStage;
@@ -141,16 +138,17 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
         value: false
     },
 
-/**
-    Boolean that specifies whether the loader is loading the application's main component.
-*/
+    /**
+     * Whether the loader is loading the application's main component at this
+     * time.
+     * @type {boolean}
+     */
     isLoadingMainComponent: {
         value: null
     },
 
-/**
-    Specifies whether the loader is ready to show the loading graphic...FIXME
-*/
+    /**
+     */
     readyToShowLoader: {
         get: function() {
             return this._readyToShowLoader;
@@ -165,9 +163,9 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
         }
     },
 
-/**
-    Specifies whether the main component is ready to be displayed.
-*/
+    /**
+     * Specifies whether the main component is ready to be displayed.
+     */
     readyToShowMainComponent: {
         get: function() {
             return !!this._mainComponent;
@@ -440,9 +438,11 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
         }
     },
 
-/**
-    Boolean that specifies whether to remove the loading content when load is completed
-*/
+    /**
+     * Specifies whether to remove the loading content when load is completed.
+     * @type {boolean}
+     * @default true
+    */
     removeContentOnLoad: {
         value: true
     },
@@ -457,9 +457,9 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
         value: null
     },
 
-/**
-    Forces a manual removal of loading content
-*/
+    /**
+     * Forces a manual removal of loading content.
+     */
     removeContent: {
         value: function() {
             this._forceContentRemoval = true;
@@ -508,3 +508,4 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
     }
 
 });
+

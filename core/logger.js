@@ -15,9 +15,6 @@ var Montage = require("montage").Montage,
 
 loggers = exports.loggers = {};
 
-/**
- * @private
- */
 getFunctionName = function(montageObject) {
     var aCaller = getFunctionName.caller.caller,
         aFunctionName;
@@ -28,9 +25,6 @@ getFunctionName = function(montageObject) {
     return aFunctionName;
 };
 
-/**
- * @private
- */
 toTimeString = function(date) {
     if (date.getHours) {
         var hours = date.getHours(),
@@ -40,22 +34,13 @@ toTimeString = function(date) {
     }
 };
 
-/**
- * @private
- */
 emptyLoggerFunction = function() {
 };
 
-/**
- * @private
- */
 consoleLog = function() {
     console.log(arguments);
 };
 
-/**
- * @private
- */
 consoleLogMontage = function() {
     var firstArgument = arguments[0],
         metadata = firstArgument._montage_metadata,
@@ -91,12 +76,12 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
         }
     },
 
-   /**
-    @function
-    @param {String} name The name of the logger.
-    @param {State} [dontStoreState=false] If true, don't store the isDebug state of the logger in localStorage .
-    @returns itself
-    */
+    /**
+     * @method
+     * @param {string} name The name of the logger.
+     * @param {State} [dontStoreState=false] If true, don't store the isDebug state of the logger in localStorage .
+     * @returns itself
+     */
     init: {
         value: function(name, onStateChange, dontStoreState) {
             this.name = name;
@@ -117,8 +102,8 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
     },
 
     /**
-     * @type {String}
-     * @default {String} null
+     * @type {string}
+     * @default {string} null
      */
     name: {
         value: null
@@ -136,7 +121,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
 
     /**
      * @type {Property}
-     * @default {Boolean} false
+     * @default {boolean} false
      */
     buffered: {
         value: false
@@ -158,7 +143,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
     },
 
     /**
-     * @type {Boolean}
+     * @type {boolean}
      */
     isDebug: {
         get: function() {
@@ -175,7 +160,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
     },
 
     /**
-     * @type {Boolean}
+     * @type {boolean}
      */
     isError: {
         get: function() {
@@ -193,7 +178,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
     /**
      * @method Logger#debug
      * @param {Function|String} object If the first argument is a function the logger with print its name
-     * @param {String} [...]
+     * @param {string} [...]
      */
     debug: {
         value: emptyLoggerFunction
@@ -202,7 +187,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
     /**
      * @method Logger#error
      * @param {Function|String} object If the first argument is a function the logger with print its name
-     * @param {String} [...]
+     * @param {string} [...]
      */
     error: {
         value: emptyLoggerFunction
@@ -216,9 +201,6 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
         value: toTimeString
     },
 
-    /**
-     * @private
-     */
     _storeState: {
         value: null
     },
@@ -229,8 +211,8 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
 });
 
 /**
-    @function module:montage/core/logger#logger
-    */
+ * @function module:montage/core/logger#logger
+ */
 exports.logger = function(loggerName, onStateChange, dontStoreState) {
     var logger;
     if ((logger = loggers[loggerName]) == null) {

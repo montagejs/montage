@@ -17,7 +17,7 @@
 /**
  * @class MessageFormat
  * @classdesc see [messageformat.js](https://github.com/SlexAxton/messageformat.js)
-*/
+ */
   function MessageFormat ( locale, pluralFunc ) {
     var fallbackLocale;
 

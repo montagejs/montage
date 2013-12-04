@@ -5,6 +5,7 @@
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
+
 /**
  * @class Slot
  * @classdesc A structural component that serves as a place-holder for some
@@ -102,7 +103,7 @@ exports.Slot = Component.specialize( /** @lends Slot# */ {
      * @method
      * @param newContent
      * @param oldContent
-    */
+     */
     contentDidChange: {
         value: function(newContent, oldContent) {
             if (this.delegate && typeof this.delegate.slotDidSwitchContent === "function") {
@@ -110,4 +111,6 @@ exports.Slot = Component.specialize( /** @lends Slot# */ {
             }
         }
     }
+
 });
+

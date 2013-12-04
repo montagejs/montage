@@ -11,7 +11,7 @@ var CLASS_PREFIX = "montage-NumberField";
  * @extends AbstractControl
  */
 var AbstractNumberField = exports.AbstractNumberField = AbstractControl.specialize(
-    /** @lends AbstractNumberField# */
+/** @lends AbstractNumberField# */
 {
 
     // Lifecycle
@@ -116,6 +116,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
 
     /**
      * Handle increment-button action
+     * @private
      */
     handlePlusAction: {
         value: function () {
@@ -136,6 +137,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
 
     /**
      * Handle decrement-button action
+     * @private
      */
     handleMinusAction: {
         value: function () {

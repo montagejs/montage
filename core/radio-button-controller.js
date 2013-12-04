@@ -1,3 +1,4 @@
+
 var Montage = require("montage").Montage,
     RangeController = require("core/range-controller").RangeController;
 
@@ -67,9 +68,6 @@ exports.RadioButtonController = Montage.specialize(/** @lends RadioButtonControl
         }
     },
 
-    /**
-     * @private
-     */
     constructor: {
         value: function RadioButtonController() {
             this._radioButtons = [];
@@ -141,4 +139,6 @@ exports.RadioButtonController = Montage.specialize(/** @lends RadioButtonControl
             }
         }
     }
+
 });
+

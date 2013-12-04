@@ -97,7 +97,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     /**
      * Initializes the Template with an empty document.
      *
-     * @function
+     * @method
      * @param {require} _require The require function used to load modules when
      *                           a template is instantiated.
      */
@@ -114,7 +114,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     /**
      * Initializes the Template with a document.
      *
-     * @function
+     * @method
      * @param {HTMLDocument} _document The document to be used as a template.
      * @param {require} _require The require function used to load modules when
      *                           a template is instantiated.
@@ -139,7 +139,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     /**
      * Initializes the Template with an HTML string.
      *
-     * @function
+     * @method
      * @param {HTMLDocument} html The HTML string to be used as a template.
      * @param {require} _require The require function used to load modules when
      *                           a template is instantiated.
@@ -165,7 +165,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      * Initializes the Template with Objects and a DocumentFragment to be
      * used as the body of the document.
      *
-     * @function
+     * @method
      * @param {Object} objects A JSON'able representation of the objects of the
      *                         template.
      * @param {DocumentFragment} html The HTML string to be used as the body.
@@ -192,8 +192,8 @@ var Template = Montage.specialize( /** @lends Template# */ {
     /**
      * Initializes the Template with the HTML document at the module id.
      *
-     * @function
-     * @param {String} moduleId The module id of the HTML page to load.
+     * @method
+     * @param {string} moduleId The module id of the HTML page to load.
      * @param {require} _require The require function used to load modules when
      *                           a template is instantiated.
      * @returns {Promise} A promise for the proper initialization of the
@@ -506,7 +506,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      * unless a different set of instances is passed in
      * instantiateWithInstances().
      *
-     * @function
+     * @method
      * @param {Object} instances The objects' instances.
      */
     setInstances: {
@@ -531,10 +531,10 @@ var Template = Montage.specialize( /** @lends Template# */ {
     /**
      * Add metadata to specific objects of the serialization.
      *
-     * @param {String} label The label of the object in the serialization.
+     * @param {string} label The label of the object in the serialization.
      * @param {Require} _require The require function to be used when loading
      *        the module.
-     * @param {String} effectiveLabel An alternative label to be given to the
+     * @param {string} effectiveLabel An alternative label to be given to the
      *        object.
      * @param {Object} owner The owner object to be given to the object.
      */
@@ -591,7 +591,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     /**
      * Uses the document markup as the base of the template markup.
      *
-     * @function
+     * @method
      * @param {HTMLDocument} doc The document.
      * @returns {Promise} A promise for the proper initialization of the
      *                    document.
@@ -609,7 +609,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      * The objects string can live as an inline script in the document or as an
      * external resource that needs to be loaded.
      *
-     * @function
+     * @method
      * @param {HTMLDocument} doc The document with the objects string.
      * @returns {Promise} A promise for the objects string, null if not
      *                    found.
@@ -631,7 +631,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     /**
      * Searches for an inline objects string in a document and returns it if
      * found.
-     * @function
+     * @method
      * @param {HTMLDocument} doc The document with the objects string.
      * @returns {(String|null)} The objects string or null if not found.
      */
@@ -652,8 +652,8 @@ var Template = Montage.specialize( /** @lends Template# */ {
      * Searches for an external objects file in a document and returns its
      * contents if found.
      *
-     * @function
-     * @param {String} doc The document to search.
+     * @method
+     * @param {string} doc The document to search.
      * @returns {Promise} A promise to the contents of the objects file or null
      *                    if none found.
      */

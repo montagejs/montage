@@ -1,12 +1,12 @@
  /*global require, exports*/
 
 /**
-    @module montage/ui/base/abstract-button.reel
-    @requires montage/core/core
-    @requires montage/ui/component
-    @requires montage/ui/native-control
-    @requires montage/composer/press-composer
-*/
+ * @module montage/ui/base/abstract-button.reel
+ * @requires montage/core/core
+ * @requires montage/ui/component
+ * @requires montage/ui/native-control
+ * @requires montage/composer/press-composer
+ */
 var Montage = require("montage").Montage,
     AbstractControl = require("ui/base/abstract-control").AbstractControl,
     PressComposer = require("composer/press-composer").PressComposer;
@@ -20,18 +20,21 @@ var Montage = require("montage").Montage,
 var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @lends AbstractButton# */ {
 
     /**
-     * Dispatched when the button is activated through a mouse click, finger tap,
-     * or when focused and the spacebar is pressed.
+     * Dispatched when the button is activated through a mouse click, finger
+     * tap, or when focused and the spacebar is pressed.
      * @event action
      * @memberof AbstractButton
-     * @property {Dict} detail - The detail object as defined in  {@link AbstractControl#detail}
+     * @property {Dict} detail - The detail object as defined in  {@link
+     * AbstractControl#detail}
      */
 
     /**
-     * Dispatched when the button is pressed for a period of time, set by  {@link AbstractButton#holdThreshold}.
+     * Dispatched when the button is pressed for a period of time, set by
+     * {@link AbstractButton#holdThreshold}.
      * @event longAction
      * @memberof AbstractButton
-     * @property {Dict} detail - The detail object as defined in {@link AbstractControl#detail}
+     * @property {Dict} detail - The detail object as defined in {@link
+     * AbstractControl#detail}
      */
 
     /**
@@ -54,9 +57,11 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     },
 
     /**
-     * Enables or disables the Button from user input. When this property is set to ```false```,
-     * the "montage--disabled" CSS style is applied to the button's DOM element during the next draw cycle. When set to
-     * ```true``` the "montage--disabled" CSS class is removed from the element's class list.
+     * Enables or disables the Button from user input. When this property is
+     * set to `false`, the "montage--disabled" CSS style is applied to the
+     * button's DOM element during the next draw cycle. When set to `true` the
+     * "montage--disabled" CSS class is removed from the element's class
+     * list.
      * @type {boolean}
      */
     enabled: {
@@ -106,8 +111,8 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     _label: { value: undefined, enumerable: false },
 
     /**
-     * The displayed text on the button. In an &lt;input> element this is taken from the element's ```value``` attribute. On any other element (including &lt;button>) this is the first child node which is a text node. If one isn't found then it will be created.
-     * If the button has a non-null ```converter``` property, the converter object's ```convert()``` method is called on the value before being assigned to the button instance.
+     * The displayed text on the button. In an &lt;input> element this is taken from the element's `value` attribute. On any other element (including &lt;button>) this is the first child node which is a text node. If one isn't found then it will be created.
+     * If the button has a non-null `converter` property, the converter object's `convert()` method is called on the value before being assigned to the button instance.
      * @type {string}
      * @default undefined
      */
@@ -133,10 +138,11 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     },
 
     /**
-        The amount of time in milliseconds the user must press and hold the button a `longAction` event is dispatched. The default is 1 second.
-        @type {number}
-        @default 1000
-    */
+     * The amount of time in milliseconds the user must press and hold the
+     * button a `longAction` event is dispatched. The default is 1 second.
+     * @type {number}
+     * @default 1000
+     */
     holdThreshold: {
         value: 1000
     },
@@ -150,7 +156,8 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     },
 
     /**
-     * This property is true when the button is being interacted with, either through mouse click or touch event, otherwise false.
+     * This property is true when the button is being interacted with, either
+     * through mouse click or touch event, otherwise false.
      * @type {boolean}
      * @default false
      */
@@ -292,7 +299,7 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
 
     /**
      * Draws the label to the DOM.
-     * @function
+     * @method
      * @private
      */
     _drawLabel: {
@@ -327,9 +334,12 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     _elementNeedsTabIndexRegex: {
         value: /INPUT|TEXTAREA|A|SELECT|BUTTON|LABEL/
     },
+
     _elementNeedsTabIndex: {
         value: function() {
             return this.element.tagName.match(this._elementNeedsTabIndexRegex) === null;
         }
     }
+
 });
+

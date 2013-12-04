@@ -96,3 +96,4 @@ var DocumentPart = Montage.specialize( {
 });
 
 exports.DocumentPart = DocumentPart;
+

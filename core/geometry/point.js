@@ -19,7 +19,7 @@ exports.Point = Montage.specialize( /** @lends Point# */ {
     },
 /**
         The x axis point.
-        @type {Number}
+        @type {number}
         @default  0
     */
     x: {
@@ -28,7 +28,7 @@ exports.Point = Montage.specialize( /** @lends Point# */ {
     },
 /**
         The y axis point.
-        @type {Number}
+        @type {number}
         @default  0
     */
     y: {

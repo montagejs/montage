@@ -1,8 +1,9 @@
 /*global Node,Element,WebKitPoint,webkitConvertPointFromNodeToPage,webkitConvertPointFromPageToNode */
+
 /**
-    Provides DOM
-    @module montage/core/dom
-    @requires montage/core/geometry/point
+ * Provides DOM
+ * @module montage/core/dom
+ * @requires montage/core/geometry/point
 */
 
 var Point = require("core/geometry/point").Point,
@@ -10,11 +11,11 @@ var Point = require("core/geometry/point").Point,
     ElementPrototype = Element.prototype;
 
 /**
-    @function external:Element#set
-    @param {string} string
-    @param {string} string
-    @param {number} string
-*/
+ * @function external:Element#set
+ * @param {string} string
+ * @param {string} string
+ * @param {number} string
+ */
 Object.defineProperty(ElementPrototype, "set", {
     value: function(aPropertyPath, value, currentIndex) {
         var dotIndex = aPropertyPath.indexOf(".", currentIndex),
@@ -205,7 +206,7 @@ var _offsetForElement = function(element) {
         } else {
             return { top: elementsBody.offsetTop, left: elementsBody.offsetLeft };
         }
-   } else {
+    } else {
         return null;
     }
 };

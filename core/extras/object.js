@@ -1,5 +1,5 @@
 /**
-    Defines extensions to intrinsic <code>Object</code>.
+    Defines extensions to intrinsic `Object`.
     @see {external:Object}
     @module montage/core/extras/object
 */
@@ -14,11 +14,11 @@ var STRING = "string";
 var FUNCTION = "function";
 
 /**
-    Returns the descriptor object for an object's property.
-    @param {Object} anObject The object containing the property.
-    @param {String} propertyName The name of the property.
-    @returns {Object} The object's property descriptor.
-    @function external:Object.getPropertyDescriptor
+ * Returns the descriptor object for an object's property.
+ * @param {Object} anObject The object containing the property.
+ * @param {string} propertyName The name of the property.
+ * @returns {Object} The object's property descriptor.
+ * @function external:Object.getPropertyDescriptor
 */
 Object.defineProperty(Object, "getPropertyDescriptor", {
     value: function(anObject, propertyName) {
@@ -36,12 +36,15 @@ Object.defineProperty(Object, "getPropertyDescriptor", {
 });
 
 /**
-    Returns the prototype object and property descriptor for a property belonging to an object.
-    @param {Object} anObject The object to return the prototype for.
-    @param {String} propertyName The name of the property.
-    @returns {Object} An object containing two properties named <code>prototype</code> and <code>propertyDescriptor</code> that contain the object's prototype object and property descriptor, respectively.
-    @function external:Object.getPrototypeAndDescriptorDefiningProperty
-*/
+ * Returns the prototype object and property descriptor for a property
+ * belonging to an object.
+ * @param {Object} anObject The object to return the prototype for.
+ * @param {string} propertyName The name of the property.
+ * @returns {Object} An object containing two properties named `prototype` and
+ * `propertyDescriptor` that contain the object's prototype object and property
+ * descriptor, respectively.  @function
+ * external:Object.getPrototypeAndDescriptorDefiningProperty
+ */
 Object.defineProperty(Object, "getPrototypeAndDescriptorDefiningProperty", {
     value: function(anObject, propertyName) {
         var current = anObject,
@@ -63,12 +66,12 @@ Object.defineProperty(Object, "getPrototypeAndDescriptorDefiningProperty", {
 });
 
 /**
-    Removes all properties owned by this object making the object suitable for
-    reuse.
-
-    @function external:Object#clear
-    @returns this
-*/
+ * Removes all properties owned by this object making the object suitable for
+ * reuse.
+ *
+ * @function external:Object#clear
+ * @returns this
+ */
 Object.defineProperty(Object.prototype, "clear", {
     value: function() {
         var keys = Object.keys(this),

@@ -46,7 +46,8 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
     },
 
     /**
-     * The number of pixels a gesture must continue to be recognized as a swipe.
+     * The number of pixels a gesture must continue to be recognized as a
+     * swipe.
      * @type {number}
      */
     _threshold: {

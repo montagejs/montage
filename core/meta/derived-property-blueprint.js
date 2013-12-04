@@ -1,10 +1,10 @@
 "use strict";
 /**
- @module montage/core/blueprint
- @requires montage/core/core
- @requires core/exception
- @requires core/promise
- @requires core/logger
+ * @module montage/core/blueprint
+ * @requires montage/core/core
+ * @requires core/exception
+ * @requires core/promise
+ * @requires core/logger
  */
 var Montage = require("montage").Montage;
 var PropertyBlueprint = require("core/meta/property-blueprint").PropertyBlueprint;
@@ -16,10 +16,10 @@ var Defaults = {
     getterDefinition:"",
     setterDefinition:""
 };
-/**
- A derived is property blueprint is calculated using other property blueprints of the object.<br/>
 
- @class DerivedPropertyBlueprint
+/**
+ * A derived is property blueprint is calculated using other property blueprints of the object.
+ * @class DerivedPropertyBlueprint
  */
 exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends DerivedPropertyBlueprint# */ {
 
@@ -63,8 +63,8 @@ exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends Deri
     },
 
     /**
-     @type {Property}
-     @default {Boolean} true
+     * @type {Property}
+     * @default {boolean} true
      */
     isDerived: {
         get: function() {
@@ -74,28 +74,30 @@ exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends Deri
     },
 
     /**
-     List of property blueprints this derived property blueprint depends on.
-     @type {Property}
-     @default {Array} []
+     * List of property blueprints this derived property blueprint depends on.
+     * @type {Property}
+     * @default {Array} []
      */
     dependencies: {
         value: [],
         distinct:true
     },
+
     /**
-     @type {Property}
-     @default null
+     * @type {Property}
+     * @default null
      */
     getterDefinition: {
         value: Defaults["getterDefinition"]
     },
 
     /**
-     @type {Property}
-     @default null
+     * @type {Property}
+     * @default null
      */
     setterDefinition: {
         value: Defaults["setterDefinition"]
     }
 
 });
+

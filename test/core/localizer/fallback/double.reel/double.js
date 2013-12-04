@@ -52,7 +52,7 @@ exports.Double = Component.specialize( {
     /**
         The default string value assigned to the Text instance.
         @type {Property}
-        @default {String} ""
+        @default {string} ""
     */
     defaultValue: {
         value: ""

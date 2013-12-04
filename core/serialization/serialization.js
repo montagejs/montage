@@ -311,8 +311,8 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
     /**
      * @private
      * @param parentObject {Object} The parent object of the object to walk
-     * @param key {String} The key of the object in the parent object
-     * @param label {String} Optional label for when the object has no
+     * @param key {string} The key of the object in the parent object
+     * @param label {string} Optional label for when the object has no
      *                       parent
      * @param parent {Object} The representation of the object's parent
      */

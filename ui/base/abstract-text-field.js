@@ -11,8 +11,9 @@ var CLASS_PREFIX = "montage-TextField";
  * @extends AbstractControl
  */
 var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
-    /** @lends AbstractTextField# */
+/** @lends AbstractTextField# */
 {
+
     /**
      * Dispatched when the textfield is activated when the user presses enter.
      * @event action
@@ -191,4 +192,6 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
             }
         }
     }
+
 });
+

@@ -1,10 +1,10 @@
 "use strict";
 /**
- @module montage/core/meta/validation-rule
- @requires montage/core/core
- @requires core/exception
- @requires core/promise
- @requires core/logger
+ * @module montage/core/meta/validation-rule
+ * @requires montage/core/core
+ * @requires core/exception
+ * @requires core/promise
+ * @requires core/logger
  */
 var Montage = require("montage").Montage;
 var Selector = require("core/selector").Selector;
@@ -13,8 +13,8 @@ var PropertyValidationSemantics = require("core/meta/validation-semantics").Prop
 var logger = require("core/logger").logger("blueprint");
 
 /**
- @class PropertyValidationRule
- @extends Montage
+ * @class PropertyValidationRule
+ * @extends Montage
  */
 var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidationRule# */ {
 
@@ -25,11 +25,11 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
     },
 
     /**
-     Initialize a newly allocated blueprint validation rule.
-     @function
-     @param {String} rule name
-     @param {Blueprint} blueprint
-     @returns itself
+     * Initialize a newly allocated blueprint validation rule.
+     * @method
+     * @param {string} rule name
+     * @param {Blueprint} blueprint
+     * @returns itself
      */
     initWithNameAndBlueprint: {
         value: function(name, blueprint) {
@@ -65,14 +65,11 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
         }
     },
 
-    /*
-     * @private
-     */
     _owner: {
         value: null
     },
 
-    /*
+    /**
      * Component description attached to this validation rule.
      */
     owner: {
@@ -82,9 +79,9 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
     },
 
     /**
-     The identifier is the same as the name and is used to make the serialization of a blueprint humane.
-     @type {Property}
-     @default {String} this.name
+     * The identifier is the same as the name and is used to make the serialization of a blueprint humane.
+     * @type {Property}
+     * @default {string} this.name
      */
     identifier: {
         get: function() {
@@ -96,14 +93,11 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
         }
     },
 
-    /*
-     * @private
-     */
     _name: {
         value: ""
     },
 
-    /*
+    /**
      * Name of the property being described
      */
     name: {
@@ -113,15 +107,13 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
     },
 
 
-    /*
-     * @private
-     */
     _validationSelector: {
         value: null
     },
 
-    /*
+    /**
      * Selector to evaluate to check this rule.
+     * @type {Selector}
      */
     validationSelector: {
         serializable: false,
@@ -140,7 +132,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
         value: ""
     },
 
-    /*
+    /**
      * Message key to display when the rule fires.
      */
     messageKey: {
@@ -161,7 +153,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
     },
 
     /*
-     * Evaluates the rules based on the blueprint and the properties.<br/>
+     * Evaluates the rules based on the blueprint and the properties.
      * @param {Object} object instance to evaluate the rule for
      * @return true if the rules fires, false otherwise.
      */
@@ -180,3 +172,4 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
     blueprint: require("montage")._blueprintDescriptor
 
 });
+

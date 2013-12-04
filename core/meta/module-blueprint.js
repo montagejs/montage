@@ -14,10 +14,10 @@ var BLUEPRINT_CACHE = Object.create(null);
 var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize(/** @lends ModuleBlueprint# */ {
 
     /**
-     @function
-     @param {String} name TODO
-     @param {String} module A ModuleReference
-     @returns this
+     * @function
+     * @param {string} name TODO
+     * @param {string} module A ModuleReference
+     * @returns this
      */
     initWithModuleAndExportName: {
         value: function(module, exportName) {
@@ -83,11 +83,12 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize(/** @lends 
     }
 
 }, /** @lends ModuleBlueprint. */ {
+
     /**
-     Gets a blueprint from a serialized file at the given module id.
-     @function
-     @param {String} blueprint module id
-     @param {Function} require function
+     * Gets a blueprint from a serialized file at the given module id.
+     * @function
+     * @param {string} blueprint module id
+     * @param {Function} require function
      */
     getBlueprintWithModuleId: {
         value: function(moduleId, _require) {
@@ -173,3 +174,4 @@ function getModuleRequire(parentRequire, moduleId) {
 
     return module.require;
 }
+

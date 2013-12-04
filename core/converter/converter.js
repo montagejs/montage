@@ -1,5 +1,6 @@
 /**
- * Provides common conversion, validation, and formatting functions for different types of values.
+ * Provides common conversion, validation, and formatting functions for
+ * different types of values.
  * @module montage/core/converter/converter
  * @requires montage/core/core
  */
@@ -19,6 +20,7 @@ var _toString = Object.prototype.toString;
 /**
  * @exports module:montage/core/converter#isNumber
  * @function
+ * @private
  */
 var isNumber = function(object) {
     return _toString.call(object) === NUMBER_CLASS;
@@ -27,9 +29,10 @@ exports.isNumber = isNumber;
 
 
 /**
-    @exports module:montage/core/converter#isDef
-    @function
-*/
+ * @exports module:montage/core/converter#isDef
+ * @function
+ * @private
+ */
 var isDef = function(obj) {
     return (obj && typeof obj !== 'undefined');
 };
@@ -55,26 +58,30 @@ var Validator = exports.Validator = Montage.specialize( /** @lends Validator# */
 // Converters
 
 /**
+ * Converts and optionally reverts values between two domains. The converter
+ * interface consists of two methods:
+ *
+ * -   `convert(input)`: convert input to output
+ * -   `revert(output)`: optional, converts output back to input
+ *
  * @class Converter
- * @classdesc The base Converter class that is extended by specific converter classes. A Converter has two primary methods:
- * <ul>
- * <li><code>convert(<i>value</i>)</code> : Convert value to a String.
- * <li><code>revert(<i>value</i>)</code>: Do the reverse. Depending on the specific converter being used, the reverse operation may be "lossy".
- * </ul>
+ * @classdesc An abstract type for converters, objects that can convert and
+ * optionally revert values between domains, like strings and numbers.
  */
 var Converter = exports.Converter = Montage.specialize( /** @lends Converter# */ {
 
     /**
      * Specifies whether the converter allows partial conversion.
-     * @type {Property}
-     * @default {Boolean} true
+     * @type {boolean}
+     * @default true
      */
     allowPartialConversion: {
         value: true
     },
 
     /**
-     * @type {Property}
+     * Converts values from the input domain into the output range.
+     * @method
      * @default null
      */
     convert: {
@@ -83,7 +90,10 @@ var Converter = exports.Converter = Montage.specialize( /** @lends Converter# */
     },
 
     /**
-     * @type {Property}
+     * Optionally, reverts values from the output range, back into the input
+     * range. This may not be possible with high fidelity depending on the
+     * relationship between these domains.
+     * @method
      * @default null
      */
     revert: {

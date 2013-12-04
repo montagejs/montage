@@ -1,18 +1,17 @@
 /**
- @module montage/core/enum
- @requires montage/core/core
- @requires montage/core/logger
+ * @module montage/core/enum
+ * @requires montage/core/core
+ * @requires montage/core/logger
  */
 var Montage = require("montage").Montage,
     logger = require("core/logger").logger("enum");
+
 /**
- @class Enum
- @extends Montage
+ * @class Enum
+ * @extends Montage
  */
 exports.Enum = Montage.specialize( /** @lends Enum# */ {
-/**
-  @private
-*/
+
     _value: {
         value: 0
     },
@@ -23,10 +22,10 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
         }
     },
 
-/**
-    @function
-    @returns itself
-    */
+    /**
+     * @method
+     * @returns itself
+     */
     init : {
         value: function() {
             if (Object.isSealed(this)) {
@@ -35,10 +34,11 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
             return this;
         }
     },
-/**
-    @function
-    @returns {Object} Object.seal(this)
-    */
+
+    /**
+     * @method
+     * @returns {Object} Object.seal(this)
+     */
     initWithMembers : {
         value: function() {
             if (Object.isSealed(this)) {
@@ -56,10 +56,11 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
             return Object.seal(this);
         }
     },
-/**
-    @function
-    @param {String} member The member to be added.
-    */
+
+    /**
+     * @method
+     * @param {string} member The member to be added.
+     */
     addMember : {
         value: function(member) {
 
@@ -74,10 +75,11 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
             }
         }
     },
-/**
-    @function
-    @returns {Object} Object.seal(this)
-    */
+
+    /**
+     * @method
+     * @returns {Object} this, but sealed
+     */
     seal : {
         value: function() {
             if (! Object.isSealed(this)) {
@@ -85,4 +87,6 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
             }
         }
     }
+
 });
+

@@ -49,13 +49,15 @@ var MutableEvent = exports.MutableEvent = Montage.specialize(/** @lends MutableE
                     continue;
                 }
 
-                // Skip methods, the ones we care about have been wrapped already
+                // Skip methods, the ones we care about have been wrapped
+                // already.
                 // TODO actually wrap all known functions generically
                 //if (typeof this[key] === "function") {
                 // continue;
                 //}
 
-                // TODO ok, maybe it would be quicker to not make this a function, but I really hate duplicated code
+                // TODO ok, maybe it would be quicker to not make this a
+                // function, but I really hate duplicated code.
                 wrapProperty(this, key);
             }
 
@@ -64,26 +66,26 @@ var MutableEvent = exports.MutableEvent = Montage.specialize(/** @lends MutableE
             return this;
         }
     },
-/**
-  @private
-*/
+
     _initWithEvent: {
         value: function(event) {
             this._event = event;
             return this;
         }
     },
-/**
-    @function
-    */
+
+    /**
+     * @method
+     */
     preventDefault: {
         value: function() {
             this._event.preventDefault();
         }
     },
-/**
-    @function
-    */
+
+    /**
+     * @method
+     */
     stopImmediatePropagation: {
         value: function() {
             this._event.stopImmediatePropagation();
@@ -92,37 +94,42 @@ var MutableEvent = exports.MutableEvent = Montage.specialize(/** @lends MutableE
             this.immediatePropagationStopped = true;
         }
     },
-/**
-            @type {Property}
-        @default {Boolean} false
-    */
+
+    /**
+     * @type {Property}
+     * @default {boolean} false
+     */
     propagationStopped: {
         value: false
     },
-/**
-            @type {Property}
-        @default {Boolean} false
-    */
+
+    /**
+     * @type {Property}
+     * @default {boolean} false
+     */
     immediatePropagationStopped: {
         value: false
     },
-/**
-            @type {Property}
-        @default {Boolean} true
+
+    /**
+     * @type {Property}
+     * @default {boolean} true
     */
     mutable: {
         value: true
     },
-/**
-            @type {Property}
-        @default {Element} null
-    */
+
+    /**
+     * @type {Property}
+     * @default {Element} null
+     */
     target: {
         value: null
     },
-/**
-    @function
-    */
+
+    /**
+     * @method
+     */
     stopPropagation: {
         value: function() {
             this._event.stopPropagation();
@@ -130,9 +137,10 @@ var MutableEvent = exports.MutableEvent = Montage.specialize(/** @lends MutableE
             this.propagationStopped = true;
         }
     },
-/**
-    @function
-    */
+
+    /**
+     * @method
+     */
     stop: {
         value: function() {
             this.preventDefault();
@@ -140,10 +148,11 @@ var MutableEvent = exports.MutableEvent = Montage.specialize(/** @lends MutableE
         }
     }
 }, {
+
     /**
-     @function
-     @param {Event} event The original event.
-     @returns newEvent
+     * @function
+     * @param {Event} event The original event.
+     * @returns newEvent
      */
     fromEvent: {
         value: function(event) {
@@ -165,13 +174,13 @@ var MutableEvent = exports.MutableEvent = Montage.specialize(/** @lends MutableE
     //    Same arguments as initEvent & initCustomEvent
 
     /**
-    @function
-    @param {Event} type TODO
-    @param {Event} canBubbleArg TODO
-    @param {Event} cancelableArg TODO
-    @param {Event} data TODO
-    @returns this.fromEvent(anEvent)
-    */
+     * @function
+     * @param {Event} type TODO
+     * @param {Event} canBubbleArg TODO
+     * @param {Event} cancelableArg TODO
+     * @param {Event} data TODO
+     * @returns this.fromEvent(anEvent)
+     */
     fromType: {
         value: function(type, canBubbleArg, cancelableArg, detail) {
             var anEvent = document.createEvent("CustomEvent");
@@ -183,3 +192,4 @@ var MutableEvent = exports.MutableEvent = Montage.specialize(/** @lends MutableE
 });
 
 } // client-side
+

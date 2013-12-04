@@ -13,148 +13,146 @@ var UNDO_OPERATION = 0,
     REDO_OPERATION = 1;
 
 /**
- *    Applications that allow end-user operations can use an UndoManager to record
- *    information on how to undo those operations.
+ * Applications that allow end-user operations can use an UndoManager to record
+ * information on how to undo those operations.
  *
- *    ## Undoable Operations
+ * ## Undoable Operations
  *
- *    To make an operation undoable an application simply adds the inverse of that
- *    operation to an UndoManager instance using the ```add``` method:
+ * To make an operation undoable an application simply adds the inverse of that
+ * operation to an UndoManager instance using the `add` method:
  *
- *    ```undoManager.register(label, operationPromise)```
+ * `undoManager.register(label, operationPromise)`
  *
- *    This means that every undo-able user operation has to have an inverse
- *    operation available. For example a calculator might provide a ```subtract```
- *    method as the inverse of the ```add``` method.
+ * This means that every undo-able user operation has to have an inverse
+ * operation available. For example a calculator might provide a `subtract`
+ * method as the inverse of the `add` method.
  *
- *    An simple example would look something like this:
+ * An simple example would look something like this:
  *
- *```javascript
- *add: {
- *       value: function (number) {
- *           this.undoManager.register("Add", Promise.resolve([this.subtract, this, number]));
- *           var result = this.total += number;
- *           return result;
- *       }
- *   },
+ * ```javascript
+ * add: {
+ *        value: function (number) {
+ *            this.undoManager.register("Add", Promise.resolve([this.subtract, this, number]));
+ *            var result = this.total += number;
+ *            return result;
+ *        }
+ *    },
  *
- *subtract: {
- *       value: function (number) {
- *           this.undoManager.register("Subtract", Promise.resolve([this.add, this, number]));
- *           var result = this.total -= number;
- *           return result;
- *       }
- *   }
- *```
+ * subtract: {
+ *        value: function (number) {
+ *            this.undoManager.register("Subtract", Promise.resolve([this.add, this, number]));
+ *            var result = this.total -= number;
+ *            return result;
+ *        }
+ *    }
+ * ```
  *
- *    Of immediate interest is the actual promise added to the undoManager.
- *    ```Promise.resolve(["Add", this.subtract, this, number])```
+ * Of immediate interest is the actual promise added to the undoManager.
+ * `Promise.resolve(["Add", this.subtract, this, number])`
  *
- *    The promise provides the final label (optionally), a reference to the function to call,
- *    the context for the function to be executed in, and any number of arguments
- *    to be passed along when calling the function.
+ * The promise provides the final label (optionally), a reference to the function to call,
+ * the context for the function to be executed in, and any number of arguments
+ * to be passed along when calling the function.
  *
- *    In simple cases such as this the promise for the inverse operation
- *    can be resolved immediately; this is not necessarily always possible in cases
- *    where the operation itself is asynchronous.
+ * In simple cases such as this the promise for the inverse operation
+ * can be resolved immediately; this is not necessarily always possible in cases
+ * where the operation itself is asynchronous.
  *
- *    ## Basic Undoing and Redoing
+ * ## Basic Undoing and Redoing
  *
- *    After performing ```calculator.add(42)``` the undoManager will have an entry
- *    on how to undo that addition operation. Each operation added to the
- *    undoManager is added on top of a stack. Calling the undoManager's ```undo```
- *    method will perform the operation on the top of that stack if
- *    original operationPromise has been resolved.
+ * After performing `calculator.add(42)` the undoManager will have an entry
+ * on how to undo that addition operation. Each operation added to the
+ * undoManager is added on top of a stack. Calling the undoManager's `undo`
+ * method will perform the operation on the top of that stack if
+ * original operationPromise has been resolved.
  *
- *    While performing an undo operation any additions to the undoManager will
- *    instead be placed on the redo stack. Conversely, any additions made while
- *    performing a redo operation will be placed on the undo stack.
+ * While performing an undo operation any additions to the undoManager will
+ * instead be placed on the redo stack. Conversely, any additions made while
+ * performing a redo operation will be placed on the undo stack.
  *
- *    When not actively undoing or redoing, the redo stack is cleared whenever a
- *    new operation is added; the only way operations end up on the redo stack is
- *    through undoing an operation.
+ * When not actively undoing or redoing, the redo stack is cleared whenever a
+ * new operation is added; the only way operations end up on the redo stack is
+ * through undoing an operation.
  *
- *    ## Asynchronous Considerations
+ * ## Asynchronous Considerations
  *
- *    It is possible for a user invoked operation to take some time to complete or
- *    details of how to undo the operation may not be known until the operation
- *    has completed.
+ * It is possible for a user invoked operation to take some time to complete or
+ * details of how to undo the operation may not be known until the operation
+ * has completed.
  *
- *    In these cases it is important to remember that the undo stack captures user
- *    intent, which is considered synchronous. This is why the undoManager accepts
- *    promises for the operations but places them on the stack synchronously.
+ * In these cases it is important to remember that the undo stack captures user
+ * intent, which is considered synchronous. This is why the undoManager accepts
+ * promises for the operations but places them on the stack synchronously.
  *
- *    Consider the following example:
- *```javascript
- *addRandomNumber: {
- *       var deferredUndo,
- *           self = this;
+ * Consider the following example:
  *
- *       this.undoManager.register("Add Random", deferredUndo.promise);
+ * ```javascript
+ * addRandomNumber: {
+ *        var deferredUndo,
+ *            self = this;
  *
- *       return this.randomNumberGeneratorService.next().then(function(rand) {
- *           deferredUndo.resolve(["Add " + rand, self.subtract, self, rand];
- *           var result = self.total = self.total + number;
- *           return result
- *       });
- *   }
- *```
+ *        this.undoManager.register("Add Random", deferredUndo.promise);
  *
- *    Here we see that the undo operation for addRandomNumber is added to the
- *    UndoManager before we even know how to undo the operation, indeed it's added
- *    before the operation has even happened.
+ *        return this.randomNumberGeneratorService.next().then(function(rand) {
+ *            deferredUndo.resolve(["Add " + rand, self.subtract, self, rand];
+ *            var result = self.total = self.total + number;
+ *            return result
+ *        });
+ *    }
+ * ```
  *
- *    It is worth noting that the undoManager does not block anything. Users are
- *    still free to call ```add```, ```subtract```, ```addRandomNumber``` or any
- *    other APIs exposed by the calculator, whether the ```addRandomNumber``` has
- *    resolved or not. It's the responsibility of an API provider to handle this
- *    scenario as necessary.
+ * Here we see that the undo operation for addRandomNumber is added to the
+ * UndoManager before we even know how to undo the operation, indeed it's added
+ * before the operation has even happened.
  *
- *    At this point two things can happen:
- *    1) A user could invoke ```undo``` after the operation promise's resolution.
- *    2) A user could invoke ```undo``` prior to the operation promise's resolution.
+ * It is worth noting that the undoManager does not block anything. Users are
+ * still free to call `add`, `subtract`, `addRandomNumber` or any
+ * other APIs exposed by the calculator, whether the `addRandomNumber` has
+ * resolved or not. It's the responsibility of an API provider to handle this
+ * scenario as necessary.
  *
- *    In the first scenario, things move along much like they did in the first case
- *    we described above.
+ * At this point two things can happen:
+ * 1) A user could invoke `undo` after the operation promise's resolution.
+ * 2) A user could invoke `undo` prior to the operation promise's resolution.
  *
- *    In the second scenario, the undoManager puts the unresolved promise into a
- *    queue of operations to be performed when possible. Subsequent undo and redo
- *    requests are added to this queue.
+ * In the first scenario, things move along much like they did in the first case
+ * we described above.
  *
- *    Whenever a promise is resolved the undoManager runs through this queue in
- *    order, oldest to newest, and attempts to perform the operation specified,
- *    stopping when it encounters an unfulfilled operation promise.
+ * In the second scenario, the undoManager puts the unresolved promise into a
+ * queue of operations to be performed when possible. Subsequent undo and redo
+ * requests are added to this queue.
  *
- *    This guarantees that promised operations are added in the order as they were
- *    performed by the user and are executed, not in the order they are fulfilled,
- *    but in the order they are undone or redone.
+ * Whenever a promise is resolved the undoManager runs through this queue in
+ * order, oldest to newest, and attempts to perform the operation specified,
+ * stopping when it encounters an unfulfilled operation promise.
  *
- *   @class UndoManager
- *   @extends Target
-*/
+ * This guarantees that promised operations are added in the order as they were
+ * performed by the user and are executed, not in the order they are fulfilled,
+ * but in the order they are undone or redone.
+ *
+ * class UndoManager
+ * extends Target
+ */
 var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManager# */ {
 
     /**
-        Dispatched when a new change is registered (i.e. not while undoing or
-        redoing).
-
-        @event operationRegistered
-        @memberof UndoManager
+     * Dispatched when a new change is registered (i.e. not while undoing or
+     * redoing).
+     * @event operationRegistered
+     * @memberof UndoManager
     */
 
     /**
-        Dispatched when an undo has been completed.
-
-        @event undo
-        @memberof UndoManager
-    */
+     * Dispatched when an undo has been completed.
+     * @event undo
+     * @memberof UndoManager
+     */
 
     /**
-        Dispatched when a redo has been completed.
-
-        @event redo
-        @memberof UndoManager
-    */
+     * Dispatched when a redo has been completed.
+     * @event redo
+     * @memberof UndoManager
+     */
 
     _operationQueue: {
         value: null
@@ -192,10 +190,10 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
     },
 
     /**
-        Maximum number of operations allowed in each undo and redo stack
-        Setting this lower than the current count of undo/redo operations will remove
-        the oldest undos/redos as necessary to meet the new limit.
-    */
+     * Maximum number of operations allowed in each undo and redo stack.
+     * Setting this lower than the current count of undo/redo operations will
+     * remove the oldest undos/redos as necessary to meet the new limit.
+     */
     maxUndoCount: {
         get: function () {
             return this._maxUndoCount;
@@ -219,7 +217,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
     },
 
     /**
-        The current number of stored undoable operations
+     * The current number of stored undoable operations
      */
     undoCount: {
         value: 0
@@ -230,7 +228,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
     },
 
     /**
-        The current number of stored redoable operations
+     * The current number of stored redoable operations
      */
     redoCount: {
         value: 0
@@ -254,7 +252,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
     },
 
     /**
-     * Whether or not to accept registration of undo/redo operations
+     * Whether or not to accept registration of undo/redo operations.
      *
      * This is typically used to disable registration of operations
      * temporarily while undoable actions should be performed without
@@ -346,36 +344,38 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
         }
     },
 
-/**
- *    Adds a new operation to the either the undo or redo stack as appropriate.
- *
- *    The operationPromise should be resolved with an array containing:
- *        - A label string for the operation (optional)
- *        - The function to execute when performing this operation
- *        - The object to use as the context when performing the function
- *        - Any number of arguments to apply when performing the function
- *
- *    ### Examples
- *    Registering an undo operation with no arguments
- *```javascript
- *undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
- * ```
- *
- *   Registering an undo operation with arguments
- *```javascript
- *undoManager.register("Add", Promise.resolve([calculator.subtract, calculator, number]));
- *```
-  *
- *    Registering an undo operation with a label and arguments
- *```javascript
- *    undoManager.register("Add", Promise.resolve(["Add 5", calculator.subtract, calculator, 5]));
- *```
- *
- *    @param {string} label A label to associate with this undo entry.
- *    @param {promise} operationPromise A promise for an undoable operation
- *    @returns a promise for the resolution of the operationPromise
- *    @function
- */
+    /**
+     * Adds a new operation to the either the undo or redo stack as appropriate.
+     *
+     * The operationPromise should be resolved with an array containing:
+     *     - A label string for the operation (optional)
+     *     - The function to execute when performing this operation
+     *     - The object to use as the context when performing the function
+     *     - Any number of arguments to apply when performing the function
+     *
+     * ### Examples
+     *
+     * Registering an undo operation with no arguments
+     * ```javascript
+     * undoManager.register("Square", Promise.resolve([calculator.sqrt, calculator]));
+     *  ```
+     *
+     *    Registering an undo operation with arguments
+     * ```javascript
+     * undoManager.register("Add", Promise.resolve([calculator.subtract, calculator, number]));
+     * ```
+     *
+     * Registering an undo operation with a label and arguments
+     *
+     * ```javascript
+     *     undoManager.register("Add", Promise.resolve(["Add 5", calculator.subtract, calculator, 5]));
+     * ```
+     *
+     * @param {string} label A label to associate with this undo entry.
+     * @param {promise} operationPromise A promise for an undoable operation
+     * @returns a promise for the resolution of the operationPromise
+     * @method
+     */
     register: {
         value: function (label, operationPromise) {
 
@@ -553,9 +553,9 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
     },
 
     /**
-        Removes all items from the undo stack.
-        @function
-    */
+     * Removes all items from the undo stack.
+     * @method
+     */
     clearUndo: {
         value: function () {
             this._undoStack.splice(0, this._undoStack.length);
@@ -563,9 +563,9 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
     },
 
     /**
-        Removes all items from the redo stack.
-        @function
-    */
+     * Removes all items from the redo stack.
+     * @method
+     */
     clearRedo: {
         value: function () {
             this._redoStack.splice(0, this._redoStack.length);
@@ -573,21 +573,20 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
     },
 
     /**
-        Returns `true` if the UndoManager is in the middle of an undo operation, otherwise returns `false`.
-    */
+     * Returns `true` if the UndoManager is in the middle of an undo operation, otherwise returns `false`.
+     */
     isUndoing: {
         // TODO restore as computed property with dependency on undoEntry
         value: false
     },
 
     /**
-        Returns `true` if the UndoManager is in the middle of an redo operation, otherwise returns `false`.
-    */
+     * Returns `true` if the UndoManager is in the middle of an redo operation, otherwise returns `false`.
+     */
     isRedoing: {
         // TODO restore as computed property with dependency on reoEntry
         value: false
     },
-
 
     undoEntry: {
         enumerable: false,
@@ -600,9 +599,9 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
     },
 
     /**
-        Schedules the next undo operation for invocation as soon as possible
-        @function
-        @returns {Promise} A promise resolving to true when this undo request has been performed
+     * Schedules the next undo operation for invocation as soon as possible
+     * @method
+     * @returns {Promise} A promise resolving to true when this undo request has been performed
      */
     undo: {
         value: function () {
@@ -621,10 +620,10 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
     },
 
     /**
-        Schedules the next redo operation for invocation as soon as possible
-        @function
-        @returns {Promise} A promise resolving to true when this redo request has been performed
-    */
+     * Schedules the next redo operation for invocation as soon as possible
+     * @method
+     * @returns {Promise} A promise resolving to true when this redo request has been performed
+     */
     redo: {
         value: function () {
 
@@ -656,38 +655,44 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
     },
 
     /**
-        Returns true if the undo stack contains any items, otherwise returns false.
-    */
+     * Returns true if the undo stack contains any items, otherwise returns
+     * false.
+     */
     canUndo: {
-        // TODO restore this as a readOnly getter with a dependency on the undoStack.length
+        // TODO restore this as a readOnly getter with a dependency on the
+        // undoStack.length
         value: null
     },
 
     /**
-        Returns true if the redo stack contains any items, otherwise returns false.
-    */
+     * Returns true if the redo stack contains any items, otherwise returns
+     * false.
+     */
     canRedo: {
-        // TODO restore this as a readOnly getter with a dependency on the redoStack.length
+        // TODO restore this as a readOnly getter with a dependency on the
+        // redoStack.length
         value: null
     },
 
     /**
-        Contains the label describing the operation on top of the undo stack.
-        End-users are strongly advised to prefix this with a localized "Undo" when
-        presenting the label within an interface.
-    */
+     * Contains the label describing the operation on top of the undo stack.
+     * End-users are strongly advised to prefix this with a localized "Undo"
+     * when presenting the label within an interface.
+     */
     undoLabel: {
-        // TODO restore this as a readOnly getter with a dependency on the undoStack.head.prev
+        // TODO restore this as a readOnly getter with a dependency on the
+        // undoStack.head.prev
         value: null
     },
 
     /**
-     Contains the label describing the operation on top of the redo stack.
-     End-users are strongly advised to prefix this with a localized "Redo" when
-     presenting the label within an interface.
-    */
+     * Contains the label describing the operation on top of the redo stack.
+     * End-users are strongly advised to prefix this with a localized "Redo"
+     * when presenting the label within an interface.
+     */
     redoLabel: {
-        // TODO restore this as a readOnly getter with a dependency on the redoStack.head.prev
+        // TODO restore this as a readOnly getter with a dependency on the
+        // redoStack.head.prev
         value: null
     }
 
@@ -702,3 +707,4 @@ Montage.defineProperty(exports, "defaultUndoManager", {
         return _defaultUndoManager;
     }
 });
+

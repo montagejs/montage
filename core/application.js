@@ -29,36 +29,40 @@ var Montage = require("core/core").Montage,
  */
 
 /**
- * The application is a singleton, it initially loads and oversees the running program.
+ * The application is a singleton, it initially loads and oversees the running
+ * program.
  * It is also responsible for window management.
- * The behavior of the application can be modified by implementing a delegate {Application#delegate}
- * It is also possible to subclass the application by specifying an ```applicationPrototype"``` in ```the package.json```
+ * The behavior of the application can be modified by implementing a delegate
+ * {Application#delegate}.
+ * It is also possible to subclass the application by specifying an
+ * `applicationPrototype"` in `the package.json`.
  * @class Application
  * @extends Target
  */
 var Application = exports.Application = Target.specialize( /** @lends Application# */ {
 
     /**
-     Provides a reference to the Montage event manager used in the application.
-     @type {EventManager}
+     * Provides a reference to the Montage event manager used in the
+     * application.
+     * @type {EventManager}
      */
     eventManager: {
         value: null
     },
 
     /**
-     Provides a reference to the parent application.
-     @type {Application}
-     @default null
+     * Provides a reference to the parent application.
+     * @type {Application}
+     * @default null
      */
     parentApplication: {
         value: null
     },
 
     /**
-     Provides a reference to the main application.
-     @type {Application}
-     @default this
+     * Provides a reference to the main application.
+     * @type {Application}
+     * @default this
      */
     mainApplication: {
         get: function() {
@@ -79,7 +83,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     /**
      Determines the sort order for the Application.windows array.
      Possible values are: z-order, reverse-z-order, open-order, reverse-open-order
-     @type {String}
+     @type {string}
      @default "reverse-z-order"
      */
     windowsSortOrder: {
@@ -133,8 +137,9 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     },
 
     /**
-     Provides a reference to the MontageWindow associated with the application.
-     @type {MontageWindow}
+     * Provides a reference to the MontageWindow associated with the
+     * application.
+     * @type {MontageWindow}
      */
     window: {
         get: function() {
@@ -155,19 +160,19 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     },
 
     /**
-     An array of the child windows attached to the application.
-     @type {Array<MontageWindow>}
-     @default {Array} []
+     * An array of the child windows attached to the application.
+     * @type {Array<MontageWindow>}
+     * @default {Array} []
      */
     attachedWindows: {
         value: []
     },
 
     /**
-     Returns the event manager for the specified window object.
-     @function
-     @param {Window} aWindow The browser window whose event manager object should be returned.
-     @returns aWindow.defaultEventMananger
+     * Returns the event manager for the specified window object.
+     * @method
+     * @param {Window} aWindow The browser window whose event manager object should be returned.
+     * @returns aWindow.defaultEventMananger
      */
     eventManagerForWindow: {
         value: function(aWindow) {
@@ -200,8 +205,9 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     },
 
     /**
-     * The application's delegate object, it can implement a ```willFinishLoading``` method that will be called right
-     * after the index.html is loaded
+     * The application's delegate object, it can implement a
+     * `willFinishLoading` method that will be called right after the
+     * index.html is loaded
      * @type {Object}
      * @default null
      */
@@ -216,12 +222,18 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     },
 
     /**
-     * Opens a component in a new browser window, and registers the window with the Montage event manager.<br>
-     * The component URL must be in the same domain as the calling script. Can be relative to the main application
-     * @function
-     * @param {String} component, the path to the reel component to open in the new window.
-     * @param {String} name, the component main class name.
-     * @param {Object} parameters, the new window parameters (accept same parameters than window.open).
+     * Opens a component in a new browser window, and registers the window with
+     * the Montage event manager.
+     *
+     * The component URL must be in the same domain as the calling script. Can
+     * be relative to the main application
+     *
+     * @method
+     * @param {string} component, the path to the reel component to open in the
+     * new window.
+     * @param {string} name, the component main class name.
+     * @param {Object} parameters, the new window parameters (accept same
+     * parameters than window.open).
      * @example
      * var app = document.application;
      * app.openWindow("docs/help.reel", "Help", "{width:300, height:500}");
@@ -322,7 +334,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     /**
      * Attach a window to a parent application. When a window open, it is automatically attached to the Application used to
      * create the window.
-     * @function
+     * @method
      * @param {MontageWindow} window to detach.
      */
     attachWindow: {
@@ -353,7 +365,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     /**
      * Detach the window from its parent application. If no montageWindow is specified, the current application's windows
      * will be detached
-     * @function
+     * @method
      * @param {MontageWindow} window to detach.
      */
     detachWindow: {
@@ -384,9 +396,6 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
         }
     },
 
-    /**
-     @private
-     */
     constructor: {
         value: function Application() {
             if (window.loadInfo && !this.parentApplication) {

@@ -37,8 +37,8 @@ var KEY_KEY = "key",
 
 var EMPTY_STRING_FUNCTION = function() { return ""; };
 
-// This is not a strict match for the grammar in http://tools.ietf.org/html/rfc5646,
-// but it's good enough for our purposes.
+// This is not a strict match for the grammar in
+// http://tools.ietf.org/html/rfc5646, but it's good enough for our purposes.
 var reLanguageTagValidator = /^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/;
 
 /**
@@ -54,11 +54,11 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     },
 
     /**
-        Initialize the localizer.
-        @function
-        @param {String} [locale] The RFC-5646 language tag this localizer should use. Defaults to defaultLocalizer.locale
-        @returns {Localizer} The Localizer object it was called on.
-    */
+     * @method
+     * @param {string} [locale] The RFC-5646 language tag this localizer
+     * should use. Defaults to defaultLocalizer.locale
+     * @returns {Localizer} The Localizer object it was called on.
+     */
     init: {
         value: function(locale) {
             this.locale = locale || defaultLocalizer.locale;
@@ -68,12 +68,11 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     },
 
     /**
-        Initialize the object
-        @function
-        @param {String} locale The RFC-5646 language tag this localizer should use.
-        @param {Object} messages A map from keys to messages. Each message should either be a string or an object with a "message" property.
-        @returns {Localizer} The Localizer object it was called on.
-    */
+     * @method
+     * @param {string} locale The RFC-5646 language tag this localizer should use.
+     * @param {Object} messages A map from keys to messages. Each message should either be a string or an object with a "message" property.
+     * @returns {Localizer} The Localizer object it was called on.
+     */
     initWithMessages: {
         value: function(locale, messages) {
             this.locale = locale;
@@ -84,10 +83,10 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     },
 
     /**
-        The MessageFormat object to use.
-        @type {MessageFormat}
-        @default null
-    */
+     * The MessageFormat object to use.
+     * @type {MessageFormat}
+     * @default null
+     */
     messageFormat: {
         serializable: false,
         value: null
@@ -98,10 +97,10 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     },
 
     /**
-        A map from keys to messages.
-        @type Object
-        @default null
-    */
+     * A map from keys to messages.
+     * @type Object
+     * @default null
+     */
     messages: {
         get: function() {
             return this._messages;
@@ -117,11 +116,12 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
             }
         }
     },
+
     /**
-        A promise for the messages property
-        @type Promise
-        @default null
-    */
+     * A promise for the messages property
+     * @type Promise
+     * @default null
+     */
     messagesPromise: {
         serializable: false,
         value: null
@@ -132,12 +132,12 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     },
 
     /**
-        A RFC-5646 language-tag specifying the locale of this localizer.
-        Setting the locale will create a new {@link MessageFormat} object
-        with the new locale.
-        @type {String}
-        @default null
-    */
+     * A RFC-5646 language-tag specifying the locale of this localizer.
+     * Setting the locale will create a new {@link MessageFormat} object with
+     * the new locale.
+     * @type {string}
+     * @default null
+     */
     locale: {
         get: function() {
             return this._locale;
@@ -158,11 +158,11 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     },
 
     /**
-        A promise for the locales available in this package. Resolves to an
-        array of strings, each containing a locale tag.
-        @type Promise
-        @default null
-    */
+     * A promise for the locales available in this package. Resolves to an
+     * array of strings, each containing a locale tag.
+     * @type Promise
+     * @default null
+     */
     availableLocales: {
         get: function() {
             if (this._availableLocales) {
@@ -206,11 +206,11 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     },
 
     /**
-        Promise for the manifest
-        @private
-        @type Promise
-        @default null
-    */
+     * Promise for the manifest
+     * @private
+     * @type Promise
+     * @default null
+     */
     _manifest: {
         depends: ["require"],
         get: function() {
@@ -233,12 +233,14 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     },
 
     /**
-        Load messages for the locale
-        @function
-        @param {Number|Boolean} [timeout=5000] Number of milliseconds to wait before failing. Set to false for no timeout.
-        @param {Function} [callback] Called on successful loading of messages. Using the returned promise is recomended.
-        @returns {Promise} A promise for the messages.
-    */
+     * Load messages for the locale
+     * @method
+     * @param {?number|boolean} [timeout=5000] Number of milliseconds to wait
+     * before failing. Set to false for no timeout.
+     * @param {Function} [callback] Called on successful loading of messages.
+     * Using the returned promise is recomended.
+     * @returns {Promise} A promise for the messages.
+     */
     loadMessages: {
         value: function(timeout, callback) {
             if (!this.require) {
@@ -279,14 +281,14 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     },
 
     /**
-        Load the locale appropriate message files from the given manifest
-        structure.
-        @private
-        @function
-        @param {Object} files An object mapping directory (locale) names to
-        @returns {Promise} A promise that will be resolved with an array
-        containing the content of message files appropriate to this locale.
-        Suitable for passing into {@link _collapseMessages}.
+     * Load the locale appropriate message files from the given manifest
+     * structure.
+     * @private
+     * @method
+     * @param {Object} files An object mapping directory (locale) names to
+     * @returns {Promise} A promise that will be resolved with an array
+     * containing the content of message files appropriate to this locale.
+     * Suitable for passing into {@link _collapseMessages}.
     */
     _loadMessageFiles: {
         value: function(files) {
@@ -350,17 +352,17 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     },
 
     /**
-        Collapse an array of message objects into one, earlier elements taking
-        precedence over later ones.
-        @private
-        @function
-        @param {Array<Object>} localesMessages
-        @returns {Object} An object mapping messages keys to the messages
-        @example
-        [{hi: "Good-day"}, {hi: "Hello", bye: "Bye"}]
-        // results in
-        {hi: "Good-day", bye: "Bye"}
-    */
+     * Collapse an array of message objects into one, earlier elements taking
+     * precedence over later ones.
+     * @private
+     * @method
+     * @param {Array<Object>} localesMessages
+     * @returns {Object} An object mapping messages keys to the messages
+     * @example
+     * [{hi: "Good-day"}, {hi: "Hello", bye: "Bye"}]
+     * // results in
+     * {hi: "Good-day", bye: "Bye"}
+     */
     _collapseMessages: {
         value: function(localesMessages) {
             var messages = {};
@@ -386,24 +388,24 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     },
 
     /**
-        <p>Localize a key and return a message function.</p>
-
-        <p>If the message is a precompiled function then this is returned
-        directly. Otherwise the message string is compiled to a function with
-        <a href="https://github.com/SlexAxton/messageformat.js#readme">
-        messageformat.js</a>. The resulting function takes an object mapping
-        from variables in the message to their values.</p>
-
-        <p>Be aware that if the messages have not loaded yet this method
-        will not return the localized string. See <code>localize</code> for
-        method that works whether the messages have loaded or not.</p>
-
-        @function
-        @param {String} key The key to the string in the {@link messages} object.
-        @param {String} defaultMessage The value to use if key does not exist.
-        @returns {Function} A function that accepts an object mapping variables
-                            in the message string to values.
-    */
+     * Localize a key and return a message function.
+     *
+     * If the message is a precompiled function then this is returned
+     * directly. Otherwise the message string is compiled to a function with
+     * <a href="https://github.com/SlexAxton/messageformat.js#readme">
+     * messageformat.js</a>. The resulting function takes an object mapping
+     * from variables in the message to their values.
+     *
+     * Be aware that if the messages have not loaded yet this method
+     * will not return the localized string. See `localize` for
+     * method that works whether the messages have loaded or not.
+     *
+     * @method
+     * @param {string} key The key to the string in the {@link messages} object.
+     * @param {string} defaultMessage The value to use if key does not exist.
+     * @returns {Function} A function that accepts an object mapping variables
+     * in the message string to values.
+     */
     localizeSync: {
         value: function(key, defaultMessage) {
             var message, type, compiled;
@@ -456,40 +458,43 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     },
 
     /**
-        <p>Async version of {@link localize}.</p>
-
-        <p>Waits for the localizer to get messages before localizing the key.
-        Use either the callback or the promise.</p>
-
-        <pre><code>
-defaultLocalizer.localize("hello_name", "Hello, {name}!").then(function (hi) {
-    console.log(hi({name: "World"})); // => "Hello, World!""
-    console.log(hi()); // => Error: MessageFormat: No data passed to function.
-});
-        </code></pre>
-
-        <p>If the message for the key is "simple", i.e. it does not contain any
-        variables, then the function will implement a custom <code>toString</code>
-        function that also returns the message. This means that you can use
-        the function like a string. Example:</p>
-        <pre><code>
-defaultLocalizer.localize("hello", "Hello").then(function (hi) {
-    // Concatenating an object to a string calls its toString
-    myObject.hello = "" + hi;
-    var y = "The greeting '" + hi + "' is used in this locale";
-    // textContent only accepts strings and so calls toString
-    button.textContent = hi;
-    // and use as a function also works.
-    var z = hi();
-});
-        </code></pre>
-
-        @function
-        @param {String} key The key to the string in the {@link messages} object.
-        @param {String} defaultMessage The value to use if key does not exist.
-        @param {String} [defaultOnFail=true] Whether to use the default messages if the messages fail to load.
-        @param {Function} [callback] Passed the message function.
-        @returns {Promise} A promise that is resolved with the message function.
+     * Async version of {@link localize}.
+     *
+     * Waits for the localizer to get messages before localizing the key.
+     * Use either the callback or the promise.
+     *
+     * ```js
+     * defaultLocalizer.localize("hello_name", "Hello, {name}!").then(function (hi) {
+     *     console.log(hi({name: "World"})); // => "Hello, World!""
+     *     console.log(hi()); // => Error: MessageFormat: No data passed to function.
+     * });
+     * ```
+     *
+     * If the message for the key is "simple", i.e. it does not contain any
+     * variables, then the function will implement a custom `toString`
+     * function that also returns the message. This means that you can use
+     * the function like a string. Example:
+     *
+     * ```js
+     * defaultLocalizer.localize("hello", "Hello").then(function (hi) {
+     *     // Concatenating an object to a string calls its toString
+     *     myObject.hello = "" + hi;
+     *     var y = "The greeting '" + hi + "' is used in this locale";
+     *     // textContent only accepts strings and so calls toString
+     *     button.textContent = hi;
+     *     // and use as a function also works.
+     *     var z = hi();
+     * });
+     * ```
+     *
+     * @method
+     * @param {string} key The key to the string in the {@link messages}
+     * object.
+     * @param {string} defaultMessage The value to use if key does not exist.
+     * @param {string} [defaultOnFail=true] Whether to use the default messages
+     * if the messages fail to load.
+     * @param {Function} [callback] Passed the message function.
+     * @returns {Promise} A promise that is resolved with the message function.
     */
     localize: {
         value: function(key, defaultMessage, defaultOnFail, callback) {
@@ -522,9 +527,9 @@ defaultLocalizer.localize("hello", "Hello").then(function (hi) {
 });
 
 /**
-    @class DefaultLocalizer
-    @extends Localizer
-*/
+ * @class DefaultLocalizer
+ * @extends Localizer
+ */
 var DefaultLocalizer = Localizer.specialize( /** @lends DefaultLocalizer# */ {
     init: {
         value: function() {
@@ -551,12 +556,12 @@ var DefaultLocalizer = Localizer.specialize( /** @lends DefaultLocalizer# */ {
     },
 
     /**
-        Delegate to get the default locale.
-        Should implement a <code>getDefaultLocale</code> method that returns
-        a language-tag string that can be passed to {@link locale}
-        @type Object
-        @default null
-    */
+     * Delegate to get the default locale.
+     * Should implement a `getDefaultLocale` method that returns
+     * a language-tag string that can be passed to {@link locale}
+     * @type Object
+     * @default null
+     */
     delegate: {
         get: function() {
             return this._delegate;
@@ -589,10 +594,10 @@ var DefaultLocalizer = Localizer.specialize( /** @lends DefaultLocalizer# */ {
     },
 
     /**
-        Reset the saved locale back to default by using the steps above.
-        @function
-        @returns {String} the reset locale
-    */
+     * Reset the saved locale back to default by using the steps above.
+     * @method
+     * @returns {string} the reset locale
+     */
     reset: {
         value: function() {
             if (typeof window !== "undefined" && window.localStorage) {
@@ -607,32 +612,38 @@ var DefaultLocalizer = Localizer.specialize( /** @lends DefaultLocalizer# */ {
 /**
  * The default localizer.
  * The locale of the defaultLocalizer is determined by following these steps:
- * - If localStorage exists, use the value stored in "montage_locale" (LOCALE_STORAGE_KEY)
+ *
+ * - If localStorage exists, use the value stored in "montage_locale"
+ *   (LOCALE_STORAGE_KEY)
  * - Otherwise use the value of navigator.userLanguage (Internet Explorer)
  * - Otherwise use the value of navigator.language (other browsers)
  * - Otherwise fall back to "en"
- * defaultLocalizer.locale can be set and if localStorage exists then the value will be saved in
+ *
+ * `defaultLocalizer.locale` can be set and if localStorage exists then the
+ * value will be saved in
+ *
  * "montage_locale" (LOCALE_STORAGE_KEY).
  * @type {DefaultLocalizer}
  * @static
-*/
+ */
 var defaultLocalizer = exports.defaultLocalizer = new DefaultLocalizer().init();
 
 /**
-    The localize function from {@link defaultLocalizer} provided for convenience.
-
-    @function
-    @see Localizer#localize
+ * The localize function from {@link defaultLocalizer} provided for
+ * convenience.
+ *
+ * @function
+ * @see Localizer#localize
 */
 exports.localize = defaultLocalizer.localize.bind(defaultLocalizer);
 
 /**
-    Tracks a message function and its data for changes in order to generate a
-    localized message.
-
-    @class MessageLocalizer
-    @extends Montage
-*/
+ * Tracks a message function and its data for changes in order to generate a
+ * localized message.
+ *
+ * @class MessageLocalizer
+ * @extends Montage
+ */
 var Message = exports.Message = Montage.specialize( /** @lends MessageLocalizer# */ {
 
     constructor: {
@@ -646,15 +657,13 @@ var Message = exports.Message = Montage.specialize( /** @lends MessageLocalizer#
     },
 
     /**
-        Initialize the object.
-
-        @function
-        @param {string|Function} keyOrFunction A messageformat string or a
-        function that takes an object argument mapping variables to values and
-        returns a string. Usually the output of Localizer#localize.
-        @param {Object} data  Value for this data property.
-        @returns {Message} this.
-    */
+     * @method
+     * @param {string|Function} keyOrFunction A messageformat string or a
+     * function that takes an object argument mapping variables to values and
+     * returns a string. Usually the output of Localizer#localize.
+     * @param {Object} data  Value for this data property.
+     * @returns {Message} this.
+     */
     init: {
         value: function(key, defaultMessage, data) {
             if (key) this.key = key;
@@ -779,15 +788,15 @@ var Message = exports.Message = Montage.specialize( /** @lends MessageLocalizer#
     },
 
     /**
-        The data needed for the message. Properties on this object can be
-        bound to.
-
-        This object will be wrapped in a MessageData object to watch all
-        properties for changes so that the localized message can be updated.
-
-        @type {MessageData}
-        @default null
-    */
+     * The data needed for the message. Properties on this object can be
+     * bound to.
+     *
+     * This object will be wrapped in a MessageData object to watch all
+     * properties for changes so that the localized message can be updated.
+     *
+     * @type {MessageData}
+     * @default null
+     */
     _dataObject: {
         value: null
     },
@@ -1006,11 +1015,11 @@ var createMessageBinding = function(object, prop, key, defaultMessage, data, des
     }
 
     if (typeof defaultMessage === "object") {
-//console.log("Define default binding: ", defaultMessage);
+        //console.log("Define default binding: ", defaultMessage);
         Bindings.defineBinding(message, "defaultMessage", defaultMessage, {
             components: deserializer
         });
-//console.log(FrbBindings.getBindings(message).source, deserializer.getObjectByLabel("source"));
+        //console.log(FrbBindings.getBindings(message).source, deserializer.getObjectByLabel("source"));
     } else {
         message.defaultMessage = defaultMessage;
     }
@@ -1063,3 +1072,4 @@ Deserializer.defineDeserializationUnit("localizations", function(deserializer, o
         createMessageBinding(object, prop, key, defaultMessage, desc.data, deserializer);
     }
 });
+

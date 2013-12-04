@@ -1,11 +1,12 @@
 "use strict";
 /**
- @module montage/core/meta/property-blueprint
- @requires montage/core/core
- @requires core/exception
- @requires core/promise
- @requires core/logger
+ * @module montage/core/meta/property-blueprint
+ * @requires montage/core/core
+ * @requires core/exception
+ * @requires core/promise
+ * @requires core/logger
  */
+
 var Montage = require("montage").Montage;
 var Enum = require("core/enum").Enum;
 
@@ -14,6 +15,8 @@ var logger = require("core/logger").logger("blueprint");
 var ValueType = new Enum().initWithMembers("string", "number", "boolean", "date", "enum", "url", "object");
 var CollectionValueType = new Enum().initWithMembers("list", "set", "map");
 
+// TODO change Defaults[*] to Defaults.* throughout. Needless performance
+// degredation.
 var Defaults = {
     name:"default",
     cardinality:1,
@@ -29,7 +32,7 @@ var Defaults = {
 };
 
 /**
- @class PropertyBlueprint
+ * @class PropertyBlueprint
  */
 exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */ {
 
@@ -40,12 +43,12 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
     },
 
     /**
-     Initialize a newly allocated property blueprint.
-     @function
-     @param {String} name name of the property blueprint to create
-     @param {Blueprint} blueprint
-     @param {Number} cardinality name of the property blueprint to create
-     @returns itself
+     * Initialize a newly allocated property blueprint.
+     * @method
+     * @param {string} name name of the property blueprint to create
+     * @param {Blueprint} blueprint
+     * @param {number} cardinality name of the property blueprint to create
+     * @returns itself
      */
     initWithNameBlueprintAndCardinality:{
         value:function (name, blueprint, cardinality) {
@@ -114,14 +117,11 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
         }
     },
 
-    /*
-     * @private
-     */
     _owner:{
         value:null
     },
 
-    /*
+    /**
      * Component description attached to this property blueprint.
      */
     owner:{
@@ -130,17 +130,15 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
         }
     },
 
-    /**
-     @private
-     */
     _name:{
         value:null
     },
 
     /**
-     Name of the object. The name is used to define the property on the object.
-     @function
-     @returns {String} this._name
+     * Name of the object. The name is used to define the property on the
+     * object.
+     * @method
+     * @returns {string} this._name
      */
     name:{
         serializable:false,
@@ -150,11 +148,11 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
     },
 
     /**
-     The identifier is the name of the blueprint, dot, the name of the
-     property blueprint, and is used to make the serialization of property blueprints more
-     readable.
-     @type {Property}
-     @default {String} this.name
+     * The identifier is the name of the blueprint, dot, the name of the
+     * property blueprint, and is used to make the serialization of property
+     * blueprints more readable.
+     * @type {Property}
+     * @default {string} this.name
      */
     identifier:{
         get:function () {
@@ -166,43 +164,47 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
     },
 
     /**
-     Cardinality of the property blueprint.<br/>
-     The Cardinality of an property blueprint is the number of values that can be stored.
-     A cardinality of one means that only one object can be stored. Only positive values are legal. A value of infinity means that any number of values can be stored.
-     @type {Property}
-     @default {Number} 1
+     * Cardinality of the property blueprint.
+     *
+     * The Cardinality of an property blueprint is the number of values that
+     * can be stored. A cardinality of one means that only one object can be
+     * stored. Only positive values are legal. A value of infinity means that
+     * any number of values can be stored.
+     *
+     * @type {Property}
+     * @default {number} 1
      */
     cardinality:{
-        value:Defaults["cardinality"]
+        value: Defaults["cardinality"]
     },
 
     /**
-     @type {Property}
-     @default {Boolean} false
+     * @type {Property}
+     * @default {boolean} false
      */
     mandatory:{
-        value:Defaults["mandatory"]
+        value: Defaults["mandatory"]
     },
 
     /**
-     @type {Property}
-     @default {Boolean} false
+     * @type {Property}
+     * @default {boolean} false
      */
     denyDelete:{
-        value:Defaults["denyDelete"]
+        value: Defaults["denyDelete"]
     },
 
     /**
-     @type {Property}
-     @default {Boolean} false
+     * @type {Property}
+     * @default {boolean} false
      */
     readOnly:{
-        value:Defaults["readOnly"]
+        value: Defaults["readOnly"]
     },
 
     /**
-     @type {Property}
-     @default {Boolean} false
+     * @type {Property}
+     * @default {boolean} false
      */
     isAssociationBlueprint:{
         get:function () {
@@ -211,9 +213,9 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
     },
 
     /**
-     Returns true if the cardinality is more than one.
-     @type {Property}
-     @default {Boolean} false
+     * Returns true if the cardinality is more than one.
+     * @type {Property}
+     * @default {boolean} false
      */
     isToMany:{
         get:function () {
@@ -222,8 +224,8 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
     },
 
     /**
-     @type {Property}
-     @default {Boolean} false
+     * @type {Property}
+     * @default {boolean} false
      */
     isDerived:{
         get:function () {
@@ -232,35 +234,35 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
     },
 
     /**
-     @type {Property}
-     @default {String} "string"
+     * @type {Property}
+     * @default {string} "string"
      */
     valueType:{
-        value:Defaults["valueType"]
+        value: Defaults["valueType"]
     },
 
     /**
-     @type {Property}
-     @default {String} "string"
+     * @type {Property}
+     * @default {string} "string"
      */
     collectionValueType:{
-        value:Defaults["collectionValueType"]
+        value: Defaults["collectionValueType"]
     },
 
     /**
-     @type {Property}
-     @default {Object} null
+     * @type {Property}
+     * @default {Object} null
      */
     valueObjectPrototypeName:{
-        value:Defaults["valueObjectPrototypeName"]
+        value: Defaults["valueObjectPrototypeName"]
     },
 
     /**
-     @type {Property}
-     @default {Object} null
+     * @type {Property}
+     * @default {Object} null
      */
     valueObjectModuleId:{
-        value:Defaults["valueObjectModuleId"]
+        value: Defaults["valueObjectModuleId"]
     },
 
     _enumValues:{
@@ -287,7 +289,7 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
     },
 
     helpKey:{
-        value:Defaults["helpKey"]
+        value: Defaults["helpKey"]
     },
 
     blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
@@ -295,3 +297,4 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
     blueprint:require("montage")._blueprintDescriptor
 
 });
+

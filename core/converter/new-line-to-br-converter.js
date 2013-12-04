@@ -11,8 +11,8 @@ var Converter = require('core/converter/converter').Converter;
  * Replaces all new line characters with a HTML &lt;br&gt;
  * @memberof module:montage/core/converter#
  * @function
- * @param {String} str The string to format.
- * @returns {String} The formatted string.
+ * @param {string} str The string to format.
+ * @returns {string} The formatted string.
  */
 var newLineToBr = function(str) {
     return str.replace(/(\r\n|\r|\n)/g, '<br />');
@@ -37,8 +37,8 @@ exports.NewLineToBrConverter = Converter.specialize( /** @lends NewLineToBrConve
     },
 
     /**
-     * @function
-     * @param {String} v Case format
+     * @method
+     * @param {string} v Case format
      * @returns this._convert(v)
      */
     convert: {value: function(v) {
@@ -46,11 +46,13 @@ exports.NewLineToBrConverter = Converter.specialize( /** @lends NewLineToBrConve
     }},
 
     /**
-     * @function
-     * @param {String} v Case format
+     * @method
+     * @param {string} v Case format
      * @returns this._convert(v)
      */
     revert: {value: function(v) {
         return this._convert(v);
     }}
+
 });
+

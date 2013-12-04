@@ -22,8 +22,8 @@ exports.LowerCaseConverter = Converter.specialize( /** @lends LowerCaseConverter
     },
 
     /**
-     * @function
-     * @param {String} v Case format
+     * @method
+     * @param {string} v Case format
      * @returns this._convert(v)
      */
     convert: {value: function(v) {
@@ -31,11 +31,13 @@ exports.LowerCaseConverter = Converter.specialize( /** @lends LowerCaseConverter
     }},
 
     /**
-     * @function
-     * @param {String} v Case format
+     * @method
+     * @param {string} v Case format
      * @returns this._convert(v)
      */
     revert: {value: function(v) {
         return this._convert(v);
     }}
+
 });
+

@@ -1,7 +1,7 @@
 /*global require, exports*/
 
 /**
- @module montage/ui/base/abstract-image.reel
+ * @module montage/ui/base/abstract-image.reel
  */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
@@ -13,9 +13,6 @@ var Montage = require("montage").Montage,
  */
 var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends AbstractImage# */ {
 
-    /**
-     * @private
-     */
     constructor: {
         value: function AbstractImage() {
             if(this.constructor === AbstractImage) {
@@ -67,8 +64,8 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
     },
 
     // Invalid source is set when the src property is a relative location that
-    // the image was not able to rebase using the templates baseUrl or any other
-    // means. It can also mean that there is no src.
+    // the image was not able to rebase using the templates baseUrl or any
+    // other means. It can also mean that there is no src.
     _isInvalidSrc: {
         value: true
     },
@@ -192,3 +189,4 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
         }
     }
 });
+

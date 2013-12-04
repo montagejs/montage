@@ -11,8 +11,8 @@ var Converter = require('core/converter/converter').Converter;
  * Trims a string of any leading or trailing white space.
  * @memberof module:montage/core/converter#
  * @function
- * @param {String} str String to be trimmed.
- * @returns {String} The trimmed string.
+ * @param {string} str String to be trimmed.
+ * @returns {string} The trimmed string.
  */
 var trim = exports.trim = function(str) {
     // from Google Closure library
@@ -47,8 +47,8 @@ exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
 
     /**
      * Trims the provided string and returns the new string.
-     * @function
-     * @param {String} v The string to trim.
+     * @method
+     * @param {string} v The string to trim.
      * @returns this._convert(v)
      */
     convert: {value: function(v) {
@@ -57,8 +57,8 @@ exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
 
     /**
      * Reverts the conversion.
-     * @function
-     * @param {String} v The string to revert.
+     * @method
+     * @param {string} v The string to revert.
      * @returns this._convert(v)
      */
     revert: {value: function(v) {

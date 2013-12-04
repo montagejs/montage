@@ -36,18 +36,18 @@ exports.AssociationBlueprint = PropertyBlueprint.specialize( /** @lends Associat
         }
     },
 
-    /*
-     @private
-     */
     _targetBlueprintReference: {
         value: null
     },
 
     /**
-     Promise for the blueprint targeted by this association<br/>
-     <b>Note</b> The setter expects an actual blueprint but the getter will return a promise
-     @type {Property}
-     @default {Object} null
+     * Promise for the blueprint targeted by this association.
+     *
+     * **Note**: The setter expects an actual blueprint but the getter will
+     * return a promise.
+     *
+     * @type {Property}
+     * @default {Object} null
      */
     targetBlueprint: {
         serializable: false,
@@ -60,8 +60,8 @@ exports.AssociationBlueprint = PropertyBlueprint.specialize( /** @lends Associat
     },
 
     /**
-     @type {Property}
-     @default {Boolean} false
+     * @type {Property}
+     * @default {boolean} false
      */
     isAssociationBlueprint: {
         get: function() {
@@ -70,3 +70,4 @@ exports.AssociationBlueprint = PropertyBlueprint.specialize( /** @lends Associat
     }
 
 });
+

@@ -186,10 +186,17 @@ var KEYPRESS_EVENT_TYPE = "keyPress",
 
 
 /**
- @class KeyManager
- @classdesc The KeyManager dispatches KeyComposer events when it detects a keyComposer has been pressed or released.
- Do not create a KeyManager directly but instead require for the defaultKeyManager: require("core/event/key-manager").defaultKeyManager
- @extends Montage
+ * The KeyManager dispatches KeyComposer events when it detects a keyComposer
+ * has been pressed or released.  Do not create a KeyManager directly but
+ * instead require for the defaultKeyManager:
+ *
+ * ```js
+ * require("core/event/key-manager").defaultKeyManager
+ * ```
+ *
+ * @class KeyManager
+ * @classdesc Dispatches events to a key composer. There can only be one.
+ * @extends Montage
 */
 var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# */ {
 
@@ -243,10 +250,10 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     /**
-      The number of milliseconds a key must be pressed in order to dispatch a longKeyPress event.
-      @type {number}
-      @default 1000
-    */
+     * The number of milliseconds a key must be pressed in order to dispatch a longKeyPress event.
+     * @type {number}
+     * @default 1000
+     */
     longPressThreshold: {
         get: function() {
             return this._longPressThreshold;
@@ -264,13 +271,14 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     /**
-      Register a composerKey.
-      @function
-      @param {Object} keyComposer. The key to register.
-    */
+     * Register a composerKey.
+     * @method
+     * @param {Object} keyComposer. The key to register.
+     */
     registerKey: {
         value: function(keyComposer) {
-            var normalizedKeys = this._normalizeKeySequence(keyComposer.keys),     // validates the keys
+                // validates the keys:
+            var normalizedKeys = this._normalizeKeySequence(keyComposer.keys),
                 modifiersAndKey,
                 map = this._composerKeyMap,
                 mapModifiersEntry,
@@ -312,10 +320,12 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     /**
-      Unregister a composerKey. if a key has been registered multiple time, unregister must be called the same amount of time before the key is actually unregistered.
-      @function
-      @param {Object} keyComposer. The key to unregister.
-    */
+     * Unregister a composerKey. if a key has been registered multiple time,
+     * unregister must be called the same amount of time before the key is
+     * actually unregistered.
+     * @method
+     * @param {Object} keyComposer The key to unregister.
+     */
     unregisterKey: {
         value: function(keyComposer) {
             var map = this._composerKeyMap,
@@ -349,11 +359,6 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         }
     },
 
-    /**
-      constructor method
-      @function
-      @private
-    */
     constructor: {
         value: function() {
             var userAgent = navigator.userAgent,
@@ -429,11 +434,6 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         }
     },
 
-    /**
-      captureKeydown handler
-      @function
-      @private
-    */
     captureKeydown: {
         value: function(event) {
             var keyCode,
@@ -469,11 +469,6 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         }
     },
 
-    /**
-      captureKeypress handler
-      @function
-      @private
-    */
     captureKeypress: {
         value: function(event) {
             var charCode = event.charCode,
@@ -515,11 +510,6 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         }
     },
 
-    /**
-      captureKeyup handler
-      @function
-      @private
-    */
     captureKeyup: {
         value: function(event) {
             var keyCode = event.keyCode,
@@ -571,9 +561,6 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         }
     },
 
-    /**
-      @private
-    */
     _normalizeKeySequence: {
         value: function(keySequence) {
             var modifiersOrder = [MODIFIERS.meta.name, MODIFIERS.alt.name, MODIFIERS.control.name, MODIFIERS.shift.name],
@@ -616,9 +603,6 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         }
     },
 
-    /**
-      @private
-    */
     _preprocessKeyEvent: {
         value: function(event) {
             var thisRef = this,
@@ -694,9 +678,6 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         }
     },
 
-    /**
-      @private
-    */
     _registerListeners: {
         value: function() {
             if (!this._keyEventsListenerInstalled) {
@@ -708,9 +689,6 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         }
     },
 
-    /**
-      @private
-    */
     _unregisterListeners: {
         value: function() {
             if (this._keyEventsListenerInstalled) {
@@ -722,9 +700,6 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         }
     },
 
-    /**
-      @private
-    */
     _dispatchComposerKeyMatches: {
         value: function(matches, event) {
             var thisRef = this,
@@ -854,9 +829,6 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         }
     },
 
-    /**
-      @private
-    */
     _cleanup: {
         value: function() {
             var keyComposer,
@@ -885,9 +857,6 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         }
     },
 
-    /**
-      @private
-    */
     _setupCleanupTimer: {
         value: function() {
             var thisRef = this;
@@ -905,9 +874,6 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         }
     },
 
-    /**
-      @private
-    */
     _convertKeysToModifiersAndKeyCode: {
         value: function(keys) {
             var nbrKeys,
@@ -956,9 +922,6 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
         }
     },
 
-    /**
-      @private
-    */
     _decodeKeyIdentifier: {
         value: function(identifier) {
             if (identifier.match(/U\+/)) {
@@ -977,3 +940,4 @@ Montage.defineProperty(exports, "defaultKeyManager", {
         return _defaultKeyManager;
     }
 });
+
