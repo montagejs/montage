@@ -1190,7 +1190,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                     for (i = 0; i < intersections.length; i++) {
                         step = iterations / 2;
                         j = step;
-                        while (step > 1) {
+                        while (step >= 1) {
                             index = (j|0) * pathsLength + k;
                             position = (j|0) + this._getSlideOffset(index) - offset;
                             step /= 2;
@@ -1212,7 +1212,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                                 newVisibleIndexes.push(index);
                             }
                             j++;
-                        } while (position <= intersections[i][1]);
+                        } while ((position <= intersections[i][1]) && (j < iterations));
                     }
                 }
                 this._needsComputeVisibleRange = false;
