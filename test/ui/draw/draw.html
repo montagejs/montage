@@ -63,6 +63,7 @@ POSSIBILITY OF SUCH DAMAGE.
             "arguments2": {"@": "arguments2"},
             "noArguments": {"@": "noArguments"},
             "nestedArguments": {"@": "nestedArguments"},
+            "wrappedArguments": {"@": "wrappedArguments"},
             "componentBindingStar1": {"@": "componentBindingStar1"},
             "componentBindingStarText1": {"@": "componentBindingStarText1"},
             "componentBindingStar2": {"@": "componentBindingStar2"},
@@ -283,6 +284,13 @@ POSSIBILITY OF SUCH DAMAGE.
             "hasTemplate": false
         }
     },
+    "wrappedArguments": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "wrappedArguments"},
+            "hasTemplate": false
+        }
+    },
     "componentBindingStar1": {
         "prototype": "ui/draw/component-binding-star.reel",
         "properties": {
@@ -484,6 +492,14 @@ POSSIBILITY OF SUCH DAMAGE.
         <span data-arg="three" class="three"></span>
         <span data-arg="four" class="four"></span>
     </div>
+</div>
+
+<div data-montage-id="wrappedArguments">
+    <table>
+        <tr>
+            <td data-arg="one" class="one"></td>
+        </tr>
+    </table>
 </div>
 
 <div data-montage-id="componentBindingStar1">

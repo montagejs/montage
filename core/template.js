@@ -878,10 +878,9 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     /**
-     * @param {Template} template The template object where the arguments reside
-     * @param {Object} delegate A delegate object that needs to implement
-     *        getTemplateParameterArgument(template, name) function that returns
-     *        the argument to replace with the `name` parameter.
+     * @param {TemplateArgumentProvider} templateArgumentProvider An object that
+     *        implements the interface needed to provide the arguments to the
+     *        parameters.
      * @returns {Object} A dictionary with four properties representing the
      *          objects and elements that were imported into the template:
      *          - labels: the labels of the objects added from template
@@ -895,7 +894,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      *
      */
     expandParameters: {
-        value: function(template, delegate) {
+        value: function(templateArgumentProvider) {
             var parameterElements,
                 argumentsElementIds = [],
                 collisionTable,
@@ -905,6 +904,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 argumentElement,
                 serialization = this.getSerialization(),
                 argumentsSerialization,
+                willMergeObjectWithLabel,
                 result = {};
 
             parameterElements = this.getParameters();
@@ -912,8 +912,8 @@ var Template = Montage.specialize( /** @lends Template# */ {
             // Expand elements.
             for (var parameterName in parameterElements) {
                 parameterElement = parameterElements[parameterName];
-                argumentElement = delegate.getTemplateParameterArgument(
-                    template, parameterName);
+                argumentElement = templateArgumentProvider.getTemplateArgumentElement(
+                    parameterName);
 
                 // Store all element ids of the argument, we need to create
                 // a serialization with the components that point to them.
@@ -935,14 +935,35 @@ var Template = Montage.specialize( /** @lends Template# */ {
             result.elementIdsCollisions = argumentElementsCollisionTable;
 
             // Expand objects.
-            argumentsSerialization = template
-                ._createSerializationWithElementIds(argumentsElementIds);
+            argumentsSerialization = templateArgumentProvider
+                .getTemplateArgumentSerialization(argumentsElementIds);
 
             argumentsSerialization.renameElementReferences(
                 argumentElementsCollisionTable);
 
+            // When merging the serializations we need to resolve any template
+            // property alias that comes from the arguments, for instance, the
+            // argument could be referring to @table:cell in its scope when in
+            // this scope (the serialization1) it is aliased to
+            // @repetition:iteration. To do this we ask the argument provider
+            // to resolve the template property for us.
+            // This approach works because the arguments serialization is
+            // created assuming that template properties are just like any other
+            // label and are considered external objects.
+            willMergeObjectWithLabel = function(label) {
+                if (label.indexOf(":") > 0) {
+                    var resolvedLabel = templateArgumentProvider
+                        .resolveTemplateArgumentTemplateProperty(label);
+                    if (resolvedLabel !== label) {
+                        return resolvedLabel;
+                    }
+                }
+            };
+
             objectsCollisionTable = serialization.mergeSerialization(
-                argumentsSerialization);
+                argumentsSerialization, {
+                    willMergeObjectWithLabel: willMergeObjectWithLabel
+                });
             this.objectsString = serialization.getSerializationString();
 
             result.labels = argumentsSerialization.getSerializationLabels();
@@ -1454,6 +1475,45 @@ function instantiateDocument(_document, _require, instances) {
     });
 }
 
+var TemplateArgumentProvider = Montage.specialize({
+    /**
+     * This function asks the provider to return the element that corresponds
+     * to the argument with the same name. This element will be used to replace
+     * the corresponding element with data-param of the template being expanded.
+     * @private
+     */
+    getTemplateArgumentElement: {
+        value: function(argumentName) {}
+    },
+
+    /**
+     * This function asks the provider to return the serialization components
+     * that refer to the given element ids.
+     * The serialization returned will be merged with the serialization of the
+     * template being expanded.
+     * @private
+     */
+    getTemplateArgumentSerialization: {
+        value: function(elementIds) {}
+    },
+
+    /**
+     * This function asks the provider to resolve a template property that was
+     * found in the argument serialization. The template property could be an
+     * alias that only the provider knows how to resolve because they have
+     * access to the template where the argument comes from and where the
+     * aliases are defined in the serialization block (e.g: ":cell": {alias:
+     * "@repetition:iteration"}).
+     * If the return value is the same as the input then the template property
+     * is not resolved and treated as any other label.
+     * @private
+     */
+    resolveTemplateArgumentTemplateProperty: {
+        value: function(templatePropertyLabel) {}
+    }
+});
+
 exports.Template = Template;
+exports.TemplateArgumentProvider = TemplateArgumentProvider;
 exports.TemplateResources = TemplateResources;
 exports.instantiateDocument = instantiateDocument;

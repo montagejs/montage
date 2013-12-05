@@ -13,6 +13,79 @@ describe("reel/serialization/serialization-spec", function() {
         serialization = new Serialization();
     });
 
+    it("should clone", function() {
+        var objects = {
+                "one": {
+                    "properties": {
+                        "element": {"#": "oneId"}
+                    }
+                }
+            },
+            serializationClone;
+
+        serialization.initWithObject(objects);
+        serializationClone = serialization.clone();
+
+        expect(serializationClone).not.toBe(serialization);
+        expect(serializationClone.getSerializationObject()).not.toBe(serialization.getSerializationObject());
+        expect(serializationClone.getSerializationString()).toBe(serialization.getSerializationString());
+    });
+
+    describe("hasSerializationLabel", function() {
+        it("should know if a label exists in the serialization", function() {
+            var objects = {
+                    "one": {}
+                },
+                hasLabel;
+
+            serialization.initWithObject(objects);
+            hasLabel = serialization.hasSerializationLabel("one");
+
+            expect(hasLabel).toBe(true);
+        });
+
+        it("should know if a label does not exist in the serialization", function() {
+            var objects = {
+                    "one": {}
+                },
+                hasLabel;
+
+            serialization.initWithObject(objects);
+            hasLabel = serialization.hasSerializationLabel("two");
+
+            expect(hasLabel).toBe(false);
+        });
+    });
+
+    describe("isAlias", function() {
+        it("should know that an object is an alias", function() {
+            var objects = {
+                    "one": {
+                        "alias": "@component:propertyName"
+                    },
+                    "component": {}
+                },
+                isAlias;
+
+            serialization.initWithObject(objects);
+            isAlias = serialization.isAlias("one");
+
+            expect(isAlias).toBe(true);
+        });
+
+        it("should know that an object is not an alias", function() {
+            var objects = {
+                    "one": {}
+                },
+                isAlias;
+
+            serialization.initWithObject(objects);
+            isAlias = serialization.isAlias("one");
+
+            expect(isAlias).toBe(false);
+        });
+    });
+
     it("should find the labels of objects with a specific element id", function() {
         var objects = {
                 "one": {

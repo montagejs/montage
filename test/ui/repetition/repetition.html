@@ -548,6 +548,84 @@ POSSIBILITY OF SUCH DAMAGE.
                 "bindings": {
                     "value": {"<-": "@repetitionInSubstitution:iteration.object"}
                 }
+            },
+
+            "aliasRepetitionIteration": {
+                "prototype": "ui/repetition/alias-repetition-iteration.reel",
+                "properties": {
+                    "element": {"#": "aliasRepetitionIteration"}
+                }
+            },
+
+            "text100": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "text100"}
+                },
+                "bindings": {
+                    "value": {"<-": "@aliasRepetitionIteration:i.object"}
+                }
+            },
+
+            "aliasNestedRepetitionIteration": {
+                "prototype": "ui/repetition/alias-nested-repetition-iteration.reel",
+                "properties": {
+                    "element": {"#": "aliasNestedRepetitionIteration"}
+                }
+            },
+
+            "text110": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "text110"}
+                },
+                "bindings": {
+                    "value": {"<-": "@aliasNestedRepetitionIteration:i.object + '-' + @aliasNestedRepetitionIteration:j.object"}
+                }
+            },
+
+            "aliasChainedRepetitionIteration": {
+                "prototype": "ui/repetition/alias-chained-repetition-iteration.reel",
+                "properties": {
+                    "element": {"#": "aliasChainedRepetitionIteration"}
+                }
+            },
+
+            "text120": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "text120"}
+                },
+                "bindings": {
+                    "value": {"<-": "@aliasChainedRepetitionIteration:i.object"}
+                }
+            },
+
+            "aliasMixedRepetitionIteration": {
+                "prototype": "ui/repetition/alias-mixed-repetition-iteration.reel",
+                "properties": {
+                    "element": {"#": "aliasMixedRepetitionIteration"}
+                }
+            },
+
+            "aliasMixedRepetitionIterationText": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "aliasMixedRepetitionIterationText"}
+                },
+                "bindings": {
+                    "value": {"<-": "@aliasMixedRepetitionIteration:inner.object"}
+                }
+            },
+
+            "aliasMixedRepetitionIterationHeader": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "aliasMixedRepetitionIterationHeader"}
+                },
+                "bindings": {
+                    "value": {"<-": "@aliasMixedRepetitionIteration:header.object"}
+                }
             }
 
     }</script>
@@ -719,6 +797,31 @@ POSSIBILITY OF SUCH DAMAGE.
                 <span data-montage-id="textInSubstitution" class="textInSubstitution"></span>
             </div>
         </div>
+    </div>
+
+    <h2>Template Properties Alias - repetition iteration</h2>
+
+    <div data-montage-id="aliasRepetitionIteration" class="aliasRepetitionIteration">
+        <div data-montage-id="text100" class="text100"></div>
+    </div>
+
+    <h2>Template Properties Alias - repetition nested iteration</h2>
+
+    <div data-montage-id="aliasNestedRepetitionIteration" class="aliasNestedRepetitionIteration">
+        <div data-montage-id="text110" class="text110"></div>
+    </div>
+
+    <h2>Template Properties Alias - chained alias</h2>
+
+    <div data-montage-id="aliasChainedRepetitionIteration" class="aliasChainedRepetitionIteration">
+        <div data-montage-id="text120" class="text120"></div>
+    </div>
+
+    <h2>Template Properties Alias - alias used, defined and instantiated in different places</h2>
+
+    <div data-montage-id="aliasMixedRepetitionIteration" class="aliasMixedRepetitionIteration">
+        <span data-arg="inner" data-montage-id="aliasMixedRepetitionIterationText" class="innerText"></span>
+        <span data-arg="header" data-montage-id="aliasMixedRepetitionIterationHeader" class="header"></span>
     </div>
 
 </body>
