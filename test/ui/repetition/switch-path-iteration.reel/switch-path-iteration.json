@@ -9,10 +9,10 @@
         "prototype": "montage/ui/repetition.reel",
         "properties": {
             "element": {"#": "repetition"},
-            "switchPath": "isAdmin ? 'admin' : 'user'",
+            "switchPath": "object.isAdmin ? 'admin' : 'user'",
             "content": [
-                {"name": "John"},
-                {"name": "Mary"}
+                {"name": "John", "isAdmin": true},
+                {"name": "Mary", "isAdmin": false}
             ]
         }
     },
@@ -20,8 +20,7 @@
     "admin": {
         "prototype": "montage/ui/text.reel",
         "properties": {
-            "element": {"#": "admin"},
-            "isAdmin": true
+            "element": {"#": "admin"}
         },
         "bindings": {
             "value": {"<-": "@repetition.objectAtCurrentIteration.name"}
@@ -31,8 +30,7 @@
     "user": {
         "prototype": "montage/ui/text.reel",
         "properties": {
-            "element": {"#": "user"},
-            "isAdmin": false
+            "element": {"#": "user"}
         },
         "bindings": {
             "value": {"<-": "@repetition.objectAtCurrentIteration.name"}
