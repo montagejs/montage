@@ -13,6 +13,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
     constructor: {
         value: function FlowTranslateComposer() {
             this.super();
+            this.handleMousewheel = this.handleWheel;
         }
     },
 
@@ -315,21 +316,22 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
     // TODO doc
     /**
      */
-    handleMousewheel: {
+    handleWheel: {
         value: function(event) {
             var self = this;
 
             // If this composers' component is claiming the "wheel" pointer then handle the event
             if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this.component)) {
-                var oldPageY = this._pageY;
+                var oldPageY = this._pageY,
+                    deltaY = event.wheelDeltaY || -event.deltaY || 0;
 
                 if (this.translateStrideX) {
                     window.clearTimeout(this._mousewheelStrideTimeout);
-                    if ((this._mousewheelStrideTimeout === null) || (Math.abs(event.wheelDeltaY) > Math.abs(this._previousDeltaY * (this._mousewheelStrideTimeout === null ? 2 : 4)))) {
-                        if (event.wheelDeltaY > 1) {
+                    if ((this._mousewheelStrideTimeout === null) || (Math.abs(deltaY) > Math.abs(this._previousDeltaY * (this._mousewheelStrideTimeout === null ? 2 : 4)))) {
+                        if (deltaY > 1) {
                             this.callDelegateMethod("previousStride", this);
                         } else {
-                            if (event.wheelDeltaY < -1) {
+                            if (deltaY < -1) {
                                 this.callDelegateMethod("nextStride", this);
                             }
                         }
@@ -338,7 +340,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                         self._mousewheelStrideTimeout = null;
                         self._previousDeltaY = 0;
                     }, 70);
-                    self._previousDeltaY = event.wheelDeltaY;
+                    self._previousDeltaY = deltaY;
                     if (this._shouldPreventDefault(event)) {
                         event.preventDefault();
                     }
@@ -346,7 +348,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     if (this._translateEndTimeout === null) {
                         this._dispatchTranslateStart();
                     }
-                    this._pageY = this._pageY + ((event.wheelDeltaY * 20) / 100);
+                    this._pageY = this._pageY + ((deltaY * 20) / 100);
                     this._updateScroll();
                     this._dispatchTranslate();
                     window.clearTimeout(this._translateEndTimeout);
