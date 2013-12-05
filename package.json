@@ -10,6 +10,9 @@
   "overlay": {
     "browser": {
       "main": "core/core",
+      "redirects": {
+        "montage": "core/core"
+      },
       "mappings": {
         "mr": {
           "name": "mr",
@@ -30,7 +33,7 @@
   },
   "devDependencies": {
     "montage-testing": "~0.2.0",
-    "mr": "~0.13.0",
+    "mr": "~0.14.2",
     "q": "0.9.6",
     "q-io": "~1.7.2",
     "jshint": "~2.0.1"

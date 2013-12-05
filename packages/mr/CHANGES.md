@@ -1,3 +1,26 @@
+### 0.14.2
+
+ - Use overlays in config given to `loadPackage`.
+
+### 0.14.1
+
+ - Correct extension detection
+
+## 0.14.0
+
+ - Remove support for `directories` `package.json` property. Node ignores the
+   property, and continuing to support it breaks compatibility
+ - Remove support for package reflexive module names
+ - Fix main linkage for relative identifiers. Previously, a package with a
+   `main` property that started with "./" would be linked incorrectly.
+ - Fix loading of modules with a `.min.js` extension
+ - Don't block XHR for the `file:` protocol. Firefox and Safari allow it as
+   long as requests remain within the HTML page's directory.
+ - Add support for the `browser` property in `package.json`, as pioneered by
+   Browserify
+ - Add "sandbox", to inject dependencies into a module. Require with
+   `require("mr/sandbox")`
+
 ### 0.13.4
 
  - Update Q from v0.9.6 to v0.9.7
