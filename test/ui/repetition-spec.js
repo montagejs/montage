@@ -974,6 +974,13 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                 expect(element).toBeDefined();
                 expect(element.textContent).toBe("PASS");
             });
+
+            it("should iterate through content", function() {
+                var admin = querySelector("#switch-path-admin");
+                var user = querySelector("#switch-path-user");
+                expect(admin.textContent).toBe("John");
+                expect(user.textContent).toBe("Mary");
+            });
         });
 
         describe("repetition within a substitution", function () {

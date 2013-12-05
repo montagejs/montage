@@ -1041,7 +1041,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     _createIteration: {
         value: function () {
             var self = this,
-                switchPath,
                 iteration;
 
             iteration = new this.Iteration().initWithRepetition(this);
@@ -1058,10 +1057,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                     if (!iteration.object) {
                         console.warn('No iteration.object', iteration.object);
                     }
-                    switchPath = Montage.getPath.call(iteration.object, self.switchPath);
+                    switchPath = iteration.getPath(self.switchPath);
                     var element = self._getDomArgument(self.element, switchPath);
                     if (!element) {
-                        throw new Error("Cannot find " + JSON.stringify(switchPath) + ""); // TODO: better error message
+                        throw new Error("Cannot find " + JSON.stringify(switchPath)); // TODO: better error message
                     }
                     self._iterationTemplate = self.innerTemplate.createTemplateFromDomElement(element);
                     self._iterationTemplate.setInstances(self.innerTemplate._instances);
@@ -1091,14 +1090,14 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                         self.constructIteration(iteration);
                     }).done();
                     self.currentIteration = null;
-                })
+                });
 
                 promise.done(); // radiate an error if necessary
                 return promise.then(null, function () {
                     // but regardless of whether this iteration failed, allow
                     // another iteration to be created
                 });
-            })
+            });
 
             this._requestedIterations++;
             return iteration;
