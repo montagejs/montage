@@ -21,6 +21,8 @@ require("core/extras/function");
 require("core/extras/regexp");
 require("core/extras/string");
 
+var deprecate = require("core/deprecate");
+
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
     PROTO = "__proto__",
@@ -57,48 +59,10 @@ var CONSTRUCTOR_COMPATIBILITY = true;
 var Montage = exports.Montage = function Montage() {};
 
 // to monkey patch a method on an object
-Montage.deprecate = function deprecate(scope, deprecatedFunction, name, alternative) {
-    var deprecationWrapper = function () {
-        var depth = Error.stackTraceLimit;
-        Error.stackTraceLimit = 2;
-        if (typeof console !== "undefined" && typeof console.warn === "function") {
-            if(alternative) {
-                console.warn(name + " is deprecated, use " + alternative + " instead.", new Error("").stack);
-            } else {
-                //name is a complete message
-                console.warn(name, new Error("").stack);
-            }
-
-        }
-        Error.stackTraceLimit = depth;
-        return deprecatedFunction.apply(scope ? scope : this, arguments);
-    };
-    deprecationWrapper.deprecatedFunction = deprecatedFunction;
-    return deprecationWrapper;
-}
+Montage.deprecate = deprecate.deprecateMethod;
 
 // too call a function immediately and log a deprecation warning
-Montage.callDeprecatedFunction = function callDeprecatedFunction(scope, callback, name, alternative/*, ...args */) {
-    var depth = Error.stackTraceLimit,
-        scopeName,
-        args;
-
-    Error.stackTraceLimit = 2;
-    if (typeof console !== "undefined" && typeof console.warn === "function") {
-        scopeName = Montage.getInfoForObject(scope).objectName;
-
-        if(alternative) {
-            console.warn(name + " is deprecated, use " + alternative + " instead.", scopeName);
-        } else {
-            //name is a complete message
-            console.warn(name, scopeName);
-        }
-
-    }
-    Error.stackTraceLimit = depth;
-    args = Array_prototype.slice.call(arguments, 4);
-    return callback.apply(scope ? scope : this, args);
-};
+Montage.callDeprecatedFunction = deprecate.callDeprecatedFunction;
 
 var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;
 var PROTO_PROPERTIES_BLACKLIST = {"_montage_metadata": 1, "__state__": 1};
