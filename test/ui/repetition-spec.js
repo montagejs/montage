@@ -967,6 +967,34 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                 });
             });
         });
+        describe("objectAtCurrentIteration property", function () {
+            it("should be still working", function () {
+                var elements = querySelectorAll(".objectAtCurrentIteration");
+                expect(elements.length).toBe(1);
+            });
+            it("should cause a deprecation warning", function () {
+                var repetition = querySelectorAll(".repetitionWithObjectAtCurrentIteration")[0].component;
+                expectConsoleCallsFrom(function () {
+                    repetition.observeProperty("objectAtCurrentIteration", Function.noop, Function.noop );
+                }, testPage.window, "warn").toHaveBeenCalledWith("objectAtCurrentIteration is deprecated, use :iteration.object instead.", "");
+            });
+        });
+        describe("contentAtCurrentIteration property", function () {
+            it("should cause a deprecation warning", function () {
+                var repetition = querySelectorAll(".repetitionWithObjectAtCurrentIteration")[0].component;
+                expectConsoleCallsFrom(function () {
+                    repetition.observeProperty("contentAtCurrentIteration", Function.noop, Function.noop );
+                }, testPage.window, "warn").toHaveBeenCalledWith("contentAtCurrentIteration is deprecated, use :iteration.object instead.", "");
+            });
+        });
+        describe("currentIteration property", function () {
+            it("should cause a deprecation warning", function () {
+                var repetition = querySelectorAll(".repetitionWithObjectAtCurrentIteration")[0].component;
+                expectConsoleCallsFrom(function () {
+                    repetition.observeProperty("currentIteration", Function.noop, Function.noop );
+                }, testPage.window, "warn").toHaveBeenCalledWith("currentIteration is deprecated, use :iteration instead.", "");
+            });
+        });
 
         describe("repetition within a substitution", function () {
             it("should see elements from the repetition inside the substitution", function () {

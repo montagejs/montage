@@ -10,6 +10,8 @@ var Promise = require("core/promise").Promise;
 var Map = require("collections/map");
 var Set = require("collections/set");
 
+var deprecationWarning = require("../../core/deprecate").deprecationWarning
+
 var Observers = require("frb/observers");
 var observeProperty = Observers.observeProperty;
 var observeKey = Observers.observeKey;
@@ -565,12 +567,14 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * repetition to bind its parent repetition's `currentIteration` to a
      * property of itself so its children can access their grandparent.
      * @type {Iteration}
+     * @deprecated
      */
     currentIteration: {value: null},
 
     /**
      * The user may bind the the `currentIteration.object` with this shorthand.
      * @type {Object}
+     * @deprecated
      */
     objectAtCurrentIteration: {value: null},
 
@@ -1123,6 +1127,11 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     observeProperty: {
         value: function (key, emit, scope) {
             if (key === "contentAtCurrentIteration" || key === "objectAtCurrentIteration") {
+                if (key === "contentAtCurrentIteration") {
+                    deprecationWarning("contentAtCurrentIteration",":iteration.object");
+                } else if (key === "objectAtCurrentIteration"){
+                    deprecationWarning("objectAtCurrentIteration",":iteration.object");
+                }
                 // delegate to the mapping from iterations to content for the
                 // current iteration
                 return observeKey(
@@ -1132,6 +1141,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                     scope
                 );
             } else if (key === "currentIteration") {
+                deprecationWarning("currentIteration",":iteration");
                 // Shortcut since this property is sticky -- won't change in
                 // the course of instantiating an iteration and should not
                 // dispatch a change notification when we instantiate the next.
