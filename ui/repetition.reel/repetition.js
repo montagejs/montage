@@ -1058,7 +1058,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                         console.warn('No iteration.object', iteration.object);
                     }
                     switchPath = iteration.getPath(self.switchPath);
-                    var element = self._getDomArgument(self.element, switchPath);
+                    var element = self._getTemplateDomArgument(switchPath);
                     if (!element) {
                         throw new Error("Cannot find " + JSON.stringify(switchPath)); // TODO: better error message
                     }
