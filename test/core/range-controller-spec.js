@@ -154,6 +154,15 @@ describe("core/range-controller-spec", function() {
                     rangeController.selection.splice(0, 100);
                     expect(rangeController.selection.toArray()).toEqual([0]);
                 });
+
+                it("does not have an empty selection when selected content is removed", function () {
+                    rangeController.multiSelect = false;
+                    rangeController.selection = [0];
+
+                    rangeController.content.delete(0);
+                    expect(rangeController.selection.length).toBe(1);
+                    expect(rangeController.selection.toArray()).not.toEqual([0]);
+                });
             });
 
             describe("when false", function () {
@@ -283,6 +292,30 @@ describe("core/range-controller-spec", function() {
             })).toBe(true);
         });
 
+    });
+
+    describe("When content has a custom contentEquals", function () {
+        beforeEach(function () {
+            var content = [0, 1, 2];
+            content.contentEquals = function(){ return true; };
+            expect(content.find(42)).toBe(0);
+
+            rangeController = RangeController.create().initWithContent(content);
+            rangeController.multiSelect = true;
+            rangeController.selection = [0];
+
+            expect(rangeController.selection.toArray()).toEqual([0]);
+        });
+
+        it("should not allow duplicates according to the custom contentEquals", function () {
+            rangeController.selection.add(1);
+            expect(rangeController.selection.toArray()).toEqual([0]);
+        });
+
+        it("should check of selection is in content using the custom contentEquals", function () {
+            rangeController.selection.splice(0, 1, 42);
+            expect(rangeController.selection.toArray()).toEqual([42]);
+        });
     });
 
 });

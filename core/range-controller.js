@@ -34,6 +34,7 @@ var RangeSelection = function(content, rangeController) {
     var self = content.clone();
     self.makeObservable();
     self.rangeController = rangeController;
+    self.contentEquals = content.contentEquals || Object.is;
 
     /**
      * @method splice
@@ -45,19 +46,39 @@ var RangeSelection = function(content, rangeController) {
      *  - if rC.multiSelect is false, only allow one item in set.
      *  - if rC.avoidsEmtySelection is true, require at least one item in set.
      *  - only add items that are present in rC.content
-     *  - enforce uniqueness of items
+     *  - enforce uniqueness of items according to the contentEquals of the content
      */
     var oldSplice = self.splice;
     Object.defineProperty(self, "splice", {
         configurable: false,
         value: function(start, howMany) {
+            this.contentEquals = this.rangeController.content.contentEquals || Object.is;
             start = start >= 0 ? start : this.length + start;
-            var plus = [].slice.call(arguments, 2).filter(function(item){
-                return this.has(item);
-            }, this.rangeController.content || []);
-            // TODO: enforce uniqueness, somehow?
             var oldLength = this.length;
             var minusLength = Math.min(howMany, oldLength - start);
+
+            var plusCandidates = [].slice.call(arguments, 2);
+            plusCandidates.contentEquals = this.contentEquals;
+
+            var plus = plusCandidates.filter(function(item, index){
+                // do not add items to the selection if they aren't in content
+                if (!this.rangeController.content.has(item)) {
+                    return false;
+                }
+
+                // if the same item appears twice in the add list, only add it once
+                if (plusCandidates.findLast(item) > index) {
+                    return false;
+                }
+
+                // if the item is already in the selection, don't add it
+                // unless it's in the part that we're about to delete.
+                var indexInSelection = this.find(item);
+                return indexInSelection < 0 ||
+                        (indexInSelection >= start && indexInSelection < start + minusLength);
+
+            }, this);
+
             var plusLength = Math.max(plus.length, 0);
             var diffLength = plusLength - minusLength;
             var newLength = Math.max(oldLength + diffLength, start + plusLength);
@@ -68,7 +89,12 @@ var RangeSelection = function(content, rangeController) {
                 var last = plusLength ? plus[plusLength-1] : this.one();
                 args = [0, oldLength, last];
             } else if (this.rangeController.avoidsEmptySelection && newLength === 0) {
-                args = [1, howMany];
+                // use the first item in the selection, unless it is no longer in the content
+                if (this.rangeController.content.has(this[0])) {
+                    args = [1, this.length-1];
+                } else {
+                    args = [0, this.length, this.rangeController.content.one()];
+                }
             } else {
                 args = [start, howMany].concat(plus);
             }
