@@ -318,4 +318,12 @@ describe("core/range-controller-spec", function() {
         });
     });
 
+    describe("swap", function () {
+        it("should accept an array of added items, rather than being variadic.", function () {
+            rangeController.content = [1, 2];
+            rangeController.swap(1, 1, [3, 4]);
+            expect(rangeController.content).toEqual([1, 3, 4]);
+        });
+    });
+
 });
