@@ -515,9 +515,11 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      */
     swap: {
         value: function (index, length, values) {
-            var result = this.content.splice.apply(this.content, values);
-            for (var index = 2; index < values.length; index++) {
-                this.handleAdd(values[index]);
+            var result = this.content.swap.apply(this.content, arguments);
+            if (values) {
+                for (var index = 2; index < values.length; index++) {
+                    this.handleAdd(values[index]);
+                }
             }
             return result;
         }
