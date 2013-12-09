@@ -1,3 +1,10 @@
+### v0.13.9
+
+-  **Montage**
+
+   Fix issue that was causing, at times, a component to enter the document
+   before its stylesheets were completely loaded.
+
 ### v0.13.8
 
 -  **Montage**
