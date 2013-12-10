@@ -136,14 +136,8 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
         }
     },
 
-    /**
-     * Handle press event from press composer.
-     * @private
-     */
-    handlePress: {
-        value: function(/* event */) {
-            this.active = false;
-
+    check: {
+        value: function() {
             if (!this.enabled || this.checked) {
                 return;
             }
@@ -154,8 +148,18 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
     },
 
     /**
-     * Called when all interaction is over.
-     * @private
+     Handle press event from press composer
+     */
+    handlePress: {
+        value: function(/* event */) {
+            this.active = false;
+            this.check();
+        }
+    },
+
+    /**
+     Called when all interaction is over.
+     @private
      */
     handlePressCancel: {
         value: function(/* event */) {
@@ -170,7 +174,11 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
             this._pressComposer.addEventListener("press", this, false);
             this._pressComposer.addEventListener("pressCancel", this, false);
         }
+    },
+
+    activate: {
+        value: function() {
+            this.check();
+        }
     }
-
 });
-

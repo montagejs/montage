@@ -1,0 +1,85 @@
+{
+    "target_property": {
+        "prototype": "core/meta/association-blueprint",
+        "properties": {
+            "name": "target",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object",
+            "targetBlueprint": {
+                "@": "component_reference"
+            }
+        }
+    },
+    "action_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "action",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "string"
+        }
+    },
+    "component_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Component",
+                "prototypeName": "Component",
+                "blueprintModule": {
+                    "%": "ui/component.meta"
+                }
+            }
+        }
+    },
+    "text_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Text",
+                "prototypeName": "Text",
+                "blueprintModule": {
+                    "%": "ui/text.reel/text.meta"
+                }
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "Label",
+            "customPrototype": false,
+            "parent": {
+                "@": "text_reference"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "target_property"
+                },
+                {
+                    "@": "action_property"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "Label": [
+                    {
+                        "@": "target_property"
+                    },
+                    {
+                        "@": "action_property"
+                    }
+                ]
+            },
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "ui/label.reel/label.meta"
+            },
+            "exportName": "Label",
+            "module": {
+                "%": "ui/label.reel"
+            }
+        }
+    }
+}
