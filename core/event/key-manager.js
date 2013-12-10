@@ -460,7 +460,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                     identifierCode = KEYNAMES_TO_KEYCODES[event.keyIdentifier.toLowerCase()] ||
                         this._decodeKeyIdentifier(event.keyIdentifier);
                     if (identifierCode && identifierCode !== keyCode && submap[identifierCode]) {
-                        this._dispatchComposerKeyMatches(submap[identifierCode], event);
+                        this._dispatchComposerKeyMatches(submap[identifierCode].slice(), event);
                     }
                 }
             }
