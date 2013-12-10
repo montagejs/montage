@@ -58,7 +58,8 @@ exports.BlueprintReference = RemoteReference.specialize( {
 
             return binderPromise.then(function(binder) {
                 if (binder) {
-                    return BlueprintModule.Blueprint.getBlueprintWithModuleId(blueprintModule.id, blueprintModule.require).then(function (blueprint) {
+                    var ModuleBlueprintModule = require("core/meta/module-blueprint");
+                    return ModuleBlueprintModule.ModuleBlueprint.getBlueprintWithModuleId(blueprintModule.id, blueprintModule.require).then(function (blueprint) {
                         if (blueprint) {
                             binder.addBlueprint(blueprint);
                             return blueprint;
