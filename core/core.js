@@ -21,7 +21,7 @@ require("core/extras/function");
 require("core/extras/regexp");
 require("core/extras/string");
 
-var deprecate = require("core/deprecate");
+var deprecate = require("./deprecate");
 
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
@@ -59,10 +59,10 @@ var CONSTRUCTOR_COMPATIBILITY = true;
 var Montage = exports.Montage = function Montage() {};
 
 // to monkey patch a method on an object
-Montage.deprecate = deprecate.deprecateMethod;
+Montage.deprecate = deprecate.deprecateMethod(Montage, deprecate.deprecateMethod, "Montage.deprecate", "deprecate module's deprecateMethod");
 
 // too call a function immediately and log a deprecation warning
-Montage.callDeprecatedFunction = deprecate.callDeprecatedFunction;
+Montage.callDeprecatedFunction = deprecate.deprecateMethod(Montage, deprecate.callDeprecatedFunction, "Montage.callDeprecatedFunction", "deprecate module's callDeprecatedFunction");
 
 var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;
 var PROTO_PROPERTIES_BLACKLIST = {"_montage_metadata": 1, "__state__": 1};
@@ -164,8 +164,8 @@ Object.defineProperty(Montage, "specialize", {
             constructorProperty = function(original, constructor, propertyName) {
                 function deprecationWrapper() {
                     if(this === constructor) {
-                        console.warn("Deprecated - " + Montage.getInfoForObject(constructor).objectName + "."
-                            + propertyName + " should be moved to constructorProperties");
+                        deprecate.deprecationWarning(Montage.getInfoForObject(constructor).objectName + "."
+                            + propertyName + " should be moved to constructorProperties", null, 3);
                     }
                     return original.apply(this, arguments);
                 }

@@ -11,6 +11,7 @@
  * @param {Number} [stackTraceLimit] - depth of the stack trace to print out. Set to falsy value to disable stack.
  */
 var deprecationWarning = exports.deprecationWarning = function deprecationWarning(name, alternative, stackTraceLimit) {
+    stackTraceLimit = stackTraceLimit === true ? 2 : stackTraceLimit;
     if (stackTraceLimit) {
         var depth = Error.stackTraceLimit;
         Error.stackTraceLimit = stackTraceLimit;

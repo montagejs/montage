@@ -18,6 +18,7 @@ var AssociationBlueprint = require("core/meta/association-blueprint").Associatio
 var DerivedPropertyBlueprint = require("core/meta/derived-property-blueprint").DerivedPropertyBlueprint;
 var EventBlueprint = require("core/meta/event-blueprint").EventBlueprint;
 var PropertyValidationRule = require("core/meta/validation-rule").PropertyValidationRule;
+var deprecate = require("../deprecate");
 
 var logger = require("core/logger").logger("blueprint");
 
@@ -64,7 +65,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      * @returns itself
      */
     initWithNameAndModuleId: {
-        value: Montage.deprecate(void 0, function (name) {
+        value: deprecate.deprecateMethod(void 0, function (name) {
             return this.initWithName(name);
         }, "Blueprint#initWithNameAndModuleId", "ModuleBlueprint#initWithModuleAndExportName")
     },
@@ -928,7 +929,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 }, {
 
     getBlueprintWithModuleId: {
-        value: Montage.deprecate(void 0, function (moduleId, _require) {
+        value: deprecate.deprecateMethod(void 0, function (moduleId, _require) {
             return require("./module-blueprint").ModuleBlueprint.getBlueprintWithModuleId(moduleId, _require);
         }, "Blueprint.getBlueprintWithModuleId", "ModuleBlueprint.getBlueprintWithModuleId")
     },
