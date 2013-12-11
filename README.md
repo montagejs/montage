@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/montagejs/mr.png?branch=master)](http://travis-ci.org/montagejs/mr)
+
 Montage Require
 ===============
 

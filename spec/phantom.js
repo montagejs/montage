@@ -5,7 +5,7 @@ var spawn = require("child_process").spawn;
 var util = require("util");
 
 var Q = require("q");
-var wd = require("wd");
+var phantom = require("phantom-wd");
 var joey = require("joey");
 var Apps = require("q-io/http-apps");
 
@@ -56,12 +56,6 @@ if (COVERAGE) {
 var TESTS_FAILED = {};
 var POLL_TIME = 250;
 
-var phantom = spawn("phantomjs", ["--webdriver=127.0.0.1:8910"], {
-    stdio: "inherit"
-});
-
-var browser = wd.promiseRemote("127.0.0.1", 8910);
-
 var server = joey
 .error(true)
 .app(fileTree(PATH.resolve(__dirname, "..")))
@@ -73,77 +67,71 @@ var testPagePort = server.node.address().port;
 var testPageUrl = "http://127.0.0.1:" + testPagePort + "/spec/run.html";
 console.log("Test page at " + testPageUrl);
 
-// wait for Ghost Driver to start running
-Q.delay(2000)
-.then(function () {
-    return browser.init();
-})
-.then(function () {
-    return browser.get(testPageUrl);
-})
-.then(function () {
-    var done = Q.defer();
+// Start PhantomJS webdriver
+phantom()
+.then(function (browser) {
+    return browser.get(testPageUrl)
+    .then(function () {
+        var done = Q.defer();
 
-    var poll = function() {
-        browser.execute("return typeof jsApiReporter !== 'undefined' ? jsApiReporter.finished : false").then(function (isFinished) {
-            if (isFinished) {
-                done.resolve();
-            } else {
-                setTimeout(poll, POLL_TIME);
-            }
-        }, done.reject);
-    };
-    poll();
+        var poll = function() {
+            browser.execute("return typeof jsApiReporter !== 'undefined' ? jsApiReporter.finished : false").then(function (isFinished) {
+                if (isFinished) {
+                    done.resolve();
+                } else {
+                    setTimeout(poll, POLL_TIME);
+                }
+            }, done.reject);
+        };
+        poll();
 
-    return done.promise;
-})
-.then(function () {
-    return browser.execute("return [jsApiReporter.suites(), jsApiReporter.results()]");
-})
-.spread(function (suites, results) {
-    var info = log(suites, results);
+        return done.promise;
+    })
+    .then(function () {
+        return browser.execute("return [jsApiReporter.suites(), jsApiReporter.results()]");
+    })
+    .spread(function (suites, results) {
+        var info = log(suites, results);
 
-    if (info.failures.length) {
-        console.log("\nFailures:\n");
-        console.log(info.failures.join("\n\n"));
-    }
+        if (info.failures.length) {
+            console.log("\nFailures:\n");
+            console.log(info.failures.join("\n\n"));
+        }
 
-    var msg = '';
-        msg += info.specsCount + ' test' + ((info.specsCount === 1) ? '' : 's') + ', ';
-        msg += info.totalCount + ' assertion' + ((info.totalCount === 1) ? '' : 's') + ', ';
-        msg += info.failedCount + ' failure' + ((info.failedCount === 1) ? '' : 's');
+        var msg = '';
+            msg += info.specsCount + ' test' + ((info.specsCount === 1) ? '' : 's') + ', ';
+            msg += info.totalCount + ' assertion' + ((info.totalCount === 1) ? '' : 's') + ', ';
+            msg += info.failedCount + ' failure' + ((info.failedCount === 1) ? '' : 's');
 
-    console.log();
-    console.log(msg);
+        console.log();
+        console.log(msg);
 
-    if (info.failures.length) {
-        throw TESTS_FAILED;
-    }
-})
-.then(function () {
-    if (!COVERAGE) {
-        return;
-    }
+        if (info.failures.length) {
+            throw TESTS_FAILED;
+        }
+    })
+    .then(function () {
+        if (!COVERAGE) {
+            return;
+        }
 
-    return browser.execute("return window.__coverage__")
-    .then(function (coverage) {
-        var reporter = istanbul.Report.create("lcov");
-        var collector = new istanbul.Collector();
+        return browser.execute("return window.__coverage__")
+        .then(function (coverage) {
+            var reporter = istanbul.Report.create("lcov");
+            var collector = new istanbul.Collector();
 
-        collector.add(coverage);
+            collector.add(coverage);
 
-        console.log("Writing coverage reports.");
-        reporter.writeReport(collector);
+            console.log("Writing coverage reports.");
+            reporter.writeReport(collector);
+        });
+    })
+    .finally(function () {
+        server.stop();
+    })
+    .finally(function () {
+        return browser.quit();
     });
-})
-.finally(function () {
-    server.stop();
-})
-.finally(function () {
-    return browser.quit();
-})
-.finally(function () {
-    phantom.kill();
 })
 .fail(function (err) {
     if (err === TESTS_FAILED) {
