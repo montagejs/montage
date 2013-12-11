@@ -354,7 +354,10 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
          * maintain the complicated invariants about what the selection can be.
          */
         set: function (collection) {
-            var args = [0, this._selection.length].concat(collection.toArray());
+            var args = [0, this._selection.length];
+            if (collection && collection.toArray) {
+                args = args.concat(collection.toArray());
+            }
             this._selection.splice.apply(this._selection, args);
         }
     },
