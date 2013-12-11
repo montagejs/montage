@@ -66,7 +66,6 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
      */
     keys: {
         get: function() {
-            console.log(this._keys);
             return this._keys;
         },
         set: function(keys) {
