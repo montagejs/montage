@@ -62,6 +62,7 @@
         config.paths = config.paths || [config.location];
         config.mappings = config.mappings || {}; // EXTENSION
         config.exposedConfigs = config.exposedConfigs || Require.exposedConfigs;
+        config.moduleTypes = config.moduleTypes || [];
         config.makeLoader = config.makeLoader || Require.makeLoader;
         config.load = config.load || config.makeLoader(config);
         config.makeCompiler = config.makeCompiler || Require.makeCompiler;
@@ -835,7 +836,11 @@
         return function (id, module) {
             var path = id;
             var extension = Require.extension(id);
-            if (!extension || extension === "min") {
+            if (!extension || (
+                extension !== "js" &&
+                extension !== "json" &&
+                config.moduleTypes.indexOf(extension) === -1
+            )) {
                 path += ".js";
             }
             var location = URL.resolve(config.location, path);

@@ -1,3 +1,10 @@
+## 0.15.0
+
+ - Added `moduleTypes` config parameter so that all loadable extensions are
+   known. This fixes a bug where modules with a "." in them would not be loaded
+   as JavaScript modules. When implementing a custom extension loader you must
+   add the extension to the `config.moduleTypes` array when loading a package.
+
 ### 0.14.2
 
  - Use overlays in config given to `loadPackage`.
