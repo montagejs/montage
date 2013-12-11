@@ -1045,7 +1045,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
             iteration = new this.Iteration().initWithRepetition(this);
 
-
             this._iterationCreationPromise = this._iterationCreationPromise
             .then(function() {
                 var _document = self.element.ownerDocument,
@@ -1058,11 +1057,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                         console.warn('No iteration.object', iteration.object);
                     }
                     switchPath = iteration.getPath(self.switchPath);
-                    var element = self._getTemplateDomArgument(switchPath);
-                    if (!element) {
-                        throw new Error("Cannot find " + JSON.stringify(switchPath)); // TODO: better error message
-                    }
-                    self._iterationTemplate = self.innerTemplate.createTemplateFromDomElement(element);
+                    self._iterationTemplate = self._getIterationTemplateBySwitchPath(switchPath);
                     self._iterationTemplate.setInstances(self.innerTemplate._instances);
                 }
 
@@ -1103,6 +1098,31 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             return iteration;
         }
     },
+
+    /**
+     * @param {string} switchPath
+     * @returns Template
+     * @private
+     */
+    _getIterationTemplateBySwitchPath: {
+        value: function(switchPath) {
+            if (!this._switchPathCache.hasOwnProperty(switchPath)) {
+                var element = this._getTemplateDomArgument(switchPath);
+                if (!element) {
+                    throw new Error("Cannot find " + JSON.stringify(switchPath)); // TODO: better error message
+                }
+                this._switchPathCache[switchPath] = this.innerTemplate.createTemplateFromDomElement(element)
+            }
+
+            return this._switchPathCache[switchPath];
+        }
+    },
+
+    /**
+     * @type {Object.<string, Template>}
+     * @private
+     */
+    _switchPathCache: {value: {}},
 
     /**
      * @private
