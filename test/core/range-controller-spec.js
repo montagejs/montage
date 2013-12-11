@@ -15,6 +15,18 @@ describe("core/range-controller-spec", function() {
             it("TODO should allow new item if duplicate deleted in same splice");
         });
 
+        it("should allow setting selection to null/undefined", function () {
+            rangeController.selection = [1];
+            expect(rangeController.selection.length).toBe(1);
+            rangeController.selection = undefined;
+            expect(rangeController.selection.length).toBe(0);
+
+            rangeController.selection = [1];
+            expect(rangeController.selection.length).toBe(1);
+            rangeController.selection = null;
+            expect(rangeController.selection.length).toBe(0);
+        });
+
         describe("constrained to content", function() {
             it("should allow selection if subset of content", function() {
                 rangeController.selection.add(1);
