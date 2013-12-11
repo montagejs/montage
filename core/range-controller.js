@@ -34,7 +34,7 @@ var RangeSelection = function(content, rangeController) {
     var self = content.clone();
     self.makeObservable();
     self.rangeController = rangeController;
-    self.contentEquals = content.contentEquals || Object.is;
+    self.contentEquals = content && content.contentEquals || Object.is;
 
     /**
      * @method splice
@@ -52,7 +52,8 @@ var RangeSelection = function(content, rangeController) {
     Object.defineProperty(self, "splice", {
         configurable: false,
         value: function(start, howMany) {
-            this.contentEquals = this.rangeController.content.contentEquals || Object.is;
+            var content = this.rangeController.content;
+            this.contentEquals = content && content.contentEquals || Object.js;
             start = start >= 0 ? start : this.length + start;
             var oldLength = this.length;
             var minusLength = Math.min(howMany, oldLength - start);
@@ -62,7 +63,7 @@ var RangeSelection = function(content, rangeController) {
 
             var plus = plusCandidates.filter(function(item, index){
                 // do not add items to the selection if they aren't in content
-                if (!this.rangeController.content.has(item)) {
+                if (content && !content.has(item)) {
                     return false;
                 }
 
@@ -90,10 +91,10 @@ var RangeSelection = function(content, rangeController) {
                 args = [0, oldLength, last];
             } else if (this.rangeController.avoidsEmptySelection && newLength === 0) {
                 // use the first item in the selection, unless it is no longer in the content
-                if (this.rangeController.content.has(this[0])) {
+                if (content.has(this[0])) {
                     args = [1, this.length-1];
                 } else {
-                    args = [0, this.length, this.rangeController.content.one()];
+                    args = [0, this.length, content.one()];
                 }
             } else {
                 args = [start, howMany].concat(plus);
