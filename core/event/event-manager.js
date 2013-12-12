@@ -104,7 +104,11 @@ var NONE = Event.NONE,
  * @class EventManager
  */
 var EventManager = exports.EventManager = Montage.specialize(/** @lends EventManager# */ {
-
+    constructor: {
+        value: function EventManager() {
+            this.super();
+        }
+    },
     // Utility
     eventDefinitions: {
         // ClipboardEvent http://dev.w3.org/2006/webapi/clipops/clipops.html#event-types-and-details
