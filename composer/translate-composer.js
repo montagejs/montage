@@ -1,15 +1,15 @@
 /*global require,exports */
 /**
-    @module montage/composer/translate-composer
-    @requires montage/core/core
-    @requires montage/composer/composer
-    @requires montage/core/event/event-manager
-*/
+ * @module montage/composer/translate-composer
+ * @requires montage/core/core
+ * @requires montage/composer/composer
+ * @requires montage/core/event/event-manager
+ */
 var Composer = require("composer/composer").Composer,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
 /**
- * Abstracts listening for touch and mouse events representing a drag.  The
+ * Abstracts listening for touch and mouse events representing a drag. The
  * emitted events provide translateX and translateY properties that are updated
  * when the user drags on the given element. Should be used wherever a user
  * interacts with an element by dragging.

@@ -5,7 +5,6 @@
 
 /**
  * @module montage/core/uuid
- * @requires montage/core/core
 */
 
 /**

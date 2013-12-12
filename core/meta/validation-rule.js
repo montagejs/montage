@@ -71,6 +71,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
 
     /**
      * Component description attached to this validation rule.
+     * @type {Blueprint}
      */
     owner: {
         get: function() {
@@ -80,8 +81,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
 
     /**
      * The identifier is the same as the name and is used to make the serialization of a blueprint humane.
-     * @type {Property}
-     * @default {string} this.name
+     * @type {string}
      */
     identifier: {
         get: function() {
@@ -155,7 +155,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
     /*
      * Evaluates the rules based on the blueprint and the properties.
      * @param {Object} object instance to evaluate the rule for
-     * @return true if the rules fires, false otherwise.
+     * @return {boolean} true if the rules fires, false otherwise.
      */
     evaluateRule: {
         value: function(objectInstance) {

@@ -1,6 +1,6 @@
 /**
-    @module montage/core/messageformat
-*/
+ * @module montage/core/messageformat
+ */
 /**
  * messageformat.js
  *

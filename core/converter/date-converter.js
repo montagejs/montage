@@ -1,11 +1,14 @@
- /**
-  * @version: 1.0 Alpha-1
-  * @author: Coolite Inc. http://www.coolite.com/
-  * @date: 2008-04-13
-  * @copyright: Copyright (c) 2006-2008, Coolite Inc. (http://www.coolite.com/). All rights reserved.
-  * @license: Licensed under The MIT License. See license.txt and http://www.datejs.com/license/.
-  * @website: http://www.datejs.com/
-  */
+/**
+ * @version: 1.0 Alpha-1
+ * @author: Coolite Inc. http://www.coolite.com/
+ * @date: 2008-04-13
+ * @copyright: Copyright (c) 2006-2008, Coolite Inc. (http://www.coolite.com/).
+ * All rights reserved.
+ * @license: Licensed under The MIT License. See license.txt and
+ * http://www.datejs.com/license/.
+ * @website: http://www.datejs.com/
+ */
+
 /**
  * @module montage/core/converter/date-converter
  * @requires montage/core/core

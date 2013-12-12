@@ -1,4 +1,5 @@
 "use strict";
+
 /**
  * @module montage/core/meta/binder-reference
  * @requires montage/core/core
@@ -24,8 +25,8 @@ exports.BinderReference = RemoteReference.create(RemoteReference, {
     /**
      * The identifier is the name of the binder and is used to make the
      * serialization of binders more readable.
-     * @type {Property}
-     * @default {string} this.name
+     * @readonly
+     * @type {string}
      */
     identifier: {
         get: function() {

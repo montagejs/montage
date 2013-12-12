@@ -63,8 +63,8 @@ exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends Deri
     },
 
     /**
-     * @type {Property}
-     * @default {boolean} true
+     * @type {boolean}
+     * @default true
      */
     isDerived: {
         get: function() {
@@ -75,8 +75,8 @@ exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends Deri
 
     /**
      * List of property blueprints this derived property blueprint depends on.
-     * @type {Property}
-     * @default {Array} []
+     * @type {Array.<PropertyBlueprint>}
+     * @default []
      */
     dependencies: {
         value: [],
@@ -84,16 +84,14 @@ exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends Deri
     },
 
     /**
-     * @type {Property}
-     * @default null
+     * @type {string}
      */
     getterDefinition: {
         value: Defaults["getterDefinition"]
     },
 
     /**
-     * @type {Property}
-     * @default null
+     * @type {string}
      */
     setterDefinition: {
         value: Defaults["setterDefinition"]

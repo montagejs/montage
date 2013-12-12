@@ -7,11 +7,6 @@ var Montage = require("montage").Montage,
     PressComposer = require("composer/press-composer").PressComposer,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
-/**
-    @class module:Overlay
-    @extends module:Component
-*/
-
 var CLASS_PREFIX = "montage-Overlay";
 
 /*
@@ -24,6 +19,8 @@ var CLASS_PREFIX = "montage-Overlay";
  * class that has a "display: block". A second draw is then forced.
  * On the second draw the element is now measurable and the visibility is set
  * back to "visible". This mechanism is controlled by the _isDisplayed flag.
+ * @class Overlay
+ * @extends Component
  */
 exports.Overlay = Component.specialize( /** @lends Overlay# */ {
 

@@ -1,7 +1,6 @@
 /*global Node,Element,WebKitPoint,webkitConvertPointFromNodeToPage,webkitConvertPointFromPageToNode */
 
 /**
- * Provides DOM
  * @module montage/core/dom
  * @requires montage/core/geometry/point
 */
@@ -241,6 +240,7 @@ var webkitImplementation = function() {
         return point ? new Point().init(point.x, point.y) : null;
     };
 };
+
 var shimImplementation = function() {
     exports.convertPointFromNodeToPage = function(element, point) {
         if (!element || typeof element.x !== "undefined") {
@@ -272,3 +272,4 @@ if (_webKitPoint) {
 } else {
     shimImplementation();
 }
+

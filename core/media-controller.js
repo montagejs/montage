@@ -43,9 +43,6 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
      */
     EMPTY: { value: 3, writable: false },
 
-    /**
-     * @private
-     */
     _TIMEUPDATE_FREQUENCY: { value: 0.25   },  // Don't refresh too often.
 
 
@@ -53,9 +50,6 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
      MARK:   Properties
      -----------------------------------------------------------------------------*/
 
-    /**
-     * @private
-     */
     _mediaController: {
         value: null
     },
@@ -82,14 +76,10 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
         }
     },
 
-
     /*-----------------------------------------------------------------------------
      MARK:   Status & Attributes
      -----------------------------------------------------------------------------*/
 
-    /**
-     * @private
-     */
     _status: {
         value: 3
     },
@@ -111,9 +101,6 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
         }
     },
 
-    /**
-     * @private
-     */
     _position: {
         value: null
     },
@@ -134,9 +121,6 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
         }
     },
 
-    /**
-     * @private
-     */
     _duration: {
         value: null
     },
@@ -249,9 +233,6 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
         }
     },
 
-    /**
-     * @private
-     */
     _playbackRate: {
         value: 1
     },
@@ -450,9 +431,6 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
         }
     },
 
-    /**
-     * @private
-     */
     _lastCurrentTime: {
         value: 0
     },
@@ -589,9 +567,6 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
         }
     },
 
-    /**
-     * @private
-     */
     _installControlEventHandlers: {
         value: function () {
             this.mediaController.addEventListener('loadedmetadata', this);

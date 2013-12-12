@@ -6,7 +6,7 @@ var stringify = require("frb/stringify");
 var evaluate = require("frb/evaluate");
 var precedence = require("frb/language").precedence;
 
-var Selector = exports.Selector = Montage.specialize( {
+var Selector = exports.Selector = Montage.specialize({
 
     syntax: {
         value: null

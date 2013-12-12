@@ -23,11 +23,11 @@ var GenericCollection = require("collections/generic-collection");
 // the same position.
 
 /**
- * @class RangeSelection
  * A `RangeSelection` is a special kind of `Array` that knows about a `RangeController`
- * and maintains invariants about itself relative to the properties of the 
+ * and maintains invariants about itself relative to the properties of the
  * `RangeController`. A `RangeSelection` should only be modified using the `splice`
  * method. Changes by directly using other `Array` methods can break the invariants.
+ * @class RangeSelection
  * @private
  */
 var RangeSelection = function(content, rangeController) {
@@ -106,10 +106,11 @@ var RangeSelection = function(content, rangeController) {
 };
 
 /**
- * @class RangeController
- * @classdesc Manages the selection and visible portion of given content,
- * typically for a [Repetition]{@link Repetition}.
- * @extends Montage
+ * A `RangeController` is responsible for managing "ranged content", typically
+ * an array, but any collection that implements ranged content change dispatch,
+ * `(plus, minus, index)`, would suffice. The controller manages selection and
+ * governs the filtering and ordering of the content. `RangeController` is not
+ * affiliated with a number range input.
  *
  * A `RangeController` receives a `content` collection, manages what portition
  * of that content is visible and the order of its appearance
@@ -130,6 +131,11 @@ var RangeSelection = function(content, rangeController) {
  *
  * The `RangeController` is also responsible for managing which content is
  * selected and provides a variety of knobs for that purpose.
+ *
+ * @class RangeController
+ * @classdesc Manages the selection and visible portion of given content,
+ * typically an Array for for a [Repetition]{@link Repetition}.
+ * @extends Montage
  */
 var RangeController = exports.RangeController = Montage.specialize( /** @lends RangeController# */ {
 

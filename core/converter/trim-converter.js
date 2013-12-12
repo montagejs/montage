@@ -21,6 +21,7 @@ var trim = exports.trim = function(str) {
     // include it in the regexp to enforce consistent cross-browser behavior.
     return str.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
 };
+
 /**
  * @class TrimConverter
  * @classdesc Trims a string of white space.
@@ -34,9 +35,7 @@ var trim = exports.trim = function(str) {
  * // After trim: Hello World
  */
 exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
-    /**
-     * @private
-     */
+
     _convert: {
         value: function(v) {
             if (v && typeof v === 'string') {
@@ -64,6 +63,6 @@ exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
     revert: {value: function(v) {
         return this._convert(v);
     }}
-});
 
+});
 

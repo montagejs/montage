@@ -1,8 +1,8 @@
 /**
-	@module montage/core/geometry/cubic-bezier
-    @requires montage/core/core
-    @requires montage/core/geometry/point
-*/
+ * @module montage/core/geometry/cubic-bezier
+ * @requires montage/core/core
+ * @requires montage/core/geometry/point
+ */
 var Montage = require("montage").Montage;
 var Point = require("core/geometry/point").Point;
 
@@ -10,7 +10,6 @@ var Point = require("core/geometry/point").Point;
  * @class CubicBezier
  * @extends Montage
  */
-
 var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezier# */{
 
     /**

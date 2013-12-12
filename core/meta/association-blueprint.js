@@ -1,9 +1,9 @@
 "use strict";
 /**
- @module montage/core/meta/association-reference
- @requires montage/core/core
- @requires core/promise
- @requires core/logger
+ * @module montage/core/meta/association-reference
+ * @requires montage/core/core
+ * @requires core/promise
+ * @requires core/logger
  */
 var Montage = require("montage").Montage;
 var BlueprintReference = require("core/meta/blueprint-reference").BlueprintReference;
@@ -12,7 +12,7 @@ var PropertyBlueprint = require("core/meta/property-blueprint").PropertyBlueprin
 var logger = require("core/logger").logger("blueprint");
 
 /**
- @class AssociationBlueprint
+ * @class AssociationBlueprint
  */
 exports.AssociationBlueprint = PropertyBlueprint.specialize( /** @lends AssociationBlueprint# */ {
 
@@ -46,8 +46,8 @@ exports.AssociationBlueprint = PropertyBlueprint.specialize( /** @lends Associat
      * **Note**: The setter expects an actual blueprint but the getter will
      * return a promise.
      *
-     * @type {Property}
-     * @default {Object} null
+     * @type {?Blueprint}
+     * @default null
      */
     targetBlueprint: {
         serializable: false,
@@ -60,8 +60,8 @@ exports.AssociationBlueprint = PropertyBlueprint.specialize( /** @lends Associat
     },
 
     /**
-     * @type {Property}
-     * @default {boolean} false
+     * @type {boolean}
+     * @default false
      */
     isAssociationBlueprint: {
         get: function() {
