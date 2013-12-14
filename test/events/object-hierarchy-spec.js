@@ -103,7 +103,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
                     childFoo.addEventListener("bubbleEvent", childFooListener, true);
 
-                    spyOn(childFooListener, "handleEvent");
+                    spyOn(childFooListener, "handleEvent").andCallThrough();
                     childFoo.dispatchEvent(bubbleEvent);
 
                     expect(childFooListener.handleEvent).toHaveBeenCalled();
@@ -119,7 +119,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
                     parent.addEventListener("bubbleEvent", parentListener, true);
 
-                    spyOn(parentListener, "handleEvent");
+                    spyOn(parentListener, "handleEvent").andCallThrough();
                     childFoo.dispatchEvent(bubbleEvent);
 
                     expect(parentListener.handleEvent).toHaveBeenCalled();
@@ -135,7 +135,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
                     testApplication.addEventListener("bubbleEvent", applicationListener, true);
 
-                    spyOn(applicationListener, "handleEvent");
+                    spyOn(applicationListener, "handleEvent").andCallThrough();
 
                     childFoo.dispatchEvent(bubbleEvent);
 
@@ -162,8 +162,8 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                         }
                     };
 
-                    spyOn(childFooListener, "handleEvent");
-                    spyOn(parentListener, "handleEvent");
+                    spyOn(childFooListener, "handleEvent").andCallThrough();
+                    spyOn(parentListener, "handleEvent").andCallThrough();
 
                     parent.addEventListener("bubbleEvent", parentListener, true);
                     childFoo.addEventListener("bubbleEvent", childFooListener, true);
@@ -205,7 +205,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
                     childFoo.addEventListener("bubbleEvent", childFooListener, false);
 
-                    spyOn(childFooListener, "handleEvent");
+                    spyOn(childFooListener, "handleEvent").andCallThrough();
                     childFoo.dispatchEvent(bubbleEvent);
 
                     expect(childFooListener.handleEvent).toHaveBeenCalled();
@@ -221,7 +221,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
                     parent.addEventListener("bubbleEvent", parentListener, false);
 
-                    spyOn(parentListener, "handleEvent");
+                    spyOn(parentListener, "handleEvent").andCallThrough();
                     childFoo.dispatchEvent(bubbleEvent);
 
                     expect(parentListener.handleEvent).toHaveBeenCalled();
@@ -237,7 +237,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
                     testApplication.addEventListener("bubbleEvent", applicationListener, false);
 
-                    spyOn(applicationListener, "handleEvent");
+                    spyOn(applicationListener, "handleEvent").andCallThrough();
                     childFoo.dispatchEvent(bubbleEvent);
 
                     expect(applicationListener.handleEvent).toHaveBeenCalled();
@@ -263,8 +263,8 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                         }
                     };
 
-                    spyOn(childFooListener, "handleEvent");
-                    spyOn(parentListener, "handleEvent");
+                    spyOn(childFooListener, "handleEvent").andCallThrough();
+                    spyOn(parentListener, "handleEvent").andCallThrough();
 
                     parent.addEventListener("bubbleEvent", parentListener, false);
                     childFoo.addEventListener("bubbleEvent", childFooListener, false);
@@ -276,7 +276,6 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                 });
 
             });
-
             it("should distribute the event to the entire chain of registered event listeners in the expected order", function() {
                 var handledCount = 0;
 
@@ -323,14 +322,15 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                 };
 
 
-                spyOn(parentListener, "handleEvent");
-                spyOn(parentListener, "captureBubbleEvent");
+                spyOn(parentListener, "handleEvent").andCallThrough();
+                spyOn(parentListener, "captureBubbleEvent").andCallThrough();
 
-                spyOn(childFooListener, "handleEvent");
-                spyOn(childFooListener, "captureBubbleEvent");
+                spyOn(childFooListener, "handleEvent").andCallThrough();
+                spyOn(childFooListener, "captureBubbleEvent").andCallThrough();
 
-                spyOn(grandchildFooListener, "handleEvent");
-                spyOn(grandchildFooListener, "captureBubbleEvent");
+                spyOn(grandchildFooListener, "handleEvent").andCallThrough();
+                spyOn(grandchildFooListener, "captureBubbleEvent").andCallThrough();
+
 
                 parent.addEventListener("bubbleEvent", parentListener, true);
                 parent.addEventListener("bubbleEvent", parentListener, false);
@@ -399,7 +399,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
                     child.addEventListener("bubbleEvent", childListener, true);
 
-                    spyOn(childListener, "handleEvent");
+                    spyOn(childListener, "handleEvent").andCallThrough();
                     child.dispatchEvent(bubbleEvent);
 
                     expect(childListener.handleEvent).toHaveBeenCalled();
@@ -415,7 +415,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
                     parent.addEventListener("bubbleEvent", parentListener, true);
 
-                    spyOn(parentListener, "handleEvent");
+                    spyOn(parentListener, "handleEvent").andCallThrough();
                     child.dispatchEvent(bubbleEvent);
 
                     expect(parentListener.handleEvent).toHaveBeenCalled();
@@ -431,7 +431,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
                     testApplication.addEventListener("bubbleEvent", applicationListener, true);
 
-                    spyOn(applicationListener, "handleEvent");
+                    spyOn(applicationListener, "handleEvent").andCallThrough();
                     child.dispatchEvent(bubbleEvent);
 
                     expect(applicationListener.handleEvent).toHaveBeenCalled();
@@ -457,8 +457,8 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                         }
                     };
 
-                    spyOn(childListener, "handleEvent");
-                    spyOn(parentListener, "handleEvent");
+                    spyOn(childListener, "handleEvent").andCallThrough();
+                    spyOn(parentListener, "handleEvent").andCallThrough();
 
                     parent.addEventListener("bubbleEvent", parentListener, true);
                     child.addEventListener("bubbleEvent", childListener, true);
@@ -501,7 +501,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
                     child.addEventListener("bubbleEvent", childListener, false);
 
-                    spyOn(childListener, "handleEvent");
+                    spyOn(childListener, "handleEvent").andCallThrough();
                     child.dispatchEvent(bubbleEvent);
 
                     expect(childListener.handleEvent).toHaveBeenCalled();
@@ -517,7 +517,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
                     parent.addEventListener("bubbleEvent", parentListener, false);
 
-                    spyOn(parentListener, "handleEvent");
+                    spyOn(parentListener, "handleEvent").andCallThrough();
                     child.dispatchEvent(bubbleEvent);
 
                     expect(parentListener.handleEvent).toHaveBeenCalled();
@@ -533,7 +533,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
                     testApplication.addEventListener("bubbleEvent", applicationListener, false);
 
-                    spyOn(applicationListener, "handleEvent");
+                    spyOn(applicationListener, "handleEvent").andCallThrough();
                     child.dispatchEvent(bubbleEvent);
 
                     expect(applicationListener.handleEvent).toHaveBeenCalled();
@@ -559,8 +559,8 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                         }
                     };
 
-                    spyOn(childListener, "handleEvent");
-                    spyOn(parentListener, "handleEvent");
+                    spyOn(childListener, "handleEvent").andCallThrough();
+                    spyOn(parentListener, "handleEvent").andCallThrough();
 
                     parent.addEventListener("bubbleEvent", parentListener, false);
                     child.addEventListener("bubbleEvent", childListener, false);
@@ -572,58 +572,6 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                 });
 
             });
-
-            it("should distribute the event to the entire chain of registered event listeners in the expected order", function() {
-                var handledCount = 0;
-
-                var parentListener = {
-                    captureBubbleEvent: function(event) {
-                        expect(event._event).toBe(bubbleEvent);
-                        expect(handledCount).toBe(0);
-                        handledCount++;
-                    },
-
-                    handleEvent: function(event) {
-                        expect(event._event).toBe(bubbleEvent);
-                        expect(handledCount).toBe(5);
-                        handledCount++;
-                    }
-                };
-
-                var childListener = {
-                    captureBubbleEvent: function(event) {
-                        expect(event._event).toBe(bubbleEvent);
-                        expect(handledCount).toBe(1);
-                        handledCount++;
-                    },
-
-                    handleEvent: function(event) {
-                        expect(event._event).toBe(bubbleEvent);
-                        expect(handledCount).toBe(4);
-                        handledCount++;
-                    }
-                };
-
-                spyOn(parentListener, "handleEvent");
-                spyOn(parentListener, "captureBubbleEvent");
-
-                spyOn(childListener, "handleEvent");
-                spyOn(childListener, "captureBubbleEvent");
-
-                parent.addEventListener("bubbleEvent", parentListener, true);
-                parent.addEventListener("bubbleEvent", parentListener, false);
-
-                child.addEventListener("bubbleEvent", childListener, true);
-                child.addEventListener("bubbleEvent", childListener, false);
-
-                child.dispatchEvent(bubbleEvent);
-
-                expect(parentListener.captureBubbleEvent).toHaveBeenCalled();
-                expect(childListener.captureBubbleEvent).toHaveBeenCalled();
-                expect(childListener.handleEvent).toHaveBeenCalled();
-                expect(parentListener.handleEvent).toHaveBeenCalled();
-            });
-
         });
 
         describe("determining the event target chain", function () {
