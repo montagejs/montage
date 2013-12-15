@@ -44,6 +44,17 @@
             "helpKey": ""
         }
     },
+    "treeController_allExpanded": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "allExpanded",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
     "treeController_root": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
