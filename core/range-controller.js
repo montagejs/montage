@@ -74,7 +74,7 @@ var RangeSelection = function(content, rangeController) {
 
                 // if the item is already in the selection, don't add it
                 // unless it's in the part that we're about to delete.
-                var indexInSelection = this.find(item);
+                var indexInSelection = this.findValue(item);
                 return indexInSelection < 0 ||
                         (indexInSelection >= start && indexInSelection < start + minusLength);
 

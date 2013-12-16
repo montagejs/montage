@@ -310,7 +310,7 @@ describe("core/range-controller-spec", function() {
         beforeEach(function () {
             var content = [0, 1, 2];
             content.contentEquals = function(){ return true; };
-            expect(content.find(42)).toBe(0);
+            expect(content.findValue(42)).toBe(0);
 
             rangeController = RangeController.create().initWithContent(content);
             rangeController.multiSelect = true;
