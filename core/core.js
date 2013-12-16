@@ -1068,11 +1068,11 @@ var uuidGetGenerator = function() {
 
     // NOTE Safari (as of Version 6.1 8537.71) has a bug related to ES5
     // property values. In some situations, even when the uuid has already
-    // be defined as a property value, accessing the uuid of an object can
-    // make it go through the defaultUuidGet like if the property descriptor
-    // was still the original one. When that happens a new uuid is created
-    // for that object. To avoid that we always make sure that the object
-    // have a _uuid that will be looked up to at defaultUuidGet() before
+    // been defined as a property value, accessing the uuid of an object can
+    // make it go through the defaultUuidGet as if the property descriptor
+    // was still the original one. When that happens, a new uuid is created
+    // for that object. To avoid this, we always make sure that the object
+    // has a _uuid that will be looked up at defaultUuidGet() before
     // generating a new one. This mechanism was created to work around an
     // issue with Safari that didn't allow redefining property descriptors
     // in DOM elements.
