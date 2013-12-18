@@ -49,6 +49,20 @@
             }
         }
     },
+    "axis_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "axis",
+            "valueType": "enum",
+            "enumValues": [
+                "horizontal",
+                "vertical"
+            ],
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
     "blueprint_parent": {
         "prototype": "core/meta/blueprint-reference",
         "properties": {
@@ -83,6 +97,9 @@
                 },
                 {
                     "@": "step_property"
+                },
+                {
+                    "@": "axis_property"
                 }
             ],
             "propertyBlueprintGroups": {
@@ -101,6 +118,9 @@
                     },
                     {
                         "@": "step_property"
+                    },
+                    {
+                        "@": "axis_property"
                     }
                 ]
             },
