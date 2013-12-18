@@ -989,7 +989,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
             // Set up the labeler with the current element ids.
             elementIds = this.getElementIds();
             for (var i = 0, elementId; (elementId = elementIds[i]); i++) {
-                labeler.setObjectLabel(null, elementId);
+                labeler.addLabel(elementId);
             }
 
             // Resolve element ids collisions.
@@ -997,7 +997,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
             for (var elementId in nodeElements) {
                 if (this.getElementById(elementId)) {
                     element = nodeElements[elementId];
-                    newId = labeler.getObjectLabel(element);
+                    newId = labeler.generateLabel(elementId);
                     this.setElementId(element, newId);
                     if (!collisionTable) {
                         collisionTable = Object.create(null);

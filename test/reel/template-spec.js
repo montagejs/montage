@@ -359,6 +359,26 @@ describe("reel/template-spec", function() {
             expect(collisionTable).toEqual(expectedCollisionTable);
         });
 
+        it("should solve the collisions with the same base name", function() {
+            var html = require("reel/template/modification.html").content,
+                htmlModification = require("reel/template/modification-elements.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                collisionTable,
+                node,
+                reference;
+
+            template.initWithHtml(html, require);
+            htmlDocument.documentElement.innerHTML = htmlModification;
+
+            node = htmlDocument.getElementById("collisions");
+            reference = template.getElementById("title");
+
+            collisionTable = template.insertNodeBefore(node, reference);
+
+            expect(collisionTable.repetition).toBe("repetition2");
+            expect(collisionTable.title).toBe("title2")
+        });
+
         it("should append a node to the template", function() {
             var html = require("reel/template/modification.html").content,
                 htmlModification = require("reel/template/modification-elements.html").content,
