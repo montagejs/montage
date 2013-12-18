@@ -159,6 +159,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
             // The _orderedContent variable is a necessary intermediate stage
             // From which visibleIndexes plucks visible values.
             this.organizedContent = [];
+            // dispatches handleOrganizedContentRangeChange
             this.organizedContent.addRangeChangeListener(this, "organizedContent");
             this.defineBinding("_orderedContent", {
                 "<-": "content" +

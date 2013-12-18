@@ -1076,7 +1076,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             // Add new values to the end if the visible indexes have grown
             for (j = oldIndexesLength; i < newVisibleIndexes.length; i++) {
                 if (newVisibleIndexes[i] !== null) {
-                    oldVisibleIndexes.set(j,  newVisibleIndexes[i]);
+                    oldVisibleIndexes.set(j, newVisibleIndexes[i]);
                     j++;
                 }
             }
