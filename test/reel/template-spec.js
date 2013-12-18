@@ -293,16 +293,7 @@ describe("reel/template-spec", function() {
         });
 
         it("should clone the markup out of the document", function() {
-            var html = require("reel/template/simple-template.html").content,
-                expectedObjects = {
-                    "text": {
-                        "prototype": "montage/ui/text.reel",
-                        "properties": {
-                            "element": {"#": "text"},
-                            "value": "Hello, World!"
-                        }
-                    }
-                };
+            var html = require("reel/template/simple-template.html").content;
 
             return template.initWithHtml(html)
             .then(function() {
@@ -325,7 +316,9 @@ describe("reel/template-spec", function() {
             var html = require("reel/template/modification.html").content,
                 htmlModification = require("reel/template/modification-elements.html").content,
                 htmlDocument = document.implementation.createHTMLDocument(""),
-                collisionTable;
+                collisionTable,
+                node,
+                reference;
 
             template.initWithHtml(html, require);
             htmlDocument.documentElement.innerHTML = htmlModification;
@@ -343,9 +336,11 @@ describe("reel/template-spec", function() {
             var html = require("reel/template/modification.html").content,
                 htmlModification = require("reel/template/modification-elements.html").content,
                 htmlDocument = document.implementation.createHTMLDocument(""),
-                children,
                 collisionTable,
-                expectedCollisionTable;
+                expectedCollisionTable,
+                node,
+                reference,
+                title;
 
             template.initWithHtml(html, require);
             htmlDocument.documentElement.innerHTML = htmlModification;
@@ -367,7 +362,9 @@ describe("reel/template-spec", function() {
         it("should append a node to the template", function() {
             var html = require("reel/template/modification.html").content,
                 htmlModification = require("reel/template/modification-elements.html").content,
-                htmlDocument = document.implementation.createHTMLDocument("");
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                node,
+                reference;
 
             template.initWithHtml(html, require);
             htmlDocument.documentElement.innerHTML = htmlModification;
@@ -387,7 +384,7 @@ describe("reel/template-spec", function() {
                 htmlDocument = document.implementation.createHTMLDocument(""),
                 expectedResult = {
                     "src" : URL.resolve(document.baseURI, "reel/template/sample-image.jpeg")
-                }
+                };
 
             return template.initWithModuleId(moduleId, require)
             .then(function() {
