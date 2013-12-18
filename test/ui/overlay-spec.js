@@ -11,6 +11,7 @@ describe("ui/overlay-spec", function() {
     var anOverlay;
 
     beforeEach(function() {
+        defaultEventManager._activeTarget = null;
         anOverlay = new Overlay();
         anOverlay.hasTemplate = false;
         anOverlay.element = MockDOM.element();
