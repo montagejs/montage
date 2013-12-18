@@ -205,16 +205,20 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     show: {
         value: function() {
             if (!this._isShown) {
+                if (this.isModal) {
+                    this._previousActiveTarget = defaultEventManager.activeTarget;
+                    defaultEventManager.activeTarget = this;
+                    if (defaultEventManager.activeTarget !== this) {
+                        console.warn("Overlay " + this.identifier + " can't become the active target because ", defaultEventManager.activeTarget, " didn't surrender it.");
+                        return;
+                    }
+                }
+
                 this.attachToParentComponent();
                 this.classList.add(CLASS_PREFIX + "--visible");
                 this._pressComposer.load();
                 this._isShown = true;
                 this.needsDraw = true;
-
-                if (this.isModal) {
-                    this._previousActiveTarget = defaultEventManager.activeTarget;
-                    defaultEventManager.activeTarget = this;
-                }
 
                 this._keyComposer.addEventListener("keyPress", this, false);
             }
