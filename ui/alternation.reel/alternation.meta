@@ -1,133 +1,29 @@
 {
-    "blueprint_alternation_content": {
-        "prototype": "core/meta/property-blueprint",
-        "properties": {
-            "name": "content",
-            "blueprint": {
-                "@": "root"
-            },
-            "valueType": "object",
-            "cardinality": -1
-        }
-    },
-    "blueprint_alternation_contentController": {
-        "prototype": "core/meta/property-blueprint",
-        "properties": {
-            "name": "contentController",
-            "blueprint": {
-                "@": "root"
-            },
-            "valueType": "object"
-        }
-    },
-    "blueprint_alternation_isSelectionEnabled": {
-        "prototype": "core/meta/property-blueprint",
-        "properties": {
-            "name": "isSelectionEnabled",
-            "blueprint": {
-                "@": "root"
-            },
-            "valueType": "boolean"
-        }
-    },
-    "blueprint_alternation_selection": {
-        "prototype": "core/meta/property-blueprint",
-        "properties": {
-            "name": "selection",
-            "blueprint": {
-                "@": "root"
-            },
-            "valueType": "object"
-        }
-    },
-    "blueprint_alternation_selectedIndexes": {
-        "prototype": "core/meta/property-blueprint",
-        "properties": {
-            "name": "selectedIndexes",
-            "blueprint": {
-                "@": "root"
-            },
-            "valueType": "number",
-            "cardinality": -1
-        }
-    },
-    "blueprint_alternation_clonesChildComponents": {
-        "prototype": "core/meta/property-blueprint",
-        "properties": {
-            "name": "clonesChildComponents",
-            "blueprint": {
-                "@": "root"
-            },
-            "valueType": "boolean"
-        }
-    },
-    "blueprint_component_reference": {
-        "prototype": "core/meta/blueprint-reference",
+    "blueprint_parent": {
+        "prototype": "montage/core/meta/blueprint-reference",
         "properties": {
             "valueReference": {
-                "blueprintName": "Component",
-                "prototypeName": "Component",
+                "blueprintName": "Alternation",
+                "prototypeName": "Alternation",
                 "blueprintModule": {
-                    "%": "ui/component.meta"
+                    "%": "montage/ui/alternation.reel/alternation.meta"
                 }
             }
         }
     },
     "root": {
-        "prototype": "core/meta/module-blueprint",
+        "prototype": "montage/core/meta/module-blueprint",
         "properties": {
-            "name": "Alternation",
+            "name": "Repetition",
             "parent": {
-                "@": "blueprint_component_reference"
-            },
-            "propertyBlueprints": [
-                {
-                    "@": "blueprint_alternation_content"
-                },
-                {
-                    "@": "blueprint_alternation_contentController"
-                },
-                {
-                    "@": "blueprint_alternation_isSelectionEnabled"
-                },
-                {
-                    "@": "blueprint_alternation_selection"
-                },
-                {
-                    "@": "blueprint_alternation_selectedIndexes"
-                },
-                {
-                    "@": "blueprint_alternation_clonesChildComponents"
-                }
-            ],
-            "propertyBlueprintGroups": {
-                "Alternation": [
-                    {
-                        "@": "blueprint_alternation_content"
-                    },
-                    {
-                        "@": "blueprint_alternation_contentController"
-                    },
-                    {
-                        "@": "blueprint_alternation_isSelectionEnabled"
-                    },
-                    {
-                        "@": "blueprint_alternation_selection"
-                    },
-                    {
-                        "@": "blueprint_alternation_selectedIndexes"
-                    },
-                    {
-                        "@": "blueprint_alternation_clonesChildComponents"
-                    }
-                ]
+                "@": "blueprint_parent"
             },
             "blueprintModule": {
-                "%": "ui/alternation.reel/alternation.meta"
+                "%": "montage/ui/repetition.reel/repetition.meta"
             },
-            "exportName": "Alternation",
+            "exportName": "Repetition",
             "module": {
-                "%": "ui/alternation.reel"
+                "%": "ui/repetition.reel"
             }
         }
     }
