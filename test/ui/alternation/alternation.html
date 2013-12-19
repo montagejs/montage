@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+    <title>Alteration Spec</title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">{
+            "owner": {
+                "value": {}
+            },
+
+            "application": {
+                "prototype": "montage/core/application",
+                "properties": {
+                    "delegate": {"@": "alternationtest1"}
+                }
+            },
+            "alternationtest1": {
+                "prototype": "ui/alternation/alternation-test",
+                "properties": {
+                    "text": "Hello",
+                    "simpleArrayControllerContent": ["one", "two", "three"]
+                }
+            },
+
+            "alternationSwitchPath": {
+                "prototype": "montage/ui/alternation.reel",
+                "properties": {
+                    "element": {"#": "alternationSwitchPath"},
+                    "switchPath": "'pass'",
+                    "content": [1]
+                }
+            },
+
+            "alternationSwitchPathPass": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "alternationSwitchPathPass"},
+                    "value": "PASS"
+                }
+            },
+
+            "alternationSwitchPathFail": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "alternationSwitchPathFail"},
+                    "value": "FAIL. You must not see this."
+                }
+            },
+
+            "switchPathIteration": {
+                 "prototype": "ui/alternation/switch-path-iteration.reel",
+                 "properties": {
+                    "element": {"#": "switchPathIteration"}
+                 }
+            }
+
+    }</script>
+</head>
+<body>
+    <h2>switchPath</h2>
+    <div data-montage-id="alternationSwitchPath" class="alternationSwitchPath">
+        <span data-montage-id="alternationSwitchPathFail" data-arg="fail"></span>
+        <span data-montage-id="alternationSwitchPathPass" data-arg="pass"></span>
+    </div>
+
+    <h2>switchPath: iteration</h2>
+    <div data-montage-id="switchPathIteration"></div>
+
+</body>
+</html>

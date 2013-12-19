@@ -5,10 +5,10 @@
         }
     },
 
-    "repetition": {
-        "prototype": "montage/ui/repetition.reel",
+    "alternation": {
+        "prototype": "montage/ui/alternation.reel",
         "properties": {
-            "element": {"#": "repetition"},
+            "element": {"#": "alternation"},
             "switchPath": "object.isAdmin ? 'admin' : 'user'",
             "content": [
                 {"name": "John", "isAdmin": true},
@@ -23,7 +23,7 @@
             "element": {"#": "admin"}
         },
         "bindings": {
-            "value": {"<-": "@repetition.objectAtCurrentIteration.name"}
+            "value": {"<-": "@alternation.objectAtCurrentIteration.name"}
         }
     },
 
@@ -33,7 +33,7 @@
             "element": {"#": "user"}
         },
         "bindings": {
-            "value": {"<-": "@repetition.objectAtCurrentIteration.name"}
+            "value": {"<-": "@alternation.objectAtCurrentIteration.name"}
         }
     }
 }

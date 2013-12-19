@@ -968,21 +968,6 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
             });
         });
 
-        describe("switchPath property", function() {
-            it("should only draw DOM elements that match switchPath", function() {
-                var element = querySelector(".repetitionSwitchPath");
-                expect(element).toBeDefined();
-                expect(element.textContent).toBe("PASS");
-            });
-
-            it("should iterate through content", function() {
-                var admin = querySelector("#switch-path-admin");
-                var user = querySelector("#switch-path-user");
-                expect(admin.textContent).toBe("John");
-                expect(user.textContent).toBe("Mary");
-            });
-        });
-
         describe("repetition within a substitution", function () {
             it("should see elements from the repetition inside the substitution", function () {
                 var elements = querySelectorAll(".textInSubstitution");
