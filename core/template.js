@@ -978,14 +978,14 @@ var Template = Montage.specialize( /** @lends Template# */ {
      * already exist in the current template.
      */
     _resolveElementIdCollisions: {
-        value: function(node) {
+        value: function(node, labeler) {
             var collisionTable,
                 nodeElements,
                 elementIds,
                 element,
-                newId,
-                labeler = new MontageLabeler();
+                newId;
 
+            labeler = labeler || new MontageLabeler();
             // Set up the labeler with the current element ids.
             elementIds = this.getElementIds();
             for (var i = 0, elementId; (elementId = elementIds[i]); i++) {
@@ -997,7 +997,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
             for (var elementId in nodeElements) {
                 if (this.getElementById(elementId)) {
                     element = nodeElements[elementId];
-                    newId = labeler.generateLabel(elementId);
+                    newId = labeler.generateLabel(labeler.getLabelBaseName(elementId));
                     this.setElementId(element, newId);
                     if (!collisionTable) {
                         collisionTable = Object.create(null);
@@ -1011,10 +1011,10 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     replaceNode: {
-        value: function(newNode, oldNode) {
+        value: function(newNode, oldNode, labeler) {
             var collisionTable;
 
-            collisionTable = this._resolveElementIdCollisions(newNode);
+            collisionTable = this._resolveElementIdCollisions(newNode, labeler);
             this.normalizeRelativeUrls(newNode, this.getBaseUrl());
             oldNode.parentNode.replaceChild(newNode, oldNode);
 
@@ -1023,10 +1023,10 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     insertNodeBefore: {
-        value: function(node, reference) {
+        value: function(node, reference, labeler) {
             var collisionTable;
 
-            collisionTable = this._resolveElementIdCollisions(node);
+            collisionTable = this._resolveElementIdCollisions(node, labeler);
             this.normalizeRelativeUrls(node, this.getBaseUrl());
             reference.parentNode.insertBefore(node, reference);
 
@@ -1035,10 +1035,10 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     appendNode: {
-        value: function(node, parentNode) {
+        value: function(node, parentNode, labeler) {
             var collisionTable;
 
-            collisionTable = this._resolveElementIdCollisions(node);
+            collisionTable = this._resolveElementIdCollisions(node, labeler);
             this.normalizeRelativeUrls(node, this.getBaseUrl());
             parentNode.appendChild(node);
 

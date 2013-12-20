@@ -7,6 +7,7 @@ var Montage = require("montage").Montage,
     Template = require("montage/core/template").Template,
     TemplateResources = require("montage/core/template").TemplateResources,
     Component = require("montage/ui/component").Component,
+    MontageLabeler = require("montage/core/serialization/serializer/montage-labeler").MontageLabeler,
     Promise = require("montage/q"),
     objects = require("serialization/testobjects-v2").objects,
     URL = require("montage/core/mini-url");
@@ -379,6 +380,72 @@ describe("reel/template-spec", function() {
             expect(collisionTable.title).toBe("title2")
         });
 
+        it("should solve the collisions by using a custom labeler with insertNodeBefore", function() {
+            var html = require("reel/template/modification.html").content,
+                htmlModification = require("reel/template/modification-elements.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                collisionTable,
+                node,
+                reference,
+                labeler;
+
+            template.initWithHtml(html, require);
+            htmlDocument.documentElement.innerHTML = htmlModification;
+
+            node = htmlDocument.getElementById("collisions");
+            reference = template.getElementById("title");
+            labeler = new MontageLabeler();
+            labeler.addLabel("title2");
+
+            collisionTable = template.insertNodeBefore(node, reference, labeler);
+
+            expect(collisionTable.title).not.toBe("title2")
+        });
+
+        it("should solve the collisions by using a custom labeler with appendNode", function() {
+            var html = require("reel/template/modification.html").content,
+                htmlModification = require("reel/template/modification-elements.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                collisionTable,
+                node,
+                reference,
+                labeler;
+
+            template.initWithHtml(html, require);
+            htmlDocument.documentElement.innerHTML = htmlModification;
+
+            node = htmlDocument.getElementById("collisions");
+            reference = template.getElementById("title");
+            labeler = new MontageLabeler();
+            labeler.addLabel("title2");
+
+            collisionTable = template.appendNode(node, reference, labeler);
+
+            expect(collisionTable.title).not.toBe("title2")
+        });
+
+        it("should solve the collisions by using a custom labeler with replaceNode", function() {
+            var html = require("reel/template/modification.html").content,
+                htmlModification = require("reel/template/modification-elements.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                collisionTable,
+                node,
+                reference,
+                labeler;
+
+            template.initWithHtml(html, require);
+            htmlDocument.documentElement.innerHTML = htmlModification;
+
+            node = htmlDocument.getElementById("collisions");
+            reference = template.getElementById("replace");
+            labeler = new MontageLabeler();
+            labeler.addLabel("title2");
+
+            collisionTable = template.replaceNode(node, reference, labeler);
+
+            expect(collisionTable.title).not.toBe("title2")
+        });
+
         it("should append a node to the template", function() {
             var html = require("reel/template/modification.html").content,
                 htmlModification = require("reel/template/modification-elements.html").content,
@@ -394,7 +461,7 @@ describe("reel/template-spec", function() {
 
             template.appendNode(node, reference);
 
-            expect(reference.children.length).toBe(2);
+            expect(reference.children.length).toBe(3);
             expect(reference.lastChild).toBe(node);
         });
 
