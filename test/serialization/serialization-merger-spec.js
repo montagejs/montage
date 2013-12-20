@@ -4,7 +4,8 @@ All Rights Reserved.
 </copyright> */
 var Montage = require("montage").Montage,
     SerializationMerger = require("montage/core/serialization/serialization").SerializationMerger,
-    Serialization = require("montage/core/serialization/serialization").Serialization;
+    Serialization = require("montage/core/serialization/serialization").Serialization,
+    MontageLabeler = require("montage/core/serialization/serializer/montage-labeler").MontageLabeler;
 
 describe("reel/serialization/serialization-merger-spec", function() {
     var merger;
@@ -311,6 +312,32 @@ describe("reel/serialization/serialization-merger-spec", function() {
                 expect(serialization1.getSerializationObject())
                     .toEqual(expectedSerialization);
             });
+        });
+
+        describe("labeler", function() {
+            var serialization1 = new Serialization().initWithObject({
+                    "object": {
+                        "value": {
+                            "name": "object"
+                        }
+                    }
+                }),
+                serialization2 = new Serialization().initWithObject({
+                    "object": {
+                        "value": {
+                            "name": "object2"
+                        }
+                    }
+                }),
+                labeler = new MontageLabeler(),
+                delegate = {
+                    labeler: labeler
+                };
+
+            labeler.addLabel("object2");
+
+            SerializationMerger.mergeSerializations(serialization1, serialization2, delegate);
+            expect(serialization1.getSerializationObject().object2).toBeUndefined();
         });
     });
 

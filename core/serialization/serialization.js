@@ -248,9 +248,9 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
             labels2 = serialization2.getSerializationLabels();
 
             // Check for name collisions and generate new labels
-            foundCollisions = this._createCollisionTable(labels1, labels2, collisionTable);
+            foundCollisions = this._createCollisionTable(labels1, labels2, collisionTable, delegate && delegate.labeler);
 
-            if (delegate) {
+            if (delegate && delegate.willMergeObjectWithLabel) {
                 hasCollisionTableChanged = this._willMergeObjectWithLabel(delegate, serialization1, serialization2, collisionTable);
                 foundCollisions = foundCollisions || hasCollisionTableChanged;
             }
@@ -367,8 +367,8 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
      * @private
      */
     _createCollisionTable: {
-        value: function(labels1, labels2, collisionTable) {
-            var labeler = new MontageLabeler(),
+        value: function(labels1, labels2, collisionTable, labeler) {
+            var labeler = labeler || new MontageLabeler(),
                 foundCollisions = false,
                 componentLabel,
                 newLabel,
