@@ -253,34 +253,6 @@ describe("reel/serialization/serialization-merger-spec", function() {
                     .toEqual(expectedSerialization);
             });
 
-            it("should throw when a non existing label is returned", function() {
-                var serialization1 = new Serialization().initWithObject({
-                        "object1": {
-                            "value": {
-                                "name": "object1"
-                            }
-                        }
-                    }),
-                    serialization2 = new Serialization().initWithObject({
-                        "object2": {
-                            "value": {
-                                "name": "object2"
-                            }
-                        }
-                    }),
-                    delegate = {
-                        willMergeObjectWithLabel: function(label) {
-                            if (label === "object2") {
-                                return "object3";
-                            }
-                        }
-                    };
-
-                expect(function() {
-                    SerializationMerger.mergeSerializations(serialization1, serialization2, delegate);
-                }).toThrow();
-            });
-
             it("should rename a template property to a label that refers to a component that exists in serialization1", function() {
                 var serialization1 = new Serialization().initWithObject({
                         "object1": {
@@ -311,6 +283,157 @@ describe("reel/serialization/serialization-merger-spec", function() {
                 SerializationMerger.mergeSerializations(serialization1, serialization2, delegate);
                 expect(serialization1.getSerializationObject())
                     .toEqual(expectedSerialization);
+            });
+
+            it("should rename an object label when merging", function() {
+                var serialization1 = new Serialization().initWithObject({
+                        "x": {
+                            "value": {
+                                "name": "x"
+                            }
+                        }
+                    }),
+                    serialization2 = new Serialization().initWithObject({
+                        "y": {
+                            "value": {
+                                "name": "y"
+                            }
+                        }
+                    }),
+                    expectedSerialization = {
+                        "x": {
+                            "value": {
+                                "name": "x"
+                            }
+                        },
+                        "z": {
+                            "value": {
+                                "name": "y"
+                            }
+                        }
+                    },
+                    delegate = {
+                        willMergeObjectWithLabel: function(label) {
+                            if (label === "y") {
+                                return "z";
+                            }
+                        }
+                    };
+
+                SerializationMerger.mergeSerializations(serialization1, serialization2, delegate);
+                expect(serialization1.getSerializationObject())
+                    .toEqual(expectedSerialization);
+            });
+
+            it("should rename an object label when merging even when there's a collision", function() {
+                var serialization1 = new Serialization().initWithObject({
+                        "x": {
+                            "value": {
+                                "name": "x1"
+                            }
+                        }
+                    }),
+                    serialization2 = new Serialization().initWithObject({
+                        "x": {
+                            "value": {
+                                "name": "x2"
+                            }
+                        }
+                    }),
+                    expectedSerialization = {
+                        "x": {
+                            "value": {
+                                "name": "x1"
+                            }
+                        },
+                        "z": {
+                            "value": {
+                                "name": "x2"
+                            }
+                        }
+                    },
+                    delegate = {
+                        willMergeObjectWithLabel: function(label) {
+                            if (label === "x") {
+                                return "z";
+                            }
+                        }
+                    };
+
+                SerializationMerger.mergeSerializations(serialization1, serialization2, delegate);
+                expect(serialization1.getSerializationObject())
+                    .toEqual(expectedSerialization);
+            });
+
+            it("should throw when willMergeObjectWithLabel returns a labels that already exists in the origin serialization", function() {
+                var serialization1 = new Serialization().initWithObject({
+                        "x": {
+                            "value": {
+                                "name": "x1"
+                            }
+                        }
+                    }),
+                    serialization2 = new Serialization().initWithObject({
+                        "x": {
+                            "value": {
+                                "name": "x2"
+                            }
+                        },
+                        "z": {
+                            "value": {
+                                "name": "z"
+                            }
+                        }
+                    }),
+                    delegate = {
+                        willMergeObjectWithLabel: function(label) {
+                            if (label === "x") {
+                                return "z";
+                            }
+                        }
+                    };
+
+                expect(function () {
+                    SerializationMerger.mergeSerializations(serialization1, serialization2, delegate);
+                }).toThrow();
+            });
+
+            it("should throw when willMergeObjectWithLabel returns a labels that was generated to solve a collision", function() {
+                var serialization1 = new Serialization().initWithObject({
+                        "x": {
+                            "value": {
+                                "name": "x"
+                            }
+                        },
+                        "x2": {
+                            "value": {
+                                "name": "x2"
+                            }
+                        }
+                    }),
+                    serialization2 = new Serialization().initWithObject({
+                        "x": {
+                            "value": {
+                                "name": "x"
+                            }
+                        },
+                        "x2": {
+                            "value": {
+                                "name": "x2"
+                            }
+                        }
+                    }),
+                    delegate = {
+                        willMergeObjectWithLabel: function(label) {
+                            if (label === "x") {
+                                return "x4";
+                            }
+                        }
+                    };
+
+                expect(function () {
+                    SerializationMerger.mergeSerializations(serialization1, serialization2, delegate);
+                }).toThrow();
             });
         });
 
@@ -446,6 +569,18 @@ describe("reel/serialization/serialization-merger-spec", function() {
 
             SerializationMerger._createCollisionTable(labels1, labels2, collisionTable);
             expect(collisionTable["owner:foo"]).not.toBe("object:foo");
+        });
+
+        it("should not find a conflict just because the label exists in the labeler", function() {
+            var labels1 = ["owner"],
+                labels2 = ["object"],
+                collisionTable = {},
+                foundCollisions,
+                labeler = new MontageLabeler();
+
+            labeler.addLabel("object", "owner");
+            foundCollisions = SerializationMerger._createCollisionTable(labels1, labels2, collisionTable, labeler);
+            expect(foundCollisions).toBe(false);
         });
     });
 

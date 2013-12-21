@@ -1535,32 +1535,6 @@ describe("reel/template-spec", function() {
             });
         });
 
-        it("should reject an unknown label to solve the template property alias", function() {
-            var parametersHtml = require("reel/template/template-properties-parameters.html").content,
-                argumentsHtml = require("reel/template/template-arguments.html").content,
-                serialization;
-
-            argumentsProvider.getTemplateArgumentElement = function() {
-                range = document.createRange();
-                range.selectNodeContents(
-                    argumentsTemplate.getElementById("template-properties"));
-                return range.extractContents();
-            };
-
-            argumentsProvider.resolveTemplateArgumentTemplateProperty = function() {
-                return "unknown:iteration";
-            };
-
-            return Promise.all([
-                    parametersTemplate.initWithHtml(parametersHtml),
-                    argumentsTemplate.initWithHtml(argumentsHtml)
-            ]).then(function() {
-                expect(function() {
-                    parametersTemplate.expandParameters(argumentsProvider);
-                }).toThrow();
-            });
-        });
-
         it("should resolve to another template property alias", function() {
             var parametersHtml = require("reel/template/template-properties-parameters.html").content,
                 argumentsHtml = require("reel/template/template-arguments.html").content,
