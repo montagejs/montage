@@ -119,6 +119,19 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
         }
     },
 
+    getElementId: {
+        value: function(label) {
+            var object = this.getSerializationObject();
+
+            // TODO: much faster than using the visitor, need to make the visitor
+            // faster.
+            var element = Montage.getPath.call(object, label + ".properties.element");
+            if (element) {
+                return element["#"];
+            }
+        }
+    },
+
     getSerializationLabelsWithElements: {
         value: function(elementIds) {
             var inspector = new SerializationInspector(),
