@@ -739,18 +739,8 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // always appear in the same order as they appear in the iterations
             // list.
             this.activeIterations = [];
-
-            this.addOwnPropertyChangeListener("switchPath", this);
         }
     },
-
-
-    handleSwitchPathChange: {
-        value: function (newValue, path, myObject) {
-            this._switchPathCache = {};
-        }
-    },
-
 
     // Creating an iteration template:
     // ----
