@@ -1,4 +1,14 @@
 {
+    "switchPath_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "switchPath",
+            "valueType": "string",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
     "blueprint_parent": {
         "prototype": "montage/core/meta/blueprint-reference",
         "properties": {
@@ -13,6 +23,18 @@
     },
     "root": {
         "prototype": "montage/core/meta/module-blueprint",
+        "propertyBlueprints": [
+            {
+                "@": "switchPath_property"
+            }
+        ],
+        "propertyBlueprintGroups": {
+            "Main": [
+                {
+                    "@": "switchPath_property"
+                }
+            ]
+        },
         "properties": {
             "name": "Repetition",
             "parent": {
