@@ -23,22 +23,22 @@
     },
     "root": {
         "prototype": "montage/core/meta/module-blueprint",
-        "propertyBlueprints": [
-            {
-                "@": "switchPath_property"
-            }
-        ],
-        "propertyBlueprintGroups": {
-            "Main": [
-                {
-                    "@": "switchPath_property"
-                }
-            ]
-        },
         "properties": {
             "name": "Repetition",
             "parent": {
                 "@": "blueprint_parent"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "switchPath_property"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "Main": [
+                    {
+                        "@": "switchPath_property"
+                    }
+                ]
             },
             "blueprintModule": {
                 "%": "montage/ui/repetition.reel/repetition.meta"
