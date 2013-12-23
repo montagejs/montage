@@ -739,7 +739,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // always appear in the same order as they appear in the iterations
             // list.
             this.activeIterations = [];
-
         }
     },
 
@@ -1048,18 +1047,8 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             this._iterationCreationPromise = this._iterationCreationPromise
             .then(function() {
                 var _document = self.element.ownerDocument,
-                    switchPath,
                     instances,
                     promise;
-
-                if (self.switchPath) {
-                    if (!iteration.object) {
-                        console.warn('No iteration.object', iteration.object);
-                    }
-                    switchPath = iteration.getPath(self.switchPath);
-                    self._iterationTemplate = self._getIterationTemplateBySwitchPath(switchPath);
-                    self._iterationTemplate.setInstances(self.innerTemplate._instances);
-                }
 
                 self.currentIteration = iteration;
 
@@ -1098,31 +1087,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             return iteration;
         }
     },
-
-    /**
-     * @param {string} switchPath
-     * @returns Template
-     * @private
-     */
-    _getIterationTemplateBySwitchPath: {
-        value: function(switchPath) {
-            if (!this._switchPathCache.hasOwnProperty(switchPath)) {
-                var element = this._getTemplateDomArgument(switchPath);
-                if (!element) {
-                    throw new Error("Cannot find " + JSON.stringify(switchPath)); // TODO: better error message
-                }
-                this._switchPathCache[switchPath] = this.innerTemplate.createTemplateFromDomElement(element)
-            }
-
-            return this._switchPathCache[switchPath];
-        }
-    },
-
-    /**
-     * @type {Object.<string, Template>}
-     * @private
-     */
-    _switchPathCache: {value: {}},
 
     /**
      * @private

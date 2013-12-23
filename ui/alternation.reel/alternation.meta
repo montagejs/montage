@@ -1,0 +1,52 @@
+{
+    "switchPath_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "switchPath",
+            "valueType": "string",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "montage/core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Alternation",
+                "prototypeName": "Alternation",
+                "blueprintModule": {
+                    "%": "montage/ui/alternation.reel/alternation.meta"
+                }
+            }
+        }
+    },
+    "root": {
+        "prototype": "montage/core/meta/module-blueprint",
+        "properties": {
+            "name": "Repetition",
+            "parent": {
+                "@": "blueprint_parent"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "switchPath_property"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "Main": [
+                    {
+                        "@": "switchPath_property"
+                    }
+                ]
+            },
+            "blueprintModule": {
+                "%": "montage/ui/repetition.reel/repetition.meta"
+            },
+            "exportName": "Repetition",
+            "module": {
+                "%": "ui/repetition.reel"
+            }
+        }
+    }
+}
