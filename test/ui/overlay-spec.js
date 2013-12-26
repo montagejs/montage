@@ -180,7 +180,7 @@ describe("ui/overlay-spec", function() {
                 expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target, "pressStart");
             });
 
-            it("should hide the overlay when the escape key is pressed", function() {
+            it("should be called when the escape key is pressed", function() {
                 delegate.shouldDismissOverlay = jasmine.createSpy().andReturn(true);
 
                 anOverlay.enterDocument(true);
@@ -197,7 +197,7 @@ describe("ui/overlay-spec", function() {
                 expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.targetElement, "keyPress");
             });
 
-            it("should not the overlay when the delegate returns false", function() {
+            it("should not hide the overlay when the delegate returns false", function() {
                 delegate.shouldDismissOverlay = jasmine.createSpy().andReturn(false);
 
                 anOverlay.enterDocument(true);
@@ -420,6 +420,45 @@ describe("ui/overlay-spec", function() {
 
             anOverlay._pressComposer._dispatchPressStart(event);
             expect(anOverlay._isShown).toBe(true);
+        });
+
+        it("should hide the overlay when the escape key is pressed", function() {
+            anOverlay.enterDocument(true);
+            anOverlay.show();
+
+            var event = Event.event();
+            event.type = "keyPress";
+            event.identifier = "escape";
+            event.targetElement = MockDOM.element();
+            anOverlay.handleKeyPress(event);
+
+            expect(anOverlay._isShown).toBe(false);
+        });
+    });
+
+    describe("keyPress", function() {
+        it("should be loaded when the overlay is shown", function() {
+            anOverlay.enterDocument(true);
+            anOverlay.show();
+
+            expect(anOverlay._keyComposer._isLoaded).toBe(true);
+        });
+
+        it("should not be loaded when the overlay is shown", function() {
+            anOverlay.enterDocument(true);
+            anOverlay.show();
+            anOverlay.hide();
+
+            expect(anOverlay._keyComposer._isLoaded).toBe(false);
+        });
+
+        it("should be loaded when the overlay is hidden and shown again", function() {
+            anOverlay.enterDocument(true);
+            anOverlay.show();
+            anOverlay.hide();
+            anOverlay.show();
+
+            expect(anOverlay._keyComposer._isLoaded).toBe(true);
         });
     });
 
