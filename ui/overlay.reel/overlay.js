@@ -217,6 +217,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
                 this.attachToParentComponent();
                 this.classList.add(CLASS_PREFIX + "--visible");
                 this._pressComposer.load();
+                this._keyComposer.load();
                 this._isShown = true;
                 this.needsDraw = true;
 
@@ -239,8 +240,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
                     defaultEventManager.activeTarget = this._previousActiveTarget;
                 }
 
-                this.removeEventListener("keyPress", this, false);
-                this._keyComposer.removeEventListener("keyPress", null, false);
+                this._keyComposer.removeEventListener("keyPress", this, false);
             }
         }
     },
