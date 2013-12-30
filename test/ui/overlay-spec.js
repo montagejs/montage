@@ -237,6 +237,18 @@ describe("ui/overlay-spec", function() {
                 expect(defaultEventManager.activeTarget).toBe(previousTarget);
                 anOverlay.hide();
                 expect(defaultEventManager.activeTarget).toBe(previousTarget);
+            });
+
+            it("should not show if the overlay isn't able to be the activeTarget", function() {
+                var previousTarget = new Component();
+                previousTarget.surrendersActiveTarget = function() {
+                    return false;
+                };
+                defaultEventManager.activeTarget = previousTarget;
+
+                anOverlay.enterDocument(true);
+                anOverlay.show();
+                expect(anOverlay._isShown).toBe(false);
             })
         });
 
