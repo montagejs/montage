@@ -86,6 +86,18 @@ var MutableEvent = exports.MutableEvent = Montage.specialize(/** @lends MutableE
     /**
      * @method
      */
+    getPreventDefault: {
+        value: function() {
+            if (this._event.getPreventDefault) {
+                return this._event.getPreventDefault();
+            }
+            return this._event.defaultPrevented;
+        }
+    },
+
+    /**
+     * @method
+     */
     stopImmediatePropagation: {
         value: function() {
             this._event.stopImmediatePropagation();
