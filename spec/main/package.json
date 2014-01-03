@@ -1,0 +1,8 @@
+{
+    "dependencies": {
+        "dot-slash": "*",
+        "js-ext": "*",
+        "no-ext": "*",
+        "dot-js-ext": "*"
+    }
+}
