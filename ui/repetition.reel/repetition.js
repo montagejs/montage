@@ -10,7 +10,7 @@ var Promise = require("core/promise").Promise;
 var Map = require("collections/map");
 var Set = require("collections/set");
 
-var deprecationWarning = require("../../core/deprecate").deprecationWarning
+var deprecationWarning = require("../../core/deprecate").deprecationWarning;
 
 var Observers = require("frb/observers");
 var observeProperty = Observers.observeProperty;

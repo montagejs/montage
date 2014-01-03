@@ -4,6 +4,7 @@ var Montage = require("montage").Montage,
     FlowBezierSpline = require("ui/flow.reel/flow-bezier-spline").FlowBezierSpline,
     RangeController = require("core/range-controller").RangeController;
 
+var deprecationWarning = require("../../core/deprecate").deprecationWarning;
 
 /**
  * @class Flow
@@ -1402,6 +1403,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 key === "objectAtCurrentIteration" ||
                 key === "contentAtCurrentIteration"
             ) {
+                deprecationWarning(key,":iteration.object");
                 if (this._repetition) {
                     return this._repetition.observeProperty(key, emit, scope);
                 }
