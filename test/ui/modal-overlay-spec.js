@@ -2,13 +2,15 @@
 var Montage = require("montage").Montage,
     ModalOverlay = require("montage/ui/modal-overlay.reel").ModalOverlay,
     Promise = require("montage/core/promise").Promise,
-    MockDOM = require("mocks/dom");
+    MockDOM = require("mocks/dom"),
+    defaultEventManager = require("montage/core/event/event-manager").defaultEventManager;
 
 describe("ui/modal-overlay-spec", function() {
     var aModalOverlay,
         anotherModalOverlay;
 
     beforeEach(function() {
+        defaultEventManager._activeTarget = null;
         aModalOverlay = new ModalOverlay();
         aModalOverlay.hasTemplate = false;
         aModalOverlay.element = MockDOM.element();
