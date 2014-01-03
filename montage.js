@@ -93,6 +93,8 @@ if (typeof window !== "undefined") {
 
             var montageLocation = URL.resolve(Require.getLocation(), params.montageLocation);
 
+            config.moduleTypes = ["html", "meta"];
+
             // setup the reel loader
             config.makeLoader = function (config) {
                 return exports.ReelLoader(

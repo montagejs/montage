@@ -59,10 +59,10 @@
         // Configuration defaults:
         config = config || {};
         config.location = URL.resolve(config.location || Require.getLocation(), "./");
-        config.lib = URL.resolve(config.location, config.lib || "./");
-        config.paths = config.paths || [config.lib];
+        config.paths = config.paths || [config.location];
         config.mappings = config.mappings || {}; // EXTENSION
         config.exposedConfigs = config.exposedConfigs || Require.exposedConfigs;
+        config.moduleTypes = config.moduleTypes || [];
         config.makeLoader = config.makeLoader || Require.makeLoader;
         config.load = config.load || config.makeLoader(config);
         config.makeCompiler = config.makeCompiler || Require.makeCompiler;
@@ -556,8 +556,23 @@
 
         // overlay
         var overlay = description.overlay || {};
+
+        // but first, convert "browser" field, as pioneered by Browserify, to
+        // an overlay
+        if (typeof description.browser === "string") {
+            overlay.browser = {
+                redirects: {"": description.browser}
+            };
+        } else if (typeof description.browser === "object") {
+            overlay.browser = {
+                redirects: description.browser
+            };
+        }
+
+        // overlay continued...
         var layer;
-        (config.overlays || Require.overlays).forEach(function (engine) {
+        config.overlays = config.overlays || Require.overlays;
+        config.overlays.forEach(function (engine) {
             /*jshint -W089 */
             if (overlay[engine]) {
                 var layer = overlay[engine];
@@ -569,16 +584,7 @@
         });
         delete description.overlay;
 
-        // directories
-        description.directories = description.directories || {};
-        description.directories.lib =
-            description.directories.lib === void 0 ? "./" : description.directories.lib;
-        var lib = description.directories.lib;
-        // lib
-        config.lib = URL.resolve(location, "./" + lib);
-        var packagesDirectory = description.directories.packages || "node_modules";
-        packagesDirectory = URL.resolve(location, packagesDirectory + "/");
-        config.packagesDirectory = packagesDirectory;
+        config.packagesDirectory = URL.resolve(location, "node_modules/");
 
         // The default "main" module of a package has the same name as the
         // package.
@@ -590,17 +596,9 @@
             // loaded definition from the given path.
             modules[""] = {
                 id: "",
-                redirect: normalizeId(description.main),
+                redirect: normalizeId(resolve(description.main, "")),
                 location: config.location
             };
-
-            if (description.name !== modules[""].redirect) {
-                modules[description.name] = {
-                    id: description.name,
-                    redirect: "",
-                    location: URL.resolve(location, description.name)
-                };
-            }
 
         }
 
@@ -610,7 +608,7 @@
             Object.keys(redirects).forEach(function (name) {
                 modules[name] = {
                     id: name,
-                    redirect: redirects[name],
+                    redirect: normalizeId(resolve(redirects[name], name)),
                     location: URL.resolve(location, name)
                 };
             });
@@ -682,11 +680,12 @@
         return target.join("/");
     }
 
-    Require.base = function (location) {
-        // matches Unix basename
-        return String(location)
-            .replace(/(.+?)\/+$/, "$1")
-            .match(/([^\/]+$|^\/$|^$)/)[1];
+    var extensionPattern = /\.([^\/\.]+)$/;
+    Require.extension = function (path) {
+        var match = extensionPattern.exec(path);
+        if (match) {
+            return match[1];
+        }
     };
 
     // Tests whether the location or URL is a absolute.
@@ -833,65 +832,19 @@
         };
     };
 
-    Require.ExtensionsLoader = function(config, load) {
-        var extensions = config.extensions || ["js"];
-        var loadWithExtension = extensions.reduceRight(function (next, extension) {
-            return function (id, module) {
-                return load(id + "." + extension, module)
-                .fail(function (error) {
-                    if (/^Can't find /.test(error.message)) {
-                        return next(id, module);
-                    } else {
-                        throw error;
-                    }
-                });
-            };
-        }, function (id, module) {
-            throw new Error(
-                "Can't find " + JSON.stringify(id) + " with extensions " +
-                JSON.stringify(extensions) + " in package at " +
-                JSON.stringify(config.location)
-            );
-        });
+    Require.LocationLoader = function (config, load) {
         return function (id, module) {
-            if (Require.base(id).indexOf(".") !== -1) {
-                // already has an extension
-                return load(id, module);
-            } else {
-                return loadWithExtension(id, module);
+            var path = id;
+            var extension = Require.extension(id);
+            if (!extension || (
+                extension !== "js" &&
+                extension !== "json" &&
+                config.moduleTypes.indexOf(extension) === -1
+            )) {
+                path += ".js";
             }
-        };
-    };
-
-    // Attempts to load using multiple base paths (or one absolute path) with a
-    // single loader.
-    Require.PathsLoader = function(config, load) {
-        var loadFromPaths = config.paths.reduceRight(function (next, path) {
-            return function (id, module) {
-                var newId = URL.resolve(path, id);
-                return load(newId, module)
-                .fail(function (error) {
-                    if (/^Can't find /.test(error.message)) {
-                        return next(id, module);
-                    } else {
-                        throw error;
-                    }
-                });
-            };
-        }, function (id, module) {
-            throw new Error(
-                "Can't find " + JSON.stringify(id) + " from paths " +
-                JSON.stringify(config.paths) + " in package at " +
-                JSON.stringify(config.location)
-            );
-        });
-        return function(id, module) {
-            if (Require.isAbsolute(id)) {
-                // already fully qualified
-                return load(id, module);
-            } else {
-                return loadFromPaths(id, module);
-            }
+            var location = URL.resolve(config.location, path);
+            return load(location, module);
         };
     };
 
