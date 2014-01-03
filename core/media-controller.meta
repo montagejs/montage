@@ -156,10 +156,16 @@
     },
 
     "root": {
-        "prototype": "core/meta/blueprint",
+        "prototype": "core/meta/module-blueprint",
         "properties": {
             "name": "MediaController",
-            "blueprintModuleId": "core/media-controller.meta",
+            "exportName": "MediaController",
+            "module": {
+                "%": "core/media-controller"
+            },
+            "blueprintModule": {
+                "%": "core/media-controller.meta"
+            },
             "prototypeName": "MediaController",
             "customPrototype": false,
             "propertyBlueprints": [

@@ -60,9 +60,6 @@
             },
             "propertyBlueprints": [
                 {
-                    "@": "blueprint_loader_mainModule"
-                },
-                {
                     "@": "blueprint_loader_position"
                 },
                 {
@@ -74,9 +71,6 @@
             ],
             "propertyBlueprintGroups": {
                 "Overlay": [
-                    {
-                        "@": "blueprint_loader_mainModule"
-                    },
                     {
                         "@": "blueprint_loader_position"
                     },
