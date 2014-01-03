@@ -201,6 +201,21 @@ describe("events/mutable-event-spec", function() {
             target.dispatchEventNamed(type, false, false);
         });
 
-    })
+    });
+
+
+
+    describe("methods", function() {
+        var event;
+        beforeEach(function () {
+            event = MutableEvent.fromType("mousedown");
+        });
+        it("getPreventDefault() shouldn't throw", function () {
+            expect(function () {
+                event.getPreventDefault();
+            }).not.toThrow();
+        });
+    });
+
 
 });
