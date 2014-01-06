@@ -98,7 +98,7 @@ var pathPropertyDescriptors = { /** @lends Montage# */
      * that should receive change messages.
      */
     addRangeAtPathChangeListener: {
-        value: function (path, handler, methodName) {
+        value: function (path, handler, methodName, parameters, document, components) {
             methodName = methodName || "handleRangeChange";
             function dispatch(plus, minus, index) {
                 if (handler[methodName]) {
@@ -121,7 +121,7 @@ var pathPropertyDescriptors = { /** @lends Montage# */
                     dispatch(plus, minus, 0);
                     minus = plus;
                 }
-            });
+            }, void 0, void 0, parameters, document, components);
         }
     },
 
@@ -180,7 +180,7 @@ var pathPropertyDescriptors = { /** @lends Montage# */
      * @method
      */
     addPathChangeListener: {
-        value: function (path, handler, methodName, beforeChange) {
+        value: function (path, handler, methodName, beforeChange, parameters, document, components) {
             var self = this;
 
             handler = handler || Function.noop;
@@ -221,6 +221,9 @@ var pathPropertyDescriptors = { /** @lends Montage# */
             var observe = compileObserver(syntax);
             var scope = new Scope(this);
             scope.beforeChange = beforeChange;
+            scope.parameters = parameters;
+            scope.document = document;
+            scope.components = components;
             var cancel = observe(autoCancelPrevious(emit), scope);
 
             descriptor.cancel = cancel;
@@ -271,8 +274,8 @@ var pathPropertyDescriptors = { /** @lends Montage# */
      * @method
      */
     addBeforePathChangeListener: {
-        value: function (path, handler, methodName) {
-            return Montage.addPathChangeListener.call(this, path, handler, methodName, true);
+        value: function (path, handler, methodName, parameters, document, components) {
+            return Montage.addPathChangeListener.call(this, path, handler, methodName, true, parameters, document, components);
         }
     },
 
