@@ -273,6 +273,24 @@ describe("test/base/abstract-number-field-spec", function () {
                 aNumberField.handlePlusAction();
                 expect(aNumberField.value).toEqual(11);
             });
+            it("should increment by a unit of floating point step", function() {
+                aNumberField.value = 0.3;
+                aNumberField.min = 0;
+                aNumberField.max = 1;
+                aNumberField.step = 0.1;
+                aNumberField.handlePlusAction();
+
+                expect(aNumberField.value).toEqual(0.4);
+            });
+            it("should snap to greater floating point multiple", function() {
+                aNumberField.value = 0.2;
+                aNumberField.min = 0;
+                aNumberField.max = 1;
+                aNumberField.step = 0.125;
+                aNumberField.handlePlusAction();
+
+                expect(aNumberField.value).toEqual(0.25);
+            });
         });
         describe("minus", function () {
             //http://www.w3.org/html/wg/drafts/html/master/forms.html#dom-input-stepup
@@ -303,6 +321,24 @@ describe("test/base/abstract-number-field-spec", function () {
                 aNumberField.step = 3;
                 aNumberField.handleMinusAction();
                 expect(aNumberField.value).toEqual(1);
+            });
+            it("should decrement by a unit of floating point step", function() {
+                aNumberField.value = 0.2;
+                aNumberField.min = 0;
+                aNumberField.max = 1;
+                aNumberField.step = 0.1;
+                aNumberField.handleMinusAction();
+
+                expect(aNumberField.value).toEqual(0.1);
+            });
+            it("should snap to greater floating point multiple", function() {
+                aNumberField.value = 0.3;
+                aNumberField.min = 0;
+                aNumberField.max = 1;
+                aNumberField.step = 0.125;
+                aNumberField.handleMinusAction();
+
+                expect(aNumberField.value).toEqual(0.25);
             });
         });
     });

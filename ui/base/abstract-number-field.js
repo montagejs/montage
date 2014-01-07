@@ -120,18 +120,19 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
      */
     handlePlusAction: {
         value: function () {
-            var stepBase = (typeof this.min === "number") ? this.min : 0;
-            var value = this.value - stepBase;
-            if (value % this.step) {
+            var step = this.step * this._stepDecimal;
+            var stepBase = (typeof this.min === "number") ? this.min * this._stepDecimal : 0;
+            var value = (this.value * this._stepDecimal) - stepBase;
+            if (value % step) {
                 if (value < 0) {
-                    value -= value % this.step;
+                    value -= value % step;
                 } else {
-                    value += this.step - (value % this.step);
+                    value += step - (value % step);
                 }
             } else {
-                value += this.step;
+                value += step;
             }
-            this.value = value + stepBase;
+            this.value = (value + stepBase) / this._stepDecimal;
         }
     },
 
@@ -141,18 +142,19 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
      */
     handleMinusAction: {
         value: function () {
-            var stepBase = (typeof this.min === "number") ? this.min : 0;
-            var value = this.value - stepBase;
-            if (value % this.step) {
+            var step = this.step * this._stepDecimal;
+            var stepBase = (typeof this.min === "number") ? this.min * this._stepDecimal : 0;
+            var value = (this.value * this._stepDecimal) - stepBase;
+            if (value % step) {
                 if (value > 0) {
-                    value -= value % this.step;
+                    value -= value % step;
                 } else {
-                    value -= this.step + (value % this.step);
+                    value -= step + (value % step);
                 }
             } else {
-                value -= this.step;
+                value -= step;
             }
-            this.value = value + stepBase;
+            this.value = (value + stepBase) / this._stepDecimal;
         }
     },
 
@@ -256,6 +258,10 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
         }
    },
 
+    _stepDecimal: {
+        value: null
+    },
+
     /**
      * The amount the value changes when using the plus/minus buttons. Can be any positive number.
      * @type {number}
@@ -274,6 +280,12 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
                     this._propertyNamesUsed.step = true;
                 }
                 this._step = value;
+                var decimalPart = String(value).match(/\.(\d+)$/);
+                if (decimalPart) {
+                    this._stepDecimal = Math.pow(10, decimalPart[1].length);
+                } else {
+                    this._stepDecimal = 1;
+                }
             }
         }
     },
