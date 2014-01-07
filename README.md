@@ -71,3 +71,5 @@ To start using MontageJS, follow these steps:
 ##Where to Go from Here
 For a quick introduction on how to assemble MontageJS components into a user interface, refer to [“Hello MontageJS”](http://montagejs.org/docs/hello-montagejs.html) in our Quick Start tutorial.
 For more information on MontageJS components, bindings, event handling, serialization etc. refer to the [documentation](http://montagejs.org/docs/) (be patient: we are currently in the process of updating the docs).
+
+[![Analytics](https://ga-beacon.appspot.com/UA-35717912-2/montagejs/montage)](https://github.com/montagejs/montage)
