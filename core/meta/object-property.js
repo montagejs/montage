@@ -18,7 +18,7 @@ var logger = require("core/logger").logger("object-property");
  * @class ObjectProperty
  * @extends Montage
  */
-var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends ObjectProperty# */ {
+var ObjectProperty = exports.ObjectProperty = Montage.specialize(/** @lends ObjectProperty# */ {
 
     constructor: {
         value: function ObjectProperty() {
@@ -30,10 +30,8 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @method
      * @returns this
      */
-    init:{
-        serializable:false,
-        enumerable:false,
-        value:function () {
+    init: {
+        value: function () {
             return this;
         }
     },
@@ -48,8 +46,8 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Property} prototype TODO
      * @param {Object} blueprint TODO
      */
-    apply:{
-        value:function (prototype, blueprint) {
+    apply: {
+        value: function (prototype, blueprint) {
             if (!prototype.hasOwnProperty("blueprint")) {
                 var info;
                 info = Montage.getInfoForObject(prototype);
@@ -75,8 +73,8 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Property} prototype TODO
      * @param {Object} blueprint TODO
      */
-    applyWithBlueprint:{
-        value:function (prototype, blueprint) {
+    applyWithBlueprint: {
+        value: function (prototype, blueprint) {
             if (blueprint != null) {
                 this.addProperties(prototype, blueprint);
                 if (blueprint.parent !== null) {
@@ -93,8 +91,8 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Property} prototype TODO
      * @param {Object} blueprint TODO
      */
-    addProperties:{
-        value:function (prototype, blueprint) {
+    addProperties: {
+        value: function (prototype, blueprint) {
             //for loop over attributes
             var i = 0, attribute;
             while ((attribute = blueprint.propertyBlueprints[i++])) {
@@ -107,14 +105,14 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
                 }
             }
 
-            Montage.defineProperty(prototype, "_blueprint", { serializable:false, enumerable:false, value:blueprint });
-            Montage.defineProperty(prototype, "blueprint", { enumerable:false, serializable:false, get:function () {
+            Montage.defineProperty(prototype, "_blueprint", { serializable: false, enumerable: false, value: blueprint });
+            Montage.defineProperty(prototype, "blueprint", { enumerable: false, serializable: false, get: function () {
                 return this._blueprint;
             }});
             // Enable access to the 'inherited' get method for easy override.
-            Montage.defineProperty(prototype, "blueprintGet", { serializable:false, enumerable:false, value:this.blueprintGet});
+            Montage.defineProperty(prototype, "blueprintGet", { serializable: false, enumerable: false, value: this.blueprintGet});
             // Enable access to the 'inherited' set method for easy override.
-            Montage.defineProperty(prototype, "blueprintSet", { serializable:false, enumerable:false, value:this.blueprintSet});
+            Montage.defineProperty(prototype, "blueprintSet", { serializable: false, enumerable: false, value: this.blueprintSet});
         }
     },
 
@@ -125,8 +123,8 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Property} prototype TODO
      * @param {Object} attribute TODO
      */
-    addProperty:{
-        value:function (prototype, attribute) {
+    addProperty: {
+        value: function (prototype, attribute) {
             this.addPropertyStorage(prototype, attribute);
             this.addPropertyDefinition(prototype, attribute);
             this.addPropertyStoredValue(prototype, attribute);
@@ -138,23 +136,23 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Property} prototype TODO
      * @param {Object} attribute TODO
      */
-    addPropertyStorage:{
-        value:function (prototype, attribute) {
+    addPropertyStorage: {
+        value: function (prototype, attribute) {
             var storageKey = "_" + attribute.name,
                 storageDefinition = null;
             if (!prototype.hasOwnProperty(storageKey)) {
                 if (attribute.isToMany) {
                     storageDefinition = {
-                        value:[],
-                        enumerable:false,
-                        serializable:true,
-                        distinct:true
+                        value: [],
+                        enumerable: false,
+                        serializable: true,
+                        distinct: true
                     };
                 } else {
                     storageDefinition = {
-                        value:null,
-                        enumerable:false,
-                        serializable:true
+                        value: null,
+                        enumerable: false,
+                        serializable: true
                     };
                 }
                 Montage.defineProperty(prototype, storageKey, storageDefinition);
@@ -171,17 +169,17 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Property} prototype TODO
      * @param {Object} attribute TODO
      */
-    addPropertyDefinition:{
-        value:function (prototype, attribute) {
+    addPropertyDefinition: {
+        value: function (prototype, attribute) {
             var propertyKey = attribute.name,
                 propertyDefinition = null;
             if (!prototype.hasOwnProperty(propertyKey)) {
                 propertyDefinition = {
-                    get:function () {
+                    get: function () {
                         return this.blueprintGet(propertyKey);
                     },
-                    enumerable:true,
-                    serializable:false
+                    enumerable: true,
+                    serializable: false
                 };
                 if (!attribute.readOnly) {
                     propertyDefinition.set = function (value) {
@@ -206,13 +204,13 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @returns {Array} [storageKey]
      */
     blueprintGet: {
-        value:function (propertyName) {
+        value: function (propertyName) {
             var propertyBlueprint = this.blueprint.propertyBlueprintForName(propertyName);
             var storageKey = "_" + propertyBlueprint.name;
             return this[storageKey];
         },
-        enumerable:false,
-        serializable:false
+        enumerable: false,
+        serializable: false
     },
 
     /**
@@ -224,8 +222,8 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Property} value TODO
      * @returns {Array} [storageKey]
      */
-    blueprintSet:{
-        value:function (propertyName, value) {
+    blueprintSet: {
+        value: function (propertyName, value) {
             var propertyBlueprint = this.blueprint.propertyBlueprintForName(propertyName);
             var storageKey = "_" + propertyBlueprint.name;
             if (value == null && propertyBlueprint.denyDelete) {
@@ -234,8 +232,8 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
                 this[storageKey] = value;
             }
         },
-        enumerable:false,
-        serializable:false
+        enumerable: false,
+        serializable: false
     },
 
     /**
@@ -243,23 +241,23 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Property} prototype TODO
      * @param {Object} attribute TODO
      */
-    addPropertyStoredValue:{
-        value:function (prototype, attribute) {
+    addPropertyStoredValue: {
+        value: function (prototype, attribute) {
             var storedValueKey = attribute.name + "$Storage",
                 storedValueDefinition = null;
             if (!prototype.hasOwnProperty(storedValueKey)) {
                 if (attribute.isToMany) {
                     storedValueDefinition = {
-                        value:[],
-                        enumerable:false,
-                        serializable:false,
-                        distinct:true
+                        value: [],
+                        enumerable: false,
+                        serializable: false,
+                        distinct: true
                     };
                 } else {
                     storedValueDefinition = {
-                        value:null,
-                        enumerable:false,
-                        serializable:false
+                        value: null,
+                        enumerable: false,
+                        serializable: false
                     };
                 }
                 Montage.defineProperty(prototype, storedValueKey, storedValueDefinition);
@@ -277,8 +275,8 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Property} prototype TODO
      * @param {Object} attribute relationship to add
      */
-    addAssociation:{
-        value:function (prototype, attribute) {
+    addAssociation: {
+        value: function (prototype, attribute) {
             this.addPropertyStorage(prototype, attribute);
             this.addAssociationDefinition(prototype, attribute);
             this.addPropertyStoredValue(prototype, attribute);
@@ -291,8 +289,8 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Property} prototype TODO
      * @param {Object} attribute TODO
      */
-    addAssociationDefinition:{
-        value:function (prototype, attribute) {
+    addAssociationDefinition: {
+        value: function (prototype, attribute) {
             if (attribute.isToMany) {
                 this.addToManyAssociationDefinition(prototype, attribute);
             } else {
@@ -306,12 +304,12 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Property} prototype TODO
      * @param {Object} attribute TODO
      */
-    addToOneAssociationDefinition:{
-        value:function (prototype, attribute) {
+    addToOneAssociationDefinition: {
+        value: function (prototype, attribute) {
             var relationshipKey = attribute.name.toCapitalized();
             var key = "addTo" + relationshipKey;
             if (!prototype.hasOwnProperty(key)) {
-                Montage.defineProperty(prototype, key, { serializable:false, enumerable:false, value:function () {
+                Montage.defineProperty(prototype, key, { serializable: false, enumerable: false, value: function () {
                     return null;
                 }});
             } else {
@@ -321,7 +319,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
             }
             key = "removeFrom" + relationshipKey;
             if (!prototype.hasOwnProperty(key)) {
-                Montage.defineProperty(prototype, key, { serializable:false, enumerable:false, value:function () {
+                Montage.defineProperty(prototype, key, { serializable: false, enumerable: false, value: function () {
                     return null;
                 }});
             } else {
@@ -331,7 +329,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
             }
             key = "clear" + relationshipKey;
             if (!prototype.hasOwnProperty(key)) {
-                Montage.defineProperty(prototype, key, { serializable:false, enumerable:false, value:function () {
+                Montage.defineProperty(prototype, key, { serializable: false, enumerable: false, value: function () {
                     return null;
                 }});
             } else {
@@ -347,12 +345,12 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Property} prototype TODO
      * @param {Object} attribute TODO
      */
-    addToManyAssociationDefinition:{
-        value:function (prototype, attribute) {
+    addToManyAssociationDefinition: {
+        value: function (prototype, attribute) {
             var relationshipKey = attribute.name.toCapitalized();
             var key = "addTo" + relationshipKey;
             if (!prototype.hasOwnProperty(key)) {
-                Montage.defineProperty(prototype, key, { serializable:false, enumerable:false, value:function () {
+                Montage.defineProperty(prototype, key, { serializable: false, enumerable: false, value: function () {
                     return null;
                 }});
             } else {
@@ -362,7 +360,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
             }
             key = "removeFrom" + relationshipKey;
             if (!prototype.hasOwnProperty(key)) {
-                Montage.defineProperty(prototype, key, { serializable:false, enumerable:false, value:function () {
+                Montage.defineProperty(prototype, key, { serializable: false, enumerable: false, value: function () {
                     return null;
                 }});
             } else {
@@ -372,7 +370,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
             }
             key = "clear" + relationshipKey;
             if (!prototype.hasOwnProperty(key)) {
-                Montage.defineProperty(prototype, key, { serializable:false, enumerable:false, value:function () {
+                Montage.defineProperty(prototype, key, { serializable: false, enumerable: false, value: function () {
                     return null;
                 }});
             } else {
@@ -389,8 +387,8 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * @param {Property} prototype TODO
      * @param {Object} attribute TODO
      */
-    addDerivedProperty:{
-        value:function (prototype, attribute) {
+    addDerivedProperty: {
+        value: function (prototype, attribute) {
         }
     }
 
