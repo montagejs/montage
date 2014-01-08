@@ -442,11 +442,14 @@ var setupUI = function() {
     new LoggerUI().init();
 }
 if (typeof window !== "undefined") {
-    
-    window.loggers = loggers;
-    if (window.localStorage) {
-        // assigning to a local allows us to feature-test without typeof
+    // assigning to a local allows us to feature-test without typeof
+    try {
         localStorage = window.localStorage;
+    } catch (e) {
+        console.log("Error accessing localStorage", e);
+    }
+    window.loggers = loggers;
+    if (localStorage) {
         setupUI();
     }
 }
