@@ -626,6 +626,24 @@ POSSIBILITY OF SUCH DAMAGE.
                 "bindings": {
                     "value": {"<-": "@aliasMixedRepetitionIteration:header.object"}
                 }
+            },
+
+            "repetitionWithObjectAtCurrentIteration": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "repetitionWithObjectAtCurrentIteration"},
+                    "content": ["a"]
+                }
+            },
+
+            "objectAtCurrentIteration": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "objectAtCurrentIteration"}
+                },
+                "bindings": {
+                    "value": {"<-": "@repetitionWithObjectAtCurrentIteration.objectAtCurrentIteration"}
+                }
             }
 
     }</script>
@@ -822,6 +840,12 @@ POSSIBILITY OF SUCH DAMAGE.
     <div data-montage-id="aliasMixedRepetitionIteration" class="aliasMixedRepetitionIteration">
         <span data-arg="inner" data-montage-id="aliasMixedRepetitionIterationText" class="innerText"></span>
         <span data-arg="header" data-montage-id="aliasMixedRepetitionIterationHeader" class="header"></span>
+    </div>
+
+    <h2>Using objectAtCurrentIteration should cause a deprecation warning</h2>
+
+    <div data-montage-id="repetitionWithObjectAtCurrentIteration" class="repetitionWithObjectAtCurrentIteration">
+        <div data-montage-id="objectAtCurrentIteration" class="objectAtCurrentIteration"></div>
     </div>
 
 </body>

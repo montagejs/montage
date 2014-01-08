@@ -9,7 +9,7 @@ exports.companyBinder = function () {
 };
 
 exports.BinderHelper = Montage.specialize( {
-
+}, {
     companyBinder: {
         value: function() {
             var companyBinder = new Binder().initWithNameAndRequire("CompanyBinder", global.require);

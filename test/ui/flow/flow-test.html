@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Flow</title>
+    <script type="text/javascript" src="../../node_modules/montage/montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+        {
+            "test": {
+                "prototype": "ui/flow/flow-test[Test]",
+                "properties": {
+                    "flow": {"@": "flow"}
+                }
+            },
+
+            "flow": {
+                "prototype": "montage/ui/flow.reel",
+                "properties": {
+                    "element": {"#": "flow"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+    <h1>Flow</h1>
+
+    <div data-montage-id="flow"></div>
+</body>
+</html>

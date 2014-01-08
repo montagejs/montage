@@ -24,7 +24,7 @@ exports.AbstractControl = Component.specialize( /** @lends AbstractControl# */ {
      * The data property of the action event.
      *
      * Example to toggle the complete class: `"detail.get('selectedItem')" : {
-     * "<-" : "@repetition.objectAtCurrentIteration"}`
+     * "<-" : "@repetition:iteration.object"}`
      * @type {Dict}
      * @default null
      */

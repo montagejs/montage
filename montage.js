@@ -623,7 +623,8 @@ if (typeof window !== "undefined") {
                 "core/core",
                 "core/event/event-manager",
                 "core/serialization/deserializer/montage-reviver",
-                "core/logger"
+                "core/logger",
+                "core/deprecate"
             ];
 
             var Promise = montageRequire("core/promise").Promise;
@@ -637,6 +638,7 @@ if (typeof window !== "undefined") {
                 var EventManager = montageRequire("core/event/event-manager").EventManager;
                 var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                 var logger = montageRequire("core/logger").logger
+                var deprecate = montageRequire("core/deprecate")
 
                 var defaultEventManager, application;
 
@@ -668,7 +670,7 @@ if (typeof window !== "undefined") {
                     var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
                     application = new Application();
                     Object.defineProperty(window.document, "application", {
-                        get: Montage.deprecate(
+                        get: deprecate.deprecateMethod(
                             null,
                             function () {
                                 return exports.application

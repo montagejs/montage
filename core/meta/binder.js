@@ -12,6 +12,7 @@ var Promise = require("core/promise").Promise;
 var Deserializer = require("core/serialization").Deserializer;
 var BinderManager = require("core/meta/binder-manager").BinderManager;
 var BlueprintModule = require("core/meta/blueprint");
+var deprecate = require("../deprecate");
 var logger = require("core/logger").logger("blueprint");
 
 /**
@@ -224,7 +225,7 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
      * @returns blueprint
      */
     blueprintForPrototype: {
-        value: Montage.deprecate(void 0, function (prototypeName) {
+        value: deprecate.deprecateMethod(void 0, function (prototypeName) {
             return this.blueprintForName(prototypeName);
         }, "blueprintForPrototype", "blueprintForName")
     },
