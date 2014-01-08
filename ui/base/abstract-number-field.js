@@ -2,7 +2,9 @@
 var Montage = require("montage").Montage,
     AbstractControl = require("ui/base/abstract-control").AbstractControl,
     KeyComposer = require("composer/key-composer").KeyComposer,
-    Dict = require("collections/dict");
+    Dict = require("collections/dict"),
+    NumberConverter = require('core/converter/number-converter').NumberConverter;
+
 
 var CLASS_PREFIX = "montage-NumberField";
 
@@ -15,7 +17,6 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
 {
 
     // Lifecycle
-
     constructor: {
         value: function AbstractNumberField() {
             if (this.constructor === AbstractNumberField) {
@@ -24,6 +25,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
             AbstractControl.constructor.call(this); // super
             this._propertyNamesUsed = {};
             this.defineBinding( "classList.has('montage--disabled')", { "<-": "!enabled" });
+            this.converter = new NumberConverter();
         }
     },
 
@@ -188,7 +190,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
     },
 
     _required: {
-        value: false
+        value: null
     },
 
     _min: {
@@ -254,7 +256,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
                 }
             }
         }
-   },
+    },
 
     /**
      * The amount the value changes when using the plus/minus buttons. Can be any positive number.
@@ -288,6 +290,8 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
             return this._value;
         },
         set: function (value) {
+            this.super(value);
+            value = this._value;
             if (! isNaN(value = parseFloat(value))) {
                 if (typeof this.min === 'number' && value < this.min) {
                     value = this.min;
@@ -306,6 +310,20 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
             if(this._numberFieldTextFieldComponent && this._value !==  this._numberFieldTextFieldComponent.value) {
                 this._numberFieldTextFieldComponent.value = this._value;
             }
+            this.element.value = this._value;
+        }
+    },
+
+    required: {
+        set: function(value) {
+            if (value === "" || value === "true") {
+                value = true;
+            }
+            this._required = value;
+            this.needsDraw = true;
+        },
+        get: function() {
+            return this._required;
         }
     },
 
@@ -332,4 +350,11 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
         value: null
     }
 
+});
+
+// Standard <input type=number> tag attributes - http://www.w3.org/TR/html5/the-input-element.html#the-input-element
+AbstractNumberField.addAttributes({
+    min: {dataType: 'number'},
+    max: {dataType: 'number'},
+    step: 1
 });
