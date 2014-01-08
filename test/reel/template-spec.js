@@ -7,6 +7,7 @@ var Montage = require("montage").Montage,
     Template = require("montage/core/template").Template,
     TemplateResources = require("montage/core/template").TemplateResources,
     Component = require("montage/ui/component").Component,
+    MontageLabeler = require("montage/core/serialization/serializer/montage-labeler").MontageLabeler,
     Promise = require("montage/q"),
     objects = require("serialization/testobjects-v2").objects,
     URL = require("montage/core/mini-url");
@@ -293,16 +294,7 @@ describe("reel/template-spec", function() {
         });
 
         it("should clone the markup out of the document", function() {
-            var html = require("reel/template/simple-template.html").content,
-                expectedObjects = {
-                    "text": {
-                        "prototype": "montage/ui/text.reel",
-                        "properties": {
-                            "element": {"#": "text"},
-                            "value": "Hello, World!"
-                        }
-                    }
-                };
+            var html = require("reel/template/simple-template.html").content;
 
             return template.initWithHtml(html)
             .then(function() {
@@ -325,7 +317,9 @@ describe("reel/template-spec", function() {
             var html = require("reel/template/modification.html").content,
                 htmlModification = require("reel/template/modification-elements.html").content,
                 htmlDocument = document.implementation.createHTMLDocument(""),
-                collisionTable;
+                collisionTable,
+                node,
+                reference;
 
             template.initWithHtml(html, require);
             htmlDocument.documentElement.innerHTML = htmlModification;
@@ -343,9 +337,11 @@ describe("reel/template-spec", function() {
             var html = require("reel/template/modification.html").content,
                 htmlModification = require("reel/template/modification-elements.html").content,
                 htmlDocument = document.implementation.createHTMLDocument(""),
-                children,
                 collisionTable,
-                expectedCollisionTable;
+                expectedCollisionTable,
+                node,
+                reference,
+                title;
 
             template.initWithHtml(html, require);
             htmlDocument.documentElement.innerHTML = htmlModification;
@@ -364,10 +360,98 @@ describe("reel/template-spec", function() {
             expect(collisionTable).toEqual(expectedCollisionTable);
         });
 
+        it("should solve the collisions with the same base name", function() {
+            var html = require("reel/template/modification.html").content,
+                htmlModification = require("reel/template/modification-elements.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                collisionTable,
+                node,
+                reference;
+
+            template.initWithHtml(html, require);
+            htmlDocument.documentElement.innerHTML = htmlModification;
+
+            node = htmlDocument.getElementById("collisions");
+            reference = template.getElementById("title");
+
+            collisionTable = template.insertNodeBefore(node, reference);
+
+            expect(collisionTable.repetition).toBe("repetition2");
+            expect(collisionTable.title).toBe("title2")
+        });
+
+        it("should solve the collisions by using a custom labeler with insertNodeBefore", function() {
+            var html = require("reel/template/modification.html").content,
+                htmlModification = require("reel/template/modification-elements.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                collisionTable,
+                node,
+                reference,
+                labeler;
+
+            template.initWithHtml(html, require);
+            htmlDocument.documentElement.innerHTML = htmlModification;
+
+            node = htmlDocument.getElementById("collisions");
+            reference = template.getElementById("title");
+            labeler = new MontageLabeler();
+            labeler.addLabel("title2");
+
+            collisionTable = template.insertNodeBefore(node, reference, labeler);
+
+            expect(collisionTable.title).not.toBe("title2")
+        });
+
+        it("should solve the collisions by using a custom labeler with appendNode", function() {
+            var html = require("reel/template/modification.html").content,
+                htmlModification = require("reel/template/modification-elements.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                collisionTable,
+                node,
+                reference,
+                labeler;
+
+            template.initWithHtml(html, require);
+            htmlDocument.documentElement.innerHTML = htmlModification;
+
+            node = htmlDocument.getElementById("collisions");
+            reference = template.getElementById("title");
+            labeler = new MontageLabeler();
+            labeler.addLabel("title2");
+
+            collisionTable = template.appendNode(node, reference, labeler);
+
+            expect(collisionTable.title).not.toBe("title2")
+        });
+
+        it("should solve the collisions by using a custom labeler with replaceNode", function() {
+            var html = require("reel/template/modification.html").content,
+                htmlModification = require("reel/template/modification-elements.html").content,
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                collisionTable,
+                node,
+                reference,
+                labeler;
+
+            template.initWithHtml(html, require);
+            htmlDocument.documentElement.innerHTML = htmlModification;
+
+            node = htmlDocument.getElementById("collisions");
+            reference = template.getElementById("replace");
+            labeler = new MontageLabeler();
+            labeler.addLabel("title2");
+
+            collisionTable = template.replaceNode(node, reference, labeler);
+
+            expect(collisionTable.title).not.toBe("title2")
+        });
+
         it("should append a node to the template", function() {
             var html = require("reel/template/modification.html").content,
                 htmlModification = require("reel/template/modification-elements.html").content,
-                htmlDocument = document.implementation.createHTMLDocument("");
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                node,
+                reference;
 
             template.initWithHtml(html, require);
             htmlDocument.documentElement.innerHTML = htmlModification;
@@ -377,7 +461,7 @@ describe("reel/template-spec", function() {
 
             template.appendNode(node, reference);
 
-            expect(reference.children.length).toBe(2);
+            expect(reference.children.length).toBe(3);
             expect(reference.lastChild).toBe(node);
         });
 
@@ -387,7 +471,7 @@ describe("reel/template-spec", function() {
                 htmlDocument = document.implementation.createHTMLDocument(""),
                 expectedResult = {
                     "src" : URL.resolve(document.baseURI, "reel/template/sample-image.jpeg")
-                }
+                };
 
             return template.initWithModuleId(moduleId, require)
             .then(function() {
@@ -1448,32 +1532,6 @@ describe("reel/template-spec", function() {
                 expect(serializationObject.iterationItem.bindings).toEqual({
                     "value": {"<-": "@repetition:iteration"}
                 });
-            });
-        });
-
-        it("should reject an unknown label to solve the template property alias", function() {
-            var parametersHtml = require("reel/template/template-properties-parameters.html").content,
-                argumentsHtml = require("reel/template/template-arguments.html").content,
-                serialization;
-
-            argumentsProvider.getTemplateArgumentElement = function() {
-                range = document.createRange();
-                range.selectNodeContents(
-                    argumentsTemplate.getElementById("template-properties"));
-                return range.extractContents();
-            };
-
-            argumentsProvider.resolveTemplateArgumentTemplateProperty = function() {
-                return "unknown:iteration";
-            };
-
-            return Promise.all([
-                    parametersTemplate.initWithHtml(parametersHtml),
-                    argumentsTemplate.initWithHtml(argumentsHtml)
-            ]).then(function() {
-                expect(function() {
-                    parametersTemplate.expandParameters(argumentsProvider);
-                }).toThrow();
             });
         });
 

@@ -189,6 +189,22 @@ describe("reel/serialization/serialization-spec", function() {
         expect(labels).toContain("three");
     });
 
+    it("should get the element id of a component's element", function() {
+        var object = {
+                "one": {
+                    "properties": {
+                        "element": {"#": "mid"}
+                    }
+                }
+            },
+            elementId;
+
+        serialization.initWithObject(object);
+        elementId = serialization.getElementId("one");
+
+        expect(elementId).toBe("mid");
+    });
+
     describe("isExternalObject", function() {
         beforeEach(function() {
             var object = {
