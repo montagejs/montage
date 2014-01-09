@@ -2,7 +2,7 @@
  * @module montage/core/logger
  * @requires montage/core/core
  */
-var Montage = require("montage").Montage,
+var Montage = require("./core").Montage,
     Logger,
     loggers,
     consoleLog,

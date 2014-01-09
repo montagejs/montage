@@ -1,4 +1,4 @@
-var Montage = require("montage").Montage;
+var Montage = require("../../core").Montage;
 
 function UnitSerializer(visitor, malker, object) {
     this._visitor = visitor;

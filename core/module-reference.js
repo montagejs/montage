@@ -1,4 +1,5 @@
-var Montage = require("montage").Montage;
+
+var Montage = require("./core").Montage;
 
 /**
  * @class ModuleReference

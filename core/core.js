@@ -1,25 +1,14 @@
-/**
- @module montage
- @requires core/shim/object
- @requires core/shim/array
- @requires core/shim/string
- @requires core/extras/object
- @requires core/extras/string
- @requires core/extras/function
- @requires core/extras/date
- @requires core/extras/element
- @requires core/extras/regexp
-*/
+
 require("collections/shim");
-require("core/shim/object");
-require("core/shim/array");
-require("core/shim/string");
-require("core/extras/object");
-require("core/extras/date");
-require("core/extras/element");
-require("core/extras/function");
-require("core/extras/regexp");
-require("core/extras/string");
+require("./shim/object");
+require("./shim/array");
+require("./shim/string");
+require("./extras/object");
+require("./extras/date");
+require("./extras/element");
+require("./extras/function");
+require("./extras/regexp");
+require("./extras/string");
 
 var deprecate = require("./deprecate");
 
@@ -978,7 +967,7 @@ Montage.defineProperty(Montage, "getInfoForObject", {
 // it to core/extras/object resulted in _uuid becoming enumerable and tests
 // breaking. - @kriskowal
 
-var UUID = require("core/uuid");
+var UUID = require("./uuid");
 
 // HACK: This is to fix an IE10 bug where a getter on the window prototype chain
 // gets some kind of proxy Window object which cannot have properties defined
@@ -1131,11 +1120,11 @@ Object.addEach(Montage, PropertyChanges.prototype);
 Object.addEach(Montage.prototype, PropertyChanges.prototype);
 
 // have to come last since they use the Montage.defineProperties to augment Object.prototype
-require("core/bindings");
-require("core/paths");
+require("./bindings");
+require("./paths");
 // has to come last since serializer and deserializer depend on logger, which
 // in turn depends on montage running to completion
-require("core/serialization/bindings");
+require("./serialization/bindings");
 
 /*
  * Defines the module Id for blueprints. This is externalized so that it can be subclassed.

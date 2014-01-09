@@ -5,7 +5,7 @@
  * @module
  */
 
-var Montage = require("core/core").Montage;
+var Montage = require("./core").Montage;
 var WeakMap = require("collections/weak-map");
 var Map = require("collections/map");
 

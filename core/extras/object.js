@@ -3,7 +3,6 @@
     @see {external:Object}
     @module montage/core/extras/object
 */
-var M = require("core/core"); // lazy bound because of dependency cycle
 
 var WeakMap = require("collections/weak-map");
 

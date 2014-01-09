@@ -1,4 +1,4 @@
-var Montage = require("core/core").Montage;
+var Montage = require("./core").Montage;
 
 var Bindings = exports.Bindings = require("frb");
 
