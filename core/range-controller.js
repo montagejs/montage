@@ -36,6 +36,12 @@ var RangeSelection = function(content, rangeController) {
     self.rangeController = rangeController;
     self.contentEquals = content && content.contentEquals || Object.is;
 
+    Object.defineProperty(self, "clone", {
+        value: function(){
+            return self.slice();
+        }
+    });
+
     /**
      * @method splice
      * @param {number} start
