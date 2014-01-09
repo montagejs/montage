@@ -443,9 +443,13 @@ var setupUI = function() {
 }
 if (typeof window !== "undefined") {
     // assigning to a local allows us to feature-test without typeof
-    localStorage = window.localStorage;
+    try {
+        localStorage = window.localStorage;
+    } catch (e) {
+        console.log("Error accessing localStorage", e);
+    }
     window.loggers = loggers;
-    if (window.localStorage) {
+    if (localStorage) {
         setupUI();
     }
 }
