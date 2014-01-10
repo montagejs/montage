@@ -1,3 +1,17 @@
+### v0.13.10
+
+-  **Mr**
+
+   Update the Mr package to version 0.15.
+   Fixes an [issue](https://github.com/montagejs/mr/issues/65) with requiring modules with relative path as the main
+   file in package.json.
+   More info [here](https://github.com/montagejs/mr/blob/master/CHANGES.md).
+
+-  **Key Composer**
+
+   KeyManager now emits key events on the composer, not the target. This fixes an issue where you had to listen for keys
+   on the component and the composer.
+
 ### v0.13.9
 
 -  **Montage**
