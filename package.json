@@ -10,6 +10,9 @@
   "overlay": {
     "browser": {
       "main": "core/core",
+      "redirects": {
+        "montage": "core/core"
+      },
       "mappings": {
         "mr": {
           "name": "mr",

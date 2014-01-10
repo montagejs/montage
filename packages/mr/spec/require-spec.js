@@ -61,7 +61,15 @@ describe("Require", function () {
         "inject-mapping",
         {name: "script-injection-dep", node: false},
         {name: "script-injection", node: false},
-        "read"
+        "read",
+        "main-name",
+        "main",
+        "sandbox",
+        "browser-alternative",
+        "browser-alternatives",
+        "extension-loader",
+        "overlay",
+        "moduleTypes"
     ].forEach(function (test) {
         if (typeof test === "object") {
             if (test.node === false && typeof process !== "undefined") {
