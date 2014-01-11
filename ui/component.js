@@ -1637,7 +1637,7 @@ var Component = exports.Component = Target.specialize(/** @lends module:montage/
 
             if (element.parentNode) {
                 element.parentNode.replaceChild(template, element);
-            } else {
+            } else if (!this._canDrawOutsideDocument) {
                 console.warn("Warning: Trying to replace element ", element," which has no parentNode");
             }
 
