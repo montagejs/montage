@@ -450,6 +450,34 @@ describe("document-resources-spec", function() {
         });
     });
 
+    describe("prepopulate with the existing resources in the document", function() {
+        it("should prepopulate with a script file", function() {
+            var resources = new DocumentResources();
+
+            return createPage("reel/template/prepopulated-page.html")
+            .then(function(page) {
+                resources.initWithDocument(page.document);
+                var src = page.document.querySelector("script").src;
+                expect(resources.hasResource(src)).toBe(true);
+            }).fail(function(reason) {
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should prepopulate with a link file", function() {
+            var resources = new DocumentResources();
+
+            return createPage("reel/template/prepopulated-page.html")
+                .then(function(page) {
+                    resources.initWithDocument(page.document);
+                    var src = page.document.querySelector("link").href;
+                    expect(resources.hasResource(src)).toBe(true);
+                }).fail(function(reason) {
+                    expect("test").toBe("executed");
+                });
+        });
+    });
+
     describe("normalize url", function() {
         it("should normalize a relative url", function() {
             var resources = new DocumentResources(),
