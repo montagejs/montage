@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "collections": "~0.2.1",
-    "frb": "~0.2.15",
+    "frb": "0.2.16",
     "mousse": "~0.1.2",
     "htmlparser2": "~3.0.5"
   },
