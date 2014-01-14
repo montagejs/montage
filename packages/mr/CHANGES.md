@@ -1,3 +1,9 @@
+### 0.15.1
+
+ - Fix requiring dependencies with ".js" in their name in script-injection mode
+   (thanks @evax)
+ - Fix requiring twice a module that throws an error
+
 ## 0.15.0
 
  - Added `moduleTypes` config parameter so that all loadable extensions are
