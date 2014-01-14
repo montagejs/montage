@@ -187,7 +187,7 @@ Require.ScriptLoader = function (config) {
             }
 
             if (/\.js$/.test(location)) {
-                location = location.replace(/\.js/, ".load.js");
+                location = location.replace(/\.js$/, ".load.js");
             } else {
                 location += ".load.js";
             }
