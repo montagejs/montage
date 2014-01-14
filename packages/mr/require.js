@@ -211,14 +211,22 @@
             module.directory = URL.resolve(module.location, "./"); // EXTENSION
             module.exports = {};
 
-            // Execute the factory function:
-            var returnValue = module.factory.call(
-                // in the context of the module:
-                void 0, // this (defaults to global)
-                makeRequire(topId), // require
-                module.exports, // exports
-                module // module
-            );
+            var returnValue;
+            try {
+                // Execute the factory function:
+                returnValue = module.factory.call(
+                    // in the context of the module:
+                    void 0, // this (defaults to global)
+                    makeRequire(topId), // require
+                    module.exports, // exports
+                    module // module
+                );
+            } catch (_error) {
+                // Delete the exports so that the factory is run again if this
+                // module is required again
+                delete module.exports;
+                throw _error;
+            }
 
             // EXTENSION
             if (returnValue !== void 0) {
