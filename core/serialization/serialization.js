@@ -119,6 +119,19 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
         }
     },
 
+    getElementId: {
+        value: function(label) {
+            var object = this.getSerializationObject();
+
+            // TODO: much faster than using the visitor, need to make the visitor
+            // faster.
+            var element = Montage.getPath.call(object, label + ".properties.element");
+            if (element) {
+                return element["#"];
+            }
+        }
+    },
+
     getSerializationLabelsWithElements: {
         value: function(elementIds) {
             var inspector = new SerializationInspector(),
@@ -216,6 +229,8 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
      * method all references to the object being merged will change to point
      * to the object from serialization1 instead and the object will not be
      * merged.
+     * By returning a label that does not exist in both serializations the
+     * object will be merged into serialization2 with this new label instead.
      *
      * @callback delegateWillMergeObjectWithLabel
      * @param {string} label The object label.
@@ -248,9 +263,9 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
             labels2 = serialization2.getSerializationLabels();
 
             // Check for name collisions and generate new labels
-            foundCollisions = this._createCollisionTable(labels1, labels2, collisionTable);
+            foundCollisions = this._createCollisionTable(labels1, labels2, collisionTable, delegate && delegate.labeler);
 
-            if (delegate) {
+            if (delegate && delegate.willMergeObjectWithLabel) {
                 hasCollisionTableChanged = this._willMergeObjectWithLabel(delegate, serialization1, serialization2, collisionTable);
                 foundCollisions = foundCollisions || hasCollisionTableChanged;
             }
@@ -285,25 +300,47 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
         value: function(delegate, serialization1, serialization2, collisionTable) {
             var newLabel,
                 collisionLabel,
-                inSerialization,
+                collisionLabels,
+                inDestination,
+                renameLabel,
                 hasCollisionTableChanged = false,
                 labels2 = serialization2.getSerializationLabels();
+
+            if (collisionTable) {
+                collisionLabels = [];
+                Object.keys(collisionTable).forEach(function(label) {
+                    collisionLabels.push(collisionTable[label]);
+                });
+            }
 
             for (var i = 0, label; (label = labels2[i]); i++) {
                 collisionLabel = collisionTable && collisionTable[label];
                 newLabel = delegate.willMergeObjectWithLabel(label, collisionLabel);
 
                 if (typeof newLabel === "string") {
-                    // If the delegate returns a new label we need to make sure
-                    // that it exists in serialization1.
-                    inSerialization = this._isLabelValidInSerialization(
+                    // If the delegate returns a new label there are two
+                    // possible interpretations:
+                    // 1) The label is on the destination serialization so it
+                    //    means that we don't need to move this object there
+                    //    because it is already there under a different label.
+                    //    We just need to update the references to point to the
+                    //    right name.
+                    // 2) The label doesn't exist anywhere so it means we just
+                    //    need to move the object under this new different
+                    //    label.
+                    inDestination = this._isLabelValidInSerialization(
                         newLabel, serialization1);
+                    if (!inDestination) {
+                        renameLabel = !this._isLabelValidInSerialization(
+                            newLabel, serialization2)
+                            && collisionLabels.indexOf(newLabel) === -1;
+                    }
 
-                    if (inSerialization) {
+                    if (inDestination || renameLabel) {
                         hasCollisionTableChanged = true;
                         collisionTable[label] = newLabel;
                     } else {
-                        throw new Error("willMergeObjectWithLabel needs to return a label that exists in the destination serialization, \"" + newLabel + "\" was not found in " + serialization1.getSerializationString());
+                        throw new Error("willMergeObjectWithLabel either needs to return a label that exists in the destination serialization to indicate it's the same object or return a completely new label to rename the object being merged. \"" + newLabel + "\"  destination: " + serialization1.getSerializationString() + "\n source: " + serialization2.getSerializationString() + "\n collision table: " + JSON.stringify(collisionTable, null, 4));
                     }
                 }
             }
@@ -367,10 +404,11 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
      * @private
      */
     _createCollisionTable: {
-        value: function(labels1, labels2, collisionTable) {
-            var labeler = new MontageLabeler(),
+        value: function(labels1, labels2, collisionTable, labeler) {
+            var labeler = labeler || new MontageLabeler(),
                 foundCollisions = false,
                 componentLabel,
+                labels1Index = Object.create(null),
                 newLabel,
                 label,
                 ix;
@@ -385,9 +423,12 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
                 // property.
                 ix = label.indexOf(":");
                 if (ix > 0) {
-                    labeler.setObjectLabel(null, label.slice(0, ix));
+                    componentLabel = label.slice(0, ix);
+                    labeler.addLabel(componentLabel);
+                    labels1Index[componentLabel] = 1;
                 }
-                labeler.setObjectLabel(null, label);
+                labeler.addLabel(label);
+                labels1Index[label] = 1;
             }
 
             for (var i = 0; (label = labels2[i]); i++) {
@@ -402,11 +443,11 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
                     if (newLabel) {
                         collisionTable[label] = newLabel + ":" + label.slice(ix+1);
                         foundCollisions = true;
-                    } else if (labeler.isLabelDefined(componentLabel)) {
+                    } else if (componentLabel in labels1Index) {
                         // Renaming a label that is a property template is
                         // the same as renaming the component part of the
                         // label.
-                        newLabel = labeler.generateObjectLabel({});
+                        newLabel = labeler.generateLabel(labeler.getLabelBaseName(componentLabel));
                         // Rename the component label too if it exists.
                         if (labels2.indexOf(componentLabel) >= 0) {
                             collisionTable[componentLabel] = newLabel;
@@ -414,16 +455,16 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
                         collisionTable[label] = newLabel + label.slice(ix);
                         foundCollisions = true;
                     } else {
-                        labeler.setObjectLabel(null, componentLabel);
+                        labeler.addLabel(componentLabel);
                     }
                 }
                 // Also check if the label already has a new label, this can
                 // happen if a template property on that component was renamed.
-                else if (labeler.isLabelDefined(label) && !(label in collisionTable)) {
-                    collisionTable[label] = labeler.generateObjectLabel({});
+                else if (label in labels1Index && !(label in collisionTable)) {
+                    collisionTable[label] = labeler.generateLabel(labeler.getLabelBaseName(label));
                     foundCollisions = true;
                 } else {
-                    labeler.setObjectLabel(null, label);
+                    labeler.addLabel(label);
                 }
             }
 
