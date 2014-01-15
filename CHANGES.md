@@ -1,3 +1,11 @@
+### v0.13.11
+
+-  **Mr**
+
+   Update the Mr package to version 0.15.1.
+   Fixes an issue requiring dependencies with ".js" in their name in script-injection mode.
+   More info [here](https://github.com/montagejs/mr/blob/master/CHANGES.md).
+
 ### v0.13.10
 
 -  **Mr**
