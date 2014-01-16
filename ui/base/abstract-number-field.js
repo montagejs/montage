@@ -165,10 +165,13 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
             }
             this.value = this._numberFieldTextFieldComponent.value;
             if(event.identifier === "increase") {
+                this._numberFieldPlusComponent.element.focus();
                 this.handlePlusAction();
             } else if (event.identifier === "decrease") {
+                this._numberFieldMinusComponent.element.focus();
                 this.handleMinusAction();
             }
+            this._numberFieldTextFieldComponent.element.focus();
         }
     },
 
