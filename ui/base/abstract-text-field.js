@@ -6,6 +6,8 @@ var Montage = require("montage").Montage,
 
 var CLASS_PREFIX = "montage-TextField";
 
+
+
 /**
  * @class AbstractTextField
  * @extends AbstractControl
@@ -80,13 +82,15 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     },
 
     value: {
-        set: function(value) {
-            if (value !== this._value && !this.hasFocus) {
-                this._value = value;
-                this.needsDraw = true;
+        set: function (value) {
+            if (value !== this._value) {
+                if (!this.hasFocus || this.callDelegateMethod("shouldAcceptValue", this, value)) {
+                    this._value = value;
+                    this.needsDraw = true;
+                }
             }
         },
-        get: function() {
+        get: function () {
             return this._value;
         }
     },
