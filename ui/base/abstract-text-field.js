@@ -126,8 +126,6 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
             if (firstTime) {
                 this.element.addEventListener("input", this, false);
                 this.element.addEventListener("change", this, false);
-                this.element.addEventListener("focus", this, false);
-                this.element.addEventListener("blur", this, false);
             }
         }
     },
@@ -160,26 +158,23 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
         }
     },
 
-    handleFocus: {
+    willBecomeActiveTarget: {
         value: function(event) {
-            if (this.acceptsActiveTarget) {
-                this._hasFocus = true;
-                this.callDelegateMethod("didBeginEditing", this);
-            } else {
-                this.element.blur();
-            }
+            this._hasFocus = true;
+            this.callDelegateMethod("didBeginEditing", this);
         }
     },
 
-    handleBlur: {
+    surrendersActiveTarget: {
         value: function(event) {
             var shouldEnd = this.callDelegateMethod("shouldEndEditing", this);
             if (shouldEnd === false) {
-                this.element.focus();
+                return false;
             } else {
                 this._hasFocus = false;
                 this.callDelegateMethod("didEndEditing", this);
             }
+            return true;
         }
     },
 
