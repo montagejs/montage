@@ -83,6 +83,15 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
         }
     },
 
+    textFieldShouldAcceptValue: {
+        value: function(textField, value) {
+            if (this._activeValueChange === true) {
+                return true;
+            }
+        }
+    },
+
+
     prepareForActivationEvents: {
         value: function() {
             this._upKeyComposer.addEventListener("keyPress", this, false);
@@ -120,6 +129,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
      */
     handlePlusAction: {
         value: function () {
+            this._activeValueChange = true;
             var step = this.step * this._stepDecimal;
             var stepBase = (typeof this.min === "number") ? this.min * this._stepDecimal : 0;
             var value = (this.value * this._stepDecimal) - stepBase;
@@ -133,6 +143,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
                 value += step;
             }
             this.value = (value + stepBase) / this._stepDecimal;
+            this._activeValueChange = false;
         }
     },
 
@@ -142,6 +153,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
      */
     handleMinusAction: {
         value: function () {
+            this._activeValueChange = true;
             var step = this.step * this._stepDecimal;
             var stepBase = (typeof this.min === "number") ? this.min * this._stepDecimal : 0;
             var value = (this.value * this._stepDecimal) - stepBase;
@@ -155,6 +167,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
                 value -= step;
             }
             this.value = (value + stepBase) / this._stepDecimal;
+            this._activeValueChange = false;
         }
     },
 
@@ -163,15 +176,11 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
             if (!this.enabled) {
                 return;
             }
-            this.value = this._numberFieldTextFieldComponent.value;
             if(event.identifier === "increase") {
-                this._numberFieldPlusComponent.element.focus();
                 this.handlePlusAction();
             } else if (event.identifier === "decrease") {
-                this._numberFieldMinusComponent.element.focus();
                 this.handleMinusAction();
             }
-            this._numberFieldTextFieldComponent.element.focus();
         }
     },
 
@@ -262,7 +271,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
    },
 
     _stepDecimal: {
-        value: null
+        value: 1
     },
 
     /**
@@ -345,6 +354,10 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
 
     _numberFieldPlusComponent: {
         value: null
+    },
+
+    _activeValueChange: {
+        value: false
     }
 
 });
