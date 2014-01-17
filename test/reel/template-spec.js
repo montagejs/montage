@@ -847,6 +847,62 @@ describe("reel/template-spec", function() {
                 expect("test").toBe("executed");
             });
         });
+
+        it("should call _deserializedFromTemplate with the right metadata", function() {
+            var owner = {},
+                documentPart = {
+                    objects: {
+                        "object": new Montage()
+                    }
+                },
+                object = documentPart.objects.object;
+
+            object._deserializedFromTemplate = function(){};
+            spyOn(object, "_deserializedFromTemplate");
+            template.initWithRequire(require);
+            template.setObjectMetadata("object", null, "effectiveLabel", owner);
+            template._invokeDelegates(documentPart);
+
+            expect(object._deserializedFromTemplate).toHaveBeenCalledWith(owner, "effectiveLabel", documentPart);
+        });
+
+        it("should call deserializedFromTemplate with the right metadata", function() {
+            var owner = {},
+                documentPart = {
+                    objects: {
+                        "object": new Montage()
+                    }
+                },
+                object = documentPart.objects.object;
+
+            object.deserializedFromTemplate = function(){};
+            spyOn(object, "deserializedFromTemplate");
+            template.initWithRequire(require);
+            template.setObjectMetadata("object", null, "effectiveLabel", owner);
+            template._invokeDelegates(documentPart);
+
+            expect(object.deserializedFromTemplate).toHaveBeenCalledWith(owner, "effectiveLabel", documentPart);
+        });
+    });
+
+    describe("metadata", function() {
+        it("should get the right object owner", function() {
+            var owner = {};
+
+            template.initWithRequire(require);
+            template.setObjectMetadata("object", null, null, owner);
+
+            expect(template._getObjectOwner("object")).toBe(owner);
+        });
+
+        it("should get the right object label", function() {
+            var owner = {};
+
+            template.initWithRequire(require);
+            template.setObjectMetadata("object", null, "effectiveLabel", owner);
+
+            expect(template._getObjectLabel("object")).toBe("effectiveLabel");
+        });
     });
 
     describe("external objects", function() {
