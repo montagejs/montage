@@ -456,7 +456,8 @@ var Template = Montage.specialize( /** @lends Template# */ {
             var objects = documentPart.objects,
                 object,
                 owner = objects.owner || instances && instances.owner,
-                objectOwner;
+                objectOwner,
+                objectLabel;
 
             for (var label in objects) {
                 // Don't call delegate methods on objects that were passed to
@@ -472,14 +473,15 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 // when an object in the serialization is the result of a
                 // data-param that was expanded using arguments from an external
                 // template.
-                objectOwner = this._getObjectOwner(label, owner)
+                objectOwner = this._getObjectOwner(label, owner);
+                objectLabel = this._getObjectLabel(label);
 
                 if (object) {
                     if (typeof object._deserializedFromTemplate === "function") {
-                        object._deserializedFromTemplate(objectOwner, label, documentPart);
+                        object._deserializedFromTemplate(objectOwner, objectLabel, documentPart);
                     }
                     if (typeof object.deserializedFromTemplate === "function") {
-                        object.deserializedFromTemplate(objectOwner, label, documentPart);
+                        object.deserializedFromTemplate(objectOwner, objectLabel, documentPart);
                     }
                 }
             }
@@ -585,6 +587,21 @@ var Template = Montage.specialize( /** @lends Template# */ {
             }
 
             return objectOwner;
+        }
+    },
+
+    _getObjectLabel: {
+        value: function(label) {
+            var objectLabel,
+                metadata = this._metadata;
+
+            if (metadata && label in metadata) {
+                objectLabel = metadata[label].label;
+            } else {
+                objectLabel = label;
+            }
+
+            return objectLabel;
         }
     },
 
