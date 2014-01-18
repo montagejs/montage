@@ -269,7 +269,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                     this._dispatchPressCancel(event);
                     this._endInteraction(event);
                     return;
-                } else if (isSurrendered && !isTarget) {
+                } else {
                     this._endInteraction(event);
                 }
             }
