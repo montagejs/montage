@@ -140,8 +140,8 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate# */ {
                 } else {
                     this.count++;
                 }
-            } else if (value) {
-                logger.error(this, aFieldName + " was not set before.");
+            } else if (value && logger.isDebug) {
+                logger.debug(this, aFieldName + " was not set before.");
             }
             table[aFieldName] = !!value;
             if (this.count === 0 && oldCount > 0) {
