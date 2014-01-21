@@ -265,6 +265,27 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function(tes
                 expect(outer_listener).toHaveBeenCalled();
                 expect(inner_listener).not.toHaveBeenCalled();
             });
+
+            // touchend's target is always the same as touch start, so this
+            // test doesn't apply
+            if (!window.Touch) {
+                describe("outer_listener", function () {
+                    var _endInteractionSpy;
+                    beforeEach(function () {
+                        _endInteractionSpy = spyOn(test.outer_press_composer, "_endInteraction")
+                    });
+                    it("should _endInteraction when the mouse is released elsewhere", function() {
+                        testPage.mouseEvent({target: test.innerComponent.element}, "mousedown");
+                        testPage.mouseEvent({target: testPage.document}, "mouseup");
+                        expect(_endInteractionSpy).toHaveBeenCalled();
+                     });
+                    it("should _endInteraction when the mouse is released within the element but unclaimed", function() {
+                        testPage.mouseEvent({target: test.innerComponent.element}, "mousedown");
+                        testPage.mouseEvent({target: test.inner2Component.element}, "mouseup");
+                        expect(_endInteractionSpy).toHaveBeenCalled();
+                     });
+                });
+            }
         });
     });
 });

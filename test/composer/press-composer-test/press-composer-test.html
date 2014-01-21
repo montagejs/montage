@@ -77,6 +77,19 @@ POSSIBILITY OF SUCH DAMAGE.
             "component": {"@": "innerComponent"}
         }
     },
+    "inner2Component": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "hasTemplate": false,
+            "element": {"#": "inner2Component"}
+        }
+    },
+    "inner2_press_composer": {
+        "prototype": "montage/composer/press-composer",
+        "properties": {
+            "component": {"@": "inner2Component"}
+        }
+    },
 
     "test": {
         "prototype": "composer/press-composer-test/press-composer-test",
@@ -85,7 +98,9 @@ POSSIBILITY OF SUCH DAMAGE.
             "example": {"@": "example"},
             "outerComponent": {"@": "outerComponent"},
             "innerComponent": {"@": "innerComponent"},
+            "inner2Component": {"@": "inner2Component"},
             "inner_press_composer": {"@": "inner_press_composer"},
+            "inner2_press_composer": {"@": "inner2_press_composer"},
             "outer_press_composer": {"@": "outer_press_composer"}
         }
     },
@@ -127,6 +142,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
     <div data-montage-id="outerComponent" class="outerComponent">
         <div data-montage-id="innerComponent" class="innerComponent"></div>
+        <div data-montage-id="inner2Component" class="inner2Component"></div>
     </div>
 </body>
 </html>
