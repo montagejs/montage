@@ -2,7 +2,7 @@
 
 -  **Montage**
 
-   Avoid the warning message: "Trying to replace element <div>​</div>​ which has no parentNode"
+   Avoid the warning message: "Trying to replace element `<div>​</div>`​ which has no parentNode"
    Remove some extra logging in the Gate.
 
 ### v0.13.11
