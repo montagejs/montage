@@ -82,7 +82,9 @@ POSSIBILITY OF SUCH DAMAGE.
             "componentClassInTemplateAndBindings": {"@": "componentClassInTemplateAndBindings"},
             "componentF": {"@": "componentF"},
             "componentF1": {"@": "componentF1"},
-            "componentG": {"@": "componentG"}
+            "componentG": {"@": "componentG"},
+            "componentH": {"@": "componentH"},
+            "componentH1": {"@": "componentH1"}
         }
     },
     "owner": {
@@ -421,8 +423,25 @@ POSSIBILITY OF SUCH DAMAGE.
             "element": {"#": "componentG"},
             "hasTemplate": false
         }
-    }
+    },
 
+    "componentH": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "componentH"},
+            "hasTemplate": false
+        }
+    },
+
+    "componentH1": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "componentH1"},
+            "hasTemplate": false,
+            "ownerComponent": {"@": "componentH"},
+            "_blocksOwnerComponentDraw": true
+        }
+    }
 }
     </script>
 
@@ -551,6 +570,10 @@ POSSIBILITY OF SUCH DAMAGE.
     <div data-montage-id="componentF1">F1</div>
 </div>
 <div data-montage-id="componentG"></div>
+
+<div data-montage-id="componentH">
+    <div data-montage-id="componentH1">H1</div>
+</div>
 
 </body>
 </html>

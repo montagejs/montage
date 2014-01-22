@@ -379,6 +379,61 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
 
                    expect(style).toBe("border: 1px solid black; margin: 2px");
                 });
+
+                describe("_blocksOwnerComponentDraw", function() {
+                    it("should stop the owner from drawing when the component can't", function() {
+                        // setup spies
+                        spyOn(testPage.test.componentH, 'draw').andCallThrough();
+                        // trigger test
+                        testPage.test.componentH.needsDraw = true;
+                        testPage.test.componentH1.canDrawGate.setField("field", false);
+                        /// wait for draw
+                        testPage.waitForDraw();
+                        // test results
+                        runs(function() {
+                            expect(testPage.test.componentH.draw).not.toHaveBeenCalled();
+                            testPage.test.componentH1.canDrawGate.setField("field", true);
+                        });
+                    });
+
+                    it("should continue drawing when the component can", function() {
+                        // setup spies
+                        spyOn(testPage.test.componentH, 'draw').andCallThrough();
+                        // trigger test
+                        testPage.test.componentH.needsDraw = true;
+                        testPage.test.componentH1.canDrawGate.setField("field", false);
+                        /// wait for draw
+                        testPage.waitForDraw();
+                        // test results
+                        runs(function() {
+                            testPage.test.componentH1.canDrawGate.setField("field", true);
+                            testPage.waitForDraw();
+                            runs(function() {
+                                expect(testPage.test.componentH.draw).toHaveBeenCalled();
+                            });
+                        });
+                    });
+
+                    it("should continue drawing even if the owner component doesn't need to draw", function() {
+                        // setup spies
+                        spyOn(testPage.test.componentH1, 'draw').andCallThrough();
+                        // trigger test
+                        testPage.test.componentH1.needsDraw = true;
+                        testPage.test.componentH1.canDrawGate.setField("field", false);
+
+                        /// wait for draw
+                        testPage.waitForDraw();
+                        // test results
+                        runs(function() {
+                            expect(testPage.test.componentH1.draw).not.toHaveBeenCalled();
+                            testPage.test.componentH1.canDrawGate.setField("field", true);
+                            testPage.waitForDraw();
+                            runs(function() {
+                                expect(testPage.test.componentH1.draw).toHaveBeenCalled();
+                            })
+                        });
+                    });
+                });
             });
 
             describe("didDraw calling after draw", function() {
