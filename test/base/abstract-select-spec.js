@@ -157,7 +157,7 @@ describe("test/base/abstract-select-spec", function () {
             it("should set first of the values", function() {
                 aSelect.values = [content[1], content[2]];
                 aSelect.value = content[2];
-                expect(aSelect.values).toEqual([content[2]]);
+                expect(aSelect.values.slice()).toEqual([content[2]]);
             });
         });
 
@@ -210,7 +210,7 @@ describe("test/base/abstract-select-spec", function () {
                 aSelect.values = [content[1]];
                 aSelect.contentController.selection.push(content[2]);
 
-                expect(aSelect.values).toEqual([content[1], content[2]]);
+                expect(aSelect.values.slice()).toEqual([content[1], content[2]]);
             });
         });
 
@@ -222,8 +222,9 @@ describe("test/base/abstract-select-spec", function () {
 
             it("should only have one item in the content controller's selection when multiSelect is off", function() {
                 aSelect.multiSelect = false;
-                aSelect.values = [content[1], content[2]];
+                expect(aSelect.contentController.selection.length).toBe(1);
 
+                aSelect.values = [content[1], content[2]];
                 expect(aSelect.contentController.selection.length).toBe(1);
             });
 

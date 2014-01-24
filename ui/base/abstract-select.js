@@ -37,13 +37,11 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
             this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
             this.contentController = new RangeController();
+            this._values = this.contentController.selection;
 
             this.defineBindings({
                 "content": {
                     "<->": "contentController.content"
-                },
-                "values": {
-                    "<->": "contentController.selection.rangeContent()"
                 },
                 // FIXME: due to issues with 2 way bindings with rangeContent()
                 // we aren't currently able to have this "value" binding.
@@ -149,21 +147,8 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
             return this._values;
         },
         set: function(value) {
-            // When a property is bound to a rangeContent() we can't change the
-            // reference of the property because the binding will not work
-            // anymore (MON-444).
-            if (this._values) {
-                // We can't change the value reference because it is bound to a
-                // rangeContent(), instead we just replace its entire contents
-                // with the contents of the value given.
-                var args = [0, this._values.length].concat(value);
-                this._values.splice.apply(this._values, args);
-            } else {
-                // This is the only time when we actually set the values
-                // property. It is the value given when establishing the binding
-                // to rangeContent() in the constructor.
-                this._values = value;
-            }
+            var args = [0, this._values.length].concat(value);
+            this._values.splice.apply(this._values, args);
 
             this.needsDraw = true;
         }
