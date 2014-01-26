@@ -1243,17 +1243,22 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // it is unnecessary to splice the corresponding index in and out,
             // and unnecessary to even check whether more iterations need to be
             // allocated.
-            if (plus.length === minus.length) {
+            var reusableIterationsCount = Math.min(plus.length, minus.length);
+            var removeIterationsCount = minus.length - reusableIterationsCount;
+            var addIterationsCount = plus.length - reusableIterationsCount;
 
-                for (var i = 0; i < plus.length; i++, index++) {
+            if (reusableIterationsCount > 0) {
+
+                for (var i = 0; i < reusableIterationsCount; i++, index++) {
                     iterations[index].content = plus[i];
                     contentForIteration.set(iterations[index], plus[i]);
                 }
 
-            } else {
+            }
 
+            if (removeIterationsCount > 0) {
                 // Subtract iterations
-                var freedIterations = iterations.splice(index, minus.length);
+                var freedIterations = iterations.splice(index, removeIterationsCount);
                 freedIterations.forEach(function (iteration) {
                     // Notify these iterations that they have been recycled,
                     // particularly so they know to disable animations with the
@@ -1262,19 +1267,28 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 });
                 // Add them back to the free list so they can be reused
                 this._freeIterations.addEach(freedIterations);
+            }
+
+            if (addIterationsCount > 0) {
                 // Create more iterations if we will need them
-                while (this._freeIterations.length < plus.length) {
+                while (this._freeIterations.length < addIterationsCount) {
                     this._freeIterations.push(this._createIteration());
                 }
                 // Add iterations
-                iterations.swap(index, 0, plus.map(function (content, offset) {
+                var plusIterations = new Array(addIterationsCount);
+                for (var i = reusableIterationsCount, j = 0; i < plus.length; i++, j++) {
                     var iteration = this._freeIterations.pop();
+                    var content = plus[i];
                     iteration.content = content;
                     // This updates the "repetition.contentAtCurrentIteration"
                     // bindings.
                     contentForIteration.set(iteration, content);
-                    return iteration;
-                }, this));
+                    plusIterations[j] = iteration;
+                }
+                iterations.swap(index, 0, plusIterations);
+            }
+
+            if (removeIterationsCount > 0 || addIterationsCount > 0) {
                 // Update indexes for all subsequent iterations
                 this._updateIndexes(index);
 
