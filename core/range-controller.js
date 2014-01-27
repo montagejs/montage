@@ -59,7 +59,7 @@ var RangeSelection = function(content, rangeController) {
         configurable: false,
         value: function(start, howMany) {
             var content = this.rangeController.content;
-            this.contentEquals = content && content.contentEquals || Object.js;
+            this.contentEquals = content && content.contentEquals || Object.is;
             start = start >= 0 ? start : this.length + start;
             var oldLength = this.length;
             var minusLength = Math.min(howMany, oldLength - start);
