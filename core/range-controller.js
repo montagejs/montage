@@ -647,9 +647,10 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      */
     handleContentRangeChange: {
         value: function (plus, minus, index) {
+            var equals = this.content && this.content.contentEquals || Object.is;
             // remove all values from the selection that were removed (but
             // not added back)
-            minus.deleteEach(plus);
+            minus.deleteEach(plus, equals);
             if (this.selection) {
                 this.selection.deleteEach(minus);
             }
