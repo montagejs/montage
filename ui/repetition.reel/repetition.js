@@ -115,14 +115,13 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
 
             this.repetition = null;
             this.controller = null;
-            this.content = null;
-            this.defineBinding("object", {"<->": "content"}); // TODO remove this migration shim
+            this.object = null;
             // The iteration watches whether it is selected.  If the iteration
             // is drawn, it enqueue's selection change draw operations and
             // notifies the repetition it needs to be redrawn.
             // Dispatches handlePropertyChange with the "selected" key:
             this.defineBinding("selected", {
-                "<->": "content.defined() ? repetition.contentController.selection.has(content) : selected"
+                "<->": "object.defined() ? repetition.contentController.selection.has(object) : selected"
             });
             // An iteration can be "on" or "off" the document.  When the
             // iteration is added to a document, the "fragment" is depopulated
@@ -197,7 +196,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
     recycle: {
         value: function () {
             this.index = null;
-            this.content = null;
+            this.object = null;
             // Adding the "no-transition" class ensures that the iteration will
             // stop any transitions applied when the iteration was bound to
             // other content.  It has the side-effect of scheduling a draw, and
@@ -440,7 +439,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     initWithContent: {
         value: function (content) {
-            this.content = content;
+            this.object = content;
             return this;
         }
     },
@@ -1250,7 +1249,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             if (reusableIterationsCount > 0) {
 
                 for (var i = 0; i < reusableIterationsCount; i++, index++) {
-                    iterations[index].content = plus[i];
+                    iterations[index].object = plus[i];
                     contentForIteration.set(iterations[index], plus[i]);
                 }
 
@@ -1279,7 +1278,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 for (var i = reusableIterationsCount, j = 0; i < plus.length; i++, j++) {
                     var iteration = this._freeIterations.pop();
                     var content = plus[i];
-                    iteration.content = content;
+                    iteration.object = content;
                     // This updates the "repetition.contentAtCurrentIteration"
                     // bindings.
                     contentForIteration.set(iteration, content);
