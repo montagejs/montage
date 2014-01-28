@@ -59,7 +59,7 @@ var RangeSelection = function(content, rangeController) {
         configurable: false,
         value: function(start, howMany) {
             var content = this.rangeController.content;
-            this.contentEquals = content && content.contentEquals || Object.js;
+            this.contentEquals = content && content.contentEquals || Object.is;
             start = start >= 0 ? start : this.length + start;
             var oldLength = this.length;
             var minusLength = Math.min(howMany, oldLength - start);
@@ -647,11 +647,14 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      */
     handleContentRangeChange: {
         value: function (plus, minus, index) {
-            // remove all values from the selection that were removed (but
-            // not added back)
-            minus.deleteEach(plus);
-            if (this.selection) {
-                this.selection.deleteEach(minus);
+            if (this.selection.length > 0) {
+                var equals = this.content && this.content.contentEquals || Object.is;
+                // remove all values from the selection that were removed (but
+                // not added back)
+                minus.deleteEach(plus, equals);
+                if (this.selection) {
+                    this.selection.deleteEach(minus);
+                }
             }
         }
     },
