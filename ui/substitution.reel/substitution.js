@@ -214,6 +214,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
 
     contentDidChange: {
         value: function(newContent, oldContent) {
+            this.super();
             if (this._drawnSwitchValue) {
                 this._switchElements[this._drawnSwitchValue] = oldContent;
             }
