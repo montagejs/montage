@@ -1136,6 +1136,18 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
+    _blocksOwnerComponentDraw: {
+        value: false
+    },
+
+    _updateOwnerCanDrawGate: {
+        value: function() {
+            if (this._blocksOwnerComponentDraw && this.ownerComponent) {
+                this.ownerComponent.canDrawGate.setField(this.uuid, this.canDrawGate.value);
+            }
+        }
+    },
+
     _isComponentTreeLoaded: {
         value: null
     },
@@ -1473,6 +1485,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 } else {
                     this.ownerComponent = this.rootComponent;
                 }
+                this._updateOwnerCanDrawGate();
             }
 
             if (this._needsDrawInDeserialization) {
@@ -1527,9 +1540,19 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         value: function(gate) {
             if (gate === this._canDrawGate) {
                 this._canDraw = true;
+                this._updateOwnerCanDrawGate();
             } else if (gate === this._blockDrawGate) {
                 rootComponent.componentBlockDraw(this);
                 this._prepareCanDraw();
+            }
+        },
+        enumerable: false
+    },
+
+    gateDidBecomeFalse: {
+        value: function(gate) {
+            if (gate === this._canDrawGate) {
+                this._updateOwnerCanDrawGate();
             }
         },
         enumerable: false
@@ -2743,7 +2766,10 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
             length = needsDrawList.length;
             for (i = 0; i < length; i++) {
                 component = needsDrawList[i];
-                if (component.needsDraw) {
+                if (component.needsDraw ||
+                    // Maybe the component doesn't need to draw but has child
+                    // components that do.
+                    (component._drawList && component._drawList.length > 0)) {
                     component._addToParentsDrawList();
                 }
             }
