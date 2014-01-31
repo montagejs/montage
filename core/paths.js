@@ -36,7 +36,7 @@ var pathPropertyDescriptors = { /** @lends Montage# */
                 this,
                 parameters || this,
                 document,
-                components
+                components || this._ownerDocumentPart
             );
         }
     },
@@ -57,7 +57,7 @@ var pathPropertyDescriptors = { /** @lends Montage# */
                 value,
                 parameters || this,
                 document,
-                components
+                components || this._ownerDocumentPart
             );
         }
     },
@@ -78,7 +78,9 @@ var pathPropertyDescriptors = { /** @lends Montage# */
         value: function (path, emit) {
             var syntax = parse(path);
             var observe = compileObserver(syntax);
-            return observe(autoCancelPrevious(emit), new Scope(this));
+            var scope = new Scope(this);
+            scope.components = this._ownerDocumentPart;
+            return observe(autoCancelPrevious(emit), scope);
         }
     },
 

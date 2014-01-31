@@ -92,7 +92,14 @@ var DocumentPart = Montage.specialize( {
 
             return deferred.promise;
         }
+    },
+
+    getObjectByLabel: {
+        value: function (label) {
+            return this.objects[label];
+        }
     }
+
 });
 
 exports.DocumentPart = DocumentPart;

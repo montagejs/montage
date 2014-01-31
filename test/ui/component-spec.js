@@ -1360,5 +1360,22 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                 expect(templatePropertyLabel).toBe("bar:i");
             });
         });
+
+        describe("getPath", function () {
+            it("acquires peer components by label", function () {
+                expect(testPage.test.owner.getPath("@repetition")).toBe(testPage.test.repetition);
+            });
+        });
+
+        describe("defineBinding", function () {
+            it("binds via peer components by label", function () {
+                testPage.test.owner.defineBinding("repetitionContent", {
+                    "<->": "@repetition.content"
+                });
+                testPage.test.owner.repetitionContent = [4, 5, 6];
+                expect(testPage.test.repetition.content).toEqual([4, 5, 6]);
+            });
+        });
+
     });
 });

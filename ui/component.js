@@ -3286,6 +3286,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
             this._documentResources = DocumentResources.getInstanceForDocument(value);
         }
     }
+
 });
 
 var rootComponent = new RootComponent().init();

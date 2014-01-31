@@ -6,6 +6,7 @@ var bindingPropertyDescriptors = {
 
     defineBinding: {
         value: function (targetPath, descriptor, commonDescriptor) {
+            descriptor.components = descriptor.components || this._ownerDocumentPart;
             return Bindings.defineBinding(this, targetPath, descriptor, commonDescriptor);
         }
     },
