@@ -11,6 +11,18 @@
             "helpKey": ""
         }
     },
+    "rangeController_organizedContent": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "organizedContent",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": -1,
+            "valueType": "object",
+            "helpKey": ""
+        }
+    },
     "rangeController_sortPath": {
         "prototype": "core/meta/property-blueprint",
         "properties": {
@@ -109,6 +121,9 @@
                     "@": "rangeController_content"
                 },
                 {
+                    "@": "rangeController_organizedContent"
+                },
+                {
                     "@": "rangeController_sortPath"
                 },
                 {
@@ -137,6 +152,9 @@
                 "rangeController": [
                     {
                         "@": "rangeController_content"
+                    },
+                    {
+                        "@": "rangeController_organizedContent"
                     },
                     {
                         "@": "rangeController_sortPath"
