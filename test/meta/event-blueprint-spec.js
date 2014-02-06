@@ -8,10 +8,9 @@ describe("meta/event-blueprint-spec", function () {
 
     describe("EventBlueprint", function () {
 
-        var blueprint, eventBlueprint;
+        var eventBlueprint;
         beforeEach(function () {
-            blueprint = new Blueprint().initWithName("testBlueprint");
-            eventBlueprint = new EventBlueprint().initWithNameAndBlueprint("event", blueprint);
+            eventBlueprint = new EventBlueprint().initWithNameAndBlueprint("event", null);
         });
 
         it("has the correct name", function () {
@@ -43,11 +42,9 @@ describe("meta/event-blueprint-spec", function () {
                     "root": {
                         "prototype": "montage/core/meta/event-blueprint",
                         "properties": {
-                            "name": "event",
-                            "blueprint": {"@": "blueprint_testblueprint"}
+                            "name": "event"
                         }
-                    },
-                    "blueprint_testblueprint": {}
+                    }
                 };
 
                 serializer = new Serializer().initWithRequire(require);
@@ -67,7 +64,7 @@ describe("meta/event-blueprint-spec", function () {
 
             it("should deserialize correctly", function () {
                 var deserializer = new Deserializer().init(JSON.stringify(blueprintSerialization), require);
-                return deserializer.deserializeObject({blueprint_testblueprint: blueprint})
+                return deserializer.deserializeObject()
                 .then(function (deserialized) {
                     expect(deserialized).toEqual(eventBlueprint);
                 });

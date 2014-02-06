@@ -1190,7 +1190,8 @@ exports._blueprintDescriptor = {
                         // requested does not exist. If any parents do not
                         // exist then the error should still be thrown.
                         if (error.message.indexOf("Can't XHR") !== -1) {
-                            return Blueprint.createDefaultBlueprintForObject(self).then(function (blueprint) {
+                            return Blueprint.createDefaultBlueprintForObject(self)
+                            .then(function (blueprint) {
                                 return blueprint;
                             });
                         } else {

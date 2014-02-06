@@ -47,7 +47,6 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
     serializeSelf:{
         value:function (serializer) {
             serializer.setProperty("name", this.name);
-            serializer.setProperty("blueprint", this._owner, "reference");
             if (this.detailKeys.length > 0) {
                 this._setPropertyWithDefaults(serializer, "detailKeys", this.detailKeys);
             }
@@ -58,7 +57,6 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
     deserializeSelf:{
         value:function (deserializer) {
             this._name = deserializer.getProperty("name");
-            this._owner = deserializer.getProperty("blueprint");
             this.detailKeys = this._getPropertyWithDefaults(deserializer, "detailKeys");
             this.helpKey = this._getPropertyWithDefaults(deserializer, "helpKey");
         }
@@ -118,10 +116,7 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
      */
     identifier:{
         get:function () {
-            return [
-                this.owner.identifier,
-                this.name
-            ].join("_");
+            return this.owner ? this.owner.identifier + "_" + this.name : this.name;
         }
     },
 
