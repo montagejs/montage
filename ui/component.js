@@ -1315,8 +1315,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     _setupTemplateObjects: {
         value: function(objects) {
+            this.templateObjects = Object.create(null);
+            this._addTemplateObjects(objects);
+        }
+    },
+
+    _addTemplateObjects: {
+        value: function(objects) {
             var descriptor = this._templateObjectDescriptor,
-                templateObjects = Object.create(null);
+                templateObjects = this.templateObjects;
 
             for (var label in objects) {
                 var object = objects[label];
@@ -1331,8 +1338,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                     }
                 }
             }
-
-            this.templateObjects = templateObjects;
         }
     },
 
