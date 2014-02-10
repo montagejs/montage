@@ -22,6 +22,8 @@ var Montage = require("montage").Montage,
     Set = require("collections/set"),
     Alias = require("core/serialization/alias").Alias;
 
+var ATTR_LE_COMPONENT="data-montage-le-component";
+
 /**
  * @requires montage/ui/component-description
  */
@@ -250,6 +252,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             if (value == null) {
                 console.warn("Tried to set element of ", this, " to ", value);
                 return;
+            }
+
+            if (window.MONTAGE_LE_FLAG) {
+                value.setAttribute(ATTR_LE_COMPONENT, Montage.getInfoForObject(this).moduleId);
             }
 
             if (this.isDeserializing) {
@@ -1680,7 +1686,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             // TODO: get a spec for this, what attributes should we merge?
             for (i = 0; (attribute = attributes[i]); i++) {
                 attributeName = attribute.nodeName;
-                if (attributeName === "id" || attributeName === "data-montage-id") {
+                if (window.MONTAGE_LE_FLAG && attributeName === ATTR_LE_COMPONENT) {
+                    value = attribute.nodeValue;
+                } else if (attributeName === "id" || attributeName === "data-montage-id") {
                     value = attribute.nodeValue;
                 } else {
                     value = (template.getAttribute(attributeName) || "") + (attributeName === "style" ? "; " : " ") +
