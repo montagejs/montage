@@ -884,6 +884,15 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 self._expandIterationTemplateParameters();
             }
 
+            if (window.MONTAGE_LE_FLAG) {
+                var body = self._iterationTemplate.document.body;
+                if (body.children.length > 0) {
+                    var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
+                    var label = this._montage_metadata.label;
+                    this._leTagStarArgument(ownerModuleId, label, body);
+                }
+            }
+
             // Erase the initial child component trees. The initial document
             // children will be purged on first draw.  We use the innerTemplate
             // as the iteration template and replicate it for each iteration

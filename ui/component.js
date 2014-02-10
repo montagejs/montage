@@ -23,6 +23,9 @@ var Montage = require("montage").Montage,
     Alias = require("core/serialization/alias").Alias;
 
 var ATTR_LE_COMPONENT="data-montage-le-component";
+var ATTR_LE_ARG="data-montage-le-arg";
+var ATTR_LE_ARG_BEGIN="data-montage-le-arg-begin";
+var ATTR_LE_ARG_END="data-montage-le-arg-end";
 
 /**
  * @requires montage/ui/component-description
@@ -421,15 +424,27 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 range,
                 argument;
 
+            if (window.MONTAGE_LE_FLAG) {
+                var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
+                var label = this._montage_metadata.label;
+            }
+
             if (argumentName === "*") {
                 element = template.getElementById(this.getElementId());
 
                 range = template.document.createRange();
                 range.selectNodeContents(element);
                 argument = range.cloneContents();
+                if (window.MONTAGE_LE_FLAG && argument.children.length > 0) {
+                    this._leTagStarArgument(ownerModuleId, label, argument);
+                }
             } else {
                 argument = this._getTemplateDomArgument(argumentName).cloneNode(true);
                 argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
+                if (window.MONTAGE_LE_FLAG) {
+                    this._leTagNamedArgument(ownerModuleId, label, argument,
+                        argumentName);
+                }
             }
 
             return argument;
@@ -1753,13 +1768,51 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 logger.debug(this, "_templateElement: " + this._templateElement);
             }
 
+            var leTagArguments;
+            if (window.MONTAGE_LE_FLAG) {
+                leTagArguments = this.element.children.length > 0;
+            }
             this._initDomArguments();
+            if (leTagArguments) {
+                var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
+                var label = this._montage_metadata.label;
+                var argumentNames = this.getDomArgumentNames();
+                if (argumentNames.length === 0) {
+                    this._leTagStarArgument(ownerModuleId, label, this.element);
+                } else {
+                    for (var i = 0, name; name = /*assign*/argumentNames[i]; i++) {
+                        this._leTagNamedArgument(ownerModuleId, label,
+                            this._domArguments[name], name);
+                    }
+                }
+            }
             if (this._templateElement) {
                 this._bindTemplateParametersToArguments();
                 this._replaceElementWithTemplate();
             }
         },
         enumerable: false
+    },
+
+    _leTagStarArgument: {
+        value: function(ownerModuleId, label, rootElement) {
+            var argumentBegin = rootElement.firstElementChild;
+            var argumentEnd = rootElement.lastElementChild;
+
+            argumentBegin.setAttribute(ATTR_LE_ARG_BEGIN,
+                (argumentBegin.getAttribute(ATTR_LE_ARG_BEGIN)||"") + " " +
+                    ownerModuleId + "," + label);
+            argumentEnd.setAttribute(ATTR_LE_ARG_END,
+                (argumentEnd.getAttribute(ATTR_LE_ARG_END)||"") + " " +
+                    ownerModuleId + "," + label);
+        }
+    },
+
+    _leTagNamedArgument: {
+        value: function(ownerModuleId, label, element, name) {
+            element.setAttribute(ATTR_LE_ARG,
+                ownerModuleId + "," + label + "," + name);
+        }
     },
 
     _bindTemplateParametersToArguments: {
