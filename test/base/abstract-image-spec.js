@@ -264,7 +264,22 @@ describe("test/base/abstract-image-spec", function () {
                 }
             };
 
-            expect(anImage.src).toBe("http://montagejs.org/images/logo-montage.png");
+            expect(anImage._image.src).toBe("http://montagejs.org/images/logo-montage.png");
+        });
+
+        it("should not change the src to the rebased src", function() {
+            var src = "logo-montage.png";
+
+            anImage.src = src;
+            anImage._ownerDocumentPart = {
+                template: {
+                    getBaseUrl: function() {
+                        return "http://montagejs.org/images/";
+                    }
+                }
+            };
+
+            expect(anImage.src).toBe(src);
         });
     });
 

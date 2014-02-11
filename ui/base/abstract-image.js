@@ -110,12 +110,15 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
 
     _rebaseSrc: {
         value: function() {
-            var url;
+            var value;
 
-            url = this._getRebasedSrc();
+            value = this._getRebasedSrc();
 
-            if (url) {
-                this.src = url;
+            if (value) {
+                this._isLoadingImage = true;
+                this._isInvalidSrc = false;
+                this._image.src = value;
+                this.needsDraw = true;
             }
         }
     },
