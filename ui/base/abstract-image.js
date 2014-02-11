@@ -64,8 +64,8 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
 
     _loadImage: {
         value: function(src) {
-            this._isLoadingImage = true;
             this._image.src = src;
+            this._isLoadingImage = !this._image.complete;
         }
     },
 

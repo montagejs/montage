@@ -26,6 +26,7 @@ describe("test/base/abstract-image-spec", function () {
 
     describe("properties", function () {
         var Image = AbstractImage.specialize( {}),
+            imageURL = "http://montagejs.org/images/logo-montage.png",
             anImage;
 
         beforeEach(function () {
@@ -40,10 +41,9 @@ describe("test/base/abstract-image-spec", function () {
             });
 
             it("should start loading the new image", function() {
-                anImage.src = src1;
-
+                anImage.src = imageURL;
                 expect(anImage._isLoadingImage).toBeTruthy();
-                expect(anImage._image.src).toBe(src1);
+                expect(anImage._image.src).toBe(imageURL);
             });
         });
     });
@@ -74,7 +74,7 @@ describe("test/base/abstract-image-spec", function () {
         });
 
         it("should draw the empty image when src is changed and hasn't been loaded yet", function () {
-            anImage.src = src1;
+            anImage.src = "http://montagejs.org/images/logo-montage.png";
             anImage.draw();
             expect(anImage.element.src).toBe(anImage.emptyImageSrc);
         });
@@ -323,6 +323,26 @@ describe("test/base/abstract-image-spec", function () {
             expect(anImage.src).toBe(src);
         });
 
+    });
+
+    describe("cached image", function() {
+        var Image = AbstractImage.specialize({}),
+            cachedImage = new Image(),
+            imageURL = "http://montagejs.org/images/logo-montage.png";
+
+        it("should preload the image", function() {
+            cachedImage.src = imageURL;
+
+            waitsFor(function() {
+                return !cachedImage._isLoadingImage;
+            }, 4000);
+        });
+
+        it("should display the cached image", function() {
+            var anImage = new Image();
+            anImage.src = imageURL;
+            expect(anImage._isLoadingImage).toBe(false);
+        });
     });
 
     describe("blueprint", function () {
