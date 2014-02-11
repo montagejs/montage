@@ -83,7 +83,7 @@ var __FILE__String = "__FILE__",
     DoubleUnderscoreString = "__",
     globalEvalConstantA = "(function ",
     globalEvalConstantB = "(require, exports, module) {",
-    globalEvalConstantC = "//*/\n})\n//@ sourceURL=";
+    globalEvalConstantC = "//*/\n})\n//# sourceURL=";
 
 Require.Compiler = function (config) {
     return function(module) {
