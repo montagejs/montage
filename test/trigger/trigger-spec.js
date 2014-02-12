@@ -2,7 +2,6 @@
 var Montage = require("montage").Montage;
 var Promise = require("montage/core/promise").Promise;
 var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
-var URL = require("montage/core/url");
 
 var options = TestPageLoader.options("trigger-test", {timeoutLength: 10000}, function() {console.log("trigger-test callback");});
 describe("trigger-test", function() {
@@ -44,7 +43,7 @@ describe("trigger-test", function() {
                 injections.packageDescriptions = [
                     {
                         name: "to-be-defined",
-                        location: URL.resolve(options.directory, "node_modules/to-be-defined/"),
+                        location: options.directory + "node_modules/to-be-defined/",
                         description: packageJSON
                     }
                 ];
@@ -53,8 +52,8 @@ describe("trigger-test", function() {
                 injections.packageDescriptionLocations = [
                     {
                         name: "inject-description-location",
-                        location: URL.resolve(options.directory, "node_modules/inject-description-location/"),
-                        descriptionLocation: URL.resolve(options.directory, "inject-description-location.json")
+                        location: options.directory + "node_modules/inject-description-location/",
+                        descriptionLocation: options.directory + "inject-description-location.json"
                     }
                 ];
 
