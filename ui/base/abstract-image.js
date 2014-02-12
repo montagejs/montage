@@ -49,9 +49,8 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
 
                 value = this._getRebasedSrc();
                 if (value) {
-                    this._isLoadingImage = true;
                     this._isInvalidSrc = false;
-                    this._image.src = value;
+                    this._loadImage(value);
                 } else {
                     this._isInvalidSrc = true;
                 }
@@ -62,6 +61,14 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
             return this._src;
         }
     },
+
+    _loadImage: {
+        value: function(src) {
+            this._isLoadingImage = true;
+            this._image.src = src;
+        }
+    },
+
 
     // Invalid source is set when the src property is a relative location that
     // the image was not able to rebase using the templates baseUrl or any
@@ -110,12 +117,14 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
 
     _rebaseSrc: {
         value: function() {
-            var url;
+            var value;
 
-            url = this._getRebasedSrc();
+            value = this._getRebasedSrc();
 
-            if (url) {
-                this.src = url;
+            if (value) {
+                this._isInvalidSrc = false;
+                this._loadImage(value);
+                this.needsDraw = true;
             }
         }
     },
@@ -162,7 +171,7 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
             if (this._isLoadingImage || this._isInvalidSrc) {
                 src = this.emptyImageSrc;
             } else {
-                src = this._src;
+                src = this._getRebasedSrc();
             }
 
             // data: procotol is considered local and fires a CORS exception

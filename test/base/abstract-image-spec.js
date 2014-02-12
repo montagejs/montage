@@ -117,6 +117,41 @@ describe("test/base/abstract-image-spec", function () {
             anImage.draw();
             expect(anImage.element.hasAttribute("crossorigin")).toBe(false);
         });
+
+        it("should draw the rebased relative url if the _ownerDocumentPart is set after src", function() {
+            var src = "logo-montage.png";
+
+            anImage.src = src;
+            anImage._ownerDocumentPart = {
+                template: {
+                    getBaseUrl: function() {
+                        return "http://montagejs.org/images/";
+                    }
+                }
+            };
+            anImage._isLoadingImage = false;
+            anImage.draw();
+
+            expect(anImage.element.src).toBe("http://montagejs.org/images/logo-montage.png");
+        });
+
+        it("should draw the rebased relative url if the src is set after _ownerDocumentPart", function() {
+            var src = "logo-montage.png";
+
+             anImage._ownerDocumentPart = {
+                template: {
+                    getBaseUrl: function() {
+                        return "http://montagejs.org/images/";
+                    }
+                }
+            };
+            anImage.src = src;
+            anImage._isLoadingImage = false;
+            anImage.draw();
+
+            expect(anImage.element.src).toBe("http://montagejs.org/images/logo-montage.png");
+        });
+
     });
 
     describe("rebased src", function() {
@@ -140,6 +175,9 @@ describe("test/base/abstract-image-spec", function () {
         it("should not rebase https:// urls", function() {
             var src = "https://montagejs.org/images/logo-montage.png",
                 rebasedSrc;
+
+            //To prevent errors in the console.
+            anImage._loadImage = Function.noop;
 
             anImage.src = src;
             rebasedSrc = anImage._getRebasedSrc();
@@ -180,6 +218,9 @@ describe("test/base/abstract-image-spec", function () {
         it("should not rebase protocol: urls", function() {
             var src = "protocol://image.jpg",
                 rebasedSrc;
+
+            //To prevent errors in the console.
+            anImage._loadImage = Function.noop;
 
             anImage.src = src;
             rebasedSrc = anImage._getRebasedSrc();
@@ -264,8 +305,24 @@ describe("test/base/abstract-image-spec", function () {
                 }
             };
 
-            expect(anImage.src).toBe("http://montagejs.org/images/logo-montage.png");
+            expect(anImage._image.src).toBe("http://montagejs.org/images/logo-montage.png");
         });
+
+        it("should not change the src to the rebased src", function() {
+            var src = "logo-montage.png";
+
+            anImage.src = src;
+            anImage._ownerDocumentPart = {
+                template: {
+                    getBaseUrl: function() {
+                        return "http://montagejs.org/images/";
+                    }
+                }
+            };
+
+            expect(anImage.src).toBe(src);
+        });
+
     });
 
     describe("blueprint", function () {
