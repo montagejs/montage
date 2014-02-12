@@ -4,7 +4,8 @@ var MockDOM = require("mocks/dom");
 
 AbstractImage.prototype.hasTemplate = false;
 
-var src1 = "data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+var src1 = "data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==",
+    imageURL = "http://montagejs.org/images/logo-montage.png";
 
 describe("test/base/abstract-image-spec", function () {
     describe("creation", function () {
@@ -26,7 +27,6 @@ describe("test/base/abstract-image-spec", function () {
 
     describe("properties", function () {
         var Image = AbstractImage.specialize( {}),
-            imageURL = "http://montagejs.org/images/logo-montage.png",
             anImage;
 
         beforeEach(function () {
@@ -74,7 +74,7 @@ describe("test/base/abstract-image-spec", function () {
         });
 
         it("should draw the empty image when src is changed and hasn't been loaded yet", function () {
-            anImage.src = "http://montagejs.org/images/logo-montage.png";
+            anImage.src = imageURL;
             anImage.draw();
             expect(anImage.element.src).toBe(anImage.emptyImageSrc);
         });
@@ -94,7 +94,7 @@ describe("test/base/abstract-image-spec", function () {
         });
 
         it("should change the crossorigin attribute when crossOrigin is set", function () {
-            anImage.src = "http://montagejs.org/images/logo-montage.png";
+            anImage.src = imageURL;
             anImage.crossOrigin = "anonymous";
             anImage._isLoadingImage = false;
             anImage.draw();
@@ -103,7 +103,7 @@ describe("test/base/abstract-image-spec", function () {
 
         it("should remove the crossorigin attribute when crossOrigin is null", function () {
             anImage.element.setAttribute("crossorigin", "anonymous");
-            anImage.src = "http://montagejs.org/images/logo-montage.png";
+            anImage.src = imageURL;
             anImage.crossOrigin = null;
             anImage._isLoadingImage = false;
             anImage.draw();
@@ -163,7 +163,7 @@ describe("test/base/abstract-image-spec", function () {
         });
 
         it("should not rebase http:// urls", function() {
-            var src = "http://montagejs.org/images/logo-montage.png",
+            var src = imageURL,
                 rebasedSrc;
 
             anImage.src = src;
@@ -290,7 +290,7 @@ describe("test/base/abstract-image-spec", function () {
             anImage.src = src;
             rebasedSrc = anImage._getRebasedSrc();
 
-            expect(rebasedSrc).toBe("http://montagejs.org/images/logo-montage.png");
+            expect(rebasedSrc).toBe(imageURL);
         });
 
         it("should rebase relative urls as soon as owner template is available", function() {
@@ -304,8 +304,7 @@ describe("test/base/abstract-image-spec", function () {
                     }
                 }
             };
-
-            expect(anImage._image.src).toBe("http://montagejs.org/images/logo-montage.png");
+            expect(anImage._image.src).toBe(imageURL);
         });
 
         it("should not change the src to the rebased src", function() {
@@ -327,8 +326,7 @@ describe("test/base/abstract-image-spec", function () {
 
     describe("cached image", function() {
         var Image = AbstractImage.specialize({}),
-            cachedImage = new Image(),
-            imageURL = "http://montagejs.org/images/logo-montage.png";
+            cachedImage = new Image();
 
         it("should preload the image", function() {
             cachedImage.src = imageURL;
