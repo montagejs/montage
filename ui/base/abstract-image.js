@@ -49,7 +49,6 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
 
                 value = this._getRebasedSrc();
                 if (value) {
-                    this._isLoadingImage = true;
                     this._isInvalidSrc = false;
                     this._loadImage(value);
                 } else {
@@ -65,6 +64,7 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
 
     _loadImage: {
         value: function(src) {
+            this._isLoadingImage = true;
             this._image.src = src;
         }
     },
@@ -122,7 +122,6 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
             value = this._getRebasedSrc();
 
             if (value) {
-                this._isLoadingImage = true;
                 this._isInvalidSrc = false;
                 this._loadImage(value);
                 this.needsDraw = true;
