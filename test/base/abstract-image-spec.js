@@ -41,9 +41,10 @@ describe("test/base/abstract-image-spec", function () {
             });
 
             it("should start loading the new image", function() {
-                anImage.src = imageURL;
+                var url = imageURL + "?donotchache=" + Date.now();
+                anImage.src = url;
                 expect(anImage._isLoadingImage).toBeTruthy();
-                expect(anImage._image.src).toBe(imageURL);
+                expect(anImage._image.src).toBe(url);
             });
         });
     });
@@ -74,7 +75,7 @@ describe("test/base/abstract-image-spec", function () {
         });
 
         it("should draw the empty image when src is changed and hasn't been loaded yet", function () {
-            anImage.src = imageURL;
+            anImage.src = imageURL + "?donotchache=" + Date.now();
             anImage.draw();
             expect(anImage.element.src).toBe(anImage.emptyImageSrc);
         });
