@@ -41,6 +41,7 @@ exports.Target = Montage.specialize( /** @lends Target# */ {
      * `defaultEventManager.activeTarget == this`.
      *
      * @type {boolean}
+     * @readonly
      */
     isActiveTarget: {
         get: function () {
