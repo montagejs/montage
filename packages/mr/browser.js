@@ -79,11 +79,13 @@ if (global.navigator && global.navigator.userAgent.indexOf("Firefox") >= 0) {
     globalEval = new Function("_", "return eval(_)");
 }
 
-var __FILE__String = "__FILE__",
-    DoubleUnderscoreString = "__",
+var DoubleUnderscore = "__",
+    Underscore = "_",
     globalEvalConstantA = "(function ",
     globalEvalConstantB = "(require, exports, module) {",
-    globalEvalConstantC = "//*/\n})\n//# sourceURL=";
+    globalEvalConstantC = "//*/\n})\n//# sourceMappingURL=data:text/text;base64,",
+    sourceMapPrefix = '{"version":3,"file":"x.js.map","names":["identity"],"mappings":"CAACA","sources":["',
+    sourceMapSuffix = '"]}';
 
 Require.Compiler = function (config) {
     return function(module) {
@@ -97,16 +99,15 @@ Require.Compiler = function (config) {
         // Here we use a couple tricks to make debugging better in various browsers:
         // TODO: determine if these are all necessary / the best options
         // 1. name the function with something inteligible since some debuggers display the first part of each eval (Firebug)
-        // 2. append the "//@ sourceURL=location" hack (Safari, Chrome, Firebug)
-        //  * http://pmuellr.blogspot.com/2009/06/debugger-friendly.html
-        //  * http://blog.getfirebug.com/2009/08/11/give-your-eval-a-name-with-sourceurl/
-        //      TODO: investigate why this isn't working in Firebug.
+        // 2. append the "//# sourceMappingURL=dataURI"
+        //  * http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/
+        //  * dataURI scheme documented here: http://tools.ietf.org/html/rfc2397
         // 3. set displayName property on the factory function (Safari, Chrome)
 
-        var displayName = __FILE__String+module.location.replace(/\.\w+$|\W/g, DoubleUnderscoreString);
+        var displayName = (module.require.config.name + DoubleUnderscore + module.id).replace(/[^\w\d]/g, Underscore);
 
         try {
-            module.factory = globalEval(globalEvalConstantA+displayName+globalEvalConstantB+module.text+globalEvalConstantC+module.location);
+            module.factory = globalEval(globalEvalConstantA+displayName+globalEvalConstantB+module.text+globalEvalConstantC+btoa(sourceMapPrefix+module.location+sourceMapSuffix));
         } catch (exception) {
             exception.message = exception.message + " in " + module.location;
             throw exception;
@@ -187,7 +188,7 @@ Require.ScriptLoader = function (config) {
             }
 
             if (/\.js$/.test(location)) {
-                location = location.replace(/\.js/, ".load.js");
+                location = location.replace(/\.js$/, ".load.js");
             } else {
                 location += ".load.js";
             }
