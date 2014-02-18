@@ -1082,6 +1082,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
                 promise = self._iterationTemplate.instantiateWithInstances(instances, _document)
                 .then(function (part) {
+                    part.parentDocumentPart = self._ownerDocumentPart;
                     iteration._templateDocumentPart = part;
                     part.loadComponentTree().then(function() {
                         iteration._fragment = part.fragment;

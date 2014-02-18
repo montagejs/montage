@@ -1421,6 +1421,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
                 return template.instantiateWithInstances(instances, _document)
                 .then(function(documentPart) {
+                    documentPart.parentDocumentPart = self._ownerDocumentPart;
                     self._templateDocumentPart = documentPart;
                     documentPart.fragment = null;
                 })
