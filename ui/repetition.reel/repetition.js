@@ -106,6 +106,11 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
     _noTransition: {value: null},
 
     /**
+     * The document part created by instantiating the iteration template.
+     */
+    _templateDocumentPart: {value: null},
+
+    /**
      * Creates the initial values of all instance state.
      * @private
      */
@@ -1077,6 +1082,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
                 promise = self._iterationTemplate.instantiateWithInstances(instances, _document)
                 .then(function (part) {
+                    iteration._templateDocumentPart = part;
                     part.loadComponentTree().then(function() {
                         iteration._fragment = part.fragment;
                         // It is significant that _childComponents are assigned
