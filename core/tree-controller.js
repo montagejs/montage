@@ -135,7 +135,7 @@ var Node = exports.TreeControllerNode = Montage.specialize({
      * @private
      */
     _junction: {
-        value: null,
+        value: null
     },
 
     /**
@@ -236,7 +236,10 @@ var Node = exports.TreeControllerNode = Montage.specialize({
 
     /**
      * Finds and return the node having the given content.
-     * Takes an optional second argument to specify the comparaison function to use.
+     * Takes an optional second argument to specify the compare function to use.
+     * note: If you are doing find operations frequently, it might be better to attach
+     * a binding that will facilitate incremental updates and O(1) lookups.
+     * `nodeForContent <- nodes{[content, this]}.toMap()`
      */
     findNodeByContent: {
         value: function (content, equals) {
@@ -449,7 +452,10 @@ exports.TreeController = Montage.specialize({
 
     /**
      * Finds and returns the node having the given content.
-     * Takes an optional second argument to specify the comparaison function to use.
+     * Takes an optional second argument to specify the compare function to use.
+     * note: If you are doing find operations frequently, it might be better to attach
+     * a binding that will facilitate incremental updates and O(1) lookups.
+     * `nodeForContent <- nodes{[content, this]}.toMap()`
      */
     findNodeByContent: {
         value: function(content, equals) {
