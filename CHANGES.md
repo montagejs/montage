@@ -5,6 +5,12 @@
     Better JSDoc annotations.
    `super()` methods are now cached for better performance.
    `addRangeAtPathChangeListener()` is more tolerant changes along the path
+   Better support for Firefox, using source maps for better compatibility.
+   Existing document resources are now taken into account when loading the page for the first time. (#1397)
+
+-  **Path Listeners**
+
+   *PathChangeListener functions an now accept parameters, document and components.
 
 -  **Target**
 
@@ -31,11 +37,15 @@
 -  **RangeController**
 
    Can now track selection with an Array, Set or SortedSet.
+   Better selection management.
+
+-  **TreeController**
+   Added findNodeByContent() to be able to locate content in the tree.
 
 -  **Repetition**
 
-   Added aliases and template properties so that binding to `@repetition:iteration` is possible. Using aliases this
-   can be exposed by the owner template.
+   Added aliases and template properties so that binding to `@repetition:iteration.object` is possible. Using aliases
+   this can be exposed by the owner template.
    Some never used properties were removed for performance improvements.
    Fixed a bug in selection where a selected object could not be part of the content array.
 
@@ -43,13 +53,19 @@
 
    Added ModalOverlay to force user response
    Added AbstractAlert and AbstractConfirm.
-   Better handling of activeTarget
+   Better handling of activeTarget, will not show if the activeTarget is not surrendered.
    Dismisses with escape key.
    Overlay can now have a delegate that affects it's position and behavior.
+
+-  **AbstractButton**
+
+   Now only has a label property, value is gone.
 
 -  **AbstractImage**
 
    Now handles cross origin via the `crossOrigin` property.
+   Now doesn't modify the src property when rebasing.
+   Properly handles the case where the image is in browser cache.
 
 -  **AbstractSlider**
 
@@ -57,9 +73,9 @@
    Fixed bug for initial knob position.
    Uses a simplified dom structure.
 
--  **AbstractButton**
+-  **AbstractTextField**
 
-   Now only has a label property, value is gone.
+   Fixed bug with setting the value to 0.
 
 ### v0.13.12
 
