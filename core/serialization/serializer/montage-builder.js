@@ -1,4 +1,4 @@
-var Montage = require("montage").Montage;
+var Montage = require("../../core").Montage;
 var Builder = require("mousse/serialization/builder").Builder;
 var MontageAst = require("./montage-ast");
 

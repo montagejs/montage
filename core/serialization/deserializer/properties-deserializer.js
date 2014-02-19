@@ -1,5 +1,5 @@
-var Montage = require("core/core").Montage;
-var Promise = require("core/promise").Promise;
+var Montage = require("../../core").Montage;
+var Promise = require("../../promise").Promise;
 
 var PropertiesDeserializer = Montage.specialize( {
     _object: {value: null},

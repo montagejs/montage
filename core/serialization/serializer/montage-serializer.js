@@ -1,11 +1,11 @@
-var Montage = require("core/core").Montage;
+var Montage = require("../../core").Montage;
 var Malker = require("mousse/serialization/malker").Malker;
 var Serializer = require("mousse/serialization/serializer").Serializer;
 var MontageBuilder = require("./montage-builder").MontageBuilder;
 var MontageLabeler = require("./montage-labeler").MontageLabeler;
 var MontageVisitor = require("./montage-visitor").MontageVisitor;
 
-var logger = require("core/logger").logger("montage-serializer");
+var logger = require("../../logger").logger("montage-serializer");
 
 var MontageSerializer = Montage.specialize.call(Serializer, {
     _require: {value: null},

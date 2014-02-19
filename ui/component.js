@@ -10,7 +10,6 @@
  */
 var Montage = require("montage").Montage,
     Target = require("core/target").Target,
-    Bindings = require("core/bindings").Bindings,
     Template = require("core/template").Template,
     DocumentResources = require("core/document-resources").DocumentResources,
     Gate = require("core/gate").Gate,
@@ -948,13 +947,13 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             // Until we have a more granular way we shouldn't do this,
             // the cancelBindings parameter is a short term fix.
             if (cancelBindings) {
-                Bindings.cancelBindings(this);
+                this.cancelBindings();
             }
             this.needsDraw = false;
             this.traverseComponentTree(function(component) {
                 // See above comment
                 if (cancelBindings) {
-                    Bindings.cancelBindings(component);
+                    component.cancelBindings();
                 }
                 component.needsDraw = false;
             });

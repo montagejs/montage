@@ -1,12 +1,12 @@
-var Montage = require("core/core").Montage;
+var Montage = require("../../core").Montage;
 var Interpreter = require("mousse/deserialization/interpreter").Interpreter;
 var Deserializer = require("mousse/deserialization/deserializer").Deserializer;
 var MontageInterpreter = require("./montage-interpreter").MontageInterpreter;
 var MontageReviver = require("./montage-reviver").MontageReviver;
-var Promise = require("core/promise").Promise;
-var JSHINT = require("core/jshint").JSHINT;
+var Promise = require("../../promise").Promise;
+var JSHINT = require("../../jshint").JSHINT;
 
-var logger = require("core/logger").logger("montage-deserializer");
+var logger = require("../../logger").logger("montage-deserializer");
 
 var MontageDeserializer = Montage.specialize.call(Deserializer, {
     _interpreter: {value: null},

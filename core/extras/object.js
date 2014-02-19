@@ -1,8 +1,9 @@
 /**
- * Defines extensions to intrinsic `Object`.
- * @see {external:Object}
- * @module montage/core/extras/object
- */
+    Defines extensions to intrinsic `Object`.
+    @see {external:Object}
+    @module montage/core/extras/object
+*/
+
 var WeakMap = require("collections/weak-map");
 
 // string table, for strings that might be constructed multiple times

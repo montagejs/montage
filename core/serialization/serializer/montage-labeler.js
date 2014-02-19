@@ -1,4 +1,4 @@
-var Montage = require("montage").Montage;
+var Montage = require("../../core").Montage;
 var Labeler = require("mousse/serialization/labeler").Labeler;
 
 exports.MontageLabeler = Montage.specialize.call(Labeler, {

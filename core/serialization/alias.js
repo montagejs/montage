@@ -1,6 +1,6 @@
 /*global require, exports */
 
-var Montage = require("core/core").Montage;
+var Montage = require("../core").Montage;
 
 /**
  * A component can expose internal components to external usage using aliases.
