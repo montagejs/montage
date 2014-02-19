@@ -12,6 +12,10 @@
 
    *PathChangeListener functions an now accept parameters, document and components.
 
+-  **url**
+
+   `montage/core/url` has been removed, use the `url` npm package instead https://www.npmjs.org/package/url.
+
 -  **Target**
 
    dispatchEvent() now return a boolean to signify whether or not the defaults were prevented.
