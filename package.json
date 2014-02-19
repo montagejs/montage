@@ -1,6 +1,6 @@
 {
   "name": "mr",
-  "version": "0.15.0",
+  "version": "0.15.2",
   "description": "A refresh-only CommonJS module system for browsers, used in Montage",
   "keywords": [
     "montage",
@@ -10,6 +10,10 @@
     "modules",
     "loader"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/montagejs/mr.git"
+  },
   "main": "require",
   "scripts": {
     "test": "jasmine-node spec/node-spec.js && node spec/phantom.js && jshint .",
@@ -34,7 +38,7 @@
     "q-io": "~1.10.1",
     "jshint": "~2.1.4",
     "jasmine-node": "~1.11.0",
-    "phantom-wd": "~0.0.1",
+    "phantom-wd": "~0.0.2",
     "mop-integration": "git://github.com/montagejs/mop-integration.git#master"
   },
   "exclude": [

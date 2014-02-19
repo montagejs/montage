@@ -1,3 +1,18 @@
+### 0.15.2
+
+ - Change `//@` for `//#` for SourceURL comment to match the spec
+ - Use `sourceMappingURL` instead of `sourceURL`. This allows the evaled code
+   to appear as source files in Firefox.
+ - Friendlier display names for modules:
+   `__FILE__http______localhost__8081__montagejs__mr__demo__data__` is now
+   `mr_demo__data`
+
+### 0.15.1
+
+ - Fix requiring dependencies with ".js" in their name in script-injection mode
+   (thanks @evax)
+ - Fix requiring twice a module that throws an error
+
 ## 0.15.0
 
  - Added `moduleTypes` config parameter so that all loadable extensions are
