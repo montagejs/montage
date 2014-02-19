@@ -38,8 +38,11 @@ TestPageLoader.queueTest("mytest", function(testPage) {
 });
 ```
 
+Core Team
+=========
+
 git subtree
------------------
+-----------
 
 Git subtrees are like submodules, but better and easier for everyone involved. They allow you to import code from a different repository but instead of adding a *reference* to your repository, they add the **actual code** *and commit saying where the code came from*.
 
