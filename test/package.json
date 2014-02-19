@@ -4,6 +4,7 @@
     "mappings": {
         "montage": "../",
         "montage-testing": "../node_modules/montage-testing",
+        "collections": "../node_modules/collections",
         "package-a": {
             "name": "package-a",
             "location": "package-a"
