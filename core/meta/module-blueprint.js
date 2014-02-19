@@ -15,8 +15,8 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize(/** @lends 
 
     /**
      * @function
-     * @param {string} name TODO
-     * @param {string} module A ModuleReference
+     * @param {ModuleReference} module
+     * @param {string} name
      * @returns this
      */
     initWithModuleAndExportName: {
@@ -88,7 +88,7 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize(/** @lends 
      * Gets a blueprint from a serialized file at the given module id.
      * @function
      * @param {string} blueprint module id
-     * @param {Function} require function
+     * @param {function} require function
      */
     getBlueprintWithModuleId: {
         value: function(moduleId, _require) {

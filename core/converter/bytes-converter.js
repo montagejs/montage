@@ -11,9 +11,6 @@ var _stringToNumericValue = require("core/converter/number-converter")._stringTo
 var NUMERIC_SCALES_BINARY_ = require("core/converter/number-converter").NUMERIC_SCALES_BINARY_;
 var isDef = require('core/converter/converter').isDef;
 
-/**
- * @private
- */
 var NUMERIC_SCALE_PREFIXES_BYTES = [
     'P', 'T', 'G', 'M', 'K', '', 'm', 'u', 'n'
 ];
@@ -36,7 +33,8 @@ var stringToNumBytes = function(stringValue) {
  * confusion with counts that are scaled by powers of 1000.
  * @function
  * @param {number} val Value to be converted.
- * @param {?number} decimals=2 The number of decimals to use.  Defaults to 2.
+ * @param {?number} decimals=2 The number of decimals to use.
+ * Defaults to 2.
  * @param {?boolean} suffix=true If true, include trailing 'B' in returned
  * string. Default is true.
  * @return {string} String representation of number of bytes.
@@ -54,7 +52,8 @@ var numBytesToString = function(val, opt_decimals, opt_suffix) {
  * Formats a number of bytes in human readable form: 54, 450K, 1.3M, 5G etc.
  * @function
  * @param {number} bytes The number of bytes to show.
- * @param {number} decimals=2 The number of decimals to use.  Defaults to 2.
+ * @param {number} decimals=2 The number of decimals to use.
+ * Defaults to 2.
  * @return {string} The human readable form of the byte size.
  * @private
  */
@@ -119,5 +118,6 @@ exports.BytesConverter = Converter.specialize( /** @lends BytesConverter# */ {
             return v;
         }
     }
+
 });
 

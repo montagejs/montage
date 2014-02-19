@@ -1,9 +1,9 @@
 "use strict";
 /**
- @module montage/core/remote-reference
- @requires montage/core/core
- @requires core/promise
- @requires core/logger
+ * @module montage/core/remote-reference
+ * @requires montage/core/core
+ * @requires core/promise
+ * @requires core/logger
  */
 var Montage = require("montage").Montage;
 var Promise = require("core/promise").Promise;
@@ -79,7 +79,7 @@ exports.RemoteReference = Montage.specialize({
      * The default implementation does nothing and must be overwritten by subtypes
      *
      * @param references
-     * @param isRequire
+     * @param {boolean} isRequire
      */
     valueFromReference: {
         value: function(reference, iRequire) {

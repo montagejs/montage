@@ -1,13 +1,14 @@
 /*global require,exports */
+
 /**
-    @module montage/core/localizer
-    @requires montage/core/core
-    @requires montage/core/logger
-    @requires montage/core/deserializer
-    @requires montage/core/promise
-    @requires montage/core/messageformat
-    @requires montage/core/messageformat-locale
-*/
+ * @module montage/core/localizer
+ * @requires montage/core/core
+ * @requires montage/core/logger
+ * @requires montage/core/deserializer
+ * @requires montage/core/promise
+ * @requires montage/core/messageformat
+ * @requires montage/core/messageformat-locale
+ */
 var Montage = require("montage").Montage,
     MessageFormat = require("core/messageformat"),
     logger = require("core/logger").logger("localizer"),
@@ -42,9 +43,9 @@ var EMPTY_STRING_FUNCTION = function() { return ""; };
 var reLanguageTagValidator = /^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/;
 
 /**
-    @class Localizer
-    @extends Montage
-*/
+ * @class Localizer
+ * @extends Montage
+ */
 var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */ {
 
     constructor: {
@@ -180,14 +181,14 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     },
 
     /**
-        The require function to use in {@link loadMessages}.
-        By default this is set to the global require, meaning that messages
-        will be loaded from the root of the application. To load messages
-        from the root of your package set this to the require function from
-        any class in the package.
-        @type Function
-        @default global require | null
-    */
+     * The require function to use in {@link loadMessages}.
+     * By default this is set to the global require, meaning that messages
+     * will be loaded from the root of the application. To load messages
+     * from the root of your package set this to the require function from
+     * any class in the package.
+     * @type Function
+     * @default global require | null
+     */
     require: {
         serializable: false,
         get: function() {
@@ -283,13 +284,13 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     /**
      * Load the locale appropriate message files from the given manifest
      * structure.
-     * @private
      * @method
      * @param {Object} files An object mapping directory (locale) names to
      * @returns {Promise} A promise that will be resolved with an array
      * containing the content of message files appropriate to this locale.
      * Suitable for passing into {@link _collapseMessages}.
-    */
+     * @private
+     */
     _loadMessageFiles: {
         value: function(files) {
             var messageRequire = this.require;
@@ -354,7 +355,6 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     /**
      * Collapse an array of message objects into one, earlier elements taking
      * precedence over later ones.
-     * @private
      * @method
      * @param {Array<Object>} localesMessages
      * @returns {Object} An object mapping messages keys to the messages
@@ -362,6 +362,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
      * [{hi: "Good-day"}, {hi: "Hello", bye: "Bye"}]
      * // results in
      * {hi: "Good-day", bye: "Bye"}
+     * @private
      */
     _collapseMessages: {
         value: function(localesMessages) {
@@ -531,6 +532,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
  * @extends Localizer
  */
 var DefaultLocalizer = Localizer.specialize( /** @lends DefaultLocalizer# */ {
+
     init: {
         value: function() {
             var defaultLocale = this.callDelegateMethod("getDefaultLocale");
@@ -607,6 +609,7 @@ var DefaultLocalizer = Localizer.specialize( /** @lends DefaultLocalizer# */ {
             return this._locale;
         }
     }
+
 });
 
 /**
@@ -634,7 +637,7 @@ var defaultLocalizer = exports.defaultLocalizer = new DefaultLocalizer().init();
  *
  * @function
  * @see Localizer#localize
-*/
+ */
 exports.localize = defaultLocalizer.localize.bind(defaultLocalizer);
 
 /**
@@ -658,7 +661,7 @@ var Message = exports.Message = Montage.specialize( /** @lends MessageLocalizer#
 
     /**
      * @method
-     * @param {string|Function} keyOrFunction A messageformat string or a
+     * @param {string|function} keyOrFunction A messageformat string or a
      * function that takes an object argument mapping variables to values and
      * returns a string. Usually the output of Localizer#localize.
      * @param {Object} data  Value for this data property.

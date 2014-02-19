@@ -4,6 +4,7 @@
  */
 var Montage = require("montage").Montage,
     Target = require("core/target").Target;
+
 /**
  * The `Composer` helps to keep event normalization and calculation out of
  * specific `Component`s and in a reusable place. For example, the
@@ -128,7 +129,7 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
     },
 
 
-    /*
+    /**
      * Invoked by the framework to default the composer's element to the
      * component's element if necessary.
      * @private
@@ -141,7 +142,7 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
         }
     },
 
-    /*
+    /**
      * Invoked by the framework to load this composer.
      * @private
      */
@@ -185,7 +186,7 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
         }
     },
 
-    /*
+    /**
      * Called when a composer is part of a template serialization. It's
      * responsible for calling `addComposer` on the component.
      * @private

@@ -24,9 +24,6 @@ var newLineToBr = function(str) {
  */
 exports.NewLineToBrConverter = Converter.specialize( /** @lends NewLineToBrConverter# */{
 
-    /**
-     * @private
-     */
     _convert: {
         value: function(v) {
             if (v && typeof v === 'string') {

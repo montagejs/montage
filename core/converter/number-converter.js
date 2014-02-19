@@ -1,4 +1,5 @@
-// Number and String formatting functions from Google Closure Library - http://code.google.com/closure/library/
+// Number and String formatting functions from Google Closure Library
+// http://code.google.com/closure/library/
 // /library/format/format.js
 
 // Copyright 2010 The Closure Library Authors. All Rights Reserved.
@@ -322,9 +323,6 @@ var NumberConverter = exports.NumberConverter = Converter.specialize( /** @lends
         value: null
     },
 
-    /**
-     * @private
-     */
     _reg: {
         value: /(\d+)(\d{3})/
     },
@@ -346,9 +344,6 @@ var NumberConverter = exports.NumberConverter = Converter.specialize( /** @lends
     },
 
     // credit: sugar.js - https://github.com/andrewplummer/Sugar
-    /**
-     * @private
-     */
     _makeReadable: {
         value: function(num, comma, period) {
             comma = comma || ',';

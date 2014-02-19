@@ -3,13 +3,14 @@
  */
 
 /**
- * Returns whether the given value is a regexp, regardless of which
- * context it comes from.  The context may be another frame.
+ * Returns whether the given value is a regexp, regardless of which context it
+ * comes from.
+ * The context may be another frame.
  *
- * <p>This is the proper idiomatic way to test whether an object is a
- * regexp and replaces the less generally useful `instanceof`
- * check (which does not work across contexts) and the strangeness that
- * the `typeof` a regexp is `"object"`.
+ * This is the proper idiomatic way to test whether an object is a regexp and
+ * replaces the less generally useful `instanceof` check (which does not work
+ * across contexts) and the strangeness that the `typeof` a regexp is
+ * `"object"`.
  *
  * @function external:RegExp.isRegExp
  * @param value any value

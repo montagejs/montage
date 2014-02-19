@@ -51,9 +51,6 @@ var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** 
         }
     },
 
-    /**
-     * @private
-     */
     handleEvent: {
         value: function(event) {
             if (typeof this.action === "function") {
@@ -65,9 +62,6 @@ var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** 
         }
     },
 
-    /**
-     * @private
-     */
     serializeProperties: {
         value: function(serializer) {
             serializer.set("handler", this.handler, "reference");

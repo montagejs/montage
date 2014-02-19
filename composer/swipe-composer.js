@@ -1,8 +1,8 @@
 /**
-    @module montage/composer/swipe-composer
-    @requires montage
-    @requires montage/composer/composer
-*/
+ * @module montage/composer/swipe-composer
+ * @requires montage
+ * @requires montage/composer/composer
+ */
 var Montage = require("montage").Montage,
     Composer = require("composer/composer").Composer;
 
@@ -232,4 +232,5 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
 
         }
     }
+
 });

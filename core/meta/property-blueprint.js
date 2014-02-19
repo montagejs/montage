@@ -137,8 +137,8 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
     /**
      * Name of the object. The name is used to define the property on the
      * object.
-     * @method
-     * @returns {string} this._name
+     * @readonly
+     * @type {string}
      */
     name:{
         serializable:false,
@@ -151,8 +151,8 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
      * The identifier is the name of the blueprint, dot, the name of the
      * property blueprint, and is used to make the serialization of property
      * blueprints more readable.
-     * @type {Property}
-     * @default {string} this.name
+     * @readonly
+     * @type {string}
      */
     identifier:{
         get:function () {
@@ -171,40 +171,41 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
      * stored. Only positive values are legal. A value of infinity means that
      * any number of values can be stored.
      *
-     * @type {Property}
-     * @default {number} 1
+     * @type {number}
+     * @default 1
      */
     cardinality:{
         value: Defaults["cardinality"]
     },
 
     /**
-     * @type {Property}
-     * @default {boolean} false
+     * @type {boolean}
+     * @default false
      */
     mandatory:{
         value: Defaults["mandatory"]
     },
 
     /**
-     * @type {Property}
-     * @default {boolean} false
+     * @type {boolean}
+     * @default false
      */
     denyDelete:{
         value: Defaults["denyDelete"]
     },
 
     /**
-     * @type {Property}
-     * @default {boolean} false
+     * @type {boolean}
+     * @default false
      */
     readOnly:{
         value: Defaults["readOnly"]
     },
 
     /**
-     * @type {Property}
-     * @default {boolean} false
+     * @readonly
+     * @type {boolean}
+     * @default false
      */
     isAssociationBlueprint:{
         get:function () {
@@ -214,8 +215,9 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
 
     /**
      * Returns true if the cardinality is more than one.
-     * @type {Property}
-     * @default {boolean} false
+     * @readonly
+     * @type {boolean}
+     * @default false
      */
     isToMany:{
         get:function () {
@@ -224,8 +226,8 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
     },
 
     /**
-     * @type {Property}
-     * @default {boolean} false
+     * @type {boolean}
+     * @default false
      */
     isDerived:{
         get:function () {
@@ -234,32 +236,28 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
     },
 
     /**
-     * @type {Property}
-     * @default {string} "string"
+     * @type {string}
      */
     valueType:{
         value: Defaults["valueType"]
     },
 
     /**
-     * @type {Property}
-     * @default {string} "string"
+     * @type {string}
      */
     collectionValueType:{
         value: Defaults["collectionValueType"]
     },
 
     /**
-     * @type {Property}
-     * @default {Object} null
+     * @type {string}
      */
     valueObjectPrototypeName:{
         value: Defaults["valueObjectPrototypeName"]
     },
 
     /**
-     * @type {Property}
-     * @default {Object} null
+     * @type {string}
      */
     valueObjectModuleId:{
         value: Defaults["valueObjectModuleId"]
@@ -271,8 +269,7 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
 
     /**
      * List of values for enumerated value types
-     * @type {Property}
-     * @default {Object} null
+     * @type {Array}
      */
     enumValues:{
         get:function () {

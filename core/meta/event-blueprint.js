@@ -1,10 +1,10 @@
 "use strict";
 /**
- @module montage/core/meta/property-blueprint
- @requires montage/core/core
- @requires core/exception
- @requires core/promise
- @requires core/logger
+ * @module montage/core/meta/property-blueprint
+ * @requires montage/core/core
+ * @requires core/exception
+ * @requires core/promise
+ * @requires core/logger
  */
 var Montage = require("montage").Montage;
 
@@ -18,7 +18,7 @@ var Defaults = {
 };
 
 /**
- @class EventBlueprint
+ * @class EventBlueprint
  */
 exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
 
@@ -34,9 +34,9 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
      * @function
      * @param {string} name name of the property blueprint to create
      * @param {Blueprint} blueprint
-     * @return this
+     * @returns itself
      */
-    initWithNameAndBlueprint:{
+    initWithNameAndBlueprint: {
         value:function (name, blueprint) {
             this._name = (name !== null ? name : Defaults.name);
             this._owner = blueprint;
@@ -44,7 +44,7 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
         }
     },
 
-    serializeSelf:{
+    serializeSelf: {
         value:function (serializer) {
             serializer.setProperty("name", this.name);
             serializer.setProperty("blueprint", this._owner, "reference");
@@ -55,7 +55,7 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
         }
     },
 
-    deserializeSelf:{
+    deserializeSelf: {
         value:function (deserializer) {
             this._name = deserializer.getProperty("name");
             this._owner = deserializer.getProperty("blueprint");
@@ -64,7 +64,7 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
         }
     },
 
-    _setPropertyWithDefaults:{
+    _setPropertyWithDefaults: {
         value:function (serializer, propertyName, value) {
             if (value != Defaults[propertyName]) {
                 serializer.setProperty(propertyName, value);
@@ -72,37 +72,38 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
         }
     },
 
-    _getPropertyWithDefaults:{
+    _getPropertyWithDefaults: {
         value:function (deserializer, propertyName) {
             var value = deserializer.getProperty(propertyName);
             return value ? value : Defaults[propertyName];
         }
     },
 
-    _owner:{
+    _owner: {
         value:null
     },
 
     /**
      * Component description attached to this property blueprint.
+     * @type {Component}
      */
-    owner:{
+    owner: {
         get:function () {
             return this._owner;
         }
     },
 
-    _name:{
+    _name: {
         value:null
     },
 
     /**
      * Name of the object. The name is used to define the property on the
      * object.
-     * @function
-     * @returns {string} this._name
+     * @readonly
+     * @type {string}
      */
-    name:{
+    name: {
         serializable:false,
         get:function () {
             return this._name;
@@ -113,10 +114,10 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
      * The identifier is the name of the blueprint, dot, the name of the event
      * blueprint, and is used to make the serialization of property blueprints
      * more readable.
-     * @type {Property}
-     * @default {string} this.name
+     * @type {string}
+     * @default `this.name`
      */
-    identifier:{
+    identifier: {
         get:function () {
             return [
                 this.owner.identifier,
@@ -125,16 +126,16 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
         }
     },
 
-    _detailKeys:{
+    _detailKeys: {
         value:null
     },
 
     /**
      * List of key for the details dictionary
-     * @type {Property}
-     * @default {Object} empty array
+     * @type {Array.<string>}
+     * @default []
      */
-    detailKeys:{
+    detailKeys: {
         get:function () {
             return this._detailKeys;
         },
@@ -145,14 +146,13 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
         }
     },
 
-
-    helpKey:{
-        value:Defaults["helpKey"]
+    helpKey: {
+        value: Defaults["helpKey"]
     },
 
-    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId: require("montage")._blueprintModuleIdDescriptor,
 
-    blueprint:require("montage")._blueprintDescriptor
+    blueprint: require("montage")._blueprintDescriptor
 
 });
 

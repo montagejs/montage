@@ -1,16 +1,16 @@
 /*global Window,Document,Element,Event,Components,Touch */
+
 /**
- *
  * @author: Lea Verou
  * @license: Licensed under The MIT License. See license.txt and http://www.opensource.org/licenses/mit-license.php.
  * @website: http://leaverou.github.com/chainvas/
  */
 
 /**
- @module montage/core/event/event-manager
- @requires montage/core/core
- @requires montage/core/event/mutable-event
- @requires montage/core/event/action-event-listener
+ * @module montage/core/event/event-manager
+ * @requires montage/core/core
+ * @requires montage/core/event/mutable-event
+ * @requires montage/core/event/action-event-listener
  */
 
 var Montage = require("montage").Montage,

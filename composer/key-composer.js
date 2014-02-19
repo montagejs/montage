@@ -6,15 +6,10 @@
 var Montage = require("montage").Montage,
     Composer = require("composer/composer").Composer;
 
-
-/**
- * @module montage/composer/key-composer
- */
 // Event types dispatched by KeyComposer
 var KEYPRESS_EVENT_TYPE = "keyPress",
     LONGKEYPRESS_EVENT_TYPE = "longKeyPress",
     KEYRELEASE_EVENT_TYPE = "keyRelease";
-
 
 /**
  * @class KeyComposer
@@ -28,7 +23,7 @@ var KEYPRESS_EVENT_TYPE = "keyPress",
  * keyComposer = KeyComposer.createKey(textComponent, "command+z", "undo");
  * keyComposer.addEventListener("keyPress", undoManager);
  * // when command+z is pressed inside textComponent,
- * //undoManager.handleUndoKeyPress() will be called.
+ * // undoManager.handleUndoKeyPress() will be called.
  */
 var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyComposer# */ {
 
@@ -76,17 +71,6 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
             } else {
                 this._keys = keys;
             }
-        }
-    },
-
-    _identifier: { value: null },
-
-    identifier: {
-       get: function() {
-           return this._identifier;
-       },
-        set: function(identifier) {
-            this._identifier = identifier;
         }
     },
 

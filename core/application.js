@@ -1,32 +1,22 @@
 /**
-    @module montage/core/application
-    @requires montage/core/core
-    @requires montage/core/event/event-manager
-    @requires montage/core/template
-    @requires montage/ui/component
-
-    @requires montage/core/dom
-*/
+ * This module defines the {Application} prototype.
+ * @module core/application
+ * @requires event/event-manager
+ * @requires template
+ * @requires ui/popup/popup
+ * @requires ui/popup/alert
+ * @requires ui/popup/confirm
+ * @requires ui/loading
+ * @requires ui/popup/growl
+ * @requires ui/slot
+ */
 
 var Montage = require("core/core").Montage,
     Target = require("core/target").Target,
     MontageWindow = require("window-loader/montage-window").MontageWindow,
     Slot;
 
-    require("core/dom");
-
-/**
- This module defines the {Application} prototype.
- @module core/application
- @requires event/event-manager
- @requires template
- @requires ui/popup/popup
- @requires ui/popup/alert
- @requires ui/popup/confirm
- @requires ui/loading
- @requires ui/popup/growl
- @requires ui/slot
- */
+require("core/dom");
 
 /**
  * The application is a singleton, it initially loads and oversees the running
@@ -66,7 +56,8 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
      */
     mainApplication: {
         get: function() {
-            // JFD TODO: We should cache the result, would need to update it when the window is detached or attached
+            // JFD TODO: We should cache the result, would need to update it
+            // when the window is detached or attached
             var mainApplication = this;
             while (mainApplication.parentApplication) {
                 mainApplication = mainApplication.parentApplication;
@@ -75,16 +66,18 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
         }
     },
 
-    // possible values: "z-order", "reverse-z-order", "z-order", "reverse-open-order"
+    // possible values: "z-order", "reverse-z-order", "z-order",
+    // "reverse-open-order"
     _windowsSortOrder: {
         value: "reverse-z-order"
     },
 
     /**
-     Determines the sort order for the Application.windows array.
-     Possible values are: z-order, reverse-z-order, open-order, reverse-open-order
-     @type {string}
-     @default "reverse-z-order"
+     * Determines the sort order for the Application.windows array.
+     * Possible values are: z-order, reverse-z-order, open-order,
+     * reverse-open-order
+     * @type {string}
+     * @default "reverse-z-order"
      */
     windowsSortOrder: {
         get: function() {
@@ -107,9 +100,11 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     },
 
     /**
-     Provides a reference to all the windows opened by the main application or any of its descendents, including the main
-     window itself The list is kept sorted, the sort order is determined by the Application.windowsSortOrder property
-     @type {Array<MontageWindow>}
+     * Provides a reference to all the windows opened by the main application
+     * or any of its descendents, including the main window itself.
+     * The list is kept sorted, the sort order is determined by the
+     * `Application.windowsSortOrder` property
+     * @type {Array<MontageWindow>}
      */
     windows: {
         get: function() {
@@ -207,7 +202,9 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     /**
      * The application's delegate object, it can implement a
      * `willFinishLoading` method that will be called right after the
-     * index.html is loaded
+     * index.html is loaded.
+     * The application delegate is also the next event target after the
+     * application.
      * @type {Object}
      * @default null
      */
@@ -332,8 +329,9 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     },
 
     /**
-     * Attach a window to a parent application. When a window open, it is automatically attached to the Application used to
-     * create the window.
+     * Attach a window to a parent application.
+     * When a window open, it is automatically attached to the Application used
+     * to create the window.
      * @method
      * @param {MontageWindow} window to detach.
      */
@@ -363,8 +361,9 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     },
 
     /**
-     * Detach the window from its parent application. If no montageWindow is specified, the current application's windows
-     * will be detached
+     * Detach the window from its parent application.
+     * If no montageWindow is specified, the current application's windows will
+     * be detached.
      * @method
      * @param {MontageWindow} window to detach.
      */
@@ -535,3 +534,4 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     }
 
 });
+

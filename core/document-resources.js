@@ -3,6 +3,7 @@ var Montage = require("montage").Montage,
     URL = require("core/mini-url");
 
 var DocumentResources = Montage.specialize({
+
     _SCRIPT_TIMEOUT: {value: 5000},
     _document: {value: null},
     _resources: {value: null},
@@ -302,7 +303,9 @@ var DocumentResources = Montage.specialize({
             return this._expectedStyles.length === 0;
         }
     }
+
 }, {
+
     getInstanceForDocument: {
         value: function(_document) {
             var documentResources = _document.__montage_resources__;
@@ -314,6 +317,7 @@ var DocumentResources = Montage.specialize({
             return documentResources;
         }
     }
+
 });
 
 exports.DocumentResources = DocumentResources;

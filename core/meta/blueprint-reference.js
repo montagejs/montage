@@ -27,8 +27,8 @@ exports.BlueprintReference = RemoteReference.specialize( {
     /**
      * The identifier is the name of the binder and is used to make the
      * serialization of binders more readable.
-     * @type {Property}
-     * @default {string} this.name
+     * @type {string}
+     * @default this.name
      */
     identifier: {
         get: function() {

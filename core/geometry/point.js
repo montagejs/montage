@@ -1,11 +1,12 @@
 /**
-    @module montage/core/geometry/point
-    @requires montage/core/core
-*/
+ * @module montage/core/geometry/point
+ * @requires montage/core/core
+ */
 var Montage = require("montage").Montage;
+
 /**
- @class Point
- @extends Montage
+ * @class Point
+ * @extends Montage
  */
 
 exports.Point = Montage.specialize( /** @lends Point# */ {
@@ -17,20 +18,22 @@ exports.Point = Montage.specialize( /** @lends Point# */ {
             return this;
         }
     },
-/**
-        The x axis point.
-        @type {number}
-        @default  0
-    */
+
+    /**
+     * The x axis point.
+     * @type {number}
+     * @default  0
+     */
     x: {
         enumerable: true,
         value: 0
     },
-/**
-        The y axis point.
-        @type {number}
-        @default  0
-    */
+
+    /**
+     * The y axis point.
+     * @type {number}
+     * @default  0
+     */
     y: {
         enumerable: true,
         value: 0
@@ -63,3 +66,4 @@ exports.Point = Montage.specialize( /** @lends Point# */ {
     }
 
 });
+

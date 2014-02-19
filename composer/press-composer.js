@@ -8,16 +8,17 @@
 var Montage = require("montage").Montage,
     Composer = require("composer/composer").Composer,
     MutableEvent = require("core/event/mutable-event").MutableEvent;
+
 /**
  * @class PressComposer
+ * @classdesc The `PressComposer` abstracts away handling mouse and touch
+ * events that represent presses, allowing generic detection of presses, long
+ * presses, and cancelled presses.
  * @extends Composer
  * @fires pressStart
  * @fires press
  * @fires longPress
  * @fires pressCancel
- * @classdesc The `PressComposer` abstracts away handling mouse and touch
- * events that represent presses, allowing generic detection of presses, long
- * presses, and cancelled presses.
  */
 var PressComposer = exports.PressComposer = Composer.specialize(/** @lends PressComposer# */ {
 
@@ -302,8 +303,8 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
      * matching index might be 0.
      *
      * @method
-     * @private
      * @returns {number|boolean} The index of the matching touch, or false
+     * @private
      */
     _changedTouchisObserved: {
         value: function(changedTouches) {

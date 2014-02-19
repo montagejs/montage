@@ -1,6 +1,6 @@
 /**
- @module montage/core/event/key-manager
- @requires montage/core/core
+ * @module montage/core/event/key-manager
+ * @requires montage/core/core
  */
 
 var Montage = require("montage").Montage,
@@ -250,7 +250,8 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     /**
-     * The number of milliseconds a key must be pressed in order to dispatch a longKeyPress event.
+     * The number of milliseconds a key must be pressed in order to dispatch a
+     * longKeyPress event.
      * @type {number}
      * @default 1000
      */

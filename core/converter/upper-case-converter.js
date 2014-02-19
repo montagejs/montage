@@ -6,15 +6,12 @@
 var Montage = require("montage").Montage;
 var Converter = require('core/converter/converter').Converter;
 
-// uppercase formatter
 /**
  * @class UpperCaseConverter
  * @classdesc Converts a string to upper-case.
  */
 exports.UpperCaseConverter = Converter.specialize( /** @lends UpperCaseConverter# */ {
-    /**
-     * @private
-     */
+
     _convert: {
         value: function(v) {
             if (v && typeof v === 'string') {
@@ -43,5 +40,6 @@ exports.UpperCaseConverter = Converter.specialize( /** @lends UpperCaseConverter
     revert: {value: function(v) {
         return this._convert(v);
     }}
+
 });
 

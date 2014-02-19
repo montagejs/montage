@@ -26,6 +26,7 @@ var Promise = require("core/promise").Promise;
  *          suitable for substitutions that provide alternative view for
  *          determinate and indeterminate progress.
  *
+ * @class PromiseController
  * @classdesc Provides bindable properties for the state of a promise
  */
 var PromiseController = exports.PromiseController = Montage.specialize( {
@@ -102,6 +103,7 @@ var PromiseController = exports.PromiseController = Montage.specialize( {
 
     /**
      * The error from the promise, if it was rejected.
+     * @type {?Error}
      */
     error: {value: null},
 

@@ -1,11 +1,11 @@
 /**
- Defines the BitField class, that compactly stores multiple values as a short series of bits.
- @module montage/core/bitfield
- @requires montage/core/core
+ * Defines the BitField class, that compactly stores multiple values as a short
+ * series of bits.
+ * @module montage/core/bitfield
+ * @requires montage/core/core
  */
 
 var Montage = require("montage").Montage;
-
 
 /**
  * The BitField object compactly stores multiple values as a short series of
@@ -24,10 +24,14 @@ var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
     },
 
     /**
-     * Creates a new BitField object containing the fields provided in the propertyDescriptor parameter.
+     * Creates a new BitField object containing the fields provided in the
+     * propertyDescriptor parameter.
      * @method
-     * @param {Object} propertyDescriptor An object containing one or more property name/value pairs. Each pair is added to the new BitField.
-     * @returns {Object} A new BitField object that contains fields described by the property descriptor.
+     * @param {Object} propertyDescriptor An object containing one or more
+     * property name/value pairs.
+     * Each pair is added to the new BitField.
+     * @returns {Object} A new BitField object that contains fields described
+     * by the property descriptor.
      * @example
      * var bitField = new BitField();
      * bitField = new BitField().initWithDescriptor({
@@ -177,7 +181,6 @@ var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
 
     /**
      * @method
-     * @returns result
      */
     toString: {
         value: function() {

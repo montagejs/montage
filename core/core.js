@@ -1,15 +1,16 @@
 /**
- @module montage
- @requires core/shim/object
- @requires core/shim/array
- @requires core/shim/string
- @requires core/extras/object
- @requires core/extras/string
- @requires core/extras/function
- @requires core/extras/date
- @requires core/extras/element
- @requires core/extras/regexp
-*/
+ * @module montage
+ * @requires core/shim/object
+ * @requires core/shim/array
+ * @requires core/shim/string
+ * @requires core/extras/object
+ * @requires core/extras/string
+ * @requires core/extras/function
+ * @requires core/extras/date
+ * @requires core/extras/element
+ * @requires core/extras/regexp
+ */
+
 require("collections/shim");
 require("core/shim/object");
 require("core/shim/array");

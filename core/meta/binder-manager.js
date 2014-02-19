@@ -1,10 +1,11 @@
 "use strict";
+
 /**
- @module montage/core/meta/binder-manager
- @requires montage/core/core
- @requires core/exception
- @requires core/promise
- @requires core/logger
+ * @module montage/core/meta/binder-manager
+ * @requires montage/core/core
+ * @requires core/exception
+ * @requires core/promise
+ * @requires core/logger
  */
 var Montage = require("montage").Montage;
 var Promise = require("core/promise").Promise;
@@ -19,7 +20,6 @@ var logger = require("core/logger").logger("blueprint");
  * loading and dispaching binders and blueprints.
  * @extends Montage
  */
-
 var BinderManager = exports.BinderManager = Montage.specialize( /** @lends BinderManager# */ {
 
     constructor: {
@@ -40,6 +40,7 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
 
     /**
      * Return the list of binder registered on the manager.
+     * @readonly
      * @type {Array.<Binder>}
      */
     binders: {
@@ -51,7 +52,7 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     /**
      * Add a new blueprint binder.
      * @method
-     * @param {Property} binder TODO
+     * @param {Binder} binder
      */
     addBinder: {
         value: function(binder) {
@@ -71,7 +72,7 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
 
     /**
      * @method
-     * @param {Property} binder TODO
+     * @param {Binder} binder
      */
     removeBinder: {
         value: function(binder) {
@@ -100,8 +101,8 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     /**
      * Search through the binders for a blueprint that extends that prototype.
      * @method
-     * @param {Property} prototypeName TODO
-     * @param {Property} moduleId TODO
+     * @param {string} prototypeName
+     * @param {string} moduleId
      * @returns The requested blueprint or null if this prototype is not
      * managed.
      */
@@ -124,10 +125,10 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     },
 
     /**
-     * Return the default blueprint object property</br>
+     * Return the default blueprint object property.
      * This is the last resort property declaration object.
-     * @type {Property}
-     * @returns {ObjectProperty} default blueprint object property
+     * @readonly
+     * @type {ObjectProperty} default blueprint object property
      */
     defaultBlueprintObjectProperty: {
         get: function() {
@@ -144,10 +145,10 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     },
 
     /**
-     * Return the default blueprint object property</br>
+     * Return the default blueprint object property.
      * This is the last resort property declaration object.
-     * @type {Property}
-     * @returns {ObjectProperty} default blueprint object property
+     * @readonly
+     * @type {ObjectProperty} default blueprint object property
      */
     defaultBinder: {
         get: function() {
