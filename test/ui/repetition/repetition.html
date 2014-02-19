@@ -58,6 +58,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "repetition9": {"@": "repetition9"},
                     "repetition12": {"@": "repetition12"},
                     "repetition15": {"@": "repetition15"},
+                    "domRepetition": {"@": "domRepetition"},
                     "repetitionController": {"@": "repetitionController"},
                     "list1Objects": [
 
@@ -644,6 +645,15 @@ POSSIBILITY OF SUCH DAMAGE.
                 "bindings": {
                     "value": {"<-": "@repetitionWithObjectAtCurrentIteration.objectAtCurrentIteration"}
                 }
+            },
+
+            "domRepetition": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "domRepetition"},
+                    "content": [1, 2, 3],
+                    "isSelectionEnabled": true
+                }
             }
 
     }</script>
@@ -848,5 +858,12 @@ POSSIBILITY OF SUCH DAMAGE.
         <div data-montage-id="objectAtCurrentIteration" class="objectAtCurrentIteration"></div>
     </div>
 
+    <h2>DOM Repetition</h2>
+
+    <ul data-montage-id="domRepetition">
+        <li>
+            Item being repeated
+        </li>
+    </ul>
 </body>
 </html>

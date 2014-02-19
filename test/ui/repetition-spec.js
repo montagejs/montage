@@ -1003,5 +1003,16 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
             });
         });
 
+        describe("iteration selection", function() {
+            it("should select an iteration that does not have components when clicked", function() {
+                var repetition = delegate.domRepetition;
+                var li = repetition.element.querySelectorAll("li")[1];
+                testPage.mouseEvent({target: li}, "mousedown", function () {
+                    testPage.mouseEvent({target: li}, "mouseup", function () {
+                        expect(repetition.iterations[1].selected).toBe(true);
+                    });
+                });
+            });
+        });
     });
 });
