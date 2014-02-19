@@ -21,7 +21,30 @@ var DocumentResources = Montage.specialize({
             this.clear();
             this._document = _document;
 
+            this._populateWithDocument(_document);
+
             return this;
+        }
+    },
+
+    _populateWithDocument: {
+        value: function(_document) {
+            var scripts = _document.querySelectorAll("script"),
+                forEach = Array.prototype.forEach;
+
+            forEach.call(scripts, function(script) {
+                if (script.src) {
+                    this._addResource(this.normalizeUrl(script.src));
+                }
+            }, this);
+
+            var links = _document.querySelectorAll("link");
+
+            forEach.call(links, function(link) {
+                if (link.rel === "stylesheet") {
+                    this._addResource(this.normalizeUrl(link.href));
+                }
+            }, this);
         }
     },
 
