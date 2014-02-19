@@ -1,12 +1,15 @@
 
 var TreeController = require("montage/core/tree-controller").TreeController;
+var Object = require("../collections/shim-object");
 
 Error.stackTraceLimit = Infinity;
 
 describe("core/tree-controller-spec", function () {
 
     describe("default children structure", function () {
-        var tree;
+        var tree,
+            root,
+            treeController;
 
         beforeEach(function () {
             tree = {
@@ -29,8 +32,6 @@ describe("core/tree-controller-spec", function () {
         });
 
         describe("expand and collapse", function () {
-            var treeController;
-            var root;
 
             it("initialize", function () {
                 treeController = new TreeController();
@@ -212,6 +213,62 @@ describe("core/tree-controller-spec", function () {
                     "    ^- I/B/1"
                 ]);
             });
+        });
+
+        describe("find node by content", function (){
+            it("find node by content from root", function () {
+                treeController = new TreeController();
+                treeController.content = tree;
+                root = treeController.root;
+                var seek = tree.children[1];
+                node = root.findNodeByContent(seek);
+                expect(node.content).toBe(seek);
+            });
+
+            it("find node by content from treeController with Object.equals", function () {
+                treeController = new TreeController();
+                treeController.content = tree;
+                root = treeController.root;
+                var seek = tree.children[1].children[0];
+                node = treeController.findNodeByContent(seek, Object.equals);
+                expect(node.content).toBe(seek);
+            });
+        });
+
+        // 4 + 2 * 2 -> pre= +4*22; post= 422+*
+        describe("walk tree", function(){
+            var ast = {
+                value: "+",
+                children: [{
+                    value: "4",
+                    children: []
+                },
+                {
+                    value: "*",
+                    children: [{
+                        value: "2",
+                        children: []
+                    },
+                    {
+                        value: "2",
+                        children: []
+                    },
+                    ]
+                }]
+            };
+            treeController = new TreeController();
+            treeController.content = ast;
+            var res = "";
+            treeController.preOrderWalk(function(node){
+                res +=  node.content.value;
+            });
+            expect(res).toBe("+4*22");
+
+            res = "";
+            treeController.postOrderWalk(function(node){
+                res +=  node.content.value;
+            });
+            expect(res).toBe("422*+");
         });
 
     });
