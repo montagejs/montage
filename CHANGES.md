@@ -1,4 +1,4 @@
-### v1.0
+### v0.14.0
 
 -  **Montage**
 
@@ -61,6 +61,69 @@
 
    Now only has a label property, value is gone.
 
+### v0.13.12
+
+-  **Montage**
+
+   Avoid the warning message: "Trying to replace element `<div>​</div>`​ which has no parentNode"
+   Remove some extra logging in the Gate.
+
+### v0.13.11
+
+-  **Mr**
+
+   Update the Mr package to version 0.15.1.
+   Fixes an issue requiring dependencies with ".js" in their name in script-injection mode.
+   More info [here](https://github.com/montagejs/mr/blob/master/CHANGES.md).
+
+### v0.13.10
+
+-  **Mr**
+
+   Update the Mr package to version 0.15.
+   Fixes an [issue](https://github.com/montagejs/mr/issues/65) with requiring modules with relative path as the main
+   file in package.json.
+   More info [here](https://github.com/montagejs/mr/blob/master/CHANGES.md).
+
+-  **Key Composer**
+
+   KeyManager now emits key events on the composer, not the target. This fixes an issue where you had to listen for keys
+   on the component and the composer.
+
+### v0.13.9
+
+-  **Montage**
+
+   Fix issue that was causing, at times, a component to enter the document
+   before its stylesheets were completely loaded.
+
+### v0.13.8
+
+-  **Montage**
+
+   Remove reference to alpha state in readme.
+
+-  **AbstractTextField**
+
+   Correctly handle setting TextField to 0. This specific value was being
+   ignored.
+
+-  **AbstractSlider**
+
+   Improve implementation to only use two elements.
+
+### v0.13.7
+
+-  **Montage**
+
+   FRB and Collections are up-reved to address an issue in Chrome 30's introduction of ES6 Array methods.
+
+-  **PressComposer**
+
+   Fix issue with capturing the pointer in touch to make nested composers work better only the most outer one would
+   capture the event.
+   PressComposer now only works with a one touch press gesture.
+   Removed touch listeners on correct phase to stop leaking listeners.
 ### v0.13.6
 
 -  **Montage**
