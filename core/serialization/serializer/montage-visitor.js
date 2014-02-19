@@ -1,9 +1,9 @@
-var Montage = require("montage").Montage;
+var Montage = require("../../core").Montage;
 var MontageSerializerModule = require("./montage-serializer");
 var PropertiesSerializer = require("./properties-serializer").PropertiesSerializer;
 var SelfSerializer = require("./self-serializer").SelfSerializer;
 var UnitSerializer = require("./unit-serializer").UnitSerializer;
-var Alias = require("core/serialization/alias").Alias;
+var Alias = require("../alias").Alias;
 var Visitor = require("mousse/serialization/visitor").Visitor;
 
 var MontageVisitor = Montage.specialize.call(Visitor, {

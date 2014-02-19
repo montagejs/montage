@@ -1,12 +1,12 @@
-var Montage = require("core/core").Montage;
+var Montage = require("../../core").Montage;
 var Reviver = require("mousse/deserialization/reviver").Reviver;
 var PropertiesDeserializer = require("./properties-deserializer").PropertiesDeserializer;
 var SelfDeserializer = require("./self-deserializer").SelfDeserializer;
 var UnitDeserializer = require("./unit-deserializer").UnitDeserializer;
-var ModuleReference = require("core/module-reference").ModuleReference;
-var Alias = require("core/serialization/alias").Alias;
+var ModuleReference = require("../../module-reference").ModuleReference;
+var Alias = require("../alias").Alias;
 
-var Promise = require("core/promise").Promise;
+var Promise = require("../../promise").Promise;
 
 var ModuleLoader = Montage.specialize( {
     _require: {value: null},

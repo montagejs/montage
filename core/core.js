@@ -1,25 +1,14 @@
-/**
- @module montage
- @requires core/shim/object
- @requires core/shim/array
- @requires core/shim/string
- @requires core/extras/object
- @requires core/extras/string
- @requires core/extras/function
- @requires core/extras/date
- @requires core/extras/element
- @requires core/extras/regexp
-*/
+
 require("collections/shim");
-require("core/shim/object");
-require("core/shim/array");
-require("core/shim/string");
-require("core/extras/object");
-require("core/extras/date");
-require("core/extras/element");
-require("core/extras/function");
-require("core/extras/regexp");
-require("core/extras/string");
+require("./shim/object");
+require("./shim/array");
+require("./shim/string");
+require("./extras/object");
+require("./extras/date");
+require("./extras/element");
+require("./extras/function");
+require("./extras/regexp");
+require("./extras/string");
 
 var deprecate = require("./deprecate");
 
@@ -905,7 +894,7 @@ Montage.defineProperty(Montage, "getPropertyAttribute", {value: function(anObjec
     @param {string} attributeName The attribute name.
     @returns {Object} TODO getPropertyAttributes returns description
 */
-Montage.defineProperty(Montage, "getPropertyAttributes", {value: function(anObject, attributeName) {
+Montage.defineProperty(Montage, "getPropertyAttributes", {value: function (anObject, attributeName) {
     var attributeValues = {},
         attributePropertyName = UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES,
         attributes = anObject[attributePropertyName];
@@ -931,11 +920,15 @@ var _functionInstanceMetadataDescriptor = {
 };
 
 /**
-    Get the metadata Montage has on the given object
-    @function Montage.getInfoForObject
-    @param {Object} object An object.
-    @returns {Object} object._montage_metadata
-*/
+ * Get the metadata Montage has on the given object.
+ * @function Montage.getInfoForObject
+ * @param {Object} object
+ * @returns {Object} If the object was exported by a module, `property` is the
+ * name it has on the exports object, `aliases` is an array of all other names
+ * if there was more than one, `require` is the package it comes from, `module`
+ * is the identifier for the module in that package, and `isInstance` discerns
+ * constructors and prototypes from instances.
+ */
 Montage.defineProperty(Montage, "getInfoForObject", {
     value: function(object) {
         var metadata;
@@ -978,7 +971,7 @@ Montage.defineProperty(Montage, "getInfoForObject", {
 // it to core/extras/object resulted in _uuid becoming enumerable and tests
 // breaking. - @kriskowal
 
-var UUID = require("core/uuid");
+var UUID = require("./uuid");
 
 // HACK: This is to fix an IE10 bug where a getter on the window prototype chain
 // gets some kind of proxy Window object which cannot have properties defined
@@ -1125,17 +1118,583 @@ Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
     }
 });
 
-var PropertyChanges = require("collections/listen/property-changes");
+// Property Changes
 
+var PropertyChanges = require("collections/listen/property-changes");
 Object.addEach(Montage, PropertyChanges.prototype);
 Object.addEach(Montage.prototype, PropertyChanges.prototype);
 
-// have to come last since they use the Montage.defineProperties to augment Object.prototype
-require("core/bindings");
-require("core/paths");
+/**
+ * Adds a change listener for the named property of this instance.  The handler
+ * may be a function or an object with a handler method.  When the property
+ * changes on this object, the handler will be notified *on the stack*.
+ *
+ * The dispatcher will try to dispatch to *only* the most specific handler
+ * method available, from `handle` + PropertyName (bactrian camel case) +
+ * `Change`, to `handlePropertyChange`, or if the `beforeChange` flag is set,
+ * `handle` + PropertyName + `WillChange` then `handlePropertyWillChange`.  The
+ * arguments to the handler are `value`, `name`, and this.
+ *
+ * @method Montage#addOwnPropertyChangeListener
+ * @param {string} name The name of the property to observe.
+ * @param {object|function} handler On which to dispatch change notifications.
+ * @param {boolean} beforeChange Whether to observer changes before they occur.
+ * To avoid the boolean trap, try to use `addBeforeOwnPropertyChangeListener`
+ * instead, unless `beforeChange` is truly variable.
+ * @returns {function} `cancel`, useful for removing the change listener
+ * without having to retain and reconstruct all of the arguments.
+ * @see Montage#addBeforeOwnPropertyChangeListener
+ */
+
+/**
+ * Cancels a change listener established with the same given parameters.  For
+ * the meanings of the parameters, see `addOwnPropertyChangeListener`.
+ * @see Montage#addOwnPropertyChangeListener
+ * @method Montage#removeOwnPropertyChangeListener
+ * @param {string} name
+ * @param {object|function} handler
+ * @param {boolean} beforeChange
+ */
+
+/**
+ * Adds a listener that will be notified *before* a property changes.  See
+ * `addOwnPropertyChangeListener` for details.
+ * @see Montage#addOwnPropertyChangeListener
+ * @method Montage#addBeforeOwnPropertyChangeListener
+ * @param {string} name
+ * @param {object|function} handler
+ * @returns {function} cancel
+ */
+
+/**
+ * Removes a change listener established by `addBeforeOwnPropertyChangeListener`
+ * or `addOwnPropertyChangeListener` with the `beforeChange` flag.
+ * Call with the same arguments used to set up the observer.
+ * @see Montage#addOwnPropertyChangeListener
+ * @see Montage#addBeforeOwnPropertyChangeListener
+ * @method Montage#removeBeforeOwnPropertyChangeListener
+ * @param {string} name
+ * @param {object|function} handler
+ */
+
+/**
+ * Produces the descriptor for a property change listener. The descriptor is an
+ * object that will contain two arrays, `willChangeListeners` and
+ * `changeListeners`. Each listener will be the `handler` given to establish
+ * the change listener on `addOwnPropertyChangeListener` or
+ * `addBeforeOwnPropertyChangeListener`.
+ * @see Montage#addOwnPropertyChangeListener
+ * @see Montage#addBeforeOwnPropertyChangeListener
+ * @method Montage#getOwnPropertyChangeDescriptor
+ * @param {string} name
+ * @returns the property change descriptor for this name, created if necessary.
+ */
+
+/**
+ * Manually dispatches a property change notification on this object.  This can
+ * be useful if the property is a getter or setter and its value changes as a
+ * side effect of some other operation, like cache invalidation. It is
+ * unnecessary to dispatch a change notification in the setter of a property if
+ * it modifies its own value, but if changing `celicius` has a side effect on
+ * `fahrenheit`, they can manually dispatch changes to the other. Be sure
+ * to dispatch both the change and before the change.
+ * @method Montage#dispatchOwnPropertyChange
+ * @param {string} name
+ * @param value
+ * @param {boolean} beforeChange Avoid the boolean trap and use
+ * `dispatchBeforeOwnPropertyChange`. You are not likely to encounter a case
+ * where `beforeChange` is a named variable.
+ */
+
+/**
+ * Manually dispatches a notification that a property is about to change.
+ * See `dispatchOwnPropertyChange`.
+ * @see Montage#dispatchOwnPropertyChange
+ * @method Montage#dispatchBeforeOwnPropertyChange
+ * @param {string} name
+ * @param value
+ */
+
+/**
+ * An overridable method for ensuring that changes to the named property
+ * dispatch notifications. The default behavior is to wrap the property with a
+ * getter and setter.
+ * @method Montage#makePropertyObservable
+ * @param {string} name
+ */
+
+/**
+ * Determines whether a property has ever been observed. Removing all property
+ * change listeners does not destroy this record.
+ * @method Montage#hasOwnPropertyChangeDescriptor
+ * @param {string} name
+ */
+
+// Bindings
+
+var Bindings = exports.Bindings = require("frb");
+
+var bindingPropertyDescriptors = {
+
+    /**
+     * Establishes a binding between two FRB expressions.  See the
+     * [FRB](http://documentup.com/montagejs/frb/) documentation for
+     * information about FRB paths/expressions. There can only be one binding
+     * per target path on an object.
+     * @param {string} targetPath
+     * @param {object} descriptor A descriptor has at least an arrow property,
+     * `"<-"`, `"<->"`. The corresponding string is the `sourcePath` for the
+     * binding and the type of arrow determines whether the binding is one way
+     * (from source to target) or if data flows both directions. The
+     * `descriptor` may contain a `converter` or `reverter` object, or directly
+     * provide `convert` and `revert` functions. Converters and reverters have
+     * `convert` and `revert` methods.  The `convert` function or method
+     * transforms data from the source to the target. The `revert` function or
+     * method transforms data from the target to the source and is necessary if
+     * there is a converter on a two-way binding. A `reverter` is the same as a
+     * `converter`, but the polarity is reversed. This is useful for reusing
+     * converters that were designed for data flowing the “wrong” way.  The
+     * `descriptor` may also provide a `trace` flag for console debugging.
+     * @method Montage#defineBinding
+     */
+    // The `commonDescriptor` is deliberately not documented as its use is
+    // specific to the `defineBindings` implementation and not intended to
+    // be used directly.
+    defineBinding: {
+        value: function (targetPath, descriptor, commonDescriptor) {
+            return Bindings.defineBinding(this, targetPath, descriptor, commonDescriptor);
+        }
+    },
+
+    /**
+     * Establishes multiple bindings.
+     * @see Montage#defineBinding
+     * @method Montage#defineBindings
+     * @param descriptors {object} an object for which every property is a
+     * source path and every value is a binding descriptor as described by
+     * `defineBinding`.
+     * @param commonDescriptor {?object} a partial binding descriptor with
+     * properties intended to be shared by all of the established bindings.
+     */
+    defineBindings: {
+        value: function (descriptors, commonDescriptor) {
+            return Bindings.defineBindings(this, descriptors, commonDescriptor);
+        }
+    },
+
+    /**
+     * Cancels a binding and removes its descriptor from the object's binding
+     * descriptor index. This will in turn cause any change listeners needed on
+     * far reaching objects for the binding to be canceled.  A component should
+     * call this if the binding reaches into objects it does not itself own to
+     * ensure that they are available for garbage collection.
+     * @method Montage#cancelBinding
+     * @param {string} targetPath The target path used to establish the
+     * binding.
+     */
+    cancelBinding: {
+        value: function (targetPath) {
+            return Bindings.cancelBinding(this, targetPath);
+        }
+    },
+
+    /**
+     * Cancels all registered bindings on this object.
+     * @method Montage#cancelBindings
+     */
+    cancelBindings: {
+        value: function () {
+            return Bindings.cancelBindings(this);
+        }
+    },
+
+    /**
+     * Gets the binding descriptor for a target path.
+     * @method Montage#getBinding
+     * @param {string} targetPath
+     * @returns {object} the descriptor for the binding. See `defineBinding`
+     * for information on the descriptor type.
+     * @see Montage#defineBinding
+     */
+    getBinding: {
+        value: function (targetPath) {
+            return Bindings.getBinding(this, targetPath);
+        }
+    },
+
+    /**
+     * Gets the binding descriptors for all target paths.
+     * @method Montage#getBindings
+     * @returns {object} an object that maps traget paths to binding
+     * descriptors.
+     * See `defineBinding` for information on the descriptor type.
+     * @see Montage#defineBinding
+     */
+    getBindings: {
+        value: function () {
+            return Bindings.getBindings(this);
+        }
+    }
+
+};
+
+Montage.defineProperties(Montage, bindingPropertyDescriptors);
+Montage.defineProperties(Montage.prototype, bindingPropertyDescriptors);
+
+// Paths
+
+var WeakMap = require("collections/weak-map");
+var Map = require("collections/map");
+
+var parse = require("frb/parse");
+var evaluate = require("frb/evaluate");
+var assign = require("frb/assign");
+var observe = require("frb/observe");
+var bind = require("frb/bind");
+var compileObserver = require("frb/compile-observer");
+var Scope = require("frb/scope");
+var Observers = require("frb/observers");
+var autoCancelPrevious = Observers.autoCancelPrevious;
+
+var pathChangeDescriptors = new WeakMap();
+
+var pathPropertyDescriptors = {
+
+    /**
+     * Evaluates an FRB expression from this object and returns the value.
+     * The evaluator does not establish any change listeners.
+     * @method Montage#getPath
+     * @param {string} path an FRB expression
+     * @return the current value of the expression
+     */
+    getPath: {
+        value: function (path, parameters, document, components) {
+            return evaluate(
+                path,
+                this,
+                parameters || this,
+                document,
+                components
+            );
+        }
+    },
+
+    /**
+     * Assigns a value to the FRB expression from this object. Not all
+     * expressions can be assigned to. Property chains will work, but will
+     * silently fail if the target object does not exist.
+     * @method Montage#setPath
+     * @param {string} path an FRB expression designating the value to replace
+     * @param value the new value
+     */
+    setPath: {
+        value: function (path, value, parameters, document, components) {
+            return assign(
+                this,
+                path,
+                value,
+                parameters || this,
+                document,
+                components
+            );
+        }
+    },
+
+    /**
+     * Observes changes to the value of an FRB expression.  The content of the
+     * emitted value may react to changes, particularly if it is an array.
+     * @method Montage#observePath
+     * @param {string} path an FRB expression
+     * @param {function} emit a function that receives new values in response
+     * to changes.  The emitter may return a `cancel` function if it manages
+     * event listeners that must be collected when the value changes.
+     * @return {function} a canceler function that will remove all involved
+     * change listeners, prevent new values from being observed, and prevent
+     * previously emitted values from reacting to any further changes.
+     */
+    observePath: {
+        value: function (path, emit) {
+            var syntax = parse(path);
+            var observe = compileObserver(syntax);
+            return observe(autoCancelPrevious(emit), new Scope(this));
+        }
+    },
+
+    /**
+     * Observes changes to the content of the value for an FRB expression.
+     * The handler will receive “ranged content change” messages.  When a
+     * change listener is added, the handler will be immediately invoked with
+     * the initial content added at index 0 for the expression.
+     * @method Montage#addRangeAtPathChangeListener
+     * @param {string} path an FRB expression that produces content changes
+     * @param handler a function that accepts `plus`, `minus`, and `index`
+     * arguments, or a handler object with a designated method by that
+     * signature.  `plus` and `minus` are arrays of values that were added
+     * or removed.  `index` is the offset at which the `minus` was removed,
+     * then the `plus` was added.
+     * @param {?string} methodName the name of the method on the handler object
+     * that should receive change messages.
+     * @returns {function} cancel function for removing the range at path
+     * change listener. Until `removeRangeAtPathChangeListener` is implemented,
+     * this is the only way to disable this kind of observer.
+     */
+    addRangeAtPathChangeListener: {
+        value: function (path, handler, methodName) {
+            methodName = methodName || "handleRangeChange";
+            function dispatch(plus, minus, index) {
+                if (handler[methodName]) {
+                    handler[methodName](plus, minus, index);
+                } else if (handler.call) {
+                    handler.call(null, plus, minus, index);
+                } else {
+                    throw new Error("Can't dispatch range change to " + handler);
+                }
+            }
+            var minus = [];
+            return this.addPathChangeListener(path, function (plus) {
+                if (plus && plus.toArray && plus.addRangeChangeListener) {
+                    // Give copies to avoid modification by the listener.
+                    dispatch(plus.toArray(), minus.toArray(), 0);
+                    minus = plus;
+                    return plus.addRangeChangeListener(dispatch);
+                } else {
+                    plus = [];
+                    dispatch(plus, minus, 0);
+                    minus = plus;
+                }
+            });
+        }
+    },
+
+    // TODO removeRangeAtPathChangeListener
+    // TODO add/removeMapAtPathChangeListener
+
+    /**
+     * Returns an internal index of all of the path change descriptors
+     * associated with this instance.
+     * @see Montage#getPathChangeDescriptor
+     * @method Montage#getPathChangeDescriptors
+     * @returns an object that maps property names to an object with two
+     * Maps, `changeListeners` and `willChangeListeners`. Each of these
+     * maps handler objects to path change descriptors. See
+     * `getPathChangeDescriptor` for a description of that type.
+     */
+    getPathChangeDescriptors: {
+        value: function () {
+            if (!pathChangeDescriptors.has(this)) {
+                pathChangeDescriptors.set(this, {});
+            }
+            return pathChangeDescriptors.get(this);
+        }
+    },
+
+    /**
+     * Gets the path change descriptor object for an observer established
+     * previously by `addPathChangeListener` or `addBeforePathChangeListener`.
+     * @method Montage#getPathChangeDescriptor
+     * @param {string} path an FRB expression
+     * @param handler a function that will receive a value change notification,
+     * or an object with a method that will receive the change notifications
+     * @param {boolean} beforeChange
+     * @returns a path change descriptor. Such objects have `path`, `handler`,
+     * `beforeChange`, and `cancel` properties. The `cancel` method is for
+     * internal use only. It cancels the observer, but does not perform any
+     * book keeping on the index of path change descriptors.
+     */
+    getPathChangeDescriptor: {
+        value: function (path, handler, beforeChange) {
+            var descriptors = Montage.getPathChangeDescriptors.call(this);
+            if (!Object.owns(descriptors, path)) {
+                descriptors[path] = {
+                    willChangeListeners: new Map(), // handler to descriptor
+                    changeListeners: new Map()
+                };
+            }
+
+            descriptors = descriptors[path];
+            if (beforeChange) {
+                descriptors = descriptors.willChangeListeners;
+            } else {
+                descriptors = descriptors.changeListeners;
+            }
+
+            if (!descriptors.has(handler)) {
+                descriptors.set(handler, {
+                    path: path,
+                    handler: handler,
+                    beforeChange: beforeChange,
+                    cancel: Function.noop
+                })
+            }
+
+            return descriptors.get(handler);
+        }
+    },
+
+    /**
+     * Creates an observer for the value of an FRB expression. The observer
+     * will immediately dispatch a notification to the handler of the initial
+     * value of the expression, before returning.
+     *
+     * If the expression's value is an array, this will be the final
+     * notification and all subsequent changes will be reflected by the content
+     * of the array. Use `addRangeAtPathChangeListener` if you want discrete
+     * notifications for changes to the content of an expression that evaluates
+     * to an array.
+     *
+     * Use `removePathChangeListener` to cancel all involved change listeners.
+     *
+     * @method Montage#addPathChangeListener
+     * @param {string} path an FRB expression.
+     * @param {object|function} handler an object with a handler method, or a
+     * function. The handler will be called with `value`, `path`, and this as
+     * arguments.
+     * @param {string} handlerMethodName the method name on the handler on
+     * which to dispatch change notifications, if the handler is not a
+     * function.
+     * @param {boolean} beforeChange instructs the path change listener to
+     * dispatch before the change has occurred. Avoid using this boolean trap
+     * by making use of the named method `addBeforePathChangeListener`. Using
+     * this flag remains desireable only if `beforeChange` is indeed variable.
+     */
+    addPathChangeListener: {
+        value: function (path, handler, methodName, beforeChange) {
+            var self = this;
+
+            handler = handler || Function.noop;
+
+            var descriptor = Montage.getPathChangeDescriptor.call(this, path, handler, beforeChange);
+            descriptor.cancel();
+
+            var syntax = parse(path);
+
+            var initialValue;
+            var initialized;
+            var emit;
+            if (handler === Function.noop) {
+                emit = function (value) {
+                    if (initialized) {
+                        throw new Error("Path change handler needs a handler because it emits new values when the source changes: " + JSON.stringify(path));
+                    } else {
+                        initialized = true;
+                        initialValue = value;
+                    }
+                };
+            } else if (methodName) {
+                emit = function (value) {
+                    return handler[methodName].call(handler, value, path, self);
+                };
+            } else if (handler.handlePathChange) {
+                emit = function (value) {
+                    return handler.handlePathChange.call(handler, value, path, self);
+                };
+            } else if (typeof handler === "function") {
+                emit = function (value) {
+                    return handler.call(self, value, path, self);
+                };
+            } else {
+                throw new Error("Can't recognize handler type: " + handler + ". Must be function or delegate implementing handlePathChange.");
+            }
+
+            var observe = compileObserver(syntax);
+            var scope = new Scope(this);
+            scope.beforeChange = beforeChange;
+            var cancel = observe(autoCancelPrevious(emit), scope);
+
+            descriptor.cancel = cancel;
+
+            if (initialized) {
+                return initialValue;
+            } else {
+                return cancel;
+            }
+        }
+    },
+
+    /**
+     * Removes a path change listener previously established by a call to
+     * `addPathChangeListener`. The given arguments must match the original.
+     * See `addPathChangeListener` for descriptions of their meaning.
+     * @see Montage#addPathChangeListener
+     * @method Montage#removePathChangeListener
+     * @param {string} path
+     * @param {object|function}
+     * @param {string} handlerMethodName
+     * @param {boolean} beforeChange
+     */
+    removePathChangeListener: {
+        value: function (path, handler, beforeChange) {
+            handler = handler || Function.noop;
+            var descriptorsForObject = Montage.getPathChangeDescriptors.call(this);
+            var phase = beforeChange ? "willChangeListeners" : "changeListeners";
+
+            if (!Object.owns(descriptorsForObject, path)) {
+                throw new Error("Can't find " + phase + " for " + JSON.stringify(path));
+            }
+            var descriptorsForPath = descriptorsForObject[path];
+            var descriptorsForPhase = descriptorsForPath[phase];
+            if (!descriptorsForPhase.has(handler)) {
+                throw new Error("Can't find " + phase + " for " + JSON.stringify(path));
+            }
+            var descriptor = descriptorsForPhase.get(handler);
+            descriptor.cancel();
+            descriptorsForPhase["delete"](handler);
+            if (
+                descriptorsForPath.willChangeListeners.length === 0 &&
+                descriptorsForPath.changeListeners.length === 0
+            ) {
+                delete descriptorsForObject[path];
+            }
+            // if there are no other handlers
+            for (var name in descriptorsForObject) {
+                return;
+            }
+            pathChangeDescriptors["delete"](this);
+        }
+    },
+
+    /**
+     * Establishes an observer such that the handler will receive a
+     * notification when the value of an FRB expression is about to change.
+     * See `addPathChangeListener` for details.
+     * @see Montage#addPathChangeListener
+     * @method Montage#addBeforePathChangeListener
+     * @param {string} path
+     * @param {object|function}
+     * @param {string} handlerMethodName
+     */
+    addBeforePathChangeListener: {
+        value: function (path, handler, methodName) {
+            return Montage.addPathChangeListener.call(this, path, handler, methodName, true);
+        }
+    },
+
+    /**
+     * Removes a path change listener previously established by a call to
+     * `addBeforePathChangeListener`. The given arguments must match the
+     * original. See `addPathChangeListener` for descriptions of their meaning.
+     * @see Montage#addBeforePathChangeListener
+     * @see Montage#addPathChangeListener
+     * @method Montage#removeBeforePathChangeListener
+     * @param {string} path
+     * @param {object|function}
+     * @param {string} handlerMethodName
+     * @param {boolean} beforeChange
+     */
+    removeBeforePathChangeListener: {
+        value: function (path, handler, methodName) {
+            return Montage.removePathChangeListener.call(this, path, handler, true);
+        }
+    }
+
+};
+
+Montage.defineProperties(Montage, pathPropertyDescriptors);
+Montage.defineProperties(Montage.prototype, pathPropertyDescriptors);
+
 // has to come last since serializer and deserializer depend on logger, which
 // in turn depends on montage running to completion
-require("core/serialization/bindings");
+require("./serialization/bindings");
 
 /*
  * Defines the module Id for blueprints. This is externalized so that it can be subclassed.

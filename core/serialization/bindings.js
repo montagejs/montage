@@ -3,8 +3,8 @@ var Bindings = require("frb"),
     stringify = require("frb/stringify"),
     expand = require("frb/expand"),
     Scope = require("frb/scope"),
-    Serializer = require("core/serialization").Serializer,
-    Deserializer = require("core/serialization").Deserializer;
+    Serializer = require("../serialization").Serializer,
+    Deserializer = require("../serialization").Deserializer;
 
 Serializer.defineSerializationUnit("bindings", function (serializer, object) {
     var inputs = Bindings.getBindings(object);

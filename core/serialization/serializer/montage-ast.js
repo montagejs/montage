@@ -1,4 +1,4 @@
-var Montage = require("montage").Montage;
+var Montage = require("../../core").Montage;
 var Value = require("mousse/serialization/ast").Value;
 
 /**
