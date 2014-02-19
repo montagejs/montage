@@ -231,6 +231,10 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
             // Inject the elements into the document
             element.insertBefore(this._fragment, bottomBoundary);
 
+            repetition._drawnIterations.splice(index, 0, this);
+            repetition._updateDrawnIndexes(index);
+            repetition._addDirtyClassListIteration(this);
+
             // Once the child components have drawn once, and thus created all
             // their elements, we can add them to the _iterationForElement map
             var childComponentsLeftToDraw = this._childComponents.length;
@@ -246,15 +250,17 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
             };
 
             // notify the components to wake up and smell the document
-            for (var i = 0; i < this._childComponents.length; i++) {
-                var childComponent = this._childComponents[i];
-                childComponent.addEventListener("firstDraw", firstDraw, false);
-                childComponent.needsDraw = true;
+            if (this._childComponents.length > 0) {
+                for (var i = 0; i < this._childComponents.length; i++) {
+                    var childComponent = this._childComponents[i];
+                    childComponent.addEventListener("firstDraw", firstDraw, false);
+                    childComponent.needsDraw = true;
+                }
+            } else {
+                this.forEachElement(function (element) {
+                    repetition._iterationForElement.set(element, self);
+                });
             }
-
-            repetition._drawnIterations.splice(index, 0, this);
-            repetition._updateDrawnIndexes(index);
-            repetition._addDirtyClassListIteration(this);
         }
     },
 
