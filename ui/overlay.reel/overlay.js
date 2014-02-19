@@ -110,7 +110,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
      * A delegate that can implement `willPositionOverlay` and/or
      * `shouldDismissOverlay`.
      *
-     * - `willPositionOverlay(overlay, calculatedPostition)` is called when the
+     * - `willPositionOverlay(overlay, calculatedPosition)` is called when the
      *   overlay is being shown, and should return an object with `top` and
      *   `left` properties.
      * - `shouldDismissOverlay(overlay, target, event)` is called when the user
