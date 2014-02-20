@@ -22,7 +22,7 @@
 
 -  **Component**
 
-   Some cleanup to the component's draw list handling.
+   Some cleanup to the component's draw list handling and implementation of an object pool to help with GC.
 
 -  **Template**
 
