@@ -4,8 +4,7 @@
 
     Better JSDoc annotations.
    `super()` methods are now cached for better performance.
-   `addRangeAtPathChangeListener()` is more tolerant changes along the path
-   Better support for Firefox, using source maps for better compatibility.
+   `addRangeAtPathChangeListener()` is more tolerant changes along the path.
    Existing document resources are now taken into account when loading the page for the first time. (#1397)
 
 -  **Path Listeners**
