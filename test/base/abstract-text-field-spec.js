@@ -320,7 +320,7 @@ describe("test/base/abstract-text-field-spec", function () {
             });
 
             it("should be called when textfield is focused", function() {
-                aTextField.handleFocus();
+                aTextField.willBecomeActiveTarget();
                 expect(aTextFieldDelegate.didBeginEditing).toHaveBeenCalled();
             });
         });
@@ -328,29 +328,29 @@ describe("test/base/abstract-text-field-spec", function () {
         describe("shouldEndEditing", function () {
             beforeEach(function () {
                 aTextFieldDelegate.shouldEndEditing = jasmine.createSpy();
-                aTextField.handleFocus();
+                aTextField.willBecomeActiveTarget();
             });
 
             it("should be called when textfield receives blur", function() {
-                aTextField.handleBlur();
+                aTextField.surrendersActiveTarget();
                 expect(aTextFieldDelegate.shouldEndEditing).toHaveBeenCalled();
             });
 
             it("should be ignored if it returns undefined", function() {
                 aTextFieldDelegate.shouldEndEditing.andReturn(void 0);
-                aTextField.handleBlur();
+                aTextField.surrendersActiveTarget();
                 expect(aTextField.hasFocus).toBeFalsy();
             });
 
             it("should be prevent textfield being unfocused if it returns false", function() {
                 aTextFieldDelegate.shouldEndEditing.andReturn(false);
-                aTextField.handleBlur();
+                aTextField.surrendersActiveTarget();
                 expect(aTextField.hasFocus).toBeTruthy();
             });
 
             it("should not be prevent textfield being unfocused if it returns true", function() {
                 aTextFieldDelegate.shouldEndEditing.andReturn(true);
-                aTextField.handleBlur();
+                aTextField.surrendersActiveTarget();
                 expect(aTextField.hasFocus).toBeFalsy();
             });
 
@@ -362,7 +362,7 @@ describe("test/base/abstract-text-field-spec", function () {
             });
 
             it("should be called when textfield receives blur", function() {
-                aTextField.handleBlur();
+                aTextField.surrendersActiveTarget();
                 expect(aTextFieldDelegate.didEndEditing).toHaveBeenCalled();
             });
         });
