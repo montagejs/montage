@@ -79,6 +79,7 @@
 -  **AbstractTextField**
 
    Fixed bug with setting the value to 0.
+   Now uses the `activeTarget` system rather than manually managing the focus/blur.
 
 -  **Flow**
 
