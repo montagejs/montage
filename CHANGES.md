@@ -1,10 +1,19 @@
-### v1.0
+### v0.14.0
 
 -  **Montage**
 
     Better JSDoc annotations.
    `super()` methods are now cached for better performance.
-   `addRangeAtPathChangeListener()` is more tolerant changes along the path
+   `addRangeAtPathChangeListener()` is more tolerant changes along the path.
+   Existing document resources are now taken into account when loading the page for the first time. (#1397)
+
+-  **Path Listeners**
+
+   *PathChangeListener functions an now accept parameters, document and components.
+
+-  **url**
+
+   `montage/core/url` has been removed, use the `url` npm package instead https://www.npmjs.org/package/url.
 
 -  **Target**
 
@@ -12,7 +21,7 @@
 
 -  **Component**
 
-   Some cleanup to the component's draw list handling.
+   Some cleanup to the component's draw list handling and implementation of an object pool to help with GC.
 
 -  **Template**
 
@@ -31,11 +40,15 @@
 -  **RangeController**
 
    Can now track selection with an Array, Set or SortedSet.
+   Better selection management.
+
+-  **TreeController**
+   Added findNodeByContent() to be able to locate content in the tree.
 
 -  **Repetition**
 
-   Added aliases and template properties so that binding to `@repetition:iteration` is possible. Using aliases this
-   can be exposed by the owner template.
+   Added aliases and template properties so that binding to `@repetition:iteration.object` is possible. Using aliases
+   this can be exposed by the owner template.
    Some never used properties were removed for performance improvements.
    Fixed a bug in selection where a selected object could not be part of the content array.
 
@@ -43,13 +56,19 @@
 
    Added ModalOverlay to force user response
    Added AbstractAlert and AbstractConfirm.
-   Better handling of activeTarget
+   Better handling of activeTarget, will not show if the activeTarget is not surrendered.
    Dismisses with escape key.
    Overlay can now have a delegate that affects it's position and behavior.
+
+-  **AbstractButton**
+
+   Now only has a label property, value is gone.
 
 -  **AbstractImage**
 
    Now handles cross origin via the `crossOrigin` property.
+   Now doesn't modify the src property when rebasing.
+   Properly handles the case where the image is in browser cache.
 
 -  **AbstractSlider**
 
@@ -57,10 +76,79 @@
    Fixed bug for initial knob position.
    Uses a simplified dom structure.
 
--  **AbstractButton**
+-  **AbstractTextField**
 
-   Now only has a label property, value is gone.
+   Fixed bug with setting the value to 0.
+   Now uses the `activeTarget` system rather than manually managing the focus/blur.
 
+-  **Flow**
+
+   Added a `hasElasticScrolling` property to flow.reel which allows the space between individual tiles to stretch as
+   they are dragged.
+
+### v0.13.12
+
+-  **Montage**
+
+   Avoid the warning message: "Trying to replace element `<div>​</div>`​ which has no parentNode"
+   Remove some extra logging in the Gate.
+
+### v0.13.11
+
+-  **Mr**
+
+   Update the Mr package to version 0.15.1.
+   Fixes an issue requiring dependencies with ".js" in their name in script-injection mode.
+   More info [here](https://github.com/montagejs/mr/blob/master/CHANGES.md).
+
+### v0.13.10
+
+-  **Mr**
+
+   Update the Mr package to version 0.15.
+   Fixes an [issue](https://github.com/montagejs/mr/issues/65) with requiring modules with relative path as the main
+   file in package.json.
+   More info [here](https://github.com/montagejs/mr/blob/master/CHANGES.md).
+
+-  **Key Composer**
+
+   KeyManager now emits key events on the composer, not the target. This fixes an issue where you had to listen for keys
+   on the component and the composer.
+
+### v0.13.9
+
+-  **Montage**
+
+   Fix issue that was causing, at times, a component to enter the document
+   before its stylesheets were completely loaded.
+
+### v0.13.8
+
+-  **Montage**
+
+   Remove reference to alpha state in readme.
+
+-  **AbstractTextField**
+
+   Correctly handle setting TextField to 0. This specific value was being
+   ignored.
+
+-  **AbstractSlider**
+
+   Improve implementation to only use two elements.
+
+### v0.13.7
+
+-  **Montage**
+
+   FRB and Collections are up-reved to address an issue in Chrome 30's introduction of ES6 Array methods.
+
+-  **PressComposer**
+
+   Fix issue with capturing the pointer in touch to make nested composers work better only the most outer one would
+   capture the event.
+   PressComposer now only works with a one touch press gesture.
+   Removed touch listeners on correct phase to stop leaking listeners.
 ### v0.13.6
 
 -  **Montage**
