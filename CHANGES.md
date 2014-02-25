@@ -80,6 +80,11 @@
 
    Fixed bug with setting the value to 0.
 
+-  **Flow**
+
+   Added a `hasElasticScrolling` property to flow.reel which allows the space between individual tiles to stretch as
+   they are dragged.
+
 ### v0.13.12
 
 -  **Montage**
