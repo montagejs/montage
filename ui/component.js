@@ -21,6 +21,11 @@ var Montage = require("montage").Montage,
     Set = require("collections/set"),
     Alias = require("core/serialization/alias").Alias;
 
+var ATTR_LE_COMPONENT="data-montage-le-component";
+var ATTR_LE_ARG="data-montage-le-arg";
+var ATTR_LE_ARG_BEGIN="data-montage-le-arg-begin";
+var ATTR_LE_ARG_END="data-montage-le-arg-end";
+
 /**
  * @requires montage/ui/component-description
  */
@@ -251,6 +256,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 return;
             }
 
+            if (window._montage_le_flag) {
+                value.setAttribute(ATTR_LE_COMPONENT, Montage.getInfoForObject(this).moduleId);
+            }
+
             if (this.isDeserializing) {
                 this.eventManager.registerEventHandlerForElement(this, value);
 
@@ -414,15 +423,27 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 range,
                 argument;
 
+            if (window._montage_le_flag) {
+                var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
+                var label = this._montage_metadata.label;
+            }
+
             if (argumentName === "*") {
                 element = template.getElementById(this.getElementId());
 
                 range = template.document.createRange();
                 range.selectNodeContents(element);
                 argument = range.cloneContents();
+                if (window._montage_le_flag && argument.children.length > 0) {
+                    this._leTagStarArgument(ownerModuleId, label, argument);
+                }
             } else {
                 argument = this._getTemplateDomArgument(argumentName).cloneNode(true);
                 argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
+                if (window._montage_le_flag) {
+                    this._leTagNamedArgument(ownerModuleId, label, argument,
+                        argumentName);
+                }
             }
 
             return argument;
@@ -1308,8 +1329,15 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     _setupTemplateObjects: {
         value: function(objects) {
+            this.templateObjects = Object.create(null);
+            this._addTemplateObjects(objects);
+        }
+    },
+
+    _addTemplateObjects: {
+        value: function(objects) {
             var descriptor = this._templateObjectDescriptor,
-                templateObjects = Object.create(null);
+                templateObjects = this.templateObjects;
 
             for (var label in objects) {
                 var object = objects[label];
@@ -1324,8 +1352,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                     }
                 }
             }
-
-            this.templateObjects = templateObjects;
         }
     },
 
@@ -1394,6 +1420,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
                 return template.instantiateWithInstances(instances, _document)
                 .then(function(documentPart) {
+                    documentPart.parentDocumentPart = self._ownerDocumentPart;
                     self._templateDocumentPart = documentPart;
                     documentPart.fragment = null;
                 })
@@ -1714,7 +1741,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             // TODO: get a spec for this, what attributes should we merge?
             for (i = 0; (attribute = attributes[i]); i++) {
                 attributeName = attribute.nodeName;
-                if (attributeName === "id" || attributeName === "data-montage-id") {
+                if (window._montage_le_flag && attributeName === ATTR_LE_COMPONENT) {
+                    value = attribute.nodeValue;
+                } else if (attributeName === "id" || attributeName === "data-montage-id") {
                     value = attribute.nodeValue;
                 } else {
                     value = (template.getAttribute(attributeName) || "") + (attributeName === "style" ? "; " : " ") +
@@ -1774,13 +1803,57 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 logger.debug(this, "_templateElement: " + this._templateElement);
             }
 
+            var leTagArguments;
+            if (window._montage_le_flag) {
+                leTagArguments = this.element.children.length > 0;
+            }
             this._initDomArguments();
+            if (leTagArguments) {
+                this._leTagArguments();
+            }
             if (this._templateElement) {
                 this._bindTemplateParametersToArguments();
                 this._replaceElementWithTemplate();
             }
         },
         enumerable: false
+    },
+
+    _leTagArguments: {
+        value: function() {
+            var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
+            var label = this._montage_metadata.label;
+            var argumentNames = this.getDomArgumentNames();
+            if (argumentNames.length === 0) {
+                this._leTagStarArgument(ownerModuleId, label, this.element);
+            } else {
+                for (var i = 0, name; name = /*assign*/argumentNames[i]; i++) {
+                    this._leTagNamedArgument(ownerModuleId, label,
+                        this._domArguments[name], name);
+                }
+            }
+        }
+    },
+
+    _leTagStarArgument: {
+        value: function(ownerModuleId, label, rootElement) {
+            var argumentBegin = rootElement.firstElementChild;
+            var argumentEnd = rootElement.lastElementChild;
+
+            argumentBegin.setAttribute(ATTR_LE_ARG_BEGIN,
+                (argumentBegin.getAttribute(ATTR_LE_ARG_BEGIN)||"") + " " +
+                    ownerModuleId + "," + label);
+            argumentEnd.setAttribute(ATTR_LE_ARG_END,
+                (argumentEnd.getAttribute(ATTR_LE_ARG_END)||"") + " " +
+                    ownerModuleId + "," + label);
+        }
+    },
+
+    _leTagNamedArgument: {
+        value: function(ownerModuleId, label, element, name) {
+            element.setAttribute(ATTR_LE_ARG,
+                ownerModuleId + "," + label + "," + name);
+        }
     },
 
     _bindTemplateParametersToArguments: {

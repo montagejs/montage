@@ -106,6 +106,11 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
     _noTransition: {value: null},
 
     /**
+     * The document part created by instantiating the iteration template.
+     */
+    _templateDocumentPart: {value: null},
+
+    /**
      * Creates the initial values of all instance state.
      * @private
      */
@@ -884,6 +889,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 self._expandIterationTemplateParameters();
             }
 
+            if (window._montage_le_flag) {
+                this._leTagIterationTemplate();
+            }
+
             // Erase the initial child component trees. The initial document
             // children will be purged on first draw.  We use the innerTemplate
             // as the iteration template and replicate it for each iteration
@@ -909,6 +918,18 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             self._canDrawInitialContent = true;
             self.needsDraw = true;
 
+        }
+    },
+
+    _leTagIterationTemplate: {
+        value: function() {
+            var body = this._iterationTemplate.document.body;
+
+            if (body.children.length > 0) {
+                var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
+                var label = this._montage_metadata.label;
+                this._leTagStarArgument(ownerModuleId, label, body);
+            }
         }
     },
 
@@ -1068,6 +1089,8 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
                 promise = self._iterationTemplate.instantiateWithInstances(instances, _document)
                 .then(function (part) {
+                    part.parentDocumentPart = self._ownerDocumentPart;
+                    iteration._templateDocumentPart = part;
                     part.loadComponentTree().then(function() {
                         iteration._fragment = part.fragment;
                         // It is significant that _childComponents are assigned

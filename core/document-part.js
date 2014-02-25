@@ -4,7 +4,7 @@ var Montage = require("montage").Montage,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
 var DocumentPart = Montage.specialize({
-
+    parentDocumentPart: {value: null},
     template: {value: null},
     fragment: {value: null},
     objects: {value: null},
