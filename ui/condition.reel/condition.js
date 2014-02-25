@@ -13,7 +13,7 @@ var Component = require("ui/component").Component,
  * condition will remove its content from the DOM but
  * [removalStrategy]{@link Condition#removalStrategy} can be changed to alter
  * this behavior.
- *
+ * 
  * @class Condition
  * @classdesc A component that shows or hides its inner template in response to
  * changes to some condition.
@@ -103,8 +103,18 @@ exports.Condition = Component.specialize( /** @lends Condition# */ {
      * the DOM.
      *
      * A value of `hide` will make the condition hide its contents through CSS
-     * using the `montage-invisible` class while keeping them on the DOM.
-     *
+     * using the `montage-invisible` class while keeping them on the DOM. Apps using 
+     * `hide` should declare the `montage-invisible` class 
+     * which will be applied to elements.
+     * 
+     * Example:
+     * 
+     * ```css
+     * .montage-invisible {
+     *   display: none;
+     * }
+     * ```
+     * 
      * Possible values are `remove`, `hide`.
      *
      * @type {string}
