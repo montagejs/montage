@@ -890,12 +890,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             }
 
             if (window.MONTAGE_LE_FLAG) {
-                var body = self._iterationTemplate.document.body;
-                if (body.children.length > 0) {
-                    var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
-                    var label = this._montage_metadata.label;
-                    this._leTagStarArgument(ownerModuleId, label, body);
-                }
+                this._leTagIterationTemplate();
             }
 
             // Erase the initial child component trees. The initial document
@@ -923,6 +918,18 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             self._canDrawInitialContent = true;
             self.needsDraw = true;
 
+        }
+    },
+
+    _leTagIterationTemplate: {
+        value: function() {
+            var body = this._iterationTemplate.document.body;
+
+            if (body.children.length > 0) {
+                var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
+                var label = this._montage_metadata.label;
+                this._leTagStarArgument(ownerModuleId, label, body);
+            }
         }
     },
 

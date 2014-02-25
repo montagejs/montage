@@ -1775,17 +1775,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             }
             this._initDomArguments();
             if (leTagArguments) {
-                var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
-                var label = this._montage_metadata.label;
-                var argumentNames = this.getDomArgumentNames();
-                if (argumentNames.length === 0) {
-                    this._leTagStarArgument(ownerModuleId, label, this.element);
-                } else {
-                    for (var i = 0, name; name = /*assign*/argumentNames[i]; i++) {
-                        this._leTagNamedArgument(ownerModuleId, label,
-                            this._domArguments[name], name);
-                    }
-                }
+                this._leTagArguments();
             }
             if (this._templateElement) {
                 this._bindTemplateParametersToArguments();
@@ -1793,6 +1783,22 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             }
         },
         enumerable: false
+    },
+
+    _leTagArguments: {
+        value: function() {
+            var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
+            var label = this._montage_metadata.label;
+            var argumentNames = this.getDomArgumentNames();
+            if (argumentNames.length === 0) {
+                this._leTagStarArgument(ownerModuleId, label, this.element);
+            } else {
+                for (var i = 0, name; name = /*assign*/argumentNames[i]; i++) {
+                    this._leTagNamedArgument(ownerModuleId, label,
+                        this._domArguments[name], name);
+                }
+            }
+        }
     },
 
     _leTagStarArgument: {
