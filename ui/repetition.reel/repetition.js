@@ -889,7 +889,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 self._expandIterationTemplateParameters();
             }
 
-            if (window.MONTAGE_LE_FLAG) {
+            if (window._montage_le_flag) {
                 this._leTagIterationTemplate();
             }
 

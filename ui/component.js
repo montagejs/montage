@@ -257,7 +257,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 return;
             }
 
-            if (window.MONTAGE_LE_FLAG) {
+            if (window._montage_le_flag) {
                 value.setAttribute(ATTR_LE_COMPONENT, Montage.getInfoForObject(this).moduleId);
             }
 
@@ -424,7 +424,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 range,
                 argument;
 
-            if (window.MONTAGE_LE_FLAG) {
+            if (window._montage_le_flag) {
                 var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
                 var label = this._montage_metadata.label;
             }
@@ -435,13 +435,13 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 range = template.document.createRange();
                 range.selectNodeContents(element);
                 argument = range.cloneContents();
-                if (window.MONTAGE_LE_FLAG && argument.children.length > 0) {
+                if (window._montage_le_flag && argument.children.length > 0) {
                     this._leTagStarArgument(ownerModuleId, label, argument);
                 }
             } else {
                 argument = this._getTemplateDomArgument(argumentName).cloneNode(true);
                 argument.removeAttribute(this.DOM_ARG_ATTRIBUTE);
-                if (window.MONTAGE_LE_FLAG) {
+                if (window._montage_le_flag) {
                     this._leTagNamedArgument(ownerModuleId, label, argument,
                         argumentName);
                 }
@@ -1707,7 +1707,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             // TODO: get a spec for this, what attributes should we merge?
             for (i = 0; (attribute = attributes[i]); i++) {
                 attributeName = attribute.nodeName;
-                if (window.MONTAGE_LE_FLAG && attributeName === ATTR_LE_COMPONENT) {
+                if (window._montage_le_flag && attributeName === ATTR_LE_COMPONENT) {
                     value = attribute.nodeValue;
                 } else if (attributeName === "id" || attributeName === "data-montage-id") {
                     value = attribute.nodeValue;
@@ -1770,7 +1770,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             }
 
             var leTagArguments;
-            if (window.MONTAGE_LE_FLAG) {
+            if (window._montage_le_flag) {
                 leTagArguments = this.element.children.length > 0;
             }
             this._initDomArguments();
