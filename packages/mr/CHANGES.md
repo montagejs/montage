@@ -1,3 +1,7 @@
+### 0.15.3
+
+ - Revert sourceMappingURL change, causes issues in Chrome and doesn't work great in Firefox.
+
 ### 0.15.2
 
  - Change `//@` for `//#` for SourceURL comment to match the spec
