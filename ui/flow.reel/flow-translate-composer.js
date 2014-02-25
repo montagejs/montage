@@ -666,6 +666,27 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
         }
     },
 
+    _rayPointDistance: {
+        value: function (rayVector, point) {
+            var dotProduct,
+                magnitude,
+                x, y, z;
+
+            dotProduct = rayVector[0] * point[0] + rayVector[1] * point[1] + rayVector[2] * point[2];
+            if (dotProduct >= 0) {
+                magnitude = rayVector[0] * rayVector[0] + rayVector[1] * rayVector[1] + rayVector[2] * rayVector[2];
+                dotProduct /= magnitude;
+                x = rayVector[0] * dotProduct - point[0];
+                y = rayVector[1] * dotProduct - point[1];
+                z = rayVector[2] * dotProduct - point[2];
+                return Math.sqrt(x * x + y * y + z * z);
+            } else {
+                // behind ray
+                return false;
+            }
+        }
+    },
+
     /**
      * Intersects a ray with origin at (0, 0, 0) and its given direction
      * vector with a parallelogram/rectangle defined by a corner vertex
@@ -857,7 +878,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     indexTime = splines[pathIndex]._convertSplineTimeToBezierIndexTime(slideTime);
                     if (indexTime !== null) {
                         pos = splines[pathIndex].getPositionAtIndexTime(indexTime);
-                        rotation = splinePaths[pathIndex].getRotationAtIndexTime(indexTime);
+                        /*rotation = splinePaths[pathIndex].getRotationAtIndexTime(indexTime);
                         edge1 = this._rotateXYZ([flow.boundingBoxSize[0], 0, 0], rotation);
                         edge2 = this._rotateXYZ([0, flow.boundingBoxSize[1], 0], rotation);
                         corner = [
@@ -870,6 +891,13 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                                 minDistance = distance;
                                 closerIndex = visibleIndexes[i];
                                 this._pointerIntersectionPosition = this._rayRectangleIntersectionPosition(rayVector, corner, edge1, edge2);
+                            }
+                        }*/
+                        distance = this._rayPointDistance(rayVector, pos);
+                        if (distance !== false) {
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                closerIndex = visibleIndexes[i];
                             }
                         }
                     }
