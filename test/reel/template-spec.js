@@ -496,6 +496,56 @@ describe("reel/template-spec", function() {
             });
         });
 
+        it("should replace a node into the template and not add a rebased src attribute to images that have a src attribute", function() {
+            var moduleId = "reel/template/modification.html",
+                htmlModification = require("reel/template/template-relative-image.html").content,
+                htmlDocument = document.implementation.createHTMLDocument("");
+
+            return template.initWithModuleId(moduleId, require)
+                .then(function() {
+                    var node, reference;
+
+                    htmlDocument.documentElement.innerHTML = htmlModification;
+
+                    node = htmlDocument.getElementById("content");
+                    reference = template.getElementById("title");
+
+                    template.replaceNode(node, reference);
+
+                    var domImage = template.document.getElementById("no_src");
+
+                    expect(domImage.hasAttribute("src")).toBeFalsy();
+                }).fail(function() {
+                    expect("test").toBe("executed");
+                });
+        });
+
+        it("should replace a node into the template and not modify a src attribute on images that have an empty src attribute", function() {
+            var moduleId = "reel/template/modification.html",
+                htmlModification = require("reel/template/template-relative-image.html").content,
+                htmlDocument = document.implementation.createHTMLDocument("");
+
+            return template.initWithModuleId(moduleId, require)
+                .then(function() {
+                    var node, reference;
+
+                    htmlDocument.documentElement.innerHTML = htmlModification;
+
+                    node = htmlDocument.getElementById("content");
+                    reference = template.getElementById("title");
+
+                    template.replaceNode(node, reference);
+
+                    var domImage = template.document.getElementById("empty_src"),
+                        domSrc = domImage ? domImage.src : "";
+
+                    expect(domSrc).toBe("");
+                }).fail(function() {
+                    expect("test").toBe("executed");
+                });
+        });
+
+
         it("should insert a node to the template and resolve any relative Urls", function() {
             var moduleId = "reel/template/modification.html",
                 htmlModification = require("reel/template/template-relative-image.html").content,
