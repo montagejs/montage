@@ -1318,10 +1318,26 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
         });
 
         describe("resolveTemplateArgumentTemplateProperty", function() {
-            it("should resolve to the same name when the template property is not an alias", function() {
+            it("should not resolve a template property not targeting the component", function() {
                 var component = new Component(),
                     templatePropertyLabel;
 
+                Montage.getInfoForObject(component).label = "component";
+                component._templateDocumentPart = new DocumentPart();
+                component._templateDocumentPart.objects = {
+                    ":cell": {}
+                };
+
+                templatePropertyLabel = component.resolveTemplateArgumentTemplateProperty("otherComponent:cell");
+
+                expect(templatePropertyLabel).toBeUndefined();
+            });
+
+            it("should not resolve when the template property is not an alias", function() {
+                var component = new Component(),
+                    templatePropertyLabel;
+
+                Montage.getInfoForObject(component).label = "component";
                 component._templateDocumentPart = new DocumentPart();
                 component._templateDocumentPart.objects = {
                     ":cell": {}
@@ -1329,7 +1345,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
 
                 templatePropertyLabel = component.resolveTemplateArgumentTemplateProperty("component:cell");
 
-                expect(templatePropertyLabel).toBe("component:cell");
+                expect(templatePropertyLabel).toBeUndefined();
             });
 
             it("should resolve an alias recursively until it finds a template property that is not an alias", function() {
@@ -1338,18 +1354,21 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                     foo = new Component(),
                     bar = new Component();
 
+                Montage.getInfoForObject(component).label = "component";
                 component._templateDocumentPart = new DocumentPart();
                 component._templateDocumentPart.objects = {
                     ":cell": new Alias().init("@foo:j"),
                     "foo": foo
                 };
 
+                Montage.getInfoForObject(foo).label = "foo";
                 foo._templateDocumentPart = new DocumentPart();
                 foo._templateDocumentPart.objects = {
                     ":j": new Alias().init("@bar:i"),
                     "bar": bar
                 };
 
+                Montage.getInfoForObject(bar).label = "bar";
                 bar._templateDocumentPart = new DocumentPart();
                 bar._templateDocumentPart.objects = {
                     ":i": {}
@@ -1358,7 +1377,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                 templatePropertyLabel = component.resolveTemplateArgumentTemplateProperty("component:cell");
 
                 expect(templatePropertyLabel).toBe("bar:i");
-                            });
+            });
         });
         describe("array object pool", function() {
             var component;

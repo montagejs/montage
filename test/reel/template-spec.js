@@ -1673,14 +1673,14 @@ describe("reel/template-spec", function() {
             });
         });
 
-        it("should resolve to the same label (not an alias)", function() {
+        it("should not resolve to a label (not an alias)", function() {
             var parametersHtml = require("reel/template/template-properties-parameters.html").content,
                 argumentsHtml = require("reel/template/template-arguments.html").content,
                 serialization,
                 templatePropertyAlias;
 
             argumentsProvider.getTemplateArgumentElement = function() {
-                range = document.createRange();
+                var range = document.createRange();
                 range.selectNodeContents(
                     argumentsTemplate.getElementById("template-properties"));
                 return range.extractContents();
@@ -1688,7 +1688,6 @@ describe("reel/template-spec", function() {
 
             argumentsProvider.resolveTemplateArgumentTemplateProperty = function(name) {
                 templatePropertyAlias = name;
-                return name;
             };
 
             return Promise.all([
