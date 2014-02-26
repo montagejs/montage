@@ -1,7 +1,7 @@
 {
   "name": "montage",
-  "version": "0.13.6",
-  "description": "A UI Framework",
+  "version": "0.14.0",
+  "description": "Build your next application with a browser based platform that really gets the web.",
   "repository": {
     "type": "git",
     "url": "https://github.com/montagejs/montage.git"
@@ -26,26 +26,23 @@
     }
   },
   "dependencies": {
-    "collections": "~0.2.1",
-    "frb": "0.2.16",
+    "collections": "~1.0.0",
+    "frb": "~0.2.17",
     "mousse": "~0.3.0",
     "htmlparser2": "~3.0.5"
   },
   "devDependencies": {
-    "montage-testing": "~0.3.0",
-    "mr": "~0.14.2",
-    "q": "0.9.6",
-    "q-io": "~1.7.2",
-    "jshint": "~2.0.1"
+    "montage-testing": "~0.4.0",
+    "mr": "~0.15.3",
+    "q": "1.0.0",
+    "q-io": "~1.11.0",
+    "jshint": "~2.4.4"
   },
   "scripts": {
     "test": "node test/node/node-spec.js",
     "jsdoc": "node ../montagejs.org/build/jsdoc/jsdoc.js -out $PWD/builds/jsdoc/ montage@npm-link"
   },
   "exclude": [
-    "etc",
-    "lab",
-    "node.js",
     "test",
     "tools"
   ]
