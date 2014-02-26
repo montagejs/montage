@@ -1191,9 +1191,11 @@ var Template = Montage.specialize( /** @lends Template# */ {
                         }
                     } else {
                         // DOM image
-                        url = node.getAttribute('src');
-                        if (!absoluteUrlRegExp.test(url)) {
-                            node.setAttribute('src', URL.resolve(baseUrl, url));
+                        if (node.hasAttribute("src")) {
+                            url = node.getAttribute('src');
+                            if (url !== "" && !absoluteUrlRegExp.test(url)) {
+                                node.setAttribute('src', URL.resolve(baseUrl, url));
+                            }
                         }
                     }
                 }
