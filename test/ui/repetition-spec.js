@@ -50,7 +50,7 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
         };
 
         beforeEach(function () {
-            application = testPage.window.document.application;
+            application = testPage.window.montageRequire("core/application").application;
             eventManager = application.eventManager;
             delegate = application.delegate;
         });
@@ -371,15 +371,25 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
 
                     expect(querySelectorAll(".list3 > li").length).toBe(1);
 
-                    innerRepetition = querySelector(".list3 > li > .list3a").component;
-                    testPage.waitForComponentDraw(innerRepetition);
-
-                    runs(function() {
+                    var expectationFunction = function() {
                         expect(innerRepetition.element.querySelectorAll("li").length).toBe(1);
                         var inputs = innerRepetition.element.querySelectorAll("li > input.textfield2");
                         expect(inputs.length).toBe(1);
                         expect(inputs[0].value).toBe("iteration 1");
-                    });
+                    };
+
+                    // Depending on timing the inner repetitions might have not
+                    // drawn yet so we need to wait till one of the inner
+                    // repetitions draws because atm we're not able to draw two
+                    // nested repetitions in a single draw.
+                    innerRepetition = innerRepetition = querySelector(".list3 > li > .list3a").component;
+
+                    if (innerRepetition.needsDraw) {
+                        testPage.waitForComponentDraw(innerRepetition);
+                        runs(expectationFunction);
+                    } else {
+                        expectationFunction();
+                    }
                 });
             });
 
@@ -400,14 +410,7 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                 delegate.list3Objects = [[{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}], [{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}, {text: "iteration 4"}, {text: "iteration 5"}]];
                 testPage.waitForComponentDraw(delegate.repetition4);
 
-                runs(function() {
-                    // we need to wait till one of the inner repetitions draws
-                    // because atm we're not able to draw two nested repetitions
-                    // in a single draw.
-                    var innerRepetition = delegate.repetition4.element.querySelector(".list3a").component;
-                    testPage.waitForComponentDraw(innerRepetition);
-                });
-                runs(function() {
+                var expectationFunction = function() {
                     expect(querySelectorAll(".list3 > li").length).toBe(2);
 
                     // BUG: Chrome outputs 0 on this..
@@ -419,6 +422,21 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                     for (var i = 0; i < 5; i++) {
                         expect(inputs[i]).toBeDefined();
                         expect(inputs[i].value).toBe("iteration " + (i+1));
+                    }
+                };
+
+                runs(function() {
+                    // Depending on timing the inner repetitions might have not
+                    // drawn yet so we need to wait till one of the inner
+                    // repetitions draws because atm we're not able to draw two
+                    // nested repetitions in a single draw.
+                    var innerRepetition = delegate.repetition4.element.querySelector(".list3a").component;
+
+                    if (innerRepetition.needsDraw) {
+                        testPage.waitForComponentDraw(innerRepetition);
+                        runs(expectationFunction);
+                    } else {
+                        expectationFunction();
                     }
                 });
             });
@@ -477,13 +495,12 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                 testPage.waitForComponentDraw(delegate.repetition5);
 
                 runs(function() {
-                    // we need to wait till one of the inner repetitions draws
-                    // because atm we're not able to draw two nested repetitions
-                    // in a single draw.
+                    // Depending on timing the inner repetitions might have not
+                    // drawn yet so we need to wait till one of the inner
+                    // repetitions draws because atm we're not able to draw two
+                    // nested repetitions in a single draw.
                     var innerRepetition = delegate.repetition5.element.querySelectorAll(".list4a")[1].component;
-                    testPage.waitForComponentDraw(innerRepetition);
-
-                    runs(function() {
+                    var expectationFunction = function() {
                         expect(querySelectorAll(".list4 > li").length).toBe(2);
 
                         // BUG: Chrome outputs 0 on this..
@@ -495,7 +512,14 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                         for (var i = 0; i < 5; i++) {
                             expect(inputs[i].value).toBe("a component Y textfield");
                         }
-                    });
+                    };
+
+                    if (innerRepetition.needsDraw) {
+                        testPage.waitForComponentDraw(innerRepetition);
+                        runs(expectationFunction);
+                    } else {
+                        expectationFunction();
+                    }
                 });
             });
 
@@ -518,18 +542,25 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                 testPage.waitForComponentDraw(delegate.repetition7);
 
                 runs(function() {
-                    // we need to wait till one of the inner repetitions draws
-                    // because atm we're not able to draw two nested repetitions
-                    // in a single draw.
+                    // Depending on timing the inner repetitions might have not
+                    // drawn yet so we need to wait till one of the inner
+                    // repetitions draws because atm we're not able to draw two
+                    // nested repetitions in a single draw.
                     var innerRepetition = delegate.repetition7.element.querySelector(".list5a").component;
-                    testPage.waitForComponentDraw(innerRepetition);
 
-                    runs(function() {
+                    var expectationFunction = function() {
                         expect(querySelectorAll(".list5 > li").length).toBe(1);
                         expect(querySelectorAll(".list5 > li > ul.list5a > li").length).toBe(1);
                         expect(querySelectorAll(".list5 > li > ul.list5a > li > div.content4").length).toBe(1);
                         expect(querySelectorAll(".list5 > li > ul.list5a input.textfield4").length).toBe(1);
-                    });
+                    };
+
+                    if (innerRepetition.needsDraw) {
+                        testPage.waitForComponentDraw(innerRepetition);
+                        runs(expectationFunction);
+                    } else {
+                        expectationFunction();
+                    }
                 });
             });
 
@@ -538,13 +569,13 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                 testPage.waitForComponentDraw(delegate.repetition7);
 
                 runs(function() {
-                    // we need to wait till one of the inner repetitions draws
-                    // because atm we're not able to draw two nested repetitions
-                    // in a single draw.
+                    // Depending on timing the inner repetitions might have not
+                    // drawn yet so we need to wait till one of the inner
+                    // repetitions draws because atm we're not able to draw two
+                    // nested repetitions in a single draw.
                     var innerRepetition = delegate.repetition7.element.querySelectorAll(".list5a")[1].component;
-                    testPage.waitForComponentDraw(innerRepetition);
 
-                    runs(function() {
+                    var expectationFunction = function() {
                         expect(querySelectorAll(".list5 > li").length).toBe(2);
 
                         expect(querySelectorAll(".list5 > li:nth-child(2) > ul.list5a > li").length).toBe(5);
@@ -555,7 +586,14 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                         for (var i = 0; i < 5; i++) {
                             expect(inputs[i].value).toBe("X here");
                         }
-                    });
+                    };
+
+                    if (innerRepetition.needsDraw) {
+                        testPage.waitForComponentDraw(innerRepetition);
+                        runs(expectationFunction);
+                    } else {
+                        expectationFunction();
+                    }
                 });
             });
 
