@@ -207,7 +207,11 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
                 y = 1 - time,
                 j,
                 parameterName,
-                style = "";
+                style = "",
+                parameterKeys,
+                parameterKeyCount,
+                jParameter,
+                jParameterData;
 
             parameterKeys = Object.keys(_parameters);
             parameterKeyCount = parameterKeys.length;

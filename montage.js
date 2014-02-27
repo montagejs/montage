@@ -1,4 +1,4 @@
-/*global BUNDLE */
+/*global BUNDLE, module: false */
 if (typeof window !== "undefined") {
 
     // Workaround for window.Touch on desktop browsers

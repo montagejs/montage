@@ -1,3 +1,4 @@
+/* global ARRAY_PROTOTYPE: false, Montage: false */
 /**
  * @module deprecate
  */
