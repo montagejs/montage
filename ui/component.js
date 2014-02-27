@@ -3159,7 +3159,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                     if (miliseconds < 0) {
                         miliseconds = 0;
                     }
-                    this.requestedAnimationFrame = setTimeout(_drawTree, miliseconds);
+                    this.requestedAnimationFrame = setTimeout(this._drawTree, miliseconds);
                     this._previousDrawDate = currentDate + miliseconds;
                 }
                 this._scheduleComposerRequest = false;
