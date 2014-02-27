@@ -3172,14 +3172,23 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
         value: function(timestamp) {
             var drawPerformanceStartTime;
 
-            // Before initiating a draw cycle through the components we
-            // need to have a draw cycle just to add all the stylesheets
-            // if any is requested to draw.
-            // We need to do this because adding the stylesheets at the
-            // same time the components draw won't make the styles
-            // available at that first draw.
+            // Add all stylesheets needed by the components since last
+            // draw.
             if (this._needsStylesheetsDraw) {
                 this.drawStylesheets();
+            }
+
+            // Wait for all stylesheets to be loaded, do not proceeed
+            // with the draw cycle until all needed stylesheets are
+            // ready.
+            // We need to do this because adding the stylesheets won't
+            // make them immediately available for styling even if the
+            // file is already loaded.
+            if (!this._documentResources.areStylesLoaded) {
+                if (drawPerformanceLogger.isDebug) {
+                    console.log("Draw Cycle Waiting Stylesheets: ", this._documentResources._expectedStyles.length);
+                }
+
                 this.requestedAnimationFrame = null;
                 this.drawTree();
                 return;
