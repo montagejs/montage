@@ -172,7 +172,7 @@ Object.defineProperty(Montage, "specialize", {
                     } else {
                         if(property.get) {
                             property.get = constructorProperty(property.get, constructor, propertyName);
-                         }
+                        }
                         if(property.set) {
                             property.set = constructorProperty(property.set, constructor, propertyName);
                         }
@@ -564,7 +564,8 @@ Object.defineProperty(Montage, "defineProperty", {
 
             return Object.defineProperty(obj, prop, descriptor);
         }
-    }});
+    }
+});
 
 /**
  * Defines one or more new properties to an object, or modifies existing
@@ -612,7 +613,9 @@ function getAttributeProperties(proto, attributeName) {
         return proto[attributePropertyName];
     } else {
         return Object.defineProperty(proto, attributePropertyName, {
-            enumerable: false, configurable: false, writable: true,
+            enumerable: false,
+            configurable: false,
+            writable: true,
             value: Object.create(getAttributeProperties(Object.getPrototypeOf(proto), attributeName))
         })[attributePropertyName];
     }

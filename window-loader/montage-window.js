@@ -110,7 +110,7 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
      * @type {boolean}
      */
     focused: {
-          value: false
+        value: false
     },
 
     /**

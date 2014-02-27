@@ -759,7 +759,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
             Array.prototype.forEach.call(
                 doc.querySelectorAll(selector),
                 function (element) {
-                   element.parentNode.removeChild(element);
+                    element.parentNode.removeChild(element);
                 }
             );
         }

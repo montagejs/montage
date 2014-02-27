@@ -268,7 +268,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
                 }
             }
         }
-   },
+    },
 
     _stepDecimal: {
         value: 1

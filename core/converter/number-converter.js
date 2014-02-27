@@ -311,9 +311,9 @@ var NumberConverter = exports.NumberConverter = Converter.specialize( /** @lends
      * @type {Property}
      * @default {boolean} false
      */
-     forceDecimals: {
+    forceDecimals: {
         value: false
-     },
+    },
 
     /**
      * @type {Property}

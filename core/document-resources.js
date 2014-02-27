@@ -138,7 +138,7 @@ var DocumentResources = Montage.specialize({
                 // more time for the template to be considered loaded.
                 scriptLoaded = function(event) {
                     //if (event.type === "load") {
-                        self.setResourcePreloaded(url);
+                    self.setResourcePreloaded(url);
                     //}
                     script.removeEventListener("load", scriptLoaded);
                     script.removeEventListener("error", scriptLoaded);
@@ -260,7 +260,7 @@ var DocumentResources = Montage.specialize({
 
             loadHandler = function(event) {
                 //if (event.type === "load") {
-                    self.setResourcePreloaded(url);
+                self.setResourcePreloaded(url);
                 //}
                 req.removeEventListener("load", loadHandler);
                 req.removeEventListener("error", loadHandler);

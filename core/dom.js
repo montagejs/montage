@@ -121,7 +121,8 @@ if (typeof Element !== "undefined") {
                 classListGetter = function () {
                     var elem = this,
                         classes = elem.getAttribute("class") || "";
-                        classes = classes.replace(trim, "").split(/\s+/);
+
+                    classes = classes.replace(trim, "").split(/\s+/);
                     return {
                         length: classes.length,
                         item: function (i) {

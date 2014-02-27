@@ -132,19 +132,19 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
             TranslateComposer._start.apply(this, arguments);
             //if (this._scrollingMode === "drag") {
                 // TODO: Review using getComputedStyle outside draw cycle
-                var computedStyle = window.getComputedStyle(this._element, null),
-                    borderLeft = this.convertCssPixelsPropertyStringToNumber(computedStyle.getPropertyValue("border-left-width")),
-                    borderTop = this.convertCssPixelsPropertyStringToNumber(computedStyle.getPropertyValue("border-top-width")),
-                    paddingLeft = this.convertCssPixelsPropertyStringToNumber(computedStyle.getPropertyValue("padding-left")),
-                    paddingTop = this.convertCssPixelsPropertyStringToNumber(computedStyle.getPropertyValue("padding-top")),
-                    point = convertPointFromPageToNode(this._element, new Point().init(x, y));
+            var computedStyle = window.getComputedStyle(this._element, null),
+                borderLeft = this.convertCssPixelsPropertyStringToNumber(computedStyle.getPropertyValue("border-left-width")),
+                borderTop = this.convertCssPixelsPropertyStringToNumber(computedStyle.getPropertyValue("border-top-width")),
+                paddingLeft = this.convertCssPixelsPropertyStringToNumber(computedStyle.getPropertyValue("padding-left")),
+                paddingTop = this.convertCssPixelsPropertyStringToNumber(computedStyle.getPropertyValue("padding-top")),
+                point = convertPointFromPageToNode(this._element, new Point().init(x, y));
 
-                this._pointerStartX = this._pointerX = point.x - borderLeft - paddingLeft;
-                this._pointerStartY = this._pointerY = point.y - borderTop - paddingTop;
-                this._contentOffsetX = this._startPageX - this._pointerStartX;
-                this._contentOffsetY = this._startPageY - this._pointerStartY;
-                // TODO @romancortes, should this be here? @kriskowal
-                this._computePointedElement();
+            this._pointerStartX = this._pointerX = point.x - borderLeft - paddingLeft;
+            this._pointerStartY = this._pointerY = point.y - borderTop - paddingTop;
+            this._contentOffsetX = this._startPageX - this._pointerStartX;
+            this._contentOffsetY = this._startPageY - this._pointerStartY;
+            // TODO @romancortes, should this be here? @kriskowal
+            this._computePointedElement();
             //}
             this._startPageX = this._pageX = x;
             this._startPageY = this._pageY = y;
