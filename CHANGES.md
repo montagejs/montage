@@ -1,8 +1,23 @@
+### v0.14.1
+
+-  **Component**
+
+   Fixes a regression where the component was allowed to draw before the stylesheets were loaded.
+   Fixes a broken shim for requestAnimationFrame.
+
+-  **Template**
+
+   Fixes a bug when two nested aliased template objects using `:iteration` had the same label or alias.
+
+-  **DocumentResources**
+
+   Fixes preloading css file contents as soon as possible.
+
 ### v0.14.0
 
 -  **Montage**
 
-    Better JSDoc annotations.
+   Better JSDoc annotations.
    `super()` methods are now cached for better performance.
    `addRangeAtPathChangeListener()` is more tolerant changes along the path.
    Existing document resources are now taken into account when loading the page for the first time. (#1397)
