@@ -25,7 +25,7 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
      * @type {Application}
      */
     application: {
-        get: function() { return this._application },
+        get: function() { return this._application; },
         set: function(value) {
             if (this._application === null) {
                 this._application = value;
@@ -45,7 +45,7 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
      * @type {Window}
      */
     window: {
-        get: function() { return this._window },
+        get: function() { return this._window; },
         set: function(value) {
             if (this._window === null) {
                 var body = value.document.body;
@@ -70,7 +70,7 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
      * @type {document}
      */
     document: {
-        get: function() { return this._window.document }
+        get: function() { return this._window.document; }
     },
 
     _component: {
@@ -82,7 +82,7 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
      * @type {component}
      */
     component: {
-        get: function() {return this._component},
+        get: function() {return this._component;},
         set: function(value) {
             if (this._component === null) {
                 this._component = value;
@@ -98,7 +98,7 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
      * @type {string}
      */
     title: {
-        get: function() { return this.document.title },
+        get: function() { return this.document.title; },
         set: function(value) {
             this.document.title = value;
         }
@@ -163,7 +163,7 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
      * @type {boolean}
      */
     closed: {
-        get: function() { return this._window ? this._window.closed : false }
+        get: function() { return this._window ? this._window.closed : false; }
     },
 
     /**

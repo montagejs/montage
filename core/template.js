@@ -570,7 +570,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 return {
                     "require": this._require,
                     "label": label
-                }
+                };
             }
         }
     },

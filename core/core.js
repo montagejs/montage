@@ -115,7 +115,7 @@ Object.defineProperty(Montage, "specialize", {
                         if(Object.getPrototypeOf(object) === this) {
                             return true;
                         }
-                        object = Object.getPrototypeOf(object)
+                        object = Object.getPrototypeOf(object);
                     }
                     return false;
                 },
@@ -412,7 +412,7 @@ Object.defineProperty(Montage, "defineProperty", {
                                 if (!returnValue) {
                                     returnValue = {};
                                     if (this.hasOwnProperty(internalProperty))  {
-                                        this[internalProperty] = returnValue
+                                        this[internalProperty] = returnValue;
                                     } else {
                                         defineInternalProperty(this, internalProperty, returnValue);
                                     }
@@ -468,7 +468,7 @@ Object.defineProperty(Montage, "defineProperty", {
                                 if (!returnValue) {
                                     returnValue = [];
                                     if (this.hasOwnProperty(internalProperty))  {
-                                        this[internalProperty] = returnValue
+                                        this[internalProperty] = returnValue;
                                     } else {
                                         defineInternalProperty(this, internalProperty, returnValue);
                                     }
@@ -523,7 +523,7 @@ Object.defineProperty(Montage, "defineProperty", {
                             if (!returnValue) {
                                 returnValue = Object.create(value.__proto__ || Object.getPrototypeOf(value));
                                 if (this.hasOwnProperty(internalProperty))  {
-                                    this[internalProperty] = returnValue
+                                    this[internalProperty] = returnValue;
                                 } else {
                                     defineInternalProperty(this, internalProperty, returnValue);
                                 }
@@ -532,7 +532,7 @@ Object.defineProperty(Montage, "defineProperty", {
                         },
                         set: function(value) {
                             if(!this.hasOwnProperty(internalProperty)) {
-                                defineInternalProperty(this, internalProperty, value)
+                                defineInternalProperty(this, internalProperty, value);
                             } else {
                                 this[internalProperty] = value;
                             }
@@ -1524,7 +1524,7 @@ var pathPropertyDescriptors = {
                     handler: handler,
                     beforeChange: beforeChange,
                     cancel: Function.noop
-                })
+                });
             }
 
             return descriptors.get(handler);

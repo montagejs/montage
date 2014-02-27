@@ -6,7 +6,7 @@ if (typeof window !== "undefined") {
         window.Touch = null;
     }
 
-    document._montageTiming = {}
+    document._montageTiming = {};
     document._montageTiming.loadStartTime = Date.now();
 
     // Give a threshold before we decide we need to show the bootstrapper progress
@@ -298,7 +298,7 @@ if (typeof window !== "undefined") {
      @param compiler
      */
     var reverseReelExpression = /((.*)\.reel)\/\2$/;
-    var reverseReelFunction = function ($0, $1) { return $1 };
+    var reverseReelFunction = function ($0, $1) { return $1; };
     exports.SerializationCompiler = function(config, compile) {
         return function(module) {
             compile(module);
@@ -637,8 +637,8 @@ if (typeof window !== "undefined") {
                 var Montage = montageRequire("core/core").Montage;
                 var EventManager = montageRequire("core/event/event-manager").EventManager;
                 var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
-                var logger = montageRequire("core/logger").logger
-                var deprecate = montageRequire("core/deprecate")
+                var logger = montageRequire("core/logger").logger;
+                var deprecate = montageRequire("core/deprecate");
 
                 var defaultEventManager, application;
 
@@ -673,7 +673,7 @@ if (typeof window !== "undefined") {
                         get: deprecate.deprecateMethod(
                             null,
                             function () {
-                                return exports.application
+                                return exports.application;
                             },
                             "document.application is deprecated, use require(\"montage/core/application\").application instead."
                             )
@@ -690,7 +690,7 @@ if (typeof window !== "undefined") {
                             global.montageDidLoad();
                         }
                     });
-                })
+                });
 
             })
             .done();
@@ -710,4 +710,4 @@ if (typeof window !== "undefined") {
         exports.getPlatform();
     }
 
-})
+});

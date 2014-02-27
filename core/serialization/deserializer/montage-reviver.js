@@ -428,7 +428,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
         value: /(?:^|-)([^-])/g
     },
     _replaceToCamelCase: {
-        value: function(_, g1) { return g1.toUpperCase() }
+        value: function(_, g1) { return g1.toUpperCase(); }
     },
     // Cache of location descriptors indexed by locationId
     _locationDescCache: {value: Object.create(null)},

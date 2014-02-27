@@ -50,7 +50,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
 
     constructor: {
         value: function Localizer() {
-            this.super()
+            this.super();
         }
     },
 

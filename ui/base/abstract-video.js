@@ -223,7 +223,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
                     } else if (this.element.webkitCancelFullScreen) {
                         this.element.webkitCancelFullScreen();
                     } else if (this.element.ownerDocument.webkitCancelFullScreen && this.element.ownerDocument.webkitCurrentFullScreenElement === this.element) {
-                        this.element.ownerDocument.webkitCancelFullScreen()
+                        this.element.ownerDocument.webkitCancelFullScreen();
                     }
                 } else {
                     if (this.element.webkitEnterFullScreen) {

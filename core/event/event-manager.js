@@ -851,7 +851,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
                 if (bubbles) {
                     // TODO why on the document and not the window?
-                    return /* isWindow*/target.screen ? target.document : target.ownerDocument;;
+                    return /* isWindow*/target.screen ? target.document : target.ownerDocument;
                 } else {
                     return target;
                 }

@@ -166,7 +166,7 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
                 p0[0] * coef1 + p1[0] * coef2 + p2[0] * coef3 + p3[0] * coef4,
                 p0[1] * coef1 + p1[1] * coef2 + p2[1] * coef3 + p3[1] * coef4,
                 p0[2] * coef1 + p1[2] * coef2 + p2[2] * coef3 + p3[2] * coef4
-            ]
+            ];
         }
     },
 
