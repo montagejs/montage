@@ -1,4 +1,4 @@
-// jshint -W015
+// jshint -W015, -W106
 /**
  * @module montage/core/messageformat
  */

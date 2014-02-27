@@ -312,9 +312,11 @@ if (typeof window !== "undefined") {
                     // avoid attempting to initialize a non-object
                     if (!(object instanceof Object)) {
                     // avoid attempting to reinitialize an aliased property
+                    //jshint -W106
                     } else if (object.hasOwnProperty("_montage_metadata") && !object._montage_metadata.isInstance) {
                         object._montage_metadata.aliases.push(name);
                         object._montage_metadata.objectName = name;
+                        //jshint +W106
                     } else if (!Object.isSealed(object)) {
                         var id = module.id.replace(
                             reverseReelExpression,

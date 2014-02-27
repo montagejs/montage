@@ -256,7 +256,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 return;
             }
 
+            //jshint -W106
             if (window._montage_le_flag) {
+            //jshint +W106
                 value.setAttribute(ATTR_LE_COMPONENT, Montage.getInfoForObject(this).moduleId);
             }
 
@@ -423,6 +425,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 range,
                 argument;
 
+            //jshint -W106
             if (window._montage_le_flag) {
                 var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
                 var label = this._montage_metadata.label;
@@ -445,6 +448,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                         argumentName);
                 }
             }
+            //jshint +W106
 
             return argument;
         }
@@ -1720,7 +1724,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
             if (this._newDomContent !== null || this._shouldClearDomContentOnNextDraw) {
                 if (drawLogger.isDebug) {
+                    //jshint -W106
                     logger.debug("Component content changed: component ", this._montage_metadata.objectName, this.identifier, " newDomContent", this._newDomContent);
+                    //jshint +W106
                 }
                 this._performDomContentChanges();
             }
@@ -1741,7 +1747,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             // TODO: get a spec for this, what attributes should we merge?
             for (i = 0; (attribute = attributes[i]); i++) {
                 attributeName = attribute.nodeName;
+                //jshint -W106
                 if (window._montage_le_flag && attributeName === ATTR_LE_COMPONENT) {
+                    //jshint +W106
                     value = attribute.nodeValue;
                 } else if (attributeName === "id" || attributeName === "data-montage-id") {
                     value = attribute.nodeValue;
@@ -1804,7 +1812,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             }
 
             var leTagArguments;
+            //jshint -W106
             if (window._montage_le_flag) {
+                //jshint +W106
                 leTagArguments = this.element.children.length > 0;
             }
             this._initDomArguments();
@@ -1821,8 +1831,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     _leTagArguments: {
         value: function() {
+            //jshint -W106
             var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
             var label = this._montage_metadata.label;
+            //jshint +W106
             var argumentNames = this.getDomArgumentNames();
             if (argumentNames.length === 0) {
                 this._leTagStarArgument(ownerModuleId, label, this.element);
@@ -2090,7 +2102,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 } else {
                     parentComponent._addToDrawList(this);
                     if (drawLogger.isDebug) {
+                        //jshint -W106
                         drawLogger.debug("drawList -- childComponent",this._montage_metadata.objectName," added to ",parentComponent._montage_metadata.objectName);
+                        //jshint +W106
                     }
                 }
             }
@@ -2134,7 +2148,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             }
             if (this._needsDraw !== value) {
                 if (drawLogger.isDebug) {
+                    //jshint -W106
                     drawLogger.debug("NEEDS DRAW TOGGLED " + value + " FOR " + this._montage_metadata.objectName);
+                    //jshint +W106
                 }
                 this._needsDraw = !!value;
                 if (value) {
@@ -2786,12 +2802,14 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                 this._needsDraw = !!value;
                 if (value) {
                     var childComponents = this.childComponents;
+                    //jshint -W106
                     for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
                         if (drawLogger.isDebug) {
                             drawLogger.debug(this, "needsDraw = true for: " + childComponent._montage_metadata.exportedSymbol);
                         }
                         childComponent.needsDraw = true;
                     }
+                    //jshint +W106
                 }
             }
         }
@@ -3329,7 +3347,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                         component.willDraw(this._frameTime);
                     }
                     if (drawLogger.isDebug) {
+                        //jshint -W106
                         drawLogger.debug(component._montage_metadata.objectName, " willDraw treeLevel ",component._treeLevel);
+                        //jshint +W106
                     }
                 }
                 this._drawIfNeeded(0);
@@ -3351,7 +3371,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                 component._draw(this._frameTime);
                 component.draw(this._frameTime);
                 if (drawLogger.isDebug) {
+                    //jshint -W106
                     drawLogger.debug(component._montage_metadata.objectName, " draw treeLevel ",component._treeLevel);
+                    //jshint +W106
                 }
             }
 
@@ -3365,7 +3387,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                     component._completedFirstDraw = true;
                 }
                 if (drawLogger.isDebug) {
+                    //jshint -W106
                     drawLogger.debug(component._montage_metadata.objectName, " didDraw treeLevel ",component._treeLevel);
+                    //jshint +W106
                 }
             }
 

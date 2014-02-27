@@ -43,7 +43,9 @@ consoleLog = function() {
 
 consoleLogMontage = function() {
     var firstArgument = arguments[0],
+        //jshint -W106
         metadata = firstArgument._montage_metadata,
+        //jshint +W106
         now = new Date();
     //[].unshift.call(arguments, toTimeString(now));
     if (metadata) {

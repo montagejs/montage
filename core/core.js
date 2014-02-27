@@ -21,9 +21,9 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     SERIALIZABLE = "serializable",
     MODIFY = "modify";
 
-var Array_prototype = Array.prototype;
+var ARRAY_PROTOTYPE = Array.prototype;
 
-var Object_prototype = Object.prototype;
+var OBJECT_PROTOTYPE = Object.prototype;
 
 // The CONSTRUCTOR_COMPATIBILITY flag marks areas that allow the migration from
 // Montage.create to Constructor.specialize The following is done:
@@ -374,7 +374,7 @@ Object.defineProperty(Montage, "defineProperty", {
                         value: value
                     });
                 };
-                if (value.constructor === Object && Object.getPrototypeOf(value) === Object_prototype) {
+                if (value.constructor === Object && Object.getPrototypeOf(value) === OBJECT_PROTOTYPE) {
                     // we have an object literal {...}
                     if (Object.keys(value).length !== 0) {
                         Object.defineProperty(obj, prop, {
@@ -429,7 +429,7 @@ Object.defineProperty(Montage, "defineProperty", {
                         });
                     }
 
-                } else if ((value.__proto__ || Object.getPrototypeOf(value)) === Array_prototype) {
+                } else if ((value.__proto__ || Object.getPrototypeOf(value)) === ARRAY_PROTOTYPE) {
                     // we have an array literal [...]
                     if (value.length !== 0) {
                         Object.defineProperty(obj, prop, {
@@ -937,6 +937,8 @@ Montage.defineProperty(Montage, "getInfoForObject", {
         var metadata;
         var instanceMetadataDescriptor;
 
+        //jshint -W106
+
         if (hasOwnProperty.call(object, "_montage_metadata")) {
             return object._montage_metadata;
         } else {
@@ -967,6 +969,7 @@ Montage.defineProperty(Montage, "getInfoForObject", {
                 return (object._montage_metadata = Object.create(metadata, instanceMetadataDescriptor));
             }
         }
+        //jshint +W106
     }
 });
 
@@ -1108,14 +1111,14 @@ Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
             delegateFunctionName = this.identifier + name.toCapitalized();
             if (delegate && typeof (delegateFunction = delegate[delegateFunctionName]) === "function") {
                 // remove first argument
-                Array_prototype.shift.call(arguments);
+                ARRAY_PROTOTYPE.shift.call(arguments);
                 return delegateFunction.apply(delegate, arguments);
             }
         }
 
         if (delegate && typeof (delegateFunction = delegate[name]) === "function") {
             // remove first argument
-            Array_prototype.shift.call(arguments);
+            ARRAY_PROTOTYPE.shift.call(arguments);
             return delegateFunction.apply(delegate, arguments);
         }
     }

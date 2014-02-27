@@ -1,4 +1,4 @@
-// jshint -W015
+// jshint -W015, -W106
 exports.am = function(n) {
   if (n === 0 || n == 1) {
     return 'one';

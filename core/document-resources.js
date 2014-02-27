@@ -308,6 +308,7 @@ var DocumentResources = Montage.specialize({
 
     getInstanceForDocument: {
         value: function(_document) {
+            //jshint -W106
             var documentResources = _document.__montage_resources__;
 
             if (!documentResources) {
@@ -315,6 +316,7 @@ var DocumentResources = Montage.specialize({
             }
 
             return documentResources;
+            //jshint +W106
         }
     }
 
