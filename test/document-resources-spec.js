@@ -317,6 +317,22 @@ describe("document-resources-spec", function() {
         });
     });
 
+    it("should load on absolute url if it's in the same domain", function() {
+        var resources = new DocumentResources(),
+            url = resources.domain + "/example.html";
+
+        return createPage("reel/template/page.html")
+            .then(function(page) {
+                resources.initWithDocument(page.document);
+
+                return resources.preloadResource(url)
+                    .then(function() {
+                        expect(resources.isResourcePreloaded(url)).toBe(true);
+                        deletePage(page);
+                    });
+            });
+    });
+
     it("should add an inline style", function() {
         var resources = new DocumentResources();
 
