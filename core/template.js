@@ -969,11 +969,8 @@ var Template = Montage.specialize( /** @lends Template# */ {
             // label and are considered external objects.
             willMergeObjectWithLabel = function(label) {
                 if (label.indexOf(":") > 0) {
-                    var resolvedLabel = templateArgumentProvider
+                    return templateArgumentProvider
                         .resolveTemplateArgumentTemplateProperty(label);
-                    if (resolvedLabel !== label) {
-                        return resolvedLabel;
-                    }
                 }
             };
 
@@ -1523,8 +1520,6 @@ var TemplateArgumentProvider = Montage.specialize({
      * access to the template where the argument comes from and where the
      * aliases are defined in the serialization block (e.g: ":cell": {alias:
      * "@repetition:iteration"}).
-     * If the return value is the same as the input then the template property
-     * is not resolved and treated as any other label.
      * @private
      */
     resolveTemplateArgumentTemplateProperty: {

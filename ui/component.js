@@ -465,12 +465,18 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     resolveTemplateArgumentTemplateProperty: {
         value: function(templatePropertyName) {
             var ix = templatePropertyName.indexOf(":"),
-                // componentLabel = templatePropertyName.slice(0, ix),
+                componentLabel = templatePropertyName.slice(0, ix),
                 propertyName = templatePropertyName.slice(ix),
                 documentPart = this._templateDocumentPart,
                 aliasTemplatePropertyName,
                 aliasComponent,
-                alias;
+                alias,
+                result;
+
+            // Check if the template property is referring to this object at all.
+            if (Montage.getInfoForObject(this).label !== componentLabel) {
+                return;
+            }
 
             if (documentPart) {
                 alias = documentPart.objects[propertyName];
@@ -480,10 +486,13 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 aliasComponent = documentPart.objects[alias.componentLabel];
                 // Strip the @ prefix
                 aliasTemplatePropertyName = alias.value.slice(1);
-                return aliasComponent.resolveTemplateArgumentTemplateProperty(aliasTemplatePropertyName);
-            } else {
-                return templatePropertyName;
+                result = aliasComponent.resolveTemplateArgumentTemplateProperty(aliasTemplatePropertyName);
+                if (!result) {
+                    result = aliasTemplatePropertyName;
+                }
             }
+
+            return result;
         }
     },
 
