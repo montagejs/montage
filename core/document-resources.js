@@ -209,33 +209,28 @@ var DocumentResources = Montage.specialize({
         }
     },
 
-    _schemeRegexp: {
-        // http://tools.ietf.org/html/rfc3986#section-3.1
-        value: /^[a-zA-Z][a-zA-Z0-9+\.\-]*:\/\//i
+    domain: {
+        value: window.location.protocol + "//" + window.location.host
     },
-    preloadResource: {
-        value: function(url, force) {
-            var skipPreload;
 
-            // If the url is absolute then we give up on preloading because it
-            // is a potential x-domain request.
-            if (this._schemeRegexp.test(url)) {
-                skipPreload = true;
-            }
+    isCrossDomain: {
+        value: function(url) {
+            return url.indexOf(this.domain + "/") !== 0 ||
+                url.indexOf("file://") === 0;
+        }
+    },
+
+    preloadResource: {
+        value: function(url, forcePreload) {
+            var skipPreload;
 
             url = this.normalizeUrl(url);
 
-            // Never preload file:// resources, they will always be a x-domain
-            // request.
-            if (url.slice(0, 7) === "file://") {
+            // We do not preload cross-domain urls to avoid x-domain security
+            // errors unless forcePreload is requested, it could be a server
+            // configured with CORS.
+            if (!forcePreload && this.isCrossDomain(url)) {
                 skipPreload = true;
-            }
-
-            // If we force the preloading then we ignore the logic that
-            // prevents x-domain requests. A server might be configured with
-            // CORS.
-            if (skipPreload && force) {
-                skipPreload = false;
             }
 
             if (skipPreload || this.isResourcePreloaded(url)) {
