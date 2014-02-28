@@ -233,7 +233,7 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
         value: function () {
             var stepBase = (typeof this.min == "number") ? this.min : 0;
             var value = this.value - stepBase;
-            var step =  this.step | (this.max-this.min)/100
+            var step =  this.step | (this.max-this.min)/100;
             if (value % step) {
                 if (value < 0) {
                     value -= value % step;
@@ -251,7 +251,7 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
         value: function () {
             var stepBase = (typeof this.min == "number") ? this.min : 0;
             var value = this.value - stepBase;
-            var step =  this.step | (this.max-this.min)/100
+            var step =  this.step | (this.max-this.min)/100;
             if (value % step) {
                 if (value > 0) {
                     value -= value % step;

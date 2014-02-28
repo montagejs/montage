@@ -36,7 +36,7 @@ exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends Deri
             }
             this._setPropertyWithDefaults(serializer, "getterDefinition", this.getterDefinition);
             this._setPropertyWithDefaults(serializer, "setterDefinition", this.setterDefinition);
-         }
+        }
     },
 
     deserializeSelf: {

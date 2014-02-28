@@ -1,3 +1,4 @@
+// jshint -W015, -W106
 /*
  * JSHint, by JSHint Community.
  *

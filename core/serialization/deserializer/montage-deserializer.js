@@ -140,5 +140,5 @@ exports.deserialize = function(serializationString, _require) {
     return new MontageDeserializer().
         init(serializationString, _require)
         .deserializeObject();
-}
+};
 

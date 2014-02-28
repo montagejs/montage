@@ -28,7 +28,7 @@ require.loadPackage(parentWindow.require.location)
                     callback(window, event.detail);
                 });
             }
-        })
+        });
     });
 
 })

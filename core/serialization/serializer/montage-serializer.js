@@ -14,7 +14,7 @@ var MontageSerializer = Montage.specialize.call(Serializer, {
 
     _findObjectNameRegExp: {value: /([^\/]+?)(\.reel)?$/},
     _toCamelCaseRegExp: {value: /(?:^|-)([^-])/g},
-    _replaceToCamelCase: {value: function(_, g1){return g1.toUpperCase()}},
+    _replaceToCamelCase: {value: function(_, g1){return g1.toUpperCase();}},
 
     constructor: {
         value: function MontageSerializer() {}

@@ -354,7 +354,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 } else {
                     this.windows.push(montageWindow);
                 }
-                montageWindow.focus()
+                montageWindow.focus();
             }
             return montageWindow;
         }

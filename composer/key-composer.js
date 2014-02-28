@@ -348,16 +348,16 @@ var KeyManagerProxy = Montage.specialize(  {
      * @returns {Object} `KeyManager` or `KeyManagerProxy`.
      */
     defaultKeyManager: {
-       get: function() {
-           if (!_keyManagerProxy) {
-               _keyManagerProxy = new KeyManagerProxy();
-           }
-           if (this._defaultKeyManager) {
-               return this._defaultKeyManager;
-           } else {
-               return _keyManagerProxy;
-           }
-       }
+        get: function() {
+            if (!_keyManagerProxy) {
+                _keyManagerProxy = new KeyManagerProxy();
+            }
+            if (this._defaultKeyManager) {
+                return this._defaultKeyManager;
+            } else {
+                return _keyManagerProxy;
+            }
+        }
     }
 
 });

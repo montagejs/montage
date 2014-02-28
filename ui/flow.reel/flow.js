@@ -1431,7 +1431,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             // TODO consider a two-way binding on needsDraw
             this._repetition.willDraw = function () {
                 self.needsDraw = true;
-            }
+            };
         }
     },
 

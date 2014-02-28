@@ -233,7 +233,7 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
                 // but we're technically done bootstrapping and can show loader now if we should
                 timing.bootstrappingEndTime = Date.now();
 
-                remainingBootstrappingDelay = this.minimumBootstrappingDuration - (timing.bootstrappingEndTime - timing.bootstrappingStartTime)
+                remainingBootstrappingDelay = this.minimumBootstrappingDuration - (timing.bootstrappingEndTime - timing.bootstrappingStartTime);
 
                 if (remainingBootstrappingDelay > 0) {
                     if (logger.isDebug) {

@@ -294,7 +294,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 mapModifiersEntry = map[modifiersAndKey.modifiers];
                 if (!mapModifiersEntry) {
                     mapModifiersEntry = map[modifiersAndKey.modifiers] = {};
-               }
+                }
                 mapKeyEntry = mapModifiersEntry[modifiersAndKey.keyCode];
                 if (mapKeyEntry) {
                     for (i in mapKeyEntry) {

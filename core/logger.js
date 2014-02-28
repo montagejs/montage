@@ -43,7 +43,9 @@ consoleLog = function() {
 
 consoleLogMontage = function() {
     var firstArgument = arguments[0],
+        //jshint -W106
         metadata = firstArgument._montage_metadata,
+        //jshint +W106
         now = new Date();
     //[].unshift.call(arguments, toTimeString(now));
     if (metadata) {
@@ -336,7 +338,6 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
                     style,
                     span;
                 this.m_dontRemove = document.getElementsByTagName("body")[0];
-                ;
                 this.inspectorElement = document.createElement("div");
                 this.inspectorElement.id = "_montage_logger_inspector";
                 div1 = document.createElement("div");
@@ -440,7 +441,7 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
 
 var setupUI = function() {
     new LoggerUI().init();
-}
+};
 if (typeof window !== "undefined") {
     // assigning to a local allows us to feature-test without typeof
     try {

@@ -21,9 +21,9 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     SERIALIZABLE = "serializable",
     MODIFY = "modify";
 
-var Array_prototype = Array.prototype;
+var ARRAY_PROTOTYPE = Array.prototype;
 
-var Object_prototype = Object.prototype;
+var OBJECT_PROTOTYPE = Object.prototype;
 
 // The CONSTRUCTOR_COMPATIBILITY flag marks areas that allow the migration from
 // Montage.create to Constructor.specialize The following is done:
@@ -115,7 +115,7 @@ Object.defineProperty(Montage, "specialize", {
                         if(Object.getPrototypeOf(object) === this) {
                             return true;
                         }
-                        object = Object.getPrototypeOf(object)
+                        object = Object.getPrototypeOf(object);
                     }
                     return false;
                 },
@@ -172,7 +172,7 @@ Object.defineProperty(Montage, "specialize", {
                     } else {
                         if(property.get) {
                             property.get = constructorProperty(property.get, constructor, propertyName);
-                         }
+                        }
                         if(property.set) {
                             property.set = constructorProperty(property.set, constructor, propertyName);
                         }
@@ -374,7 +374,7 @@ Object.defineProperty(Montage, "defineProperty", {
                         value: value
                     });
                 };
-                if (value.constructor === Object && Object.getPrototypeOf(value) === Object_prototype) {
+                if (value.constructor === Object && Object.getPrototypeOf(value) === OBJECT_PROTOTYPE) {
                     // we have an object literal {...}
                     if (Object.keys(value).length !== 0) {
                         Object.defineProperty(obj, prop, {
@@ -412,7 +412,7 @@ Object.defineProperty(Montage, "defineProperty", {
                                 if (!returnValue) {
                                     returnValue = {};
                                     if (this.hasOwnProperty(internalProperty))  {
-                                        this[internalProperty] = returnValue
+                                        this[internalProperty] = returnValue;
                                     } else {
                                         defineInternalProperty(this, internalProperty, returnValue);
                                     }
@@ -429,7 +429,7 @@ Object.defineProperty(Montage, "defineProperty", {
                         });
                     }
 
-                } else if ((value.__proto__ || Object.getPrototypeOf(value)) === Array_prototype) {
+                } else if ((value.__proto__ || Object.getPrototypeOf(value)) === ARRAY_PROTOTYPE) {
                     // we have an array literal [...]
                     if (value.length !== 0) {
                         Object.defineProperty(obj, prop, {
@@ -468,7 +468,7 @@ Object.defineProperty(Montage, "defineProperty", {
                                 if (!returnValue) {
                                     returnValue = [];
                                     if (this.hasOwnProperty(internalProperty))  {
-                                        this[internalProperty] = returnValue
+                                        this[internalProperty] = returnValue;
                                     } else {
                                         defineInternalProperty(this, internalProperty, returnValue);
                                     }
@@ -523,7 +523,7 @@ Object.defineProperty(Montage, "defineProperty", {
                             if (!returnValue) {
                                 returnValue = Object.create(value.__proto__ || Object.getPrototypeOf(value));
                                 if (this.hasOwnProperty(internalProperty))  {
-                                    this[internalProperty] = returnValue
+                                    this[internalProperty] = returnValue;
                                 } else {
                                     defineInternalProperty(this, internalProperty, returnValue);
                                 }
@@ -532,7 +532,7 @@ Object.defineProperty(Montage, "defineProperty", {
                         },
                         set: function(value) {
                             if(!this.hasOwnProperty(internalProperty)) {
-                                defineInternalProperty(this, internalProperty, value)
+                                defineInternalProperty(this, internalProperty, value);
                             } else {
                                 this[internalProperty] = value;
                             }
@@ -564,7 +564,8 @@ Object.defineProperty(Montage, "defineProperty", {
 
             return Object.defineProperty(obj, prop, descriptor);
         }
-    }});
+    }
+});
 
 /**
  * Defines one or more new properties to an object, or modifies existing
@@ -612,7 +613,9 @@ function getAttributeProperties(proto, attributeName) {
         return proto[attributePropertyName];
     } else {
         return Object.defineProperty(proto, attributePropertyName, {
-            enumerable: false, configurable: false, writable: true,
+            enumerable: false,
+            configurable: false,
+            writable: true,
             value: Object.create(getAttributeProperties(Object.getPrototypeOf(proto), attributeName))
         })[attributePropertyName];
     }
@@ -934,6 +937,8 @@ Montage.defineProperty(Montage, "getInfoForObject", {
         var metadata;
         var instanceMetadataDescriptor;
 
+        //jshint -W106
+
         if (hasOwnProperty.call(object, "_montage_metadata")) {
             return object._montage_metadata;
         } else {
@@ -964,6 +969,7 @@ Montage.defineProperty(Montage, "getInfoForObject", {
                 return (object._montage_metadata = Object.create(metadata, instanceMetadataDescriptor));
             }
         }
+        //jshint +W106
     }
 });
 
@@ -1105,14 +1111,14 @@ Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
             delegateFunctionName = this.identifier + name.toCapitalized();
             if (delegate && typeof (delegateFunction = delegate[delegateFunctionName]) === "function") {
                 // remove first argument
-                Array_prototype.shift.call(arguments);
+                ARRAY_PROTOTYPE.shift.call(arguments);
                 return delegateFunction.apply(delegate, arguments);
             }
         }
 
         if (delegate && typeof (delegateFunction = delegate[name]) === "function") {
             // remove first argument
-            Array_prototype.shift.call(arguments);
+            ARRAY_PROTOTYPE.shift.call(arguments);
             return delegateFunction.apply(delegate, arguments);
         }
     }
@@ -1524,7 +1530,7 @@ var pathPropertyDescriptors = {
                     handler: handler,
                     beforeChange: beforeChange,
                     cancel: Function.noop
-                })
+                });
             }
 
             return descriptors.get(handler);

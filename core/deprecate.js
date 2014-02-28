@@ -1,3 +1,4 @@
+/* global ARRAY_PROTOTYPE: false, Montage: false */
 /**
  * @module deprecate
  */
@@ -70,6 +71,6 @@ exports.callDeprecatedFunction = function callDeprecatedFunction(scope, callback
 
     }
     Error.stackTraceLimit = depth;
-    args = Array_prototype.slice.call(arguments, 4);
+    args = ARRAY_PROTOTYPE.slice.call(arguments, 4);
     return callback.apply(scope ? scope : this, args);
 };

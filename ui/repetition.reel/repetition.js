@@ -889,9 +889,11 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 self._expandIterationTemplateParameters();
             }
 
+            //jshint -W106
             if (window._montage_le_flag) {
                 this._leTagIterationTemplate();
             }
+            //jshint +W106
 
             // Erase the initial child component trees. The initial document
             // children will be purged on first draw.  We use the innerTemplate
@@ -926,8 +928,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             var body = this._iterationTemplate.document.body;
 
             if (body.children.length > 0) {
+                //jshint -W106
                 var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
                 var label = this._montage_metadata.label;
+                //jshint +W106
                 this._leTagStarArgument(ownerModuleId, label, body);
             }
         }
@@ -1103,14 +1107,14 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                         self.constructIteration(iteration);
                     }).done();
                     self.currentIteration = null;
-                })
+                });
 
                 promise.done(); // radiate an error if necessary
                 return promise.then(null, function () {
                     // but regardless of whether this iteration failed, allow
                     // another iteration to be created
                 });
-            })
+            });
 
             this._requestedIterations++;
             return iteration;
