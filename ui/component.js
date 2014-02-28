@@ -2000,6 +2000,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             if (contents || this._shouldClearDomContentOnNextDraw) {
                 element = this._element;
 
+                // HACK: It is necessary to remove the oldContent before
+                // replacing because of a bug discovered in Internet Explorer
+                // (at least version 11.0.9431.0).
+                // We can safely remove this when this test case passes:
+                // http://jsfiddle.net/89X6F/
+                if (oldContent) {
+                    element.removeChild(oldContent);
+                }
                 element.innerHTML = "";
 
                 if (Element.isElement(contents)) {
