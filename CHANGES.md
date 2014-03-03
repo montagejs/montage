@@ -1,3 +1,17 @@
+### v0.14.2
+
+-  **Montage**
+
+   Reduction of jshint errors
+
+-  **Mr**
+
+   Fix bug in packages with names that start with a digit.
+
+-  **Substitution**
+
+   Added a workaround for an IE bug in its handling of innerHTML. http://jsfiddle.net/89X6F/
+
 ### v0.14.1
 
 -  **Component**
