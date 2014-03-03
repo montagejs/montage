@@ -1,3 +1,7 @@
+### 0.15.4
+
+ - Fix display name for packages beginning with digits
+
 ### 0.15.3
 
  - Revert sourceMappingURL change, causes issues in Chrome and doesn't work great in Firefox.
