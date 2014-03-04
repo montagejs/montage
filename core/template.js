@@ -657,6 +657,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
             var html = _document.documentElement.innerHTML;
 
             this.document = this.createHtmlDocumentWithHtml(html, _document.baseURI);
+            this.clearTemplateFromElementContentsCache();
         }
     },
 
