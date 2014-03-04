@@ -21,7 +21,6 @@ var Template = Montage.specialize( /** @lends Template# */ {
 
     _require: {value: null},
     _resources: {value: null},
-    document: {value: null},
     _baseUrl: {value: null},
     _instances: {value: null},
     _metadata: {value: null},
@@ -85,6 +84,46 @@ var Template = Montage.specialize( /** @lends Template# */ {
             }
 
             return serialiation;
+        }
+    },
+
+    _isDirty: {
+        value: false
+    },
+
+    isDirty: {
+        get: function() {
+            return this._isDirty;
+        },
+        set: function(value) {
+            if (this._isDirty !== value) {
+                this._isDirty = value;
+                this.clearTemplateFromElementContentsCache();
+            }
+        }
+    },
+
+    /**
+     * Object that knows how to refresh the contents of the template when it's
+     * dirty. Expected to implement the refreshTemplate(template) function.
+     */
+    refresher: {
+        value: null
+    },
+
+    _document: {
+        value: null
+    },
+
+    document: {
+        get: function() {
+            if (this._isDirty) {
+                this.refresh();
+            }
+            return this._document;
+        },
+        set: function(value) {
+            this._document = value;
         }
     },
 
@@ -1198,6 +1237,23 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 }
             }
 
+        }
+    },
+
+    /**
+     * Refresh the contents of the template when its dirty.
+     */
+    refresh: {
+        value: function() {
+            if (this.isDirty) {
+                if (this.refresher &&
+                    typeof this.refresher.refreshTemplate === "function") {
+                    this.refresher.refreshTemplate(this);
+                    this.isDirty = false;
+                } else {
+                    console.warn("Not able to refresh without a refresher.refreshTemplate.");
+                }
+            }
         }
     }
 
