@@ -1,3 +1,14 @@
+### v0.14.3
+
+-  **Component**
+
+   Fix getDomArgumentNames missing names after calling extractDomArgument.
+
+-  **Template**
+
+   Add the ability to set a template dirty and configure it with a refresher object.
+   Add replaceContentsWithTemplate function.
+
 ### v0.14.2
 
 -  **Montage**
