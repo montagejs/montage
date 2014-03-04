@@ -111,6 +111,11 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
     _templateDocumentPart: {value: null},
 
     /**
+     * Set when the contents of the iteration no longer match their template.
+     */
+    isDirty: {value: false},
+
+    /**
      * Creates the initial values of all instance state.
      * @private
      */
@@ -878,11 +883,35 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
             //jshint -W106
             if (window._montage_le_flag) {
+                iterationTemplate.refresher = this;
                 this._leTagIterationTemplate(iterationTemplate);
             }
             //jshint +W106
 
             return iterationTemplate;
+        }
+    },
+
+    _rebuildIterationTemplate: {
+        value: function() {
+            var iterationTemplate = this._iterationTemplate,
+                newIterationTemplate,
+                iterations = this.iterations;
+
+            this._purgeFreeIterations();
+            for (var i = 0, iteration; iteration =/*assign*/ iterations[i]; i++) {
+                iteration.isDirty = true;
+            }
+
+            this._innerTemplate = null;
+            newIterationTemplate = this._buildIterationTemplate();
+            iterationTemplate.replaceContentsWithTemplate(newIterationTemplate);
+        }
+    },
+
+    refreshTemplate: {
+        value: function() {
+            this._rebuildIterationTemplate();
         }
     },
 
@@ -1279,6 +1308,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             var iterations = this.iterations;
             var contentForIteration = this._contentForIteration;
 
+            if (this._iterationTemplate.isDirty) {
+                this._iterationTemplate.refresh();
+            }
+
             // This is an optimization for a common case with the Flow that
             // avoids shifting around with the iterations and free iterations
             // array.  If the number of added and removed content values are
@@ -1309,7 +1342,11 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                     iteration.recycle();
                 });
                 // Add them back to the free list so they can be reused
-                this._freeIterations.addEach(freedIterations);
+                for (var i = 0, freedIteration; freedIteration = freedIterations[i]; i++) {
+                    if (!freedIteration.isDirty) {
+                        this._freeIterations.push(freedIteration);
+                    }
+                }
             }
 
             if (addIterationsCount > 0) {
