@@ -1240,6 +1240,17 @@ var Template = Montage.specialize( /** @lends Template# */ {
         }
     },
 
+    replaceContentsWithTemplate: {
+        value: function(template) {
+            this._require = template._require;
+            this._baseUrl = template._baseUrl;
+            this._document = template._document;
+            this.objectsString = template.objectsString;
+            this._instances = template._instances;
+            this._templateFromElementContentsCache = template._templateFromElementContentsCache;
+        }
+    },
+
     /**
      * Refresh the contents of the template when its dirty.
      */
