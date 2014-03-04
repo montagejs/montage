@@ -1249,6 +1249,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
             this.objectsString = template.objectsString;
             this._instances = template._instances;
             this._templateFromElementContentsCache = template._templateFromElementContentsCache;
+            this._metadata = template._metadata;
         }
     },
 
