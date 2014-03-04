@@ -736,7 +736,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                 one = component.extractDomArgument("one");
                 expect(one).toBeDefined();
                 one = component.extractDomArgument("one");
-                expect(one).toBeUndefined();
+                expect(one).toBe(null);
             });
 
             it("should have dom arguments of the component only and not of nested components", function() {

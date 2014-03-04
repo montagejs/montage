@@ -112,6 +112,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         value: null
     },
 
+    _domArgumentNames: {
+        value: null
+    },
+
     /**
      * Dispatch the actionEvent this component is configured to emit upon interaction
      * @private
@@ -337,7 +341,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     getDomArgumentNames: {
         value: function() {
-            return Object.keys(this._domArguments);
+            if (!this._domArgumentNames) {
+                this._domArgumentNames = Object.keys(this._domArguments);
+            }
+            return this._domArgumentNames;
         }
     },
 
@@ -360,7 +367,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             var argument;
 
             argument = this._domArguments[name];
-            delete this._domArguments[name];
+            this._domArguments[name] = null;
 
             return argument;
         }
