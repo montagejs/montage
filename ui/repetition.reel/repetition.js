@@ -832,9 +832,14 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     cleanupDeletedComponentTree: {
         value: function (permanently) {
-            // This also causes _iterationTemplate to be torn down, through
-            // handleInnerTemplateChange.
-            this.innerTemplate = null;
+            // Don't set innerTemplate directly because the listener system
+            // will get it and that will make the repetition to create it all
+            // over again if it happens to be null for some reason.
+            var previousIterationTemplate = this._innerTemplate;
+            this._innerTemplate = null;
+            if (previousIterationTemplate) {
+                this._teardownIterationTemplate();
+            }
             if (permanently) {
                 this.cancelBindings();
             }
