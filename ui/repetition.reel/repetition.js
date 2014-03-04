@@ -111,6 +111,11 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
     _templateDocumentPart: {value: null},
 
     /**
+     * Set when the contents of the iteration no longer match their template.
+     */
+    isDirty: {value: false},
+
+    /**
      * Creates the initial values of all instance state.
      * @private
      */
@@ -827,9 +832,14 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     cleanupDeletedComponentTree: {
         value: function (permanently) {
-            // This also causes _iterationTemplate to be torn down, through
-            // handleInnerTemplateChange.
-            this.innerTemplate = null;
+            // Don't set innerTemplate directly because the listener system
+            // will get it and that will make the repetition to create it all
+            // over again if it happens to be null for some reason.
+            var previousIterationTemplate = this._innerTemplate;
+            this._innerTemplate = null;
+            if (previousIterationTemplate) {
+                this._teardownIterationTemplate();
+            }
             if (permanently) {
                 this.cancelBindings();
             }
@@ -852,23 +862,12 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         }
     },
 
-    /**
-     * When `_setupRequirements` have all been met, this method produces an
-     * iteration template using the `innerTemplate` that has been given to this
-     * repetition.  It also deletes any *initial* child components and starts
-     * watching for changes to the organized content.  Watching for organized
-     * content changes would cause errors if it were not possible to
-     * instantiate iterations.  In symmetry, `_teardownIterationTemplate`
-     * pauses watching the organized content.
-     * @private
-     */
-    _setupIterationTemplate: {
-        value: function () {
-            var self = this,
-                iterationTemplate,
-                serialization,
-                serializationObject,
-                label;
+    _buildIterationTemplate: {
+        value: function() {
+            var iterationTemplate;
+            var serialization;
+            var serializationObject;
+            var label;
 
             // We need to clone the innerTemplate because this repetition
             // might be used in different contexts and with different template
@@ -883,18 +882,59 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             serializationObject[this._iterationLabel] = {};
             iterationTemplate.setObjects(serializationObject);
 
-            self._iterationTemplate = iterationTemplate;
-
-            if (self.innerTemplate.hasParameters()) {
-                self._expandIterationTemplateParameters();
+            if (this.innerTemplate.hasParameters()) {
+                this._expandIterationTemplateParameters(iterationTemplate);
             }
 
             //jshint -W106
             if (window._montage_le_flag) {
-                this._leTagIterationTemplate();
+                iterationTemplate.refresher = this;
+                this._leTagIterationTemplate(iterationTemplate);
             }
             //jshint +W106
 
+            return iterationTemplate;
+        }
+    },
+
+    _rebuildIterationTemplate: {
+        value: function() {
+            var iterationTemplate = this._iterationTemplate,
+                newIterationTemplate,
+                iterations = this.iterations;
+
+            this._purgeFreeIterations();
+            for (var i = 0, iteration; iteration =/*assign*/ iterations[i]; i++) {
+                iteration.isDirty = true;
+            }
+
+            this._innerTemplate = null;
+            newIterationTemplate = this._buildIterationTemplate();
+            iterationTemplate.replaceContentsWithTemplate(newIterationTemplate);
+        }
+    },
+
+    refreshTemplate: {
+        value: function() {
+            this._rebuildIterationTemplate();
+        }
+    },
+
+    /**
+     * When `_setupRequirements` have all been met, this method produces an
+     * iteration template using the `innerTemplate` that has been given to this
+     * repetition.  It also deletes any *initial* child components and starts
+     * watching for changes to the organized content.  Watching for organized
+     * content changes would cause errors if it were not possible to
+     * instantiate iterations.  In symmetry, `_teardownIterationTemplate`
+     * pauses watching the organized content.
+     * @private
+     */
+    _setupIterationTemplate: {
+        value: function () {
+            var self = this;
+
+            this._iterationTemplate = this._buildIterationTemplate();
             // Erase the initial child component trees. The initial document
             // children will be purged on first draw.  We use the innerTemplate
             // as the iteration template and replicate it for each iteration
@@ -924,8 +964,8 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     },
 
     _leTagIterationTemplate: {
-        value: function() {
-            var body = this._iterationTemplate.document.body;
+        value: function(template) {
+            var body = template.document.body;
 
             if (body.children.length > 0) {
                 //jshint -W106
@@ -959,18 +999,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
             // prepare all the free iterations and their child component trees
             // for garbage collection
-            for (var i = 0; i < this._freeIterations.length; i++) {
-                var iteration = this._freeIterations[i];
-                for (var j = 0; j < iteration._childComponents.length; j++) {
-                    var childComponent = iteration._childComponents[j];
-                    this.removeChildComponent(childComponent);
-                    childComponent.cleanupDeletedComponentTree(true); // true cancels bindings
-                }
-            }
+            this._purgeFreeIterations();
 
             // purge the existing iterations
             this._iterationTemplate = null;
-            this._freeIterations.clear();
             this._contentForIteration.clear();
             this._iterationForElement.clear();
             this.currentIteration = null;
@@ -984,14 +1016,27 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         }
     },
 
+    _purgeFreeIterations: {
+        value: function() {
+            for (var i = 0; i < this._freeIterations.length; i++) {
+                var iteration = this._freeIterations[i];
+                for (var j = 0; j < iteration._childComponents.length; j++) {
+                    var childComponent = iteration._childComponents[j];
+                    this.removeChildComponent(childComponent);
+                    childComponent.cleanupDeletedComponentTree(true); // true cancels bindings
+                }
+            }
+            this._freeIterations.clear();
+        }
+    },
+
     // TODO(@aadsm) doc
     /**
      * @private
      */
     _expandIterationTemplateParameters: {
-        value: function() {
-            var template = this._iterationTemplate,
-                owner = this,
+        value: function(template) {
+            var owner = this,
                 argumentsTemplate,
                 collisionTable,
                 externalLabels,
@@ -1268,6 +1313,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             var iterations = this.iterations;
             var contentForIteration = this._contentForIteration;
 
+            if (this._iterationTemplate.isDirty) {
+                this._iterationTemplate.refresh();
+            }
+
             // This is an optimization for a common case with the Flow that
             // avoids shifting around with the iterations and free iterations
             // array.  If the number of added and removed content values are
@@ -1298,7 +1347,11 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                     iteration.recycle();
                 });
                 // Add them back to the free list so they can be reused
-                this._freeIterations.addEach(freedIterations);
+                for (var i = 0, freedIteration; freedIteration = freedIterations[i]; i++) {
+                    if (!freedIteration.isDirty) {
+                        this._freeIterations.push(freedIteration);
+                    }
+                }
             }
 
             if (addIterationsCount > 0) {
