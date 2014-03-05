@@ -250,7 +250,7 @@ var Node = exports.TreeControllerNode = Montage.specialize( /** @lends TreeContr
             }
             var node;
             for (var i = 0; i < this.children.length; i++) {
-                if (node = this.children[i].findNodeByContent(content)) {
+                if (node = this.children[i].findNodeByContent(content, equals)) {
                     break;
                 }
             }
