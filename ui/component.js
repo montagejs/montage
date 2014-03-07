@@ -2014,20 +2014,19 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         value: function() {
             var contents = this._newDomContent,
                 oldContent = this._element.childNodes[0],
+                childNodesCount,
                 element;
 
             if (contents || this._shouldClearDomContentOnNextDraw) {
                 element = this._element;
 
-                // HACK: It is necessary to remove the oldContent before
-                // replacing because of a bug discovered in Internet Explorer
-                // (at least version 11.0.9431.0).
-                // We can safely remove this when this test case passes:
-                // http://jsfiddle.net/89X6F/
-                if (oldContent) {
-                    element.removeChild(oldContent);
+                // Setting the innerHTML to clear the children will not work on
+                // IE because it modifies the underlying child nodes. Here's the
+                // test case that shows this issue: http://jsfiddle.net/89X6F/
+                childNodesCount = this._element.childNodes.length;
+                for (var i = 0; i < childNodesCount; i++) {
+                    element.removeChild(element.firstChild);
                 }
-                element.innerHTML = "";
 
                 if (Element.isElement(contents)) {
                     element.appendChild(contents);
