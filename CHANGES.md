@@ -1,3 +1,13 @@
+### v0.14.4
+
+-  **Browser Support**
+
+   A better fix for IE's innerHTML issues.
+
+-  **TreeController**
+
+   Fix an issue with the findNodeByContent equality parameter.
+
 ### v0.14.3
 
 -  **Component**
