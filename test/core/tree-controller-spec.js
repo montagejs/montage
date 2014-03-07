@@ -14,16 +14,20 @@ describe("core/tree-controller-spec", function () {
         beforeEach(function () {
             tree = {
                 name: "I",
+                "id": "1",
                 children: [
                     {
                         "name": "I/A",
+                        "id": "2",
                         children: []
                     },
                     {
                         "name": "I/B",
+                        "id": "3",
                         children: [
                             {
-                                name: "I/B/1"
+                                name: "I/B/1",
+                                "id": "4"
                             }
                         ]
                     }
@@ -225,15 +229,29 @@ describe("core/tree-controller-spec", function () {
                 expect(node.content).toBe(seek);
             });
 
-            it("find node by content from treeController with Object.equals", function () {
-                treeController = new TreeController();
-                treeController.content = tree;
-                root = treeController.root;
-                var seek = tree.children[1].children[0];
-                node = treeController.findNodeByContent(seek, Object.equals);
-                expect(node.content).toBe(seek);
+            describe("find node by content from treeController given equality function", function () {
+
+                beforeEach(function () {
+                    treeController = new TreeController();
+                    treeController.content = tree;
+                    root = treeController.root;
+                });
+
+                it("should be able to find the root", function () {
+                    var seek =  {id: "1"};
+                    var equality = function(x,y) { return x.id === y.id; };
+                    node = treeController.findNodeByContent(seek, equality);
+                    expect(node.content).toBe(tree);
+                });
+
+                it("should be able to find any level", function () {
+                    var seek =  {id: "3"};
+                    var equality = function(x,y) { return x.id === y.id; };
+                    node = treeController.findNodeByContent(seek, equality);
+                    expect(node.content).toBe(tree.children[1]);
+                });
             });
-        });
+      });
 
         // 4 + 2 * 2 -> pre= +4*22; post= 422+*
         describe("walk tree", function(){
