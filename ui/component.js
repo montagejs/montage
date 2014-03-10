@@ -444,7 +444,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 range = template.document.createRange();
                 range.selectNodeContents(element);
                 argument = range.cloneContents();
-                if (window._montage_le_flag && argument.children.length > 0) {
+                if (window._montage_le_flag && element.children.length > 0) {
                     this._leTagStarArgument(ownerModuleId, label, argument);
                 }
             } else {
@@ -1863,10 +1863,44 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
+    _getNodeFirstElement: {
+        value: function(node) {
+            var element = node.firstElementChild;
+
+            if (!element) {
+                element = node.firstChild;
+                do {
+                    if (element.nodeType === Node.ELEMENT_NODE) {
+                        break;
+                    }
+                } while (element =/*assign*/ element.nextSibling);
+            }
+
+            return element;
+        }
+    },
+
+    _getNodeLastElement: {
+        value: function(node) {
+            var element = node.lastElementChild;
+
+            if (!element) {
+                element = node.lastChild;
+                do {
+                    if (element.nodeType === Node.ELEMENT_NODE) {
+                        break;
+                    }
+                } while (element =/*assign*/ element.previousSibling);
+            }
+
+            return element;
+        }
+    },
+
     _leTagStarArgument: {
         value: function(ownerModuleId, label, rootElement) {
-            var argumentBegin = rootElement.firstElementChild;
-            var argumentEnd = rootElement.lastElementChild;
+            var argumentBegin = this._getNodeFirstElement(rootElement);
+            var argumentEnd = this._getNodeLastElement(rootElement);
 
             argumentBegin.setAttribute(ATTR_LE_ARG_BEGIN,
                 (argumentBegin.getAttribute(ATTR_LE_ARG_BEGIN)||"") + " " +
