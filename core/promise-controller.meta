@@ -1,0 +1,125 @@
+{
+    "promiseController_promise": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "promise",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object",
+            "helpKey": ""
+        }
+    },
+    "promiseController_value": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "value",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object",
+            "helpKey": ""
+        }
+    },
+    "promiseController_error": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "error",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "object",
+            "helpKey": ""
+        }
+    },
+    "promiseController_pending": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "pending",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+    "promiseController_fulfilled": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "fulfilled",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+    "promiseController_rejected": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "rejected",
+            "blueprint": {
+                "@": "root"
+            },
+            "valueType": "boolean",
+            "helpKey": ""
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "PromiseController",
+            "customPrototype": false,
+            "propertyBlueprints": [
+                {
+                    "@": "promiseController_promise"
+                },
+                {
+                    "@": "promiseController_value"
+                },
+                {
+                    "@": "promiseController_error"
+                },
+                {
+                    "@": "promiseController_pending"
+                },
+                {
+                    "@": "promiseController_fulfilled"
+                },
+                {
+                    "@": "promiseController_rejected"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "promiseController": [
+                    {
+                        "@": "promiseController_promise"
+                    },
+                    {
+                        "@": "promiseController_value"
+                    },
+                    {
+                        "@": "promiseController_error"
+                    },
+                    {
+                        "@": "promiseController_pending"
+                    },
+                    {
+                        "@": "promiseController_fulfilled"
+                    },
+                    {
+                        "@": "promiseController_rejected"
+                    }
+                ]
+            },
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "core/promise-controller.meta"
+            },
+            "exportName": "PromiseController",
+            "module": {
+                "%": "core/promise-controller"
+            }
+        }
+    }
+}
