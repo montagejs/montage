@@ -719,22 +719,11 @@ var Template = Montage.specialize( /** @lends Template# */ {
             var link = doc.querySelector('link[rel="serialization"]'),
                 req,
                 url,
-                rootUrl,
                 deferred;
 
             if (link) {
                 req = new XMLHttpRequest();
                 url = link.getAttribute("href");
-                rootUrl = this.getBaseUrl() || "";
-
-                if (! /^https?:\/\/|^\//.test(url)) {
-                    url = rootUrl + url;
-                } else {
-                    return Promise.reject(
-                        new Error("Relative link found for the objects file but the document URL is unknown: '" + url + "'.")
-                    );
-                }
-
                 deferred = Promise.defer();
 
                 req.open("GET", url);
@@ -1233,6 +1222,12 @@ var Template = Montage.specialize( /** @lends Template# */ {
                             if (url !== "" && !absoluteUrlRegExp.test(url)) {
                                 node.setAttribute('src', URL.resolve(baseUrl, url));
                             }
+                        } else if (node.hasAttribute("href")) {
+                            // Stylesheets
+                            url = node.getAttribute('href');
+                            if (url !== "" && !absoluteUrlRegExp.test(url)) {
+                                node.setAttribute('href', URL.resolve(baseUrl, url));
+                            }
                         }
                     }
                 }
@@ -1304,7 +1299,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     _NORMALIZED_TAG_NAMES: {
-        value: ["IMG", "image", "IFRAME"]
+        value: ["IMG", "image", "IFRAME", "link"]
     },
 
     __NORMALIZED_TAG_NAMES_SELECTOR: {
@@ -1484,16 +1479,12 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
     loadStyle: {
         value: function(element, targetDocument) {
             var url,
-                documentResources,
-                baseUrl = this.template.getBaseUrl();
+                documentResources;
 
             url = element.getAttribute("href");
 
             if (url) {
                 documentResources = DocumentResources.getInstanceForDocument(targetDocument);
-
-                url = documentResources.normalizeUrl(url, baseUrl);
-
                 return documentResources.preloadResource(url);
             } else {
                 return Promise.resolve();
@@ -1505,23 +1496,11 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
         value: function(targetDocument) {
             var styles = this.getStyles(),
                 newStyle,
-                stylesForDocument = [],
-                baseUrl = this.template.getBaseUrl(),
-                documentResources,
-                url,
-                normalizedUrl;
-
-            documentResources = DocumentResources.getInstanceForDocument(targetDocument);
+                stylesForDocument = [];
 
             for (var i = 0, style; (style = styles[i]); i++) {
-                url = style.getAttribute("href");
                 newStyle = targetDocument.importNode(style, true);
                 stylesForDocument.push(newStyle);
-
-                if (url) {
-                    normalizedUrl = documentResources.normalizeUrl(url, baseUrl);
-                    newStyle.setAttribute("href", normalizedUrl);
-                }
             }
 
             return stylesForDocument;
