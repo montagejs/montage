@@ -159,5 +159,11 @@ var PromiseController = exports.PromiseController = Montage.specialize( {
         }
     }
 
+}, /** @lends PromiseController. */ {
+
+    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+
+    blueprint:require("montage")._blueprintDescriptor
+
 });
 
