@@ -23,6 +23,7 @@
                 "prototype": "core/range-controller",
                 "bindings": {
                     "content": {"<-": "@owner.contentController.organizedContent ?? @owner.content"},
+                    "selection.0": {"<->": "@owner.contentController.selection.0"},
                     "visibleIndexes": {"<-": "@owner._visibleIndexes"}
                 }
             },
