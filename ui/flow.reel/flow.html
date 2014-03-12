@@ -12,18 +12,18 @@
                         "#": "montage-flow-repetition"
                     },
                     "contentController": {
-                        "@": "frustrumController"
+                        "@": "frustumController"
                     }
                 },
                 "bindings": {
                     "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"}
                 }
             },
-            "frustrumController": {
+            "frustumController": {
                 "prototype": "core/range-controller",
                 "bindings": {
                     "content": {"<-": "@owner.contentController.organizedContent ?? @owner.content"},
-                    "selection": {"<-": "@owner.contentController.selection"},
+                    "selection.0": {"<->": "@owner.contentController.selection.0"},
                     "visibleIndexes": {"<-": "@owner._visibleIndexes"}
                 }
             },
@@ -68,12 +68,13 @@
                     "_cameraElement": {
                         "#": "montage-flow-camera"
                     },
-                    "_frustrumController": {
-                        "@": "frustrumController"
+                    "_frustumController": {
+                        "@": "frustumController"
                     }
                 },
                 "bindings": {
                     "scroll": {"<->": "@flowTranslateComposer.scroll"},
+                    "selection": {"<->": "@frustumController.selection"},
                     "selectedIndexes": {"<-": "@repetition.selectedIndexes"},
                     "activeIndexes": {"<-": "@repetition.activeIndexes"},
                     "draggedSlideIndex": {"<-": "@flowTranslateComposer._closerIndex"}

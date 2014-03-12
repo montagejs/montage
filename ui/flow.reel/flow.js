@@ -16,7 +16,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         value: function Flow() {
             this.super();
             // The template has a binding from these visibleIndexes to
-            // the frustrum controller's visibleIndexes.  We manage the
+            // the frustum controller's visibleIndexes.  We manage the
             // array within the flow and use it also in the flow
             // translate composer.
             this._visibleIndexes = [];
@@ -25,7 +25,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             // FlowBezierSpline.
             this._slideOffsets = {};
             this.defineBinding("_numberOfIterations", {
-                "<-": "_frustrumController.content.length"
+                "<-": "_frustumController.content.length"
             });
             // dispatches handle_numberOfIterationsChange
             this.addOwnPropertyChangeListener("_numberOfIterations", this);
@@ -997,7 +997,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
 
     /**
      * The content that governs the repetition is plucked from the original
-     * content using the frustrumController's visibleIndexes array, which we
+     * content using the frustumController's visibleIndexes array, which we
      * retain a copy of on Flow.
      *
      * In order to prevent jitter and minimize thrashing on the DOM, the Flow
@@ -1440,7 +1440,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     },
 
     /**
-     * The number of visible iterations after frustrum culling, which is
+     * The number of visible iterations after frustum culling, which is
      * subject to variation depending on the scroll offset.
      *
      * <pre>
