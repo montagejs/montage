@@ -29,7 +29,7 @@ var Promise = require("core/promise").Promise;
  * @class PromiseController
  * @classdesc Provides bindable properties for the state of a promise
  */
-var PromiseController = exports.PromiseController = Montage.specialize( {
+exports.PromiseController = Montage.specialize( {
 
     constructor: {
         value: function PromiseController() {
@@ -136,21 +136,24 @@ var PromiseController = exports.PromiseController = Montage.specialize( {
 
             promise.then(
                 function (value) {
-                    if (reset)
+                    if (reset) {
                         return;
+                    }
                     self.fulfilled = true;
                     self.value = value;
                     self.progress = 1;
                 },
                 function (error) {
-                    if (reset)
+                    if (reset) {
                         return;
+                    }
                     self.rejected = true;
                     self.error = error;
                 },
                 function (progress) {
-                    if (reset)
+                    if (reset) {
                         return;
+                    }
                     self.progress = progress;
                     self.determinate = typeof progress === "number";
                 }
