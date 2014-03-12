@@ -319,6 +319,9 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
             if (this._isDisplayed && this._isShown) {
                 this._calculatePosition();
             }
+            if (!this._isShown) {
+                this.callDelegateMethod("didHideOverlay", this);
+            }
         }
     },
 
@@ -336,6 +339,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
                     // next draw cycle at willDraw without causing a flash.
                     this.element.style.visibility = "hidden";
                     this._isDisplayed = true;
+                    this.callDelegateMethod("didShowOverlay", this);
                     // Trigger the new draw cycle so we can finally measure the
                     // element.
                     this.needsDraw = true;
