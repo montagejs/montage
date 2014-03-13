@@ -125,6 +125,27 @@ describe("ui/overlay-spec", function() {
             expect(delegate.willPositionOverlay).toHaveBeenCalledWith(anOverlay, anOverlay.position);
         });
 
+        it("should call didHideOverlay", function() {
+            delegate.didHideOverlay = jasmine.createSpy();
+
+            anOverlay._isShown = false;
+
+            anOverlay.willDraw();
+
+            expect(delegate.didHideOverlay).toHaveBeenCalledWith(anOverlay);
+        });
+
+        it("should call didShowOverlay", function() {
+            delegate.didShowOverlay = jasmine.createSpy();
+
+            anOverlay._isShown = true;
+            anOverlay._isDisplayed = false;
+
+            anOverlay.draw();
+
+            expect(delegate.didShowOverlay).toHaveBeenCalledWith(anOverlay);
+        });
+
         describe("shouldDismissOverlay", function() {
             it("should hide the overlay when a pressStart is fired outside the overlay and it returns true", function() {
                 delegate.shouldDismissOverlay = jasmine.createSpy().andReturn(true);
