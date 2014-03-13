@@ -1,3 +1,25 @@
+### v0.14.5
+
+-  **Browser Support**
+
+   Remove dependency on the NodeParent interface on DocumentFragments which isn't widely supported.
+
+-  **Template**
+
+   Make all urls in the template be rebased in the same way.
+
+-  **RangeController**
+
+   Add an optional content parameter to the constructor to avoid having to `initWithContent`
+
+-  **PromiseController**
+
+   Add a meta file and cleanup jshint warnings.
+
+-  **Flow**
+
+   Fix an issue with flow selection where the selection of the contentController was not being respected.
+
 ### v0.14.4
 
 -  **Browser Support**
