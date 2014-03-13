@@ -146,7 +146,7 @@ var RangeSelection = function(content, rangeController) {
 var RangeController = exports.RangeController = Montage.specialize( /** @lends RangeController# */ {
 
     constructor: {
-        value: function RangeController() {
+        value: function RangeController(content) {
             this.content = null;
             this._selection = new RangeSelection([], this);
 
@@ -199,6 +199,10 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
             this.addOwnPropertyChangeListener("multiSelect", this);
 
             this.iterations = [];
+
+            if (content) {
+                this.initWithContent(content);
+            }
         }
     },
 
