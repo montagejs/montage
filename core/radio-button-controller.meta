@@ -1,0 +1,40 @@
+{
+    "blueprint_radio_button_controller_value": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "value",
+            "blueprint": { "@": "root" },
+            "valueType": "object",
+            "helpKey": ""
+        }
+    },
+    "blueprint_radio_button_controller_contentController": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "contentController",
+            "blueprint": { "@": "root" },
+            "valueType": "object",
+            "helpKey": ""
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "RadioButtonController",F
+            "propertyBlueprints": [
+                { "@": "blueprint_radio_button_controller_value" }
+                { "@": "blueprint_radio_button_controller_contentController" }
+            ],
+            "propertyBlueprintGroups": {
+                "Selection": [
+                    { "@": "blueprint_radio_button_controller_value" },
+                    { "@": "blueprint_radio_button_controller_contentController" }
+                ]
+            },
+            "propertyValidationRules": {},
+            "blueprintModule": { "%": "core/radio-button-controller.meta" },
+            "exportName": "RadioButtonController",
+            "module": { "%": "core/radio-button-controller" }
+        }
+    }
+}
