@@ -72,6 +72,8 @@ MontageBoot.loadPackage = function (location, config) {
 
     config.location = URL.resolve(Require.getLocation(), location);
 
+    config.moduleTypes = ["html", "meta"];
+
     // setup the reel loader
     config.makeLoader = function (config) {
         return MontageBoot.ReelLoader(
