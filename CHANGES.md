@@ -1,3 +1,9 @@
+### v0.14.6
+
+-  **Mop Support**
+
+   Fixed a bug in the mr config that was preventing mop bundling from collecting the dependencies in html files.
+
 ### v0.14.5
 
 -  **Browser Support**
