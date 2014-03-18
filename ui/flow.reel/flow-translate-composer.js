@@ -210,6 +210,19 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
         }
     },
 
+    _dispatchTranslateCancel: {
+        value: function() {
+            var translateCancelEvent = document.createEvent("CustomEvent");
+
+            translateCancelEvent.initCustomEvent("translateCancel", true, true, null);
+            translateCancelEvent.scroll = this._scroll;
+            translateCancelEvent.translateX = 0;
+            translateCancelEvent.translateY = 0;
+            translateCancelEvent.pointer = this._observedPointer;
+            this.dispatchEvent(translateCancelEvent);
+        }
+    },
+
     // TODO doc
     /**
      */
