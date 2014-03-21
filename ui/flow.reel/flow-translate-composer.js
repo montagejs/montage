@@ -461,7 +461,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
      */
     _updateLinearScroll: {
         value: function () {
-            var ratio = 500 / this._flow._height,
+            var ratio = this._flow.isCameraEnabled ? 500 / this._flow._height : 1,
                 x = (this._pageX - this._startPageX) * this._linearScrollingVector[0] * ratio,
                 y = (this._pageY - this._startPageY) * this._linearScrollingVector[1] * ratio,
                 squaredMagnitude = this._linearScrollingVector[0] * this._linearScrollingVector[0] + this._linearScrollingVector[1] * this._linearScrollingVector[1],
@@ -486,7 +486,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
             this._previousScrollDelta = scroll;
 
             var flow = this._flow,
-                cameraPosition = flow._cameraPosition,
+                viewpointPosition = flow._viewpointPosition,
                 splinePaths = flow._splinePaths,
                 pathsLength = splinePaths.length,
                 pathIndex = this._closerIndex % pathsLength,
@@ -504,9 +504,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                 height = this._element.clientHeight * .5,
                 x = width - this._pointerX,
                 y = height - this._pointerY,
-                vX = flow.cameraTargetPoint[0] - cameraPosition[0],
-                vY = flow.cameraTargetPoint[1] - cameraPosition[1],
-                vZ = flow.cameraTargetPoint[2] - cameraPosition[2],
+                vX = flow._viewpointTargetPoint[0] - viewpointPosition[0],
+                vY = flow._viewpointTargetPoint[1] - viewpointPosition[1],
+                vZ = flow._viewpointTargetPoint[2] - viewpointPosition[2],
                 yAngle = -Math.atan2(vX, vZ),
                 tmpZ,
                 xAngle,
@@ -522,7 +522,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
             cosY = Math.cos(yAngle);
             sinX = Math.sin(xAngle);
             cosX = Math.cos(xAngle);
-            perspective = height / Math.tan(flow.cameraFov * .008726646259972); // pi / 360
+            perspective = height / Math.tan(flow._viewpointFov * .008726646259972); // pi / 360
 
             i = 0;
             minL = 1e100;
@@ -532,9 +532,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     position = spline.getPositionAtIndexTime(indexTime);
                     rotation = splinePaths[pathIndex].getRotationAtIndexTime(indexTime);
                     point = this._rotateXYZ(intersection, rotation);
-                    x2 = (cameraPosition[2] - position[2] - point[2]) * sinY - (position[0] - cameraPosition[0] + point[0]) * cosY;
-                    y2 = position[1] - cameraPosition[1] + point[1];
-                    z2 = (position[2] - cameraPosition[2] + point[2]) * cosY - (position[0] - cameraPosition[0] + point[0]) * sinY;
+                    x2 = (viewpointPosition[2] - position[2] - point[2]) * sinY - (position[0] - viewpointPosition[0] + point[0]) * cosY;
+                    y2 = position[1] - viewpointPosition[1] + point[1];
+                    z2 = (position[2] - viewpointPosition[2] + point[2]) * cosY - (position[0] - viewpointPosition[0] + point[0]) * sinY;
                     y3 = z2 * sinX + y2 * cosX;
                     z3 = z2 * cosX - y2 * sinX;
                     invZ = perspective / z3; // division by zero ?
@@ -559,9 +559,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     position = spline.getPositionAtIndexTime(indexTime);
                     rotation = splinePaths[pathIndex].getRotationAtIndexTime(indexTime);
                     point = this._rotateXYZ(intersection, rotation);
-                    x2 = (cameraPosition[2] - position[2] - point[2]) * sinY - (position[0] - cameraPosition[0] + point[0]) * cosY;
-                    y2 = position[1] - cameraPosition[1] + point[1];
-                    z2 = (position[2] - cameraPosition[2] + point[2]) * cosY - (position[0] - cameraPosition[0] + point[0]) * sinY;
+                    x2 = (viewpointPosition[2] - position[2] - point[2]) * sinY - (position[0] - viewpointPosition[0] + point[0]) * cosY;
+                    y2 = position[1] - viewpointPosition[1] + point[1];
+                    z2 = (position[2] - viewpointPosition[2] + point[2]) * cosY - (position[0] - viewpointPosition[0] + point[0]) * sinY;
                     y3 = z2 * sinX + y2 * cosX;
                     z3 = z2 * cosX - y2 * sinX;
                     invZ = perspective / z3; // division by zero ?
@@ -583,9 +583,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     position = spline.getPositionAtIndexTime(indexTime);
                     rotation = splinePaths[pathIndex].getRotationAtIndexTime(indexTime);
                     point = this._rotateXYZ(intersection, rotation);
-                    x2 = (cameraPosition[2] - position[2] - point[2]) * sinY - (position[0] - cameraPosition[0] + point[0]) * cosY;
-                    y2 = position[1] - cameraPosition[1] + point[1];
-                    z2 = (position[2] - cameraPosition[2] + point[2]) * cosY - (position[0] - cameraPosition[0] + point[0]) * sinY;
+                    x2 = (viewpointPosition[2] - position[2] - point[2]) * sinY - (position[0] - viewpointPosition[0] + point[0]) * cosY;
+                    y2 = position[1] - viewpointPosition[1] + point[1];
+                    z2 = (position[2] - viewpointPosition[2] + point[2]) * cosY - (position[0] - viewpointPosition[0] + point[0]) * sinY;
                     y3 = z2 * sinX + y2 * cosX;
                     z3 = z2 * cosX - y2 * sinX;
                     invZ = perspective / z3; // division by zero ?
@@ -610,9 +610,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     position = spline.getPositionAtIndexTime(indexTime);
                     rotation = splinePaths[pathIndex].getRotationAtIndexTime(indexTime);
                     point = this._rotateXYZ(intersection, rotation);
-                    x2 = (cameraPosition[2] - position[2] - point[2]) * sinY - (position[0] - cameraPosition[0] + point[0]) * cosY;
-                    y2 = position[1] - cameraPosition[1] + point[1];
-                    z2 = (position[2] - cameraPosition[2] + point[2]) * cosY - (position[0] - cameraPosition[0] + point[0]) * sinY;
+                    x2 = (viewpointPosition[2] - position[2] - point[2]) * sinY - (position[0] - viewpointPosition[0] + point[0]) * cosY;
+                    y2 = position[1] - viewpointPosition[1] + point[1];
+                    z2 = (position[2] - viewpointPosition[2] + point[2]) * cosY - (position[0] - viewpointPosition[0] + point[0]) * sinY;
                     y3 = z2 * sinX + y2 * cosX;
                     z3 = z2 * cosX - y2 * sinX;
                     invZ = perspective / z3; // division by zero ?
@@ -845,14 +845,14 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
 
             if (pathsLength) {
                 var flow = this._flow,
-                    vX = flow.cameraTargetPoint[0] - flow.cameraPosition[0],
-                    vZ = flow.cameraTargetPoint[2] - flow.cameraPosition[2],
+                    vX = flow._viewpointTargetPoint[0] - flow._viewpointPosition[0],
+                    vZ = flow._viewpointTargetPoint[2] - flow._viewpointPosition[2],
                     yAngle = Math.atan2(vX, vZ),
                     tmpZ = vZ * Math.cos(-yAngle) - vX * Math.sin(-yAngle),
-                    xAngle = Math.atan2(flow.cameraTargetPoint[1] - flow.cameraPosition[1], tmpZ),
+                    xAngle = Math.atan2(flow._viewpointTargetPoint[1] - flow._viewpointPosition[1], tmpZ),
                     x2 = this._element.clientWidth * .5 - this._pointerX,
                     y2 = this._pointerY - this._element.clientHeight * .5,
-                    perspective = (this._element.offsetHeight * .5) / Math.tan((flow.cameraFov * flow._doublePI) * (1 / 720)),
+                    perspective = (this._element.offsetHeight * .5) / Math.tan((flow._viewpointFov * flow._doublePI) * (1 / 720)),
                     z2, tmp,
                     splines = [],
                     visibleIndexes = flow._visibleIndexes,
@@ -883,7 +883,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                         1, 0, 0, 0,
                         0, 1, 0, 0,
                         0, 0, 1, 0,
-                        -flow.cameraPosition[0], -flow.cameraPosition[1], -flow.cameraPosition[2], 1
+                        -flow._viewpointPosition[0], -flow._viewpointPosition[1], -flow._viewpointPosition[2], 1
                     ]);
                 }
                 for (i = 0; i < length; i++) {
@@ -936,9 +936,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
         value: function () {
             var flow = this._flow,
                 bezierValue = this._bezierValue,
-                vX = flow.cameraTargetPoint[0] - flow.cameraPosition[0],
-                vY = flow.cameraTargetPoint[1] - flow.cameraPosition[1],
-                vZ = flow.cameraTargetPoint[2] - flow.cameraPosition[2],
+                vX = flow._viewpointTargetPoint[0] - flow._viewpointPosition[0],
+                vY = flow._viewpointTargetPoint[1] - flow._viewpointPosition[1],
+                vZ = flow._viewpointTargetPoint[2] - flow._viewpointPosition[2],
                 yAngle = Math.atan2(vX, vZ),
                 tmpZ,
                 xAngle,
@@ -951,7 +951,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
             xAngle = Math.atan2(vY, tmpZ);
             x2 = this._element.clientWidth * .5 - x;
             y2 = y - this._element.clientHeight * .5;
-            perspective = z2 = (this._element.offsetHeight * .5) / Math.tan((flow.cameraFov * flow._doublePI) * (1 / 720));
+            perspective = z2 = (this._element.offsetHeight * .5) / Math.tan((flow._viewpointFov * flow._doublePI) * (1 / 720));
             z3 = z2 * Math.cos(xAngle) - y2 * Math.sin(xAngle);
             y3 = z2 * Math.sin(xAngle) + y2 * Math.cos(xAngle);
             x3 = x2;
@@ -959,9 +959,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
             x2 = z3 * Math.sin(yAngle) + x3 * Math.cos(yAngle);
             y2 = y3;
             this.t = t = this._raycastBezierTubes( // review
-                flow._cameraPosition[0],
-                flow._cameraPosition[1],
-                flow._cameraPosition[2],
+                flow._viewpointPosition[0],
+                flow._viewpointPosition[1],
+                flow._viewpointPosition[2],
                 this._computeRotationValuesToXAxis(
                     x2,
                     y2,
@@ -970,18 +970,18 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
             );
             if (t[0] !== null) {
                 var bz = [
-                        flow._splinePaths[t[0]]._knots[t[1]][0] - flow._cameraPosition[0],
-                        flow._splinePaths[t[0]]._knots[t[1]][1] - flow._cameraPosition[1],
-                        flow._splinePaths[t[0]]._knots[t[1]][2] - flow._cameraPosition[2],
-                        flow._splinePaths[t[0]]._nextHandlers[t[1]][0] - flow._cameraPosition[0],
-                        flow._splinePaths[t[0]]._nextHandlers[t[1]][1] - flow._cameraPosition[1],
-                        flow._splinePaths[t[0]]._nextHandlers[t[1]][2] - flow._cameraPosition[2],
-                        flow._splinePaths[t[0]]._previousHandlers[t[1] + 1][0] - flow._cameraPosition[0],
-                        flow._splinePaths[t[0]]._previousHandlers[t[1] + 1][1] - flow._cameraPosition[1],
-                        flow._splinePaths[t[0]]._previousHandlers[t[1] + 1][2] - flow._cameraPosition[2],
-                        flow._splinePaths[t[0]]._knots[t[1] + 1][0] - flow._cameraPosition[0],
-                        flow._splinePaths[t[0]]._knots[t[1] + 1][1] - flow._cameraPosition[1],
-                        flow._splinePaths[t[0]]._knots[t[1] + 1][2] - flow._cameraPosition[2]
+                        flow._splinePaths[t[0]]._knots[t[1]][0] - flow._viewpointPosition[0],
+                        flow._splinePaths[t[0]]._knots[t[1]][1] - flow._viewpointPosition[1],
+                        flow._splinePaths[t[0]]._knots[t[1]][2] - flow._viewpointPosition[2],
+                        flow._splinePaths[t[0]]._nextHandlers[t[1]][0] - flow._viewpointPosition[0],
+                        flow._splinePaths[t[0]]._nextHandlers[t[1]][1] - flow._viewpointPosition[1],
+                        flow._splinePaths[t[0]]._nextHandlers[t[1]][2] - flow._viewpointPosition[2],
+                        flow._splinePaths[t[0]]._previousHandlers[t[1] + 1][0] - flow._viewpointPosition[0],
+                        flow._splinePaths[t[0]]._previousHandlers[t[1] + 1][1] - flow._viewpointPosition[1],
+                        flow._splinePaths[t[0]]._previousHandlers[t[1] + 1][2] - flow._viewpointPosition[2],
+                        flow._splinePaths[t[0]]._knots[t[1] + 1][0] - flow._viewpointPosition[0],
+                        flow._splinePaths[t[0]]._knots[t[1] + 1][1] - flow._viewpointPosition[1],
+                        flow._splinePaths[t[0]]._knots[t[1] + 1][2] - flow._viewpointPosition[2]
                     ],
                     bz2 = [],
                     x2, y2, z2,

@@ -89,7 +89,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         value: null
     },
 
-    _perspective: {
+    _transformPerspective: {
         value: null
     },
 
@@ -325,6 +325,49 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         }
     },
 
+    _isCameraEnabled: {
+        value: true
+    },
+
+    isCameraEnabled: {
+        get: function () {
+            return this._isCameraEnabled;
+        },
+        set: function (value) {
+            var enabled = !!value;
+
+            if (this._isCameraEnabled !== enabled) {
+                this._isCameraEnabled = enabled;
+                this._isCameraUpdated = true;
+                this._needsComputeVisibleRange = true;
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    /**
+     * CSS perspective value in pixels used when camera is disabled
+     */
+    _perspective: {
+        value: 500
+    },
+
+    perspective: {
+        get: function () {
+            return this._perspective;
+        },
+        set: function (value) {
+            var perspective = parseFloat(value);
+
+            if (!isNaN(perspective) && (this._perspective !== perspective)) {
+                this._perspective = perspective;
+                this._isCameraUpdated = true;
+                this._needsComputeVisibleRange = true;
+                this.needsDraw = true;
+            }
+        }
+    },
+
     /**
      * The camera elements is the DOM element that contains the
      * repetition and on which the flow applies 3d transforms.
@@ -353,6 +396,16 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         }
     },
 
+    _viewpointPosition: {
+        get: function () {
+            if (this._isCameraEnabled) {
+                return this.cameraPosition;
+            } else {
+                return [0, 0, this._perspective];
+            }
+        }
+    },
+
     _cameraTargetPoint: {
         value: [0, 0, 0]
     },
@@ -373,6 +426,16 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         }
     },
 
+    _viewpointTargetPoint: {
+        get: function () {
+            if (this._isCameraEnabled) {
+                return this.cameraTargetPoint;
+            } else {
+                return [0, 0, 0];
+            }
+        }
+    },
+
     _cameraFov: {
         value: 50
     },
@@ -390,6 +453,16 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             this._isCameraUpdated = true;
             this.needsDraw = true;
             this._needsComputeVisibleRange = true;
+        }
+    },
+
+    _viewpointFov: {
+        get: function () {
+            if (this._isCameraEnabled) {
+                return this.cameraFov;
+            } else {
+                return ((Math.PI / 2) - Math.atan2(this._perspective, this._height / 2)) * 360 / Math.PI;
+            }
         }
     },
 
@@ -750,13 +823,13 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
      */
     _computeFrustumNormals: {
         value: function () {
-            var angle = ((this.cameraFov * .5) * this._doublePI) / 360,
+            var angle = ((this._viewpointFov * .5) * this._doublePI) / 360,
                 y = Math.sin(angle),
                 z = Math.cos(angle),
                 x = (y * this._width) / this._height,
-                vX = this.cameraTargetPoint[0] - this.cameraPosition[0],
-                vY = this.cameraTargetPoint[1] - this.cameraPosition[1],
-                vZ = this.cameraTargetPoint[2] - this.cameraPosition[2],
+                vX = this._viewpointTargetPoint[0] - this._viewpointPosition[0],
+                vY = this._viewpointTargetPoint[1] - this._viewpointPosition[1],
+                vZ = this._viewpointTargetPoint[2] - this._viewpointPosition[2],
                 yAngle = this._halfPI - Math.atan2(vZ, vX),
                 tmpZ = vX * Math.sin(yAngle) + vZ * Math.cos(yAngle),
                 rX, rY, rZ,
@@ -835,9 +908,9 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     _computeVisibleRange: { // TODO: make it a loop, optimize
         value: function (spline) {
             var splineLength = spline._knots.length - 1,
-                planeOrigin0 = this._cameraPosition[0],
-                planeOrigin1 = this._cameraPosition[1],
-                planeOrigin2 = this._cameraPosition[2],
+                planeOrigin0 = this._viewpointPosition[0],
+                planeOrigin1 = this._viewpointPosition[1],
+                planeOrigin2 = this._viewpointPosition[2],
                 normals = this._computeFrustumNormals(),
                 mod,
                 r = [], r2 = [], r3 = [], tmp,
@@ -933,18 +1006,18 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             if("webkitTransform" in this.element.style) {
                 this._transform = "webkitTransform";
                 this._transformCss = "-webkit-transform";
-                this._perspective = "webkitPerspective";
+                this._transformPerspective = "webkitPerspective";
             } else if("MozTransform" in this.element.style) {
                 this._transform = "MozTransform";
                 this._transformCss = "-moz-transform";
-                this._perspective = "MozPerspective";
+                this._transformPerspective = "MozPerspective";
             } else if("msTransform" in this.element.style) {
                 this._transform = "msTransform";
                 this._transformCss = "-ms-transform";
-                this._perspective = "msPerspective";
+                this._transformPerspective = "msPerspective";
             } else {
                 this._transform = "transform";
-                this._perspective = "perspective";
+                this._transformPerspective = "perspective";
             }
         }
     },
@@ -1248,20 +1321,28 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 this.needsDraw = true;
             }
             if (this._isCameraUpdated) {
-                var perspective = Math.tan(((90 - this.cameraFov * .5) * this._doublePI) / 360) * this._height * .5,
-                    vX = this.cameraTargetPoint[0] - this.cameraPosition[0],
-                    vY = this.cameraTargetPoint[1] - this.cameraPosition[1],
-                    vZ = this.cameraTargetPoint[2] - this.cameraPosition[2],
-                    yAngle = Math.atan2(-vX, -vZ),  // TODO: Review this
-                    tmpZ,
-                    xAngle;
+                if (this._isCameraEnabled) {
+                    var perspective = Math.tan(((90 - this._viewpointFov * .5) * this._doublePI) / 360) * this._height * .5,
+                        vX = this._viewpointTargetPoint[0] - this._viewpointPosition[0],
+                        vY = this._viewpointTargetPoint[1] - this._viewpointPosition[1],
+                        vZ = this._viewpointTargetPoint[2] - this._viewpointPosition[2],
+                        yAngle = Math.atan2(-vX, -vZ),  // TODO: Review this
+                        tmpZ,
+                        xAngle;
 
-                tmpZ = vX * -Math.sin(-yAngle) + vZ * Math.cos(-yAngle);
-                xAngle = Math.atan2(-vY, -tmpZ);
-                this._element.style[this._perspective]= perspective + "px";
-                this._cameraElement.style[this._transform] =
-                    "translate3d(0,0," + perspective + "px)rotateX(" + xAngle + "rad)rotateY(" + (-yAngle) + "rad)" +
-                    "translate3d(" + (-this.cameraPosition[0]) + "px," + (-this.cameraPosition[1]) + "px," + (-this.cameraPosition[2]) + "px)";
+                    tmpZ = vX * -Math.sin(-yAngle) + vZ * Math.cos(-yAngle);
+                    xAngle = Math.atan2(-vY, -tmpZ);
+                    this._element.style[this._transformPerspective]= perspective + "px";
+                    this._cameraElement.style[this._transform] =
+                        "translate3d(0,0," + perspective + "px)rotateX(" + xAngle + "rad)rotateY(" + (-yAngle) + "rad)" +
+                        "translate3d(" + (-this._viewpointPosition[0]) + "px," + (-this._viewpointPosition[1]) + "px," + (-this._viewpointPosition[2]) + "px)";
+                } else {
+                    this._element.style[this._transformPerspective]= this._perspective + "px";
+                    this._cameraElement.style[this._transform] = "translate3d(0,0,0)";
+                    /*cameraFov = ((Math.PI / 2) - Math.atan2(this._perspective, this._height / 2)) * 360 / Math.PI;
+                    cameraPosition = [0, 0, this._perspective];
+                    cameraTargetPoint = [0, 0, 0];*/
+                }
                 this._isCameraUpdated = false;
             }
             if (this.splinePaths.length) {
