@@ -186,18 +186,6 @@ Object.defineProperty(Montage, "specialize", {
                 },
                 enumerable: false
             });
-            if (! prototype.hasOwnProperty("didCreate")) {
-                Montage.defineProperty(prototype, "didCreate", {
-                    value: constructor,
-                    enumerable: false
-                });
-            }
-            if (! constructor.hasOwnProperty("didCreate")) {
-                Montage.defineProperty(constructor, "didCreate", {
-                    value: constructor,
-                    enumerable: false
-                });
-            }
         }
         // end compatibility code
         // needs to be done afterwards so that it overrides any prototype properties
