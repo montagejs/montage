@@ -549,7 +549,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     /**
      * The CSS timing function, "ease" by default, used for smooth
      * scroll transitions.  Supports named timing functions "ease",
-     * "linear", "ease-in", "ease-out", "ease-in-out", and the qunituple
+     * "linear", "ease-in", "ease-out", "ease-in-out", and the tuple
      * `cubic-bezier(0, 0, 1, 1)` format as well.
      */
     scrollingTransitionTimingFunction: {
