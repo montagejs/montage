@@ -358,6 +358,28 @@ describe("document-resources-spec", function() {
         });
     });
 
+    it("should add an inline style but not wait for it to be loaded like a style file", function() {
+        var resources = new DocumentResources();
+
+        return createPage("reel/template/page.html")
+            .then(function(page) {
+                var style;
+
+                resources.initWithDocument(page.document);
+
+                style = page.document.createElement("style");
+                style.textContent = "body { padding-left: 42px; }";
+
+                resources.addStyle(style);
+
+                expect(resources.areStylesLoaded).toBe(true);
+                deletePage(page);
+            }).fail(function(reason) {
+                console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+    });
+
     it("should add a style file", function() {
         var resources = new DocumentResources(),
             url = "resource.css";

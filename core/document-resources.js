@@ -182,19 +182,17 @@ var DocumentResources = Montage.specialize({
             var url = element.getAttribute("href"),
                 documentHead;
 
-            url = this.normalizeUrl(url);
-
             if (url) {
+                url = this.normalizeUrl(url);
                 if (this.hasResource(url)) {
                     return;
                 } else {
                     this._addResource(url);
                 }
+                this._expectedStyles.push(url);
             }
 
             documentHead = this._document.head;
-
-            this._expectedStyles.push(url);
             documentHead.insertBefore(element, documentHead.firstChild);
         }
     },
