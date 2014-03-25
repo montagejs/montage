@@ -401,7 +401,11 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             if (this._isCameraEnabled) {
                 return this.cameraPosition;
             } else {
-                return [0, 0, this._perspective];
+                return [
+                     (50 - this._sceneOffsetLeft) * 0.01 * this._width,
+                     (50 - this._sceneOffsetTop) * 0.01 * this._height,
+                     this._perspective
+                ];
             }
         }
     },
@@ -431,7 +435,11 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             if (this._isCameraEnabled) {
                 return this.cameraTargetPoint;
             } else {
-                return [0, 0, 0];
+                return [
+                    (50 - this._sceneOffsetLeft) * 0.01 * this._width,
+                    (50 - this._sceneOffsetTop) * 0.01 * this._height,
+                    0
+                ];
             }
         }
     },
@@ -484,6 +492,48 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         },
         set: function (value) {
             this._cameraRoll = value;
+            this._isCameraUpdated = true;
+            this.needsDraw = true;
+            this._needsComputeVisibleRange = true;
+        }
+    },
+
+    /**
+     * Scene's vertical offset relative to the viewport.
+     * Expressed as a percentage of the viewport's height.
+     * Only in use when camera is disabled.
+     */
+    _sceneOffsetTop: {
+        value: 50
+    },
+
+    sceneOffsetTop: {
+        get: function () {
+            return this._sceneOffsetTop;
+        },
+        set: function (value) {
+            this._sceneOffsetTop = value;
+            this._isCameraUpdated = true;
+            this.needsDraw = true;
+            this._needsComputeVisibleRange = true;
+        }
+    },
+
+    /**
+     * Scene's horizontal offset relative to the viewport.
+     * Expressed as a percentage of the viewport's width.
+     * Only in use when camera is disabled.
+     */
+    _sceneOffsetLeft: {
+        value: 50
+    },
+
+    sceneOffsetLeft: {
+        get: function () {
+            return this._sceneOffsetLeft;
+        },
+        set: function (value) {
+            this._sceneOffsetLeft = value;
             this._isCameraUpdated = true;
             this.needsDraw = true;
             this._needsComputeVisibleRange = true;
@@ -1047,6 +1097,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     handleResize: {
         value: function () {
             this._isCameraUpdated = true;
+            this._needsComputeVisibleRange = true;
             this.needsDraw = true;
         }
     },
@@ -1336,12 +1387,11 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                     this._cameraElement.style[this._transform] =
                         "translate3d(0,0," + perspective + "px)rotateX(" + xAngle + "rad)rotateY(" + (-yAngle) + "rad)" +
                         "translate3d(" + (-this._viewpointPosition[0]) + "px," + (-this._viewpointPosition[1]) + "px," + (-this._viewpointPosition[2]) + "px)";
+                    this._element.classList.remove("camera-disabled");
                 } else {
                     this._element.style[this._transformPerspective]= this._perspective + "px";
-                    this._cameraElement.style[this._transform] = "translate3d(0,0,0)";
-                    /*cameraFov = ((Math.PI / 2) - Math.atan2(this._perspective, this._height / 2)) * 360 / Math.PI;
-                    cameraPosition = [0, 0, this._perspective];
-                    cameraTargetPoint = [0, 0, 0];*/
+                    this._cameraElement.style[this._transform] = "translate3d(" + (.5 * this._width - this._viewpointPosition[0]) + "px, " + (.5 * this._height - this._viewpointPosition[1]) + "px,0)";
+                    this._element.classList.add("camera-disabled");
                 }
                 this._isCameraUpdated = false;
             }

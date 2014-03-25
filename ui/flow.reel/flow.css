@@ -62,3 +62,9 @@
     -ms-transform: translate3d(-50%, -50%, 0);
     transform: translate3d(-50%, -50%, 0);
 }
+
+.montage-Flow.camera-disabled .montage-Flow-Repetition > div,
+.montage-Flow.camera-disabled .montage-Flow-Slot {
+    top: 0;
+    left: 0;
+}
