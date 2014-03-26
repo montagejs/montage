@@ -1,4 +1,4 @@
-var Montage = require("montage").Montage;
+var Montage = require("./core").Montage;
 var GenericCollection = require("collections/generic-collection");
 
 // The content controller is responsible for determining which content from a
@@ -767,9 +767,9 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
 }, /** @lends RangeController. */ {
 
-    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId:require("./core")._blueprintModuleIdDescriptor,
 
-    blueprint:require("montage")._blueprintDescriptor
+    blueprint:require("./core")._blueprintDescriptor
 
 });
 

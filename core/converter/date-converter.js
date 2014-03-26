@@ -14,9 +14,9 @@
  * @requires montage/core/core
  * @requires montage/core/converter/converter
  */
-var Montage = require("montage").Montage,
-    Converter = require("core/converter/converter").Converter,
-    Validator = require("core/converter/converter").Validator;
+var Montage = require("../core").Montage,
+    Converter = require("./converter").Converter,
+    Validator = require("./converter").Validator;
 
 (function () {
     var $D = Date,

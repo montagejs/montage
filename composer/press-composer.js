@@ -5,9 +5,9 @@
     @requires montage/composer/composer
     @requires montage/core/event/mutable-event
 */
-var Montage = require("montage").Montage,
-    Composer = require("composer/composer").Composer,
-    MutableEvent = require("core/event/mutable-event").MutableEvent;
+var Montage = require("../core/core").Montage,
+    Composer = require("./composer").Composer,
+    MutableEvent = require("../core/event/mutable-event").MutableEvent;
 
 /**
  * @class PressComposer

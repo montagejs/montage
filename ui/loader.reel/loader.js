@@ -2,10 +2,10 @@
     @module montage/ui/loader
  */
 
-var Montage = require("core/core").Montage,
-    Component = require("ui/component").Component,
-    logger = require("core/logger").logger("loader"),
-    defaultEventManager = require("core/event/event-manager").defaultEventManager,
+var Montage = require("../../core/core").Montage,
+    Component = require("../component").Component,
+    logger = require("../../core/logger").logger("loader"),
+    defaultEventManager = require("../../core/event/event-manager").defaultEventManager,
     bootstrappingTimeoutPropertyName = "_montageStartBootstrappingTimeout",
     MONTAGE_BOOTSTRAPPER_ELEMENT_ID = "montage-app-bootstrapper",
     MONTAGE_LOADER_ELEMENT_ID = "montage-app-loader",

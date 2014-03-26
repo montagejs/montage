@@ -5,11 +5,11 @@
  * @requires core/promise
  * @requires core/logger
  */
-var Montage = require("montage").Montage;
-var BlueprintReference = require("core/meta/blueprint-reference").BlueprintReference;
-var PropertyBlueprint = require("core/meta/property-blueprint").PropertyBlueprint;
+var Montage = require("../core").Montage;
+var BlueprintReference = require("./blueprint-reference").BlueprintReference;
+var PropertyBlueprint = require("./property-blueprint").PropertyBlueprint;
 
-var logger = require("core/logger").logger("blueprint");
+var logger = require("../logger").logger("blueprint");
 
 /**
  * @class AssociationBlueprint

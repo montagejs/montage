@@ -2,7 +2,7 @@
  * @module montage/core/event/action-event-listener
  * @requires montage/core/core
  */
-var Montage = require("montage").Montage;
+var Montage = require("../core").Montage;
 
 /**
  * @class ActionEventListener
@@ -73,9 +73,9 @@ var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** 
 
 }, {
 
-    blueprintModuleId: require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId: require("../core")._blueprintModuleIdDescriptor,
 
-    blueprint: require("montage")._blueprintDescriptor
+    blueprint: require("../core")._blueprintDescriptor
 
 });
 

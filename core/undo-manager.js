@@ -3,9 +3,9 @@
  @module montage/core/undo-manager
  */
 
-var Montage = require("montage").Montage,
-    Target = require("core/target").Target,
-    Promise = require("core/promise").Promise,
+var Montage = require("./core").Montage,
+    Target = require("./target").Target,
+    Promise = require("./promise").Promise,
     Map = require("collections/map"),
     List = require("collections/list");
 

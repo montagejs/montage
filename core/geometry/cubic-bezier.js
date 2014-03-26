@@ -3,8 +3,8 @@
  * @requires montage/core/core
  * @requires montage/core/geometry/point
  */
-var Montage = require("montage").Montage;
-var Point = require("core/geometry/point").Point;
+var Montage = require("../core").Montage;
+var Point = require("./point").Point;
 
 /**
  * @class CubicBezier

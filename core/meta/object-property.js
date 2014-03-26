@@ -7,12 +7,12 @@
  * @requires montage/core/exception
  * @requires montage/core/logger
  */
-var Montage = require("montage").Montage;
-var Exception = require("core/exception").Exception;
-var Blueprint = require("core/meta/blueprint").Blueprint;
-var Binder = require("core/meta/blueprint").Binder;
+var Montage = require("../core").Montage;
+var Exception = require("../exception").Exception;
+var Blueprint = require("./blueprint").Blueprint;
+var Binder = require("./blueprint").Binder;
 
-var logger = require("core/logger").logger("object-property");
+var logger = require("../logger").logger("object-property");
 
 /**
  * @class ObjectProperty

@@ -3,8 +3,8 @@
  * @requires montage/core/core
  * @requires montage/core/converter/converter
  */
-var Montage = require("montage").Montage;
-var Converter = require('core/converter/converter').Converter;
+var Montage = require("../core").Montage;
+var Converter = require("./converter").Converter;
 
 
 /**
@@ -27,8 +27,8 @@ var trim = exports.trim = function(str) {
  * @classdesc Trims a string of white space.
  * @example
  * <caption>Removes leading and trailing white space from a string.</caption>
- * var Converter= require("core/converter/converter").Converter,
- * TrimConverter = require("core/converter/converter").TrimConverter;
+ * var Converter= require("./converter").Converter,
+ * TrimConverter = require("./converter").TrimConverter;
  * var str = "      Hello World     ";
  * var trimConverter = new TrimConverter();
  * console.log("After trim: " + trimConverter.convert(str));

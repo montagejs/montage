@@ -1,7 +1,7 @@
 /*global require, exports, document, Error*/
-var Montage = require("montage").Montage,
-    AbstractControl = require("ui/base/abstract-control").AbstractControl,
-    PressComposer = require("composer/press-composer").PressComposer,
+var Montage = require("../../core/core").Montage,
+    AbstractControl = require("./abstract-control").AbstractControl,
+    PressComposer = require("../../composer/press-composer").PressComposer,
     Dict = require("collections/dict");
 
 var CLASS_PREFIX = "montage-RadioButton";

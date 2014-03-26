@@ -1,4 +1,4 @@
-var Montage = require("core/core").Montage;
+var Montage = require("./core").Montage;
 var Map = require("collections/map");
 var WeakMap = require("collections/weak-map");
 var Object = require("collections/shim-object");
@@ -499,9 +499,9 @@ exports.TreeController = Montage.specialize( /** @lends TreeController# */ {
 
 }, {
 
-    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId:require("./core")._blueprintModuleIdDescriptor,
 
-    blueprint:require("montage")._blueprintDescriptor
+    blueprint:require("./core")._blueprintDescriptor
 
 });
 

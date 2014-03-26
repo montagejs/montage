@@ -8,18 +8,18 @@
  * @requires montage/core/logger | drawing
  * @requires montage/core/event/event-manager
  */
-var Montage = require("montage").Montage,
-    Target = require("core/target").Target,
-    Template = require("core/template").Template,
-    DocumentResources = require("core/document-resources").DocumentResources,
-    Gate = require("core/gate").Gate,
-    Promise = require("core/promise").Promise,
-    logger = require("core/logger").logger("component"),
-    drawPerformanceLogger = require("core/logger").logger("Drawing performance"),
-    drawLogger = require("core/logger").logger("drawing"),
-    defaultEventManager = require("core/event/event-manager").defaultEventManager,
+var Montage = require("../core/core").Montage,
+    Target = require("../core/target").Target,
+    Template = require("../core/template").Template,
+    DocumentResources = require("../core/document-resources").DocumentResources,
+    Gate = require("../core/gate").Gate,
+    Promise = require("../core/promise").Promise,
+    logger = require("../core/logger").logger("component"),
+    drawPerformanceLogger = require("../core/logger").logger("Drawing performance"),
+    drawLogger = require("../core/logger").logger("drawing"),
+    defaultEventManager = require("../core/event/event-manager").defaultEventManager,
     Set = require("collections/set"),
-    Alias = require("core/serialization/alias").Alias;
+    Alias = require("../core/serialization/alias").Alias;
 
 var ATTR_LE_COMPONENT="data-montage-le-component";
 var ATTR_LE_ARG="data-montage-le-arg";
@@ -524,7 +524,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     application: {
         enumerable: false,
         get: function() {
-            return require("core/application").application;
+            return require("../core/application").application;
         }
     },
 
@@ -1572,7 +1572,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
-    blueprint: require("montage")._blueprintDescriptor,
+    blueprint: require("../core/core")._blueprintDescriptor,
 
     /**
      * Callback for the ```canDrawGate```.

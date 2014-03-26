@@ -4,10 +4,10 @@
  * @requires montage/core/converter/converter
  * @requires montage/core/converter/number-converter
  */
-var Montage = require("montage").Montage;
-var Converter = require('core/converter/converter');
-var numericValueToString = require("core/converter/number-converter").numericValueToString;
-var NumberConverter = require("core/converter/number-converter").NumberConverter;
+var Montage = require("../core").Montage;
+var Converter = require("./converter");
+var numericValueToString = require("./number-converter").numericValueToString;
+var NumberConverter = require("./number-converter").NumberConverter;
 
 /**
  * @class CurrencyConverter

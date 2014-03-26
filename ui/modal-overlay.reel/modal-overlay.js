@@ -1,8 +1,8 @@
 /**
  * @module ui/modal-overlay.reel
  */
-var Overlay = require("ui/overlay.reel").Overlay,
-    Promise = require("core/promise").Promise;
+var Overlay = require("../overlay.reel").Overlay,
+    Promise = require("../../core/promise").Promise;
 
 var CLASS_PREFIX = "montage-ModalOverlay";
 

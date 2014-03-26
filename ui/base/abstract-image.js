@@ -3,9 +3,9 @@
 /**
  * @module montage/ui/base/abstract-image.reel
  */
-var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
-    URL = require("core/mini-url");
+var Montage = require("../../core/core").Montage,
+    Component = require("../component").Component,
+    URL = require("../../core/mini-url");
 
 /**
  * @class AbstractImage

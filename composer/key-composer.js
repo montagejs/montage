@@ -3,8 +3,8 @@
  * @requires montage/core/core
  * @requires montage/composer/composer
  */
-var Montage = require("montage").Montage,
-    Composer = require("composer/composer").Composer;
+var Montage = require("../core/core").Montage,
+    Composer = require("./composer").Composer;
 
 // Event types dispatched by KeyComposer
 var KEYPRESS_EVENT_TYPE = "keyPress",

@@ -3,10 +3,10 @@
 /**
  * @module montage/ui/base/abstract-select.reel
  */
-var Montage = require("montage").Montage,
-    AbstractControl = require("ui/base/abstract-control").AbstractControl,
-    PressComposer = require("composer/press-composer").PressComposer,
-    RangeController = require("core/range-controller").RangeController,
+var Montage = require("../../core/core").Montage,
+    AbstractControl = require("./abstract-control").AbstractControl,
+    PressComposer = require("../../composer/press-composer").PressComposer,
+    RangeController = require("../../core/range-controller").RangeController,
     Dict = require("collections/dict");
 
 /**

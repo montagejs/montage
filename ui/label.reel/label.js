@@ -1,6 +1,6 @@
-var Montage = require("montage").Montage,
-    Text = require("ui/text.reel/text").Text,
-    PressComposer = require("composer/press-composer").PressComposer;
+var Montage = require("../../core/core").Montage,
+    Text = require("../text.reel/text").Text,
+    PressComposer = require("../../composer/press-composer").PressComposer;
 
 /* FIXME:
 - docs,

@@ -6,11 +6,11 @@
  * @requires core/promise
  * @requires core/logger
  */
-var Montage = require("montage").Montage;
-var Selector = require("core/selector").Selector;
-var PropertyValidationSemantics = require("core/meta/validation-semantics").PropertyValidationSemantics;
+var Montage = require("../core").Montage;
+var Selector = require("../selector").Selector;
+var PropertyValidationSemantics = require("./validation-semantics").PropertyValidationSemantics;
 
-var logger = require("core/logger").logger("blueprint");
+var logger = require("../logger").logger("blueprint");
 
 /**
  * @class PropertyValidationRule
@@ -167,9 +167,9 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
         }
     },
 
-    blueprintModuleId: require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId: require("../core")._blueprintModuleIdDescriptor,
 
-    blueprint: require("montage")._blueprintDescriptor
+    blueprint: require("../core")._blueprintDescriptor
 
 });
 

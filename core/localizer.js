@@ -9,13 +9,13 @@
  * @requires montage/core/messageformat
  * @requires montage/core/messageformat-locale
  */
-var Montage = require("montage").Montage,
-    MessageFormat = require("core/messageformat"),
-    logger = require("core/logger").logger("localizer"),
-    Serializer = require("core/serialization").Serializer,
-    Deserializer = require("core/serialization").Deserializer,
-    Promise = require("core/promise").Promise,
-    Bindings = require("core/bindings").Bindings,
+var Montage = require("./core").Montage,
+    MessageFormat = require("./messageformat"),
+    logger = require("./logger").logger("localizer"),
+    Serializer = require("./serialization").Serializer,
+    Deserializer = require("./serialization").Deserializer,
+    Promise = require("./promise").Promise,
+    Bindings = require("./bindings").Bindings,
     PropertyChanges = require("collections/listen/property-changes"),
     FrbBindings = require("frb/bindings"),
     stringify = require("frb/stringify"),
@@ -23,7 +23,7 @@ var Montage = require("montage").Montage,
     Scope = require("frb/scope");
 
 // Add all locales to MessageFormat object
-MessageFormat.locale = require("core/messageformat-locale");
+MessageFormat.locale = require("./messageformat-locale");
 
 var KEY_KEY = "key",
     DEFAULT_MESSAGE_KEY = "default",

@@ -1,6 +1,6 @@
-var Montage = require("montage").Montage,
-    defaultEventManager = require("core/event/event-manager").defaultEventManager,
-    MutableEvent = require("core/event/mutable-event").MutableEvent;
+var Montage = require("./core").Montage,
+    defaultEventManager = require("./event/event-manager").defaultEventManager,
+    MutableEvent = require("./event/mutable-event").MutableEvent;
 
 /**
  * A Target is any object that can be a candidate for dispatching and receiving

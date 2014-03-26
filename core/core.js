@@ -1780,7 +1780,7 @@ exports._blueprintDescriptor = {
             throw new TypeError("Object blueprint should not be a promise");
         } else {
             value.blueprintInstanceModule = self.blueprintModule;
-            _blueprintValue = require("core/promise").Promise.resolve(value);
+            _blueprintValue = require("./promise").Promise.resolve(value);
         }
         Montage.defineProperty(self, "_blueprint", {
             enumerable: false,

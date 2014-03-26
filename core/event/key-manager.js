@@ -3,9 +3,9 @@
  * @requires montage/core/core
  */
 
-var Montage = require("montage").Montage,
-    defaultEventManager = require("core/event/event-manager").defaultEventManager,
-    MutableEvent = require("core/event/mutable-event").MutableEvent;
+var Montage = require("../core").Montage,
+    defaultEventManager = require("./event-manager").defaultEventManager,
+    MutableEvent = require("./mutable-event").MutableEvent;
 
 var KEYNAMES_TO_KEYCODES = {
     // W3C Key Code
@@ -191,7 +191,7 @@ var KEYPRESS_EVENT_TYPE = "keyPress",
  * instead require for the defaultKeyManager:
  *
  * ```js
- * require("core/event/key-manager").defaultKeyManager
+ * require("./key-manager").defaultKeyManager
  * ```
  *
  * @class KeyManager

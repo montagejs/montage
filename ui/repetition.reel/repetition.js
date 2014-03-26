@@ -1,11 +1,11 @@
 /**
  * @module montage/ui/repetition.reel
  */
-var Montage = require("montage").Montage;
-var Component = require("ui/component").Component;
-var Template = require("core/template").Template;
-var RangeController = require("core/range-controller").RangeController;
-var Promise = require("core/promise").Promise;
+var Montage = require("../../core/core").Montage;
+var Component = require("../component").Component;
+var Template = require("../../core/template").Template;
+var RangeController = require("../../core/range-controller").RangeController;
+var Promise = require("../../core/promise").Promise;
 
 var Map = require("collections/map");
 var Set = require("collections/set");

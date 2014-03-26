@@ -7,12 +7,12 @@
  * @requires core/promise
  * @requires core/logger
  */
-var Montage = require("montage").Montage;
-var Promise = require("core/promise").Promise;
-var ObjectProperty = require("core/meta/object-property").ObjectProperty;
-var BinderModule = require("core/meta/binder");
+var Montage = require("../core").Montage;
+var Promise = require("../promise").Promise;
+var ObjectProperty = require("./object-property").ObjectProperty;
+var BinderModule = require("./binder");
 
-var logger = require("core/logger").logger("blueprint");
+var logger = require("../logger").logger("blueprint");
 
 /**
  * @class BinderManager

@@ -1,9 +1,9 @@
 /**
  * @module "montage/ui/substitution.reel"
  */
-var Slot = require("ui/slot.reel").Slot,
-    Promise = require("core/promise").Promise,
-    logger = require("core/logger").logger("substitution");
+var Slot = require("../slot.reel").Slot,
+    Promise = require("../../core/promise").Promise,
+    logger = require("../../core/logger").logger("substitution");
 
 /**
  * The substitution is a structural component and it should be used when there

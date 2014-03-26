@@ -1,11 +1,11 @@
 /**
  * @module "ui/overlay.reel"
  */
-var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
-    KeyComposer = require("composer/key-composer").KeyComposer,
-    PressComposer = require("composer/press-composer").PressComposer,
-    defaultEventManager = require("core/event/event-manager").defaultEventManager;
+var Montage = require("../../core/core").Montage,
+    Component = require("../component").Component,
+    KeyComposer = require("../../composer/key-composer").KeyComposer,
+    PressComposer = require("../../composer/press-composer").PressComposer,
+    defaultEventManager = require("../../core/event/event-manager").defaultEventManager;
 
 var CLASS_PREFIX = "montage-Overlay";
 

@@ -1,5 +1,5 @@
-var Montage = require("montage").Montage;
-var logger = require("core/logger").logger("exception");
+var Montage = require("./core").Montage;
+var logger = require("./logger").logger("exception");
 
 /**
  * @module montage/core/exception

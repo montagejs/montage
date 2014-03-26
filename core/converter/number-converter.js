@@ -37,11 +37,11 @@
  * @requires montage/core/core
  * @requires montage/core/converter/converter
  */
-var Montage = require("montage").Montage;
-var Converter = require('core/converter/converter').Converter;
-var Validator = require("core/converter/converter").Validator;
-var isNumber = require('core/converter/converter').isNumber;
-var isDef = require('core/converter/converter').isDef;
+var Montage = require("../core").Montage;
+var Converter = require("./converter").Converter;
+var Validator = require("./converter").Validator;
+var isNumber = require("./converter").isNumber;
+var isDef = require("./converter").isDef;
 
 /**
  * Regular expression for detecting scaling units, such as K, M, G, etc. for

@@ -5,7 +5,7 @@
  * @requires montage/core/core
  */
 
-var Montage = require("montage").Montage;
+var Montage = require("./core").Montage;
 
 /**
  * The BitField object compactly stores multiple values as a short series of

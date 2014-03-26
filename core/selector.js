@@ -1,5 +1,5 @@
 
-var Montage = require("montage").Montage;
+var Montage = require("./core").Montage;
 
 var parse = require("frb/parse");
 var stringify = require("frb/stringify");

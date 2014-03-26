@@ -3,9 +3,9 @@
 /**
  * @module montage/ui/base/abstract-video.reel
  */
-var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
-    MediaController = require("core/media-controller").MediaController;
+var Montage = require("../../core/core").Montage,
+    Component = require("../component").Component,
+    MediaController = require("../../core/media-controller").MediaController;
 
 /**
  * @class AbstractVideo

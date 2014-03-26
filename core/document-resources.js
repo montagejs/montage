@@ -1,6 +1,6 @@
-var Montage = require("montage").Montage,
-    Promise = require("core/promise").Promise,
-    URL = require("core/mini-url");
+var Montage = require("./core").Montage,
+    Promise = require("./promise").Promise,
+    URL = require("./mini-url");
 
 var DocumentResources = Montage.specialize({
 

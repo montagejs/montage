@@ -1,13 +1,13 @@
-var Montage = require("montage").Montage,
-    Deserializer = require("core/serialization").Deserializer,
-    DocumentPart = require("core/document-part").DocumentPart,
-    DocumentResources = require("core/document-resources").DocumentResources,
-    Serialization = require("core/serialization/serialization").Serialization,
-    MontageLabeler = require("core/serialization/serializer/montage-labeler").MontageLabeler,
-    Promise = require("core/promise").Promise,
-    URL = require("core/mini-url"),
-    logger = require("core/logger").logger("template"),
-    defaultEventManager = require("core/event/event-manager").defaultEventManager,
+var Montage = require("./core").Montage,
+    Deserializer = require("./serialization").Deserializer,
+    DocumentPart = require("./document-part").DocumentPart,
+    DocumentResources = require("./document-resources").DocumentResources,
+    Serialization = require("./serialization/serialization").Serialization,
+    MontageLabeler = require("./serialization/serializer/montage-labeler").MontageLabeler,
+    Promise = require("./promise").Promise,
+    URL = require("./mini-url"),
+    logger = require("./logger").logger("template"),
+    defaultEventManager = require("./event/event-manager").defaultEventManager,
     defaultApplication;
 
 /**
@@ -399,7 +399,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
             var templateObjects = Object.create(instances || null);
 
             if (typeof defaultApplication === "undefined") {
-                defaultApplication = require("core/application").application;
+                defaultApplication = require("./application").application;
             }
 
             templateObjects.application = defaultApplication;

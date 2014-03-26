@@ -2,8 +2,8 @@
  * @module montage/composer/composer
  * @requires montage/core/core
  */
-var Montage = require("montage").Montage,
-    Target = require("core/target").Target;
+var Montage = require("../core/core").Montage,
+    Target = require("../core/target").Target;
 
 /**
  * The `Composer` helps to keep event normalization and calculation out of
