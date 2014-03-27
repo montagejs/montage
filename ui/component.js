@@ -1758,7 +1758,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 attributeName,
                 value,
                 i,
-                attribute;
+                attribute,
+                templateAttributeValue;
 
             // TODO: get a spec for this, what attributes should we merge?
             for (i = 0; (attribute = attributes[i]); i++) {
@@ -1770,8 +1771,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 } else if (attributeName === "id" || attributeName === "data-montage-id") {
                     value = attribute.nodeValue;
                 } else {
-                    value = (template.getAttribute(attributeName) || "") + (attributeName === "style" ? "; " : " ") +
-                        attribute.nodeValue;
+                    templateAttributeValue = template.getAttribute(attributeName) || "";
+                    if (templateAttributeValue) {
+                        value = templateAttributeValue +
+                            (attributeName === "style" ? "; " : " ") +
+                            attribute.nodeValue;
+                    } else {
+                        value = attribute.nodeValue;
+                    }
                 }
 
                 template.setAttribute(attributeName, value);
