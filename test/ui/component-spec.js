@@ -380,6 +380,13 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                    expect(style).toBe("border: 1px solid black; margin: 2px");
                 });
 
+                it("should correctly merge attributes without leading or trailing whitespaces", function() {
+                    var element = testPage.test.componentStyle.element;
+
+                    expect(element.getAttribute("data-element-attr")).toBe("element");
+                    expect(element.getAttribute("data-template-attr")).toBe("template");
+                });
+
                 describe("_blocksOwnerComponentDraw", function() {
                     it("should stop the owner from drawing when the component can't", function() {
                         // setup spies
