@@ -111,9 +111,8 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
             if (!this.enabled) {
                 return;
             }
-
-            this.dispatchActionEvent();
             this.checked = !this.checked;
+            this.dispatchActionEvent();
         }
     },
 
