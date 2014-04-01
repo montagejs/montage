@@ -1,7 +1,7 @@
 /**
  * @module montage/ui/text.reel
  */
-var Component = require("ui/component").Component;
+var Component = require("../component").Component;
 
 /**
  * A Text component shows plain text. Any text can be safely displayed without

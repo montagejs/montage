@@ -2,7 +2,7 @@
  @module montage/core/event/mutable-event
  @requires montage
  */
-var Montage = require("montage").Montage;
+var Montage = require("../core").Montage;
 
 // XXX Does not presently function server-side
 if (typeof window !== "undefined") {

@@ -1,6 +1,6 @@
 /*global require, exports, document, Error*/
-var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
+var Montage = require("../../core/core").Montage,
+    Component = require("../component").Component,
     Dict = require("collections/dict");
 
 /**

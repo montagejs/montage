@@ -7,14 +7,14 @@
  * @requires core/promise
  * @requires core/logger
  */
-var Montage = require("montage").Montage;
-var Promise = require("core/promise").Promise;
-var BlueprintModule = require("core/meta/blueprint");
-var BinderModule = require("core/meta/binder");
-var RemoteReference = require("core/meta/remote-reference").RemoteReference;
-var BinderReference = require("core/meta/binder-reference").BinderReference;
+var Montage = require("../core").Montage;
+var Promise = require("../promise").Promise;
+var BlueprintModule = require("./blueprint");
+var BinderModule = require("./binder");
+var RemoteReference = require("./remote-reference").RemoteReference;
+var BinderReference = require("./binder-reference").BinderReference;
 
-var logger = require("core/logger").logger("blueprint");
+var logger = require("../logger").logger("blueprint");
 
 exports.BlueprintReference = RemoteReference.specialize( {
 
@@ -58,7 +58,7 @@ exports.BlueprintReference = RemoteReference.specialize( {
 
             return binderPromise.then(function(binder) {
                 if (binder) {
-                    var ModuleBlueprintModule = require("core/meta/module-blueprint");
+                    var ModuleBlueprintModule = require("./module-blueprint");
                     return ModuleBlueprintModule.ModuleBlueprint.getBlueprintWithModuleId(blueprintModule.id, blueprintModule.require).then(function (blueprint) {
                         if (blueprint) {
                             binder.addBlueprint(blueprint);

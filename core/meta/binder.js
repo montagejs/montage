@@ -7,13 +7,13 @@
  * @requires core/meta/blueprint
  * @requires core/logger
  */
-var Montage = require("montage").Montage;
-var Promise = require("core/promise").Promise;
-var Deserializer = require("core/serialization").Deserializer;
-var BinderManager = require("core/meta/binder-manager").BinderManager;
-var BlueprintModule = require("core/meta/blueprint");
+var Montage = require("../core").Montage;
+var Promise = require("../promise").Promise;
+var Deserializer = require("../serialization").Deserializer;
+var BinderManager = require("./binder-manager").BinderManager;
+var BlueprintModule = require("./blueprint");
 var deprecate = require("../deprecate");
-var logger = require("core/logger").logger("blueprint");
+var logger = require("../logger").logger("blueprint");
 
 var _binderManager = null;
 
@@ -261,9 +261,9 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
         }
     },
 
-    blueprintModuleId: require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId: require("../core")._blueprintModuleIdDescriptor,
 
-    blueprint: require("montage")._blueprintDescriptor
+    blueprint: require("../core")._blueprintDescriptor
 
 }, {
 

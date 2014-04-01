@@ -6,9 +6,9 @@
  * @requires core/promise
  * @requires core/logger
  */
-var Montage = require("montage").Montage;
+var Montage = require("../core").Montage;
 
-var logger = require("core/logger").logger("blueprint");
+var logger = require("../logger").logger("blueprint");
 
 var Defaults = {
     name:"default",
@@ -150,9 +150,9 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
         value: Defaults["helpKey"]
     },
 
-    blueprintModuleId: require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId: require("../core")._blueprintModuleIdDescriptor,
 
-    blueprint: require("montage")._blueprintDescriptor
+    blueprint: require("../core")._blueprintDescriptor
 
 });
 

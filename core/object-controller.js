@@ -3,7 +3,7 @@
  * @requires montage/core/core
  */
 
-var Montage = require("montage").Montage;
+var Montage = require("./core").Montage;
 
 /**
  * @class ObjectController
@@ -59,9 +59,9 @@ var ObjectController = exports.ObjectController = Montage.specialize( /** @lends
         value: null
     },
 
-    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId:require("./core")._blueprintModuleIdDescriptor,
 
-    blueprint:require("montage")._blueprintDescriptor
+    blueprint:require("./core")._blueprintDescriptor
 
 });
 

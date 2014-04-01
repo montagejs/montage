@@ -1,8 +1,8 @@
-var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
+var Montage = require("../../core/core").Montage,
+    Component = require("../component").Component,
     observeProperty = require("frb/observers").observeProperty,
-    FlowBezierSpline = require("ui/flow.reel/flow-bezier-spline").FlowBezierSpline,
-    RangeController = require("core/range-controller").RangeController;
+    FlowBezierSpline = require("./flow-bezier-spline").FlowBezierSpline,
+    RangeController = require("../../core/range-controller").RangeController;
 
 var deprecationWarning = require("../../core/deprecate").deprecationWarning;
 

@@ -4,8 +4,8 @@
  * @requires montage/core/converter/converter
  */
 
-var Montage = require("montage").Montage;
-var Converter = require('core/converter/converter').Converter;
+var Montage = require("../core").Montage;
+var Converter = require("./converter").Converter;
 
 /**
  * Replaces all new line characters with a HTML &lt;br&gt;

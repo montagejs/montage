@@ -1,7 +1,7 @@
-var Montage = require("montage").Montage,
-    logger = require("core/logger").logger("document-part"),
-    Promise = require("core/promise").Promise,
-    defaultEventManager = require("core/event/event-manager").defaultEventManager;
+var Montage = require("./core").Montage,
+    logger = require("./logger").logger("document-part"),
+    Promise = require("./promise").Promise,
+    defaultEventManager = require("./event/event-manager").defaultEventManager;
 
 var DocumentPart = Montage.specialize({
     parentDocumentPart: {value: null},

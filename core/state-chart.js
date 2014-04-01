@@ -2,7 +2,7 @@
  * @module montage/core/state-chart
  * @requires montage
  */
-var Montage = require("montage").Montage;
+var Montage = require("./core").Montage;
 
 /**
  * @class State

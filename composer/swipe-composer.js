@@ -3,8 +3,8 @@
  * @requires montage
  * @requires montage/composer/composer
  */
-var Montage = require("montage").Montage,
-    Composer = require("composer/composer").Composer;
+var Montage = require("../core/core").Montage,
+    Composer = require("./composer").Composer;
 
 /**
  * @class SwipeComposer

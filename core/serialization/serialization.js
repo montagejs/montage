@@ -1,4 +1,4 @@
-var Montage = require("core/core").Montage,
+var Montage = require("../core").Montage,
     MontageLabeler = require("./serializer/montage-labeler").MontageLabeler,
     MontageReviver = require("./deserializer/montage-reviver").MontageReviver,
     parse = require("frb/parse"),

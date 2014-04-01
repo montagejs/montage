@@ -11,12 +11,12 @@
  * @requires ui/slot
  */
 
-var Montage = require("core/core").Montage,
-    Target = require("core/target").Target,
-    MontageWindow = require("window-loader/montage-window").MontageWindow,
+var Montage = require("./core").Montage,
+    Target = require("./target").Target,
+    MontageWindow = require("../window-loader/montage-window").MontageWindow,
     Slot;
 
-require("core/dom");
+require("./dom");
 
 /**
  * The application is a singleton, it initially loads and oversees the running
@@ -416,7 +416,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 rootComponent = exports.__root__;
                 rootComponent.element = document;
 
-                return require("core/template").instantiateDocument(window.document, applicationRequire)
+                return require("./template").instantiateDocument(window.document, applicationRequire)
                 .then(function(part) {
                     self.callDelegateMethod("willFinishLoading", self);
                     rootComponent.needsDraw = true;

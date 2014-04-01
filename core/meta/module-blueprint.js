@@ -1,8 +1,8 @@
-var Montage = require("montage").Montage;
-var Promise = require("core/promise").Promise;
-var Blueprint = require("core/meta/blueprint").Blueprint;
-var Deserializer = require("core/serialization").Deserializer;
-var ModuleReference = require("core/module-reference").ModuleReference;
+var Montage = require("../core").Montage;
+var Promise = require("../promise").Promise;
+var Blueprint = require("./blueprint").Blueprint;
+var Deserializer = require("../serialization").Deserializer;
+var ModuleReference = require("../module-reference").ModuleReference;
 
 // Cache all loaded blueprints
 var BLUEPRINT_CACHE = Object.create(null);

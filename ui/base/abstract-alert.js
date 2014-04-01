@@ -1,9 +1,9 @@
 /**
  * @module ui/alert.reel
  */
-var Component = require("ui/component").Component,
-    ModalOverlay = require("ui/modal-overlay.reel").ModalOverlay,
-    Promise = require("core/promise").Promise;
+var Component = require("../component").Component,
+    ModalOverlay = require("../modal-overlay.reel").ModalOverlay,
+    Promise = require("../../core/promise").Promise;
 
 /**
  * @class Alert

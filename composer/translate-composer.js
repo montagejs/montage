@@ -5,8 +5,8 @@
  * @requires montage/composer/composer
  * @requires montage/core/event/event-manager
  */
-var Composer = require("composer/composer").Composer,
-    defaultEventManager = require("core/event/event-manager").defaultEventManager;
+var Composer = require("./composer").Composer,
+    defaultEventManager = require("../core/event/event-manager").defaultEventManager;
 
 /**
  * Abstracts listening for touch and mouse events representing a drag. The

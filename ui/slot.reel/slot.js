@@ -3,8 +3,8 @@
     @requires montage/core/core
     @requires montage/ui/component
 */
-var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
+var Montage = require("../../core/core").Montage,
+    Component = require("../component").Component;
 
 /**
  * @class Slot

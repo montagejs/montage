@@ -4,12 +4,12 @@
  * @requires montage/core/converter/converter
  * @requires montage/core/converter/number-converter
  */
-var Montage = require("montage").Montage;
-var Converter = require('core/converter/converter').Converter;
-var _numericValueToString = require("core/converter/number-converter")._numericValueToString;
-var _stringToNumericValue = require("core/converter/number-converter")._stringToNumericValue;
-var NUMERIC_SCALES_BINARY_ = require("core/converter/number-converter").NUMERIC_SCALES_BINARY_;
-var isDef = require('core/converter/converter').isDef;
+var Montage = require("../core").Montage;
+var Converter = require("./converter").Converter;
+var _numericValueToString = require("./number-converter")._numericValueToString;
+var _stringToNumericValue = require("./number-converter")._stringToNumericValue;
+var NUMERIC_SCALES_BINARY_ = require("./number-converter").NUMERIC_SCALES_BINARY_;
+var isDef = require("./converter").isDef;
 
 var NUMERIC_SCALE_PREFIXES_BYTES = [
     'P', 'T', 'G', 'M', 'K', '', 'm', 'u', 'n'
@@ -84,8 +84,8 @@ exports.BytesConverter = Converter.specialize( /** @lends BytesConverter# */ {
      * @param {Property} v The value to format.
      * @returns {string} The value converted to byte format.
      * @example
-     * var Converter = require("core/converter/converter").Converter;
-     * var BytesConverter = require("core/converter/converter").BytesConverter;
+     * var Converter = require("./converter").Converter;
+     * var BytesConverter = require("./converter").BytesConverter;
      * var bytes = "12341234";
      * var byteconverter = new BytesConverter();
      * console.log("Converted: " + byteconverter.convert(bytes));
@@ -106,8 +106,8 @@ exports.BytesConverter = Converter.specialize( /** @lends BytesConverter# */ {
      * @returns {string} v
      * @see BytesConverter#convert
      * @example
-     * var Converter= require("core/converter/converter").Converter;
-     * var BytesConverter = require("core/converter/converter").BytesConverter;
+     * var Converter= require("./converter").Converter;
+     * var BytesConverter = require("./converter").BytesConverter;
      * var bytes = "11.77MB";
      * var byteconverter = new BytesConverter();
      * console.log("Reverted: " + byteconverter.revert(bytes));

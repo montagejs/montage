@@ -7,7 +7,7 @@
  * @requires montage/core/logger | drawing
  * @requires montage/core/event/event-manager
  */
-var Montage = require("montage").Montage;
+var Montage = require("../core/core").Montage;
 
 /**
  * The Window object is responsible for managing a DOM window.

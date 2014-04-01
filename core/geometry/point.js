@@ -2,7 +2,7 @@
  * @module montage/core/geometry/point
  * @requires montage/core/core
  */
-var Montage = require("montage").Montage;
+var Montage = require("../core").Montage;
 
 /**
  * @class Point

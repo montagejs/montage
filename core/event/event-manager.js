@@ -13,11 +13,11 @@
  * @requires montage/core/event/action-event-listener
  */
 
-var Montage = require("montage").Montage,
-    UUID = require("core/uuid"),
-    MutableEvent = require("core/event/mutable-event").MutableEvent,
-    Serializer = require("core/serialization").Serializer,
-    Deserializer = require("core/serialization").Deserializer,
+var Montage = require("../core").Montage,
+    UUID = require("../uuid"),
+    MutableEvent = require("./mutable-event").MutableEvent,
+    Serializer = require("../serialization").Serializer,
+    Deserializer = require("../serialization").Deserializer,
     defaultEventManager;
 
 // XXX Does not presently function server-side

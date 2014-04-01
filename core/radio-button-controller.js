@@ -1,6 +1,6 @@
 
-var Montage = require("montage").Montage,
-    RangeController = require("core/range-controller").RangeController;
+var Montage = require("./core").Montage,
+    RangeController = require("./range-controller").RangeController;
 
 /**
  * The radio button controller intermediates between a set of options and their
@@ -142,9 +142,9 @@ exports.RadioButtonController = Montage.specialize(/** @lends RadioButtonControl
 
 }, /** @lends RadioButtonController. */ {
 
-    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId:require("./core")._blueprintModuleIdDescriptor,
 
-    blueprint:require("montage")._blueprintDescriptor
+    blueprint:require("./core")._blueprintDescriptor
 
 });
 

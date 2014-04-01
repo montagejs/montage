@@ -8,9 +8,9 @@
  * @requires montage/composer/press-composer
  */
 
-var AbstractControl = require("ui/base/abstract-control").AbstractControl,
-    TranslateComposer = require("composer/translate-composer").TranslateComposer,
-    KeyComposer = require("composer/key-composer").KeyComposer,
+var AbstractControl = require("./abstract-control").AbstractControl,
+    TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
+    KeyComposer = require("../../composer/key-composer").KeyComposer,
     Dict = require("collections/dict");
 
 /**

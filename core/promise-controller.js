@@ -1,6 +1,6 @@
 
-var Montage = require("montage").Montage;
-var Promise = require("core/promise").Promise;
+var Montage = require("./core").Montage;
+var Promise = require("./promise").Promise;
 
 /**
  * A promise does not have bindable properties. This controller tracks the
@@ -164,9 +164,9 @@ exports.PromiseController = Montage.specialize( {
 
 }, /** @lends PromiseController. */ {
 
-    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId:require("./core")._blueprintModuleIdDescriptor,
 
-    blueprint:require("montage")._blueprintDescriptor
+    blueprint:require("./core")._blueprintDescriptor
 
 });
 

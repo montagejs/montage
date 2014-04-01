@@ -1,4 +1,4 @@
-var Montage = require("core/core").Montage,
+var Montage = require("../../core").Montage,
     MontageReviver = require("./montage-reviver").MontageReviver,
     parse = require("frb/parse");
 

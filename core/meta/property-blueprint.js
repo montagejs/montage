@@ -7,10 +7,10 @@
  * @requires core/logger
  */
 
-var Montage = require("montage").Montage;
-var Enum = require("core/enum").Enum;
+var Montage = require("../core").Montage;
+var Enum = require("../enum").Enum;
 
-var logger = require("core/logger").logger("blueprint");
+var logger = require("../logger").logger("blueprint");
 
 var ValueType = new Enum().initWithMembers("string", "number", "boolean", "date", "enum", "url", "object");
 var CollectionValueType = new Enum().initWithMembers("list", "set", "map");
@@ -289,9 +289,9 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
         value: Defaults["helpKey"]
     },
 
-    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId:require("../core")._blueprintModuleIdDescriptor,
 
-    blueprint:require("montage")._blueprintDescriptor
+    blueprint:require("../core")._blueprintDescriptor
 
 });
 

@@ -4,9 +4,9 @@
  * @requires montage/ui/component
  * @requires montage/core/logger
  */
-var Montage = require("montage").Montage;
-var Target = require("core/target").Target;
-var logger = require("core/logger").logger("mediacontroller");
+var Montage = require("./core").Montage;
+var Target = require("./target").Target;
+var logger = require("./logger").logger("mediacontroller");
 
 /**
  * @class MediaController
@@ -608,9 +608,9 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
 
 }, {
 
-    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId:require("./core")._blueprintModuleIdDescriptor,
 
-    blueprint:require("montage")._blueprintDescriptor
+    blueprint:require("./core")._blueprintDescriptor
 
 });
 

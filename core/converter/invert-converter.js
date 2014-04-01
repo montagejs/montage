@@ -3,8 +3,8 @@
  * @requires montage/core/core
  * @requires montage/core/converter/converter
  */
-var Montage = require("montage").Montage;
-var Converter = require('core/converter/converter').Converter;
+var Montage = require("../core").Montage;
+var Converter = require("./converter").Converter;
 
 /**
  * Inverts the value of a boolean value.

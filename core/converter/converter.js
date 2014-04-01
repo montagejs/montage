@@ -4,7 +4,7 @@
  * @module montage/core/converter/converter
  * @requires montage/core/core
  */
-var Montage = require("montage").Montage;
+var Montage = require("../core").Montage;
 
 
 var FUNCTION_CLASS = '[object Function]',
@@ -103,9 +103,9 @@ var Converter = exports.Converter = Montage.specialize( /** @lends Converter# */
 
 }, {
 
-    blueprintModuleId: require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId: require("../core")._blueprintModuleIdDescriptor,
 
-    blueprint: require("montage")._blueprintDescriptor
+    blueprint: require("../core")._blueprintDescriptor
 
 });
 

@@ -6,21 +6,21 @@
  * @requires core/promise
  * @requires core/logger
  */
-var Montage = require("montage").Montage;
-var Promise = require("core/promise").Promise;
-var Deserializer = require("core/serialization").Deserializer;
-var ObjectProperty = require("core/meta/object-property").ObjectProperty;
-var Enum = require("core/enum").Enum;
-var BinderModule = require("core/meta/binder");
-var BlueprintReference = require("core/meta/blueprint-reference").BlueprintReference;
-var PropertyBlueprint = require("core/meta/property-blueprint").PropertyBlueprint;
-var AssociationBlueprint = require("core/meta/association-blueprint").AssociationBlueprint;
-var DerivedPropertyBlueprint = require("core/meta/derived-property-blueprint").DerivedPropertyBlueprint;
-var EventBlueprint = require("core/meta/event-blueprint").EventBlueprint;
-var PropertyValidationRule = require("core/meta/validation-rule").PropertyValidationRule;
+var Montage = require("../core").Montage;
+var Promise = require("../promise").Promise;
+var Deserializer = require("../serialization").Deserializer;
+var ObjectProperty = require("./object-property").ObjectProperty;
+var Enum = require("../enum").Enum;
+var BinderModule = require("./binder");
+var BlueprintReference = require("./blueprint-reference").BlueprintReference;
+var PropertyBlueprint = require("./property-blueprint").PropertyBlueprint;
+var AssociationBlueprint = require("./association-blueprint").AssociationBlueprint;
+var DerivedPropertyBlueprint = require("./derived-property-blueprint").DerivedPropertyBlueprint;
+var EventBlueprint = require("./event-blueprint").EventBlueprint;
+var PropertyValidationRule = require("./validation-rule").PropertyValidationRule;
 var deprecate = require("../deprecate");
 
-var logger = require("core/logger").logger("blueprint");
+var logger = require("../logger").logger("blueprint");
 
 var Defaults = {
     name:"default",
@@ -910,9 +910,9 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
         }
     },
 
-    blueprintModuleId:require("montage")._blueprintModuleIdDescriptor,
+    blueprintModuleId:require("../core")._blueprintModuleIdDescriptor,
 
-    blueprint:require("montage")._blueprintDescriptor
+    blueprint:require("../core")._blueprintDescriptor
 
 
 }, {
