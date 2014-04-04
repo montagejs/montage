@@ -1712,6 +1712,11 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     // Dispatched by "mousedown" event listener if isSelectionEnabled
     captureMousedown: {
         value: function (event) {
+            if (this._selectionPointer != null) {
+                // If we already have one touch making a selection, ignore any
+                // other pointers.
+                return;
+            }
             this._observeSelectionPointer("mouse");
             var iteration = this._findIterationContainingElement(event.target);
             if (iteration) {
@@ -1729,8 +1734,8 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     captureTouchstart: {
         value: function (event) {
             if (this._selectionPointer != null) {
-                // If we already have one touch making a selection, ignore any
-                // others.
+                // If we already have one touch or mouse making a selection, ignore any
+                // other pointers.
                 return;
             }
 
