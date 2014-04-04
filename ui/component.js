@@ -2663,6 +2663,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 if(descriptor) {
                     // check if this element has textContent
                     var textContent = originalElement.textContent;
+
+                    // if no attributes were needed this yet, we need it now
+                    if(this._elementAttributeValues === null) {
+                        this._elementAttributeValues = {};
+                    }
+
                     if(typeof this._elementAttributeValues.textContent === 'undefined') {
                         this._elementAttributeValues.textContent = textContent;
                         if( this.textContent == null) {
