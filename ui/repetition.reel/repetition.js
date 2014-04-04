@@ -6,6 +6,7 @@ var Component = require("../component").Component;
 var Template = require("../../core/template").Template;
 var RangeController = require("../../core/range-controller").RangeController;
 var Promise = require("../../core/promise").Promise;
+var browser = require("../../core/browser").browser;
 
 var Map = require("collections/map");
 var Set = require("collections/set");
@@ -1624,8 +1625,16 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     // isSelectionEnabled becoming true.
     _enableSelectionTracking: {
         value: function () {
-            this.element.addEventListener("touchstart", this, true);
-            this.element.addEventListener("mousedown", this, true);
+            if (browser.android && browser.android.androidBrowser) {
+                if (window.Touch) {
+                    this.element.addEventListener("touchstart", this, true);
+                } else {
+                    this.element.addEventListener("mousedown", this, true);
+                }
+            } else {
+                this.element.addEventListener("touchstart", this, true);
+                this.element.addEventListener("mousedown", this, true);
+            }
         }
     },
 
@@ -1636,8 +1645,16 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     // isSelectionEnabled becoming false.
     _disableSelectionTracking: {
         value: function () {
-            this.element.removeEventListener("touchstart", this, true);
-            this.element.removeEventListener("mousedown", this, true);
+            if (browser.android && browser.android.androidBrowser) {
+                if (window.Touch) {
+                    this.element.removeEventListener("touchstart", this, true);
+                } else {
+                    this.element.removeEventListener("mousedown", this, true);
+                }
+            } else {
+                this.element.removeEventListener("touchstart", this, true);
+                this.element.removeEventListener("mousedown", this, true);
+            }
         }
     },
 
