@@ -2,6 +2,7 @@
 var Montage = require("../../core/core").Montage,
     AbstractControl = require("./abstract-control").AbstractControl,
     PressComposer = require("../../composer/press-composer").PressComposer,
+    KeyComposer = require("../../composer/key-composer").KeyComposer,
     Dict = require("collections/dict");
 
 var CLASS_PREFIX = "montage-RadioButton";
@@ -31,6 +32,11 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
             AbstractControl.constructor.call(this); // super
             this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
+
+            this._keyComposer = new KeyComposer();
+            this._keyComposer.component = this;
+            this._keyComposer.keys = "space";
+            this.addComposer(this._keyComposer);
 
             this.defineBindings({
                 // classList management
@@ -80,6 +86,10 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
         value: true
     },
 
+    _keyComposer: {
+        value: null
+    },
+
     _radioButtonController: {
         value: null
     },
@@ -110,6 +120,8 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
         value: function(firstTime) {
             if (firstTime) {
                 this.element.setAttribute("role", "radio");
+                this._keyComposer.addEventListener("keyPress", this, false);
+                this._keyComposer.addEventListener("keyRelease", this, false);
             }
         }
     },
@@ -165,6 +177,19 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
         value: function(/* event */) {
             this.active = false;
             document.removeEventListener("touchmove", this, false);
+        }
+    },
+
+    handleKeyPress: {
+        value: function() {
+            this.active = true;
+        }
+    },
+
+    handleKeyRelease: {
+        value: function() {
+            this.active = false;
+            this.check();
         }
     },
 
