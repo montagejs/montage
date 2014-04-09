@@ -417,9 +417,10 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
      */
     _updateLinearScroll: {
         value: function () {
-            var ratio = this._flow.isCameraEnabled ? 500 / this._flow._height : 1,
-                x = (this._pageX - this._startPageX) * this._linearScrollingVector[0] * ratio,
-                y = (this._pageY - this._startPageY) * this._linearScrollingVector[1] * ratio,
+            var flow = this._flow,
+                ratio = flow.isCameraEnabled ? 500 / flow._height : 1,
+                x = ((this._pageX - this._startPageX) * this._linearScrollingVector[0] * ratio * flow._sceneScaleX.denominator) / flow._sceneScaleX.numerator,
+                y = ((this._pageY - this._startPageY) * this._linearScrollingVector[1] * ratio * flow._sceneScaleY.denominator) / flow._sceneScaleY.numerator,
                 squaredMagnitude = this._linearScrollingVector[0] * this._linearScrollingVector[0] + this._linearScrollingVector[1] * this._linearScrollingVector[1],
                 scroll = (x + y) / squaredMagnitude;
 
@@ -509,6 +510,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     pathIndex,
                     slideIndex,
                     slideTime,
+                    scale = flow._sceneScale,
                     closerIndex = null,
                     closerTime = null,
                     minDistance = 1e100,
@@ -541,6 +543,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     slideTime = offset.slideTime;
                     indexTime = splines[pathIndex]._convertSplineTimeToBezierIndexTime(slideTime);
                     if (indexTime !== null) {
+                        pos = splines[pathIndex].getPositionAtIndexTime(indexTime, scale);
                         distance = this._rayPointDistance(rayVector, pos);
                         if (distance !== false) {
                             if (distance < minDistance) {

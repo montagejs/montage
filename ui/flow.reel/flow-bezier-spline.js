@@ -149,7 +149,7 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
     },
 
     getPositionAtIndexTime: {
-        value: function (indexTime) {
+        value: function (indexTime, scale) {
             var index = indexTime[0],
                 time = indexTime[1],
                 p0 = this._knots[index],
@@ -162,11 +162,19 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
                 coef3 = y * time * time * 3,
                 coef4 = time * time * time;
 
-            return [
-                p0[0] * coef1 + p1[0] * coef2 + p2[0] * coef3 + p3[0] * coef4,
-                p0[1] * coef1 + p1[1] * coef2 + p2[1] * coef3 + p3[1] * coef4,
-                p0[2] * coef1 + p1[2] * coef2 + p2[2] * coef3 + p3[2] * coef4
-            ];
+            if (scale) {
+                return [
+                    (scale.x.numerator * (p0[0] * coef1 + p1[0] * coef2 + p2[0] * coef3 + p3[0] * coef4)) / scale.x.denominator,
+                    (scale.y.numerator * (p0[1] * coef1 + p1[1] * coef2 + p2[1] * coef3 + p3[1] * coef4)) / scale.y.denominator,
+                    (scale.z.numerator * (p0[2] * coef1 + p1[2] * coef2 + p2[2] * coef3 + p3[2] * coef4)) / scale.z.denominator
+                ];
+            } else {
+                return [
+                    p0[0] * coef1 + p1[0] * coef2 + p2[0] * coef3 + p3[0] * coef4,
+                    p0[1] * coef1 + p1[1] * coef2 + p2[1] * coef3 + p3[1] * coef4,
+                    p0[2] * coef1 + p1[2] * coef2 + p2[2] * coef3 + p3[2] * coef4
+                ];
+            }
         }
     },
 
@@ -386,6 +394,60 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
         enumerable: false,
         value: function (x, y, z, matrix) {
             return x * matrix[0] + y * matrix[1] + z * matrix[2];
+        }
+    },
+
+    getScaledKnots: {
+        value: function (scale) {
+            var knots = [],
+                i;
+
+            for (i = 0; i < this._knots.length; i++) {
+                if (this._knots[i]) {
+                    knots[i] = [
+                        (scale.x.numerator * this._knots[i][0]) / scale.x.denominator,
+                        (scale.y.numerator * this._knots[i][1]) / scale.y.denominator,
+                        (scale.z.numerator * this._knots[i][2]) / scale.z.denominator
+                    ];
+                }
+            }
+            return knots;
+        }
+    },
+
+    getScaledPreviousHandlers: {
+        value: function (scale) {
+            var previousHandlers = [],
+                i;
+
+            for (i = 0; i < this._previousHandlers.length; i++) {
+                if (this._previousHandlers[i]) {
+                    previousHandlers[i] = [
+                        (scale.x.numerator * this._previousHandlers[i][0]) / scale.x.denominator,
+                        (scale.y.numerator * this._previousHandlers[i][1]) / scale.y.denominator,
+                        (scale.z.numerator * this._previousHandlers[i][2]) / scale.z.denominator
+                    ];
+                }
+            }
+            return previousHandlers;
+        }
+    },
+
+    getScaledNextHandlers: {
+        value: function (scale) {
+            var nextHandlers = [],
+                i;
+
+            for (i = 0; i < this._nextHandlers.length; i++) {
+                if (this._nextHandlers[i]) {
+                    nextHandlers[i] = [
+                        (scale.x.numerator * this._nextHandlers[i][0]) / scale.x.denominator,
+                        (scale.y.numerator * this._nextHandlers[i][1]) / scale.y.denominator,
+                        (scale.z.numerator * this._nextHandlers[i][2]) / scale.z.denominator
+                    ];
+                }
+            }
+            return nextHandlers;
         }
     },
 

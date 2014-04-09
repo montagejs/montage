@@ -540,6 +540,107 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         }
     },
 
+    /**
+     * Scene's scale for each axis x/y/z
+     * Expressed as an object representing a fraction with numerator and denominator properties
+     * Defaults as 1:1, original size
+     */
+    _sceneScaleX: {
+        value: {
+            numerator: 1,
+            denominator: 1
+        }
+    },
+
+    _sceneScaleY: {
+        value: {
+            numerator: 1,
+            denominator: 1
+        }
+    },
+
+    _sceneScaleZ: {
+        value: {
+            numerator: 1,
+            denominator: 1
+        }
+    },
+
+    _sceneScale: {
+        value: {
+            x: {numerator: 1, denominator: 1},
+            y: {numerator: 1, denominator: 1},
+            z: {numerator: 1, denominator: 1}
+        },
+    },
+
+    _updateSceneScale: {
+        value: function () {
+            this._sceneScale = {
+                x: this._sceneScaleX,
+                y: this._sceneScaleY,
+                z: this._sceneScaleZ
+            };
+        }
+    },
+
+    sceneScaleX: {
+        get: function () {
+            return this._sceneScaleX;
+        },
+        set: function (value) {
+            if ((typeof value === "object") &&
+                (typeof value.numerator !== "undefined") &&
+                (typeof value.denominator !== "undefined") &&
+                (!isNaN(value.numerator)) &&
+                (!isNaN(value.denominator)) &&
+                (value.denominator != 0)) {
+                this._sceneScaleX = value;
+                this._updateSceneScale();
+                this.needsDraw = true;
+                this._needsComputeVisibleRange = true;
+            }
+        }
+    },
+
+    sceneScaleY: {
+        get: function () {
+            return this._sceneScaleY;
+        },
+        set: function (value) {
+            if ((typeof value === "object") &&
+                (typeof value.numerator !== "undefined") &&
+                (typeof value.denominator !== "undefined") &&
+                (!isNaN(value.numerator)) &&
+                (!isNaN(value.denominator)) &&
+                (value.denominator != 0)) {
+                this._sceneScaleY = value;
+                this._updateSceneScale();
+                this.needsDraw = true;
+                this._needsComputeVisibleRange = true;
+            }
+        }
+    },
+
+    sceneScaleZ: {
+        get: function () {
+            return this._sceneScaleZ;
+        },
+        set: function (value) {
+            if ((typeof value === "object") &&
+                (typeof value.numerator !== "undefined") &&
+                (typeof value.denominator !== "undefined") &&
+                (!isNaN(value.numerator)) &&
+                (!isNaN(value.denominator)) &&
+                (value.denominator != 0)) {
+                this._sceneScaleZ = value;
+                this._updateSceneScale();
+                this.needsDraw = true;
+                this._needsComputeVisibleRange = true;
+            }
+        }
+    },
+
     _stride: {
         value: 0
     },
@@ -966,9 +1067,9 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 r = [], r2 = [], r3 = [], tmp,
                 i, j,
                 elementsBoundingSphereRadius = this._elementsBoundingSphereRadius,
-                splineKnots = spline._knots,
-                splineNextHandlers = spline._nextHandlers,
-                splinePreviousHandlers = spline._previousHandlers,
+                splineKnots = spline.getScaledKnots(this._sceneScale),
+                splineNextHandlers = spline.getScaledNextHandlers(this._sceneScale),
+                splinePreviousHandlers = spline.getScaledPreviousHandlers(this._sceneScale),
                 reflectionMatrixBuffer = [],
                 out = [];
 
@@ -1219,6 +1320,24 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         value: null
     },
 
+    viewportWidth: {
+        get: function () {
+            return this._width;
+        },
+        set: function (value) {
+            this._width = value;
+        }
+    },
+
+    viewportHeight: {
+        get: function () {
+            return this._height;
+        },
+        set: function (value) {
+            this._height = value;
+        }
+    },
+
     willDraw: {
         value: function (timestamp) {
             var intersections,
@@ -1242,6 +1361,8 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 pathsLength = paths.length,
                 splinePaths = this.splinePaths;
 
+            this.viewportWidth = this._element.clientWidth;
+            this.viewportHeight = this._element.clientHeight;
             // Manage scroll animation
             if (this._isTransitioningScroll) {
                 time = (Date.now() - this._scrollingStartTime) / this._scrollingTransitionDurationMiliseconds; // TODO: division by zero
@@ -1294,8 +1415,6 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             }
 
             // Compute which slides are in view
-            this._width = this._element.clientWidth;
-            this._height = this._element.clientHeight;
             if (splinePaths.length) {
                 mod = this._numberOfIterations % pathsLength;
                 div = (this._numberOfIterations - mod) / pathsLength;
@@ -1416,7 +1535,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                                 element.children[0].classList.remove("active");
                             }
                         }
-                        pos = this._splinePaths[pathIndex].getPositionAtIndexTime(indexTime);
+                        pos = this._splinePaths[pathIndex].getPositionAtIndexTime(indexTime, this._sceneScale);
                         rotation = this._splinePaths[pathIndex].getRotationAtIndexTime(indexTime);
                         style =
                             this._transformCss + ":translate3d(" + (((pos[0] * 100000) >> 0) * .00001) + "px," + (((pos[1] * 100000) >> 0) * .00001) + "px," + (((pos[2] * 100000) >> 0) * .00001) + "px)" +
