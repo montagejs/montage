@@ -15,8 +15,10 @@ var Montage = require("../core/core").Montage,
     Gate = require("../core/gate").Gate,
     Promise = require("../core/promise").Promise,
     logger = require("../core/logger").logger("component"),
-    drawPerformanceLogger = require("../core/logger").logger("Drawing performance"),
-    drawLogger = require("../core/logger").logger("drawing"),
+    drawPerformanceLogger = require("../core/logger").logger("Drawing performance").color.green(),
+    drawListLogger = require("../core/logger").logger("drawing list").color.blue(),
+    needsDrawLogger = require("../core/logger").logger("drawing needsDraw").color.violet(),
+    drawLogger = require("../core/logger").logger("drawing").color.blue(),
     defaultEventManager = require("../core/event/event-manager").defaultEventManager,
     Set = require("collections/set"),
     Alias = require("../core/serialization/alias").Alias;
@@ -1693,24 +1695,17 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 this.originalElement = null;
             }
 
-            if (drawLogger.isDebug) {
-                drawLogger.debug(this, "drawList: " + (this._drawList || []).length + " of " + this.childComponents.length);
-            }
             if (this._drawList !== null && this._drawList.length > 0) {
                 oldDrawList = this._drawList;
                 this._drawList = this._getArray();
                 childComponentListLength = oldDrawList.length;
                 for (i = 0; i < childComponentListLength; i++) {
                     childComponent = oldDrawList[i];
-                    if (drawLogger.isDebug) {
-                        drawLogger.debug("Parent Component " + (this.element != null ? this.element.id : "") + " drawList length: " + oldDrawList.length);
-                    }
                     childComponent._addedToDrawList = false;
-                    if (drawLogger.isDebug) {
-                        drawLogger.debug(this, "childComponent: " + childComponent.element + "; canDraw: " + childComponent.canDraw());
-                    }
                     if (childComponent.canDraw()) { // TODO if canDraw is false when does needsDraw get reset?
                         childComponent._drawIfNeeded(level+1);
+                    } else if (drawLogger.isDebug) {
+                        drawLogger.debug(loggerToString(childComponent) + " can't draw.");
                     }
                 }
                 this._disposeArray(oldDrawList);
@@ -2160,14 +2155,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 var parentComponent = this.parentComponent;
 
                 if (!parentComponent) {
-                    if (drawLogger.isDebug) {
-                        drawLogger.debug(this, "parentComponent is null");
+                    if (drawListLogger.isDebug) {
+                        drawListLogger.debug(this, "parentComponent is null");
                     }
                 } else {
                     parentComponent._addToDrawList(this);
-                    if (drawLogger.isDebug) {
+                    if (drawListLogger.isDebug) {
                         //jshint -W106
-                        drawLogger.debug("drawList -- childComponent",this._montage_metadata.objectName," added to ",parentComponent._montage_metadata.objectName);
+                        drawListLogger.debug(loggerToString(this) + " added to " + loggerToString(parentComponent)  + "'s drawList");
                         //jshint +W106
                     }
                 }
@@ -2211,9 +2206,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 return;
             }
             if (this._needsDraw !== value) {
-                if (drawLogger.isDebug) {
+                if (needsDrawLogger.isDebug) {
                     //jshint -W106
-                    drawLogger.debug("NEEDS DRAW TOGGLED " + value + " FOR " + this._montage_metadata.objectName);
+                    needsDrawLogger.debug("needsDraw toggled " + value + " for " + this._montage_metadata.objectName);
                     //jshint +W106
                 }
                 this._needsDraw = !!value;
@@ -2874,8 +2869,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                     var childComponents = this.childComponents;
                     //jshint -W106
                     for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
-                        if (drawLogger.isDebug) {
-                            drawLogger.debug(this, "needsDraw = true for: " + childComponent._montage_metadata.exportedSymbol);
+                        if (needsDrawLogger.isDebug) {
+                            needsDrawLogger.debug(this, "needsDraw = true for: " + childComponent._montage_metadata.exportedSymbol);
                         }
                         childComponent.needsDraw = true;
                     }
@@ -3025,8 +3020,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
     _addToDrawList: {
         value: function(childComponent) {
             this.__addToDrawList(childComponent);
-            if (drawLogger.isDebug) {
-                drawLogger.debug(this, this.canDrawGate.value, this.requestedAnimationFrame);
+            if (drawListLogger.isDebug) {
+                drawListLogger.debug(this, this.canDrawGate.value, this.requestedAnimationFrame);
             }
             this.drawTree();
         },
@@ -3232,9 +3227,6 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
     drawTree: {
         value: function drawTree() {
             if (this.requestedAnimationFrame === null) { // 0 is a valid requestedAnimationFrame value
-                if (drawLogger.isDebug) {
-                    drawLogger.debug(this, "requesting a draw");
-                }
                 var requestAnimationFrame = this.requestAnimationFrame;
                 if (requestAnimationFrame) {
                     this.requestedAnimationFrame = requestAnimationFrame.call(window, this._drawTree);
@@ -3295,7 +3287,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
             }
             if (drawLogger.isDebug) {
                 // Detect any DOM modification since the previous draw
-                var newSource = document.documentElement.innerHTML;
+                var newSource = document.body.innerHTML;
                 if (this._oldSource && newSource !== this._oldSource) {
                     var warning = ["DOM modified outside of the draw loop"];
                     var out = this._diff(this._oldSource.split("\n"), newSource.split("\n"));
@@ -3332,7 +3324,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
 
             if (drawLogger.isDebug) {
                 console.groupEnd();
-                this._oldSource = document.documentElement.innerHTML;
+                this._oldSource =  document.body.innerHTML;
             }
             this._frameTime = null;
             if (this._scheduleComposerRequest) {
@@ -3368,7 +3360,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
             if (needsDrawListIndex.hasOwnProperty(component.uuid)) {
                 // Requesting a draw of a component that has already been drawn in the current cycle
                 if (drawLogger.isDebug) {
-                    drawLogger.debug("components should not be added to the draw cycle twice");
+                    if(this !== rootComponent) {
+                        drawLogger.debug(loggerToString(this) + " added to the draw cycle twice, this should not happen.");
+                    }
                 }
                 return;
             }
@@ -3419,6 +3413,13 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
             this._drawIfNeeded(0);
             j = needsDrawList.length;
 
+            //
+            // willDraw
+            //
+            if (drawLogger.isDebug) {
+                console.groupCollapsed("willDraw - " + needsDrawList.length +
+                    (needsDrawList.length > 1 ? " components." : " component."));
+            }
             while (start < j) {
                 for (i = start; i < j; i++) {
                     component = needsDrawList[i];
@@ -3426,16 +3427,21 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                         component.willDraw(this._frameTime);
                     }
                     if (drawLogger.isDebug) {
-                        //jshint -W106
-                        drawLogger.debug(component._montage_metadata.objectName, " willDraw treeLevel ",component._treeLevel);
-                        //jshint +W106
+                        drawLogger.debug("Level " + component._treeLevel + " " + loggerToString(component));
                     }
                 }
                 this._drawIfNeeded(0);
                 start = j;
                 j = needsDrawList.length;
             }
-
+            //
+            // draw
+            //
+            if (drawLogger.isDebug) {
+                console.groupEnd();
+                console.group("draw - " + needsDrawList.length +
+                                    (needsDrawList.length > 1 ? " components." : " component."));
+            }
             // Sort the needsDraw list so that any newly added items are drawn in the correct order re: parent-child
             needsDrawList.sort(this._sortByLevel);
 
@@ -3450,15 +3456,23 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                 component._draw(this._frameTime);
                 component.draw(this._frameTime);
                 if (drawLogger.isDebug) {
-                    //jshint -W106
-                    drawLogger.debug(component._montage_metadata.objectName, " draw treeLevel ",component._treeLevel);
-                    //jshint +W106
+                    drawLogger.debug("Level " + component._treeLevel + " " + loggerToString(component));
                 }
             }
-
+            //
+            // didDraw
+            //
+            if (drawLogger.isDebug) {
+                console.groupEnd();
+                console.groupCollapsed("didDraw - " + needsDrawList.length +
+                                    (needsDrawList.length > 1 ? " components." : " component."));
+            }
             for (i = 0; i < j; i++) {
                 component = needsDrawList[i];
                 component.didDraw(this._frameTime);
+                if(component.identifier === "channelListItem") {
+                    console.log("component %s completedFirstDraw %s", Object.hash(component) , component._completedFirstDraw);
+                }
                 if (!component._completedFirstDraw) {
                     firstDrawEvent = document.createEvent("CustomEvent");
                     firstDrawEvent.initCustomEvent("firstDraw", true, false, null);
@@ -3466,10 +3480,11 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                     component._completedFirstDraw = true;
                 }
                 if (drawLogger.isDebug) {
-                    //jshint -W106
-                    drawLogger.debug(component._montage_metadata.objectName, " didDraw treeLevel ",component._treeLevel);
-                    //jshint +W106
+                    drawLogger.debug("Level " + component._treeLevel + " " + loggerToString(component));
                 }
+            }
+            if (drawLogger.isDebug) {
+                console.groupEnd();
             }
 
             if (drawPerformanceLogger.isDebug) {
@@ -3501,3 +3516,10 @@ var rootComponent = new RootComponent().init();
 //if(window.parent && window.parent.jasmine) {
 exports.__root__ = rootComponent;
 //}
+
+function loggerToString (object) {
+    if (!object) return "NIL";
+    //jshint -W106
+    return object._montage_metadata.objectName + ":" + Object.hash(object) + " id: " + object.identifier;
+    //jshint +W106
+}

@@ -12,6 +12,7 @@ var Map = require("collections/map");
 var Set = require("collections/set");
 
 var deprecationWarning = require("../../core/deprecate").deprecationWarning;
+var logger = require("../../core/logger").logger("repetition").color.magenta();
 
 var Observers = require("frb/observers");
 var observeProperty = Observers.observeProperty;
@@ -123,6 +124,9 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
     constructor: {
         value: function Iteration() {
             this.super();
+            if (logger.isDebug) {
+                logger.debug("Iteration:%s create iteration %O", Object.hash(this), this);
+            }
 
             this.repetition = null;
             this.controller = null;
@@ -226,8 +230,16 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
     injectIntoDocument: {
         value: function (index) {
             if (this._drawnIndex !== null) {
+                if (logger.isDebug) {
+                    logger.debug("Iteration:%s retracting from index %s and injecting at %s",Object.hash(this),this._drawnIndex, index);
+                }
                 this.retractFromDocument();
+            } else {
+                if (logger.isDebug) {
+                    logger.debug("Iteration:%s injecting at index %s",Object.hash(this),index);
+                }
             }
+
             var self = this;
             var repetition = this.repetition;
             var element = repetition.element;
@@ -266,6 +278,9 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
                     var childComponent = this._childComponents[i];
                     childComponent.addEventListener("firstDraw", firstDraw, false);
                     childComponent.needsDraw = true;
+                    if(childComponent._completedFirstDraw === true) {
+                        console.error("Repetiton:%s child component %O has already drawn.", Object.hash(this), childComponent);
+                    }
                 }
             } else {
                 this.forEachElement(function (element) {
@@ -282,6 +297,9 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
      */
     retractFromDocument: {
         value: function () {
+            if (logger.isDebug) {
+                logger.debug("Iteration:%s retractFromDocument drawnIndex: %s",Object.hash(this), this._drawnIndex);
+            }
             var index = this._drawnIndex;
             var repetition = this.repetition;
             var element = repetition.element;
@@ -1148,6 +1166,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                     part.parentDocumentPart = self._ownerDocumentPart;
                     iteration._templateDocumentPart = part;
                     part.loadComponentTree().then(function() {
+                        if (logger.isDebug) {
+                            logger.debug("Iteration:%s component tree loaded.", Object.hash(iteration));
+                        }
                         iteration._fragment = part.fragment;
                         // It is significant that _childComponents are assigned
                         // *after* the component tree has finished loading
@@ -1317,6 +1338,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     handleOrganizedContentRangeChange: {
         value: function (plus, minus, index) {
+            if (logger.isDebug) {
+                logger.debug("Repetition:%s content changed +%s@%s %O -%s %O ", Object.hash(this), (plus?plus.length:0), index, plus, (minus?minus.length:0), minus);
+            }
             var iterations = this.iterations;
             var contentForIteration = this._contentForIteration;
 
@@ -1334,6 +1358,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             var reusableIterationsCount = Math.min(plus.length, minus.length);
             var removeIterationsCount = minus.length - reusableIterationsCount;
             var addIterationsCount = plus.length - reusableIterationsCount;
+            if (logger.isDebug) {
+                logger.debug("Repetition:%s +%s -%s iterations", Object.hash(this), addIterationsCount, removeIterationsCount);
+            }
 
             if (reusableIterationsCount > 0) {
 
@@ -1363,13 +1390,24 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
             if (addIterationsCount > 0) {
                 // Create more iterations if we will need them
+                if (logger.isDebug) {
+                    var newIterations = [];
+                }
                 while (this._freeIterations.length < addIterationsCount) {
                     this._freeIterations.push(this._createIteration());
+                    if (logger.isDebug) {
+                        newIterations.push(this._freeIterations[this._freeIterations.length-1])
+                    }
                 }
                 // Add iterations
                 var plusIterations = new Array(addIterationsCount);
                 for (var i = reusableIterationsCount, j = 0; i < plus.length; i++, j++) {
                     var iteration = this._freeIterations.pop();
+                    if (logger.isDebug) {
+                        if(!newIterations.has(iteration)) {
+                            logger.debug("Repetition:%s reusing %s", Object.hash(this), Object.hash(iteration));
+                        }
+                    }
                     var content = plus[i];
                     iteration.object = content;
                     // This updates the "repetition.contentAtCurrentIteration"
