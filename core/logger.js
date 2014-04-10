@@ -6,7 +6,6 @@ var Montage = require("./core").Montage,
     Logger,
     loggers,
     consoleLog,
-    consoleLogMontage,
     emptyLoggerFunction,
     getFunctionName,
     toTimeString,
@@ -41,31 +40,6 @@ consoleLog = function() {
     console.log(arguments);
 };
 
-consoleLogMontage = function() {
-    var firstArgument = arguments[0],
-        //jshint -W106
-        metadata = firstArgument._montage_metadata,
-        //jshint +W106
-        now = new Date();
-    //[].unshift.call(arguments, toTimeString(now));
-    if (metadata) {
-        [].shift.call(arguments);
-        [].unshift.call(arguments, metadata.objectName + "." + getFunctionName(firstArgument) + "()");
-        if (this.buffered) {
-            this.buffer.push(arguments);
-        } else {
-            console.debug.apply(console, arguments);
-        }
-    } else {
-        if (this.buffered) {
-            this.buffer.push(arguments);
-        } else {
-            console.debug.apply(console, arguments);
-        }
-    }
-
-};
-
 /**
  * @class Logger
  * @extends Montage
@@ -75,6 +49,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
     constructor: {
         value: function Logger() {
             this.super();
+            addColorProperty(this);
         }
     },
 
@@ -138,7 +113,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
                 args,
                 i;
             for (i = 0; (args = buffer[i]); i++) {
-                console.debug.apply(console, args);
+                this._formattedLog(args);
             }
             this.buffer.length = 0;
         }
@@ -153,7 +128,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
         },
         set: function(value) {
             if (value) {
-                this.debug = consoleLogMontage;
+                this.debug = this._consoleLogMontage;
             } else {
                 this.debug = emptyLoggerFunction;
             }
@@ -170,10 +145,65 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
         },
         set: function(value) {
             if (value) {
-                this.error = consoleLogMontage;
+                this.error = this._consoleLogMontage;
             } else {
                 this.error = emptyLoggerFunction;
             }
+        }
+    },
+
+    _consoleLogMontage: {
+        value: function() {
+            var firstArgument = arguments[0],
+                //jshint -W106
+                metadata = firstArgument._montage_metadata,
+                //jshint +W106
+                now = new Date();
+            //[].unshift.call(arguments, toTimeString(now));
+            // if the first argument is a Montage object, we replace it with the class and method's function name.
+            if (metadata) {
+                Array.prototype.shift.call(arguments);
+                Array.prototype.unshift.call(arguments, metadata.objectName + "." + getFunctionName(firstArgument) + "()");
+                if (this.buffered) {
+                    this.buffer.push(arguments);
+                } else {
+                    this._formattedLog(arguments);
+                }
+            } else {
+                if (this.buffered) {
+                    this.buffer.push(arguments);
+                } else {
+                    this._formattedLog(arguments);
+                }
+            }
+        }
+    },
+
+    _formattedLog: {
+        value: function (args) {
+            var firstArgument = args[0];
+            if(colors.isDebug && typeof firstArgument === "string") {
+                Array.prototype.splice.call(args, 0, 1, "%c"+firstArgument, this._logCss);
+            }
+            console.log.apply(console, args);
+        }
+    },
+
+    __logCss: {
+        value: null
+    },
+
+    _logCss: {
+        get: function () {
+            if(this.__logCss === null) {
+                this.__logCss = "";
+                if (this._color) {
+                    this.__logCss += "color:" + this._color + ";";
+                } else {
+                    this.__logCss += "color:black;";
+                }
+            }
+            return this.__logCss;
         }
     },
 
@@ -211,6 +241,40 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
         value: null
     }
 });
+
+function addColorProperty (logger) {
+    var _color = function (cssString) {
+        this._color = cssString;
+        return this;
+    };
+    for (var name in SOLARIZED_COLORS) {
+        _color[name] = function(name) {
+            return function() {
+                return logger.color(SOLARIZED_COLORS[name]);
+            }
+        }(name);
+    }
+    logger.color = _color;
+}
+
+var SOLARIZED_COLORS = {
+    "base03":  "#002b36",
+    "base02":  "#073642",
+    "base01":  "#586e75",
+    "base00":  "#657b83",
+    "base0":   "#839496",
+    "base1":   "#93a1a1",
+    "base2":   "#eee8d5",
+    "base3":   "#fdf6e3",
+    "yellow":  "#b58900",
+    "orange":  "#cb4b16",
+    "red":     "#dc322f",
+    "magenta": "#d33682",
+    "violet":  "#6c71c4",
+    "blue":    "#268bd2",
+    "cyan":    "#2aa198",
+    "green":   "#859900"
+};
 
 /**
  * @function module:montage/core/logger#logger
@@ -454,4 +518,5 @@ if (typeof window !== "undefined") {
         setupUI();
     }
 }
+var colors = exports.logger("colors");
 
