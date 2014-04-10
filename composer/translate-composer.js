@@ -508,6 +508,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             this._pointerY = y;
             if (window.Touch) {
                 this._element.addEventListener("touchend", this, true);
+                this._element.addEventListener("touchcancel", this, true);
                 this._element.addEventListener("touchmove", this, true);
                 this._element.addEventListener("touchmove", this, false);
             } else {
@@ -580,6 +581,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
             if (window.Touch) {
                 this._element.removeEventListener("touchend", this, true);
+                this._element.removeEventListener("touchcancel", this, true);
                 if (this._isFirstMove) {
                     //if we receive an end without ever getting a move
                     this._element.removeEventListener("touchmove", this, true);
@@ -673,6 +675,18 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             }
             if (i < len) {
                 this._end(event.changedTouches[i]);
+            }
+        }
+    },
+
+    captureTouchcancel: {
+        value: function(event) {
+            var i = 0, len = event.changedTouches.length;
+            while (i < len && event.changedTouches[i].identifier !== this._observedPointer) {
+                i++;
+            }
+            if (i < len) {
+                this._cancel(event.changedTouches[i]);
             }
         }
     },
@@ -855,6 +869,19 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         }
     },
 
+    _dispatchTranslateCancel: {
+        value: function() {
+            var translateCancelEvent = document.createEvent("CustomEvent");
+
+            translateCancelEvent.initCustomEvent("translateCancel", true, true, null);
+            translateCancelEvent.translateX = this._translateX;
+            translateCancelEvent.translateY = this._translateY;
+            // Event needs to be the same shape as the one in flow-translate-composer
+            translateCancelEvent.scroll = 0;
+            this.dispatchEvent(translateCancelEvent);
+        }
+    },
+
     _dispatchTranslate: {
         value: function() {
             var translateEvent = document.createEvent("CustomEvent");
@@ -985,6 +1012,25 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 this.isMoving = false;
                 // Only dispatch a translateEnd if a translate start has occured
                 this._dispatchTranslateEnd();
+            }
+            this._releaseInterest();
+        }
+    },
+
+    _cancel: {
+        value: function (event) {
+
+            this.startTime=Date.now();
+
+            this.endX = this.posX = this.startX=this._translateX;
+            this.endY=this.posY=this.startY=this._translateY;
+            this.animateMomentum = false;
+
+            if (!this._isFirstMove) {
+                this.isMoving = false;
+                // Only dispatch a translateCancel if a translate start has
+                // occurred.
+                this._dispatchTranslateCancel();
             }
             this._releaseInterest();
         }
