@@ -403,6 +403,12 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
         }
     },
 
+    isComponentTreeLoaded: {
+        value: function () {
+            return this._fragment !== null;
+        }
+    },
+
     /**
      * The most recent result of the `firstElement` accessor, useful for speed
      * if you know that the internal structure of the iteration is static.
@@ -1507,11 +1513,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     draw: {
         value: function () {
-            // TODO This is a work-around for a problem that iterations seem to
-            // be created between when the draw cycle calls canDraw() and when
-            // it gets around to calling draw().
-            if (!this.canDraw())
-                return;
 
             if (!this._initialContentDrawn) {
                 this._drawInitialContent();
@@ -1534,7 +1535,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 index++
             ) {
                 var iteration = this.iterations[index];
-                if (iteration._drawnIndex !== iteration.index) {
+                if (iteration._drawnIndex !== iteration.index && iteration.isComponentTreeLoaded()) {
                     iteration.injectIntoDocument(index);
                 }
             }
@@ -1547,20 +1548,22 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // back to the schedule.
             this._dirtyClassListIterations.clear();
             iterations.forEach(function (iteration) {
-                iteration.forEachElement(function (element) {
-                    // Only update classes that don't have a component, they
-                    // are taken care of in _addDirtyClassListIteration
-                    if (element.component) {
-                        return;
-                    }
-                    element.classList[iteration.active ? "add" : "remove"]("active");
-                    element.classList[iteration.selected ? "add" : "remove"]("selected");
+                if(iteration.isComponentTreeLoaded()) {
+                    iteration.forEachElement(function (element) {
+                        // Only update classes that don't have a component, they
+                        // are taken care of in _addDirtyClassListIteration
+                        if (element.component) {
+                            return;
+                        }
+                        element.classList[iteration.active ? "add" : "remove"]("active");
+                        element.classList[iteration.selected ? "add" : "remove"]("selected");
 
-                    // While we're at it, if the "no-transition" class has been
-                    // added to this iteration, we will need to remove it in
-                    // the next draw to allow the iteration to animate.
-                    element.classList.remove("no-transition");
-                }, this);
+                        // While we're at it, if the "no-transition" class has been
+                        // added to this iteration, we will need to remove it in
+                        // the next draw to allow the iteration to animate.
+                        element.classList.remove("no-transition");
+                    }, this);
+                }
             }, this);
         }
     },
