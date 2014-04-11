@@ -312,10 +312,10 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 return false;
             }
 
-            var i = 0, changedTouchCount = event.changedTouches.length;
+            var i = 0, changedTouchCount = changedTouches.length;
 
             for (; i < changedTouchCount; i++) {
-                if (event.changedTouches[i].identifier === this._observedPointer) {
+                if (changedTouches[i].identifier === this._observedPointer) {
                     return i;
                 }
             }
