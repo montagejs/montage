@@ -1612,7 +1612,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     _drawInitialContent: {
         value: function () {
             var element = this.element;
-            element.innerHTML = "";
+            var childNodesCount = element.childNodes.length;
+            for (var i = 0; i < childNodesCount; i++) {
+                element.removeChild(element.firstChild);
+            }
             var bottomBoundary = element.ownerDocument.createTextNode("");
             element.appendChild(bottomBoundary);
             this._boundaries.push(bottomBoundary);
