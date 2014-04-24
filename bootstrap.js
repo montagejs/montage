@@ -190,7 +190,7 @@
         var params = getParams();
         var config = {};
 
-        var applicationLocation = URL.resolve(window.location, params.package || ".");
+        var applicationLocation = URL.resolve(Require.getLocation(), params.package || ".");
         var moduleId = params.module || "";
 
         // execute the preloading plan and stall the fallback module loader
