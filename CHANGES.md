@@ -1,3 +1,38 @@
+### v0.14.7
+
+-  **Browser Support**
+
+   Better support for Android 4.0.3
+   Update Mr to fix issue in Firefox
+   Fix some dom corruption issue in IE
+
+-  **Logger**
+
+   Add support for rendering logs with colors in browsers that support it.
+   Improved the logging of the component's draw cycle so that they are less verbose.
+
+-  **Template**
+
+   Fix bug that would cause a deadlock with inline styles.
+
+-  **TranslateComposer**
+
+   Handle touchcancel to fix issue with control center on iOS 7
+
+-  **Repetition**
+
+   Fix bug in repetition which cause it to render iterations incorrectly if the content was changed after it was added
+   to the draw list.
+   Exclusively use one pointer or another to change selection.
+
+-  **CheckBox**
+
+   Now dispatches the action event after the checked property is changed
+
+-  **RadioButton**
+
+   Can be toggled with space bar key
+
 ### v0.14.6
 
 -  **Mop Support**
