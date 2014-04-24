@@ -1,3 +1,7 @@
+### 0.15.5
+
+ - Disable Firebug workaround that breaks modern Firefox
+
 ### 0.15.4
 
  - Fix display name for packages beginning with digits
