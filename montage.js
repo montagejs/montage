@@ -59,9 +59,12 @@ if (typeof window !== "undefined") {
         // Platform dependent
         platform.bootstrap(function (Require, Promise, URL) {
             var params = platform.getParams();
-            var config = platform.getConfig();
+            var config = {
+                // This takes <base> into account
+                location: Require.getLocation()
+            };
 
-            var montageLocation = URL.resolve(Require.getLocation(), params.montageLocation);
+            var montageLocation = URL.resolve(config.location, params.montageLocation);
 
             config.moduleTypes = ["html", "meta"];
 
@@ -468,12 +471,6 @@ if (typeof window !== "undefined") {
                 script.parentNode.removeChild(script);
             };
             document.getElementsByTagName("head")[0].appendChild(script);
-        },
-
-        getConfig: function() {
-            return {
-                location: "" + window.location
-            };
         },
 
         getParams: function() {
