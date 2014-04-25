@@ -1,3 +1,9 @@
+### v0.14.8
+
+-  **Repetition**
+
+   Adjust erroneous logging of an error state when iterations are reused.
+
 ### v0.14.7
 
 -  **Browser Support**
