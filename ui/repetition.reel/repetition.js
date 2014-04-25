@@ -258,6 +258,10 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
             repetition._updateDrawnIndexes(index);
             repetition._addDirtyClassListIteration(this);
 
+            if (this._elementsWillBeAddedToMap) {
+                return;
+            }
+
             // Once the child components have drawn once, and thus created all
             // their elements, we can add them to the _iterationForElement map
             var childComponentsLeftToDraw = this._childComponents.length;
@@ -287,7 +291,12 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
                     repetition._iterationForElement.set(element, self);
                 });
             }
+            this._elementsWillBeAddedToMap = true;
         }
+    },
+
+    _elementsWillBeAddedToMap: {
+        value: false
     },
 
     /**
