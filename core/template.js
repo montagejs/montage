@@ -1433,6 +1433,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
 
                 script.setAttribute(attribute.name, attribute.value);
             }
+            script.textContent = scriptTemplate.textContent;
 
             return script;
         }
