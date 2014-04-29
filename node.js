@@ -7,7 +7,7 @@ var MontageBoot = require("./montage");
 var Require = require("mr/require");
 require("mr/node");
 var Promise = require("q");
-var URL = require("./url");
+var URL = require("url");
 
 var htmlparser = require("htmlparser2");
 var DomUtils = htmlparser.DomUtils;
