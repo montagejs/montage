@@ -1,3 +1,7 @@
+### 0.15.6
+
+ - Update Q to v1.0.1
+
 ### 0.15.5
 
  - Disable Firebug workaround that breaks modern Firefox
