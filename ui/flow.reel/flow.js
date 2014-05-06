@@ -65,6 +65,20 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
 
     },
 
+    __firstIteration: {
+        value: null
+    },
+
+    _firstIteration: {
+        get: function () {
+            return this.__firstIteration;
+        },
+        set: function (value) {
+            this.__firstIteration = value;
+            this.needsDraw = true;
+        }
+    },
+
     handleTranslateStart: {
         value: function () {
             this.callDelegateMethod("didTranslateStart", this);
@@ -1338,6 +1352,32 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         }
     },
 
+    _firstIterationWidth: {
+        value: 1
+    },
+
+    _firstIterationHeight: {
+        value: 1
+    },
+
+    firstIterationWidth: {
+        get: function () {
+            return this._firstIterationWidth;
+        },
+        set: function (value) {
+            this._firstIterationWidth = value;
+        }
+    },
+
+    firstIterationHeight: {
+        get: function () {
+            return this._firstIterationHeight;
+        },
+        set: function (value) {
+            this._firstIterationHeight = value;
+        }
+    },
+
     willDraw: {
         value: function (timestamp) {
             var intersections,
@@ -1363,6 +1403,10 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
 
             this.viewportWidth = this._element.clientWidth;
             this.viewportHeight = this._element.clientHeight;
+            if (this.__firstIteration) {
+                this.firstIterationWidth = this.__firstIteration.firstElement.children[0].offsetWidth;
+                this.firstIterationHeight = this.__firstIteration.firstElement.children[0].offsetHeight;
+            }
             // Manage scroll animation
             if (this._isTransitioningScroll) {
                 time = (Date.now() - this._scrollingStartTime) / this._scrollingTransitionDurationMiliseconds; // TODO: division by zero
