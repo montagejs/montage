@@ -531,9 +531,9 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                 rayVector = [x2, y2, z2];
                 for (i = 0; i < splinePaths.length; i++) {
                     splines[i] = splinePaths[i].transform([
-                        1, 0, 0, 0,
-                        0, 1, 0, 0,
-                        0, 0, 1, 0,
+                        scale.x.numerator / scale.x.denominator, 0, 0, 0,
+                        0, scale.y.numerator / scale.y.denominator, 0, 0,
+                        0, 0, scale.z.numerator / scale.z.denominator, 0,
                         -flow._viewpointPosition[0], -flow._viewpointPosition[1], -flow._viewpointPosition[2], 1
                     ]);
                 }
@@ -543,7 +543,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     slideTime = offset.slideTime;
                     indexTime = splines[pathIndex]._convertSplineTimeToBezierIndexTime(slideTime);
                     if (indexTime !== null) {
-                        pos = splines[pathIndex].getPositionAtIndexTime(indexTime, scale);
+                        pos = splines[pathIndex].getPositionAtIndexTime(indexTime);
                         distance = this._rayPointDistance(rayVector, pos);
                         if (distance !== false) {
                             if (distance < minDistance) {
