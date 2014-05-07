@@ -64,10 +64,12 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
 
     getSerializationLabels: {
         value: function() {
+            var serializationObject;
+
             if (!this._serializationLabels) {
-                this._serializationLabels = Object.keys(
-                    this.getSerializationObject()
-                );
+                if (serializationObject = this.getSerializationObject()) {
+                    this._serializationLabels = Object.keys(serializationObject);
+                }
             }
 
             return this._serializationLabels;
