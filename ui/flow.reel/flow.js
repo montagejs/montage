@@ -1162,6 +1162,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 t2 = (d2 - d1) * p2 * p2 * .5 + p2 * d1 + dS;
                 out.push([t1, t2]);
             }
+            console.log(JSON.stringify(out));
             return out;
         }
     },
@@ -1214,6 +1215,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             this._isCameraUpdated = true;
             this._needsComputeVisibleRange = true;
             this.needsDraw = true;
+            this._visibleIndexes = [];
         }
     },
 
@@ -1340,6 +1342,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         },
         set: function (value) {
             this._width = value;
+            this._needsComputeVisibleRange = true;
         }
     },
 
@@ -1349,6 +1352,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         },
         set: function (value) {
             this._height = value;
+            this._needsComputeVisibleRange = true;
         }
     },
 
@@ -1365,7 +1369,11 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             return this._firstIterationWidth;
         },
         set: function (value) {
-            this._firstIterationWidth = value;
+            if (value !== this._firstIterationWidth) {
+                this._firstIterationWidth = value;
+                this._needsComputeVisibleRange = true;
+                this._visibleIndexes = [];
+            }
         }
     },
 
@@ -1374,7 +1382,11 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             return this._firstIterationHeight;
         },
         set: function (value) {
-            this._firstIterationHeight = value;
+            if (value !== this._firstIterationHeight) {
+                this._firstIterationHeight = value;
+                this._needsComputeVisibleRange = true;
+                this._visibleIndexes = [];
+            }
         }
     },
 
@@ -1505,7 +1517,6 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 }
                 this._needsComputeVisibleRange = false;
             }
-
             this._updateVisibleIndexes(newVisibleIndexes, newContentIndexes);
         }
     },
