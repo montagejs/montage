@@ -1162,7 +1162,6 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 t2 = (d2 - d1) * p2 * p2 * .5 + p2 * d1 + dS;
                 out.push([t1, t2]);
             }
-            console.log(JSON.stringify(out));
             return out;
         }
     },
