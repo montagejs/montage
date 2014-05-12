@@ -992,9 +992,11 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 y = Math.sin(angle),
                 z = Math.cos(angle),
                 x = (y * this._width) / this._height,
-                vX = this._viewpointTargetPoint[0] - this._viewpointPosition[0],
-                vY = this._viewpointTargetPoint[1] - this._viewpointPosition[1],
-                vZ = this._viewpointTargetPoint[2] - this._viewpointPosition[2],
+                viewpointPosition = this._viewpointPosition,
+                viewpointTargetPoint = this._viewpointTargetPoint,
+                vX = viewpointTargetPoint[0] - viewpointPosition[0],
+                vY = viewpointTargetPoint[1] - viewpointPosition[1],
+                vZ = viewpointTargetPoint[2] - viewpointPosition[2],
                 yAngle = this._halfPI - Math.atan2(vZ, vX),
                 tmpZ = vX * Math.sin(yAngle) + vZ * Math.cos(yAngle),
                 rX, rY, rZ,
@@ -1073,9 +1075,10 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     _computeVisibleRange: { // TODO: make it a loop, optimize
         value: function (spline) {
             var splineLength = spline._knots.length - 1,
-                planeOrigin0 = this._viewpointPosition[0],
-                planeOrigin1 = this._viewpointPosition[1],
-                planeOrigin2 = this._viewpointPosition[2],
+                viewpointPosition = this._viewpointPosition,
+                planeOrigin0 = viewpointPosition[0],
+                planeOrigin1 = viewpointPosition[1],
+                planeOrigin2 = viewpointPosition[2],
                 normals = this._computeFrustumNormals(),
                 mod,
                 r = [], r2 = [], r3 = [], tmp,
@@ -1537,6 +1540,8 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 positionKeyCount,
                 jPositionKey,
                 visibleIndexes = this._visibleIndexes,
+                viewpointPosition = this._viewpointPosition,
+                viewpointTargetPoint = this._viewpointTargetPoint,
                 indexTime,
                 rotation,
                 offset;
@@ -1547,9 +1552,9 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             if (this._isCameraUpdated) {
                 if (this._isCameraEnabled) {
                     var perspective = Math.tan(((90 - this._viewpointFov * .5) * this._doublePI) / 360) * this._height * .5,
-                        vX = this._viewpointTargetPoint[0] - this._viewpointPosition[0],
-                        vY = this._viewpointTargetPoint[1] - this._viewpointPosition[1],
-                        vZ = this._viewpointTargetPoint[2] - this._viewpointPosition[2],
+                        vX = viewpointTargetPoint[0] - viewpointPosition[0],
+                        vY = viewpointTargetPoint[1] - viewpointPosition[1],
+                        vZ = viewpointTargetPoint[2] - viewpointPosition[2],
                         yAngle = Math.atan2(-vX, -vZ),  // TODO: Review this
                         tmpZ,
                         xAngle;
@@ -1559,11 +1564,11 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                     this._element.style[this._transformPerspective]= perspective + "px";
                     this._cameraElement.style[this._transform] =
                         "translate3d(0,0," + perspective + "px)rotateX(" + xAngle + "rad)rotateY(" + (-yAngle) + "rad)" +
-                        "translate3d(" + (-this._viewpointPosition[0]) + "px," + (-this._viewpointPosition[1]) + "px," + (-this._viewpointPosition[2]) + "px)";
+                        "translate3d(" + (-viewpointPosition[0]) + "px," + (-viewpointPosition[1]) + "px," + (-viewpointPosition[2]) + "px)";
                     this._element.classList.remove("camera-disabled");
                 } else {
                     this._element.style[this._transformPerspective]= this._perspective + "px";
-                    this._cameraElement.style[this._transform] = "translate3d(" + (.5 * this._width - this._viewpointPosition[0]) + "px, " + (.5 * this._height - this._viewpointPosition[1]) + "px,0)";
+                    this._cameraElement.style[this._transform] = "translate3d(" + (.5 * this._width - viewpointPosition[0]) + "px, " + (.5 * this._height - viewpointPosition[1]) + "px,0)";
                     this._element.classList.add("camera-disabled");
                 }
                 this._isCameraUpdated = false;
