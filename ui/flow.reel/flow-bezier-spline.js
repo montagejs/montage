@@ -308,7 +308,7 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
     cubicRealRoots: {
         enumerable: false,
         value: function (a, b, c, d) {
-            var epsilon = 1e-100, math = Math;
+            var epsilon = 1e-10, math = Math;
 
             if ((a < -epsilon) || (a > epsilon)) {
                 var dv = 1 / a,
