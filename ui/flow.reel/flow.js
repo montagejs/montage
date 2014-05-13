@@ -1343,8 +1343,10 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             return this._width;
         },
         set: function (value) {
-            this._width = value;
-            this._needsComputeVisibleRange = true;
+            if (this._width !== value) {
+                this._width = value;
+                this._needsComputeVisibleRange = true;
+            }
         }
     },
 
@@ -1353,8 +1355,10 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             return this._height;
         },
         set: function (value) {
-            this._height = value;
-            this._needsComputeVisibleRange = true;
+            if (this._height !== value) {
+                this._height = value;
+                this._needsComputeVisibleRange = true;
+            }
         }
     },
 
