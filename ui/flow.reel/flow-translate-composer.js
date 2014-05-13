@@ -530,12 +530,17 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                 x2 = tmp * Math.sin(yAngle) + x2 * Math.cos(yAngle);
                 rayVector = [x2, y2, z2];
                 for (i = 0; i < splinePaths.length; i++) {
-                    splines[i] = splinePaths[i].transform([
-                        scale.x.numerator / scale.x.denominator, 0, 0, 0,
-                        0, scale.y.numerator / scale.y.denominator, 0, 0,
-                        0, 0, scale.z.numerator / scale.z.denominator, 0,
-                        -flow._viewpointPosition[0], -flow._viewpointPosition[1], -flow._viewpointPosition[2], 1
-                    ]);
+                    for (i = 0; i < splinePaths.length; i++) {
+                        splines[i] = splinePaths[i].transform([
+                            scale.x.numerator / scale.x.denominator, 0, 0, 0,
+                            0, scale.y.numerator / scale.y.denominator, 0, 0,
+                            0, 0, scale.z.numerator / scale.z.denominator, 0,
+                            -flow._viewpointPosition[0] + flow._firstIterationWidth * .5 + flow._firstIterationOffsetLeft,
+                            -flow._viewpointPosition[1] + flow._firstIterationHeight * .5 + flow._firstIterationOffsetTop,
+                            -flow._viewpointPosition[2],
+                            1
+                        ]);
+                    }
                 }
                 for (i = 0; i < length; i++) {
                     offset = this._flow.offset(visibleIndexes[i]);

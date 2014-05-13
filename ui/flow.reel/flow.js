@@ -934,7 +934,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     /**
      */
     _boundingBoxSize: {
-        value: [200, 200, 0]
+        value: null
     },
 
     // TODO doc
@@ -1392,6 +1392,14 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         }
     },
 
+    _firstIterationOffsetLeft: {
+        value: 0
+    },
+
+    _firstIterationOffsetTop: {
+        value: 0
+    },
+
     willDraw: {
         value: function (timestamp) {
             var intersections,
@@ -1418,8 +1426,24 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             this.viewportWidth = this._element.clientWidth;
             this.viewportHeight = this._element.clientHeight;
             if (this.__firstIteration) {
-                this.firstIterationWidth = this.__firstIteration.firstElement.children[0].offsetWidth;
-                this.firstIterationHeight = this.__firstIteration.firstElement.children[0].offsetHeight;
+                var element = this.__firstIteration.firstElement.children[0];
+
+                this.firstIterationWidth = element.offsetWidth;
+                this.firstIterationHeight = element.offsetHeight;
+                this._firstIterationOffsetLeft = element.offsetLeft;
+                this._firstIterationOffsetTop = element.offsetTop;
+                if (!this._boundingBoxSize) {
+                    var x = Math.max(
+                            Math.abs(this.firstIterationWidth + this._firstIterationOffsetLeft),
+                            Math.abs(this._firstIterationOffsetLeft)
+                        ),
+                        y = Math.max(
+                            Math.abs(this.firstIterationHeight + this._firstIterationOffsetTop),
+                            Math.abs(this._firstIterationOffsetTop)
+                        );
+
+                    this._elementsBoundingSphereRadius = Math.sqrt(x * x + y * y);
+                }
             }
             // Manage scroll animation
             if (this._isTransitioningScroll) {
