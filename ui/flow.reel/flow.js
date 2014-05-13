@@ -19,6 +19,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             // the frustum controller's visibleIndexes.  We manage the
             // array within the flow and use it also in the flow
             // translate composer.
+            this._visibleIndexes = [];
             this._needsClearVisibleIndexes = true;
             // Tracks the elastic scrolling offsets relative to their
             // corresponding non-elastic scrolling positions on their
