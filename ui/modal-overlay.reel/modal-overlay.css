@@ -1,5 +1,6 @@
 .montage-ModalOverlay-modalMask {
-    display: none;
+    display: block;
+    visibility: collapse;
     position: absolute;
     z-index: 6999;
     top: 0;
@@ -10,5 +11,5 @@
 }
 
 .montage-ModalOverlay-modalMask--visible {
-    display: block;
+    visibility: visible;
 }
