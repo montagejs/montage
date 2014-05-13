@@ -19,7 +19,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             // the frustum controller's visibleIndexes.  We manage the
             // array within the flow and use it also in the flow
             // translate composer.
-            this._visibleIndexes = [];
+            this._needsClearVisibleIndexes = true;
             // Tracks the elastic scrolling offsets relative to their
             // corresponding non-elastic scrolling positions on their
             // FlowBezierSpline.
@@ -919,14 +919,14 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     /**
      */
     _width: {
-        value: null
+        value: 0
     },
 
     // TODO doc
     /**
      */
     _height: {
-        value: null
+        value: 0
     },
 
     // TODO: bounding box is working as bounding rectangle only. Update it to work with boxes
@@ -956,7 +956,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     /**
      */
     _elementsBoundingSphereRadius: {
-        value: 283
+        value: 1
     },
 
     // TODO doc
@@ -1087,7 +1087,6 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 splineKnots = spline.getScaledKnots(this._sceneScale),
                 splineNextHandlers = spline.getScaledNextHandlers(this._sceneScale),
                 splinePreviousHandlers = spline.getScaledPreviousHandlers(this._sceneScale),
-                reflectionMatrixBuffer = [],
                 out = [];
 
             for (i = 0; i < splineLength; i++) {
@@ -1100,8 +1099,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                     splineKnots[i],
                     splineNextHandlers[i],
                     splinePreviousHandlers[i + 1],
-                    splineKnots[i + 1],
-                    reflectionMatrixBuffer
+                    splineKnots[i + 1]
                 );
                 if (r.length) {
                     mod = normals[1];
@@ -1113,8 +1111,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                         splineKnots[i],
                         splineNextHandlers[i],
                         splinePreviousHandlers[i + 1],
-                        splineKnots[i + 1],
-                        reflectionMatrixBuffer
+                        splineKnots[i + 1]
                     );
                     if (r2.length) {
                         tmp = this._segmentsIntersection(r, r2);
@@ -1128,8 +1125,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                                 splineKnots[i],
                                 splineNextHandlers[i],
                                 splinePreviousHandlers[i + 1],
-                                splineKnots[i + 1],
-                                reflectionMatrixBuffer
+                                splineKnots[i + 1]
                             );
                             tmp = this._segmentsIntersection(r, tmp);
                             if (tmp.length) {
@@ -1142,13 +1138,13 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                                     splineKnots[i],
                                     splineNextHandlers[i],
                                     splinePreviousHandlers[i + 1],
-                                    splineKnots[i + 1],
-                                    reflectionMatrixBuffer
+                                    splineKnots[i + 1]
                                 );
                                 tmp = this._segmentsIntersection(r, tmp);
                                 for (j = 0; j < tmp.length; j++) {
                                     r3.push([i, tmp[j][0], tmp[j][1]]);
                                 }
+
                             }
                         }
                     }
@@ -1165,6 +1161,8 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 t2 = (d2 - d1) * p2 * p2 * .5 + p2 * d1 + dS;
                 out.push([t1, t2]);
             }
+                    console.log(JSON.stringify(out));
+
             return out;
         }
     },
@@ -1212,12 +1210,16 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         }
     },
 
+    _needsClearVisibleIndexes: {
+        value: false
+    },
+
     handleResize: {
         value: function () {
             this._isCameraUpdated = true;
             this._needsComputeVisibleRange = true;
             this.needsDraw = true;
-            this._visibleIndexes = [];
+            this._needsClearVisibleIndexes = true;
         }
     },
 
@@ -1378,7 +1380,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             if (value !== this._firstIterationWidth) {
                 this._firstIterationWidth = value;
                 this._needsComputeVisibleRange = true;
-                this._visibleIndexes = [];
+                this._needsClearVisibleIndexes = true;
             }
         }
     },
@@ -1391,7 +1393,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             if (value !== this._firstIterationHeight) {
                 this._firstIterationHeight = value;
                 this._needsComputeVisibleRange = true;
-                this._visibleIndexes = [];
+                this._needsClearVisibleIndexes = true;
             }
         }
     },
@@ -1427,26 +1429,35 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 pathsLength = paths.length,
                 splinePaths = this.splinePaths;
 
+
+
+            if (this._needsClearVisibleIndexes) {
+                this._visibleIndexes = [];
+                this._visibleIndexes.set(0, 0);
+                this._needsClearVisibleIndexes = false;
+            }
             this.viewportWidth = this._element.clientWidth;
             this.viewportHeight = this._element.clientHeight;
             if (this.__firstIteration) {
                 var element = this.__firstIteration.firstElement.children[0];
 
-                this.firstIterationWidth = element.offsetWidth;
-                this.firstIterationHeight = element.offsetHeight;
-                this._firstIterationOffsetLeft = element.offsetLeft;
-                this._firstIterationOffsetTop = element.offsetTop;
-                if (!this._boundingBoxSize) {
-                    var x = Math.max(
-                            Math.abs(this.firstIterationWidth + this._firstIterationOffsetLeft),
-                            Math.abs(this._firstIterationOffsetLeft)
-                        ),
-                        y = Math.max(
-                            Math.abs(this.firstIterationHeight + this._firstIterationOffsetTop),
-                            Math.abs(this._firstIterationOffsetTop)
-                        );
+                if ((element.offsetWidth !== 0) && (element.offsetHeight !== 0)) {
+                    this.firstIterationWidth = element.offsetWidth;
+                    this.firstIterationHeight = element.offsetHeight;
+                    this._firstIterationOffsetLeft = element.offsetLeft;
+                    this._firstIterationOffsetTop = element.offsetTop;
+                    if (!this._boundingBoxSize) {
+                        var x = Math.max(
+                                Math.abs(this._firstIterationWidth + this._firstIterationOffsetLeft),
+                                Math.abs(this._firstIterationOffsetLeft)
+                            ),
+                            y = Math.max(
+                                Math.abs(this._firstIterationHeight + this._firstIterationOffsetTop),
+                                Math.abs(this._firstIterationOffsetTop)
+                            );
 
-                    this._elementsBoundingSphereRadius = Math.sqrt(x * x + y * y);
+                        this._elementsBoundingSphereRadius = Math.sqrt(x * x + y * y);
+                    }
                 }
             }
             // Manage scroll animation

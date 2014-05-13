@@ -375,18 +375,17 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
 
     reflectionMatrix: {
         enumerable: false,
-        value: function (planeNormal0,planeNormal1,planeNormal2,reflectionMatrixBuffer) {
+        value: function (planeNormal0, planeNormal1, planeNormal2) {
             var math = Math, angleZ = this._halfPI - math.atan2(planeNormal1, planeNormal0),
                 sinAngleZ = math.sin(angleZ),
                 cosAngleZ = math.cos(angleZ),
                 angleX = this._halfPI - math.atan2(/*p2*/ planeNormal2, /*p1*/ planeNormal0 * sinAngleZ + planeNormal1 * cosAngleZ),
                 sinAngleX = math.sin(angleX);
 
-            reflectionMatrixBuffer[0] = sinAngleX * sinAngleZ;
-            reflectionMatrixBuffer[1] = cosAngleZ * sinAngleX;
-            reflectionMatrixBuffer[2] = math.cos(angleX);
-
-            return reflectionMatrixBuffer;
+            return [
+                sinAngleX * sinAngleZ,
+                cosAngleZ * sinAngleX,
+                math.cos(angleX)];
         }
     },
 
@@ -453,8 +452,8 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
 
     directedPlaneBezierIntersection: {
         enumerable: false,
-        value: function (planeOrigin0, planeOrigin1, planeOrigin2, planeNormal, b0, b1, b2, b3, reflectionMatrixBuffer) {
-            var matrix = this.reflectionMatrix(planeNormal[0],planeNormal[1],planeNormal[2],reflectionMatrixBuffer), // TODO: cache for matrix and cache for cubicRealRoots
+        value: function (planeOrigin0, planeOrigin1, planeOrigin2, planeNormal, b0, b1, b2, b3) {
+            var matrix = this.reflectionMatrix(planeNormal[0], planeNormal[1], planeNormal[2]), // TODO: cache for matrix and cache for cubicRealRoots
                 d = this.reflectedY(b0[0] - planeOrigin0, b0[1] - planeOrigin1, b0[2] - planeOrigin2, matrix),
                 r1 = this.reflectedY(b1[0] - planeOrigin0, b1[1] - planeOrigin1, b1[2] - planeOrigin2, matrix),
                 r2 = this.reflectedY(b2[0] - planeOrigin0, b2[1] - planeOrigin1, b2[2] - planeOrigin2, matrix),
