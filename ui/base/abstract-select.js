@@ -37,7 +37,8 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
             this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
             this.contentController = new RangeController();
-            this._values = this.contentController.selection;
+
+            this.addPathChangeListener("contentController", this, "handleContentControllerChange");
 
             this.defineBindings({
                 "content": {
@@ -244,6 +245,15 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
                 this.value = this.values.one();
             }
             this.needsDraw = true;
+        }
+    },
+
+    handleContentControllerChange: {
+        value: function(value) {
+            if (value) {
+                this._values = value.selection;
+                this.handleValuesRangeChange();
+            }
         }
     },
 

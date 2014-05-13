@@ -123,6 +123,17 @@ describe("test/base/abstract-select-spec", function () {
                 expect(aSelect.value).toBe(content[1]);
             });
 
+            it("should change when content controller is modified", function() {
+                aSelect.contentController.selection = [content[0]];
+
+                var newContentController = new RangeController();
+                newContentController.content = content;
+                newContentController.selection = [content[1]];
+
+                aSelect.contentController = newContentController;
+                expect(aSelect.value).toBe(content[1]);
+            });
+
             it("should change to another value when content controller's selection is removed from the content", function() {
                 aSelect.contentController.selection = [content[0]];
                 aSelect.contentController.content.delete(content[0]);
