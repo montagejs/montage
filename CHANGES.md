@@ -1,3 +1,13 @@
+### v0.14.11
+
+-  **Template**
+
+   Guard against non-existent serialization.
+
+-  **Select**
+
+   Fix selection bug when a new contentController is set.
+
 ### v0.14.10
 
 -  **Mr**
