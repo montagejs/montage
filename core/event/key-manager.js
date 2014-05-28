@@ -714,6 +714,10 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 triggeredKeys,
                 i;
 
+            // Slice the array so that keys registered or unregistered during
+            // dispatch don't break the dispatching
+            matches = matches.slice();
+
             // matches could be either an array of matches or an array of keyComposers
             for (i = 0; i < nbrMatches && !stopped; i ++) {
                 keyComposer = matches[i].object || matches[i];
