@@ -1011,7 +1011,7 @@ describe("reel/template-spec", function() {
                     return resources.loadScripts(page.document)
                     .then(function() {
                         expect(page.ReelTemplateResourceLoadCount).toBe(1);
-                        expect(page.document.scripts.length).toBe(2);
+                        expect(page.document.scripts.length).toBe(3);
                         deletePage(page);
                     });
                 });
@@ -1041,8 +1041,8 @@ describe("reel/template-spec", function() {
                         .then(function() {
                             expect(page1.ReelTemplateResourceLoadCount).toBe(1);
                             expect(page2.ReelTemplateResourceLoadCount).toBe(1);
-                            expect(page1.document.scripts.length).toBe(2);
-                            expect(page2.document.scripts.length).toBe(2);
+                            expect(page1.document.scripts.length).toBe(3);
+                            expect(page2.document.scripts.length).toBe(3);
                             deletePage(page1);
                             deletePage(page2);
                         });
@@ -1075,14 +1075,36 @@ describe("reel/template-spec", function() {
                     .then(function() {
                         expect(page1.ReelTemplateResourceLoadCount).toBe(1);
                         expect(page2.ReelTemplateResourceLoadCount).toBe(1);
-                        expect(page1.document.scripts.length).toBe(2);
-                        expect(page2.document.scripts.length).toBe(2);
+                        expect(page1.document.scripts.length).toBe(3);
+                        expect(page2.document.scripts.length).toBe(3);
                         deletePage(page1);
                         deletePage(page2);
                     });
                 });
             }).fail(function(reason) {
                 console.log(reason.stack);
+                expect("test").toBe("executed");
+            });
+        });
+
+        it("should load inline scripts with their content", function() {
+            var html = require("reel/template/resources-template.html").content,
+                resources = new TemplateResources();
+
+            return createPage("reel/template/page.html")
+            .then(function(page) {
+                return template.initWithHtml(html)
+                .then(function() {
+                    resources.initWithTemplate(template);
+
+                    return resources.loadScripts(page.document)
+                    .then(function() {
+                        var script = page.document.getElementById("inline");
+                        expect(script.textContent).toBe("var x;");
+                        deletePage(page);
+                    });
+                });
+            }).fail(function(reason) {
                 expect("test").toBe("executed");
             });
         });
