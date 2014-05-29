@@ -54,18 +54,17 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
             this.addComposer(this._keyComposer);
 
             this.classList.add("montage-ToggleButton");
-
+            
             this.defineBindings({
                 // classList management
-                "classList.has('montage--disabled')": {
-                    "<-": "!enabled"
-                },
-                "classList.has('montage--active')": {
-                    "<-": "active"
-                },
-                "classList.has('montage-ToggleButton--pressed')": {
-                    "<-": "pressed"
-                }
+                "classList.has('is-disabled')": { "<-": "!enabled" },
+                "classList.has('is-active')": { "<-": "active" },
+                "classList.has('is-pressed')": { "<-": "pressed" },
+                
+                // deprecated -> kept for backwards compatibility
+                "classList.has('montage--disabled')": { "<-": "!enabled" },
+                "classList.has('montage--active')": { "<-": "active" },
+                "classList.has('montage-ToggleButton--pressed')": { "<-": "pressed" }
             });
         }
     },

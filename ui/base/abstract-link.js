@@ -33,12 +33,12 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
 
             this.defineBindings({
                 // classList management
-                "classList.has('montage--disabled')": {
-                    "<-": "!enabled"
-                },
-                "classList.has('montage--active')": {
-                    "<-": "active"
-                }
+                "classList.has('is-disabled')": { "<-": "!enabled" },
+                "classList.has('is-active')": { "<-": "active" },
+                
+                // deprecated -> kept for backwards compatibility
+                "classList.has('montage--disabled')": { "<-": "!enabled" },
+                "classList.has('montage--active')": { "<-": "active" }
             });
         }
     },

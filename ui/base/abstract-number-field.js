@@ -23,6 +23,11 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
             }
             AbstractControl.constructor.call(this); // super
             this._propertyNamesUsed = {};
+            
+            // classList management
+            this.defineBinding( "classList.has('is-disabled')", { "<-": "!enabled" });
+            
+            // deprecated -> kept for backwards compatibility
             this.defineBinding( "classList.has('montage--disabled')", { "<-": "!enabled" });
         }
     },

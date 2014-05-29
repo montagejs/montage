@@ -39,9 +39,16 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
             this.addOwnPropertyChangeListener("_step", this);
             this.addOwnPropertyChangeListener("axis", this);
             this.axis = "horizontal";
+            
+            this.defineBindings({
+                // classList management
+                "classList.has('is-disabled')": { "<-": "!enabled" },
+                "classList.has('is-active')": { "<-": "active" },
 
-            this.defineBinding( "classList.has('montage--disabled')", { "<-": "!enabled" });
-            this.defineBinding( "classList.has('montage-Slider--active')", { "<-": "active" });
+                // deprecated -> kept for backwards compatibility
+                "classList.has('montage--disabled')": { "<-": "!enabled" },
+                "classList.has('montage-Slider--active')": { "<-": "active" }
+            });
         }
     },
 

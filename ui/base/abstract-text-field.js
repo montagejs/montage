@@ -35,12 +35,11 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
             this._keyComposer.keys = "enter";
             this.addComposer(this._keyComposer);
 
-            this.defineBindings({
-                // classList management
-                "classList.has('montage--disabled')": {
-                    "<-": "!enabled"
-                }
-            });
+            // classList management
+            this.defineBinding( "classList.has('is-disabled')", { "<-": "!enabled" });
+            
+            // deprecated -> kept for backwards compatibility
+            this.defineBinding( "classList.has('montage--disabled')", { "<-": "!enabled" });
         }
     },
 

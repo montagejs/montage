@@ -20,12 +20,11 @@ var AbstractTextArea = exports.AbstractTextArea = Component.specialize(
             }
             Component.constructor.call(this); // super
 
-            this.defineBindings({
-                // classList management
-                "classList.has('montage--disabled')": {
-                    "<-": "!enabled"
-                }
-            });
+            // classList management
+            this.defineBinding( "classList.has('is-disabled')", { "<-": "!enabled" });
+            
+            // deprecated -> kept for backwards compatibility
+            this.defineBinding( "classList.has('montage--disabled')", { "<-": "!enabled" });
         }
     },
 

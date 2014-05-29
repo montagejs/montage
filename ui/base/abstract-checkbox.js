@@ -30,15 +30,14 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
 
             this.defineBindings({
                 // classList management
-                "classList.has('montage--disabled')": {
-                    "<-": "!enabled"
-                },
-                "classList.has('montage--active')": {
-                    "<-": "active"
-                },
-                "classList.has('montage-Checkbox--checked')": {
-                    "<-": "checked"
-                }
+                "classList.has('is-disabled')": { "<-": "!enabled" },
+                "classList.has('is-active')": { "<-": "active" },
+                "classList.has('is-checked')": { "<-": "checked" },
+
+                // deprecated -> kept for backwards compatibility
+                "classList.has('montage--disabled')": { "<-": "!enabled" },
+                "classList.has('montage--active')": { "<-": "active" },
+                "classList.has('montage-Checkbox--checked')": { "<-": "checked" }
             });
         }
     },

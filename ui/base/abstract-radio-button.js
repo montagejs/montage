@@ -40,15 +40,14 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
 
             this.defineBindings({
                 // classList management
-                "classList.has('montage--disabled')": {
-                    "<-": "!enabled"
-                },
-                "classList.has('montage--active')": {
-                    "<-": "active"
-                },
-                "classList.has('montage-RadioButton--checked')": {
-                    "<-": "checked"
-                }
+                "classList.has('is-disabled')": { "<-": "!enabled" },
+                "classList.has('is-active')": { "<-": "active" },
+                "classList.has('is-checked')": { "<-": "checked" },
+                
+                // deprecated -> kept for backwards compatibility
+                "classList.has('montage--disabled')": { "<-": "!enabled" },
+                "classList.has('montage--active')": { "<-": "active" },
+                "classList.has('montage-RadioButton--checked')": { "<-": "checked" }
             });
         }
     },

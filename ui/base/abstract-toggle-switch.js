@@ -36,12 +36,13 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
             this.addComposer(this._pressComposer);
 
             this.defineBindings({
-                "classList.has('montage-ToggleSwitch--checked')": {
-                    "<-": "checked"
-                },
-                "classList.has('montage--disabled')": {
-                    "<-": "!enabled"
-                }
+                // classList management
+                "classList.has('is-disabled')": { "<-": "!enabled" },
+                "classList.has('is-checked')": { "<-": "checked" },
+                
+                // deprecated -> kept for backwards compatibility
+                "classList.has('montage--disabled')": { "<-": "!enabled" },
+                "classList.has('montage-ToggleSwitch--checked')": { "<-": "checked" }
             });
         }
     },
