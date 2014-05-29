@@ -46,6 +46,7 @@ require("montage-testing").run(require,[
         "core/media-controller-spec",
         "core/range-controller-spec",
         "core/radio-button-controller-spec",
+        "core/request-spec",
         "core/selector-spec",
         "core/super-spec",
         "core/super-for-spec",
