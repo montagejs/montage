@@ -47,19 +47,19 @@ var Draw = exports.Draw = TestController.specialize( {
         enumerable: false,
         value: function() {
             if (this.componentA) {
-                this.componentA.detachFromParentComponent();
+                this.componentA.dispose();
             }
             if (this.componentA1) {
-                this.componentA1.detachFromParentComponent();
+                this.componentA1.dispose();
             }
             if (this.componentB) {
-                this.componentB.detachFromParentComponent();
+                this.componentB.dispose();
             }
             if (this.componentB1) {
-                this.componentB1.detachFromParentComponent();
+                this.componentB1.dispose();
             }
             if (this.componentB2) {
-                this.componentB2.detachFromParentComponent();
+                this.componentB2.dispose();
             }
 
             this.componentA = new Component();
