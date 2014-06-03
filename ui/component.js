@@ -2822,8 +2822,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         value: function() {
             this.cancelBindings();
             this.detachFromParentComponent();
-            defaultEventManager.unregisterEventHandlerForElement(this, this._element);
-            this._element = null;
+            if (this._element) {
+                defaultEventManager.unregisterEventHandlerForElement(this._element);
+                this._element = null;
+            }
 
             this.childComponents.forEach(function(component) {
                 component.dispose();
