@@ -262,6 +262,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 return;
             }
 
+            if (value.component && value.component !== this) {
+                throw new Error("Element " + value + " is already assigned to another component: " + value.component);
+            }
+
             //jshint -W106
             if (window._montage_le_flag) {
             //jshint +W106
