@@ -312,7 +312,9 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
             return this._value;
         },
         set: function (value) {
-            if (! isNaN(value = parseFloat(value))) {
+            if (value == null) {
+                this._value = "";
+            } else if (! isNaN(value = parseFloat(value))) {
                 if (typeof this.min === 'number' && value < this.min) {
                     value = this.min;
                 }

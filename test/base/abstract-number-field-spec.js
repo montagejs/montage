@@ -60,6 +60,14 @@ describe("test/base/abstract-number-field-spec", function () {
                 expect(aNumberField.value).not.toEqual("hello");
                 expect(aNumberField.value).toEqual(previousValue);
             });
+            it("can be set to null", function() {
+                aNumberField.value = null;
+                expect(aNumberField.value).toEqual("");
+            });
+            it("can be set to undefined", function() {
+                aNumberField.value = void 0;
+                expect(aNumberField.value).toEqual("");
+            });
             describe("behavior", function() {
                 it("value shouldn't be affected by step", function() {
                     aNumberField.step = 2;
