@@ -618,6 +618,15 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
             expect(testPage.test.text1.element).toBe(oldElement);
         });
 
+        it("does not allow an element to be assigned to two components", function() {
+            var element = testPage.test.text1.element;
+            var component = new Component();
+
+            expect(function() {
+                component.element = element;
+            }).toThrow();
+        });
+
         describe("template objects", function() {
             var templateObjectsComponent;
             beforeEach(function () {

@@ -262,6 +262,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 return;
             }
 
+            if (value.component && value.component !== this) {
+                throw new Error("Element " + value + " is already assigned to another component: " + value.component);
+            }
+
             //jshint -W106
             if (window._montage_le_flag) {
             //jshint +W106
@@ -2822,8 +2826,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         value: function() {
             this.cancelBindings();
             this.detachFromParentComponent();
-            defaultEventManager.unregisterEventHandlerForElement(this, this._element);
-            this._element = null;
+            if (this._element) {
+                defaultEventManager.unregisterEventHandlerForElement(this._element);
+                this._element = null;
+            }
 
             this.childComponents.forEach(function(component) {
                 component.dispose();
