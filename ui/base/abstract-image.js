@@ -25,9 +25,9 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
         }
     },
 
-    // http://probablyprogramming.com/2009/03/15/the-tiniest-gif-ever
+    // http://stackoverflow.com/questions/6018611/smallest-data-uri-image-possible-for-a-transparent-image
     emptyImageSrc: {
-        value: "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+        value: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
     },
 
     _isLoadingImage: {
