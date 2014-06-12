@@ -177,7 +177,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer# */
     },
 
     _require: {
-        value: (typeof global !== "undefined") ? global.require : (typeof window !== "undefined") ? window.require : null
+        value: self.mr
     },
 
     /**

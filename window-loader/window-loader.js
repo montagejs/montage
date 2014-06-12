@@ -9,7 +9,7 @@ require.loadPackage(parentWindow.require.location)
         callback = loadInfo.callback;
 
     // Switching the package context back to the parent application
-    window.require = require;
+    window.mr = require;
 
     return require.async("montage/ui/component")
     .then(function(exports) {

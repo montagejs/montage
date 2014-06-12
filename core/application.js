@@ -319,7 +319,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 }
             }
 
-            window.require.loadPackage({name: "montage"}).then(function(require) {
+            self.mr.loadPackage({name: "montage"}).then(function(require) {
                 var newWindow = window.open(require.location + "window-loader/index.html", "_blank", stringParamaters);
                 newWindow.loadInfo = loadInfo;
             }).done();

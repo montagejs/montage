@@ -25,7 +25,7 @@ describe("meta/blueprint-spec", function () {
         describe("Creation", function () {
         });
         describe("Adding blueprints", function () {
-            var binder = new Binder().initWithNameAndRequire("CompanyBinder", global.require);
+            var binder = new Binder().initWithNameAndRequire("CompanyBinder", self.mr);
 
             var personBlueprint = new Blueprint().initWithName("Person");
             binder.addBlueprint(personBlueprint);
@@ -90,7 +90,7 @@ describe("meta/blueprint-spec", function () {
         describe("blueprint to instance association", function () {
             var binder, personBlueprint, companyBlueprint;
             beforeEach(function () {
-                binder = new Binder().initWithNameAndRequire("Binder", global.require);
+                binder = new Binder().initWithNameAndRequire("Binder", self.mr);
                 personBlueprint = new Blueprint().initWithName("Person");
                 binder.addBlueprint(personBlueprint);
                 companyBlueprint = new Blueprint().initWithName("Company");
@@ -104,7 +104,7 @@ describe("meta/blueprint-spec", function () {
         describe("applying a basic blueprint to a prototype", function () {
             var louis, personBlueprint;
             beforeEach(function () {
-                var binder = new Binder().initWithNameAndRequire("Binder", global.require);
+                var binder = new Binder().initWithNameAndRequire("Binder", self.mr);
                 personBlueprint = new Blueprint().initWithName("Person");
                 personBlueprint.addPropertyBlueprint(personBlueprint.newPropertyBlueprint("name", 1));
                 personBlueprint.addPropertyBlueprint(personBlueprint.newPropertyBlueprint("keywords", Infinity));
@@ -127,7 +127,7 @@ describe("meta/blueprint-spec", function () {
         describe("adding a PropertyBlueprint", function () {
             var circle, shapeBlueprint;
             beforeEach(function () {
-                var binder = new Binder().initWithNameAndRequire("Binder", global.require);
+                var binder = new Binder().initWithNameAndRequire("Binder", self.mr);
                 shapeBlueprint = new Blueprint().initWithName("Shape");
                 binder.addBlueprint(shapeBlueprint);
                 var propertyBlueprint = shapeBlueprint.newPropertyBlueprint("size", 1);

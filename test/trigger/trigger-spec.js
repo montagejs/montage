@@ -92,7 +92,7 @@ describe("trigger-test", function() {
 
         it("should be able to inject a packaged description", function() {
             // the inject-description-location.json is supposed to define the main modules as inject.js
-            var injectModule = TestPageLoader.testPage.window.require.async("to-be-defined/inject");
+            var injectModule = TestPageLoader.testPage.window.mr.async("to-be-defined/inject");
 
             return injectModule.then(function(inject) {
                 expect(inject.injected).toBeTruthy();
@@ -101,7 +101,7 @@ describe("trigger-test", function() {
         });
         it("should be able to inject a packaged description location", function() {
             // the inject-description-location.json is supposed to define the main modules as inject.js
-            var injectModule = TestPageLoader.testPage.window.require.async("inject-description-location");
+            var injectModule = TestPageLoader.testPage.window.mr.async("inject-description-location");
 
             return injectModule.then(function(inject) {
                 expect(inject.injected).toBeTruthy();
@@ -110,7 +110,7 @@ describe("trigger-test", function() {
         });
         it("should be able to inject a mapping", function() {
 
-            var injectModule = TestPageLoader.testPage.window.require.async("__custom/inject");
+            var injectModule = TestPageLoader.testPage.window.mr.async("__custom/inject");
 
             return injectModule.then(function(inject) {
                 expect(inject.injected).toBeTruthy();
@@ -119,7 +119,7 @@ describe("trigger-test", function() {
         });
         it("should be able to inject a dependency", function() {
 
-            var injectModule = TestPageLoader.testPage.window.require.async("injected-dependency/inject");
+            var injectModule = TestPageLoader.testPage.window.mr.async("injected-dependency/inject");
 
             return injectModule.then(function(inject) {
                 expect(inject.injected).toBeTruthy();
@@ -128,7 +128,7 @@ describe("trigger-test", function() {
         });
         it("should be able to still use an existing dependency", function() {
 
-            var injectModule = TestPageLoader.testPage.window.require.async("existing/inject");
+            var injectModule = TestPageLoader.testPage.window.mr.async("existing/inject");
 
             return injectModule.then(function(inject) {
                 expect(inject.injected).toBeTruthy();

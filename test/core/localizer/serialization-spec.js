@@ -159,7 +159,7 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
             });
 
             it("creates a binding from the localizer to the object", function() {
-                var iframeRequire = testPage.iframe.contentWindow.require;
+                var iframeRequire = testPage.iframe.contentWindow.mr;
 
                 return iframeRequire.async("montage/core/bindings")
                 .then(function(exports) {

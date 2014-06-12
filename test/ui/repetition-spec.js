@@ -50,7 +50,7 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
         };
 
         beforeEach(function () {
-            application = testPage.window.montageRequire("core/application").application;
+            application = testPage.window.mr("montage/core/application").application;
             eventManager = application.eventManager;
             delegate = application.delegate;
         });
@@ -249,7 +249,7 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
             });
 
             xit("[TODO] should create a repetition programmatically", function() {
-                var Repetition = testPage.window.require("montage/ui/repetition.reel").Repetition,
+                var Repetition = testPage.window.mr("montage/ui/repetition.reel").Repetition,
                     repetition = new Repetition();
 
                 repetition.element = querySelector(".list12");

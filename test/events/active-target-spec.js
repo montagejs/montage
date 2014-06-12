@@ -181,7 +181,7 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function(testP
             var testTarget, proximalComponent, eventManager;
 
             beforeEach(function () {
-                testTarget = testDocument.defaultView.montageRequire("core/target").Target;
+                testTarget = testDocument.defaultView.mr("montage/core/target").Target;
                 var proximalElement = testDocument.querySelector("[data-montage-id=C0C0B0]");
                 proximalComponent = proximalElement.component;
 
@@ -201,7 +201,7 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function(testP
                     spyOn(listener, "handleFoo").andCallThrough();
                     proximalComponent.addEventListener("foo", listener);
 
-                    var MutableEvent = testDocument.defaultView.montageRequire("core/event/mutable-event").MutableEvent;
+                    var MutableEvent = testDocument.defaultView.mr.getPackage({name: "montage"})("core/event/mutable-event").MutableEvent;
 
                     eventManager.activeTarget.dispatchEvent(MutableEvent.fromType("foo", true, true));
                     expect(listener.handleFoo).toHaveBeenCalled();
