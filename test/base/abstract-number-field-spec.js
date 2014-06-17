@@ -68,6 +68,10 @@ describe("test/base/abstract-number-field-spec", function () {
                 aNumberField.value = void 0;
                 expect(aNumberField.value).toEqual("");
             });
+            it("can be set to an object without valueOf", function() {
+                aNumberField.value = Object.create(null);
+                expect(aNumberField.value).toEqual("");
+            });
             describe("behavior", function() {
                 it("value shouldn't be affected by step", function() {
                     aNumberField.step = 2;
