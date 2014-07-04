@@ -123,13 +123,15 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
     _contentOffsetY: {
         value: null
     },
-
+    _superStart: {
+		value:TranslateComposer.prototype._start
+	},
     // TODO doc
     /**
      */
     _start: {
-        value: function(x, y) {
-            TranslateComposer._start.apply(this, arguments);
+        value: function(x, y, target, timeStamp) {
+            this._superStart(x, y, target, timeStamp);
             //if (this._scrollingMode === "drag") {
                 // TODO: Review using getComputedStyle outside draw cycle
             var computedStyle = window.getComputedStyle(this._element, null),
