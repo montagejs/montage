@@ -8,7 +8,6 @@
  */
 var Montage = require("../core").Montage;
 var Promise = require("../promise").Promise;
-var Deserializer = require("../serialization").Deserializer;
 var ObjectProperty = require("./object-property").ObjectProperty;
 var Enum = require("../enum").Enum;
 var BinderModule = require("./binder");
@@ -230,12 +229,8 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
             } else {
                 var parentInstancePrototype = (this.parent ? this.parent.newInstancePrototype() : Montage );
                 var newConstructor = Montage.create(parentInstancePrototype, {
-                    // Token class
-                    init: {
-                        value: function() {
-                            return this;
-                        }
-                    }
+                    changeContext: {value: null},
+                    blueprint: {value: null}
                 });
                 this.ObjectProperty.applyWithBlueprint(newConstructor.prototype, this);
 

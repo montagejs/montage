@@ -57,7 +57,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
                     if (typeof blueprint === "undefined") {
                         blueprint = Binder.manager.blueprintForPrototype(info.objectName, info.moduleId);
                     } else if ((blueprint.prototypeName !== info.objectName) || (blueprint.moduleId !== info.moduleId)) {
-                        // Something is wrong, the hierarchies are out of wack
+                        // Something is wrong, the hierarchies are out of whack
                         blueprint = null;
                     }
                     this.applyWithBlueprint(prototype, blueprint);
@@ -230,6 +230,9 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
             if (value == null && propertyBlueprint.denyDelete) {
                 throw new Exception().initWithMessageTargetAndMethod("Deny Delete", this, propertyBlueprint.name);
             } else {
+                if (this.changeContext) {
+                    this.changeContext.set(propertyBlueprint.name, value);
+                }
                 this[storageKey] = value;
             }
         },
