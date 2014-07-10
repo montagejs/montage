@@ -10,7 +10,6 @@ var logger = require("../../logger").logger("montage-serializer");
 var MontageSerializer = Montage.specialize.call(Serializer, {
     _require: {value: null},
     _visitor: {value: null},
-    _units: {value: Object.create(null)},
 
     _findObjectNameRegExp: {value: /([^\/]+?)(\.reel)?$/},
     _toCamelCaseRegExp: {value: /(?:^|-)([^-])/g},
@@ -31,7 +30,7 @@ var MontageSerializer = Montage.specialize.call(Serializer, {
                     this._builder,
                     this._labeler,
                     this._require,
-                    this._units);
+                    this.constructor._units);
 
             this._malker = new Malker(this._visitor);
 
@@ -49,14 +48,11 @@ var MontageSerializer = Montage.specialize.call(Serializer, {
         value: function() {
             return this._visitor.getExternalElements();
         }
-    },
-
-    defineSerializationUnit: {
-        value: function(name, funktion) {
-            this.constructor.defineSerializationUnit.call(this, name, funktion);
-        }
     }
 }, {
+    _units: {
+        value: Object.create(null)
+    },
 
     defineSerializationUnit: {
         value: function(name, funktion) {

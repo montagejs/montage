@@ -45,10 +45,17 @@ var Montage = require("montage/core/core").Montage,
 
 describe("serialization/montage-serializer-spec", function() {
     var serializer;
+    var originalUnits;
 
     beforeEach(function() {
+        originalUnits = MontageSerializer._units;
+        MontageSerializer._units = {};
         serializer = new MontageSerializer().initWithRequire(require);
         serializer.setSerializationIndentation(4);
+    });
+
+    afterEach(function() {
+        MontageSerializer._units = originalUnits;
     });
 
     it("should still serialize native types", function() {
@@ -898,8 +905,7 @@ describe("serialization/montage-serializer-spec", function() {
 
         describe("serializeSelf delegate", function() {
             beforeEach(function() {
-                serializer._serializationUnits = {};
-                serializer.defineSerializationUnit("unitA",
+                MontageSerializer.defineSerializationUnit("unitA",
                 function(serializer, object) {
                     if (object._unitA) {
                         return {
@@ -907,7 +913,7 @@ describe("serialization/montage-serializer-spec", function() {
                         };
                     }
                 });
-                serializer.defineSerializationUnit("unitB",
+                MontageSerializer.defineSerializationUnit("unitB",
                 function(serializer, object) {
                     if (object._unitB) {
                         return {
@@ -915,7 +921,7 @@ describe("serialization/montage-serializer-spec", function() {
                         };
                     }
                 });
-                serializer.initWithRequire(require);
+                MontageSerializer.initWithRequire(require);
 
                 serializeSelfTestObject = new objects.TwoProps();
                 serializeSelfTestObject.prop1 = "prop1";
@@ -1758,8 +1764,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                serializer._serializationUnits = {};
-                serializer.defineSerializationUnit("testing", function(serializer, object) {
+                MontageSerializer.defineSerializationUnit("testing", function(serializer, object) {
                     return {
                         number: 42,
                         string: "string"
@@ -1792,8 +1797,7 @@ describe("serialization/montage-serializer-spec", function() {
                     simple: {}
                 };
 
-                serializer._serializationUnits = {};
-                serializer.defineSerializationUnit("testing", function(serializer, object) {
+                MontageSerializer.defineSerializationUnit("testing", function(serializer, object) {
                     var simpleRef = serializer.addObjectReference(simple);
 
                     return {
@@ -1836,8 +1840,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                serializer._serializationUnits = {};
-                serializer.defineSerializationUnit("testing", function(serializer, _object) {
+                MontageSerializer.defineSerializationUnit("testing", function(serializer, _object) {
                     if (_object !== object) {
                         return;
                     }
@@ -1884,8 +1887,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                serializer._serializationUnits = {};
-                serializer.defineSerializationUnit("testing", function(serializer, _object) {
+                MontageSerializer.defineSerializationUnit("testing", function(serializer, _object) {
                     if (_object !== object) {
                         return;
                     }
@@ -1927,8 +1929,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                serializer._serializationUnits = {};
-                serializer.defineSerializationUnit("testing", function(serializer, _object) {
+                MontageSerializer.defineSerializationUnit("testing", function(serializer, _object) {
                     if (_object !== object) {
                         return;
                     }
