@@ -582,10 +582,10 @@ var DefaultLocalizer = Localizer.specialize( /** @lends DefaultLocalizer# */ {
         },
         set: function(value) {
             try {
-                Object.getPropertyDescriptor(Localizer, "locale").set.call(this, value);
+                Object.getPropertyDescriptor(Localizer.prototype, "locale").set.call(this, value);
             } catch (e) {
                 value = "en";
-                Object.getPropertyDescriptor(Localizer, "locale").set.call(this, value);
+                Object.getPropertyDescriptor(Localizer.prototype, "locale").set.call(this, value);
             }
 
             // If possible, save locale
