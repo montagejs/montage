@@ -42,7 +42,6 @@ require("montage-testing").run(require,[
         "core/core-require-spec",
         "core/dom-spec",
         "core/localizer-spec",
-        "core/localizer/serialization-spec",
         "core/media-controller-spec",
         "core/range-controller-spec",
         "core/radio-button-controller-spec",
