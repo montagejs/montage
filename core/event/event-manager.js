@@ -59,6 +59,368 @@ var EventListenerDescriptor = Montage.specialize( {
     }
 });
 
+var _PointerStorageMemoryEntry = Montage.specialize( {
+	constructor: {
+		value: function(identifier) {
+			this.data = new Array(32);
+			this.velocity = { velocity:(new _PointerVelocity()).initWithIdentifier(identifier)};
+			return this;
+		}
+	},
+	data: {
+        enumerable: false,
+        writable: true,
+        value: null
+    },
+	size: {
+        enumerable: false,
+        writable: true,
+        value: 0
+    },
+ 	pos: {
+        enumerable: false,
+        writable: true,
+        value: 0
+    },
+   	velocity: {
+        enumerable: false,
+        writable: true,
+        value: 0
+    }
+ 
+});	
+
+var _StoredEvent = Montage.specialize( {
+	constructor: {
+		value: function(clientX,clientY,timeStamp) {
+			this.clientX = clientX;
+			this.clientY = clientY;
+			this.timeStamp = timeStamp;
+			return this;
+		}
+	},
+ 	clientX: {
+        enumerable: false,
+        writable: true,
+        value: null
+    },
+	clientY: {
+        enumerable: false,
+        writable: true,
+        value: 0
+    },
+ 	timeStamp: {
+        enumerable: false,
+        writable: true,
+        value: 0
+    }
+});
+
+var _PointerStorage = Montage.specialize( {
+
+    memory: {
+		value:{}
+	},
+    add: {
+		value:function (identifier, clientX, clientY, timeStamp) {
+			var identifierEntry;
+	        if (!(identifierEntry = this.memory[identifier])) {
+	            identifierEntry = this.memory[identifier] = new _PointerStorageMemoryEntry(identifier);
+	        }
+			if(!(data = identifierEntry.data[identifierEntry.pos])) {
+				data = identifierEntry.data[identifierEntry.pos] = new _StoredEvent(clientX,clientY,timeStamp);
+			}
+			else {
+				data.clientX = clientX;
+				data.clientY = clientY;
+				data.timeStamp = timeStamp;
+			}
+	        if (identifierEntry.size < identifierEntry.data.length) {
+	            identifierEntry.size++;
+	        }
+	        identifierEntry.pos = (identifierEntry.pos + 1) % identifierEntry.data.length;
+    	}
+	},
+    remove: {
+		value:function (identifier) {
+        	delete this.memory[identifier];
+    	}
+	},
+    clear: {
+		value:function (identifier) {
+	        if (this.memory[identifier]) {
+	            this.memory[identifier].size = 0;
+	            this.memory[identifier].velocity.velocity.clearCache();
+	        }
+    	}
+	},
+    getMemory: {
+		value:function (identifier) {
+        	return this.memory[identifier];
+    	}
+	},
+    isStored: {
+		value:function (identifier) {
+        	return (this.memory[identifier] && (this.memory[identifier].size > 0));
+    	}
+	},
+	
+    /**
+     * Created a dedicated type, _PointerVelocity and cached the instance of _PointerVelocity used per identifier, 
+     * which is typically mouse/touch. This 
+     */
+
+	pointerVelocity: {
+		value:function (identifier) {
+			if(this.memory[identifier]) {
+				return this.memory[identifier].velocity;
+			}
+		}
+	},
+    storeEvent: {
+		value:function(event) {
+	        var i;
+	        switch (event.type) {
+	            case "mousedown":
+	                defaultEventManager._isMouseDragging = true;
+	                // roll into mousemove. break omitted intentionally.
+	            case "mousemove":
+	                if (defaultEventManager._isStoringMouseEventsWhileDraggingOnly) {
+	                    if (defaultEventManager._isMouseDragging) {
+	                        this.add("mouse", event.clientX,event.clientY,event.timeStamp);
+	                        Object.defineProperty(event, "velocity", {
+	                            get: function () {
+	                                return defaultEventManager.pointerMotion("mouse").velocity;
+	                            },
+	                            set: function () {
+	                            }
+	                        });
+	                    }
+	                } else {
+	                    this.add("mouse", event.clientX,event.clientY,event.timeStamp);
+	                    Object.defineProperty(event, "velocity", {
+	                        get: function () {
+	                            return defaultEventManager.pointerMotion("mouse").velocity;
+	                        },
+	                        set: function () {
+	                        }
+	                    });
+	                }
+	                break;
+	            case "mouseup":
+	                this.add("mouse", event.clientX,event.clientY,event.timeStamp);
+	                Object.defineProperty(event, "velocity", {
+	                    get: function () {
+	                        return defaultEventManager.pointerMotion("mouse").velocity;
+	                    },
+	                    set: function () {
+	                    }
+	                });
+	                break;
+	            case "touchstart":
+	            case "touchmove":
+	                for (i = 0; i < event.touches.length; i++) {
+	                    this.add(event.touches[i].identifier, event.touches[i].clientX,event.touches[i].clientY,event.timeStamp);
+	                }
+	                break;
+	            case "touchend":
+	                for (i = 0; i < event.changedTouches.length; i++) {
+	                    this.add(event.changedTouches[i].identifier, event.changedTouches[i].clientX,event.changedTouches[i].clientY,event.timeStamp);
+	                }
+	                break;
+	        }
+    	}
+	},
+    removeEvent: {
+		value:function(event) {
+	        var i;
+	        switch (event.type) {
+	            case "mouseup":
+	                defaultEventManager._isMouseDragging = false;
+	                if (defaultEventManager._isStoringMouseEventsWhileDraggingOnly) {
+	                    this.clear("mouse");
+	                }
+	                break;
+	            case "touchend":
+	                for (i = 0; i < event.changedTouches.length; i++) {
+	                    this.remove(event.changedTouches[i].identifier);
+	                }
+	                break;
+	        }
+    	}
+	}
+});
+
+var _PointerVelocity = Montage.specialize( {
+    _identifier: {
+        enumerable: false,
+        writable: true,
+        value: null
+    },
+	initWithIdentifier: {
+		value: function(identifier) {
+			this._identifier = identifier;
+			return this;
+		}
+	},
+	clearCache: {
+		value: function() {
+			this._data = this._x = this._y = this._speed = this._angle = null;
+			return this;
+		}
+	},
+    _data: {
+        enumerable: false,
+        writable: true,
+        value: null
+    },
+    _x: {
+        enumerable: false,
+        writable: true,
+        value: null
+    },
+    _y: {
+        enumerable: false,
+        writable: true,
+        value: null
+    },
+    _speed: {
+        enumerable: false,
+        writable: true,
+        value: null
+    },
+    _angle: {
+        enumerable: false,
+        writable: true,
+        value: null
+    },
+    x: {
+        get: function () {
+            if (this._x === null) {
+                if (this._data === null) {
+                    this._data = defaultEventManager._getPointerVelocityData(this._identifier);
+                }
+                this._x = defaultEventManager._calculatePointerVelocity(this._data.time, this._data.x);
+            }
+            return this._x;
+        },
+        set: function () {
+        }
+    },
+    y: {
+        get: function () {
+            if (this._y === null) {
+                if (this._data === null) {
+                    this._data = defaultEventManager._getPointerVelocityData(this._identifier);
+                }
+                this._y = defaultEventManager._calculatePointerVelocity(this._data.time, this._data.y);
+            }
+            return this._y;
+        },
+        set: function () {
+        }
+    },
+    speed: {
+        get: function () {
+            if (this._speed === null) {
+                this._speed = Math.sqrt(this.x * this.x + this.y * this.y);
+            }
+            return this._speed;
+        },
+        set: function () {
+        }
+    },
+    angle: {
+        get: function () {
+            if (this._angle === null) {
+                this._angle = Math.atan2(this.y, this.x);
+            }
+            return this._angle;
+        },
+        set: function () {
+        }
+    }
+});
+
+/*
+eventTypeRegistration[target.uuid] = {target: target, listeners: {}};
+eventTypeRegistration[target.uuid].listeners[listener.uuid] = {listener: listener, capture: useCapture, bubble: !useCapture};
+*/
+var _TargetRegistration = function () {
+	this.listeners = {};
+	return this;	
+};
+
+_TargetRegistration._pool = [];
+_TargetRegistration.checkoutRegistration = function() {
+		return (this._pool.length === 0) ? (new this()) : this._pool.pop();
+};
+_TargetRegistration.checkinRegistration = function(aTargetRegistration) {
+	aTargetRegistration.target = null;
+	//aTargetRegistration.listeners = {};
+	this._pool.push(aTargetRegistration);
+};
+
+Object.defineProperties(_TargetRegistration.prototype,
+
+{	
+ 	target: {
+        enumerable: false,
+        writable: true,
+        value: null
+    },
+	listeners: {
+        enumerable: false,
+        writable: true,
+        value: null
+    }
+}
+);
+
+var _TargetListenerRegistration = function () {
+	return this;	
+};
+
+_TargetListenerRegistration._pool = [];
+_TargetListenerRegistration.checkoutRegistration = function() {
+		return (this._pool.length === 0) ? (new this()) : this._pool.pop();
+};
+_TargetListenerRegistration.checkinRegistration = function(aTargetListenerRegistration) {
+	aTargetListenerRegistration.listener = null;
+	this._pool.push(aTargetListenerRegistration);
+};
+
+Object.defineProperties(_TargetListenerRegistration.prototype,
+
+{	
+	initWithListener: {
+		value: function(listener,capture,bubble) {
+			this.listener = listener;
+			this.capture = capture;
+			this.bubble = bubble;
+			return this;	
+		}
+	},
+	listener: {
+        enumerable: false,
+        writable: true,
+        value: null
+    },
+ 	capture: {
+        enumerable: false,
+        writable: true,
+        value: true
+    },
+ 	bubble: {
+        enumerable: false,
+        writable: true,
+        value: false
+    }
+}
+);
+
+
+
 Serializer.defineSerializationUnit("listeners", function(serializer, object) {
     var eventManager = defaultEventManager,
         uuid = object.uuid,
@@ -699,8 +1061,9 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             if (!eventTypeRegistration) {
                 // First time this eventType has been requested
                 eventTypeRegistration = this.registeredEventListeners[eventType] = {};
-                eventTypeRegistration[target.uuid] = {target: target, listeners: {}};
-                eventTypeRegistration[target.uuid].listeners[listener.uuid] = {listener: listener, capture: useCapture, bubble: !useCapture};
+                (eventTypeRegistration[target.uuid] = _TargetRegistration.checkoutRegistration()).target = target;
+
+				eventTypeRegistration[target.uuid].listeners[listener.uuid] = _TargetListenerRegistration.checkoutRegistration().initWithListener(listener,useCapture,!useCapture);
 
                 isNewTarget = true;
                 returnResult = true;
@@ -708,7 +1071,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
                 // Or, the event type was already observed; install this new listener (or at least any new parts)
                 if (!(targetRegistration = eventTypeRegistration[target.uuid])) {
-                    targetRegistration = eventTypeRegistration[target.uuid] = {target: target, listeners: {}};
+                    (targetRegistration = (eventTypeRegistration[target.uuid] = _TargetRegistration.checkoutRegistration())).target = target;
                     isNewTarget = true;
                 }
 
@@ -719,8 +1082,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                     listenerRegistration[phase] = true;
                     returnResult = true;
                 } else {
-                    listenerRegistration = {listener: listener, capture: useCapture, bubble: !useCapture};
-                    targetRegistration.listeners[listener.uuid] = listenerRegistration;
+					targetRegistration.listeners[listener.uuid] = _TargetListenerRegistration.checkoutRegistration().initWithListener(listener,useCapture,!useCapture)
                     returnResult = true;
                 }
 
@@ -798,12 +1160,14 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
             if (!listenerRegistration.bubble && !listenerRegistration.capture) {
                 // this listener isn't listening in any phase; remove it
+				_TargetListenerRegistration.checkinRegistration(targetRegistration.listeners[listener.uuid]);
                 delete targetRegistration.listeners[listener.uuid];
 
                 if (Object.keys(targetRegistration.listeners).length === 0) {
                     // If no listeners for this target given this event type; remove this target
                     delete eventTypeRegistration[target.uuid];
-
+					//Once we get here, listeners structure of 	targetRegistration is empty
+					_TargetRegistration.checkinRegistration(targetRegistration);
                     if (Object.keys(eventTypeRegistration).length === 0) {
                         // If no targets for this eventType; stop observing this event
                         delete this.registeredEventListeners[eventType];
