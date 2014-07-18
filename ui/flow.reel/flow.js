@@ -20,6 +20,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             // array within the flow and use it also in the flow
             // translate composer.
             this._visibleIndexes = [];
+            this._needsClearVisibleIndexes = true;
             // Tracks the elastic scrolling offsets relative to their
             // corresponding non-elastic scrolling positions on their
             // FlowBezierSpline.
@@ -65,6 +66,20 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
 
     },
 
+    __firstIteration: {
+        value: null
+    },
+
+    _firstIteration: {
+        get: function () {
+            return this.__firstIteration;
+        },
+        set: function (value) {
+            this.__firstIteration = value;
+            this.needsDraw = true;
+        }
+    },
+
     handleTranslateStart: {
         value: function () {
             this.callDelegateMethod("didTranslateStart", this);
@@ -89,7 +104,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         value: null
     },
 
-    _perspective: {
+    _transformPerspective: {
         value: null
     },
 
@@ -325,6 +340,49 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         }
     },
 
+    _isCameraEnabled: {
+        value: true
+    },
+
+    isCameraEnabled: {
+        get: function () {
+            return this._isCameraEnabled;
+        },
+        set: function (value) {
+            var enabled = !!value;
+
+            if (this._isCameraEnabled !== enabled) {
+                this._isCameraEnabled = enabled;
+                this._isCameraUpdated = true;
+                this._needsComputeVisibleRange = true;
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    /**
+     * CSS perspective value in pixels used when camera is disabled
+     */
+    _perspective: {
+        value: 500
+    },
+
+    perspective: {
+        get: function () {
+            return this._perspective;
+        },
+        set: function (value) {
+            var perspective = parseFloat(value);
+
+            if (!isNaN(perspective) && (this._perspective !== perspective)) {
+                this._perspective = perspective;
+                this._isCameraUpdated = true;
+                this._needsComputeVisibleRange = true;
+                this.needsDraw = true;
+            }
+        }
+    },
+
     /**
      * The camera elements is the DOM element that contains the
      * repetition and on which the flow applies 3d transforms.
@@ -353,6 +411,20 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         }
     },
 
+    _viewpointPosition: {
+        get: function () {
+            if (this._isCameraEnabled) {
+                return this.cameraPosition;
+            } else {
+                return [
+                     (50 - this._sceneOffsetLeft) * 0.01 * this._width,
+                     (50 - this._sceneOffsetTop) * 0.01 * this._height,
+                     this._perspective
+                ];
+            }
+        }
+    },
+
     _cameraTargetPoint: {
         value: [0, 0, 0]
     },
@@ -373,6 +445,20 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         }
     },
 
+    _viewpointTargetPoint: {
+        get: function () {
+            if (this._isCameraEnabled) {
+                return this.cameraTargetPoint;
+            } else {
+                return [
+                    (50 - this._sceneOffsetLeft) * 0.01 * this._width,
+                    (50 - this._sceneOffsetTop) * 0.01 * this._height,
+                    0
+                ];
+            }
+        }
+    },
+
     _cameraFov: {
         value: 50
     },
@@ -390,6 +476,16 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             this._isCameraUpdated = true;
             this.needsDraw = true;
             this._needsComputeVisibleRange = true;
+        }
+    },
+
+    _viewpointFov: {
+        get: function () {
+            if (this._isCameraEnabled) {
+                return this.cameraFov;
+            } else {
+                return ((Math.PI / 2) - Math.atan2(this._perspective, this._height / 2)) * 360 / Math.PI;
+            }
         }
     },
 
@@ -414,6 +510,149 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             this._isCameraUpdated = true;
             this.needsDraw = true;
             this._needsComputeVisibleRange = true;
+        }
+    },
+
+    /**
+     * Scene's vertical offset relative to the viewport.
+     * Expressed as a percentage of the viewport's height.
+     * Only in use when camera is disabled.
+     */
+    _sceneOffsetTop: {
+        value: 50
+    },
+
+    sceneOffsetTop: {
+        get: function () {
+            return this._sceneOffsetTop;
+        },
+        set: function (value) {
+            this._sceneOffsetTop = value;
+            this._isCameraUpdated = true;
+            this.needsDraw = true;
+            this._needsComputeVisibleRange = true;
+        }
+    },
+
+    /**
+     * Scene's horizontal offset relative to the viewport.
+     * Expressed as a percentage of the viewport's width.
+     * Only in use when camera is disabled.
+     */
+    _sceneOffsetLeft: {
+        value: 50
+    },
+
+    sceneOffsetLeft: {
+        get: function () {
+            return this._sceneOffsetLeft;
+        },
+        set: function (value) {
+            this._sceneOffsetLeft = value;
+            this._isCameraUpdated = true;
+            this.needsDraw = true;
+            this._needsComputeVisibleRange = true;
+        }
+    },
+
+    /**
+     * Scene's scale for each axis x/y/z
+     * Expressed as an object representing a fraction with numerator and denominator properties
+     * Defaults as 1:1, original size
+     */
+    _sceneScaleX: {
+        value: {
+            numerator: 1,
+            denominator: 1
+        }
+    },
+
+    _sceneScaleY: {
+        value: {
+            numerator: 1,
+            denominator: 1
+        }
+    },
+
+    _sceneScaleZ: {
+        value: {
+            numerator: 1,
+            denominator: 1
+        }
+    },
+
+    _sceneScale: {
+        value: {
+            x: {numerator: 1, denominator: 1},
+            y: {numerator: 1, denominator: 1},
+            z: {numerator: 1, denominator: 1}
+        },
+    },
+
+    _updateSceneScale: {
+        value: function () {
+            this._sceneScale = {
+                x: this._sceneScaleX,
+                y: this._sceneScaleY,
+                z: this._sceneScaleZ
+            };
+        }
+    },
+
+    sceneScaleX: {
+        get: function () {
+            return this._sceneScaleX;
+        },
+        set: function (value) {
+            if ((typeof value === "object") &&
+                (typeof value.numerator !== "undefined") &&
+                (typeof value.denominator !== "undefined") &&
+                (!isNaN(value.numerator)) &&
+                (!isNaN(value.denominator)) &&
+                (value.denominator != 0)) {
+                this._sceneScaleX = value;
+                this._updateSceneScale();
+                this.needsDraw = true;
+                this._needsComputeVisibleRange = true;
+            }
+        }
+    },
+
+    sceneScaleY: {
+        get: function () {
+            return this._sceneScaleY;
+        },
+        set: function (value) {
+            if ((typeof value === "object") &&
+                (typeof value.numerator !== "undefined") &&
+                (typeof value.denominator !== "undefined") &&
+                (!isNaN(value.numerator)) &&
+                (!isNaN(value.denominator)) &&
+                (value.denominator != 0)) {
+                this._sceneScaleY = value;
+                this._updateSceneScale();
+                this.needsDraw = true;
+                this._needsComputeVisibleRange = true;
+            }
+        }
+    },
+
+    sceneScaleZ: {
+        get: function () {
+            return this._sceneScaleZ;
+        },
+        set: function (value) {
+            if ((typeof value === "object") &&
+                (typeof value.numerator !== "undefined") &&
+                (typeof value.denominator !== "undefined") &&
+                (!isNaN(value.numerator)) &&
+                (!isNaN(value.denominator)) &&
+                (value.denominator != 0)) {
+                this._sceneScaleZ = value;
+                this._updateSceneScale();
+                this.needsDraw = true;
+                this._needsComputeVisibleRange = true;
+            }
         }
     },
 
@@ -549,7 +788,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     /**
      * The CSS timing function, "ease" by default, used for smooth
      * scroll transitions.  Supports named timing functions "ease",
-     * "linear", "ease-in", "ease-out", "ease-in-out", and the qunituple
+     * "linear", "ease-in", "ease-out", "ease-in-out", and the tuple
      * `cubic-bezier(0, 0, 1, 1)` format as well.
      */
     scrollingTransitionTimingFunction: {
@@ -681,14 +920,14 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     /**
      */
     _width: {
-        value: null
+        value: 0
     },
 
     // TODO doc
     /**
      */
     _height: {
-        value: null
+        value: 0
     },
 
     // TODO: bounding box is working as bounding rectangle only. Update it to work with boxes
@@ -696,7 +935,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     /**
      */
     _boundingBoxSize: {
-        value: [200, 200, 0]
+        value: null
     },
 
     // TODO doc
@@ -718,7 +957,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     /**
      */
     _elementsBoundingSphereRadius: {
-        value: 283
+        value: 1
     },
 
     // TODO doc
@@ -750,13 +989,15 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
      */
     _computeFrustumNormals: {
         value: function () {
-            var angle = ((this.cameraFov * .5) * this._doublePI) / 360,
+            var angle = ((this._viewpointFov * .5) * this._doublePI) / 360,
                 y = Math.sin(angle),
                 z = Math.cos(angle),
                 x = (y * this._width) / this._height,
-                vX = this.cameraTargetPoint[0] - this.cameraPosition[0],
-                vY = this.cameraTargetPoint[1] - this.cameraPosition[1],
-                vZ = this.cameraTargetPoint[2] - this.cameraPosition[2],
+                viewpointPosition = this._viewpointPosition,
+                viewpointTargetPoint = this._viewpointTargetPoint,
+                vX = viewpointTargetPoint[0] - viewpointPosition[0],
+                vY = viewpointTargetPoint[1] - viewpointPosition[1],
+                vZ = viewpointTargetPoint[2] - viewpointPosition[2],
                 yAngle = this._halfPI - Math.atan2(vZ, vX),
                 tmpZ = vX * Math.sin(yAngle) + vZ * Math.cos(yAngle),
                 rX, rY, rZ,
@@ -835,18 +1076,18 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     _computeVisibleRange: { // TODO: make it a loop, optimize
         value: function (spline) {
             var splineLength = spline._knots.length - 1,
-                planeOrigin0 = this._cameraPosition[0],
-                planeOrigin1 = this._cameraPosition[1],
-                planeOrigin2 = this._cameraPosition[2],
+                viewpointPosition = this._viewpointPosition,
+                planeOrigin0 = viewpointPosition[0],
+                planeOrigin1 = viewpointPosition[1],
+                planeOrigin2 = viewpointPosition[2],
                 normals = this._computeFrustumNormals(),
                 mod,
                 r = [], r2 = [], r3 = [], tmp,
                 i, j,
                 elementsBoundingSphereRadius = this._elementsBoundingSphereRadius,
-                splineKnots = spline._knots,
-                splineNextHandlers = spline._nextHandlers,
-                splinePreviousHandlers = spline._previousHandlers,
-                reflectionMatrixBuffer = [],
+                splineKnots = spline.getScaledKnots(this._sceneScale),
+                splineNextHandlers = spline.getScaledNextHandlers(this._sceneScale),
+                splinePreviousHandlers = spline.getScaledPreviousHandlers(this._sceneScale),
                 out = [];
 
             for (i = 0; i < splineLength; i++) {
@@ -859,8 +1100,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                     splineKnots[i],
                     splineNextHandlers[i],
                     splinePreviousHandlers[i + 1],
-                    splineKnots[i + 1],
-                    reflectionMatrixBuffer
+                    splineKnots[i + 1]
                 );
                 if (r.length) {
                     mod = normals[1];
@@ -872,8 +1112,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                         splineKnots[i],
                         splineNextHandlers[i],
                         splinePreviousHandlers[i + 1],
-                        splineKnots[i + 1],
-                        reflectionMatrixBuffer
+                        splineKnots[i + 1]
                     );
                     if (r2.length) {
                         tmp = this._segmentsIntersection(r, r2);
@@ -887,8 +1126,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                                 splineKnots[i],
                                 splineNextHandlers[i],
                                 splinePreviousHandlers[i + 1],
-                                splineKnots[i + 1],
-                                reflectionMatrixBuffer
+                                splineKnots[i + 1]
                             );
                             tmp = this._segmentsIntersection(r, tmp);
                             if (tmp.length) {
@@ -901,13 +1139,13 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                                     splineKnots[i],
                                     splineNextHandlers[i],
                                     splinePreviousHandlers[i + 1],
-                                    splineKnots[i + 1],
-                                    reflectionMatrixBuffer
+                                    splineKnots[i + 1]
                                 );
                                 tmp = this._segmentsIntersection(r, tmp);
                                 for (j = 0; j < tmp.length; j++) {
                                     r3.push([i, tmp[j][0], tmp[j][1]]);
                                 }
+
                             }
                         }
                     }
@@ -933,18 +1171,18 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             if("webkitTransform" in this.element.style) {
                 this._transform = "webkitTransform";
                 this._transformCss = "-webkit-transform";
-                this._perspective = "webkitPerspective";
+                this._transformPerspective = "webkitPerspective";
             } else if("MozTransform" in this.element.style) {
                 this._transform = "MozTransform";
                 this._transformCss = "-moz-transform";
-                this._perspective = "MozPerspective";
+                this._transformPerspective = "MozPerspective";
             } else if("msTransform" in this.element.style) {
                 this._transform = "msTransform";
                 this._transformCss = "-ms-transform";
-                this._perspective = "msPerspective";
+                this._transformPerspective = "msPerspective";
             } else {
                 this._transform = "transform";
-                this._perspective = "perspective";
+                this._transformPerspective = "perspective";
             }
         }
     },
@@ -971,10 +1209,16 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         }
     },
 
+    _needsClearVisibleIndexes: {
+        value: false
+    },
+
     handleResize: {
         value: function () {
             this._isCameraUpdated = true;
+            this._needsComputeVisibleRange = true;
             this.needsDraw = true;
+            this._needsClearVisibleIndexes = true;
         }
     },
 
@@ -1095,6 +1339,72 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
         value: null
     },
 
+    viewportWidth: {
+        get: function () {
+            return this._width;
+        },
+        set: function (value) {
+            if (this._width !== value) {
+                this._width = value;
+                this._needsComputeVisibleRange = true;
+            }
+        }
+    },
+
+    viewportHeight: {
+        get: function () {
+            return this._height;
+        },
+        set: function (value) {
+            if (this._height !== value) {
+                this._height = value;
+                this._needsComputeVisibleRange = true;
+            }
+        }
+    },
+
+    _firstIterationWidth: {
+        value: 1
+    },
+
+    _firstIterationHeight: {
+        value: 1
+    },
+
+    firstIterationWidth: {
+        get: function () {
+            return this._firstIterationWidth;
+        },
+        set: function (value) {
+            if (value !== this._firstIterationWidth) {
+                this._firstIterationWidth = value;
+                this._needsComputeVisibleRange = true;
+                this._needsClearVisibleIndexes = true;
+            }
+        }
+    },
+
+    firstIterationHeight: {
+        get: function () {
+            return this._firstIterationHeight;
+        },
+        set: function (value) {
+            if (value !== this._firstIterationHeight) {
+                this._firstIterationHeight = value;
+                this._needsComputeVisibleRange = true;
+                this._needsClearVisibleIndexes = true;
+            }
+        }
+    },
+
+    _firstIterationOffsetLeft: {
+        value: 0
+    },
+
+    _firstIterationOffsetTop: {
+        value: 0
+    },
+
     willDraw: {
         value: function (timestamp) {
             var intersections,
@@ -1118,6 +1428,37 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 pathsLength = paths.length,
                 splinePaths = this.splinePaths;
 
+
+
+            if (this._needsClearVisibleIndexes) {
+                this._visibleIndexes = [];
+                this._visibleIndexes.set(0, 0);
+                this._needsClearVisibleIndexes = false;
+            }
+            this.viewportWidth = this._element.clientWidth;
+            this.viewportHeight = this._element.clientHeight;
+            if (this.__firstIteration) {
+                var element = this.__firstIteration.firstElement.children[0];
+
+                if ((element.offsetWidth !== 0) && (element.offsetHeight !== 0)) {
+                    this.firstIterationWidth = element.offsetWidth;
+                    this.firstIterationHeight = element.offsetHeight;
+                    this._firstIterationOffsetLeft = element.offsetLeft;
+                    this._firstIterationOffsetTop = element.offsetTop;
+                    if (!this._boundingBoxSize) {
+                        var x = Math.max(
+                                Math.abs(this._firstIterationWidth + this._firstIterationOffsetLeft),
+                                Math.abs(this._firstIterationOffsetLeft)
+                            ),
+                            y = Math.max(
+                                Math.abs(this._firstIterationHeight + this._firstIterationOffsetTop),
+                                Math.abs(this._firstIterationOffsetTop)
+                            );
+
+                        this._elementsBoundingSphereRadius = Math.sqrt(x * x + y * y);
+                    }
+                }
+            }
             // Manage scroll animation
             if (this._isTransitioningScroll) {
                 time = (Date.now() - this._scrollingStartTime) / this._scrollingTransitionDurationMiliseconds; // TODO: division by zero
@@ -1170,8 +1511,6 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
             }
 
             // Compute which slides are in view
-            this._width = this._element.clientWidth;
-            this._height = this._element.clientHeight;
             if (splinePaths.length) {
                 mod = this._numberOfIterations % pathsLength;
                 div = (this._numberOfIterations - mod) / pathsLength;
@@ -1218,7 +1557,6 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 }
                 this._needsComputeVisibleRange = false;
             }
-
             this._updateVisibleIndexes(newVisibleIndexes, newContentIndexes);
         }
     },
@@ -1240,6 +1578,8 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 positionKeyCount,
                 jPositionKey,
                 visibleIndexes = this._visibleIndexes,
+                viewpointPosition = this._viewpointPosition,
+                viewpointTargetPoint = this._viewpointTargetPoint,
                 indexTime,
                 rotation,
                 offset;
@@ -1248,20 +1588,27 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                 this.needsDraw = true;
             }
             if (this._isCameraUpdated) {
-                var perspective = Math.tan(((90 - this.cameraFov * .5) * this._doublePI) / 360) * this._height * .5,
-                    vX = this.cameraTargetPoint[0] - this.cameraPosition[0],
-                    vY = this.cameraTargetPoint[1] - this.cameraPosition[1],
-                    vZ = this.cameraTargetPoint[2] - this.cameraPosition[2],
-                    yAngle = Math.atan2(-vX, -vZ),  // TODO: Review this
-                    tmpZ,
-                    xAngle;
+                if (this._isCameraEnabled) {
+                    var perspective = Math.tan(((90 - this._viewpointFov * .5) * this._doublePI) / 360) * this._height * .5,
+                        vX = viewpointTargetPoint[0] - viewpointPosition[0],
+                        vY = viewpointTargetPoint[1] - viewpointPosition[1],
+                        vZ = viewpointTargetPoint[2] - viewpointPosition[2],
+                        yAngle = Math.atan2(-vX, -vZ),  // TODO: Review this
+                        tmpZ,
+                        xAngle;
 
-                tmpZ = vX * -Math.sin(-yAngle) + vZ * Math.cos(-yAngle);
-                xAngle = Math.atan2(-vY, -tmpZ);
-                this._element.style[this._perspective]= perspective + "px";
-                this._cameraElement.style[this._transform] =
-                    "translate3d(0,0," + perspective + "px)rotateX(" + xAngle + "rad)rotateY(" + (-yAngle) + "rad)" +
-                    "translate3d(" + (-this.cameraPosition[0]) + "px," + (-this.cameraPosition[1]) + "px," + (-this.cameraPosition[2]) + "px)";
+                    tmpZ = vX * -Math.sin(-yAngle) + vZ * Math.cos(-yAngle);
+                    xAngle = Math.atan2(-vY, -tmpZ);
+                    this._element.style[this._transformPerspective]= perspective + "px";
+                    this._cameraElement.style[this._transform] =
+                        "translate3d(0,0," + perspective + "px)rotateX(" + xAngle + "rad)rotateY(" + (-yAngle) + "rad)" +
+                        "translate3d(" + (-viewpointPosition[0]) + "px," + (-viewpointPosition[1]) + "px," + (-viewpointPosition[2]) + "px)";
+                    this._element.classList.remove("camera-disabled");
+                } else {
+                    this._element.style[this._transformPerspective]= this._perspective + "px";
+                    this._cameraElement.style[this._transform] = "translate3d(" + (.5 * this._width - viewpointPosition[0]) + "px, " + (.5 * this._height - viewpointPosition[1]) + "px,0)";
+                    this._element.classList.add("camera-disabled");
+                }
                 this._isCameraUpdated = false;
             }
             if (this.splinePaths.length) {
@@ -1285,7 +1632,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                                 element.children[0].classList.remove("active");
                             }
                         }
-                        pos = this._splinePaths[pathIndex].getPositionAtIndexTime(indexTime);
+                        pos = this._splinePaths[pathIndex].getPositionAtIndexTime(indexTime, this._sceneScale);
                         rotation = this._splinePaths[pathIndex].getRotationAtIndexTime(indexTime);
                         style =
                             this._transformCss + ":translate3d(" + (((pos[0] * 100000) >> 0) * .00001) + "px," + (((pos[1] * 100000) >> 0) * .00001) + "px," + (((pos[2] * 100000) >> 0) * .00001) + "px)" +

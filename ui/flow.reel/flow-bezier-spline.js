@@ -149,7 +149,7 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
     },
 
     getPositionAtIndexTime: {
-        value: function (indexTime) {
+        value: function (indexTime, scale) {
             var index = indexTime[0],
                 time = indexTime[1],
                 p0 = this._knots[index],
@@ -162,11 +162,19 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
                 coef3 = y * time * time * 3,
                 coef4 = time * time * time;
 
-            return [
-                p0[0] * coef1 + p1[0] * coef2 + p2[0] * coef3 + p3[0] * coef4,
-                p0[1] * coef1 + p1[1] * coef2 + p2[1] * coef3 + p3[1] * coef4,
-                p0[2] * coef1 + p1[2] * coef2 + p2[2] * coef3 + p3[2] * coef4
-            ];
+            if (scale) {
+                return [
+                    (scale.x.numerator * (p0[0] * coef1 + p1[0] * coef2 + p2[0] * coef3 + p3[0] * coef4)) / scale.x.denominator,
+                    (scale.y.numerator * (p0[1] * coef1 + p1[1] * coef2 + p2[1] * coef3 + p3[1] * coef4)) / scale.y.denominator,
+                    (scale.z.numerator * (p0[2] * coef1 + p1[2] * coef2 + p2[2] * coef3 + p3[2] * coef4)) / scale.z.denominator
+                ];
+            } else {
+                return [
+                    p0[0] * coef1 + p1[0] * coef2 + p2[0] * coef3 + p3[0] * coef4,
+                    p0[1] * coef1 + p1[1] * coef2 + p2[1] * coef3 + p3[1] * coef4,
+                    p0[2] * coef1 + p1[2] * coef2 + p2[2] * coef3 + p3[2] * coef4
+                ];
+            }
         }
     },
 
@@ -300,7 +308,7 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
     cubicRealRoots: {
         enumerable: false,
         value: function (a, b, c, d) {
-            var epsilon = 1e-100, math = Math;
+            var epsilon = 1e-10, math = Math;
 
             if ((a < -epsilon) || (a > epsilon)) {
                 var dv = 1 / a,
@@ -367,18 +375,17 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
 
     reflectionMatrix: {
         enumerable: false,
-        value: function (planeNormal0,planeNormal1,planeNormal2,reflectionMatrixBuffer) {
+        value: function (planeNormal0, planeNormal1, planeNormal2) {
             var math = Math, angleZ = this._halfPI - math.atan2(planeNormal1, planeNormal0),
                 sinAngleZ = math.sin(angleZ),
                 cosAngleZ = math.cos(angleZ),
                 angleX = this._halfPI - math.atan2(/*p2*/ planeNormal2, /*p1*/ planeNormal0 * sinAngleZ + planeNormal1 * cosAngleZ),
                 sinAngleX = math.sin(angleX);
 
-            reflectionMatrixBuffer[0] = sinAngleX * sinAngleZ;
-            reflectionMatrixBuffer[1] = cosAngleZ * sinAngleX;
-            reflectionMatrixBuffer[2] = math.cos(angleX);
-
-            return reflectionMatrixBuffer;
+            return [
+                sinAngleX * sinAngleZ,
+                cosAngleZ * sinAngleX,
+                math.cos(angleX)];
         }
     },
 
@@ -389,10 +396,64 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
         }
     },
 
+    getScaledKnots: {
+        value: function (scale) {
+            var knots = [],
+                i;
+
+            for (i = 0; i < this._knots.length; i++) {
+                if (this._knots[i]) {
+                    knots[i] = [
+                        (scale.x.numerator * this._knots[i][0]) / scale.x.denominator,
+                        (scale.y.numerator * this._knots[i][1]) / scale.y.denominator,
+                        (scale.z.numerator * this._knots[i][2]) / scale.z.denominator
+                    ];
+                }
+            }
+            return knots;
+        }
+    },
+
+    getScaledPreviousHandlers: {
+        value: function (scale) {
+            var previousHandlers = [],
+                i;
+
+            for (i = 0; i < this._previousHandlers.length; i++) {
+                if (this._previousHandlers[i]) {
+                    previousHandlers[i] = [
+                        (scale.x.numerator * this._previousHandlers[i][0]) / scale.x.denominator,
+                        (scale.y.numerator * this._previousHandlers[i][1]) / scale.y.denominator,
+                        (scale.z.numerator * this._previousHandlers[i][2]) / scale.z.denominator
+                    ];
+                }
+            }
+            return previousHandlers;
+        }
+    },
+
+    getScaledNextHandlers: {
+        value: function (scale) {
+            var nextHandlers = [],
+                i;
+
+            for (i = 0; i < this._nextHandlers.length; i++) {
+                if (this._nextHandlers[i]) {
+                    nextHandlers[i] = [
+                        (scale.x.numerator * this._nextHandlers[i][0]) / scale.x.denominator,
+                        (scale.y.numerator * this._nextHandlers[i][1]) / scale.y.denominator,
+                        (scale.z.numerator * this._nextHandlers[i][2]) / scale.z.denominator
+                    ];
+                }
+            }
+            return nextHandlers;
+        }
+    },
+
     directedPlaneBezierIntersection: {
         enumerable: false,
-        value: function (planeOrigin0, planeOrigin1, planeOrigin2, planeNormal, b0, b1, b2, b3, reflectionMatrixBuffer) {
-            var matrix = this.reflectionMatrix(planeNormal[0],planeNormal[1],planeNormal[2],reflectionMatrixBuffer), // TODO: cache for matrix and cache for cubicRealRoots
+        value: function (planeOrigin0, planeOrigin1, planeOrigin2, planeNormal, b0, b1, b2, b3) {
+            var matrix = this.reflectionMatrix(planeNormal[0], planeNormal[1], planeNormal[2]), // TODO: cache for matrix and cache for cubicRealRoots
                 d = this.reflectedY(b0[0] - planeOrigin0, b0[1] - planeOrigin1, b0[2] - planeOrigin2, matrix),
                 r1 = this.reflectedY(b1[0] - planeOrigin0, b1[1] - planeOrigin1, b1[2] - planeOrigin2, matrix),
                 r2 = this.reflectedY(b2[0] - planeOrigin0, b2[1] - planeOrigin1, b2[2] - planeOrigin2, matrix),
