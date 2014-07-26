@@ -1299,7 +1299,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     _NORMALIZED_TAG_NAMES: {
-        value: ["IMG", "image", "IFRAME", "link"]
+        value: ["IMG", "image", "IFRAME", "link","script"]
     },
 
     __NORMALIZED_TAG_NAMES_SELECTOR: {
