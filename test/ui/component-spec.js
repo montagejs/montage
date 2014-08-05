@@ -555,7 +555,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
 
             describe("the component tree", function() {
                 it("should reorganize the component tree when a new component is added", function() {
-                    var Component = testPage.window.require("montage/ui/component").Component,
+                    var Component = testPage.window.mr("montage/ui/component").Component,
                         componentE1 = new Component(),
                         element = testPage.window.document.getElementById("componentE1");
 

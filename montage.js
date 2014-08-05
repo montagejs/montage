@@ -282,8 +282,7 @@ if (typeof window !== "undefined") {
                         .done();
                     };
 
-                    global.require = applicationRequire;
-                    global.montageRequire = montageRequire;
+                    self.mr = applicationRequire;
                     platform.initMontage(montageRequire, applicationRequire, params);
                 });
             })

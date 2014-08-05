@@ -93,7 +93,7 @@ TestPageLoader.queueTest("key-composer-test/key-composer-test", function(testPag
                         listener2 = testPage.addListener(test.key_composer1, null, "longKeyPress"),
                         listener3 = testPage.addListener(test.key_composer1, null, "keyRelease");
 
-                    testPage.window.montageRequire("core/event/event-manager").defaultEventManager.activeTarget = test.example;
+                    testPage.window.mr("montage/core/event/event-manager").defaultEventManager.activeTarget = test.example;
 
                     testPage.keyEvent({target: testPage.window, modifiers: command, charCode: 0, keyCode: "J".charCodeAt(0)}, "keydown");
                     waits(1050);
