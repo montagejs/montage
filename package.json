@@ -35,7 +35,7 @@
     "q": "1.0.0"
   },
   "devDependencies": {
-    "montage-testing": "~0.4.0",
+    "montage-testing": "~0.4.1",
     "jshint": "~2.4.4"
   },
   "scripts": {
