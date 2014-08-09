@@ -108,6 +108,73 @@ var RangeSelection = function(content, rangeController) {
             return oldSplice.apply(this, args);
         }
     });
+    
+	var oldSwap = self.swap;
+	Object.defineProperty(self, "swap", {
+		configurable: false,
+		value: function(start, howMany, plusCandidates) {
+			var content = this.rangeController.content;
+            this.contentEquals = content && content.contentEquals || Object.is;
+			start = start >= 0 ? start : this.length + start;
+			var oldLength = this.length;
+            var minusLength = Math.min(howMany, oldLength - start);
+			
+            plusCandidates.contentEquals = this.contentEquals;
+			
+			var plus = plusCandidates.filter(function(item, index){
+                // do not add items to the selection if they aren't in content
+                if (content && !content.has(item)) {
+					console.log("err 1");
+                    return false;
+                }
+
+                // if the same item appears twice in the add list, only add it once
+                if (plusCandidates.findLast(item) > index) {
+					console.log("err 2");
+                    return false;
+                }
+
+                // if the item is already in the selection, don't add it
+                // unless it's in the part that we're about to delete.
+                var indexInSelection = this.find(item);
+                return indexInSelection < 0 ||
+                        (indexInSelection >= start && indexInSelection < start + minusLength);
+
+            }, this);
+			
+			var minus;
+            if (length === 0) {
+                // minus will be empty
+                if (plus.length === 0) {
+                    // at this point if plus is empty there is nothing to do.
+                    return []; // [], but spare us an instantiation
+                }
+                minus = [];
+            } else {
+                minus = Array.prototype.slice.call(this, start, start + length);
+            }
+			var diff = plus.length - minus.length;
+			var newLength = Math.max(this.length + diff, start + plus.length);
+			var args;
+
+			if (!this.rangeController.multiSelect && newLength > 1) {
+                // use the last-supplied item as the sole element of the set
+                var last = plus.length ? plus[plus.length-1] : this.one();
+                args = [0, oldLength, [last]];
+            } else if (this.rangeController.avoidsEmptySelection && newLength === 0) {
+                // use the first item in the selection, unless it is no longer in the content
+                if (content.has(this[0])) {
+                    args = [1, this.length-1];
+                } else {
+                    args = [0, this.length, [content.one()]];
+                }
+            } else {
+                args = [start, howMany, plus];
+            }
+			
+			return oldSwap.apply(this, args);
+		}
+	});
     return self;
 };
 
