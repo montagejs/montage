@@ -118,24 +118,6 @@ var RangeSelection = function(content, rangeController) {
             return oldSwap.apply(this, args);
         }
     });
-    
-    /**
-     * @method splice
-     * @param {number} start
-     * @param {number} howMany
-     * @param {object...} itemsToAdd
-     * A custom version of splice that uses the custom swap to ensure that changes obey the RangeController
-     * This function might be removable.
-     */
-    Object.defineProperty(self, "splice", {
-        configurable: false,
-        value: function(start, howMany) {
-            if (start > this.length) {
-                start = this.length;
-            }
-            return this.swap.call(this, start, howMany, Array.prototype.slice.call(arguments, 2));
-        }
-    });
     return self;
 };
 
