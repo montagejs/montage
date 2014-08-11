@@ -114,23 +114,21 @@ var RangeSelection = function(content, rangeController) {
 		configurable: false,
 		value: function(start, howMany, plusCandidates) {
 			var content = this.rangeController.content;
-            this.contentEquals = content && content.contentEquals || Object.is;
+			this.contentEquals = content && content.contentEquals || Object.is;
 			start = start >= 0 ? start : this.length + start;
 			var oldLength = this.length;
-            var minusLength = Math.min(howMany, oldLength - start);
+			var minusLength = Math.min(howMany, oldLength - start);
 			
             plusCandidates.contentEquals = this.contentEquals;
 			
 			var plus = plusCandidates.filter(function(item, index){
                 // do not add items to the selection if they aren't in content
                 if (content && !content.has(item)) {
-					console.log("err 1");
                     return false;
                 }
 
                 // if the same item appears twice in the add list, only add it once
                 if (plusCandidates.findLast(item) > index) {
-					console.log("err 2");
                     return false;
                 }
 
