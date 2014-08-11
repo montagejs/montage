@@ -109,19 +109,19 @@ var RangeSelection = function(content, rangeController) {
         }
     });
     
-	var oldSwap = self.swap;
-	Object.defineProperty(self, "swap", {
-		configurable: false,
-		value: function(start, howMany, plusCandidates) {
-			var content = this.rangeController.content;
-			this.contentEquals = content && content.contentEquals || Object.is;
-			start = start >= 0 ? start : this.length + start;
-			var oldLength = this.length;
-			var minusLength = Math.min(howMany, oldLength - start);
-			
+    var oldSwap = self.swap;
+    Object.defineProperty(self, "swap", {
+        configurable: false,
+        value: function(start, howMany, plusCandidates) {
+            var content = this.rangeController.content;
+            this.contentEquals = content && content.contentEquals || Object.is;
+            start = start >= 0 ? start : this.length + start;
+            var oldLength = this.length;
+            var minusLength = Math.min(howMany, oldLength - start);
+
             plusCandidates.contentEquals = this.contentEquals;
 			
-			var plus = plusCandidates.filter(function(item, index){
+            var plus = plusCandidates.filter(function(item, index){
                 // do not add items to the selection if they aren't in content
                 if (content && !content.has(item)) {
                     return false;
@@ -140,7 +140,7 @@ var RangeSelection = function(content, rangeController) {
 
             }, this);
 			
-			var minus;
+            var minus;
             if (length === 0) {
                 // minus will be empty
                 if (plus.length === 0) {
@@ -151,11 +151,11 @@ var RangeSelection = function(content, rangeController) {
             } else {
                 minus = Array.prototype.slice.call(this, start, start + length);
             }
-			var diff = plus.length - minus.length;
-			var newLength = Math.max(this.length + diff, start + plus.length);
-			var args;
+            var diff = plus.length - minus.length;
+            var newLength = Math.max(this.length + diff, start + plus.length);
+            var args;
 
-			if (!this.rangeController.multiSelect && newLength > 1) {
+            if (!this.rangeController.multiSelect && newLength > 1) {
                 // use the last-supplied item as the sole element of the set
                 var last = plus.length ? plus[plus.length-1] : this.one();
                 args = [0, oldLength, [last]];
@@ -170,9 +170,9 @@ var RangeSelection = function(content, rangeController) {
                 args = [start, howMany, plus];
             }
 			
-			return oldSwap.apply(this, args);
-		}
-	});
+            return oldSwap.apply(this, args);
+        }
+    });
     return self;
 };
 
