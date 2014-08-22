@@ -84,6 +84,9 @@ exports.element = function (_document) {
             },
             contains: function (className) {
                 return classList.has(className);
+            },
+            forEach: function () {
+                return classList.forEach.apply(classList, arguments);
             }
         },
         className: "",
@@ -143,6 +146,12 @@ exports.element = function (_document) {
         tagName: "MOCK"
     };
     Object.addEach(result, EventTarget);
+
+    Object.defineProperty(result.classList, 'length', {
+        get: function() {
+            return classList.length;
+        }
+    });
 
     return result;
 };
