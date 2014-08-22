@@ -2765,20 +2765,17 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     _initializeClassListFromElement: {
         value: function(element) {
-            var className;
-            if (element && element.className && (className = element.className.trim())) {
-                // classList
-                if (className.length !== 0) {
-                    // important to initializae the classList first, so that the listener doesn't get installed.
-                    var classList = this.classList;
-                    if (this._unsubscribeToClassListChanges) {
-                        this._unsubscribeToClassListChanges();
-                    }
-                    classList.addEach(className.split(/\s+/));
-                    this._subscribeToToClassListChanges();
-                }
-            }
+            if (element && element.classList && element.classList.length > 0) {
+                // important to initializae the classList first, so that the listener doesn't get installed.
+                var classList = this.classList;
 
+                if (this._unsubscribeToClassListChanges) {
+                    this._unsubscribeToClassListChanges();
+                }
+
+                classList.addEach(element.classList);
+                this._subscribeToToClassListChanges();
+            }
         }
     },
 
