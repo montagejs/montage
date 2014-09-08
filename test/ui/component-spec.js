@@ -1159,14 +1159,6 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                         expect(test.componentClassInMarkup.element.classList.contains("markupClass1")).toBeFalsy();
                     })
                 });
-                it("should handle leading and trailing spaces in element's className", function() {
-                    var aComponent = Component.specialize( {hasTemplate: {value: false}});
-                    aComponent.element = {className: "  foo  "};
-                    var funk = jasmine.createSpy("classListForEach");
-                    aComponent.classList.forEach(funk);
-                    expect(funk.callCount).toEqual(1);
-                    expect(funk.argsForCall[0][0]).toEqual("foo");
-                });
             });
             describe("with classes in original element and in template", function() {
                 describe("element", function () {
@@ -1221,7 +1213,7 @@ TestPageLoader.queueTest("draw/draw", function(testPage) {
                 it("should update the classList when the element is set", function () {
                     aComponent = Component.specialize( {hasTemplate: { value: false}}).create();
                     var anElement = MockDOM.element();
-                    anElement.className = "foo";
+                    anElement.classList.add("foo");
                     expect(aComponent.classList.contains("foo")).toBeFalsy();
                     aComponent.element = anElement;
                     expect(aComponent.classList.contains("foo")).toBeTruthy();
