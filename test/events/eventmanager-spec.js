@@ -123,7 +123,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                 });
             }
 
-            if (MediaController) {
+            if (typeof MediaController !== "undefined") {
                 it("should have overridden the addEventListener for MediaController", function() {
                     var mediaController = testDocument.defaultView.MediaController.prototype;
                     expect(mediaController.nativeAddEventListener).toBeTruthy();
@@ -162,7 +162,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
                 });
             }
 
-            if (MediaController) {
+            if (typeof MediaController !== "undefined") {
                 it("should have overridden the addEventListener for MediaController", function() {
                     var mediaController = testDocument.defaultView.MediaController.prototype;
                     expect(mediaController.nativeRemoveEventListener).toBeTruthy();
