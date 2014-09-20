@@ -286,7 +286,12 @@ describe("core/request-spec", function () {
                 .then(function () {
                     spec.fail("should be rejected");
                 }, function (error) {
-                    expect(error.message).toEqual('Could not parse JSON from "http://example.com": Unexpected token x');
+                    try {
+                        JSON.parse(response.body);
+                    } catch (errorBrowser) {
+                        // This end of the message error is dependent to browsers.
+                        expect(error.message).toEqual('Could not parse JSON from "http://example.com": ' + errorBrowser.message);
+                    }
                 });
             });
 
