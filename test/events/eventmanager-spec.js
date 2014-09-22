@@ -1154,7 +1154,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function(testPage)
             beforeEach(function () {
                 target = new Target();
                 testEvent = document.createEvent("CustomEvent");
-                testEvent.initCustomEvent("test", true, true);
+                testEvent.initCustomEvent("test", true, true, null);
             });
 
             describe("dispatchEvent", function () {
