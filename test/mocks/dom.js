@@ -201,10 +201,33 @@ exports.keyPressEvent = function(keys, target) {
         shiftKey: 8
     };
 
-    var event = document.createEvent("KeyboardEvent");
-    event.initKeyboardEvent("keypress", true, true, window,
-        0, 0, 0, 0,
-        0, modifiersAndKeyCode.keyCode);
+    var event = document.createEvent("KeyboardEvent"),
+        args = [
+            "keypress", // DOMString typeArg
+            true, // Boolean canBubbleArg
+            true, // Boolean cancelableArg
+            window // nsIDOMAbstractView viewArg
+        ];
+
+    if (typeof event.initKeyboardEvent === "function") {
+        event.initKeyboardEvent.apply(event, args.concat(
+            0, // long detailArg
+            'Enter', // DOMString keyArg
+            0, // unsigned long locationArg
+            '', //  DOMString modifiersListArg
+            false // boolean repeat
+        ));
+
+    } else if (typeof event.initKeyEvent === "function") {
+        event.initKeyEvent.apply(event, args.concat(
+            false, // boolean ctrlKeyArg
+            false, // boolean altKeyArg
+            false, // boolean shiftKeyArg
+            false, // boolean metaKeyArg
+            modifiersAndKeyCode.keyCode, // unsigned long keyCodeArg
+            modifiersAndKeyCode.keyCode // unsigned long charCodeArg
+        ));
+    }
 
     // Clone the event so we can set a target and modifiers on it.
     var customEvent = {};
