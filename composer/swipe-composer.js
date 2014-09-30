@@ -114,6 +114,12 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
 		}
 	},
 
+    captureTouchcancel: {
+        value: function(event) {
+            this._removeEventListeners();
+        }
+    },
+
     captureTouchmove: {
         value: function(event) {
             event.preventDefault();
@@ -200,7 +206,7 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
             }
 
 	        this._removeEventListeners();
-
+i
             if (deltaX > threshold && deltaY > threshold) {
                 direction = "DIAGONAL";
             } else if (deltaX > threshold && deltaY < threshold) {
