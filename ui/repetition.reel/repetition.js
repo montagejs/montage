@@ -2001,7 +2001,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 // Find the corresponding iteration
                 var iteration = this._findIterationContainingElement(target);
                 // And select it, if there is one
-                if (iteration) {
+                if (iteration && this._currentActiveIteration === iteration) {
                     iteration.active = false;
                     if (!iteration.selected) {
                         iteration.selected = true;
