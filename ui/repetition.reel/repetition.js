@@ -18,7 +18,7 @@ var Observers = require("frb/observers");
 var observeProperty = Observers.observeProperty;
 var observeKey = Observers.observeKey;
 
-var TIMEOUT_BEFORE_ITERATION_BECOME_ACTIVE = 45;
+var TIMEOUT_BEFORE_ITERATION_BECOME_ACTIVE = 60;
 
 /**
  * A reusable view-model for each iteration of a repetition.  Each iteration
