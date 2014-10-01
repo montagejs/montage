@@ -18,6 +18,8 @@ var Observers = require("frb/observers");
 var observeProperty = Observers.observeProperty;
 var observeKey = Observers.observeKey;
 
+var TIMEOUT_BEFORE_ITERATION_BECOME_ACTIVE = 60;
+
 /**
  * A reusable view-model for each iteration of a repetition.  Each iteration
  * corresponds to a value from the {@link Repetition#contentController}.
@@ -187,6 +189,41 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
 
             this.cachedFirstElement = null;
 
+        }
+    },
+
+    _timeoutBecomeActiveID: {
+        value: null
+    },
+
+    _shouldBecomeActive: {
+        value: false
+    },
+
+    shouldBecomeActive: {
+        set: function (bool) {
+            if (this._timeoutBecomeActiveID) {
+                clearTimeout(this._timeoutBecomeActiveID);
+                this._timeoutBecomeActiveID = null;
+            }
+
+            if (bool) {
+                var self = this;
+                this._shouldBecomeActive = true;
+
+                this._timeoutBecomeActiveID = setTimeout(function () {
+                    if (self._shouldBecomeActive) {
+                        self.active = true;
+                    }
+
+                    self._shouldBecomeActive = false;
+                }, TIMEOUT_BEFORE_ITERATION_BECOME_ACTIVE);
+            } else {
+                this._shouldBecomeActive = false;
+            }
+        },
+        get: function () {
+            return this._shouldBecomeActive;
         }
     },
 
@@ -1656,6 +1693,44 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     _selectionPointer: {value: null},
 
+
+    /**
+     * Represents an allowed radius of pixels between a touchstart/mousedown and a touchmove/mousemove
+     * to still consider it as a selection.
+     *
+     * @type {number}
+     * @private
+     */
+    _threshold: { value: 10 },
+
+
+    /**
+     * Original vertical coordinate of a touchstart/mousedown
+     *
+     * @type {number}
+     * @private
+     */
+    _startX: { value: 0 },
+
+
+    /**
+     * Original horizontal coordinate of a touchstart/mousedown
+     *
+     * @type {number}
+     * @private
+     */
+    _startY: { value: 0 },
+
+
+    /**
+     * Pointer to the current active Iteration
+     *
+     * @type {object}
+     * @private
+     */
+    _currentActiveIteration: { value: null },
+
+
     /**
      * @private
      */
@@ -1678,14 +1753,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     // isSelectionEnabled becoming true.
     _enableSelectionTracking: {
         value: function () {
-            if (browser.android && browser.android.androidBrowser) {
-                if (window.Touch) {
-                    this.element.addEventListener("touchstart", this, true);
-                } else {
-                    this.element.addEventListener("mousedown", this, true);
-                }
-            } else {
+
+            if (window.Touch) {
                 this.element.addEventListener("touchstart", this, true);
+            } else {
                 this.element.addEventListener("mousedown", this, true);
             }
         }
@@ -1698,14 +1769,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     // isSelectionEnabled becoming false.
     _disableSelectionTracking: {
         value: function () {
-            if (browser.android && browser.android.androidBrowser) {
-                if (window.Touch) {
-                    this.element.removeEventListener("touchstart", this, true);
-                } else {
-                    this.element.removeEventListener("mousedown", this, true);
-                }
-            } else {
+            if (window.Touch) {
                 this.element.removeEventListener("touchstart", this, true);
+            } else {
                 this.element.removeEventListener("mousedown", this, true);
             }
         }
@@ -1725,15 +1791,21 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             this.eventManager.claimPointer(pointerIdentifier, this);
 
             var document = this.element.ownerDocument;
-            // dispatches handleTouchend
-            document.addEventListener("touchend", this, false);
-            // dispatches handleTouchcancel
-            document.addEventListener("touchcancel", this, false);
-            // dispatches handleMouseup
-            document.addEventListener("mouseup", this, false);
-            // TODO after significant mouse movement or touch movement
-            // on the "active" element, forget the selection pointer,
-            // deactivate, and do not select.
+
+            if (window.Touch) {
+                // dispatches handleTouchend
+                document.addEventListener("touchend", this, false);
+                // dispatches handleTouchmove
+                document.addEventListener("touchmove", this, false);
+                // dispatches handleTouchcancel
+                document.addEventListener("touchcancel", this, false);
+
+            } else {
+                // dispatches handleMouseup
+                document.addEventListener("mouseup", this, false);
+                // dispatches handleMousemove
+                document.addEventListener("mousemove", this, false);
+            }
         }
     },
 
@@ -1748,12 +1820,27 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             }
             this._selectionPointer = null;
 
+            if (this._currentActiveIteration) {
+                this._currentActiveIteration.shouldBecomeActive = false;
+                this._currentActiveIteration = null;
+            }
+
             this.activeIterations.clear();
 
+            this._startX = 0;
+            this._startY = 0;
+
             var document = this.element.ownerDocument;
-            document.removeEventListener("touchend", this, false);
-            document.removeEventListener("touchcancel", this, false);
-            document.removeEventListener("mouseup", this, false);
+
+            if (window.Touch) {
+                document.removeEventListener("touchend", this, false);
+                document.removeEventListener("touchmove", this, false);
+                document.removeEventListener("touchcancel", this, false);
+
+            } else {
+                document.removeEventListener("mouseup", this, false);
+                document.removeEventListener("mousemove", this, false);
+            }
         }
     },
 
@@ -1773,7 +1860,11 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             this._observeSelectionPointer("mouse");
             var iteration = this._findIterationContainingElement(event.target);
             if (iteration) {
-                iteration.active = true;
+                this._startX = event.clientX;
+                this._startY = event.clientY;
+
+                iteration.shouldBecomeActive = true;
+                this._currentActiveIteration = iteration;
             } else {
                 this._ignoreSelectionPointer();
             }
@@ -1794,8 +1885,15 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
             this._observeSelectionPointer(event.changedTouches[0].identifier);
             var iteration = this._findIterationContainingElement(event.target);
+
             if (iteration) {
-                iteration.active = true;
+                var touch = event.changedTouches[0];
+
+                this._startX = touch.clientX;
+                this._startY = touch.clientY;
+
+                iteration.shouldBecomeActive = true;
+                this._currentActiveIteration = iteration;
             } else {
                 this._ignoreSelectionPointer();
             }
@@ -1803,6 +1901,58 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     },
 
     // ---
+
+    /**
+     * @private
+     */
+    handleTouchmove: {
+        value: function (event) {
+            var touch;
+
+            for (var i = 0; i < event.changedTouches.length; i++) {
+                if (event.changedTouches[i].identifier === this._selectionPointer) {
+                    touch = event.changedTouches[i];
+                    break;
+                }
+            }
+
+            if (touch) {
+                event.preventDefault();
+
+                this._move(touch.clientX, touch.clientY);
+            }
+        }
+    },
+
+
+    /**
+     * @private
+     */
+    handleMousemove: {
+        value: function (event) {
+            if (event) {
+                this._move(event.clientX, event.clientY);
+            }
+        }
+    },
+
+
+    /**
+     * @private
+     */
+    _move: {
+        value: function (positionX, positionY) {
+            var threshold = this._threshold,
+                dX = positionX - this._startX,
+                dY = positionY - this._startY;
+
+            // Check if the current position is inside the allowed radius of pixels between a touchstart/mousedown and a touchmove/mousemove.
+            if (dX * dX + dY * dY > threshold * threshold) {
+                this._ignoreSelectionPointer();
+            }
+        }
+    },
+
 
     /**
      * @private
@@ -1851,7 +2001,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 // Find the corresponding iteration
                 var iteration = this._findIterationContainingElement(target);
                 // And select it, if there is one
-                if (iteration) {
+                if (iteration && this._currentActiveIteration === iteration) {
                     iteration.active = false;
                     if (!iteration.selected) {
                         iteration.selected = true;
