@@ -18,6 +18,8 @@ var Observers = require("frb/observers");
 var observeProperty = Observers.observeProperty;
 var observeKey = Observers.observeKey;
 
+var TIMEOUT_BEFORE_ITERATION_BECOME_ACTIVE = 45;
+
 /**
  * A reusable view-model for each iteration of a repetition.  Each iteration
  * corresponds to a value from the {@link Repetition#contentController}.
@@ -187,6 +189,41 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
 
             this.cachedFirstElement = null;
 
+        }
+    },
+
+    _timeoutBecomeActiveID: {
+        value: null
+    },
+
+    _shouldBecomeActive: {
+        value: false
+    },
+
+    shouldBecomeActive: {
+        set: function (bool) {
+            if (this._timeoutBecomeActiveID) {
+                clearTimeout(this._timeoutBecomeActiveID);
+                this._timeoutBecomeActiveID = null;
+            }
+
+            if (bool) {
+                var self = this;
+                this._shouldBecomeActive = true;
+
+                this._timeoutBecomeActiveID = setTimeout(function () {
+                    if (self._shouldBecomeActive) {
+                        self.active = true;
+                    }
+
+                    self._shouldBecomeActive = false;
+                }, TIMEOUT_BEFORE_ITERATION_BECOME_ACTIVE);
+            } else {
+                this._shouldBecomeActive = false;
+            }
+        },
+        get: function () {
+            return this._shouldBecomeActive;
         }
     },
 
@@ -1686,6 +1723,15 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
 
     /**
+     * Pointer to the current active Iteration
+     *
+     * @type {object}
+     * @private
+     */
+    _currentActiveIteration: { value: null },
+
+
+    /**
      * @private
      */
     // Called by constructor to monitor changes to isSelectionEnabled and arrange
@@ -1774,6 +1820,11 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             }
             this._selectionPointer = null;
 
+            if (this._currentActiveIteration) {
+                this._currentActiveIteration.shouldBecomeActive = false;
+                this._currentActiveIteration = null;
+            }
+
             this.activeIterations.clear();
 
             this._startX = 0;
@@ -1812,7 +1863,8 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 this._startX = event.clientX;
                 this._startY = event.clientY;
 
-                iteration.active = true;
+                iteration.shouldBecomeActive = true;
+                this._currentActiveIteration = iteration;
             } else {
                 this._ignoreSelectionPointer();
             }
@@ -1833,13 +1885,15 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
             this._observeSelectionPointer(event.changedTouches[0].identifier);
             var iteration = this._findIterationContainingElement(event.target);
+
             if (iteration) {
                 var touch = event.changedTouches[0];
 
                 this._startX = touch.clientX;
                 this._startY = touch.clientY;
 
-                iteration.active = true;
+                iteration.shouldBecomeActive = true;
+                this._currentActiveIteration = iteration;
             } else {
                 this._ignoreSelectionPointer();
             }
