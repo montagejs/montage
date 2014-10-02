@@ -11,7 +11,7 @@ var Montage = require("../core/core").Montage,
  * @classdesc `Composer` for detecting swipe gestures.
  * @extends Composer
  */
-exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
+exports.SwipeComposer = Composer.specialize(/** @lends SwipeComposer# */ {
 
     load: {
         value: function() {
@@ -21,7 +21,7 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
 
     unload: {
         value: function() {
-	        this._element.removeEventListener("touchstart", this, true);
+            this._element.removeEventListener("touchstart", this, true);
         }
     },
 
@@ -78,9 +78,9 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
             this._startX = touch.clientX;
             this._startY = touch.clientY;
             this._startTimestamp = event.timeStamp;
-	        this._element.addEventListener("touchmove", this, true);
-	        this._element.addEventListener("touchend", this, true);
-	        this._element.addEventListener("touchcancel", this, true);
+            this._element.addEventListener("touchmove", this, true);
+            this._element.addEventListener("touchend", this, true);
+            this._element.addEventListener("touchcancel", this, true);
         }
     },
 
@@ -100,19 +100,13 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
         value: null
     },
 
-	_removeEventListeners: {
-		value: function () {
-			this._element.removeEventListener("touchmove", this, true);
-			this._element.removeEventListener("touchend", this, true);
-			this._element.removeEventListener("touchcancel", this, true);
-		}
-	},
-
-	captureTouchcancel: {
-		value: function(event) {
-			this._removeEventListeners();
-		}
-	},
+    _removeEventListeners: {
+        value: function() {
+            this._element.removeEventListener("touchmove", this, true);
+            this._element.removeEventListener("touchend", this, true);
+            this._element.removeEventListener("touchcancel", this, true);
+        }
+    },
 
     captureTouchcancel: {
         value: function(event) {
@@ -205,8 +199,8 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
                 return;
             }
 
-	        this._removeEventListeners();
-i
+            this._removeEventListeners();
+
             if (deltaX > threshold && deltaY > threshold) {
                 direction = "DIAGONAL";
             } else if (deltaX > threshold && deltaY < threshold) {
