@@ -1,3 +1,48 @@
+### v0.14.12
+
+-  **Repetition**
+
+   An iteration will become active after a short delay.
+   A selection is canceled when a pointer has been pressed and moved.
+
+-  **Component**
+
+   Fix an issue when initializing the classList of a Component from a SVG element.
+   Fix component dispose function, unregisterEventHandlerForElement was called with the wrong parameters.
+   Do not allow an element to be assigned to multiple components.
+
+-  **Montage Testing**
+
+   Update the Montage-testing package to version v0.4.1.
+
+-  **Flow**
+
+   Adds responsive/liquid properties to Flow and fixes several bugs.
+
+-  **Translate Composer**
+
+   Can be disabled to make it stop claiming pointers and preventing default.
+
+-  **Abstract Image**
+
+   Better support across different browsers of the 1x1 blank data url image.
+
+-  **Collections**
+
+   Update the Collections package to version v0.2.1.
+
+-  **FRB**
+
+   Update the FRB package to version v0.2.18.
+
+-  **Event Manager**
+
+   Add object pooling to minimize garbage collection of objects used inside event-manager listener registration.
+
+-  **Abstract Number Field**
+
+   Allow null values in AbstractNumberField.
+
 ### v0.14.11
 
 -  **Template**
