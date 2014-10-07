@@ -1917,8 +1917,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             }
 
             if (touch) {
-                event.preventDefault();
-
                 this._move(touch.clientX, touch.clientY);
             }
         }
