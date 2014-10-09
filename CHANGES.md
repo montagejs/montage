@@ -1,3 +1,13 @@
+### v0.14.13
+
+-  **Repetition**
+
+   Don’t cancel the event touchmove in order to fix the bug with the webkit accelerated scrolling.
+
+-  **Window Loader**
+
+   Update window loader to transition to .mr in a backward compatible way.
+
 ### v0.14.12
 
 -  **Repetition**
