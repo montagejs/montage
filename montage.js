@@ -282,7 +282,8 @@ if (typeof window !== "undefined") {
                         .done();
                     };
 
-                    self.mr = applicationRequire;
+                    // Fixe me: transition to .mr only
+                    self.require = self.mr = applicationRequire;
                     platform.initMontage(montageRequire, applicationRequire, params);
                 });
             })
