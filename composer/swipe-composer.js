@@ -15,13 +15,13 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
 
     load: {
         value: function() {
-            document.addEventListener("touchstart", this, true);
+            this._element.addEventListener("touchstart", this, true);
         }
     },
 
     unload: {
         value: function() {
-            document.removeEventListener("touchstart", this, true);
+	        this._element.removeEventListener("touchstart", this, true);
         }
     },
 
@@ -78,9 +78,9 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
             this._startX = touch.clientX;
             this._startY = touch.clientY;
             this._startTimestamp = event.timeStamp;
-            document.addEventListener("touchmove", this, true);
-            document.addEventListener("touchend", this, true);
-            document.addEventListener("touchcancel", this, true);
+	        this._element.addEventListener("touchmove", this, true);
+	        this._element.addEventListener("touchend", this, true);
+	        this._element.addEventListener("touchcancel", this, true);
         }
     },
 
@@ -100,13 +100,19 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
         value: null
     },
 
-    captureTouchcancel: {
-        value: function(event) {
-            document.removeEventListener("touchmove", this, true);
-            document.removeEventListener("touchend", this, true);
-            document.removeEventListener("touchcancel", this, true);
-        }
-    },
+	_removeEventListeners: {
+		value: function () {
+			this._element.removeEventListener("touchmove", this, true);
+			this._element.removeEventListener("touchend", this, true);
+			this._element.removeEventListener("touchcancel", this, true);
+		}
+	},
+
+	captureTouchcancel: {
+		value: function(event) {
+			this._removeEventListeners();
+		}
+	},
 
     captureTouchmove: {
         value: function(event) {
@@ -193,7 +199,7 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
                 return;
             }
 
-            document.removeEventListener("touchmove", this, true);
+	        this._removeEventListeners();
 
             if (deltaX > threshold && deltaY > threshold) {
                 direction = "DIAGONAL";
