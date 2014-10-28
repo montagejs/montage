@@ -42,10 +42,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     constructor: {
         value: function Component() {
             this.super();
-            this._isComponentExpanded = false;
-            this._isTemplateLoaded = false;
-            this._isTemplateInstantiated = false;
-            this._isComponentTreeLoaded = false;
         }
     },
 
@@ -970,17 +966,17 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     _isComponentExpanded: {
         enumerable: false,
-        value: null
+        value: false
     },
 
     _isTemplateLoaded: {
         enumerable: false,
-        value: null
+        value: false
     },
 
     _isTemplateInstantiated: {
         enumerable: false,
-        value: null
+        value: false
     },
 
     /**
@@ -1195,7 +1191,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _isComponentTreeLoaded: {
-        value: null
+        value: false
     },
 
     shouldLoadComponentTree: {
@@ -2388,7 +2384,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             for (i = 0; i < length; i++) {
                 composerList[i].unload();
             }
-            composerList.splice(0, length);
+            composerList.length = 0;
         }
     },
 
@@ -2969,7 +2965,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                 }
             }
             this._clearNeedsDrawTimeOut = null;
-            needsDrawList.splice(0, length);
+			needsDrawList.length = 0;	
         }
     },
 
