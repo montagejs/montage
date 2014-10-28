@@ -538,7 +538,7 @@ describe("reel/template-spec", function() {
                     template.replaceNode(node, reference);
 
                     var domImage = template.document.getElementById("empty_src"),
-                        domSrc = domImage ? domImage.src : "";
+                        domSrc = domImage ? domImage.getAttribute('src') : "";
 
                     expect(domSrc).toBe("");
                 }).fail(function() {
