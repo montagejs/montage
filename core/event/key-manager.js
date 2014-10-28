@@ -799,7 +799,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 keyComposer.dispatchEvent(keyComposerEvent);
 
                 // console.log("keyComposer Event DISPATCHED:", keyComposerEvent, event.target, keyComposer);
-                if (keyComposerEvent.defaultPrevented) {
+                if (keyComposerEvent._isDefaultPrevented) {
                     event.preventDefault();
                 }
                 if (keyComposerEvent.propagationStopped) {
