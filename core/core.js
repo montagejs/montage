@@ -667,15 +667,17 @@ var superImplementation = function super_() {
     return typeof superFunction === "function" ? superFunction.bind(this) : Function.noop;
 };
 
+Montage.defineProperty(Montage, "_superContext", {
+    value: null
+});
+
 var superForImplementation = function (object, propertyType, propertyName) {
     var superFunction, superObject, property, cacheObject, boundSuper,
         context = object,
         cacheId = propertyName + "." + propertyType;
 
     if (!object._superContext) {
-        Montage.defineProperty(object, "_superContext", {
-            value: {}
-        });
+        object._superContext = {};
     }
     // is there a super context for this call? I.e. does the super() call originate in an ancestor of object?
     // If so, we use that object as the starting point (context) when looking for the super method.
