@@ -1,23 +1,26 @@
 var Montage = require("montage").Montage,
     MediaController = require("montage/core/media-controller").MediaController,
     MockDOM = require("mocks/dom"),
-    MockEvent = require("mocks/event"),
-    MockMediaController = require("mocks/mediacontroller");
+    MockEvent = require("mocks/event");
 
 describe("core/media-controller-spec", function() {
 
-    var nativeMediaController;
+    var aMediaController,
+        mediaElement;
 
     beforeEach(function () {
-        nativeMediaController = window.MediaController;
-        window.MediaController = function() {
-            return MockMediaController.mediaController();
-        }
-    });
+        aMediaController = new MediaController();
+        mediaElement = MockDOM.element();
+        mediaElement.muted = false;
+        mediaElement.currentTime = 0;
+        mediaElement.volume = 1;
+        mediaElement.duration = 200;
+        mediaElement.play = Function.noop;
+        mediaElement.pause = Function.noop;
+        mediaElement.stop = Function.noop;
 
-    afterEach(function () {
-        window.MediaController = nativeMediaController;
-    });            
+        aMediaController.mediaElement = mediaElement;
+    });
 
     describe("creation", function () {
         it("can be instantiated directly", function () {
@@ -28,27 +31,8 @@ describe("core/media-controller-spec", function() {
     });
 
     describe("properties", function () {
-    
-        describe("mediaController", function () {
-            var aMediaController;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-            });
-
-            it("should create media controller automatically", function() {
-                expect(aMediaController.mediaController).not.toBeNull();
-            });
-        });
 
         describe("playbackRate", function () {
-            var aMediaController,
-                controller;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-            });
-
             it("should have correct default value", function() {
                 expect(aMediaController.playbackRate).toEqual(1);
             });
@@ -62,23 +46,9 @@ describe("core/media-controller-spec", function() {
                 aMediaController.playbackRate = -0.5;
                 expect(aMediaController.playbackRate).toEqual(-0.5);
             });
-            
-            it("should set playback rate on native media controller", function() {
-                aMediaController.playbackRate = 0.5;
-                expect(aMediaController.mediaController.playbackRate).toEqual(0.5);
-            });
-
         });
 
         describe("currentTime", function () {
-            var aMediaController,
-                controller;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-            });
-
             it("should have correct default value", function() {
                 expect(aMediaController.currentTime).toEqual(0);
             });
@@ -94,24 +64,9 @@ describe("core/media-controller-spec", function() {
                 aMediaController.currentTime = 142;
                 expect(aMediaController.currentTime).toEqual(0);
             });
-            
-            it("should update currentTime on native controller", function() {
-                aMediaController.status = aMediaController.PLAYING;
-                aMediaController.currentTime = 142;
-                expect(aMediaController.mediaController.currentTime).toEqual(142);
-            });
-
         });
 
         describe("duration", function () {
-            var aMediaController,
-                controller;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-            });
-
             it("should have correct default value", function() {
                 expect(aMediaController.duration).toBeNull();
             });
@@ -123,14 +78,6 @@ describe("core/media-controller-spec", function() {
         });
         
         describe("autoplay", function () {
-            var aMediaController,
-                controller;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-            });
-
             it("should have correct default value", function() {
                 expect(aMediaController.autoplay).toEqual(false);
             });
@@ -144,14 +91,6 @@ describe("core/media-controller-spec", function() {
         });
 
         describe("volume", function () {
-            var aMediaController,
-                controller;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-            });
-
             it("should have correct default value", function() {
                 expect(aMediaController.volume).toEqual(100);
             });
@@ -159,25 +98,11 @@ describe("core/media-controller-spec", function() {
             it("can be set", function() {
                 aMediaController.volume = 53;
                 expect(aMediaController.volume).toEqual(53);
+                expect(mediaElement.volume).toEqual(0.53);
             });
-
-            it("should set volume on native controller", function() {
-                controller.volume = 1;
-                aMediaController.volume = 53;
-                expect(controller.volume).toEqual(0.53);
-            });
-
         });
 
         describe("mute", function () {
-            var aMediaController,
-                controller;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-            });
-
             it("should have correct default value", function() {
                 expect(aMediaController.mute).toEqual(false);
             });
@@ -190,20 +115,13 @@ describe("core/media-controller-spec", function() {
             });
             
             it("should set muted on native controller", function() {
-                controller.muted = false;
                 aMediaController.mute = true;
-                expect(controller.muted).toEqual(true);
+                expect(mediaElement.muted).toEqual(true);
             });
 
         });
 
         describe("status", function () {
-            var aMediaController;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-            });
-
             it("should have default value of EMPTY", function() {
                 expect(aMediaController.status).toEqual(aMediaController.EMPTY);
             });
@@ -219,23 +137,6 @@ describe("core/media-controller-spec", function() {
     describe("functions", function () {
     
         describe("play", function () {
-            var aMediaController,
-                controller;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-            });
-
-            it("should call play on media controller", function() {
-                var wasCalled = false;
-                controller.play = function() {
-                    wasCalled = true;
-                };
-                aMediaController.play();
-                expect(wasCalled).toEqual(true);
-            });
-            
             it("should play from the beginning", function() {
                 aMediaController.currentTime = 1000;
                 aMediaController.play();
@@ -243,56 +144,10 @@ describe("core/media-controller-spec", function() {
             });
         });
 
-        describe("pause", function () {
-            var aMediaController,
-                controller;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-            });
-
-            it("should call pause on media controller", function() {
-                var wasCalled = false;
-                controller.pause = function() {
-                    wasCalled = true;
-                };
-                aMediaController.pause();
-                expect(wasCalled).toEqual(true);
-            });
-        });
-
-        describe("unpause", function () {
-            var aMediaController,
-                controller;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-            });
-
-            it("should call unpause on media controller", function() {
-                var wasCalled = false;
-                controller.unpause = function() {
-                    wasCalled = true;
-                };
-                aMediaController.unpause();
-                expect(wasCalled).toEqual(true);
-            });
-        });
-
         describe("playPause", function () {
-            var aMediaController,
-                controller;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-            });
-
             it("should call play on media controller if not playing", function() {
                 var wasCalled = false;
-                controller.play = function() {
+                aMediaController.play = function() {
                     wasCalled = true;
                 };
                 aMediaController.status = aMediaController.STOPPED;
@@ -302,7 +157,7 @@ describe("core/media-controller-spec", function() {
             
             it("should call pause on media controller if playing", function() {
                 var wasCalled = false;
-                controller.pause = function() {
+                aMediaController.pause = function() {
                     wasCalled = true;
                 };
                 aMediaController.status = aMediaController.PLAYING;
@@ -312,12 +167,6 @@ describe("core/media-controller-spec", function() {
         });
 
         describe("rewind", function () {
-            var aMediaController;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-            });
-
             it("should set playback rate to -4.0 when playing", function() {
                 aMediaController.playbackRate = 1.0;
                 aMediaController.status = aMediaController.PLAYING;
@@ -335,12 +184,6 @@ describe("core/media-controller-spec", function() {
         });
 
         describe("fastForward", function () {
-            var aMediaController;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-            });
-
             it("should set playback rate to 4.0 when playing", function() {
                 aMediaController.playbackRate = 1.0;
                 aMediaController.status = aMediaController.PLAYING;
@@ -357,27 +200,10 @@ describe("core/media-controller-spec", function() {
         });
 
         describe("stop", function () {
-            var aMediaController,
-                controller;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-            });
-
-            it("should call pause on media controller", function() {
-                var wasCalled = false;
-                controller.pause = function() {
-                    wasCalled = true;
-                };
-                aMediaController.stop();
-                expect(wasCalled).toEqual(true);
-            });
-            
             it("should set current time on media controller to zero", function() {
-                controller.currentTime = 500;
+                aMediaController.currentTime = 500;
                 aMediaController.stop();
-                expect(controller.currentTime).toEqual(0);
+                expect(aMediaController.currentTime).toEqual(0);
             });
             
             it("should set status to STOPPED", function() {
@@ -388,12 +214,6 @@ describe("core/media-controller-spec", function() {
         });
 
         describe("volumeIncrease", function () {
-            var aMediaController;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-            });
-
             it("should increase volume by 10", function() {
                 aMediaController.volume = 40;
                 aMediaController.volumeIncrease();
@@ -402,12 +222,6 @@ describe("core/media-controller-spec", function() {
         });
 
         describe("volumeDecrease", function () {
-            var aMediaController;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-            });
-
             it("should decrease volume by 10", function() {
                 aMediaController.volume = 40;
                 aMediaController.volumeDecrease();
@@ -416,12 +230,6 @@ describe("core/media-controller-spec", function() {
         });
 
         describe("toggleMute", function () {
-            var aMediaController;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-            });
-
             it("should set mute to false if muted", function() {
                 aMediaController.mute = true;
                 aMediaController.toggleMute();
@@ -441,196 +249,131 @@ describe("core/media-controller-spec", function() {
     describe("events", function () {
     
         describe("loadedmetadata", function () {
-            var aMediaController,
-                controller,
-                anEvent;
+            var anEvent;
             
             beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
                 anEvent = MockEvent.event("loadedmetadata", true, true, null);
             });
 
             it("should set status to STOPPED", function() {
                 aMediaController.status = aMediaController.EMPTY;
-                controller.dispatchEvent(anEvent);
+                mediaElement.dispatchEvent(anEvent);
                 expect(aMediaController.status).toEqual(aMediaController.STOPPED);
             });
 
             it("should start playing if autoplay=true", function() {
                 var wasCalled = false;
-                controller.play = function() {
+                aMediaController.play = function() {
                     wasCalled = true;
                 };
 
                 aMediaController.autoplay = true;
 
-                controller.dispatchEvent(anEvent);
+                mediaElement.dispatchEvent(anEvent);
                 expect(wasCalled).toEqual(true);
-            });
-
-            it("should read duration from native media controller", function() {
-                controller.duration = 67;
-                controller.dispatchEvent(anEvent);
-                expect(aMediaController.duration).toEqual(67);
             });
         });
         
         describe("timeupdate", function () {
-            var aMediaController,
-                controller,
-                anEvent;
+            var anEvent;
             
             beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
                 anEvent = MockEvent.event("timeupdate", true, true, null);
             });
             
             it("should update the position value", function() {
+                aMediaController.status = aMediaController.PLAYING;
                 aMediaController.position = 26;
-                controller.currentTime = 34;
-                controller.dispatchEvent(anEvent);
+                aMediaController.currentTime = 34;
+                mediaElement.dispatchEvent(anEvent);
                 expect(aMediaController.position).toEqual(34);
             });
             
             it("should not update the position value if stopped", function() {
                 aMediaController.position = 26;
                 aMediaController.status = aMediaController.STOPPED;
-                controller.currentTime = 34;
-                controller.dispatchEvent(anEvent);
+                aMediaController.currentTime = 34;
+                mediaElement.dispatchEvent(anEvent);
                 expect(aMediaController.position).toEqual(26);
             });
         });
         
         describe("play", function () {
-            var aMediaController,
-                controller,
-                anEvent;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-                anEvent = MockEvent.event("play", true, true, null);
-            });
-            
             it("should set the status to PLAYING", function() {
                 aMediaController.status = aMediaController.EMPTY;
-                controller.dispatchEvent(anEvent);
+                var anEvent = MockEvent.event("play", true, true, null);
+
+                mediaElement.dispatchEvent(anEvent);
                 expect(aMediaController.status).toEqual(aMediaController.PLAYING);
             });
         });
         
         describe("playing", function () {
-            var aMediaController,
-                controller,
-                anEvent;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-                anEvent = MockEvent.event("playing", true, true, null);
-            });
-            
             it("should set the status to PLAYING", function() {
                 aMediaController.status = aMediaController.EMPTY;
-                controller.dispatchEvent(anEvent);
+                var anEvent = MockEvent.event("playing", true, true, null);
+
+                mediaElement.dispatchEvent(anEvent);
                 expect(aMediaController.status).toEqual(aMediaController.PLAYING);
             });
         });
         
         describe("pause", function () {
-            var aMediaController,
-                controller,
-                anEvent;
-            
+            var anEvent;
+
             beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
                 anEvent = MockEvent.event("pause", true, true, null);
             });
-            
+
             it("should set the status to PAUSED", function() {
                 aMediaController.status = aMediaController.EMPTY;
-                controller.dispatchEvent(anEvent);
+                mediaElement.dispatchEvent(anEvent);
                 expect(aMediaController.status).toEqual(aMediaController.PAUSED);
             });
             
             it("should not change the status if stopped", function() {
                 aMediaController.status = aMediaController.STOPPED;
-                controller.dispatchEvent(anEvent);
+                mediaElement.dispatchEvent(anEvent);
                 expect(aMediaController.status).toEqual(aMediaController.STOPPED);
             });
         });
         
         describe("abort", function () {
-            var aMediaController,
-                controller,
-                anEvent;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-                anEvent = MockEvent.event("abort", true, true, null);
-            });
-            
             it("should set the status to STOPPED", function() {
                 aMediaController.status = aMediaController.EMPTY;
-                controller.dispatchEvent(anEvent);
+                var anEvent = MockEvent.event("abort", true, true, null);
+
+                mediaElement.dispatchEvent(anEvent);
                 expect(aMediaController.status).toEqual(aMediaController.STOPPED);
             });
         });
         
         describe("error", function () {
-            var aMediaController,
-                controller,
-                anEvent;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-                anEvent = MockEvent.event("error", true, true, null);
-            });
-            
             it("should set the status to STOPPED", function() {
                 aMediaController.status = aMediaController.EMPTY;
-                controller.dispatchEvent(anEvent);
+                var anEvent = MockEvent.event("error", true, true, null);
+
+                mediaElement.dispatchEvent(anEvent);
                 expect(aMediaController.status).toEqual(aMediaController.STOPPED);
             });
         });
         
         describe("emptied", function () {
-            var aMediaController,
-                controller,
-                anEvent;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-                anEvent = MockEvent.event("emptied", true, true, null);
-            });
-            
             it("should set the status to STOPPED", function() {
+                var anEvent = MockEvent.event("emptied", true, true, null);
                 aMediaController.status = aMediaController.EMPTY;
-                controller.dispatchEvent(anEvent);
+
+                mediaElement.dispatchEvent(anEvent);
                 expect(aMediaController.status).toEqual(aMediaController.STOPPED);
             });
         });
         
         describe("ended", function () {
-            var aMediaController,
-                controller,
-                anEvent;
-            
-            beforeEach(function () {
-                aMediaController = new MediaController();
-                controller = aMediaController.mediaController;
-                anEvent = MockEvent.event("ended", true, true, null);
-            });
-            
             it("should set the status to STOPPED", function() {
+                var anEvent = MockEvent.event("ended", true, true, null);
                 aMediaController.status = aMediaController.EMPTY;
-                controller.dispatchEvent(anEvent);
+
+                mediaElement.dispatchEvent(anEvent);
                 expect(aMediaController.status).toEqual(aMediaController.STOPPED);
             });
         });
