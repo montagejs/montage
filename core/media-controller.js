@@ -4,14 +4,13 @@
  * @requires montage/ui/component
  * @requires montage/core/logger
  */
-var Montage = require("./core").Montage;
-var Target = require("./target").Target;
-var logger = require("./logger").logger("mediacontroller");
+var Target = require("./target").Target,
+    logger = require("./logger").logger("mediacontroller");
 
 /**
  * @class MediaController
  * @classdesc Controls an audio/video media player.
- * @extends Montage
+ * @extends Target
  */
 var MediaController = exports.MediaController = Target.specialize(/** @lends MediaController# */ {
 
@@ -43,34 +42,28 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
      */
     EMPTY: { value: 3, writable: false },
 
-    _TIMEUPDATE_FREQUENCY: { value: 0.25   },  // Don't refresh too often.
+    _TIMEUPDATE_FREQUENCY: { value: 0.25 },  // Don't refresh too often.
 
 
     /*-----------------------------------------------------------------------------
      MARK:   Properties
      -----------------------------------------------------------------------------*/
 
-    _mediaController: {
+    _mediaElement: {
         value: null
     },
-    /**
-     * @type {Function}
-     * @default null
-     */
-    mediaController: {
+
+    mediaElement: {
         get: function () {
-            if (!this._mediaController) {
-                this._mediaController = new window.MediaController();
-                this._installControlEventHandlers();
-            }
-            return this._mediaController;
+            return this._mediaElement;
         },
-        set: function (controller) {
-            if (this._mediaController !== controller) {
-                if (this._mediaController) {
+        set: function (mediaElement) {
+            if (this._mediaElement !== mediaElement) {
+                if (this._mediaElement) {
                     this._removeControlEventHandlers();
                 }
-                this._mediaController = controller;
+
+                this._mediaElement = mediaElement;
                 this._installControlEventHandlers();
             }
         }
@@ -83,6 +76,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     _status: {
         value: 3
     },
+
     /**
      * @type {Function}
      * @default {number} 3
@@ -104,6 +98,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     _position: {
         value: null
     },
+
     /**
      * @type {Function}
      * @default null
@@ -124,6 +119,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     _duration: {
         value: null
     },
+
     /**
      * @type {Function}
      * @default null
@@ -167,11 +163,12 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
             if (logger.isDebug) {
                 logger.debug("MediaController:play()");
             }
+
             // setting currentTime will throw if video not loaded yet(?)
-            if (this.mediaController.currentTime !== 0) {
-                this.mediaController.currentTime = 0;
+            if (this._mediaElement.currentTime !== 0) {
+                this._mediaElement.currentTime = 0;
             }
-            this.mediaController.play();
+            this._mediaElement.play();
             this._pauseTime = null;
         }
     },
@@ -189,8 +186,8 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
                 logger.debug("MediaController:pause()");
             }
             // temporary workaround for Chrome issue: https://code.google.com/p/chromium/issues/detail?id=242839
-            this._pauseTime = this.mediaController.currentTime;
-            this.mediaController.pause();
+            this._pauseTime = this._mediaElement.currentTime;
+            this._mediaElement.pause();
         }
     },
 
@@ -202,10 +199,12 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
             if (logger.isDebug) {
                 logger.debug("MediaController:unpause()");
             }
+
             if (this._pauseTime !== null) {
-                this.mediaController.currentTime = this._pauseTime;
+                this._mediaElement.currentTime = this._pauseTime;
             }
-            this.mediaController.unpause();
+
+            this._mediaElement.play();
         }
     },
 
@@ -219,9 +218,11 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
                 logger.debug("MediaController:playPause()");
             }
 
-            var playing = (this.status === this.PLAYING);
-            var paused = (this.status === this.PAUSED);
-            this.playbackRate = this.mediaController.defaultPlaybackRate;
+            var playing = (this.status === this.PLAYING),
+                paused = (this.status === this.PAUSED);
+
+            this.playbackRate = this._mediaElement.defaultPlaybackRate;
+
             if (playing) {
                 this.pause();
             } else if (paused) {
@@ -229,6 +230,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
             } else {
                 this.play();
             }
+
             return !playing;    // true if it is now playing
         }
     },
@@ -236,6 +238,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     _playbackRate: {
         value: 1
     },
+
     /**
      * @type {Function}
      * @default {number} 1
@@ -247,8 +250,18 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
         set: function (playbackRate) {
             if (this._playbackRate !== playbackRate) {
                 this._playbackRate = playbackRate;
-                this.mediaController.playbackRate = this._playbackRate;
+                this._mediaElement.playbackRate = this._playbackRate;
             }
+        }
+    },
+
+
+    defaultPlaybackRate: {
+        set: function (defaultPlaybackRate) {
+            return this._mediaElement.defaultPlaybackRate = defaultPlaybackRate;
+        },
+        get: function () {
+            return this._mediaElement.defaultPlaybackRate;
         }
     },
 
@@ -258,27 +271,31 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
      */
     currentTime: {
         get: function () {
-            return this.mediaController.currentTime;
+            return this._mediaElement.currentTime;
         },
         set: function (currentTime) {
             if (this.status === this.EMPTY) {
                 return;
             }
+
             try {
-                if (isNaN(this.mediaController.duration)) {
+                if (isNaN(this._mediaElement.duration)) {
                     logger.error("MediaController:set currentTime: duration is not valid");
                     return;
                 }
-                if (logger.isDebug) {
-                    logger.debug("current time: " + this.mediaController.currentTime + ", new time: " + currentTime);
-                }
-                var oldTime = this.mediaController.currentTime;
+
+                var oldTime = this._mediaElement.currentTime;
+
                 if (oldTime !== currentTime) {
-                    this.mediaController.currentTime = currentTime;
+                    if (this._position !== currentTime && this.status !== this.STOPPED) {
+                        this._position = currentTime;
+                    }
+
+                    this._mediaElement.currentTime = currentTime;
                 }
-            }
-            catch (err) {
-                logger.error("MediaController:Exception in set currentTime" + this.mediaController.currentTime);
+
+            } catch (err) {
+                logger.error("MediaController:Exception in set currentTime" + this._mediaElement.currentTime);
             }
         }
     },
@@ -292,6 +309,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
                 if (logger.isDebug) {
                     logger.debug("MediaController:rewind()");
                 }
+
                 this.playbackRate = -4.0;
             }
         }
@@ -306,6 +324,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
                 if (logger.isDebug) {
                     logger.debug("MediaController:fastForward()");
                 }
+
                 this.playbackRate = 4.0;
             }
         }
@@ -321,7 +340,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
             }
 
             // Pause the playback
-            this.mediaController.pause();
+            this._mediaElement.pause();
             this._pauseTime = null;
             // Reset the status
             this.status = this.STOPPED;
@@ -336,11 +355,11 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
 
     /**
      * @type {Function}
-     * @returns {number} this.mediaController.volume * 100
+     * @returns {number} this.mediaElement.volume * 100
      */
     volume: {
         get: function () {
-            return this.mediaController.volume * 100;
+            return this._mediaElement.volume * 100;
         },
 
         set: function (vol) {
@@ -354,7 +373,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
             else if (volume < 0) {
                 volume = 0;
             }
-            this.mediaController.volume = volume / 100.0;
+            this._mediaElement.volume = volume / 100.0;
         }
     },
 
@@ -390,11 +409,11 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
      */
     mute: {
         get: function () {
-            return this.mediaController.muted;
+            return this._mediaElement.muted;
         },
         set: function (muted) {
-            if (muted !== this.mediaController.muted) {
-                this.mediaController.muted = muted;
+            if (muted !== this._mediaElement.muted) {
+                this._mediaElement.muted = muted;
             }
         }
     },
@@ -413,13 +432,13 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
             if (logger.isDebug) {
                 logger.debug("MediaController:handleLoadedmetadata: PLAYING=" + (this.status === this.PLAYING) + " duration=" + this.mediaController.duration);
             }
-            if (isNaN(this.mediaController.duration)) {
+            if (isNaN(this._mediaElement.duration)) {
                 if (logger.isDebug) {
                     logger.debug("MediaController:handleLoadedmetadata: duration is not valid");
                 }
                 return;
             }
-            this.duration = this.mediaController.duration;
+            this.duration = this._mediaElement.duration;
             if (this.autoplay) {
                 if (logger.isDebug) {
                     logger.debug("MediaController:handleLoadedmetadata: autoplay");
@@ -441,7 +460,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     handleTimeupdate: {
         value: function () {
             if (this.status !== this.STOPPED) { // A last 'timeupdate' is sent after stop() which is unwanted because it restores the last position.
-                var currentTime = this.mediaController.currentTime;
+                var currentTime = this._mediaElement.currentTime;
                 //if (Math.abs(this._lastCurrentTime - currentTime) >= this._TIMEUPDATE_FREQUENCY) {
                 //    this._lastCurrentTime = currentTime;
                 Object.getPropertyDescriptor(this, "position").set.call(this, currentTime, true);
@@ -503,7 +522,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
             }
             // If the media controller is not in the paused=true state
             // then it won't fire a play event when you start playing again
-            this.mediaController.pause();
+            this._mediaElement.pause();
             this.status = this.STOPPED;
         }
     },
@@ -563,35 +582,36 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
             if (logger.isDebug) {
                 logger.debug("MediaController:handleEmptied: STOPPED");
             }
+
             this.status = this.STOPPED;
         }
     },
 
     _installControlEventHandlers: {
         value: function () {
-            this.mediaController.addEventListener('loadedmetadata', this);
-            this.mediaController.addEventListener('timeupdate', this);
-            this.mediaController.addEventListener('play', this);
-            this.mediaController.addEventListener('playing', this);
-            this.mediaController.addEventListener('pause', this);
-            this.mediaController.addEventListener('abort', this);
-            this.mediaController.addEventListener('error', this);
-            this.mediaController.addEventListener('emptied', this);
-            this.mediaController.addEventListener('ended', this);
+            this._mediaElement.addEventListener('loadedmetadata', this);
+            this._mediaElement.addEventListener('timeupdate', this);
+            this._mediaElement.addEventListener('play', this);
+            this._mediaElement.addEventListener('playing', this);
+            this._mediaElement.addEventListener('pause', this);
+            this._mediaElement.addEventListener('abort', this);
+            this._mediaElement.addEventListener('error', this);
+            this._mediaElement.addEventListener('emptied', this);
+            this._mediaElement.addEventListener('ended', this);
         }
     },
 
     _removeControlEventHandlers: {
         value: function () {
-            this.mediaController.removeEventListener('loadedmetadata', this);
-            this.mediaController.removeEventListener('timeupdate', this);
-            this.mediaController.removeEventListener('play', this);
-            this.mediaController.removeEventListener('playing', this);
-            this.mediaController.removeEventListener('pause', this);
-            this.mediaController.removeEventListener('abort', this);
-            this.mediaController.removeEventListener('error', this);
-            this.mediaController.removeEventListener('emptied', this);
-            this.mediaController.removeEventListener('ended', this);
+            this._mediaElement.removeEventListener('loadedmetadata', this);
+            this._mediaElement.removeEventListener('timeupdate', this);
+            this._mediaElement.removeEventListener('play', this);
+            this._mediaElement.removeEventListener('playing', this);
+            this._mediaElement.removeEventListener('pause', this);
+            this._mediaElement.removeEventListener('abort', this);
+            this._mediaElement.removeEventListener('error', this);
+            this._mediaElement.removeEventListener('emptied', this);
+            this._mediaElement.removeEventListener('ended', this);
         }
     },
 
@@ -613,4 +633,3 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     blueprint:require("./core")._blueprintDescriptor
 
 });
-
