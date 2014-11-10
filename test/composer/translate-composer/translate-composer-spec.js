@@ -284,7 +284,7 @@ TestPageLoader.queueTest("translate-composer-test", function(testPage) {
 
                     var eventName = "mousewheel";
                     var deltaPropertyName = "wheelDeltaY";
-                    if ("onwheel" in document.createElement("div")) {
+                    if (typeof window.onwheel !== "undefined" || typeof window.WheelEvent !== "undefined" ){
                         eventName = "wheel";
                         deltaPropertyName = "deltaY";
                     }

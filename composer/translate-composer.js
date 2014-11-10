@@ -1079,7 +1079,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 this._element.addEventListener("mousedown", this, false);
 
                 var wheelEventName;
-                if (typeof window.onwheel !== "undefined"){
+                if (typeof window.onwheel !== "undefined" || typeof window.WheelEvent !== "undefined" ){
                     wheelEventName = "wheel";
                 } else {
                     wheelEventName = "mousewheel";
