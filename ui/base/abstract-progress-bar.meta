@@ -1,0 +1,68 @@
+{
+    "value_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "value",
+            "valueType": "number",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "max_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "max",
+            "valueType": "number",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "AbstractControl",
+                "prototypeName": "AbstractControl",
+                "blueprintModule": {
+                    "%": "ui/base/abstract-control.meta"
+                }
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "AbstractProgressBar",
+            "parent": {
+                "@": "blueprint_parent"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "value_property"
+                },
+                {
+                    "@": "max_property"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "Main": [
+                    {
+                        "@": "value_property"
+                    },
+                    {
+                        "@": "max_property"
+                    }
+                ]
+            },
+            "blueprintModule": {
+                "%": "ui/base/abstract-progress-bar.meta"
+            },
+            "exportName": "AbstractProgressBar",
+            "module": {
+                "%": "ui/base/abstract-progress-bar"
+            }
+        }
+    }
+}
