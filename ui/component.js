@@ -3405,7 +3405,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                     composer.needsFrame = false;
                     composer.frame(this._frameTime);
                 }
-                composerList.splice(0, composerListLength);
+                composerList.length = 0;
                 this.composerListSwap = composerList;
             }
 
@@ -3469,9 +3469,6 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
             for (i = 0; i < j; i++) {
                 component = needsDrawList[i];
                 component.didDraw(this._frameTime);
-                if(component.identifier === "channelListItem") {
-                    console.log("component %s completedFirstDraw %s", Object.hash(component) , component._completedFirstDraw);
-                }
                 if (!component._completedFirstDraw) {
                     firstDrawEvent = document.createEvent("CustomEvent");
                     firstDrawEvent.initCustomEvent("firstDraw", true, false, null);

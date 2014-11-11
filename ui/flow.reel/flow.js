@@ -1631,7 +1631,6 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
                             } else {
                                 element.children[0].classList.remove("active");
                             }
-                            element.children[0].dataset.pathIndex = pathIndex;
                         }
                         pos = this._splinePaths[pathIndex].getPositionAtIndexTime(indexTime, this._sceneScale);
                         rotation = this._splinePaths[pathIndex].getRotationAtIndexTime(indexTime);
