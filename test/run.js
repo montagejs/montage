@@ -96,6 +96,7 @@ require("montage-testing").run(require,[
         // Broken due to changes to repetition
         "ui/repetition-spec",
         "ui/repetition-selection-spec",
+        "ui/repetition-binding-spec",
         "ui/slot-spec",
         "ui/substitution-spec",
         "ui/text/text-spec"
