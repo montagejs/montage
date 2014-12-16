@@ -186,7 +186,56 @@ describe("core/tree-controller-spec", function () {
         });
 
         describe("iteration junctions", function () {
-            it("initialize", function () {
+            it("initialize single-level depth", function () {
+                treeController = new TreeController();
+                treeController.content = {
+                    name: "I",
+                    "id": "1",
+                    children: [
+                        {
+                            "name": "I/A",
+                            "id": "2",
+                            children: []
+                        },
+                        {
+                            "name": "I/B",
+                            "id": "3",
+                            children: []
+                        }
+                    ]
+                };
+                treeController.allExpanded = true;
+
+                expect(treeController.iterations.length).toEqual(3);
+
+                var iteration0 = treeController.iterations[0];
+                expect(iteration0.content.name).toEqual('I');
+                var junctions0 = iteration0.junctions;
+                expect(junctions0.length).toEqual(1);
+                expect(junctions0[0]).toBeUndefined();
+
+                var iteration1 = treeController.iterations[1];
+                expect(iteration1.content.name).toEqual('I/A');
+                var junctions1 = iteration1.junctions;
+                expect(junctions1.length).toEqual(2);
+                expect(junctions1[0]).toBeUndefined();
+                expect(junctions1[1]).toEqual('medial');
+
+                var iteration2 = treeController.iterations[2];
+                expect(iteration2.content.name).toEqual('I/B');
+                var junctions2 = iteration2.junctions;
+                expect(junctions2.length).toEqual(2);
+                expect(junctions2[0]).toBeUndefined();
+                expect(junctions2[1]).toEqual('final');
+
+                /*
+                 I
+                 +- I/A
+                 ^- I/B
+                */
+            });
+
+            it("initialize two-levels depth", function () {
                 treeController = new TreeController();
                 treeController.content = tree;
                 tree.children[0].children = [{
@@ -197,25 +246,70 @@ describe("core/tree-controller-spec", function () {
                     name: "I/A/3"
                 }];
                 treeController.allExpanded = true;
-                var ascii = {
-                    "medial": " +-",
-                    "final": " ^-",
-                    "before": " | ",
-                    "after": "   "
-                };
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.junctions.map(function (junction) {
-                        return ascii[junction];
-                    }).join("") + " " + iteration.content.name;
-                })).toEqual([
-                    " I",
-                    " +- I/A",
-                    " |  +- I/A/1",
-                    " |  +- I/A/2",
-                    " |  ^- I/A/3",
-                    " ^- I/B",
-                    "    ^- I/B/1"
-                ]);
+
+                expect(treeController.iterations.length).toEqual(7);
+
+                var iteration0 = treeController.iterations[0];
+                expect(iteration0.content.name).toEqual('I');
+                var junctions0 = iteration0.junctions;
+                expect(junctions0.length).toEqual(1);
+                expect(junctions0[0]).toBeUndefined();
+
+                var iteration1 = treeController.iterations[1];
+                expect(iteration1.content.name).toEqual('I/A');
+                var junctions1 = iteration1.junctions;
+                expect(junctions1.length).toEqual(2);
+                expect(junctions1[0]).toBeUndefined();
+                expect(junctions1[1]).toEqual('medial');
+
+                var iteration2 = treeController.iterations[2];
+                expect(iteration2.content.name).toEqual('I/A/1');
+                var junctions2 = iteration2.junctions;
+                expect(junctions2.length).toEqual(3);
+                expect(junctions2[0]).toBeUndefined();
+                expect(junctions2[1]).toEqual('before');
+                expect(junctions2[2]).toEqual('medial');
+
+                var iteration3 = treeController.iterations[3];
+                expect(iteration3.content.name).toEqual('I/A/2');
+                var junctions3 = iteration3.junctions;
+                expect(junctions3.length).toEqual(3);
+                expect(junctions3[0]).toBeUndefined();
+                expect(junctions3[1]).toEqual('before');
+                expect(junctions3[2]).toEqual('medial');
+
+                var iteration4 = treeController.iterations[4];
+                expect(iteration4.content.name).toEqual('I/A/3');
+                var junctions4 = iteration4.junctions;
+                expect(junctions4.length).toEqual(3);
+                expect(junctions4[0]).toBeUndefined();
+                expect(junctions4[1]).toEqual('before');
+                expect(junctions4[2]).toEqual('final');
+
+                var iteration5 = treeController.iterations[5];
+                expect(iteration5.content.name).toEqual('I/B');
+                var junctions5 = iteration5.junctions;
+                expect(junctions5.length).toEqual(2);
+                expect(junctions5[0]).toBeUndefined();
+                expect(junctions5[1]).toEqual('final');
+
+                var iteration6 = treeController.iterations[6];
+                expect(iteration6.content.name).toEqual('I/B/1');
+                var junctions6 = iteration6.junctions;
+                expect(junctions6.length).toEqual(3);
+                expect(junctions6[0]).toBeUndefined();
+                expect(junctions6[1]).toEqual('after');
+                expect(junctions6[2]).toEqual('final');
+
+                /*
+                 I
+                 +- I/A
+                 |  +- I/A/1
+                 |  +- I/A/2
+                 |  ^- I/A/3
+                 ^- I/B
+                 ^- I/B/1
+                */
             });
         });
 
