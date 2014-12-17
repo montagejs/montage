@@ -394,8 +394,51 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
             });
 
             it("should draw one>three iteration on the nested repetition w/ component", function() {
+                delegate.list3Objects = [];
+                testPage.waitForComponentDraw(delegate.repetition4);
+                runs(function() {
+                    delegate.list3Objects = [[{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}]];
+                    testPage.waitForComponentDraw(delegate.repetition4);
+                });
+
+                runs(function() {
+                    // Depending on timing the inner repetitions might have not
+                    // drawn yet so we need to wait till one of the inner
+                    // repetitions draws because atm we're not able to draw two
+                    // nested repetitions in a single draw.
+                    var innerRepetition = delegate.repetition4.element.querySelector(".list3a").component;
+
+                    if (innerRepetition.needsDraw) {
+                        testPage.waitForComponentDraw(innerRepetition);
+                    }
+                });
+                runs(function() {
+                    expect(querySelectorAll(".list3 > li").length).toBe(1);
+
+                    // BUG: Chrome outputs 0 on this..
+                    // expects(querySelector("#list3 > li:nth-child(2) > ul#list4-1").length).toBe(5);
+                    var list3a = testPage.evaluateNode("//*[@class='list3']/li[1]/ul[@class='list3a']");
+                    expect(list3a.querySelectorAll("li").length).toBe(3);
+
+                    var inputs = list3a.querySelectorAll("input.textfield2");
+                    expect(inputs[0]).toBeDefined();
+                    expect(inputs[0].value).toBe("iteration 1");
+
+                    expect(inputs[1]).toBeDefined();
+                    expect(inputs[1].value).toBe("iteration 2");
+
+                    expect(inputs[2]).toBeDefined();
+                    expect(inputs[2].value).toBe("iteration 3");
+                });
+
+/*
                 delegate.list3Objects = [[{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}]];
-                testPage.waitForComponentDraw(querySelector(".list3 > li > ul.list3a").component);
+                testPage.waitForComponentDraw(delegate.repetition4);
+
+                runs(function() {
+                    testPage.waitForComponentDraw(querySelector(".list3 > li > ul.list3a").component);
+                });
+
 
                 runs(function() {
                     expect(querySelectorAll(".list3 > li").length).toBe(1);
@@ -404,6 +447,7 @@ TestPageLoader.queueTest("repetition/repetition", function(testPage) {
                     expect(inputs.length).toBe(3);
                     expect(inputs[0].value).toBe("iteration 1");
                 });
+*/
             });
 
             it("should draw one>five iterations on the nested repetition w/ component", function() {
