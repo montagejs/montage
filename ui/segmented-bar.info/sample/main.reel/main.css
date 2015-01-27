@@ -1,0 +1,15 @@
+.desktop {
+    width: 100%;
+    height: 30px;
+}
+
+.phone-portrait {
+    width: 30px;
+    height: 960px;
+}
+
+.montage-Segment:not(.progress-bar) {
+    box-sizing: border-box;
+    border: 1px solid black;
+    background: darkgray;
+}

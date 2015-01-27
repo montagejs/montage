@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="segmented-bar.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "SegmentedBar"}
+            }
+        },
+        "repetition": {
+            "prototype": "ui/repetition.reel",
+            "properties": {
+                "element": {"#": "repetition"},
+                "isSelectionEnabled": false
+            },
+            "bindings": {
+                "contentController": {"<-": "@owner._repetitionDataController"}
+            }
+        },
+        ":segment": {
+            "alias": "@repetition:iteration",
+            "comments": [
+                "alias doesn't support @repetition:iteration.data",
+                "see https://github.com/montagejs/montage/issues/1517"
+            ]
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="SegmentedBar" class="montage-SegmentedBar">
+        <!-- Repetition doesn't work on other component's element yet, -->
+        <!-- and we cannot inherit from both Repetition & AbstractButton. -->
+        <div data-montage-id="repetition" class="montage-SegmentedBar-container">
+            <div data-param="*"></div>
+        </div>
+    </div>
+</body>
+</html>
