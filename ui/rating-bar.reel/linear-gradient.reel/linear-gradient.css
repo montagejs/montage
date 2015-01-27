@@ -1,0 +1,12 @@
+.LinearGradient-lastStop {
+    stop-opacity: 0;
+}
+
+.LinearGradient-firstStop {
+    stop-color: currentColor;
+}
+
+.RatingBar-item.active .LinearGradient-firstStop {
+    stop-color: currentColor;
+    stop-opacity: 0.7;
+}

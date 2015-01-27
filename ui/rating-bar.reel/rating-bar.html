@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="rating-bar.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"},
+                "_ratingBarItems": {"@": "ratingBarItems"}
+            }
+        },
+
+        "ratingBarItems": {
+            "prototype": "ui/repetition.reel",
+            "properties": {
+                "element": {"#": "ratingBarItems"}
+            },
+            "bindings": {
+                "content": {"<-": "@owner.itemCount.range()"}
+            }
+        },
+
+        "ratingBarItem": {
+            "prototype": "ui/rating-bar.reel/rating-bar-item.reel",
+            "properties": {
+                "element": { "#": "ratingBarItem" }
+            },
+            "bindings": {
+                "index": {"<-": "@ratingBarItems:iteration.object"}
+            }
+        }
+
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="RatingBar">
+        <div data-montage-id="ratingBarItems" class="RatingBar-items">
+            <div data-montage-id="ratingBarItem" class="RatingBar-item">
+                <div data-param="svg"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
