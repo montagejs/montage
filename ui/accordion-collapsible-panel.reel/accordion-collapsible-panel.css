@@ -1,0 +1,36 @@
+.montage-AccordionCollapsiblePanel {
+    border: 1px solid #bbbbbb;
+    border-radius: 5px;
+    margin-bottom: 3px;
+    overflow: hidden;
+}
+
+/*Header*/
+.montage-AccordionCollapsiblePanel > :nth-child(1) {
+
+    padding: 5px;
+    cursor: pointer;
+    background: #eeeeee;
+}
+
+/*Body Wrapper*/
+/*TODO hardware accelerated animate*/
+.montage-AccordionCollapsiblePanel > :nth-child(2) {
+
+    overflow: hidden;
+    -webkit-transition: height 0.35s ease;
+    -moz-transition: height 0.35s ease;
+    -o-transition: height 0.35s ease;
+    transition: height 0.35s ease;
+    height: 0;
+
+}
+
+/*Body*/
+.montage-AccordionCollapsiblePanel > :nth-child(2) > :nth-child(1) {
+    padding: 10px;
+}
+
+.montage-AccordionCollapsiblePanel .active {
+
+}
