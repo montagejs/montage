@@ -1,0 +1,49 @@
+<!doctype html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Collapse Component</title>
+    <link rel="stylesheet" href="accordion.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"}
+            }
+        },
+        "repetition": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "repetition"}
+            }
+        },
+        ":component": {
+            "alias": "@repetition:iteration"
+        },
+         "collapsible-panel": {
+            "prototype": "ui/accordion-collapsible-panel.reel",
+            "properties": {
+                "element": {"#": "collapsiblePanel"},
+                "accordion":{"@":"owner"}
+            },
+            "bindings": {
+                "isExpanded": {"<-": "@repetition:iteration.object.expanded"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+<div data-montage-id="owner" class="montage-Accordion">
+    <div data-montage-id="repetition">
+        <div data-montage-id="collapsiblePanel">
+            <div data-param="header">
+            </div>
+            <div data-param="body">
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
