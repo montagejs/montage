@@ -30,6 +30,9 @@ var GenericCollection = require("collections/generic-collection");
  * @class RangeSelection
  * @private
  */
+
+var EMPTY_ARRAY = Object.freeze([]);
+
 var RangeSelection = function(content, rangeController) {
     var self = content.clone();
     self.makeObservable();
@@ -64,37 +67,44 @@ var RangeSelection = function(content, rangeController) {
             var oldLength = this.length;
             var minusLength = Math.min(howMany, oldLength - start);
 
-            itemsToAdd.contentEquals = this.contentEquals;
+			if(itemsToAdd) {
+	
+	            itemsToAdd.contentEquals = this.contentEquals;
 			
-            var plus = itemsToAdd.filter(function(item, index){
-                // do not add items to the selection if they aren't in content
-                if (content && !content.has(item)) {
-                    return false;
-                }
+	            var plus = itemsToAdd.filter(function(item, index){
+	                // do not add items to the selection if they aren't in content
+	                if (content && !content.has(item)) {
+	                    return false;
+	                }
 
-                // if the same item appears twice in the add list, only add it once
-                if (itemsToAdd.findLast(item) > index) {
-                    return false;
-                }
+	                // if the same item appears twice in the add list, only add it once
+	                if (itemsToAdd.findLast(item) > index) {
+	                    return false;
+	                }
 
-                // if the item is already in the selection, don't add it
-                // unless it's in the part that we're about to delete.
-                var indexInSelection = this.find(item);
-                return indexInSelection < 0 ||
-                        (indexInSelection >= start && indexInSelection < start + minusLength);
+	                // if the item is already in the selection, don't add it
+	                // unless it's in the part that we're about to delete.
+	                var indexInSelection = this.find(item);
+	                return indexInSelection < 0 ||
+	                        (indexInSelection >= start && indexInSelection < start + minusLength);
 
-            }, this);
+	            }, this);
+			}
+			else {
+				plus = EMPTY_ARRAY;
+			}
+
 			
             var minus;
-            if (length === 0) {
+            if (minusLength === 0) {
                 // minus will be empty
                 if (plus.length === 0) {
                     // at this point if plus is empty there is nothing to do.
-                    return []; // [], but spare us an instantiation
+                    return EMPTY_ARRAY; // [], but spare us an instantiation
                 }
-                minus = [];
+                minus = EMPTY_ARRAY;
             } else {
-                minus = Array.prototype.slice.call(this, start, start + length);
+                minus = Array.prototype.slice.call(this, start, start + minusLength);
             }
             var diff = plus.length - minus.length;
             var newLength = Math.max(this.length + diff, start + plus.length);
