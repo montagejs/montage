@@ -1,0 +1,18 @@
+{
+    "person": {
+        "prototype": "montage/core/meta/blueprint",
+        "properties": {
+            "name": "Person",
+            "propertyBlueprints": [
+                {"@": "person_name"}
+            ]
+        }
+    },
+    "person_name": {
+        "prototype": "montage/core/meta/property-blueprint",
+        "properties": {
+            "name": "name",
+            "cardinality": 1
+        }
+    }
+}

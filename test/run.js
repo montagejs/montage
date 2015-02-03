@@ -73,6 +73,8 @@ require("montage-testing").run(require,[
         "meta/event-blueprint-spec",
         "meta/module-blueprint-spec",
 
+        "data/context-spec",
+
         "reel/template-spec",
         "document-resources-spec",
 
