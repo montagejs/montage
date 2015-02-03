@@ -31,7 +31,7 @@ var GenericCollection = require("collections/generic-collection");
  * @private
  */
 
-var EMPTY_ARRAY = [];
+var EMPTY_ARRAY = Object.freeze([]);
 
 var RangeSelection = function(content, rangeController) {
     var self = content.clone();
