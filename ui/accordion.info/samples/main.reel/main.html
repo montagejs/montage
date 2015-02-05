@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Main</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "properties": {
+                    "element": {"#": "main"}
+                }
+            },
+            "accordion": {
+                "prototype": "montage/ui/accordion.reel",
+                "properties": {
+                    "element": {"#": "accordion"},
+                    "isMultipleExpansionAllowed":false,
+                    "contentController": {"@": "accordionRangeController"}
+                }
+            },
+
+            "accordionRangeController":{
+                "prototype": "montage/core/range-controller",
+                "properties": {
+                    "element": {"#": "accordion"},
+                    "content":[
+                        {"title":"Content A title","bodyName":"0","value":50, "expanded":false},
+                        {"title":"Content B title","bodyName":"1","value":"Hello World","expanded":true},
+                        {"title":"Content C title","bodyName":"2","value":"","expanded":true}
+                    ]
+                }
+            },
+            "accordionHeader":{
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "accordion-header"}
+                },
+                "bindings": {
+                    "value":{"<-":"@accordion:component.object.title"}
+                }
+            },
+            "accordionContent":{
+                "prototype": "montage/ui/substitution.reel",
+                "properties": {
+                    "element": {"#": "accordion-content"}
+                },
+                "bindings": {
+                    "switchValue":{"<-":"@accordion:component.object.bodyName"}
+                }
+            },
+            "contentA":{
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "contentA"},
+                    "value":"ContentA"
+                },
+                 "bindings": {
+                    "value":{"<-":"@accordion:component.object.value"}
+                }
+            },
+             "contentB":{
+                "prototype": "digit/ui/slider.reel",
+                "properties": {
+                    "element": {"#": "contentB"},
+                    "value":"contentB"
+                },
+                 "bindings": {
+                    "value":{"<-":"@accordion:component.object.value"}
+                }
+            },
+             "accordion1": {
+                "prototype": "montage/ui/accordion.reel",
+                "properties": {
+                    "element": {"#": "accordion-1"},
+                    "isMultipleExpansionAllowed":true,
+                    "content":[
+                        {"title":"Content A title","bodyName":"0","value":90, "expanded":false},
+                        {"title":"Content B title","bodyName":"1","value":"Hello World","expanded":true},
+                        {"title":"Content C title","bodyName":"2","value":"","expanded":true}
+                    ]
+                }
+            },
+            "accordionHeader1":{
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "accordion-header-1"}
+                },
+                "bindings": {
+                    "value":{"<-":"@accordion1:component.object.title"}
+                }
+            },
+            "accordionContent1":{
+                "prototype": "montage/ui/substitution.reel",
+                "properties": {
+                    "element": {"#": "accordion-content-1"}
+                },
+                "bindings": {
+                    "switchValue":{"<-":"@accordion1:component.object.bodyName"}
+                }
+            },
+            "contentA1":{
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "contentA-1"},
+                    "value":"ContentA"
+                },
+                 "bindings": {
+                    "value":{"<-":"@accordion1:component.object.value"}
+                }
+            },
+             "contentB1":{
+                "prototype": "digit/ui/slider.reel",
+                "properties": {
+                    "element": {"#": "contentB-1"},
+                    "value":"contentB"
+                },
+                 "bindings": {
+                    "value":{"<-":"@accordion1:component.object.value"}
+                }
+            }
+        }
+
+    </script>
+</head>
+<body>
+<div data-montage-id="main" data-montage-skin="light" class="Main">
+
+    <h3 style="padding-left: 10px">Accordion + RangeController + single expansion mode</h3>
+
+    <div style="width:500px; margin: 15px">
+        <div data-montage-id="accordion">
+            <div data-arg="header">
+                <div data-montage-id="accordion-header">
+                </div>
+            </div>
+            <div data-montage-id="accordion-content" data-arg="body">
+                <div data-montage-id="contentA" data-arg="0"></div>
+                <div data-montage-id="contentB" data-arg="1"></div>
+                <div data-arg="2">
+                    <p>Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3
+                        wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
+                        laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin
+                        coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes
+                        anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings
+                        occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard
+                        of them accusamus labore sustainable VHS.</p>
+                    <input value="a no montage input">
+                </div>
+            </div>
+        </div>
+    </div>
+    <h3 style="padding-left: 10px">Accordion + multiple expansion mode</h3>
+
+    <div style="width:500px; margin: 15px">
+        <div data-montage-id="accordion-1">
+            <div data-arg="header">
+                <div data-montage-id="accordion-header-1">
+                </div>
+            </div>
+            <div data-montage-id="accordion-content-1" data-arg="body">
+                <div data-montage-id="contentA-1" data-arg="0"></div>
+                <div data-montage-id="contentB-1" data-arg="1"></div>
+                <div data-arg="2">
+                    <p>Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3
+                        wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
+                        laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin
+                        coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes
+                        anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings
+                        occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard
+                        of them accusamus labore sustainable VHS.</p>
+                    <input value="a no montage input">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
