@@ -29,22 +29,25 @@
                         "<-": "@select.contentController.selection.0"
                     }
                 }
+            },
+            "CollapsiblePanel": {
+                "prototype": "ui/collapsible-panel.info/sample/main.reel",
+                "properties": {
+                    "element": {"#": "CollapsiblePanel"}
+                }
             }
         }
     </script>
 </head>
 
 <body>
-<div data-montage-id="main" data-montage-skin="light">
-    <select data-montage-id="select"></select>
-
-    <hr/>
-
-    <div data-montage-id="substitution">
-        <!--add components below-->
+    <div data-montage-id="main" data-montage-skin="light">
+        <select data-montage-id="select"></select>
+        <hr/>
+        <div data-montage-id="substitution">
+            <!--add components below-->
+            <div data-montage-id="CollapsiblePanel" data-arg="CollapsiblePanel"></div>
+        </div>
     </div>
-</div>
-
-
 </body>
 </html>
