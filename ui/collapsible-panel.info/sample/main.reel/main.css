@@ -1,0 +1,17 @@
+.Main-CollapsiblePanel {
+    border: 1px solid #bbbbbb;
+    border-radius: 5px;
+    margin-bottom: 3px;
+    overflow: hidden;
+}
+
+/* Header */
+.Main-CollapsiblePanel > :nth-child(1) {
+    padding: 5px;
+    background: #eeeeee;
+}
+
+/* Body */
+.Main-CollapsiblePanel > :nth-child(2) > :nth-child(1) {
+    padding: 10px;
+}

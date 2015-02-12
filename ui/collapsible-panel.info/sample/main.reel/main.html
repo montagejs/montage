@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Collapsible Panel Example</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "properties": {
+                    "element": {"#": "main"}
+                }
+            },
+            "example1SelectionController": {
+                "prototype": "montage/core/selection-controller",
+                "properties": {
+                    "isMultipleSelectionAllowed": false,
+                    "selection": [2]
+                }
+            },
+            "example1CollapsiblePanel1": {
+                "prototype": "montage/ui/collapsible-panel.reel",
+                "properties": {
+                    "element": {"#": "example-1-collapsiblePanel-1"},
+                    "data": 1
+                },
+                "bindings": {
+                    "isExpanded": {"<->": "@example1SelectionController.selection.has(@example1CollapsiblePanel1.data)"}
+                }
+            },
+            "example1Header1": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "example-1-header-1"},
+                    "value": "Body1 Title"
+                }
+            },
+            "example1Body1": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "example-1-body-1"},
+                    "value": "Hello World"
+                }
+            },
+            "example1CollapsiblePanel2": {
+                "prototype": "montage/ui/collapsible-panel.reel",
+                "properties": {
+                    "element": {"#": "example-1-collapsiblePanel-2"},
+                    "data": 2
+                },
+                 "bindings": {
+                    "isExpanded": {"<->": "@example1SelectionController.selection.has(@example1CollapsiblePanel2.data)"}
+                }
+            },
+            "example1Header2": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "example-1-header-2"},
+                    "value": "Body2 Title"
+                }
+            },
+            "example2Repetition": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "example-2-repetition"},
+                    "content": [
+                        {"title": "Body 1 title","text": "Repetition content 1","data":1},
+                        {"title": "Body 2 title","text": "Repetition content 2","data":2},
+                        {"title": "Body 3 title","text": "Repetition content 3","data":3},
+                        {"title": "Body 4 title","text": "Repetition content 4","data":4},
+                        {"title": "Body 5 title","text": "Repetition content 5","data":5}
+                    ]
+                }
+            },
+            "example2SelectionController": {
+                "prototype": "montage/core/selection-controller",
+                "properties": {
+                    "isMultipleSelectionAllowed": false,
+                    "selection": [4]
+                }
+            },
+            "example2CollapsiblePanel": {
+                "prototype": "montage/ui/collapsible-panel.reel",
+                "properties": {
+                    "element": {"#": "example-2-collapsiblePanel"}
+                },
+                "bindings": {
+                    "data": {"<-": "@example2Repetition:iteration.object.data"},
+                    "isExpanded": {"<->": "@example2SelectionController.selection.has(@example2CollapsiblePanel.data)"}
+                }
+            },
+            "example2Header": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "example-2-header"}
+                },
+                "bindings": {
+                    "value": {"<-": "@example2Repetition:iteration.object.title"}
+                }
+            },
+            "example2Content": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "example-2-content"}
+                },
+                "bindings": {
+                    "value": {"<-": "@example2Repetition:iteration.object.text"}
+                }
+            },
+            "example3SelectionController": {
+                "prototype": "montage/core/selection-controller",
+                "properties": {
+                    "isMultipleSelectionAllowed": false,
+                    "selection": [1,2]
+                }
+            },
+            "example3CollapsiblePanel1": {
+                "prototype": "montage/ui/collapsible-panel.reel",
+                "properties": {
+                    "element": {"#": "example-3-collapsiblePanel-1"},
+                    "data": 1
+                },
+                "bindings": {
+                    "isExpanded": {"<->": "@example3SelectionController.selection.has(@example3CollapsiblePanel1.data)"}
+                }
+            },
+            "example3Header1": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "example-3-header-1"},
+                    "value": "Body1 Title"
+                }
+            },
+            "example3Body1": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "example-3-content1"},
+                    "value": "Hello World"
+                }
+            },
+            "example3CollapsiblePanel2": {
+                "prototype": "montage/ui/collapsible-panel.reel",
+                "properties": {
+                    "element": {"#": "example-3-collapsiblePanel-2"},
+                    "data": 2
+                },
+                "bindings": {
+                    "isExpanded": {"<->": "@example3SelectionController.selection.has(@example3CollapsiblePanel2.data)"}
+                }
+            },
+            "example3Header2": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "example-3-header-2"},
+                    "value": "Body2 Title"
+                }
+            },
+            "example4Repetition": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "example-4-repetition"},
+                    "content": [
+                        {"title": "Body 1 title","text": "Repetition content 1","data":1},
+                        {"title": "Body 2 title","text": "Repetition content 2","data":2},
+                        {"title": "Body 3 title","text": "Repetition content 3","data":3},
+                        {"title": "Body 4 title","text": "Repetition content 4","data":4},
+                        {"title": "Body 5 title","text": "Repetition content 5","data":5}
+                    ]
+                }
+            },
+            "example4SelectionController": {
+                "prototype": "montage/core/selection-controller",
+                "properties": {
+                    "isMultipleSelectionAllowed": false,
+                    "selection": [1,3,4]
+                }
+            },
+            "example4CollapsiblePanel": {
+                "prototype": "montage/ui/collapsible-panel.reel",
+                "properties": {
+                    "element": {"#": "example-4-collapsiblePanel"}
+                },
+                 "bindings": {
+                    "data": {"<-": "@example4Repetition:iteration.object.data"},
+                    "isExpanded": {"<->": "@example4SelectionController.selection.has(@example4CollapsiblePanel.data)"}
+                }
+            },
+            "example4Header": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "example-4-header"}
+                },
+                "bindings": {
+                    "value": {"<-": "@example4Repetition:iteration.object.title"}
+                }
+            },
+            "example4Content": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "example-4-content"}
+                },
+                "bindings": {
+                    "value": {"<-": "@example4Repetition:iteration.object.text"}
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" data-montage-skin="light" class="Main">
+        <h3 style="padding-left: 10px">Example 1: CollapsiblePanel + template-driven content + isMultipleSelectionAllowed =
+            false</h3>
+        <div style="width:500px; margin: 15px">
+            <div data-montage-id="example-1-collapsiblePanel-1" class="Main-CollapsiblePanel">
+                <div data-montage-id="example-1-header-1" data-arg="header"></div>
+                <div data-montage-id="example-1-body-1" data-arg="body"></div>
+            </div>
+            <div data-montage-id="example-1-collapsiblePanel-2" class="Main-CollapsiblePanel">
+                <div data-montage-id="example-1-header-2" data-arg="header"></div>
+                <div data-arg="body">
+                    <p>ALorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                        et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                        aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+                        culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <input placeholder="A native HTML input">
+                </div>
+            </div>
+        </div>
+        <h3 style="padding-left: 10px">Example 2: CollapsiblePanel + data-driven repetition + isMultipleSelectionAllowed =
+            false</h3>
+        <div style="width:500px; margin: 15px">
+            <div data-montage-id="example-2-repetition">
+                <div data-montage-id="example-2-collapsiblePanel" class="Main-CollapsiblePanel">
+                    <div data-montage-id="example-2-header" data-arg="header"></div>
+                    <div data-montage-id="example-2-content" data-arg="body"></div>
+                </div>
+            </div>
+        </div>
+        <h3 style="padding-left: 10px">Example 3: CollapsiblePanel + template-driven content + isMultipleSelectionAllowed =
+            true</h3>
+        <div style="width:500px; margin: 15px">
+            <div data-montage-id="example-3-collapsiblePanel-1" class="Main-CollapsiblePanel">
+                <div data-montage-id="example-3-header-1" data-arg="header"></div>
+                <div data-montage-id="example-3-content1" data-arg="body"></div>
+            </div>
+            <div data-montage-id="example-3-collapsiblePanel-2" class="Main-CollapsiblePanel">
+                <div data-montage-id="example-3-header-2" data-arg="header"></div>
+                <div data-arg="body">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                        et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                        aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+                        culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <input placeholder="A native HTML input">
+                </div>
+            </div>
+        </div>
+        <h3 style="padding-left: 10px">Example 4: CollapsiblePanel + data-driven repetition + isMultipleSelectionAllowed =
+            true</h3>
+        <div style="width:500px; margin: 15px">
+            <div data-montage-id="example-4-repetition">
+                <div data-montage-id="example-4-collapsiblePanel" class="Main-CollapsiblePanel">
+                    <div data-montage-id="example-4-header" data-arg="header"></div>
+                    <div data-montage-id="example-4-content" data-arg="body"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
