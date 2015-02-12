@@ -15,6 +15,8 @@ exports.SelectionController = Montage.specialize(/* @lends SelectionController.p
     },
 
     /**
+     * This is just a placeholder for possible isMultipleSelectionAllowed property
+     * TODO implement API
      * @type {boolean}
      */
     isMultipleSelectionAllowed: {
@@ -22,6 +24,8 @@ exports.SelectionController = Montage.specialize(/* @lends SelectionController.p
     },
 
     /**
+     * This is just a placeholder for possible selection property
+     * TODO implement API
      * @type {[object]}
      */
     selection: {

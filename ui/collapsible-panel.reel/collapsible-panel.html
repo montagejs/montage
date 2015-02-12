@@ -9,17 +9,28 @@
             "properties": {
                 "element": {"#": "owner"}
             }
+        },
+        "bodyWrapper": {
+            "prototype": "../component",
+            "properties": {
+                "element": {"#": "bodyWrapper"},
+                "hasTemplate": false
+            },
+            "bindings": {
+                "classList.has('montage-CollapsiblePanel--active')": {"<-": "@owner.isExpanded"},
+                "classList.has('montage-CollapsiblePanel--transition')": {"<-": "@owner._isTransition"}
+            }
         }
     }
     </script>
 </head>
 <body>
-<div data-montage-id="owner" class="montage-CollapsiblePanel">
-    <div data-param="header"></div>
-    <!--Use the body wrapper to know the body height when displaying body, animation is in this level-->
-    <div class="montage-CollapsiblePanel-bodyWrapper">
-        <div data-param="body"></div>
+    <div data-montage-id="owner" class="montage-CollapsiblePanel">
+        <div data-param="header"></div>
+        <!--Use the body wrapper to know the body height when displaying body, animation is in this level.-->
+        <div data-montage-id="bodyWrapper" class="montage-CollapsiblePanel-bodyWrapper">
+            <div data-param="body"></div>
+        </div>
     </div>
-</div>
 </body>
 </html>
