@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <title>Collipsible Panel Example</title>
+    <title>Collapsible Panel Example</title>
     <link rel="stylesheet" type="text/css" href="main.css">
     <script type="text/montage-serialization">
         {
@@ -32,13 +32,13 @@
                 "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "example-1-header-1"},
-                    "value": "Content1 Title"
+                    "value": "Body1 Title"
                 }
             },
-            "example1Content1": {
+            "example1Body1": {
                 "prototype": "montage/ui/text.reel",
                 "properties": {
-                    "element": {"#": "example-1-content-1"},
+                    "element": {"#": "example-1-body-1"},
                     "value": "Hello World"
                 }
             },
@@ -56,7 +56,7 @@
                 "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "example-1-header-2"},
-                    "value": "Content2 Title"
+                    "value": "Body2 Title"
                 }
             },
             "example2Repetition": {
@@ -64,11 +64,11 @@
                 "properties": {
                     "element": {"#": "example-2-repetition"},
                     "content": [
-                        {"title": "Content 1 title","text": "Repetition content 1","data":1},
-                        {"title": "Content 2 title","text": "Repetition content 2","data":2},
-                        {"title": "Content 3 title","text": "Repetition content 3","data":3},
-                        {"title": "Content 4 title","text": "Repetition content 4","data":4},
-                        {"title": "Content 5 title","text": "Repetition content 5","data":5}
+                        {"title": "Body 1 title","text": "Repetition content 1","data":1},
+                        {"title": "Body 2 title","text": "Repetition content 2","data":2},
+                        {"title": "Body 3 title","text": "Repetition content 3","data":3},
+                        {"title": "Body 4 title","text": "Repetition content 4","data":4},
+                        {"title": "Body 5 title","text": "Repetition content 5","data":5}
                     ]
                 }
             },
@@ -128,10 +128,10 @@
                 "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "example-3-header-1"},
-                    "value": "Content1 Title"
+                    "value": "Body1 Title"
                 }
             },
-            "example3Content1": {
+            "example3Body1": {
                 "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "example-3-content1"},
@@ -152,7 +152,7 @@
                 "prototype": "montage/ui/text.reel",
                 "properties": {
                     "element": {"#": "example-3-header-2"},
-                    "value": "Content2 Title"
+                    "value": "Body2 Title"
                 }
             },
             "example4Repetition": {
@@ -160,11 +160,11 @@
                 "properties": {
                     "element": {"#": "example-4-repetition"},
                     "content": [
-                        {"title": "Content 1 title","text": "Repetition content 1","data":1},
-                        {"title": "Content 2 title","text": "Repetition content 2","data":2},
-                        {"title": "Content 3 title","text": "Repetition content 3","data":3},
-                        {"title": "Content 4 title","text": "Repetition content 4","data":4},
-                        {"title": "Content 5 title","text": "Repetition content 5","data":5}
+                        {"title": "Body 1 title","text": "Repetition content 1","data":1},
+                        {"title": "Body 2 title","text": "Repetition content 2","data":2},
+                        {"title": "Body 3 title","text": "Repetition content 3","data":3},
+                        {"title": "Body 4 title","text": "Repetition content 4","data":4},
+                        {"title": "Body 5 title","text": "Repetition content 5","data":5}
                     ]
                 }
             },
@@ -207,71 +207,71 @@
     </script>
 </head>
 <body>
-    <div data-montage-id="main" data-montage-skin="light" class="Main">
-        <h3 style="padding-left: 10px">Example 1: CollapsiblePanel + template-driven content + isMultipleSelectionAllowed = false</h3>
-        <div style="width:500px; margin: 15px">
-            <div data-montage-id="example-1-collapsiblePanel-1" class="Main-CollapsiblePanel">
-                <div data-montage-id="example-1-header-1" data-arg="header">
-                </div>
-                <div data-montage-id="example-1-content-1" data-arg="body"></div>
+<div data-montage-id="main" data-montage-skin="light" class="Main">
+    <h3 style="padding-left: 10px">Example 1: CollapsiblePanel + template-driven content + isMultipleSelectionAllowed = false</h3>
+    <div style="width:500px; margin: 15px">
+        <div data-montage-id="example-1-collapsiblePanel-1" class="Main-CollapsiblePanel">
+            <div data-montage-id="example-1-header-1" data-arg="header">
             </div>
-            <div data-montage-id="example-1-collapsiblePanel-2" class="Main-CollapsiblePanel">
-                <div data-montage-id="example-1-header-2" data-arg="header">
-                </div>
-                <div data-arg="body">
-                    <p>Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3
-                        wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
-                        laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin
-                        coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes
-                        anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings
-                        occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard
-                        of them accusamus labore sustainable VHS.</p>
-                    <input placeholder="A native HTML input">
-                </div>
-            </div>
+            <div data-montage-id="example-1-body-1" data-arg="body"></div>
         </div>
-        <h3 style="padding-left: 10px">Example 2: CollapsiblePanel + data-driven repetition + isMultipleSelectionAllowed = false</h3>
-        <div style="width:500px; margin: 15px">
-            <div data-montage-id="example-2-repetition">
-                <div data-montage-id="example-2-collapsiblePanel" class="Main-CollapsiblePanel">
-                    <div data-montage-id="example-2-header" data-arg="header">
-                    </div>
-                    <div data-montage-id="example-2-content" data-arg="body"></div>
-                </div>
+        <div data-montage-id="example-1-collapsiblePanel-2" class="Main-CollapsiblePanel">
+            <div data-montage-id="example-1-header-2" data-arg="header">
             </div>
-        </div>
-        <h3 style="padding-left: 10px">Example 3: CollapsiblePanel + template-driven content + isMultipleSelectionAllowed = true</h3>
-        <div style="width:500px; margin: 15px">
-            <div data-montage-id="example-3-collapsiblePanel-1" class="Main-CollapsiblePanel">
-                <div data-montage-id="example-3-header-1" data-arg="header">
-                </div>
-                <div data-montage-id="example-3-content1" data-arg="body"></div>
-            </div>
-            <div data-montage-id="example-3-collapsiblePanel-2" class="Main-CollapsiblePanel">
-                <div data-montage-id="example-3-header-2" data-arg="header">
-                </div>
-                <div data-arg="body">
-                    <p>Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3
-                        wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
-                        laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin
-                        coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes
-                        anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings
-                        occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard
-                        of them accusamus labore sustainable VHS.</p>
-                    <input placeholder="A native HTML input">
-                </div>
-            </div>
-        </div>
-        <h3 style="padding-left: 10px">Example 4: CollapsiblePanel + data-driven repetition + isMultipleSelectionAllowed = true</h3>
-        <div style="width:500px; margin: 15px">
-            <div data-montage-id="example-4-repetition">
-                <div data-montage-id="example-4-collapsiblePanel" class="Main-CollapsiblePanel">
-                    <div data-montage-id="example-4-header" data-arg="header">
-                    </div>
-                    <div data-montage-id="example-4-content" data-arg="body"></div>
-                </div>
+            <div data-arg="body">
+                <p>Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3
+                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
+                    laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin
+                    coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes
+                    anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings
+                    occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard
+                    of them accusamus labore sustainable VHS.</p>
+                <input placeholder="A native HTML input">
             </div>
         </div>
     </div>
+    <h3 style="padding-left: 10px">Example 2: CollapsiblePanel + data-driven repetition + isMultipleSelectionAllowed = false</h3>
+    <div style="width:500px; margin: 15px">
+        <div data-montage-id="example-2-repetition">
+            <div data-montage-id="example-2-collapsiblePanel" class="Main-CollapsiblePanel">
+                <div data-montage-id="example-2-header" data-arg="header">
+                </div>
+                <div data-montage-id="example-2-content" data-arg="body"></div>
+            </div>
+        </div>
+    </div>
+    <h3 style="padding-left: 10px">Example 3: CollapsiblePanel + template-driven content + isMultipleSelectionAllowed = true</h3>
+    <div style="width:500px; margin: 15px">
+        <div data-montage-id="example-3-collapsiblePanel-1" class="Main-CollapsiblePanel">
+            <div data-montage-id="example-3-header-1" data-arg="header">
+            </div>
+            <div data-montage-id="example-3-content1" data-arg="body"></div>
+        </div>
+        <div data-montage-id="example-3-collapsiblePanel-2" class="Main-CollapsiblePanel">
+            <div data-montage-id="example-3-header-2" data-arg="header">
+            </div>
+            <div data-arg="body">
+                <p>Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3
+                    wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
+                    laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin
+                    coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes
+                    anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings
+                    occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard
+                    of them accusamus labore sustainable VHS.</p>
+                <input placeholder="A native HTML input">
+            </div>
+        </div>
+    </div>
+    <h3 style="padding-left: 10px">Example 4: CollapsiblePanel + data-driven repetition + isMultipleSelectionAllowed = true</h3>
+    <div style="width:500px; margin: 15px">
+        <div data-montage-id="example-4-repetition">
+            <div data-montage-id="example-4-collapsiblePanel" class="Main-CollapsiblePanel">
+                <div data-montage-id="example-4-header" data-arg="header">
+                </div>
+                <div data-montage-id="example-4-content" data-arg="body"></div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
