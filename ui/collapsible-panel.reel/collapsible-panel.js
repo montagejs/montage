@@ -6,46 +6,43 @@ var Component = require("../component").Component,
     PressComposer = require("../../composer/press-composer").PressComposer;
 
 /**
+ * A collapsible panel that can be expanded or collapsed with header and body.
+ *
  * @class CollapsiblePanel
  * @extends Component
- *
- * A collapsible panel that can be expanded or collapsed with header and body
  */
 exports.CollapsiblePanel = Component.specialize(/** @lends CollapsiblePanel# */ {
-    constructor: {
-        value: function CollapsiblePanel() {
-            this.super();
-            this._pressComposer = new PressComposer();
-        }
-    },
 
     _pressComposer: {
         value: null
     },
 
     /**
-     * Set this to true when clicking on header to collapse or expand a panel, only trgiiger animation at this stage.
-     * No animation when first time drawing
+     * There is no animation when collapsible panel displaying. The animation will only be triggered when peoiple click
+     * header to collapse or expand a panel by setting this property to true.
      * @private
      */
-    _isCollapsing: {
+    _isTransition: {
         value: false
     },
 
     _isExpanded: {
         value: null
     },
+
     /**
-     * Is the collapsible panel expanded or collapsed
+     * Is the collapsible panel expanded or collapsed.
      * @type {boolean}
      */
     isExpanded: {
         set: function (value) {
-            if (this._isExpanded == value) {
-                return;
+            if (value != this._isExpanded) {
+                this._isExpanded = value;
+                this.needsDraw = true;
             }
-            this._isExpanded = value;
-            this.needsDraw = true;
+            //Can't use this simple statement because isExpanded now is set twice when clicking on header
+            //I think one is from pressHandler another one is from selection.has() binding.
+            //this.needsDraw = (this._isExpanded != value);
         },
         get: function () {
             return this._isExpanded;
@@ -56,16 +53,30 @@ exports.CollapsiblePanel = Component.specialize(/** @lends CollapsiblePanel# */ 
         value: function () {
             var transitionEndListener = {};
             var bodyWrapper = this.element.children[1];
-            //Remove animation when it's done
-            transitionEndListener.handleEvent = function () {
-                bodyWrapper.classList.remove("collapsing");
-                this._isCollapsing = false;
-            };
             this._pressComposer.addEventListener("press", this, false);
-            //Listen css transition call back
-            bodyWrapper.addEventListener('webkitTransitionEnd', transitionEndListener);
-            bodyWrapper.addEventListener('transitionend', transitionEndListener);
+            //Listen css transition call back.
+            bodyWrapper.addEventListener('webkitTransitionEnd', this.handleTransitionEnd);
+            bodyWrapper.addEventListener('transitionend', this.handleTransitionEnd);
+        }
+    },
 
+    handleTransitionEnd: {
+        value: function () {
+            this.component.parentComponent._isTransition = false;
+        }
+    },
+
+    /**
+     * Do expand or collapse when click on the header.
+     * @method
+     * @private
+     */
+    handlePress: {
+        value: function (event) {
+            //Only trigger css animation when clicking on header, this may need change base on how SelectionController handle
+            //multipleSelection and singleSelection.
+            this._isTransition = true;
+            this.isExpanded = !this.isExpanded;
         }
     },
 
@@ -73,47 +84,9 @@ exports.CollapsiblePanel = Component.specialize(/** @lends CollapsiblePanel# */ 
         value: function (firstTime) {
             if (firstTime) {
                 var header = this.element.children[0];
-                //Register composer here and add event in prepareForActivationEvents
+                this._pressComposer = new PressComposer();
+                //Register composer here and add event in prepareForActivationEvents.
                 this.addComposerForElement(this._pressComposer, header);
-            }
-        }
-    },
-
-    /**
-     * Do expand or collapse when click on the header
-     * @method
-     * @private
-     */
-    handlePress: {
-        value: function (event) {
-            //Only trigger css animation when clicking on header, this may need change base on how SelectionController handle
-            //multipleSelection and singleSelection
-            this._isCollapsing = true;
-            this.isExpanded = !this.isExpanded;
-        }
-    },
-
-    /**
-     * Add height css animation when expanding or collapsing panel
-     * @method
-     * @private
-     */
-    _addCollapsingAnimation: {
-        value: function (bodyWrapper) {
-            if (this._isCollapsing) {
-                bodyWrapper.classList.add("collapsing");
-            }
-        }
-    },
-
-    draw: {
-        value: function () {
-            var bodyWrapper = this.element.children[1];
-            this._addCollapsingAnimation(bodyWrapper);
-            if (this.isExpanded) {
-                bodyWrapper.classList.add('active');
-            } else {
-                bodyWrapper.classList.remove('active');
             }
         }
     }
