@@ -1,27 +1,22 @@
-.montage-CollapsiblePanel {
-
-}
-
 /* Header */
 .montage-CollapsiblePanel > :nth-child(1) {
     cursor: pointer;
 }
 
-/* Body Wrapper */
-.montage-CollapsiblePanel > :nth-child(2) {
+.montage-CollapsiblePanel-bodyWrapper {
     overflow: hidden;
     max-height: 0;
 }
 
-.montage-CollapsiblePanel .montage-CollapsiblePanel--transition {
+.montage-CollapsiblePanel--transition {
     -webkit-transition: max-height 0.25s ease;
     -moz-transition: max-height 0.25s ease;
     -o-transition: max-height 0.25s ease;
     transition: max-height 0.25s ease;
 }
 
-.montage-CollapsiblePanel .montage-CollapsiblePanel--active {
+.montage-CollapsiblePanel--active {
     height: auto;
-    /*A popular way to animation auto height, we have to set a max-height to trigger the animation*/
+    /* A popular way to animation auto height, we have to set a max-height to trigger the animation */
     max-height: 1000px;
 }
