@@ -87,8 +87,8 @@ var _PointerStorageMemoryEntry = Montage.specialize( {
         writable: true,
         value: 0
     }
- 
-});	
+
+});
 
 var _StoredEvent = Montage.specialize( {
 	constructor: {
@@ -164,10 +164,10 @@ var _PointerStorage = Montage.specialize( {
         	return (this.memory[identifier] && (this.memory[identifier].size > 0));
     	}
 	},
-	
+
     /**
-     * Created a dedicated type, _PointerVelocity and cached the instance of _PointerVelocity used per identifier, 
-     * which is typically mouse/touch. This 
+     * Created a dedicated type, _PointerVelocity and cached the instance of _PointerVelocity used per identifier,
+     * which is typically mouse/touch. This
      */
 
 	pointerVelocity: {
@@ -348,7 +348,7 @@ eventTypeRegistration[target.uuid].listeners[listener.uuid] = {listener: listene
 */
 var _TargetRegistration = function () {
 	this.listeners = {};
-	return this;	
+	return this;
 };
 
 _TargetRegistration._pool = [];
@@ -363,7 +363,7 @@ _TargetRegistration.checkinRegistration = function(aTargetRegistration) {
 
 Object.defineProperties(_TargetRegistration.prototype,
 
-{	
+{
  	target: {
         enumerable: false,
         writable: true,
@@ -378,7 +378,7 @@ Object.defineProperties(_TargetRegistration.prototype,
 );
 
 var _TargetListenerRegistration = function () {
-	return this;	
+	return this;
 };
 
 _TargetListenerRegistration._pool = [];
@@ -392,13 +392,13 @@ _TargetListenerRegistration.checkinRegistration = function(aTargetListenerRegist
 
 Object.defineProperties(_TargetListenerRegistration.prototype,
 
-{	
+{
 	initWithListener: {
 		value: function(listener,capture,bubble) {
 			this.listener = listener;
 			this.capture = capture;
 			this.bubble = bubble;
-			return this;	
+			return this;
 		}
 	},
 	listener: {
@@ -2160,15 +2160,7 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
                     jListener = jListenerEntry.listener;
 
-                    if (identifierSpecificCaptureMethodName && typeof jListener[identifierSpecificCaptureMethodName] === FUNCTION_TYPE) {
-                        jListener[identifierSpecificCaptureMethodName](mutableEvent);
-                    } else if (typeof jListener[captureMethodName] === FUNCTION_TYPE) {
-                        jListener[captureMethodName](mutableEvent);
-                    } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
-                        jListener.handleEvent(mutableEvent);
-                    } else if (typeof jListener === FUNCTION_TYPE && !jListener.__isConstructor__) {
-                        jListener.call(iTarget, mutableEvent);
-                    }
+                    this._invokeTargetListenerForEvent(iTarget,jListener,mutableEvent,identifierSpecificCaptureMethodName,captureMethodName);
                 }
             }
 
@@ -2186,27 +2178,11 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
                         jListener = jListenerEntry.listener;
 
                         if (jListenerEntry.capture) {
-                            if (identifierSpecificCaptureMethodName && typeof jListener[identifierSpecificCaptureMethodName] === FUNCTION_TYPE) {
-                                jListener[identifierSpecificCaptureMethodName](mutableEvent);
-                            } else if (typeof jListener[captureMethodName] === FUNCTION_TYPE) {
-                                jListener[captureMethodName](mutableEvent);
-                            } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
-                                jListener.handleEvent(mutableEvent);
-                            } else if (typeof jListener === FUNCTION_TYPE) {
-                                jListener.call(iTarget, mutableEvent);
-                            }
+                            this._invokeTargetListenerForEvent(iTarget, jListener, mutableEvent, identifierSpecificCaptureMethodName, captureMethodName);
                         }
 
                         if (jListenerEntry.bubble) {
-                            if (identifierSpecificBubbleMethodName && typeof jListener[identifierSpecificBubbleMethodName] === FUNCTION_TYPE) {
-                                jListener[identifierSpecificBubbleMethodName](mutableEvent);
-                            } else if (typeof jListener[bubbleMethodName] === FUNCTION_TYPE) {
-                                jListener[bubbleMethodName](mutableEvent);
-                            } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
-                                jListener.handleEvent(mutableEvent);
-                            } else if (typeof jListener === FUNCTION_TYPE) {
-                                jListener.call(iTarget, mutableEvent);
-                            }
+                            this._invokeTargetListenerForEvent(iTarget, jListener, mutableEvent, identifierSpecificBubbleMethodName, bubbleMethodName);
                         }
 
                     }
@@ -2232,15 +2208,8 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
 
                     jListener = jListenerEntry.listener;
 
-                    if (identifierSpecificBubbleMethodName && typeof jListener[identifierSpecificBubbleMethodName] === FUNCTION_TYPE) {
-                        jListener[identifierSpecificBubbleMethodName](mutableEvent);
-                    } else if (typeof jListener[bubbleMethodName] === FUNCTION_TYPE) {
-                        jListener[bubbleMethodName](mutableEvent);
-                    } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
-                        jListener.handleEvent(mutableEvent);
-                    } else if (typeof jListener === FUNCTION_TYPE) {
-                        jListener.call(iTarget, mutableEvent);
-                    }
+                    this._invokeTargetListenerForEvent(iTarget, jListener, mutableEvent, identifierSpecificBubbleMethodName, bubbleMethodName);
+
                 }
             }
 
@@ -2258,6 +2227,19 @@ var EventManager = exports.EventManager = Montage.specialize(/** @lends EventMan
             }
         }
     },
+
+	_invokeTargetListenerForEvent: {
+		value: function(iTarget, jListener,mutableEvent,identifierSpecificPhaseMethodName,phaseMethodName) {
+			var listenerFunction;
+			if ((identifierSpecificPhaseMethodName && typeof (listenerFunction = jListener[identifierSpecificPhaseMethodName]) === FUNCTION_TYPE)
+			 || (typeof (listenerFunction = jListener[phaseMethodName]) === FUNCTION_TYPE)
+			 || (typeof (listenerFunction = jListener.handleEvent) === FUNCTION_TYPE)) {
+ 				listenerFunction.call(jListener, mutableEvent);
+            } else if (typeof jListener === FUNCTION_TYPE) {
+                jListener.call(iTarget, mutableEvent);
+            }
+		}
+	},
 
     // Ensure that any components associated with DOM elements in the hierarchy between the
     // original activationEvent target and the window are preparedForActionEvents
