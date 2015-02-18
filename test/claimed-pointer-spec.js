@@ -32,18 +32,18 @@ var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-TestPageLoader.queueTest("claimed-pointer-test/claimed-pointer-test", function(testPage) {
+TestPageLoader.queueTest("claimed-pointer-test/claimed-pointer-test", function (testPage) {
     var test;
-    beforeEach(function() {
+    beforeEach(function () {
         test = testPage.test;
     });
 
-    describe("claimed-pointer-spec", function() {
+    describe("claimed-pointer-spec", function () {
         var componentA,
             componentB,
             eventManager;
 
-        beforeEach(function() {
+        beforeEach(function () {
             var testWindow = testPage.iframe.contentWindow;
             eventManager = testWindow.mr("montage/core/application").application.eventManager;
             eventManager.reset();
@@ -52,9 +52,9 @@ TestPageLoader.queueTest("claimed-pointer-test/claimed-pointer-test", function(t
             componentB = testPage.test.componentB;
         });
 
-        describe("an unclaimed pointer identifier", function() {
+        describe("an unclaimed pointer identifier", function () {
 
-            it("should be successfully claimed by a component", function() {
+            it("should be successfully claimed by a component", function () {
                 eventManager.claimPointer("touch1", componentA);
 
                 expect(eventManager._claimedPointers["touch1"]).toBe(componentA);
@@ -62,20 +62,20 @@ TestPageLoader.queueTest("claimed-pointer-test/claimed-pointer-test", function(t
 
         });
 
-        describe("a claimed pointer identifier", function() {
+        describe("a claimed pointer identifier", function () {
 
-            beforeEach(function() {
+            beforeEach(function () {
                 eventManager.claimPointer("touch1", componentA);
             });
 
-            it("should be successfully forfeited by the owner component", function() {
+            it("should be successfully forfeited by the owner component", function () {
                 eventManager.forfeitPointer("touch1", componentA);
 
                 expect(eventManager._claimedPointers["touch1"]).toBeUndefined();
             });
 
-            it("must not be forfeited from a component it is not claimed by", function() {
-                expect(function() {
+            it("must not be forfeited from a component it is not claimed by", function () {
+                expect(function () {
                     eventManager.forfeitPointer("touch1", componentB);
                 }).toThrow("Not allowed to forfeit pointer 'touch1' claimed by another component");
 

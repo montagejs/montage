@@ -36,7 +36,7 @@ var TestController = require("montage-testing/test-controller").TestController;
 
 var FirstDrawListenerComponent = Component.specialize( {
    handleFirstDraw: {
-       value: function(event) {
+       value: function (event) {
        }
    }
 });
@@ -45,7 +45,7 @@ var FirstDrawListenerComponent = Component.specialize( {
 var Draw = exports.Draw = TestController.specialize( {
     loadComponents: {
         enumerable: false,
-        value: function() {
+        value: function () {
             if (this.componentA) {
                 this.componentA.dispose();
             }
@@ -86,7 +86,7 @@ var Draw = exports.Draw = TestController.specialize( {
         }
     },
     deserializedFromTemplate: {
-        value: function() {
+        value: function () {
             window.test = this;
             this.loadComponents();
             this.componentA.needsDraw = true;

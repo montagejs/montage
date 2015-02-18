@@ -37,11 +37,11 @@ var TextField = exports.TextField = Component.specialize( {
     hasTemplate: {value: true},
 
     text: {
-        set: function(value) {
+        set: function (value) {
             this._text = value;
             this.needsDraw = true;
         },
-        get: function() {
+        get: function () {
             return this._text;
         }
     },
@@ -50,7 +50,7 @@ var TextField = exports.TextField = Component.specialize( {
         value: "default text"
     },
 
-    draw: {value: function() {
+    draw: {value: function () {
         this.element.value = this.text;
     }}
 });

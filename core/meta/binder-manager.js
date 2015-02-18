@@ -3,25 +3,28 @@
 /**
  * @module montage/core/meta/binder-manager
  * @requires montage/core/core
- * @requires core/exception
- * @requires core/promise
- * @requires core/logger
+ * @requires montage/core/meta/object-property
+ * @requires montage/core/promise
+ * @requires montage/core/meta/binder
+ * @requires montage/core/logger
  */
-var Montage = require("../core").Montage;
-var Promise = require("../promise").Promise;
-var ObjectProperty = require("./object-property").ObjectProperty;
-var BinderModule = require("./binder");
-
-var logger = require("../logger").logger("blueprint");
+var Montage = require("../core").Montage,
+    Promise = require("../promise").Promise,
+    ObjectProperty = require("./object-property").ObjectProperty,
+    BinderModule = require("./binder"),
+    logger = require("../logger").logger("blueprint");
 
 /**
  * @class BinderManager
  * @classdesc A blueprint binder manager is a singleton that is responsible for
  * loading and dispaching binders and blueprints.
+ *
  * @extends Montage
  */
-var BinderManager = exports.BinderManager = Montage.specialize( /** @lends BinderManager# */ {
-
+var BinderManager = exports.BinderManager = Montage.specialize( /** @lends BinderManager.prototype # */ {
+    /**
+     * @constructs BinderManager
+     */
     constructor: {
         value: function BinderManager() {
             this._binders = [];
@@ -29,33 +32,42 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
         }
     },
 
+    /**
+     * @private
+     * @property {Array} value
+     */
     _binders: {
         value: null
     },
 
 
+    /**
+     * @private
+     */
     _binderTable: {
         value: null
     },
 
     /**
      * Return the list of binder registered on the manager.
+     *
      * @readonly
-     * @type {Array.<Binder>}
+     * @returns {Array.<Binder>}
      */
     binders: {
-        get: function() {
+        get: function () {
             return this._binders;
         }
     },
 
     /**
-     * Add a new blueprint binder.
-     * @method
+     * Add a new blueprint binder
+     *
+     * @function
      * @param {Binder} binder
      */
     addBinder: {
-        value: function(binder) {
+        value: function (binder) {
             if (binder !== null) {
                 if (this._binderTable[binder.name]) {
                     this.removeBinder(this._binderTable[binder.name]);
@@ -71,11 +83,11 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     },
 
     /**
-     * @method
+     * @function
      * @param {Binder} binder
      */
     removeBinder: {
-        value: function(binder) {
+        value: function (binder) {
             if (binder !== null) {
                 var index = this._binders.indexOf(binder);
                 if (index >= 0) {
@@ -93,21 +105,21 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
      * @param {string} name
      */
     binderForName: {
-        value: function(name) {
+        value: function (name) {
             return this._binderTable[name];
         }
     },
 
     /**
      * Search through the binders for a blueprint that extends that prototype.
-     * @method
+     * @function
      * @param {string} prototypeName
      * @param {string} moduleId
      * @returns The requested blueprint or null if this prototype is not
      * managed.
      */
     blueprintForPrototype: {
-        value: function(prototypeName, moduleId) {
+        value: function (prototypeName, moduleId) {
             var binder, blueprint, index;
             for (index = 0; typeof (binder = this.binders[index]) !== "undefined"; index++) {
                 blueprint = binder.blueprintForPrototype(prototypeName, moduleId);
@@ -119,6 +131,9 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
         }
     },
 
+    /**
+     * @private
+     */
     _defaultBlueprintObjectProperty: {
         serializable: true,
         value: null
@@ -127,11 +142,12 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     /**
      * Return the default blueprint object property.
      * This is the last resort property declaration object.
+     *
      * @readonly
-     * @type {ObjectProperty} default blueprint object property
+     * @returns {ObjectProperty} default blueprint object property
      */
     defaultBlueprintObjectProperty: {
-        get: function() {
+        get: function () {
             if (!this._defaultBlueprintObjectProperty) {
                 this._defaultBlueprintObjectProperty = new ObjectProperty().init();
             }
@@ -147,11 +163,12 @@ var BinderManager = exports.BinderManager = Montage.specialize( /** @lends Binde
     /**
      * Return the default blueprint object property.
      * This is the last resort property declaration object.
+     *
      * @readonly
-     * @type {ObjectProperty} default blueprint object property
+     * @returns {ObjectProperty} default blueprint object property
      */
     defaultBinder: {
-        get: function() {
+        get: function () {
             if (!this._defaultBinder) {
                 this._defaultBinder = new BinderModule.Binder().initWithNameAndRequire("default", self.mr);
                 this._defaultBinder.isDefault = true;

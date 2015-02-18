@@ -21,7 +21,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
             expect(aToggleButtonSubtype).toBeDefined();
         });
     });
-    
+
     describe("properties", function () {
         var ToggleButton = AbstractToggleButton.specialize( {}),
             aToggleButton;
@@ -43,7 +43,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
                 aToggleButton.prepareForActivationEvents();
             });
 
-            it("should not toggle when enabled is false and PressComposer fires a press", function() {
+            it("should not toggle when enabled is false and PressComposer fires a press", function () {
                 aToggleButton.pressed = false;
                 aToggleButton.enabled = false;
 
@@ -53,8 +53,8 @@ describe("test/base/abstract-toggle-button-spec", function () {
                 expect(aToggleButton.pressed).toBe(false);
             });
 
-            it("should not dispatch an action event when enabled is false and PressComposer fires a press", function() {
-                var callback = jasmine.createSpy().andCallFake(function(event) {
+            it("should not dispatch an action event when enabled is false and PressComposer fires a press", function () {
+                var callback = jasmine.createSpy().andCallFake(function (event) {
                     expect(event.type).toEqual("action");
                 });
                 aToggleButton.addEventListener("action", callback, false);
@@ -67,7 +67,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
                 expect(callback).not.toHaveBeenCalled();
             });
 
-            it("should add the corresponding class name to classList when enabled is false", function() {
+            it("should add the corresponding class name to classList when enabled is false", function () {
                 aToggleButton.enabled = false;
 
                 expect(aToggleButton.classList.contains("montage--disabled")).toBe(true);
@@ -113,7 +113,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
                 aToggleButton.prepareForActivationEvents();
             });
 
-            it("should toggle when enabled is true and PressComposer fires a press", function() {
+            it("should toggle when enabled is true and PressComposer fires a press", function () {
                 aToggleButton.pressed = false;
                 aToggleButton.enabled = true;
 
@@ -123,7 +123,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
                 expect(aToggleButton.pressed).toBe(true);
             });
 
-            it("should not toggle when enabled is false and PressComposer fires a press", function() {
+            it("should not toggle when enabled is false and PressComposer fires a press", function () {
                 aToggleButton.pressed = false;
                 aToggleButton.enabled = false;
 
@@ -133,7 +133,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
                 expect(aToggleButton.pressed).toBe(false);
             });
 
-            it("should add the corresponding class name to classList when enabled is false", function() {
+            it("should add the corresponding class name to classList when enabled is false", function () {
                 aToggleButton.pressed = true;
 
                 expect(aToggleButton.classList.contains("montage-ToggleButton--pressed")).toBe(true);
@@ -205,11 +205,11 @@ describe("test/base/abstract-toggle-button-spec", function () {
             aToggleButton = new ToggleButton();
             anElement = MockDOM.element();
             listener = {
-                handleEvent: function() {}
+                handleEvent: function () {}
             }
         });
 
-        it("should listen for pressStart only after prepareForActivationEvents", function() {
+        it("should listen for pressStart only after prepareForActivationEvents", function () {
             var listeners,
                 em = aToggleButton.eventManager;
 
@@ -222,7 +222,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
             expect(listeners[aToggleButton.uuid].listener).toBe(aToggleButton);
         });
 
-        it("should listen for longPress on PressComposer on demand", function() {
+        it("should listen for longPress on PressComposer on demand", function () {
             var listeners,
                 em = aToggleButton.eventManager;
 
@@ -241,8 +241,8 @@ describe("test/base/abstract-toggle-button-spec", function () {
                 aToggleButton.prepareForActivationEvents();
             });
 
-            it("should fire a 'longAction' event when the PressComposer fires a longPress", function() {
-                var callback = jasmine.createSpy().andCallFake(function(event) {
+            it("should fire a 'longAction' event when the PressComposer fires a longPress", function () {
+                var callback = jasmine.createSpy().andCallFake(function (event) {
                     expect(event.type).toEqual("longAction");
                 });
                 aToggleButton.addEventListener("longAction", callback, false);
@@ -250,8 +250,8 @@ describe("test/base/abstract-toggle-button-spec", function () {
                 expect(callback).toHaveBeenCalled();
             });
 
-            it("should not fire an 'action' event when enabled is false and PressComposer fires a press", function() {
-                var callback = jasmine.createSpy().andCallFake(function(event) {
+            it("should not fire an 'action' event when enabled is false and PressComposer fires a press", function () {
+                var callback = jasmine.createSpy().andCallFake(function (event) {
                     expect(event.type).toEqual("action");
                 });
                 aToggleButton.addEventListener("action", callback, false);
@@ -263,8 +263,8 @@ describe("test/base/abstract-toggle-button-spec", function () {
                 expect(callback).not.toHaveBeenCalled();
             });
 
-            it("should fire an 'action' event when enabled is true and PressComposer fires a press", function() {
-                var callback = jasmine.createSpy().andCallFake(function(event) {
+            it("should fire an 'action' event when enabled is true and PressComposer fires a press", function () {
+                var callback = jasmine.createSpy().andCallFake(function (event) {
                     expect(event.type).toEqual("action");
                 });
                 aToggleButton.addEventListener("action", callback, false);
@@ -276,8 +276,8 @@ describe("test/base/abstract-toggle-button-spec", function () {
                 expect(callback).toHaveBeenCalled();
             });
 
-            it("should fire an 'action' event with the contents of the detail property", function() {
-                var callback = jasmine.createSpy().andCallFake(function(event) {
+            it("should fire an 'action' event with the contents of the detail property", function () {
+                var callback = jasmine.createSpy().andCallFake(function (event) {
                     expect(event.detail.get("foo")).toEqual("bar");
                 });
                 aToggleButton.addEventListener("action", callback, false);
@@ -290,7 +290,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
                 expect(callback).toHaveBeenCalled();
             });
 
-            it("should toggle on 'space' keyPress", function() {
+            it("should toggle on 'space' keyPress", function () {
                 var anEvent = MockDOM.keyPressEvent("space", aToggleButton.element);
 
                 aToggleButton.pressed = false;

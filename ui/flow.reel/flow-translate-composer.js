@@ -101,7 +101,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
     /**
      */
     _start: {
-        value: function(x, y, target, timeStamp) {
+        value: function (x, y, target, timeStamp) {
             this._superStart(x, y, target, timeStamp);
 
             // TODO: Review using getComputedStyle outside draw cycle
@@ -129,7 +129,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
     /**
      */
     _analyzeMovement: {
-        value: function(event) {
+        value: function (event) {
             var velocity = event.velocity,
                 speed, dX, dY;
 
@@ -153,7 +153,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
     /**
      */
     _dispatchTranslateStart: {
-        value: function(x, y) {
+        value: function (x, y) {
             var translateStartEvent = document.createEvent("CustomEvent");
 
             translateStartEvent.initCustomEvent("translateStart", true, true, null);
@@ -169,7 +169,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
     /**
      */
     _dispatchTranslateEnd: {
-        value: function() {
+        value: function () {
             var translateEndEvent = document.createEvent("CustomEvent");
 
             translateEndEvent.initCustomEvent("translateEnd", true, true, null);
@@ -182,7 +182,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
     },
 
     _dispatchTranslateCancel: {
-        value: function() {
+        value: function () {
             var translateCancelEvent = document.createEvent("CustomEvent");
 
             translateCancelEvent.initCustomEvent("translateCancel", true, true, null);
@@ -198,7 +198,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
     /**
      */
     _dispatchTranslate: {
-        value: function() {
+        value: function () {
             var translateEvent = document.createEvent("CustomEvent");
             translateEvent.initCustomEvent("translate", true, true, null);
             translateEvent.scroll = this._scroll;
@@ -213,7 +213,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
     /**
      */
     _move: {
-        value: function(x, y) {
+        value: function (x, y) {
             var pointerDelta;
 
             if (this._isFirstMove) {
@@ -292,7 +292,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
     /**
      */
     handleWheel: {
-        value: function(event) {
+        value: function (event) {
             var self = this;
 
             // If this composers' component is claiming the "wheel" pointer then handle the event
@@ -311,7 +311,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                             }
                         }
                     }
-                    this._mousewheelStrideTimeout = window.setTimeout(function() {
+                    this._mousewheelStrideTimeout = window.setTimeout(function () {
                         self._mousewheelStrideTimeout = null;
                         self._previousDeltaY = 0;
                     }, 70);
@@ -327,7 +327,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     this._updateScroll();
                     this._dispatchTranslate();
                     window.clearTimeout(this._translateEndTimeout);
-                    this._translateEndTimeout = window.setTimeout(function() {
+                    this._translateEndTimeout = window.setTimeout(function () {
                         self._dispatchTranslateEnd();
                         self._translateEndTimeout = null;
                     }, 400);
@@ -433,7 +433,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
     /**
      */
     frame: {
-        value: function(timestamp) {
+        value: function (timestamp) {
             if (this.isAnimating) {
                 this._animationInterval();
             }

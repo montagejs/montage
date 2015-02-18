@@ -2,19 +2,19 @@ var Montage = require("montage").Montage,
     TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Promise = require("montage/core/promise").Promise;
 
-TestPageLoader.queueTest("repetition/selection-test/selection-test", function(testPage) {
-    describe("ui/repetition-selection-spec", function() {
+TestPageLoader.queueTest("repetition/selection-test/selection-test", function (testPage) {
+    describe("ui/repetition-selection-spec", function () {
 
         var application, eventManager, nameController, repetition;
 
-        var querySelector = function(s) {
+        var querySelector = function (s) {
             return testPage.querySelector(s);
         };
-        var querySelectorAll = function(s) {
+        var querySelectorAll = function (s) {
             return testPage.querySelectorAll(s);
         };
 
-        it("should load", function() {
+        it("should load", function () {
             expect(testPage.loaded).toBeTruthy();
             application = testPage.window.document.application;
             eventManager = application.eventManager;

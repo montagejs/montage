@@ -11,7 +11,7 @@ exports.MontageLabeler = Montage.specialize.call(Labeler, {
     },
 
     getTemplatePropertyLabel: {
-        value: function(object) {
+        value: function (object) {
             var label = this.superForValue("getObjectLabel")(object);
 
             if (label[0] !== ":") {
@@ -23,7 +23,7 @@ exports.MontageLabeler = Montage.specialize.call(Labeler, {
     },
 
     getObjectLabel: {
-        value: function(object) {
+        value: function (object) {
             var label = this.super(object);
 
             if (label[0] === ":") {
@@ -35,7 +35,7 @@ exports.MontageLabeler = Montage.specialize.call(Labeler, {
     },
 
     getObjectName: {
-        value: function(object) {
+        value: function (object) {
             var identifier = object.identifier,
                 objectName;
 

@@ -27,12 +27,12 @@ var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantic
 
     /**
      * Create a new semantic evaluator with the blueprint.
-     * @method
+     * @function
      * @param {Blueprint} blueprint
      * @returns itself
      */
     initWithBlueprint: {
-        value: function(blueprint) {
+        value: function (blueprint) {
             this._blueprint = blueprint;
             return this;
         }
@@ -46,7 +46,7 @@ var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantic
      * Component description attached to this validation rule.
      */
     blueprint: {
-        get: function() {
+        get: function () {
             return this._blueprint;
         }
     },
@@ -54,19 +54,19 @@ var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantic
     /**
      * Compile the syntax tree into a function that can be used for evaluating
      * this selector.
-     * @method
+     * @function
      * @param {Selector} selector syntax
      * @returns function
      */
     compile: {
-        value: function(syntax, parents) {
+        value: function (syntax, parents) {
             Semantics.compile.call(this, syntax, parents);
         }
     },
 
     operators: {
         value: {
-            isBound: function(a) {
+            isBound: function (a) {
                 return !a;
             }
         }
@@ -74,9 +74,9 @@ var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantic
 
     evaluators: {
         value: {
-            isBound: function(collection, modify) {
+            isBound: function (collection, modify) {
                 var self = this;
-                return function(value, parameters) {
+                return function (value, parameters) {
                     value = self.count(collection(value, parameters));
                     return modify(value, parameters);
                 };

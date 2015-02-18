@@ -11,7 +11,7 @@ exports.companyBinder = function () {
 exports.BinderHelper = Montage.specialize( {
 }, {
     companyBinder: {
-        value: function() {
+        value: function () {
             var companyBinder = new Binder().initWithNameAndRequire("CompanyBinder", self.mr);
 
             var personBlueprint = companyBinder.addBlueprintNamed("Person", "meta/blueprint/person");

@@ -14,13 +14,13 @@ var Montage = require("../core/core").Montage,
 exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
 
     load: {
-        value: function() {
+        value: function () {
             document.addEventListener("touchstart", this, true);
         }
     },
 
     unload: {
-        value: function() {
+        value: function () {
             document.removeEventListener("touchstart", this, true);
         }
     },
@@ -71,7 +71,7 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
     },
 
     captureTouchstart: {
-        value: function(event) {
+        value: function (event) {
             this._reset();
             var touches = event.touches,
                 touch = touches[0];
@@ -86,7 +86,7 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
 
     _reset: {
         enumerable: false,
-        value: function() {
+        value: function () {
             this._startX = 0;
             this._startY = 0;
             this._deltaX = 0;
@@ -101,7 +101,7 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
     },
 
     captureTouchcancel: {
-        value: function(event) {
+        value: function (event) {
             document.removeEventListener("touchmove", this, true);
             document.removeEventListener("touchend", this, true);
             document.removeEventListener("touchcancel", this, true);
@@ -109,7 +109,7 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
     },
 
     captureTouchmove: {
-        value: function(event) {
+        value: function (event) {
             event.preventDefault();
             var touches = event.changedTouches[0], swipeEvent, direction;
 
@@ -169,14 +169,14 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
 
     _findSwipeAngle: {
         enumerable: false,
-        value: function(dX, dY) {
+        value: function (dX, dY) {
             var swipeAngle = -1 * (Math.atan2(dY, dX) * 180 / 3.14);
             return swipeAngle.toFixed(2);
         }
     },
 
     captureTouchend: {
-        value: function(event) {
+        value: function (event) {
 
             if (event == null) {
                 return;
@@ -227,7 +227,7 @@ exports.SwipeComposer = Composer.specialize( /** @lends SwipeComposer# */ {
 
     _findVelocity: {
         enumerable: false,
-        value: function(deltaTime) {
+        value: function (deltaTime) {
             return (Math.sqrt(/*xSquare*/(this._deltaX * this._deltaX) + /*ySquare*/(this._deltaY * this._deltaY)) / /*deltaTime*/(deltaTime));
 
         }

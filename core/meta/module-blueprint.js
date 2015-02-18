@@ -20,7 +20,7 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize(/** @lends 
      * @returns this
      */
     initWithModuleAndExportName: {
-        value: function(module, exportName) {
+        value: function (module, exportName) {
             var self = Blueprint.prototype.initWithName.call(this, exportName);
 
             self.module = module;
@@ -37,7 +37,7 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize(/** @lends 
     },
 
     serializeSelf: {
-        value: function(serializer) {
+        value: function (serializer) {
             if (!this.module) {
                 throw new Error("Cannot serialize blueprint without a module reference");
             }
@@ -52,7 +52,7 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize(/** @lends 
     },
 
     deserializeSelf: {
-        value: function(deserializer) {
+        value: function (deserializer) {
             this.super(deserializer);
             this.module = deserializer.getProperty("module");
             this.exportName = deserializer.getProperty("exportName");
@@ -91,7 +91,7 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize(/** @lends 
      * @param {function} require function
      */
     getBlueprintWithModuleId: {
-        value: function(moduleId, _require) {
+        value: function (moduleId, _require) {
             if (moduleId.search(/\.meta$/) === -1) {
                 throw new Error(moduleId + " blueprint module id does not end in '.meta'");
             }
@@ -124,7 +124,7 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize(/** @lends 
                     // Load parent "synchronously" so that all the properties
                     // through the blueprint chain are available
                     return blueprint._parentReference.promise(targetRequire) // MARK
-                    .then(function(parentBlueprint) {
+                    .then(function (parentBlueprint) {
                         blueprint._parent = parentBlueprint;
                         return blueprint;
                     });

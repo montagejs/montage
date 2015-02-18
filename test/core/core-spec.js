@@ -33,9 +33,9 @@ var Montage = require("montage").Montage;
 var WeakMap = require("montage/collections/weak-map");
 var Map = require("montage/collections/map");
 
-describe("core/core-spec", function() {
+describe("core/core-spec", function () {
 
-    describe("inherited object creation and basic properties", function() {
+    describe("inherited object creation and basic properties", function () {
         var A,
             BSubClassOfA,
             a,
@@ -44,7 +44,7 @@ describe("core/core-spec", function() {
             object,
             object2;
 
-        beforeEach(function() {
+        beforeEach(function () {
             A = Montage.specialize( {});
             Object.defineProperty(A, "_montage_metadata", {
                 value: {
@@ -72,31 +72,31 @@ describe("core/core-spec", function() {
             object2 = {};
         });
 
-        describe("regular objects", function() {
+        describe("regular objects", function () {
 
-            it("should have a unique uuid defined", function() {
+            it("should have a unique uuid defined", function () {
                 expect(object.uuid).toBeTruthy();
                 expect(object2.uuid).toBeTruthy();
                 expect(object.uuid).not.toBe(object2.uuid);
             });
 
-            it("should have a constant uuid", function() {
+            it("should have a constant uuid", function () {
                 expect(object.uuid).toBe(object.uuid);
             });
 
         });
 
-        describe("Montage objects", function() {
+        describe("Montage objects", function () {
 
-            describe("getting prototypes uuid", function() {
+            describe("getting prototypes uuid", function () {
 
-                it("should have a unique uuid defined", function() {
+                it("should have a unique uuid defined", function () {
                     expect(A.uuid).toBeTruthy();
                     expect(BSubClassOfA.uuid).toBeTruthy();
                     expect(A.uuid).not.toEqual(BSubClassOfA.uuid);
                 });
 
-                it("shouldn't affect the instances' uuid", function() {
+                it("shouldn't affect the instances' uuid", function () {
                     expect(a.uuid).toBeTruthy();
                     expect(b.uuid).toBeTruthy();
                     expect(a.uuid).not.toEqual(A.uuid);
@@ -104,7 +104,7 @@ describe("core/core-spec", function() {
                 });
             });
 
-            it("should have the right prototype chain", function() {
+            it("should have the right prototype chain", function () {
                 expect(a).not.toBeNull();
                 expect(b).not.toBeNull();
                 expect(BSubClassOfA.__proto__).toBe(A);
@@ -112,7 +112,7 @@ describe("core/core-spec", function() {
                 expect(b.__proto__).toBe(BSubClassOfA.prototype);
             });
 
-            it("should have a unique uuid defined", function() {
+            it("should have a unique uuid defined", function () {
                 expect(a.uuid).toBeTruthy();
                 expect(a2.uuid).toBeTruthy();
                 expect(a.uuid).not.toEqual(a2.uuid);
@@ -121,12 +121,12 @@ describe("core/core-spec", function() {
                 expect(a.uuid).not.toEqual(b.uuid);
             });
 
-            it("should have a constant uuid", function() {
+            it("should have a constant uuid", function () {
                 expect(a.uuid).toBe(a.uuid);
                 expect(b.uuid).toBe(b.uuid);
             });
 
-            it("should be equal based on uuid", function() {
+            it("should be equal based on uuid", function () {
                 expect(a.equals(a2)).toBeFalsy();
                 var a3 = Montage.create(Montage);
                 a3.__proto__ = null;
@@ -138,9 +138,9 @@ describe("core/core-spec", function() {
             });
 
             //TODO when we remove compatibility mode (Montage.create returns a constructor) this needs to be re-enabled
-            xdescribe("create", function() {
-                it("must be given an object, null or undefined as the first argument", function() {
-                    expect(function(){
+            xdescribe("create", function () {
+                it("must be given an object, null or undefined as the first argument", function () {
+                    expect(function (){
                         Montage.create("string", {});
                     }).toThrow(new TypeError("Object prototype may only be an Object or null, not 'string'"));
 
@@ -151,9 +151,9 @@ describe("core/core-spec", function() {
                     expect(Montage.create({a: 1}, {b: { value: 2 }})).toEqual({a: 1, b: 2});
                 });
             });
-            describe("create", function() {
-                it("must be given an object, null or undefined as the first argument", function() {
-                    expect(function(){
+            describe("create", function () {
+                it("must be given an object, null or undefined as the first argument", function () {
+                    expect(function (){
                         Montage.create("string", {});
                     }).toThrow(new TypeError("Object prototype may only be an Object or null, not 'string'"));
 
@@ -166,20 +166,20 @@ describe("core/core-spec", function() {
                 });
             });
 
-            describe("defineProperty", function() {
+            describe("defineProperty", function () {
 
                 var foo;
 
-                it("must be given an object as the first argument", function() {
-                    expect(function(){
+                it("must be given an object as the first argument", function () {
+                    expect(function (){
                         Montage.defineProperty(null, "b", { value: null });
                     }).toThrow(new TypeError("Object must be an object, not 'null'"));
 
-                    expect(function(){
+                    expect(function (){
                         Montage.defineProperty(undefined, "b", { value: null });
                     }).toThrow(new TypeError("Object must be an object, not 'undefined'"));
 
-                    expect(function(){
+                    expect(function (){
                         Montage.defineProperty("string", "b", { value: null });
                     }).toThrow(new TypeError("Object must be an object, not 'string'"));
 
@@ -200,20 +200,20 @@ describe("core/core-spec", function() {
                     });
                 });
 
-                describe("underscore property name object value", function() {
+                describe("underscore property name object value", function () {
 
-                    beforeEach(function() {
+                    beforeEach(function () {
                         foo = Montage.create();
                     });
 
-                    it("should not be enumerable by default", function() {
+                    it("should not be enumerable by default", function () {
                         Montage.defineProperty(foo, "_privateObjectProperty", {
                             value: {}
                         });
                         expect(Object.getPropertyDescriptor(foo, "_privateObjectProperty").enumerable).toBeFalsy();
                     });
 
-                    it("should be enumerable if underscore but overridden", function() {
+                    it("should be enumerable if underscore but overridden", function () {
                         Montage.defineProperty(foo, "_privateObjectProperty", {
                             value: {},
                             enumerable:true
@@ -222,15 +222,15 @@ describe("core/core-spec", function() {
                     });
                 });
 
-                describe("function value", function() {
+                describe("function value", function () {
 
-                    beforeEach(function() {
+                    beforeEach(function () {
                         foo = Montage.create();
                     });
 
-                    it("should be non-enumerable by default", function() {
+                    it("should be non-enumerable by default", function () {
                         Montage.defineProperty(foo, "objectProperty", {
-                            value: function() {
+                            value: function () {
 
                             }
                         });
@@ -238,18 +238,18 @@ describe("core/core-spec", function() {
                     });
                 });
 
-                describe("getter setter", function() {
+                describe("getter setter", function () {
 
-                    beforeEach(function() {
+                    beforeEach(function () {
                         foo = Montage.create();
                     });
 
-                    it("should be enumerable by default", function() {
+                    it("should be enumerable by default", function () {
                         Montage.defineProperty(foo, "objectProperty", {
-                            get: function() {
+                            get: function () {
 
                             },
-                            set: function() {
+                            set: function () {
 
                             }
                         });
@@ -260,17 +260,17 @@ describe("core/core-spec", function() {
 
         });
 
-        describe("defineProperties", function() {
-            it("must be given an object as the second argument", function() {
-                expect(function(){
+        describe("defineProperties", function () {
+            it("must be given an object as the second argument", function () {
+                expect(function (){
                     Montage.defineProperties({}, null);
                 }).toThrow(new TypeError("Properties must be an object, not 'null'"));
 
-                expect(function(){
+                expect(function (){
                     Montage.defineProperties({}, undefined);
                 }).toThrow(new TypeError("Properties must be an object, not 'undefined'"));
 
-                expect(function(){
+                expect(function (){
                     Montage.defineProperties({}, "string");
                 }).toThrow(new TypeError("Properties must be an object, not 'string'"));
 
@@ -278,16 +278,16 @@ describe("core/core-spec", function() {
             });
         });
 
-        describe("serializable property attribute", function() {
+        describe("serializable property attribute", function () {
             var A, B;
             var defaultPropertyNamesCount = Montage.getSerializablePropertyNames({}).length;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 A = {};
                 B = Montage.create(A);
             });
 
-            describe("defaults", function() {
+            describe("defaults", function () {
                 it("should be reference", function () {
                     Montage.defineProperty(A, "foo", {value: null});
                     expect(Montage.getPropertyAttribute(A, "foo", "serializable")).toBe("reference")
@@ -297,7 +297,7 @@ describe("core/core-spec", function() {
                     expect(Montage.getPropertyAttribute(A, "foo", "serializable")).toBe(false)
                 });
                 it("should be false if the property has a get but no set", function () {
-                    Montage.defineProperty(A, "foo", {get: function( ) {}});
+                    Montage.defineProperty(A, "foo", {get: function ( ) {}});
                     expect(Montage.getPropertyAttribute(A, "foo", "serializable")).toBe(false)
                 });
                 it("should be false if the property is not writable", function () {
@@ -306,7 +306,7 @@ describe("core/core-spec", function() {
                 });
             });
 
-            it("should set a property as serializable", function() {
+            it("should set a property as serializable", function () {
                 Montage.defineProperty(A, "foo", {serializable:true});
 
                 var propertyNames = Montage.getSerializablePropertyNames(A);
@@ -315,7 +315,7 @@ describe("core/core-spec", function() {
                 expect(propertyNames).toContain("foo");
             });
 
-            it("must not set a property as serializable", function() {
+            it("must not set a property as serializable", function () {
                 Montage.defineProperty(A, "foo", {serializable:false});
 
                 var propertyNames = Montage.getSerializablePropertyNames(A);
@@ -324,7 +324,7 @@ describe("core/core-spec", function() {
                 expect(propertyNames).not.toContain("foo");
             });
 
-            it("should set the serializable attribute in properties as defined", function() {
+            it("should set the serializable attribute in properties as defined", function () {
                 Montage.defineProperties(A, {
                     foo: {serializable:false},
                     foz: {serializable:true},
@@ -341,7 +341,7 @@ describe("core/core-spec", function() {
                 expect(propertyNames).toContain("baz");
             });
 
-            it("should inherit the serializable property attribute", function() {
+            it("should inherit the serializable property attribute", function () {
                 Montage.defineProperty(A, "foo", {serializable:true});
 
                 var propertyNames = Montage.getSerializablePropertyNames(B);
@@ -350,7 +350,7 @@ describe("core/core-spec", function() {
                 expect(propertyNames).toContain("foo");
             });
 
-            it("should override the serializable property attribute", function() {
+            it("should override the serializable property attribute", function () {
                 Montage.defineProperty(A, "foo", {serializable:false});
                 Montage.defineProperty(B, "foo", {serializable:true});
 
@@ -361,15 +361,15 @@ describe("core/core-spec", function() {
             });
         });
 
-        describe("extended property attributes", function() {
+        describe("extended property attributes", function () {
             var A, B;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 A = {};
                 B = Montage.create(A);
             });
 
-            it("should return the boolean attribute values", function() {
+            it("should return the boolean attribute values", function () {
                 Montage.defineProperties(A, {
                     "foo": {serializable:true, value:null},
                     "bar": {serializable:false, value:null},
@@ -387,7 +387,7 @@ describe("core/core-spec", function() {
                 expect(Montage.getPropertyAttribute(A, "baz", "serializable")).toBe("reference");
             });
 
-            it("should return the defined attribute values", function() {
+            it("should return the defined attribute values", function () {
                 Montage.defineProperties(A, {
                     "foo": {serializable:"auto", value:null},
                     "bar": {serializable:"reference", value:null},
@@ -405,7 +405,7 @@ describe("core/core-spec", function() {
                 expect(Montage.getPropertyAttribute(A, "baz", "serializable")).toBe("value");
             });
 
-            it("should return the inherited defined attribute values", function() {
+            it("should return the inherited defined attribute values", function () {
                 Montage.defineProperties(A, {
                     "foo": {serializable:"auto", value:null},
                     "bar": {serializable:"value", value:null}
@@ -428,38 +428,38 @@ describe("core/core-spec", function() {
         });
     });
 
-    describe("method inheritance calling \"super\"", function() {
+    describe("method inheritance calling \"super\"", function () {
 
         var A = Montage.specialize( {
             everywhere: {
                 enumerable:false,
-                value: function() {
+                value: function () {
                     return "everywhereA";
                 }
             },
             skipped: {
                 enumerable:false,
-                value: function() {
+                value: function () {
                     return "skippedA";
                 }
             },
             getEverywhere: {
-                get: function() {
+                get: function () {
                     return "everywhereA";
                 }
             },
             getSkipped: {
-                get: function() {
+                get: function () {
                     return "skippedA";
                 }
             },
             inheritedValue: {
-                value: function() {
+                value: function () {
                     return "valueA";
                 }
             },
             valueFromPrototype: {
-                value: function() {
+                value: function () {
                     return "PrototypeValueA";
                 }
             }
@@ -467,22 +467,22 @@ describe("core/core-spec", function() {
             B = Montage.create(A, {
                 everywhere: {
                     enumerable:false,
-                    value: function() {
+                    value: function () {
                         return "everywhereB";
                     }
                 },
                 getEverywhere: {
-                    get: function() {
+                    get: function () {
                         return "everywhereB";
                     }
                 },
                 inheritedValue: {
-                    value: function() {
+                    value: function () {
                         return Object.getPrototypeOf(B)["inheritedValue"].call(this);
                     }
                 },
                 valueFromPrototype: {
-                    value: function() {
+                    value: function () {
                         return "PrototypeValueB";
                     }
                 }
@@ -490,33 +490,33 @@ describe("core/core-spec", function() {
             C = Montage.create(B, {
                 everywhere: {
                     enumerable:false,
-                    value: function() {
+                    value: function () {
                         return "everywhereC";
                     }
                 },
                 skipped: {
                     enumerable:false,
-                    value: function() {
+                    value: function () {
                         return "skippedC";
                     }
                 },
                 getEverywhere: {
-                    get: function() {
+                    get: function () {
                         return "everywhereC";
                     }
                 },
                 getSkipped: {
-                    get: function() {
+                    get: function () {
                         return "skippedC";
                     }
                 },
                 inheritedValue: {
-                    value: function() {
+                    value: function () {
                         return Object.getPrototypeOf(C)["inheritedValue"].call(this);
                     }
                 },
                 valueFromPrototype: {
-                    value: function() {
+                    value: function () {
                         return Object.getPrototypeOf(C)["valueFromPrototype"].call(this);
                     }
                 }
@@ -525,7 +525,7 @@ describe("core/core-spec", function() {
             b = Montage.create(B),
             c = Montage.create(C);
 
-        it("should override methods", function() {
+        it("should override methods", function () {
             expect(a.everywhere()).toEqual("everywhereA");
             expect(b.everywhere()).toEqual("everywhereB");
             expect(c.everywhere()).toEqual("everywhereC");
@@ -534,7 +534,7 @@ describe("core/core-spec", function() {
             expect(c.skipped()).toEqual("skippedC");
         });
 
-        it("should be able to call prototype method and return expected value", function() {
+        it("should be able to call prototype method and return expected value", function () {
             expect(Object.getPrototypeOf(A)["everywhere"]).toBeUndefined();
             expect(Object.getPrototypeOf(B)["everywhere"].call(b)).toEqual("everywhereA");
             expect(Object.getPrototypeOf(C)["everywhere"].call(c)).toEqual("everywhereB");
@@ -542,38 +542,38 @@ describe("core/core-spec", function() {
             expect(Object.getPrototypeOf(C)["skipped"].call(c)).toEqual("skippedA");
         });
 
-        it("should be able to get properties from the prototype and return expected value", function() {
+        it("should be able to get properties from the prototype and return expected value", function () {
             expect(Object.getPropertyDescriptor(Object.getPrototypeOf(B), "getEverywhere").get.call(b)).toEqual("everywhereA");
             expect(Object.getPropertyDescriptor(Object.getPrototypeOf(C), "getEverywhere").get.call(c)).toEqual("everywhereB");
             expect(Object.getPropertyDescriptor(Object.getPrototypeOf(B), "getSkipped").get.call(b)).toEqual("skippedA");
             expect(Object.getPropertyDescriptor(Object.getPrototypeOf(C), "getSkipped").get.call(c)).toEqual("skippedA");
         });
 
-        it("inheritedValue() should call inherited methods", function() {
+        it("inheritedValue() should call inherited methods", function () {
             expect(b.inheritedValue()).toEqual("valueA");
             expect(c.inheritedValue()).toEqual("valueA");
         });
 
-        it("valueFromPrototype should call parent prototype method", function() {
+        it("valueFromPrototype should call parent prototype method", function () {
             expect(C.valueFromPrototype()).toEqual("PrototypeValueB");
         });
     });
 
-    describe("split getter/setter inheritance", function() {
+    describe("split getter/setter inheritance", function () {
         var A = Montage.specialize( {
                 getsetEverywhere: {
-                    get: function() {
+                    get: function () {
                         return this._everywhere;
                     },
-                    set: function(value) {
+                    set: function (value) {
                         this._everywhere = "setA";
                     }
                 },
                 getsetSkipped: {
-                    get: function() {
+                    get: function () {
                         return this._skipped;
                     },
-                    set: function(value) {
+                    set: function (value) {
                         this._skipped = "setA";
                     }
                 },
@@ -586,15 +586,15 @@ describe("core/core-spec", function() {
             }),
             B = Montage.create(A, {
                 getsetEverywhere: {
-                    get: function() {
+                    get: function () {
                         return this._everywhere;
                     },
-                    set: function(value) {
+                    set: function (value) {
                         this._everywhere = "setB";
                     }
                 },
                 getsetSkipped: {
-                    get: function() {
+                    get: function () {
                         return this._skipped;
                     }
                 }
@@ -602,18 +602,18 @@ describe("core/core-spec", function() {
             }),
             C = Montage.create(B, {
                 getsetEverywhere: {
-                    get: function() {
+                    get: function () {
                         return this._everywhere;
                     },
-                    set: function(value) {
+                    set: function (value) {
                         this._everywhere = "setC";
                     }
                 },
                 getsetSkipped: {
-                    get: function() {
+                    get: function () {
                         return this._skipped;
                     },
-                    set: function(value) {
+                    set: function (value) {
                         this._skipped = "setC";
                     }
                 }
@@ -622,7 +622,7 @@ describe("core/core-spec", function() {
             b = Montage.create(B),
             c = Montage.create(C);
 
-        it("should override methods", function() {
+        it("should override methods", function () {
             c.getsetEverywhere = "X";
             expect(c.getsetEverywhere).toEqual("setC");
             b.getsetEverywhere = "X";
@@ -637,37 +637,37 @@ describe("core/core-spec", function() {
             expect(a.getsetSkipped).toEqual("setA");
         });
 
-        describe("distinct properties", function() {
+        describe("distinct properties", function () {
 
-            it("must not allow marking a get-only property with as distinct", function() {
-                expect(function() {
+            it("must not allow marking a get-only property with as distinct", function () {
+                expect(function () {
                     Montage.defineProperty({}, "foo", {
                         distinct: true,
-                        get: function() {}
+                        get: function () {}
                     })
                 }).toThrow();
             });
 
-            it("must not allow marking a set-only property with as distinct", function() {
-                expect(function() {
+            it("must not allow marking a set-only property with as distinct", function () {
+                expect(function () {
                     Montage.defineProperty({}, "foo", {
                         distinct: true,
-                        set: function() {}
+                        set: function () {}
                     })
                 }).toThrow();
             });
 
-            it("must not allow marking a get-set property with as distinct", function() {
-                expect(function() {
+            it("must not allow marking a get-set property with as distinct", function () {
+                expect(function () {
                     Montage.defineProperty({}, "foo", {
                         distinct: true,
-                        get: function() {},
-                        set: function() {}
+                        get: function () {},
+                        set: function () {}
                     })
                 }).toThrow();
             });
 
-            describe("array property", function() {
+            describe("array property", function () {
 
                 var subType = Montage.specialize( {
                     collection: {
@@ -682,32 +682,32 @@ describe("core/core-spec", function() {
                 var a = Montage.create(subType);
                 var b = Montage.create(subType);
 
-                it("should have different collection property values", function() {
+                it("should have different collection property values", function () {
                     expect(a.collection !== b.collection).toBeTruthy();
                     expect(a.collectionWithValues !== b.collectionWithValues).toBeTruthy();
                 });
 
-                it("should have the same prototype", function() {
+                it("should have the same prototype", function () {
                     expect(a.collection.__proto__ === b.collection.__proto__).toBeTruthy();
                     expect(a.collectionWithValues.__proto__ === b.collectionWithValues.__proto__).toBeTruthy();
                 });
 
-                it("should have the same default content", function() {
+                it("should have the same default content", function () {
                     expect(a.collectionWithValues[0]).toEqual(0);
                     expect(a.collectionWithValues[1]).toEqual(1);
                     expect(a.collectionWithValues[2]).toEqual(2);
                 });
 
-                describe("with deep inheritance", function() {
+                describe("with deep inheritance", function () {
                     var subSubType = Montage.create(subType);
                     var a = Montage.create(subSubType);
                     var b = Montage.create(subSubType);
 
-                    it("should have different collection property values", function() {
+                    it("should have different collection property values", function () {
                         expect(a.collection !== b.collection).toBeTruthy();
                     });
 
-                    it("should have the same prototype", function() {
+                    it("should have the same prototype", function () {
                         expect(a.collection.__proto__ === b.collection.__proto__).toBeTruthy();
                     });
 
@@ -715,7 +715,7 @@ describe("core/core-spec", function() {
 
             });
 
-            describe("object property", function() {
+            describe("object property", function () {
                 var subType = Montage.specialize( {
                     object: {
                         value: {},
@@ -729,23 +729,23 @@ describe("core/core-spec", function() {
                 var a = Montage.create(subType);
                 var b = Montage.create(subType);
 
-                it("should have different collection property values", function() {
+                it("should have different collection property values", function () {
                     expect(a.object !== b.object).toBeTruthy();
                     expect(a.objectWithValues !== b.objectWithValues).toBeTruthy();
                 });
 
-                it("should have the same prototype", function() {
+                it("should have the same prototype", function () {
                     expect(a.object.__proto__ === b.object.__proto__).toBeTruthy();
                     expect(a.objectWithValues.__proto__ === b.objectWithValues.__proto__).toBeTruthy();
                 });
 
-                it("should have the same default content", function() {
+                it("should have the same default content", function () {
                     expect(a.objectWithValues["foo"]).toEqual("bar");
                 });
 
             });
 
-            describe("WeakMap property", function() {
+            describe("WeakMap property", function () {
                 var subType = Montage.specialize( {
                     object: {
                         value:new WeakMap(),
@@ -756,21 +756,21 @@ describe("core/core-spec", function() {
                 var b = Montage.create(subType);
                 var wm = new WeakMap()
 
-                it("should have different collection property values", function() {
+                it("should have different collection property values", function () {
                     expect(a.object !== b.object).toBeTruthy();
                 });
 
-                it("should have the same prototype", function() {
+                it("should have the same prototype", function () {
                     expect(a.object.__proto__ === b.object.__proto__).toBeTruthy();
                 });
 
-                it("should be weak maps", function() {
+                it("should be weak maps", function () {
                     expect(a.object.__proto__ === wm.__proto__).toBeTruthy();
                     expect(b.object.__proto__ === wm.__proto__).toBeTruthy();
                 });
             });
 
-            describe("Map property", function() {
+            describe("Map property", function () {
                 var subType = Montage.specialize( {
                     object: {
                         value:new Map(),
@@ -781,15 +781,15 @@ describe("core/core-spec", function() {
                 var b = Montage.create(subType);
                 var wm = new Map()
 
-                it("should have different collection property values", function() {
+                it("should have different collection property values", function () {
                     expect(a.object !== b.object).toBeTruthy();
                 });
 
-                it("should have the same prototype", function() {
+                it("should have the same prototype", function () {
                     expect(a.object.__proto__ === b.object.__proto__).toBeTruthy();
                 });
 
-                it("should be weak maps", function() {
+                it("should be weak maps", function () {
                     expect(a.object.__proto__ === wm.__proto__).toBeTruthy();
                     expect(b.object.__proto__ === wm.__proto__).toBeTruthy();
                 });
@@ -799,33 +799,33 @@ describe("core/core-spec", function() {
 
     });
 
-    describe("delegate methods", function() {
+    describe("delegate methods", function () {
         var object,
             delegate;
 
-        beforeEach(function() {
+        beforeEach(function () {
             object = Montage.create(Montage);
             delegate = {};
             object.delegate = delegate;
         });
 
-        it("should call generic delegate method", function() {
-            delegate.methodToBeCalled = function() {};
+        it("should call generic delegate method", function () {
+            delegate.methodToBeCalled = function () {};
             spyOn(delegate, "methodToBeCalled");
             object.callDelegateMethod("methodToBeCalled");
             expect(delegate.methodToBeCalled).toHaveBeenCalled();
         });
 
-        it("should call delegate method with identifier", function() {
-            delegate.aMethodToBeCalled = function() {};
+        it("should call delegate method with identifier", function () {
+            delegate.aMethodToBeCalled = function () {};
             spyOn(delegate, "aMethodToBeCalled");
             object.identifier = "a";
             object.callDelegateMethod("methodToBeCalled");
             expect(delegate.aMethodToBeCalled).toHaveBeenCalled();
         });
 
-        it("should call generic delegate method even if the object has an identifier", function() {
-            delegate.methodToBeCalled = function() {};
+        it("should call generic delegate method even if the object has an identifier", function () {
+            delegate.methodToBeCalled = function () {};
             spyOn(delegate, "methodToBeCalled");
             object.identifier = "a";
             object.callDelegateMethod("methodToBeCalled");

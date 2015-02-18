@@ -1,12 +1,15 @@
 /**
  * Provides common conversion, validation, and formatting functions for
  * different types of values.
+ *
  * @module montage/core/converter/converter
  * @requires montage/core/core
  */
 var Montage = require("../core").Montage;
 
-
+/**
+ * @const {string}
+ */
 var FUNCTION_CLASS = '[object Function]',
     BOOLEAN_CLASS = '[object Boolean]',
     NUMBER_CLASS = '[object Number]',
@@ -16,13 +19,12 @@ var FUNCTION_CLASS = '[object Function]',
 
 var _toString = Object.prototype.toString;
 
-
 /**
  * @exports module:montage/core/converter#isNumber
  * @function
  * @private
  */
-var isNumber = function(object) {
+var isNumber = function (object) {
     return _toString.call(object) === NUMBER_CLASS;
 };
 exports.isNumber = isNumber;
@@ -33,7 +35,7 @@ exports.isNumber = isNumber;
  * @function
  * @private
  */
-var isDef = function(obj) {
+var isDef = function (obj) {
     return (obj && typeof obj !== 'undefined');
 };
 exports.isDef = isDef;
@@ -81,7 +83,7 @@ var Converter = exports.Converter = Montage.specialize( /** @lends Converter# */
 
     /**
      * Converts values from the input domain into the output range.
-     * @method
+     * @function
      * @default null
      */
     convert: {
@@ -93,7 +95,7 @@ var Converter = exports.Converter = Montage.specialize( /** @lends Converter# */
      * Optionally, reverts values from the output range, back into the input
      * range. This may not be possible with high fidelity depending on the
      * relationship between these domains.
-     * @method
+     * @function
      * @default null
      */
     revert: {

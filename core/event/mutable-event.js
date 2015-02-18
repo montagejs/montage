@@ -10,21 +10,21 @@ if (typeof window !== "undefined") {
     var _eventConstructorsByType = {};
     var nullDescriptor = {value: null};
 
-    var wrapProperty = function(obj, key) {
+    var wrapProperty = function (obj, key) {
 
         var storageKey = "_" + key;
 
         Montage.defineProperty(obj, storageKey, {value: undefined});
 
         Montage.defineProperty(obj, key, {
-            get:(function(key, storageKey) {
-                return function() {
+            get:(function (key, storageKey) {
+                return function () {
                     return this.hasOwnProperty(storageKey) ? this[storageKey] : (this._event ? this._event[key] : undefined);
                 };
             })(key, storageKey),
 
-            set: (function(storageKey) {
-                return function(value) {
+            set: (function (storageKey) {
+                return function (value) {
                     this[storageKey] = value;
                 };
             })(storageKey)
@@ -39,7 +39,7 @@ if (typeof window !== "undefined") {
       @private
     */
         _initPrototypeWithEvent: {
-            value: function(event) {
+            value: function (event) {
                 var key;
 
                 for (key in event) {
@@ -68,26 +68,26 @@ if (typeof window !== "undefined") {
         },
 
         _initWithEvent: {
-            value: function(event) {
+            value: function (event) {
                 this._event = event;
                 return this;
             }
         },
 
         /**
-         * @method
+         * @function
          */
         preventDefault: {
-            value: function() {
+            value: function () {
                 this._event.preventDefault();
             }
         },
 
         /**
-         * @method
+         * @function
          */
         getPreventDefault: {
-            value: function() {
+            value: function () {
                 if (this._event.getPreventDefault) {
                     return this._event.getPreventDefault();
                 }
@@ -96,10 +96,10 @@ if (typeof window !== "undefined") {
         },
 
         /**
-         * @method
+         * @function
          */
         stopImmediatePropagation: {
-            value: function() {
+            value: function () {
                 this._event.stopImmediatePropagation();
                 // TODO only if the event is cancellable?
                 this.propagationStopped = true;
@@ -140,10 +140,10 @@ if (typeof window !== "undefined") {
         },
 
         /**
-         * @method
+         * @function
          */
         stopPropagation: {
-            value: function() {
+            value: function () {
                 this._event.stopPropagation();
                 // TODO only if the event is cancellable?
                 this.propagationStopped = true;
@@ -151,10 +151,10 @@ if (typeof window !== "undefined") {
         },
 
         /**
-         * @method
+         * @function
          */
         stop: {
-            value: function() {
+            value: function () {
                 this.preventDefault();
                 this.stopPropagation();
             }
@@ -167,7 +167,7 @@ if (typeof window !== "undefined") {
          * @returns newEvent
          */
         fromEvent: {
-            value: function(event) {
+            value: function (event) {
                 var type = event.type,
                     constructor = _eventConstructorsByType[type],
                     newEvent;
@@ -194,7 +194,7 @@ if (typeof window !== "undefined") {
          * @returns this.fromEvent(anEvent)
          */
         fromType: {
-            value: function(type, canBubbleArg, cancelableArg, detail) {
+            value: function (type, canBubbleArg, cancelableArg, detail) {
                 var anEvent = document.createEvent("CustomEvent");
                 anEvent.initCustomEvent(type, canBubbleArg, cancelableArg, detail);
                 return this.fromEvent(anEvent);

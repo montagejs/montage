@@ -1,5 +1,5 @@
 /**
- * @module montage/ui/condition.reel
+ * @module "montage/ui/condition.reel"
  */
 var Component = require("../component").Component,
     logger = require("../../core/logger").logger("condition");
@@ -13,13 +13,13 @@ var Component = require("../component").Component,
  * condition will remove its content from the DOM but
  * [removalStrategy]{@link Condition#removalStrategy} can be changed to alter
  * this behavior.
- * 
+ *
  * @class Condition
  * @classdesc A component that shows or hides its inner template in response to
  * changes to some condition.
  * @extends Component
  */
-exports.Condition = Component.specialize( /** @lends Condition# */ {
+exports.Condition = Component.specialize( /** @lends Condition.prototype # */ {
 
     hasTemplate: {
         value: false
@@ -33,6 +33,9 @@ exports.Condition = Component.specialize( /** @lends Condition# */ {
         value: null
     },
 
+    /**
+     * @constructs Condition
+     */
     constructor: {
         value: function Condition() {
             this.super();
@@ -44,11 +47,11 @@ exports.Condition = Component.specialize( /** @lends Condition# */ {
      * visible (`true`) or hidden (`false`).
      * `null` is equivalent to `false`.
      *
-     * @type {boolean}
+     * @returns {boolean}
      * @default null
      */
     condition: {
-        set: function(value) {
+        set: function (value) {
 
             if (value === this._condition) {
                 return;
@@ -61,13 +64,13 @@ exports.Condition = Component.specialize( /** @lends Condition# */ {
                 this._updateDomContent(value);
             }
         },
-        get: function() {
+        get: function () {
             return this._condition;
         }
     },
 
     _updateDomContent: {
-        value: function(value) {
+        value: function (value) {
             if (this.removalStrategy === "remove") {
                 if (value) {
                     this.domContent = this._contents;
@@ -80,7 +83,7 @@ exports.Condition = Component.specialize( /** @lends Condition# */ {
     },
 
     deserializedFromTemplate: {
-        value: function() {
+        value: function () {
             // update the DOM if the condition is false because we're preventing
             // changes at deserialization time.
             if (!this._condition) {
@@ -103,18 +106,18 @@ exports.Condition = Component.specialize( /** @lends Condition# */ {
      * the DOM.
      *
      * A value of `hide` will make the condition hide its contents through CSS
-     * using the `montage-invisible` class while keeping them on the DOM. Apps using 
-     * `hide` should declare the `montage-invisible` class 
+     * using the `montage-invisible` class while keeping them on the DOM. Apps using
+     * `hide` should declare the `montage-invisible` class
      * which will be applied to elements.
-     * 
+     *
      * Example:
-     * 
+     *
      * ```css
      * .montage-invisible {
      *   display: none;
      * }
      * ```
-     * 
+     *
      * Possible values are `remove`, `hide`.
      *
      * @type {string}
@@ -141,7 +144,7 @@ exports.Condition = Component.specialize( /** @lends Condition# */ {
     },
 
     draw: {
-        value: function() {
+        value: function () {
 
             if (this.condition) {
                 this.element.classList.remove("montage-invisible");

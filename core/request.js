@@ -15,7 +15,7 @@ var Promise = require("./promise").Promise;
  * @param {string} [request.overrideMimeType] Override the return MIME-type of the request
  * @param {object} [request.options]    An object of properties to set on the XHR object, such as `responseType` or `withCredentials`
  * @param {object} [request.xhr]        An existing XMLHttpRequest object to use.
- * @return {Promise.<object>}           A promise for a response object
+ * @returns {Promise.<object>}           A promise for a response object
  * containing `status`, `headers`, `body` and `xhr` properties.
  */
 exports = module.exports = function doRequest(request) {
@@ -25,7 +25,7 @@ exports = module.exports = function doRequest(request) {
     var xhr = request.xhr || new XMLHttpRequest();
     xhr.open(request.method, request.url, true);
 
-    xhr.onload = function() {
+    xhr.onload = function () {
         var response = {
             status: xhr.status,
             headers: exports.parseResponseHeaders(xhr.getAllResponseHeaders()),
@@ -36,7 +36,7 @@ exports = module.exports = function doRequest(request) {
 
         done.resolve(response);
     };
-    xhr.onerror = function() {
+    xhr.onerror = function () {
         done.reject(new Error("Could not load"));
     };
 
@@ -93,7 +93,7 @@ exports.makeOk = function (next) {
  * is 2xx, otherwise it is rejected. The rejected Error object has a `response`
  * property containing the response.
  * @param  {string|object} request See documentation for `request`
- * @return {Promise.<object>}      See documentation for `request`
+ * @returns {Promise.<object>}      See documentation for `request`
  */
 exports.ok = exports.makeOk(exports.request);
 

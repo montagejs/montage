@@ -8,7 +8,7 @@
 /**
  * Returns true if the two strings are equal, otherwise returns false.
  *
- * @method external:String#equals
+ * @function external:String#equals
  * @param {Object} that The object to compare to the string.
  * @returns {boolean} Returns true if the string is equal to
  * `that`.
@@ -24,7 +24,7 @@ Object.defineProperty(String.prototype, "equals", {
 /**
  * Determines whether a substring exists within this string.
  *
- * @method external:String#contains
+ * @function external:String#contains
  * @param {string} content
  * @returns {boolean} whether this string contains the given content
  */
@@ -39,7 +39,7 @@ Object.defineProperty(String.prototype, "contains", {
 /**
  * Capitalizes the first letter in the string.
  *
- * @method external:String#toCapitalized
+ * @function external:String#toCapitalized
  * @returns {string} The original string with its first letter capitalized.
  * @example
  * var fname = "abe";
@@ -48,7 +48,7 @@ Object.defineProperty(String.prototype, "contains", {
  * // name == "Abe Lincoln"
  */
 Object.defineProperty(String.prototype, "toCapitalized", {
-    value: function() {
+    value: function () {
         return this.charAt(0).toUpperCase() + this.slice(1);
     },
     writable: true,

@@ -283,7 +283,7 @@ describe("paths-spec", function () {
 
         it("should call the specified handler after the change", function () {
             var changeObserver = {
-                handleChange: function() {}
+                handleChange: function () {}
             };
 
 
@@ -384,8 +384,8 @@ describe("paths-spec", function () {
 
     });
 
-    describe("addRangeAtPathChangeListener II", function() {
-        it("should not pass a direct reference of the object at the path to the listener's plus/minus parameters", function() {
+    describe("addRangeAtPathChangeListener II", function () {
+        it("should not pass a direct reference of the object at the path to the listener's plus/minus parameters", function () {
             var object = new Montage();
             var spy = jasmine.createSpy();
             var array1 = [1];

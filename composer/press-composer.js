@@ -1,10 +1,11 @@
 /*global require, exports*/
+
 /**
-	@module montage/composer/press-composer
-    @requires montage
-    @requires montage/composer/composer
-    @requires montage/core/event/mutable-event
-*/
+ * @module montage/composer/press-composer
+ * @requires montage/core/core
+ * @requires montage/composer/composer
+ * @requires montage/core/event/mutable-event
+ */
 var Montage = require("../core/core").Montage,
     Composer = require("./composer").Composer,
     MutableEvent = require("../core/event/mutable-event").MutableEvent;
@@ -14,13 +15,14 @@ var Montage = require("../core/core").Montage,
  * @classdesc The `PressComposer` abstracts away handling mouse and touch
  * events that represent presses, allowing generic detection of presses, long
  * presses, and cancelled presses.
+ *
  * @extends Composer
  * @fires pressStart
  * @fires press
  * @fires longPress
  * @fires pressCancel
  */
-var PressComposer = exports.PressComposer = Composer.specialize(/** @lends PressComposer# */ {
+var PressComposer = exports.PressComposer = Composer.specialize(/** @lends PressComposer.prototype # */ {
 
     /**
      * Dispatched when a press begins. It is ended by either a {@link press} or
@@ -68,7 +70,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     // Load/unload
 
     load: {
-        value: function() {
+        value: function () {
             if (window.Touch) {
                 this._element.addEventListener("touchstart", this, true);
             } else {
@@ -78,7 +80,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     },
 
     unload: {
-        value: function() {
+        value: function () {
             if (window.Touch) {
                 this._element.removeEventListener("touchstart", this, true);
             } else {
@@ -108,7 +110,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
      * already in a unpressed or canceled state.
      */
     cancelPress: {
-        value: function() {
+        value: function () {
             if (this._state === PressComposer.PRESSED) {
                 this._dispatchPressCancel();
                 this._endInteraction();
@@ -120,7 +122,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     // Optimisation so that we don't set a timeout if we do not need to
     addEventListener: {
-        value: function(type, listener, useCapture) {
+        value: function (type, listener, useCapture) {
             Composer.addEventListener.call(this, type, listener, useCapture);
             if (type === "longPress") {
                 this._shouldDispatchLongPress = true;
@@ -143,7 +145,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         value: 0
     },
     state: {
-        get: function() {
+        get: function () {
             return this._state;
         }
     },
@@ -163,10 +165,10 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
      * @type number
      */
     longPressThreshold: {
-        get: function() {
+        get: function () {
             return this._longPressThreshold;
         },
-        set: function(value) {
+        set: function (value) {
             if (this._longPressThreshold !== value) {
                 this._longPressThreshold = value;
             }
@@ -189,7 +191,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     // and handleMousedown
     _startInteraction: {
         enumerable: false,
-        value: function(event) {
+        value: function (event) {
             if (
                 ("enabled" in this.component && !this.component.enabled) ||
                 this._observedPointer !== null
@@ -236,7 +238,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
      * @private
      */
     _interpretInteraction: {
-        value: function(event) {
+        value: function (event) {
             // TODO maybe the code should be moved out to handleClick and
             // handleMouseup
             var isSurrendered, target, isTarget;
@@ -282,7 +284,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
      * @private
      */
     _endInteraction: {
-        value: function(event) {
+        value: function (event) {
             document.removeEventListener("touchend", this);
             document.removeEventListener("touchcancel", this);
             document.removeEventListener("click", this);
@@ -302,12 +304,12 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
      * to check against `!== false` or `=== false` as the
      * matching index might be 0.
      *
-     * @method
+     * @function
      * @returns {number|boolean} The index of the matching touch, or false
      * @private
      */
     _changedTouchisObserved: {
-        value: function(changedTouches) {
+        value: function (changedTouches) {
             if (this._observedPointer === null) {
                 return false;
             }
@@ -326,7 +328,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     // Surrender pointer
 
     surrenderPointer: {
-        value: function(pointer, component) {
+        value: function (pointer, component) {
             var shouldSurrender = this.callDelegateMethod("surrenderPointer", pointer, component);
             if (typeof shouldSurrender !== "undefined" && shouldSurrender === false) {
                 return false;
@@ -340,12 +342,12 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     // Handlers
 
     captureTouchstart: {
-        value: function(event) {
+        value: function (event) {
             this._startInteraction(event);
         }
     },
     handleTouchend: {
-        value: function(event) {
+        value: function (event) {
             if (this._observedPointer === null) {
                 this._endInteraction(event);
                 return;
@@ -362,7 +364,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         }
     },
     handleTouchcancel: {
-        value: function(event) {
+        value: function (event) {
             if (this._observedPointer === null || this._changedTouchisObserved(event.changedTouches) !== false) {
                 if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                     this._dispatchPressCancel(event);
@@ -373,22 +375,22 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     },
 
     captureMousedown: {
-        value: function(event) {
+        value: function (event) {
             this._startInteraction(event);
         }
     },
     handleClick: {
-        value: function(event) {
+        value: function (event) {
             this._interpretInteraction(event);
         }
     },
     handleMouseup: {
-        value: function(event) {
+        value: function (event) {
             this._interpretInteraction(event);
         }
     },
     handleDragstart: {
-        value: function(event) {
+        value: function (event) {
             this._dispatchPressCancel(event);
             this._endInteraction();
         }
@@ -398,7 +400,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     _createPressEvent: {
         enumerable: false,
-        value: function(name, event) {
+        value: function (name, event) {
             var pressEvent, detail, index;
 
             if (!event) {
@@ -481,7 +483,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
  * @classdesc The event dispatched by the `PressComposer`, providing access to
  * the raw DOM event and proxying its properties.
  */
-var PressEvent = (function(){
+var PressEvent = (function (){
     var value, eventProps, typeProps, eventPropDescriptor, typePropDescriptor, i;
 
     value = MutableEvent.specialize({
@@ -493,10 +495,10 @@ var PressEvent = (function(){
             value: null
         },
         event: {
-            get: function() {
+            get: function () {
                 return this._event;
             },
-            set: function(value) {
+            set: function (value) {
                 this._event = value;
             }
         },
@@ -505,10 +507,10 @@ var PressEvent = (function(){
             value: null
         },
         touch: {
-            get: function() {
+            get: function () {
                 return this._touch;
             },
-            set: function(value) {
+            set: function (value) {
                 this._touch = value;
             }
         }
@@ -523,16 +525,16 @@ var PressEvent = (function(){
     // on the _touch in the case of touch
     typeProps = ["clientX", "clientY", "pageX", "pageY", "screenX", "screenY", "target"];
 
-    eventPropDescriptor = function(prop) {
+    eventPropDescriptor = function (prop) {
         return {
-            get: function() {
+            get: function () {
                 return this._event[prop];
             }
         };
     };
-    typePropDescriptor = function(prop) {
+    typePropDescriptor = function (prop) {
         return {
-            get: function() {
+            get: function () {
                 return (this._touch) ? this._touch[prop] : this._event[prop];
             }
         };

@@ -35,39 +35,39 @@ var Converter = require("montage/core/converter/converter").Converter;
 
 var StrToBoolConverter = Converter.specialize( {
     convert: {
-        value: function(value) {
+        value: function (value) {
             return value === "yes";
         }
     },
     revert: {
-        value: function(value) {
+        value: function (value) {
             return value ? "yes" : "no";
         }
     }
 });
 
-describe("bindings/self-spec.js", function() {
+describe("bindings/self-spec.js", function () {
 
     var theObject,
         bindingDescriptor;
 
-    beforeEach(function() {
+    beforeEach(function () {
         theObject = {
             foo: true,
             bar: "yes"
         };
     });
 
-    describe("with a oneway binding", function() {
+    describe("with a oneway binding", function () {
 
-        beforeEach(function() {
+        beforeEach(function () {
             bindingDescriptor = {
                 "<-": "bar",
                 source: theObject
             };
         });
 
-        it ("should propagate a change at the bound property to the source property", function() {
+        it ("should propagate a change at the bound property to the source property", function () {
             Bindings.defineBinding(theObject, "foo", bindingDescriptor);
             theObject.bar = "new bar value";
 
@@ -75,7 +75,7 @@ describe("bindings/self-spec.js", function() {
             expect(theObject.bar).toBe("new bar value");
         });
 
-        it ("must not propagate a change at the source property to the bound property", function() {
+        it ("must not propagate a change at the source property to the bound property", function () {
             Bindings.defineBinding(theObject, "foo", bindingDescriptor);
             theObject.foo = "new foo value";
 
@@ -83,11 +83,11 @@ describe("bindings/self-spec.js", function() {
             expect(theObject.foo).toBe("new foo value");
         });
 
-        describe("with a converter in place", function() {
+        describe("with a converter in place", function () {
 
             var converter;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 bindingDescriptor = {
                     "<-": "bar",
                     source: theObject,
@@ -95,7 +95,7 @@ describe("bindings/self-spec.js", function() {
                 };
             });
 
-            it ("should propagate a change at the bound property as a 'converted' value to the source property", function() {
+            it ("should propagate a change at the bound property as a 'converted' value to the source property", function () {
                 Bindings.defineBinding(theObject, "foo", bindingDescriptor);
                 theObject.bar = "no";
 
@@ -104,7 +104,7 @@ describe("bindings/self-spec.js", function() {
             });
 
 
-            it ("must not propagate a change at the source property to the bound property", function() {
+            it ("must not propagate a change at the source property to the bound property", function () {
                 Bindings.defineBinding(theObject, "foo", bindingDescriptor);
                 theObject.foo = false;
 
@@ -112,7 +112,7 @@ describe("bindings/self-spec.js", function() {
                 expect(theObject.bar).toBe("yes");
             });
 
-            it ("should propagate a change at the source property as a 'reverted' value to the bound property if this change is not the first time the binding is fired", function() {
+            it ("should propagate a change at the source property as a 'reverted' value to the bound property if this change is not the first time the binding is fired", function () {
                 Bindings.defineBinding(theObject, "foo", bindingDescriptor);
                 theObject.foo = false;
                 theObject.foo = true;
@@ -125,16 +125,16 @@ describe("bindings/self-spec.js", function() {
 
     });
 
-    describe("with a twoway binding", function() {
+    describe("with a twoway binding", function () {
 
-        beforeEach(function() {
+        beforeEach(function () {
             bindingDescriptor = {
                 "<->": "bar",
                 source: theObject
             };
         });
 
-        it ("should propagate a change at the bound property to the source property", function() {
+        it ("should propagate a change at the bound property to the source property", function () {
             Bindings.defineBinding(theObject, "foo", bindingDescriptor);
             theObject.bar = "new bar value";
 
@@ -142,7 +142,7 @@ describe("bindings/self-spec.js", function() {
             expect(theObject.bar).toBe("new bar value");
         });
 
-        it ("should propagate a change at the source property to the bound property", function() {
+        it ("should propagate a change at the source property to the bound property", function () {
             Bindings.defineBinding(theObject, "foo", bindingDescriptor);
             theObject.foo = "new foo value";
 
@@ -150,11 +150,11 @@ describe("bindings/self-spec.js", function() {
             expect(theObject.bar).toBe("new foo value");
         });
 
-        describe("with a converter in place", function() {
+        describe("with a converter in place", function () {
 
             var converter;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 bindingDescriptor = {
                     "<->": "bar",
                     source: theObject,
@@ -162,7 +162,7 @@ describe("bindings/self-spec.js", function() {
                 };
             });
 
-            it ("should propagate a change at the bound property as a 'converted' value to the source property the first time such a change occurs", function() {
+            it ("should propagate a change at the bound property as a 'converted' value to the source property the first time such a change occurs", function () {
                 Bindings.defineBinding(theObject, "foo", bindingDescriptor);
                 theObject.bar = "no";
 
@@ -170,7 +170,7 @@ describe("bindings/self-spec.js", function() {
                 expect(theObject.bar).toBe("no");
             });
 
-            it ("should propagate a change at the bound property as a 'converted' value to the source property if this change is not the first time the binding is fired", function() {
+            it ("should propagate a change at the bound property as a 'converted' value to the source property if this change is not the first time the binding is fired", function () {
                 Bindings.defineBinding(theObject, "foo", bindingDescriptor);
                 theObject.bar = "no";
                 theObject.bar = "yes";
@@ -179,7 +179,7 @@ describe("bindings/self-spec.js", function() {
                 expect(theObject.bar).toBe("yes");
             });
 
-            it ("should propagate a change at the source property as a 'reverted' value to the bound property the first time such a change occurs", function() {
+            it ("should propagate a change at the source property as a 'reverted' value to the bound property the first time such a change occurs", function () {
                 Bindings.defineBinding(theObject, "foo", bindingDescriptor);
                 theObject.foo = false;
 
@@ -187,7 +187,7 @@ describe("bindings/self-spec.js", function() {
                 expect(theObject.bar).toBe("no");
             });
 
-            it ("should propagate a change at the source property as a 'reverted' value to the bound property if this change is not the first time the binding is fired", function() {
+            it ("should propagate a change at the source property as a 'reverted' value to the bound property if this change is not the first time the binding is fired", function () {
                 Bindings.defineBinding(theObject, "foo", bindingDescriptor);
 
                 theObject.foo = false;

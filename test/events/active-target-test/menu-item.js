@@ -16,7 +16,7 @@ exports.MenuItem = Component.specialize( {
     },
 
     prepareForActivationEvents: {
-        value: function() {
+        value: function () {
             this.element.addEventListener("mouseup", this);
         }
     },

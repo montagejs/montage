@@ -40,7 +40,7 @@ exports.component = function () {
             eventListeners[eventType].push(listener);
         },
         removeEventListener: function () {},
-        dispatchEvent: function(event) {
+        dispatchEvent: function (event) {
             var type = event.type,
                 listeners,
                 names,
@@ -71,14 +71,14 @@ exports.component = function () {
                 }
             }
         },
-        hasEventListener: function(eventType, listener) {
+        hasEventListener: function (eventType, listener) {
             return !!(eventListeners[eventType] &&
                       eventListeners[eventType].indexOf(listener) >= 0);
         },
         childComponents: [],
         addChildComponent: Component.prototype.addChildComponent,
         removeChildComponent: Function.noop,
-        _addToDrawList: function() {}
+        _addToDrawList: function () {}
     };
 };
 
@@ -87,9 +87,9 @@ exports.rootComponent = function (_document) {
 
     defaultEventManager.registerEventHandlerForElement(component, _document);
     component.element = _document;
-    component.drawTree = function() {};
+    component.drawTree = function () {};
     component.rootComponent = component;
-    component.isComponentWaitingNeedsDraw = function() { return false; }
+    component.isComponentWaitingNeedsDraw = function () { return false; }
 
     return component;
 };

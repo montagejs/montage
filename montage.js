@@ -13,9 +13,9 @@ if (typeof window !== "undefined") {
     // Applications that use our loader will interact with this timeout
     // and class name to coordinate a nice loading experience. Applications that do not will
     // just go about business as usual and draw their content as soon as possible.
-    window.addEventListener("DOMContentLoaded", function() {
+    window.addEventListener("DOMContentLoaded", function () {
         var bootstrappingDelay = 1000;
-        document._montageStartBootstrappingTimeout = setTimeout(function() {
+        document._montageStartBootstrappingTimeout = setTimeout(function () {
             document._montageStartBootstrappingTimeout = null;
 
             var root = document.documentElement;
@@ -269,7 +269,7 @@ if (typeof window !== "undefined") {
                         .then(function (JSHINT) {
                             if (!JSHINT.JSHINT(module.text)) {
                                 console.warn("JSHint Error: "+module.location);
-                                JSHINT.JSHINT.errors.forEach(function(error) {
+                                JSHINT.JSHINT.errors.forEach(function (error) {
                                     if (error) {
                                         console.warn("Problem at line "+error.line+" character "+error.character+": "+error.reason);
                                         if (error.evidence) {
@@ -302,13 +302,13 @@ if (typeof window !== "undefined") {
      */
     var reverseReelExpression = /((.*)\.reel)\/\2$/;
     var reverseReelFunction = function ($0, $1) { return $1; };
-    exports.SerializationCompiler = function(config, compile) {
-        return function(module) {
+    exports.SerializationCompiler = function (config, compile) {
+        return function (module) {
             compile(module);
             if (!module.factory)
                 return;
             var defaultFactory = module.factory;
-            module.factory = function(require, exports, module) {
+            module.factory = function (require, exports, module) {
                 defaultFactory.call(this, require, exports, module);
                 for (var name in exports) {
                     var object = exports[name];
@@ -347,6 +347,7 @@ if (typeof window !== "undefined") {
         };
     };
 
+    var reelExpression = /([^\/]+)\.reel$/;
     /**
      * Allows reel directories to load the contained eponymous JavaScript
      * module.
@@ -354,7 +355,6 @@ if (typeof window !== "undefined") {
      * @param config
      * @param loader the next loader in the chain
      */
-    var reelExpression = /([^\/]+)\.reel$/;
     exports.ReelLoader = function (config, load) {
         return function (id, module) {
             var match = reelExpression.exec(id);
@@ -367,13 +367,13 @@ if (typeof window !== "undefined") {
         };
     };
 
+    var metaExpression = /\.meta/;
     /**
      * Allows the .meta files to be loaded as json
      * @see Compiler middleware in require/require.js
      * @param config
      * @param compile
      */
-    var metaExpression = /\.meta/;
     exports.MetaCompiler = function (config, compile) {
         return function (module) {
             var json = (module.location || "").match(metaExpression);
@@ -387,13 +387,14 @@ if (typeof window !== "undefined") {
     };
 
     /**
-     Allows the reel's html file to be loaded via require.
-     @see Compiler middleware in require/require.js
-     @param config
-     @param compiler
+     * Allows the reel's html file to be loaded via require.
+     *
+     * @see Compiler middleware in require/require.js
+     * @param config
+     * @param compiler
      */
-    exports.TemplateCompiler = function(config, compile) {
-        return function(module) {
+    exports.TemplateCompiler = function (config, compile) {
+        return function (module) {
             if (!module.location)
                 return;
             var match = module.location.match(/(.*\/)?(?=[^\/]+\.html(?:\.load\.js)?$)/);
@@ -473,7 +474,7 @@ if (typeof window !== "undefined") {
             document.getElementsByTagName("head")[0].appendChild(script);
         },
 
-        getParams: function() {
+        getParams: function () {
             var i, j,
                 match,
                 script,
@@ -642,7 +643,7 @@ if (typeof window !== "undefined") {
                 var defaultEventManager, application;
 
                 // Setup Promise's longStackTrace support option
-                logger("Promise stacktrace support", function(state) {
+                logger("Promise stacktrace support", function (state) {
                     Promise.longStackSupport = !!state;
                 });
 
@@ -665,7 +666,7 @@ if (typeof window !== "undefined") {
                     appModulePromise = montageRequire.async("core/application");
                 }
 
-                return appModulePromise.then(function(exports) {
+                return appModulePromise.then(function (exports) {
                     var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
                     application = new Application();
                     Object.defineProperty(window.document, "application", {
@@ -679,7 +680,7 @@ if (typeof window !== "undefined") {
                     });
                     defaultEventManager.application = application;
                     application.eventManager = defaultEventManager;
-                    application._load(applicationRequire, function() {
+                    application._load(applicationRequire, function () {
                         if (params.module) {
                             // If a module was specified in the config then we initialize it now
                             applicationRequire.async(params.module)

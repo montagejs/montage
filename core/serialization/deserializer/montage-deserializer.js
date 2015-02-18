@@ -14,7 +14,7 @@ var MontageDeserializer = Montage.specialize.call(Deserializer, {
     _serialization: {value: null},
 
     init: {
-        value: function(serializationString, _require, objectRequires, origin) {
+        value: function (serializationString, _require, objectRequires, origin) {
             if (! this.isSerializationStringValid(serializationString)) {
                 throw new Error(
                     this._formatSerializationSyntaxError(serializationString)
@@ -32,7 +32,7 @@ var MontageDeserializer = Montage.specialize.call(Deserializer, {
     },
 
     serialization: {
-        get: function() {
+        get: function () {
             var serialization = this._serialization;
 
             if (!serialization) {
@@ -45,7 +45,7 @@ var MontageDeserializer = Montage.specialize.call(Deserializer, {
     },
 
     deserialize: {
-        value: function(instances, element) {
+        value: function (instances, element) {
             var serialization;
 
             try {
@@ -60,7 +60,7 @@ var MontageDeserializer = Montage.specialize.call(Deserializer, {
     },
 
     preloadModules: {
-        value: function() {
+        value: function () {
             var serialization = JSON.parse(this._serializationString);
 
             return this._interpreter.preloadModules(serialization);
@@ -68,7 +68,7 @@ var MontageDeserializer = Montage.specialize.call(Deserializer, {
     },
 
     getExternalObjectLabels: {
-        value: function() {
+        value: function () {
             var serialization = this.serialization,
                 labels = [];
 
@@ -83,7 +83,7 @@ var MontageDeserializer = Montage.specialize.call(Deserializer, {
     },
 
     isSerializationStringValid: {
-        value: function(serializationString) {
+        value: function (serializationString) {
             try {
                 JSON.parse(serializationString);
                 return true;
@@ -94,7 +94,7 @@ var MontageDeserializer = Montage.specialize.call(Deserializer, {
     },
 
     _formatSerializationSyntaxError: {
-        value: function(source) {
+        value: function (source) {
             var gutterPadding = "   ",
                 origin = this._origin,
                 message,
@@ -128,7 +128,7 @@ var MontageDeserializer = Montage.specialize.call(Deserializer, {
 }, {
 
     defineDeserializationUnit: {
-        value: function(name, funktion) {
+        value: function (name, funktion) {
             MontageReviver.defineUnitReviver(name, funktion);
         }
     }
@@ -136,7 +136,7 @@ var MontageDeserializer = Montage.specialize.call(Deserializer, {
 });
 
 exports.MontageDeserializer = MontageDeserializer;
-exports.deserialize = function(serializationString, _require) {
+exports.deserialize = function (serializationString, _require) {
     return new MontageDeserializer().
         init(serializationString, _require)
         .deserializeObject();

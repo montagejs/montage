@@ -38,148 +38,148 @@ describe("test/base/abstract-number-field-spec", function () {
             aNumberField._numberFieldPlusComponent = MockComponent.component();
         });
 
-        describe("value", function() {
-            it("should have correct default", function() {
+        describe("value", function () {
+            it("should have correct default", function () {
                 expect(aNumberField.value).toEqual(0);
             });
-            it("can be set", function() {
+            it("can be set", function () {
                 aNumberField.value = 5;
                 expect(aNumberField.value).toEqual(5);
             });
-            it("can be negative", function() {
+            it("can be negative", function () {
                 aNumberField.value = -2;
                 expect(aNumberField.value).toEqual(-2);
             });
-            it("can be set with a string", function() {
+            it("can be set with a string", function () {
                 aNumberField.value = "5";
                 expect(aNumberField.value).toEqual(5);
             });
-            it("can't be set with letters", function() {
+            it("can't be set with letters", function () {
                 var previousValue = aNumberField.value;
                 aNumberField.value = "hello";
                 expect(aNumberField.value).not.toEqual("hello");
                 expect(aNumberField.value).toEqual(previousValue);
             });
-            it("can be set to null", function() {
+            it("can be set to null", function () {
                 aNumberField.value = null;
                 expect(aNumberField.value).toEqual("");
             });
-            it("can be set to undefined", function() {
+            it("can be set to undefined", function () {
                 aNumberField.value = void 0;
                 expect(aNumberField.value).toEqual("");
             });
-            it("can be set to an object without valueOf", function() {
+            it("can be set to an object without valueOf", function () {
                 aNumberField.value = Object.create(null);
                 expect(aNumberField.value).toEqual("");
             });
-            describe("behavior", function() {
-                it("value shouldn't be affected by step", function() {
+            describe("behavior", function () {
+                it("value shouldn't be affected by step", function () {
                     aNumberField.step = 2;
                     aNumberField.value = 5.5;
                     expect(aNumberField.value).toEqual(5.5);
                 });
-                it("value should take min into account", function() {
+                it("value should take min into account", function () {
                     aNumberField.min = 10;
                     aNumberField.value = 0;
                     expect(aNumberField.value).toEqual(10);
                 });
-                it("value should take max into account", function() {
+                it("value should take max into account", function () {
                     aNumberField.max = 20;
                     aNumberField.value = 25;
                     expect(aNumberField.value).toEqual(20);
                 });
            });
         });
-        describe("step", function() {
-            it("should have correct default", function() {
+        describe("step", function () {
+            it("should have correct default", function () {
                 expect(aNumberField.step).toEqual(1);
             });
-            it("can be set", function() {
+            it("can be set", function () {
                 aNumberField.step = 2;
                 expect(aNumberField.step).toEqual(2);
             });
-            it("cannot be negative", function() {
+            it("cannot be negative", function () {
                 // Inspiration from:
                 //  http://dev.w3.org/html5/spec/common-input-element-attributes.html#attr-input-step
                 var previousValue = aNumberField.step;
                 aNumberField.step = -2;
                 expect(aNumberField.step).toEqual(previousValue);
             });
-            it("can be set with a string", function() {
+            it("can be set with a string", function () {
                 aNumberField.step = "2";
                 expect(aNumberField.step).toEqual(2);
             });
-            it("can't be set with letters", function() {
+            it("can't be set with letters", function () {
                 var previousValue = aNumberField.step;
                 aNumberField.step = "hello";
                 expect(aNumberField.step).not.toEqual("hello");
                 expect(aNumberField.step).toEqual(previousValue);
             });
         });
-        describe("min", function() {
-            it("should have correct default", function() {
+        describe("min", function () {
+            it("should have correct default", function () {
                 expect(aNumberField.min).toEqual("any");
             });
-            it("can be set", function() {
+            it("can be set", function () {
                 aNumberField.min = 2;
                 expect(aNumberField.min).toEqual(2);
             });
-            it("can be negative", function() {
+            it("can be negative", function () {
                 aNumberField.min = -2;
                 expect(aNumberField.min).toEqual(-2);
             });
-            it("can be set with a string", function() {
+            it("can be set with a string", function () {
                 aNumberField.min = "2";
                 expect(aNumberField.min).toEqual(2);
             });
-            it("can't be set with letters", function() {
+            it("can't be set with letters", function () {
                 var previousValue = aNumberField.min;
                 aNumberField.min = "hello";
                 expect(aNumberField.min).not.toEqual("hello");
                 expect(aNumberField.min).toEqual(previousValue);
             });
-            describe("behavior", function() {
-                it("value should be unchanged if value already a greater than min", function() {
+            describe("behavior", function () {
+                it("value should be unchanged if value already a greater than min", function () {
                     aNumberField.value = 6;
                     aNumberField.min = 2;
                     expect(aNumberField.value).toEqual(6);
                 });
-                it("value should be changed if value isn't greater than min", function() {
+                it("value should be changed if value isn't greater than min", function () {
                     aNumberField.value = 1;
                     aNumberField.min = 2;
                     expect(aNumberField.value).toEqual(2);
                 });
             });
         });
-        describe("max", function() {
-            it("should have correct default", function() {
+        describe("max", function () {
+            it("should have correct default", function () {
                 expect(aNumberField.max).toEqual("any");
             });
-            it("can be set", function() {
+            it("can be set", function () {
                 aNumberField.max = 2;
                 expect(aNumberField.max).toEqual(2);
             });
-            it("can be negative", function() {
+            it("can be negative", function () {
                 aNumberField.max = -2;
                 expect(aNumberField.max).toEqual(-2);
             });
-            it("can be set with a string", function() {
+            it("can be set with a string", function () {
                 aNumberField.max = "2";
                 expect(aNumberField.max).toEqual(2);
             });
-            it("can't be set with letters", function() {
+            it("can't be set with letters", function () {
                 var previousValue = aNumberField.max;
                 aNumberField.max = "hello";
                 expect(aNumberField.max).not.toEqual("hello");
                 expect(aNumberField.max).toEqual(previousValue);
             });
-            describe("behavior", function() {
-                it("value should be unchanged if value is already less than max", function() {
+            describe("behavior", function () {
+                it("value should be unchanged if value is already less than max", function () {
                     aNumberField.value = 2;
                     aNumberField.max = 6;
                     expect(aNumberField.value).toEqual(2);
                 });
-                it("value should be changed if value isn't less than max", function() {
+                it("value should be changed if value isn't less than max", function () {
                     aNumberField.value = 10;
                     aNumberField.max = 9;
                     expect(aNumberField.value).toEqual(9);
@@ -284,7 +284,7 @@ describe("test/base/abstract-number-field-spec", function () {
                 aNumberField.handlePlusAction();
                 expect(aNumberField.value).toEqual(11);
             });
-            it("should increment by a unit of floating point step", function() {
+            it("should increment by a unit of floating point step", function () {
                 aNumberField.value = 0.3;
                 aNumberField.min = 0;
                 aNumberField.max = 1;
@@ -293,7 +293,7 @@ describe("test/base/abstract-number-field-spec", function () {
 
                 expect(aNumberField.value).toEqual(0.4);
             });
-            it("should snap to greater floating point multiple", function() {
+            it("should snap to greater floating point multiple", function () {
                 aNumberField.value = 0.2;
                 aNumberField.min = 0;
                 aNumberField.max = 1;
@@ -333,7 +333,7 @@ describe("test/base/abstract-number-field-spec", function () {
                 aNumberField.handleMinusAction();
                 expect(aNumberField.value).toEqual(1);
             });
-            it("should decrement by a unit of floating point step", function() {
+            it("should decrement by a unit of floating point step", function () {
                 aNumberField.value = 0.2;
                 aNumberField.min = 0;
                 aNumberField.max = 1;
@@ -342,7 +342,7 @@ describe("test/base/abstract-number-field-spec", function () {
 
                 expect(aNumberField.value).toEqual(0.1);
             });
-            it("should snap to greater floating point multiple", function() {
+            it("should snap to greater floating point multiple", function () {
                 aNumberField.value = 0.3;
                 aNumberField.min = 0;
                 aNumberField.max = 1;
@@ -367,24 +367,24 @@ describe("test/base/abstract-number-field-spec", function () {
         });
 
         describe("'action' event ", function () {
-            it("should listen for 'action' event on the textfield after enterDocument", function() {
+            it("should listen for 'action' event on the textfield after enterDocument", function () {
                 expect(aNumberField._numberFieldTextFieldComponent.hasEventListener("action", aNumberField)).toBeFalsy();
                 aNumberField.enterDocument(true);
                 expect(aNumberField._numberFieldTextFieldComponent.hasEventListener("action", aNumberField)).toBeTruthy();
             });
-            it("should listen for 'action' event on the textfield after enterDocument", function() {
+            it("should listen for 'action' event on the textfield after enterDocument", function () {
                 expect(aNumberField._numberFieldMinusComponent.hasEventListener("action", aNumberField)).toBeFalsy();
                 aNumberField.enterDocument(true);
                 expect(aNumberField._numberFieldMinusComponent.hasEventListener("action", aNumberField)).toBeTruthy();
             });
-            it("should listen for 'action' event on the textfield after enterDocument", function() {
+            it("should listen for 'action' event on the textfield after enterDocument", function () {
                 expect(aNumberField._numberFieldPlusComponent.hasEventListener("action", aNumberField)).toBeFalsy();
                 aNumberField.enterDocument(true);
                 expect(aNumberField._numberFieldPlusComponent.hasEventListener("action", aNumberField)).toBeTruthy();
             });
 
-            it("should fire an 'action' event when the textfield fires an action", function() {
-                var callback = jasmine.createSpy("actionCallback").andCallFake(function(event) {
+            it("should fire an 'action' event when the textfield fires an action", function () {
+                var callback = jasmine.createSpy("actionCallback").andCallFake(function (event) {
                         expect(event.type).toEqual("action");
                     }),
                     actionEvent = MockEvent.event("action", true, true, null);
@@ -396,8 +396,8 @@ describe("test/base/abstract-number-field-spec", function () {
                 expect(callback).toHaveBeenCalled();
             });
 
-            it("should fire an 'action' event when the plus button fires an action", function() {
-                var callback = jasmine.createSpy("actionCallback").andCallFake(function(event) {
+            it("should fire an 'action' event when the plus button fires an action", function () {
+                var callback = jasmine.createSpy("actionCallback").andCallFake(function (event) {
                         expect(event.type).toEqual("action");
                     }),
                     actionEvent = MockEvent.event("action", true, true, null);
@@ -409,8 +409,8 @@ describe("test/base/abstract-number-field-spec", function () {
                 expect(callback).toHaveBeenCalled();
             });
 
-            it("should fire an 'action' event when the minus button fires an action", function() {
-                var callback = jasmine.createSpy("actionCallback").andCallFake(function(event) {
+            it("should fire an 'action' event when the minus button fires an action", function () {
+                var callback = jasmine.createSpy("actionCallback").andCallFake(function (event) {
                         expect(event.type).toEqual("action");
                     }),
                     actionEvent = MockEvent.event("action", true, true, null);
@@ -421,21 +421,21 @@ describe("test/base/abstract-number-field-spec", function () {
 
                 expect(callback).toHaveBeenCalled();
             });
-            it("should stop the propagation of 'action' events from the textfield", function() {
+            it("should stop the propagation of 'action' events from the textfield", function () {
                 var actionEvent = MockEvent.event("action", true, true, null);
                 aNumberField.enterDocument(true);
                 aNumberField._numberFieldTextFieldComponent.dispatchEvent(actionEvent);
                 expect(actionEvent.propagationStopped).toBeTruthy();
             });
 
-            it("should stop the propagation of 'action' events from the plus button", function() {
+            it("should stop the propagation of 'action' events from the plus button", function () {
                 var actionEvent = MockEvent.event("action", true, true, null);
                 aNumberField.enterDocument(true);
                 aNumberField._numberFieldPlusComponent.dispatchEvent(actionEvent);
                 expect(actionEvent.propagationStopped).toBeTruthy();
             });
 
-            it("should stop the propagation of 'action' events from the minus button", function() {
+            it("should stop the propagation of 'action' events from the minus button", function () {
                 var actionEvent = MockEvent.event("action", true, true, null);
                 aNumberField.enterDocument(true);
                 aNumberField._numberFieldMinusComponent.dispatchEvent(actionEvent);

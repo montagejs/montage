@@ -1,7 +1,7 @@
 /*global require,exports,describe,beforeEach,it,expect,waits,waitsFor,runs,spyOn */
 var ModuleReference = require("montage/core/module-reference").ModuleReference;
 
-describe("core/module-reference-spec", function() {
+describe("core/module-reference-spec", function () {
     var ref;
     beforeEach(function () {
         ref = new ModuleReference();

@@ -35,7 +35,7 @@ var AbstractConfirm = exports.AbstractConfirm = AbstractAlert.specialize(/** @le
     },
 
     enterDocument: {
-        value: function(firstTime) {
+        value: function (firstTime) {
             this.super(firstTime);
 
             if (firstTime) {
@@ -45,7 +45,7 @@ var AbstractConfirm = exports.AbstractConfirm = AbstractAlert.specialize(/** @le
     },
 
     handleAction: {
-        value: function(event) {
+        value: function (event) {
             if (event.target === this._okButton) {
                 this._userActionDeferred.resolve(AbstractConfirm.OKButton);
                 this._userActionDeferred = null;
@@ -63,7 +63,7 @@ var AbstractConfirm = exports.AbstractConfirm = AbstractAlert.specialize(/** @le
 }, {
 
     show: {
-        value: function(message, title, okLabel, cancelLabel) {
+        value: function (message, title, okLabel, cancelLabel) {
             var instance,
                 self = this;
 
@@ -73,7 +73,7 @@ var AbstractConfirm = exports.AbstractConfirm = AbstractAlert.specialize(/** @le
 
             instance = this._instance;
 
-            return this._nextMessagePromise = this._nextMessagePromise.then(function() {
+            return this._nextMessagePromise = this._nextMessagePromise.then(function () {
                 if (title) {
                     instance.title = title;
                 } else {

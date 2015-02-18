@@ -26,7 +26,7 @@ var EventTarget = {
         }
         listeners.splice(listenerIndex, 1);
     },
-    dispatchEvent: function(event) {
+    dispatchEvent: function (event) {
         var type = event.type,
             listeners,
             names,
@@ -57,7 +57,7 @@ var EventTarget = {
             }
         }
     },
-    hasEventListener: function(eventType, listener) {
+    hasEventListener: function (eventType, listener) {
         return !!(this._eventListeners[eventType] &&
                   this._eventListeners[eventType].indexOf(listener) >= 0);
     }
@@ -105,14 +105,14 @@ exports.element = function (_document) {
             return attribute in this.__attributes__;
         },
         childNodes: [],
-        appendChild: function(child) {
+        appendChild: function (child) {
             if (child.parentNode) {
                 child.parentNode.removeChild(child);
             }
             this.childNodes.push(child);
             child.parentNode = this;
         },
-        removeChild: function(child) {
+        removeChild: function (child) {
             var ix = this.childNodes.indexOf(child);
 
             if (ix >= 0) {
@@ -122,7 +122,7 @@ exports.element = function (_document) {
             }
             child.parentNode = null;
         },
-        contains: function(child) {
+        contains: function (child) {
             do {
                 if (child === this) {
                     return true;
@@ -131,7 +131,7 @@ exports.element = function (_document) {
 
             return false;
         },
-        getElementsByTagName: function(tagName) {
+        getElementsByTagName: function (tagName) {
             var elements = [];
             for (var i=0;i<this.childNodes.length;i++) {
                 if (this.childNodes[i].tagName.toUpperCase() === tagName.toUpperCase()) {
@@ -148,7 +148,7 @@ exports.element = function (_document) {
     Object.addEach(result, EventTarget);
 
     Object.defineProperty(result.classList, 'length', {
-        get: function() {
+        get: function () {
             return classList.length;
         }
     });
@@ -167,12 +167,12 @@ exports.window = function () {
     return result;
 };
 
-exports.document = function() {
+exports.document = function () {
     var result = {
         defaultView: exports.window(),
         body: null,
         _eventListeners: {},
-        createElement: function(tagName) {
+        createElement: function (tagName) {
             return exports.element(this);
         }
     };
@@ -188,7 +188,7 @@ exports.document = function() {
     return result;
 };
 
-exports.keyPressEvent = function(keys, target) {
+exports.keyPressEvent = function (keys, target) {
     var modifiersAndKeyCode =
         defaultKeyManager._convertKeysToModifiersAndKeyCode(
             defaultKeyManager._normalizeKeySequence(keys)

@@ -27,7 +27,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     * @method
+     * @function
      * @returns itself
      */
     init: {
@@ -44,7 +44,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * If the blueprint is null, this method will make a best attempt to locate
      * it.
      *
-     * @method
+     * @function
      * @param {Object} prototype
      * @param {Blueprint} blueprint
      */
@@ -71,7 +71,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      *
      * **Note:** This method will explore the blueprint hierarchy recursively.
      *
-     * @method
+     * @function
      * @param {Object} prototype
      * @param {Blueprint} blueprint
      */
@@ -89,7 +89,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     /**
      * Add all the properties defined in the blueprint to the target prototype.
      *
-     * @method
+     * @function
      * @param {Object} prototype
      * @param {Blueprint} blueprint
      */
@@ -121,7 +121,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     /**
      * Add one property defined in the attribute to the target prototype.
      *
-     * @method
+     * @function
      * @param {Prototype} prototype
      * @param {Attribute} attribute
      */
@@ -134,7 +134,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     * @method
+     * @function
      * @param {Object} prototype
      * @param {Attribute} attribute
      */
@@ -167,7 +167,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     * @method
+     * @function
      * @param {Property} prototype TODO
      * @param {Object} attribute TODO
      */
@@ -201,7 +201,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * This is the get function called on the target object to access
      * properties.
      *
-     * @method
+     * @function
      * @param {string} propertyName
      * @returns {PropertyBlueprint}
      */
@@ -219,7 +219,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
      * This is the get function called on the target object to set
      * properties.
      *
-     * @method
+     * @function
      * @param {string} propertyName
      * @param {PropertyBlueprint} value
      */
@@ -238,7 +238,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     * @method
+     * @function
      * @param {Object} prototype
      * @param {Attribute} attribute
      */
@@ -272,7 +272,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
 
     /**
      * Adds a relationship management methods to the managed object.
-     * @method
+     * @function
      * @param {Object} prototype
      * @param {Attribute} attribute relationship to add
      */
@@ -286,7 +286,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
 
 
     /**
-     * @method
+     * @function
      * @param {Object} prototype
      * @param {Attribute} attribute
      */
@@ -301,7 +301,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     * @method
+     * @function
      * @param {Object} prototype
      * @param {Attribute} attribute
      */
@@ -342,7 +342,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     },
 
     /**
-     * @method
+     * @function
      * @param {Object} prototype
      * @param {Association} attribute
      */
@@ -384,7 +384,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
 
     /**
      * Adds a derived attribute to the managed object.
-     * @method
+     * @function
      * @param {Object} prototype
      * @param {Attribute} attribute
      */

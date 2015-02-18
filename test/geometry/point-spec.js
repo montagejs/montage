@@ -33,34 +33,34 @@ var Montage = require("montage").Montage,
 
 
 describe("geometry/point-spec",
-function() {
+function () {
     describe("create",
-    function() {
+    function () {
         describe("no arguments",
-        function() {
+        function () {
             var point;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 point = new Point();
             });
 
             it("should be origin",
-            function() {
+            function () {
                 expect(point).not.toBeNull();
                 expect(point.x).toBe(0);
                 expect(point.y).toBe(0);
             });
         });
         describe("with x and y",
-        function() {
+        function () {
             var point;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 point = new Point().init(10, 20);
             });
 
             it("should be (x, y)",
-            function() {
+            function () {
                 expect(point).not.toBeNull();
                 expect(point.x).toBe(10);
                 expect(point.y).toBe(20);
@@ -69,17 +69,17 @@ function() {
 
     });
     describe("interpolate between points",
-    function() {
+    function () {
         describe("(0, 0) and (0, 0)",
-        function() {
+        function () {
             var points;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 points = [new Point().init(0, 0), new Point().init(0, 0)];
             });
 
             it("is correct positions",
-            function() {
+            function () {
                 var newPoint = Point.interpolate(.75, points[0], points[1]);
                 expect(newPoint.x).toBe(0);
                 expect(newPoint.y).toBe(0);
@@ -89,15 +89,15 @@ function() {
             });
         });
         describe("arbitrary",
-        function() {
+        function () {
             var points;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 points = [new Point().init(10, -10), new Point().init(-20, 10)];
             });
 
             it("is correct positions",
-            function() {
+            function () {
                 var newPoint = Point.interpolate(.25, points[0], points[1]);
                 expect(newPoint.x).toBe(2.5);
                 expect(newPoint.y).toBe(-5);
@@ -107,15 +107,15 @@ function() {
             });
         });
         describe("arbitrary with specified precision",
-        function() {
+        function () {
             var points;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 points = [new Point().init(.315, 0), new Point().init(.54, .75)];
             });
 
             it("is correct positions",
-            function() {
+            function () {
                 var newPoint = Point.interpolate(.25, points[0], points[1]);
                 expect(newPoint.x).toBe(.37125);
                 newPoint = Point.interpolate(.25, points[0], points[1], 10);

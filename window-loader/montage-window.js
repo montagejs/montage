@@ -1,20 +1,16 @@
 /**
  * @module montage/ui/window
  * @requires montage/core/core
- * @requires montage/ui/reel
- * @requires montage/core/gate
- * @requires montage/core/logger | component
- * @requires montage/core/logger | drawing
- * @requires montage/core/event/event-manager
  */
 var Montage = require("../core/core").Montage;
 
 /**
  * The Window object is responsible for managing a DOM window.
+ *
  * @class MontageWindow
  * @extends Montage
  */
-var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends MontageWindow# */ {
+var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends MontageWindow.prototype # */ {
 
     _application: {
         value: null
@@ -25,8 +21,8 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
      * @type {Application}
      */
     application: {
-        get: function() { return this._application; },
-        set: function(value) {
+        get: function () { return this._application; },
+        set: function (value) {
             if (this._application === null) {
                 this._application = value;
                 if (this.focused) {
@@ -45,8 +41,8 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
      * @type {Window}
      */
     window: {
-        get: function() { return this._window; },
-        set: function(value) {
+        get: function () { return this._window; },
+        set: function (value) {
             if (this._window === null) {
                 var body = value.document.body;
 
@@ -70,7 +66,7 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
      * @type {document}
      */
     document: {
-        get: function() { return this._window.document; }
+        get: function () { return this._window.document; }
     },
 
     _component: {
@@ -82,8 +78,8 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
      * @type {component}
      */
     component: {
-        get: function() {return this._component;},
-        set: function(value) {
+        get: function () {return this._component;},
+        set: function (value) {
             if (this._component === null) {
                 this._component = value;
             }
@@ -95,11 +91,12 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
      * window's title rather than directly accessing directly the title by the
      * document, else you will not be able to use binding with the window's
      * title.
-     * @type {string}
+     *
+     * @returns {string}
      */
     title: {
-        get: function() { return this.document.title; },
-        set: function(value) {
+        get: function () { return this.document.title; },
+        set: function (value) {
             this.document.title = value;
         }
     },
@@ -115,10 +112,10 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
 
     /**
      * Set the focus on the window, move it to the front.
-     * @method
+     * @function
      */
     focus: {
-        value: function() {
+        value: function () {
             if (this._window) {
                 this._window.focus();
             }
@@ -126,7 +123,7 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
     },
 
     _setFocusedWindow: {
-        value: function(aWindow) {
+        value: function (aWindow) {
             var application = this.application,
                 windows,
                 theWindow,
@@ -163,16 +160,16 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
      * @type {boolean}
      */
     closed: {
-        get: function() { return this._window ? this._window.closed : false; }
+        get: function () { return this._window ? this._window.closed : false; }
     },
 
     /**
      * Close the window
      * Note: Any child window will be closed too.
-     * @method
+     * @function
      */
     close: {
-        value: function() {
+        value: function () {
             if (this._window) {
                 this._window.close();
             }
@@ -181,12 +178,12 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
 
     /**
      * Resize the window to the specified width and height
-     * @method
+     * @function
      * @param {Integer} width The window's width desired.
      * @param {Integer} height The window's height desired.
      */
     resizeTo: {
-        value: function(width, height) {
+        value: function (width, height) {
             if (this._window) {
                 this._window.resizeTo(width, height);
             }
@@ -195,12 +192,12 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
 
     /**
      * Move the window to the specified screen coordinate x and y
-     * @method
+     * @function
      * @param {Integer} x The window's x screen position.
      * @param {Integer} y The window's y screen position.
      */
     moveTo: {
-        value: function(x, y) {
+        value: function (x, y) {
             if (this._window) {
                 this._window.moveTo(x, y);
             }
@@ -208,7 +205,7 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
     },
 
     captureFocus: {
-        value: function(event) {
+        value: function (event) {
             var application = this.application;
 
             if (!this.application) {
@@ -228,14 +225,14 @@ var MontageWindow = exports.MontageWindow = Montage.specialize( /** @lends Monta
     },
 
     captureMousedown: {
-        value: function(event) {
+        value: function (event) {
             // Sometime, for some reason, we do not receive anymore a focus event... let presume that if we get a mouse click, we should have focus
             this.captureFocus(event);
         }
     },
 
     captureBeforeunload: {
-        value: function(event) {
+        value: function (event) {
 
             var application = this.application,
                 windows = application.windows,

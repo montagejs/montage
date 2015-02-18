@@ -23,11 +23,11 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
     },
 
     /**
-     * @method
+     * @function
      * @returns itself
      */
     init : {
-        value: function() {
+        value: function () {
             if (Object.isSealed(this)) {
                 logger.error(this, "Object is sealed");
             }
@@ -36,11 +36,11 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
     },
 
     /**
-     * @method
+     * @function
      * @returns {Object} Object.seal(this)
      */
     initWithMembers : {
-        value: function() {
+        value: function () {
             if (Object.isSealed(this)) {
                 logger.error(this, "Object is sealed");
                 return this;
@@ -58,11 +58,11 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
     },
 
     /**
-     * @method
+     * @function
      * @param {string} member The member to be added.
      */
     addMember : {
-        value: function(member) {
+        value: function (member) {
 
             if (typeof this[member] === "undefined") {
                 Object.defineProperty(this, member, {
@@ -77,11 +77,11 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
     },
 
     /**
-     * @method
+     * @function
      * @returns {Object} this, but sealed
      */
     seal : {
-        value: function() {
+        value: function () {
             if (! Object.isSealed(this)) {
                 return Object.seal(this);
             }

@@ -97,7 +97,7 @@ MontageBoot.loadPackage = function (location, config) {
 };
 
 MontageBoot.TemplateLoader = function (config, load) {
-    return function(id, module) {
+    return function (id, module) {
         var html = id.match(/(.*\/)?(?=[^\/]+\.html$)/);
         var serialization = id.match(/(?=[^\/]+\.json$)/); // XXX this is not necessarily a strong indicator of a serialization alone
         var reelModule = id.match(/(.*\/)?([^\/]+)\.reel\/\2$/);

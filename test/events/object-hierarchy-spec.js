@@ -32,12 +32,12 @@ var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function(testPage) {
-    describe("events/object-hierarchy-spec", function() {
+TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function (testPage) {
+    describe("events/object-hierarchy-spec", function () {
 
         var eventManager, parent, testApplication, testTarget;
 
-        beforeEach(function() {
+        beforeEach(function () {
             var testWindow = testPage.iframe.contentWindow;
             var testDocument = testPage.iframe.contentDocument;
             testTarget = testDocument.defaultView.mr.getPackage({name: "montage"})("core/target").Target;
@@ -46,14 +46,14 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
             eventManager.reset();
         });
 
-        describe("handling events throughout the object hierarchy", function() {
+        describe("handling events throughout the object hierarchy", function () {
 
 
             var orphan, childFoo, childBar, grandchildFoo, bubbleEvent,
                 orphanListener, childFooListener, childBarListener, grandchildFooListener,
                 parentListener;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 // We need to use the testMontage as the base so the global defaultEventManager is the testEventManager
                 // from the test iframe, not the global defaultEventManager of the test
                 parent = new testTarget();
@@ -74,15 +74,15 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                 bubbleEvent.initCustomEvent("bubbleEvent", true, false, null);
             });
 
-            describe("during the capture phase", function() {
+            describe("during the capture phase", function () {
 
-                it("should distribute the event to listeners observing the parent of the target object if the event does not bubble", function() {
+                it("should distribute the event to listeners observing the parent of the target object if the event does not bubble", function () {
 
                     bubbleEvent = window.document.createEvent("CustomEvent");
                     bubbleEvent.initCustomEvent("bubbleEvent", false, false, null);
 
                     parentListener = {
-                        handleEvent: function() {}
+                        handleEvent: function () {}
                     };
 
                     parent.addEventListener("bubbleEvent", parentListener, true);
@@ -93,10 +93,10 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(parentListener.handleEvent).toHaveBeenCalled();
                 });
 
-                it("should distribute the event to listeners observing the target object", function() {
+                it("should distribute the event to listeners observing the target object", function () {
 
                     childFooListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                            expect(event._event).toBe(bubbleEvent);
                         }
                     };
@@ -109,10 +109,10 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(childFooListener.handleEvent).toHaveBeenCalled();
                 });
 
-                it("should distribute the event to listeners observing the parent of the target object", function() {
+                it("should distribute the event to listeners observing the parent of the target object", function () {
 
                     parentListener = {
-                       handleEvent: function(event) {
+                       handleEvent: function (event) {
                            expect(event._event).toBe(bubbleEvent);
                        }
                     };
@@ -125,10 +125,10 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(parentListener.handleEvent).toHaveBeenCalled();
                 });
 
-                it("should distribute the event to listeners observing the application", function() {
+                it("should distribute the event to listeners observing the application", function () {
 
                     var applicationListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                         }
                     };
@@ -142,12 +142,12 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(applicationListener.handleEvent).toHaveBeenCalled();
                 });
 
-                it("should distribute the event all listeners from the target to the top-most parent in order", function() {
+                it("should distribute the event all listeners from the target to the top-most parent in order", function () {
 
                     var handledCount = 0;
 
                     childFooListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                             expect(handledCount).toBe(1);
                             handledCount++;
@@ -155,7 +155,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     };
 
                     parentListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                             expect(handledCount).toBe(0);
                             handledCount++;
@@ -176,15 +176,15 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
             });
 
-            describe("during the bubble phase", function() {
+            describe("during the bubble phase", function () {
 
-                it("must not distribute the event to listeners observing the parent of the target object if the event does not bubble", function() {
+                it("must not distribute the event to listeners observing the parent of the target object if the event does not bubble", function () {
 
                     bubbleEvent = window.document.createEvent("CustomEvent");
                     bubbleEvent.initCustomEvent("bubbleEvent", false, false, null);
 
                     parentListener = {
-                        handleEvent: function() {}
+                        handleEvent: function () {}
                     };
 
                     parent.addEventListener("bubbleEvent", parentListener, false);
@@ -195,10 +195,10 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(parentListener.handleEvent).not.toHaveBeenCalled();
                 });
 
-                it("should distribute the event to listeners observing the target object", function() {
+                it("should distribute the event to listeners observing the target object", function () {
 
                     childFooListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                         }
                     };
@@ -211,10 +211,10 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(childFooListener.handleEvent).toHaveBeenCalled();
                 });
 
-                it("should distribute the event to listeners observing the parent of the target object", function() {
+                it("should distribute the event to listeners observing the parent of the target object", function () {
 
                     parentListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                         }
                     };
@@ -227,10 +227,10 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(parentListener.handleEvent).toHaveBeenCalled();
                 });
 
-                it("should distribute the event to listeners observing the application", function() {
+                it("should distribute the event to listeners observing the application", function () {
 
                     var applicationListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                         }
                     };
@@ -243,12 +243,12 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(applicationListener.handleEvent).toHaveBeenCalled();
                 });
 
-                it("should distribute the event all listeners from the target to the top-most parent in order", function() {
+                it("should distribute the event all listeners from the target to the top-most parent in order", function () {
 
                     var handledCount = 0;
 
                     childFooListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                             expect(handledCount).toBe(0);
                             handledCount++;
@@ -256,7 +256,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     };
 
                     parentListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                             expect(handledCount).toBe(1);
                             handledCount++;
@@ -276,17 +276,17 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                 });
 
             });
-            it("should distribute the event to the entire chain of registered event listeners in the expected order", function() {
+            it("should distribute the event to the entire chain of registered event listeners in the expected order", function () {
                 var handledCount = 0;
 
                 parentListener = {
-                    captureBubbleEvent: function(event) {
+                    captureBubbleEvent: function (event) {
                         expect(event._event).toBe(bubbleEvent);
                         expect(handledCount).toBe(0);
                         handledCount++;
                     },
 
-                    handleEvent: function(event) {
+                    handleEvent: function (event) {
                         expect(event._event).toBe(bubbleEvent);
                         expect(handledCount).toBe(5);
                         handledCount++;
@@ -294,13 +294,13 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                 };
 
                 childFooListener = {
-                    captureBubbleEvent: function(event) {
+                    captureBubbleEvent: function (event) {
                         expect(event._event).toBe(bubbleEvent);
                         expect(handledCount).toBe(1);
                         handledCount++;
                     },
 
-                    handleEvent: function(event) {
+                    handleEvent: function (event) {
                         expect(event._event).toBe(bubbleEvent);
                         expect(handledCount).toBe(4);
                         handledCount++;
@@ -308,13 +308,13 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                 };
 
                 grandchildFooListener = {
-                    captureBubbleEvent: function(event) {
+                    captureBubbleEvent: function (event) {
                         expect(event._event).toBe(bubbleEvent);
                         expect(handledCount).toBe(2);
                         handledCount++;
                     },
 
-                    handleEvent: function(event) {
+                    handleEvent: function (event) {
                         expect(event._event).toBe(bubbleEvent);
                         expect(handledCount).toBe(3);
                         handledCount++;
@@ -353,11 +353,11 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
         });
 
-        describe("handling events throughout the component hierarchy", function() {
+        describe("handling events throughout the component hierarchy", function () {
 
             var parent, child, bubbleEvent;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 parent = testPage.test.component1;
                 child = parent.childComponents[0];
 
@@ -365,20 +365,20 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                 bubbleEvent.initCustomEvent("bubbleEvent", true, false, null);
             });
 
-            it("should have a default nextTarget of the parentComponent on all components", function() {
+            it("should have a default nextTarget of the parentComponent on all components", function () {
                 var component = new Component();
                 expect(component.nextTarget).toBe(component.parentComponent);
             });
 
-            describe("during the capture phase", function() {
+            describe("during the capture phase", function () {
 
-                it("should distribute the event to listeners observing the parent of the target object if the event does not bubble", function() {
+                it("should distribute the event to listeners observing the parent of the target object if the event does not bubble", function () {
 
                     bubbleEvent = window.document.createEvent("CustomEvent");
                     bubbleEvent.initCustomEvent("bubbleEvent", false, false, null);
 
                     var parentListener = {
-                        handleEvent: function() {}
+                        handleEvent: function () {}
                     };
 
                     parent.addEventListener("bubbleEvent", parentListener, true);
@@ -389,10 +389,10 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(parentListener.handleEvent).toHaveBeenCalled();
                 });
 
-                it("should distribute the event to listeners observing the target component", function() {
+                it("should distribute the event to listeners observing the target component", function () {
 
                     var childListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                            expect(event._event).toBe(bubbleEvent);
                         }
                     };
@@ -405,10 +405,10 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(childListener.handleEvent).toHaveBeenCalled();
                 });
 
-                it("should distribute the event to listeners observing the parent of the target object", function() {
+                it("should distribute the event to listeners observing the parent of the target object", function () {
 
                     var parentListener = {
-                       handleEvent: function(event) {
+                       handleEvent: function (event) {
                            expect(event._event).toBe(bubbleEvent);
                        }
                     };
@@ -421,10 +421,10 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(parentListener.handleEvent).toHaveBeenCalled();
                 });
 
-                it("should distribute the event to listeners observing the application", function() {
+                it("should distribute the event to listeners observing the application", function () {
 
                     var applicationListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                         }
                     };
@@ -437,12 +437,12 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(applicationListener.handleEvent).toHaveBeenCalled();
                 });
 
-                it("should distribute the event all listeners from the target to the top-most parent in order", function() {
+                it("should distribute the event all listeners from the target to the top-most parent in order", function () {
 
                     var handledCount = 0;
 
                     var childListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                             expect(handledCount).toBe(1);
                             handledCount++;
@@ -450,7 +450,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     };
 
                     var parentListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                             expect(handledCount).toBe(0);
                             handledCount++;
@@ -471,15 +471,15 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
 
             });
 
-            describe("during the bubble phase", function() {
+            describe("during the bubble phase", function () {
 
-                it("must not distribute the event to listeners observing the parent of the target object if the event does not bubble", function() {
+                it("must not distribute the event to listeners observing the parent of the target object if the event does not bubble", function () {
 
                     bubbleEvent = window.document.createEvent("CustomEvent");
                     bubbleEvent.initCustomEvent("bubbleEvent", false, false, null);
 
                     var parentListener = {
-                        handleEvent: function() {
+                        handleEvent: function () {
                         }
                     };
 
@@ -491,10 +491,10 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(parentListener.handleEvent).not.toHaveBeenCalled();
                 });
 
-                it("should distribute the event to listeners observing the target object", function() {
+                it("should distribute the event to listeners observing the target object", function () {
 
                     var childListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                         }
                     };
@@ -507,10 +507,10 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(childListener.handleEvent).toHaveBeenCalled();
                 });
 
-                it("should distribute the event to listeners observing the parent of the target object", function() {
+                it("should distribute the event to listeners observing the parent of the target object", function () {
 
                     var parentListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                         }
                     };
@@ -523,10 +523,10 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(parentListener.handleEvent).toHaveBeenCalled();
                 });
 
-                it("should distribute the event to listeners observing the application", function() {
+                it("should distribute the event to listeners observing the application", function () {
 
                     var applicationListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                         }
                     };
@@ -539,12 +539,12 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     expect(applicationListener.handleEvent).toHaveBeenCalled();
                 });
 
-                it("should distribute the event all listeners from the target to the top-most parent in order", function() {
+                it("should distribute the event all listeners from the target to the top-most parent in order", function () {
 
                     var handledCount = 0;
 
                     var childListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                             expect(handledCount).toBe(0);
                             handledCount++;
@@ -552,7 +552,7 @@ TestPageLoader.queueTest("object-hierarchy-test/object-hierarchy-test", function
                     };
 
                     var parentListener = {
-                        handleEvent: function(event) {
+                        handleEvent: function (event) {
                             expect(event._event).toBe(bubbleEvent);
                             expect(handledCount).toBe(1);
                             handledCount++;

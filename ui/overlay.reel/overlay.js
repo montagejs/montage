@@ -9,7 +9,7 @@ var Montage = require("../../core/core").Montage,
 
 var CLASS_PREFIX = "montage-Overlay";
 
-/*
+/**
  * This component uses a "trick" to measure its element when it is shown.
  * Since the element is "display: none" when it's hidden it's not possible to
  * measure it at willDraw in order to calculate the correct position to center it.
@@ -19,10 +19,11 @@ var CLASS_PREFIX = "montage-Overlay";
  * class that has a "display: block". A second draw is then forced.
  * On the second draw the element is now measurable and the visibility is set
  * back to "visible". This mechanism is controlled by the _isDisplayed flag.
+ *
  * @class Overlay
  * @extends Component
  */
-exports.Overlay = Component.specialize( /** @lends Overlay# */ {
+exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
 
     /**
      * Dispatched when the user dismiss the overlay by clicking outside of it.
@@ -47,11 +48,11 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
      * The anchor element or component to display the overlay next to.
      */
     anchor: {
-        set: function(value) {
+        set: function (value) {
             this._anchor = value;
             this.needsDraw = true;
         },
-        get: function() {
+        get: function () {
             return this._anchor;
         }
     },
@@ -65,11 +66,11 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
      * @type {{left: number, top: number}}
      */
     position: {
-        set: function(value) {
+        set: function (value) {
             this._position = value;
             this.needsDraw = true;
         },
-        get: function() {
+        get: function () {
             return this._position;
         }
     },
@@ -85,7 +86,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     isShown: {
-        get: function() {
+        get: function () {
             return this._isShown;
         }
     },
@@ -125,7 +126,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     dismissOnExternalInteraction: {
-        set: function(value) {
+        set: function (value) {
             if (value !== this._dismissOnExternalInteraction) {
                 this._dismissOnExternalInteraction = value;
                 if (value) {
@@ -135,11 +136,14 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
                 }
             }
         },
-        get: function() {
+        get: function () {
             return this._dismissOnExternalInteraction;
         }
     },
 
+    /**
+     * @constructs Overlay
+     */
     constructor: {
         value: function Overlay() {
             this.super();
@@ -155,7 +159,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     enterDocument: {
-        value: function(firstTime) {
+        value: function (firstTime) {
             var body,
                 _window;
 
@@ -200,7 +204,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
      * because of a bug in KeyComposer.
      */
     show: {
-        value: function() {
+        value: function () {
             if (!this._isShown) {
                 if (this.isModal) {
                     this._previousActiveTarget = defaultEventManager.activeTarget;
@@ -224,7 +228,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     hide: {
-        value: function() {
+        value: function () {
             if (this._isShown) {
                 // detachFromParentComponent happens at didDraw
                 this.classList.remove(CLASS_PREFIX + "--visible");
@@ -251,7 +255,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
      * if the other component is one of its descendants.
      */
     surrendersActiveTarget: {
-        value: function(candidateActiveTarget) {
+        value: function (candidateActiveTarget) {
             if (!this.isShown || !this.isModal) {
                 return true;
             }
@@ -267,7 +271,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     // Event handlers
 
     handleResize: {
-        value: function() {
+        value: function () {
             if (this.isShown) {
                 this.needsDraw = true;
             }
@@ -275,7 +279,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     handlePressStart: {
-        value: function(event) {
+        value: function (event) {
             if (!this.element.contains(event.targetElement)) {
                 this.dismissOverlay(event);
             }
@@ -283,7 +287,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     handleKeyPress: {
-        value: function(event) {
+        value: function (event) {
             if (event.identifier === "escape") {
                 this.dismissOverlay(event);
             }
@@ -295,7 +299,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
      * an opportunity to prevent it. Returns whether the overlay was hidden.
      */
     dismissOverlay: {
-        value: function(event) {
+        value: function (event) {
             var shouldDismissOverlay = false;
             if (this._isShown) {
                 shouldDismissOverlay = this.callDelegateMethod("shouldDismissOverlay", this, event.targetElement, event.type);
@@ -313,7 +317,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     // Draw
 
     willDraw: {
-        value: function() {
+        value: function () {
             // Only calculate the position if the element is part of the layout,
             // otherwise it's not possible to measure the element.
             if (this._isDisplayed && this._isShown) {
@@ -326,7 +330,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     draw: {
-        value: function() {
+        value: function () {
             if (this._isShown) {
                 // The element is displayed when it is measurable.
                 if (this._isDisplayed) {
@@ -351,7 +355,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     didDraw: {
-        value: function() {
+        value: function () {
             if (!this._isShown) {
                 this.detachFromParentComponent();
             }
@@ -359,7 +363,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     _reposition: {
-        value: function() {
+        value: function () {
             var position = this._drawPosition;
 
             this.element.style.top = position.top + "px";
@@ -368,7 +372,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     _getElementPosition: {
-        value: function(element) {
+        value: function (element) {
             var left = 0,
                 top = 0;
 
@@ -385,7 +389,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     _calculatePosition: {
-        value: function() {
+        value: function () {
             var position,
                 delegatePosition;
 
@@ -408,7 +412,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     _calculateAnchorPosition: {
-        value: function() {
+        value: function () {
             var anchor = this.anchor,
                 width = this.element.offsetWidth,
                 anchorPosition = this._getElementPosition(anchor),
@@ -430,7 +434,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     _calculateCenteredPosition: {
-        value: function() {
+        value: function () {
             var _window = this.element.ownerDocument.defaultView,
                 viewportHeight = _window.innerHeight,
                 viewportWidth = _window.innerWidth,
@@ -445,7 +449,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay# */ {
     },
 
     _dispatchDismissEvent: {
-        value: function() {
+        value: function () {
             var dismissEvent = document.createEvent("CustomEvent");
 
             dismissEvent.initCustomEvent("dismiss", true, true, null);

@@ -18,7 +18,7 @@ var DocumentResources = Montage.specialize({
     },
 
     initWithDocument: {
-        value: function(_document) {
+        value: function (_document) {
             this.clear();
             this._document = _document;
 
@@ -29,11 +29,11 @@ var DocumentResources = Montage.specialize({
     },
 
     _populateWithDocument: {
-        value: function(_document) {
+        value: function (_document) {
             var scripts = _document.querySelectorAll("script"),
                 forEach = Array.prototype.forEach;
 
-            forEach.call(scripts, function(script) {
+            forEach.call(scripts, function (script) {
                 if (script.src) {
                     this._addResource(this.normalizeUrl(script.src));
                 }
@@ -41,7 +41,7 @@ var DocumentResources = Montage.specialize({
 
             var links = _document.querySelectorAll("link");
 
-            forEach.call(links, function(link) {
+            forEach.call(links, function (link) {
                 if (link.rel === "stylesheet") {
                     this._addResource(this.normalizeUrl(link.href));
                 }
@@ -57,49 +57,49 @@ var DocumentResources = Montage.specialize({
     },
 
     _addResource: {
-        value: function(url) {
+        value: function (url) {
             this._resources[url] = true;
         }
     },
 
     hasResource: {
-        value: function(url) {
+        value: function (url) {
             return url in this._resources;
         }
     },
 
     isResourcePreloaded: {
-        value: function(url) {
+        value: function (url) {
             return this._preloaded[url] === true;
         }
     },
 
     isResourcePreloading: {
-        value: function(url) {
+        value: function (url) {
             return Promise.isPromise(this._preloaded[url]);
         }
     },
 
     setResourcePreloadedPromise: {
-        value: function(url, promise) {
+        value: function (url, promise) {
             this._preloaded[url] = promise;
         }
     },
 
     setResourcePreloaded: {
-        value: function(url) {
+        value: function (url) {
             this._preloaded[url] = true;
         }
     },
 
     getResourcePreloadedPromise: {
-        value: function(url) {
+        value: function (url) {
             return this._preloaded[url];
         }
     },
 
     addScript: {
-        value: function(script) {
+        value: function (script) {
             var url = this.normalizeUrl(script.src);
 
             if (url) {
@@ -121,7 +121,7 @@ var DocumentResources = Montage.specialize({
     //       This change would make addStyle sync and up to whoever is adding
     //       to listen for its proper loading.
     _importScript: {
-        value: function(script) {
+        value: function (script) {
             var self = this,
                 _document = this._document,
                 documentHead = _document.head,
@@ -136,7 +136,7 @@ var DocumentResources = Montage.specialize({
                 // because templateDidLoad might need to access objects that
                 // are defined in these scripts, the downsize is that it takes
                 // more time for the template to be considered loaded.
-                scriptLoaded = function(event) {
+                scriptLoaded = function (event) {
                     //if (event.type === "load") {
                     self.setResourcePreloaded(url);
                     //}
@@ -152,7 +152,7 @@ var DocumentResources = Montage.specialize({
                 // Setup the timeout to wait for the script until the resource
                 // is considered loaded. The template doesn't fail loading just
                 // because a single script didn't load.
-                loadingTimeout = setTimeout(function() {
+                loadingTimeout = setTimeout(function () {
                     self.setResourcePreloaded(url);
                     deferred.resolve();
                 }, this._SCRIPT_TIMEOUT);
@@ -178,7 +178,7 @@ var DocumentResources = Montage.specialize({
     },
 
     addStyle: {
-        value: function(element) {
+        value: function (element) {
             var url = element.getAttribute("href"),
                 documentHead;
 
@@ -198,7 +198,7 @@ var DocumentResources = Montage.specialize({
     },
 
     normalizeUrl: {
-        value: function(url, baseUrl) {
+        value: function (url, baseUrl) {
             if (!baseUrl) {
                 baseUrl = this._document.location.href;
             }
@@ -212,14 +212,14 @@ var DocumentResources = Montage.specialize({
     },
 
     isCrossDomain: {
-        value: function(url) {
+        value: function (url) {
             return url.indexOf(this.domain + "/") !== 0 ||
                 url.indexOf("file://") === 0;
         }
     },
 
     preloadResource: {
-        value: function(url, forcePreload) {
+        value: function (url, forcePreload) {
             var skipPreload;
 
             url = this.normalizeUrl(url);
@@ -242,7 +242,7 @@ var DocumentResources = Montage.specialize({
     },
 
     _preloadResource: {
-        value: function(url) {
+        value: function (url) {
             var self = this,
                 req = new XMLHttpRequest(),
                 loadHandler,
@@ -251,7 +251,7 @@ var DocumentResources = Montage.specialize({
 
             req.open("GET", url);
 
-            loadHandler = function(event) {
+            loadHandler = function (event) {
                 //if (event.type === "load") {
                 self.setResourcePreloaded(url);
                 //}
@@ -267,7 +267,7 @@ var DocumentResources = Montage.specialize({
 
             // Setup the timeout to wait for the script until the resource
             // is considered loaded.
-            loadingTimeout = setTimeout(function() {
+            loadingTimeout = setTimeout(function () {
                 self.setResourcePreloaded(url);
                 deferred.resolve();
             }, this._SCRIPT_TIMEOUT);
@@ -279,7 +279,7 @@ var DocumentResources = Montage.specialize({
     },
 
     areStylesLoaded: {
-        get: function() {
+        get: function () {
             var styleSheets,
                 ix;
 
@@ -300,7 +300,7 @@ var DocumentResources = Montage.specialize({
 }, {
 
     getInstanceForDocument: {
-        value: function(_document) {
+        value: function (_document) {
             //jshint -W106
             var documentResources = _document.__montage_resources__;
 

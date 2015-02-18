@@ -44,7 +44,7 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
 
     /**
      * Initialize a newly allocated property blueprint.
-     * @method
+     * @function
      * @param {string} name name of the property blueprint to create
      * @param {Blueprint} blueprint
      * @param {number} cardinality name of the property blueprint to create

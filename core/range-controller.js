@@ -1,3 +1,6 @@
+/**
+ * @module montage/core/range-controller
+ */
 var Montage = require("./core").Montage;
 var GenericCollection = require("collections/generic-collection");
 
@@ -23,55 +26,60 @@ var GenericCollection = require("collections/generic-collection");
 // the same position.
 
 /**
- * A `RangeSelection` is a special kind of `Array` that knows about a `RangeController`
- * and maintains invariants about itself relative to the properties of the
- * `RangeController`. A `RangeSelection` should only be modified using the `splice`
- * method. Changes by directly using other `Array` methods can break the invariants.
- * @class RangeSelection
- * @private
+ * @const {Array}
  */
-
 var EMPTY_ARRAY = Object.freeze([]);
 
-var RangeSelection = function(content, rangeController) {
+/**
+ * A `_RangeSelection` is a special kind of `Array` that knows about a `RangeController`
+ * and maintains invariants about itself relative to the properties of the
+ * `RangeController`. A `_RangeSelection` should only be modified using the `splice`
+ * method. Changes by directly using other `Array` methods can break the invariants.
+ *
+ * @class _RangeSelection
+ * @private
+ */
+var _RangeSelection = function (content, rangeController) {
     var self = content.clone();
     self.makeObservable();
     self.rangeController = rangeController;
     self.contentEquals = content && content.contentEquals || Object.is;
 
     Object.defineProperty(self, "clone", {
-        value: function(){
+        value: function () {
             return self.slice();
         }
     });
-    
+
+    var oldSwap = self.swap;
+
     /**
-     * @method swap
-     * @param {number} start
-     * @param {number} howMany
-     * @param {object...} itemsToAdd
      * A custom version of swap to ensure that changes obey the RangeController
      * invariants:
      *  - if rC.multiSelect is false, only allow one item in set.
      *  - if rC.avoidsEmtySelection is true, require at least one item in set.
      *  - only add items that are present in rC.content
      *  - enforce uniqueness of items according to the contentEquals of the content
+     *
+     * @function swap
+     * @param {number} start
+     * @param {number} howMany
+     * @param {Object} itemsToAdd
+     *
      */
-    var oldSwap = self.swap;
     Object.defineProperty(self, "swap", {
         configurable: false,
-        value: function(start, howMany, itemsToAdd) {
+        value: function (start, howMany, itemsToAdd) {
             var content = this.rangeController.content;
             this.contentEquals = content && content.contentEquals || Object.is;
             start = start >= 0 ? start : this.length + start;
             var oldLength = this.length;
             var minusLength = Math.min(howMany, oldLength - start);
 
-			if(itemsToAdd) {
-	
+			if (itemsToAdd) {
 	            itemsToAdd.contentEquals = this.contentEquals;
-			
-	            var plus = itemsToAdd.filter(function(item, index){
+
+	            var plus = itemsToAdd.filter(function (item, index) {
 	                // do not add items to the selection if they aren't in content
 	                if (content && !content.has(item)) {
 	                    return false;
@@ -94,14 +102,15 @@ var RangeSelection = function(content, rangeController) {
 				plus = EMPTY_ARRAY;
 			}
 
-			
             var minus;
             if (minusLength === 0) {
                 // minus will be empty
                 minus = EMPTY_ARRAY;
             } else {
+                // `this` may not have .slice method; .call assumes `this` is array-like
                 minus = Array.prototype.slice.call(this, start, start + minusLength);
             }
+
             var diff = plus.length - minus.length;
             var newLength = Math.max(this.length + diff, start + plus.length);
             var args;
@@ -120,7 +129,7 @@ var RangeSelection = function(content, rangeController) {
             } else {
                 args = [start, howMany, plus];
             }
-			
+
             return oldSwap.apply(this, args);
         }
     });
@@ -159,12 +168,14 @@ var RangeSelection = function(content, rangeController) {
  * typically an Array for for a [Repetition]{@link Repetition}.
  * @extends Montage
  */
-var RangeController = exports.RangeController = Montage.specialize( /** @lends RangeController# */ {
-
+var RangeController = exports.RangeController = Montage.specialize( /** @lends RangeController.prototype # */ {
+    /**
+     * @constructs RangeController
+     */
     constructor: {
         value: function RangeController(content) {
             this.content = null;
-            this._selection = new RangeSelection([], this);
+            this._selection = new _RangeSelection([], this);
 
             this.sortPath = null;
             this.filterPath = null;
@@ -224,9 +235,9 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Initializes a range controller with a backing collection.
-     * @method
-     * @param content Any collection that produces range change events, like an
-     * `Array` or `SortedSet`.
+     *
+     * @function
+     * @param {Array|SortedSet} content - Any collection that produces range change events
      * @returns this
      */
     initWithContent: {
@@ -243,13 +254,15 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * An FRB expression that determines how to sort the content, like "name"
      * to sort by name.
      * If the `sortPath` is null, the content is not sorted.
-     * @type {?string}
+     *
+     * @property {string} value
      */
     sortPath: {value: null},
 
     /**
      * Whether to reverse the order of the sorted content.
-     * @type {?boolean}
+     *
+     * @property {boolean} value
      */
     reversed: {value: null},
 
@@ -257,7 +270,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * An FRB expression that determines how to filter content like
      * "name.startsWith('A')" to see only names starting with 'A'.
      * If the `filterPath` is null, all content is accepted.
-     * @type {?string}
+     *
+     * @property {string} value
      */
     filterPath: {value: null},
 
@@ -265,7 +279,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * An array of indexes to pluck from the ordered and filtered content.
      * The output will be an array of the corresponding content.
      * If the `visibleIndexes` is null, all content is accepted.
-     * @type {?Array.<number>}
+     *
+     * @property {Array.<number>}
      */
     visibleIndexes: {value: null},
 
@@ -274,7 +289,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * binding (indirectly) to the scroll offset of a large list.
      * If `start` or `length` is null, all content is
      * accepted.
-     * @type {?number}
+     *
+     * @property {Number}
      */
     start: {value: null},
 
@@ -283,7 +299,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * (indirectly) to the scroll height.
      * If `start` or `length` is null, all content is
      * accepted.
-     * @type {?number}
+     *
+     * @property {Number}
      */
     length: {value: null},
 
@@ -293,19 +310,19 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Whether to select new content automatically.
+     * @property {boolean}
+     * @default false
      *
-     * Off by default.
-     * @type {boolean}
+     * @todo make this work
      */
     selectAddedContent: {value: false},
-    // TODO make this work
 
     /**
      * Whether to automatically deselect content that disappears from the
      * `organizedContent`.
      *
-     * Off by default.
-     * @type {boolean}
+     * @default false
+     * @property {boolean}
      */
     deselectInvisibleContent: {value: false},
 
@@ -314,8 +331,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * `sortPath`, `filterPath`, or `reversed`
      * knobs change.
      *
-     * Off by default.
-     * @type {boolean}
+     * @default false
+     * @property {boolean}
      */
     clearSelectionOnOrderChange: {value: false},
 
@@ -323,8 +340,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * Whether to automatically reselect a value if it is the last value
      * removed from the selection.
      *
-     * Off by default.
-     * @type {boolean}
+     * @default false
+     * @property {boolean}
      */
     avoidsEmptySelection: {value: false},
 
@@ -332,8 +349,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * Whether to automatically deselect all previously selected content when a
      * new selection is made.
      *
-     * Off by default.
-     * @type {boolean}
+     * @default false
+     * @property {boolean}
      */
     multiSelect: {value: false},
 
@@ -344,6 +361,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     /**
      * The content after it has been sorted, reversed, and filtered, suitable
      * for plucking visible indexes and/or then the sliding window.
+     *
      * @private
      */
     _orderedContent: {value: null},
@@ -351,7 +369,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     /**
      * An array incrementally projected from `content` through sort,
      * reversed, filter, visibleIndexes, start, and length.
-     * @type {Array.<Object>}
+     *
+     * @property {Array.<Object>}
      */
     organizedContent: {value: null},
 
@@ -359,7 +378,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * An array of iterations corresponding to each of the values in
      * `organizedContent`, providing an interface for getting or
      * setting whether each is selected.
-     * @type {Array.<Iteration>}
+     *
+     * @property {Array.<Iteration>}
      */
     iterations: {value: null},
 
@@ -372,21 +392,19 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * The selection may be `null`.
      * The selection may be any collection that supports range change events
      * like `Array` or `SortedSet`.
-     * @type {?Array|Set|SortedSet}
+     *
+     * @param {Collection} a collection of values to be set as the selection.
+     * @returns {?Array|Set|SortedSet}
+     *
+     * @deprecated: setting the `selection` will not replace it with the provided.
+     * collection. Instead, it will empty the selection and then shallow-copy the
+     * contents of the argument into the existing selection array. This is done to
+     * maintain the complicated invariants about what the selection can be.
      */
     selection: {
         get: function () {
             return this._selection;
         },
-        /**
-         * @name RangeController#set:selection
-         * @method
-         * @param {Collection} a collection of values to be set as the selection.
-         * @deprecated: setting the `selection` will not replace it with the provided.
-         * collection. Instead, it will empty the selection and then shallow-copy the
-         * contents of the argument into the existing selection array. This is done to
-         * maintain the complicated invariants about what the selection can be.
-         */
         set: function (collection) {
             var args = [0, this._selection.length];
             if (collection && collection.toArray) {
@@ -402,7 +420,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * You can however directly manipulate the selection, but that will update
      * the selection asynchronously because the controller cannot change the
      * selection while handling a selection change event.
-     * @method
+     *
+     * @function
      * @param value
      */
     select: {
@@ -420,7 +439,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * You can however directly manipulate the selection, but that will update
      * the selection asynchronously because the controller cannot change the
      * selection while handling a selection change event.
-     * @method
+     *
+     * @function
      * @param value
      */
     deselect: {
@@ -437,7 +457,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * You can however directly manipulate the selection, but that will update
      * the selection asynchronously because the controller cannot change the
      * selection while handling a selection change event.
-     * @method
+     *
+     * @function
      */
     clearSelection: {
         value: function () {
@@ -450,9 +471,10 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     /**
      * Proxies adding content to the underlying collection, accounting for
      * `selectAddedContent`.
-     * @method
+     *
+     * @function
      * @param value
-     * @return {boolean} whether the value was added
+     * @returns {boolean} whether the value was added
      */
     add: {
         value: function (value) {
@@ -472,9 +494,10 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     /**
      * Proxies pushing content to the underlying collection, accounting for
      * `selectAddedContent`.
-     * @method
+     *
+     * @function
      * @param ...values
-     * @return {boolean} whether the value was added
+     * @returns {boolean} whether the value was added
      */
     push: {
         value: function () {
@@ -488,8 +511,9 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Proxies popping content from the underlying collection.
-     * @method
-     * @return the popped value
+     *
+     * @function
+     * @returns the popped value
      */
     pop: {
         value: function () {
@@ -499,8 +523,9 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Proxies shifting content from the underlying collection.
-     * @method
-     * @return the shifted value
+     *
+     * @function
+     * @returns the shifted value
      */
     shift: {
         value: function () {
@@ -511,9 +536,10 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     /**
      * Proxies unshifting content to the underlying collection, accounting for
      * `selectAddedContent`.
-     * @method
+     *
+     * @function
      * @param ...values
-     * @return {boolean} whether the value was added
+     * @returns {boolean} whether the value was added
      */
     unshift: {
         value: function () {
@@ -528,8 +554,9 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     /**
      * Proxies splicing values into the underlying collection.
      * Accounts for * `selectAddedContent`.
-     * @method
-     * @return the resulting content
+     *
+     * @function
+     * @returns the resulting content
      */
     splice: {
         value: function () {
@@ -544,11 +571,12 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
     /**
      * Proxies swapping values in the underlying collection.
      * Accounts for * `selectAddedContent`
-     * @method
+     *
+     * @function
      * @param {number} index the position at which to remove values
      * @param {number} minusLength the number of values to remove
      * @param {Array} plus the values to add
-     * @return {Array} `minus`, the removed values from the content
+     * @returns {Array} `minus`, the removed values from the content
      */
     swap: {
         value: function (index, length, values) {
@@ -564,9 +592,10 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Proxies deleting content from the underlying collection.
-     * @method
+     *
+     * @function
      * @param value
-     * @return {boolean} whether the value was found and deleted successfully
+     * @returns {boolean} whether the value was found and deleted successfully
      */
     "delete": {
         value: function (value) {
@@ -576,12 +605,13 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Does the value exist in the content?
-     * @method
+     *
+     * @function
      * @param {object} value the value to test for
-     * @return {boolean}
+     * @returns {boolean}
      */
     has: {
-        value: function(value) {
+        value: function (value) {
             if (this.content) {
                 return this.content.has(value);
             } else {
@@ -592,7 +622,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Proxies adding each value into the underlying collection.
-     * @method
+     *
+     * @function
      * @param {...object} values
      */
     addEach: {
@@ -601,7 +632,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Proxies deleting each value out from the underlying collection.
-     * @method
+     * @function
      * @param {...object} values
      */
     deleteEach: {
@@ -610,7 +641,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     /**
      * Proxies clearing the underlying content collection.
-     * @method
+     * @function
      */
     clear: {
         value: function () {
@@ -622,8 +653,8 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * Creates content and adds it to the controller and its backing
      * collection.
      * Uses `add` and `contentConstructor`.
-     * @method
-     * @return the value constructed and added
+     * @function
+     * @returns the value constructed and added
      */
     addContent: {
         value: function () {
@@ -633,6 +664,9 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
         }
     },
 
+    /**
+     * @private
+     */
     _contentConstructor: {
         value: null
     },
@@ -691,7 +725,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * @private
      */
     handleSelectionRangeChange : {
-        value: function(plus, minus, index) {
+        value: function (plus, minus, index) {
             if (this.selection) {
                 if (this.content) {
                     var notInContent = [];
@@ -769,7 +803,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
      * @private
      */
     handleMultiSelectChange: {
-        value: function() {
+        value: function () {
             if (this.selection) {
                 var length = this.selection.length;
                 if (!this.multiSelect && length > 1) {
@@ -781,7 +815,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
         }
     }
 
-}, /** @lends RangeController. */ {
+}, /** @lends RangeController */ {
 
     blueprintModuleId:require("./core")._blueprintModuleIdDescriptor,
 

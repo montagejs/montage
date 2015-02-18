@@ -1,12 +1,14 @@
 /* global ARRAY_PROTOTYPE: false, Montage: false */
+
 /**
- * @module deprecate
+ * @module montage/core/deprecate
  */
 
 /**
  * Prints out a deprecation warning to the console.warn with the format:
  * `name` is deprecated, use `alternative` instead.
  * It can also print out a stack trace with the line numbers.
+ *
  * @param {String} name - Name of the thing that is deprecated.
  * @param {String} alternative - Name of alternative that should be used instead.
  * @param {Number} [stackTraceLimit] - depth of the stack trace to print out. Set to falsy value to disable stack.
@@ -36,10 +38,12 @@ var deprecationWarning = exports.deprecationWarning = function deprecationWarnin
  * Prints out a deprecation warning to the console.warn with the format:
  * `name` is deprecated, use `alternative` instead.
  * It will also print out a stack trace with the line numbers.
+ *
  * @param {Object} scope - The object that will be used as the `this` when the `deprecatedFunction` is applied.
  * @param {Function} deprecatedFunction - The function object that is deprecated.
  * @param {String} name - Name of the method that is deprecated.
  * @param {String} alternative - Name of alternative method that should be used instead.
+ *
  * @returns {Function} deprecationWrapper
  */
 exports.deprecateMethod = function deprecate(scope, deprecatedFunction, name, alternative) {
@@ -52,7 +56,15 @@ exports.deprecateMethod = function deprecate(scope, deprecatedFunction, name, al
     return deprecationWrapper;
 };
 
-// too call a function immediately and log a deprecation warning
+/**
+ * To call a function immediately and log a deprecation warning
+ *
+ * @param scope
+ * @param callback
+ * @param name
+ * @param alternative
+ * @returns {*}
+ */
 exports.callDeprecatedFunction = function callDeprecatedFunction(scope, callback, name, alternative/*, ...args */) {
     var depth = Error.stackTraceLimit,
         scopeName,

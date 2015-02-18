@@ -7,14 +7,14 @@ var Montage = require("montage").Montage,
     Serialization = require("montage/core/serialization/serialization").Serialization,
     Promise = require("montage/core/promise").Promise;
 
-describe("reel/serialization/serialization-extractor-spec", function() {
+describe("reel/serialization/serialization-extractor-spec", function () {
     var serializationExtractor;
 
-    beforeEach(function() {
+    beforeEach(function () {
         serializationExtractor = new SerializationExtractor();
     });
 
-    it("should extract an object", function() {
+    it("should extract an object", function () {
         var objects = {
                 "one": {
                     "properties": {
@@ -49,7 +49,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
             .toEqual(expectedObjects);
     });
 
-    it("should extract an object and add a defined external", function() {
+    it("should extract an object and add a defined external", function () {
         var objects = {
                 "one": {
                     "properties": {
@@ -76,7 +76,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
             .toEqual(expectedObjects);
     });
 
-    it("should extract an object with its object dependencies as external objects", function() {
+    it("should extract an object with its object dependencies as external objects", function () {
         var objects = {
                 "one": {
                     "properties": {
@@ -113,7 +113,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
             .toEqual(expectedObjects);
     });
 
-    it("should extract objects with dependencies between them", function() {
+    it("should extract objects with dependencies between them", function () {
         var objects = {
                 "one": {
                     "properties": {
@@ -150,7 +150,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
             .toEqual(expectedObjects);
     });
 
-    it("should extract two objects even when one of them is a defined external", function() {
+    it("should extract two objects even when one of them is a defined external", function () {
         var objects = {
                 "one": {
                     "properties": {
@@ -182,7 +182,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
             .toEqual(expectedObjects);
     });
 
-    it("should extract two objects even if one of them is an external reference", function() {
+    it("should extract two objects even if one of them is an external reference", function () {
         var objects = {
                 "one": {
                     "properties": {
@@ -209,7 +209,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
             .toEqual(expectedObjects);
     });
 
-    it("should ignore passed external objects that do not exist", function() {
+    it("should ignore passed external objects that do not exist", function () {
         var objects = {
                 "one": {
                     "properties": {
@@ -233,8 +233,8 @@ describe("reel/serialization/serialization-extractor-spec", function() {
             .toEqual(expectedObjects);
     });
 
-    describe("bindings", function() {
-        it("should extract an object and its one way bindings as external objects", function() {
+    describe("bindings", function () {
+        it("should extract an object and its one way bindings as external objects", function () {
             var objects = {
                     "one": {
                         "properties": {
@@ -268,7 +268,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                 .toEqual(expectedObjects);
         });
 
-        it("should extract an object and its two way bindings as external objects", function() {
+        it("should extract an object and its two way bindings as external objects", function () {
             var objects = {
                     "one": {
                         "properties": {
@@ -302,7 +302,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
                 .toEqual(expectedObjects);
         });
 
-        it("should extract an object with bindings that have multiple references", function() {
+        it("should extract an object with bindings that have multiple references", function () {
             var objects = {
                     "one": {
                         "properties": {
@@ -342,7 +342,7 @@ describe("reel/serialization/serialization-extractor-spec", function() {
         });
     });
 
-    it("should extract an object and its listeners as external objects", function() {
+    it("should extract an object and its listeners as external objects", function () {
         var objects = {
                 "one": {
                     "properties": {

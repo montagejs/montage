@@ -34,90 +34,90 @@ var Montage = require("montage").Montage,
     convertPointFromNodeToPage = require("montage/core/dom").convertPointFromNodeToPage,
     convertPointFromPageToNode = require("montage/core/dom").convertPointFromPageToNode;
 
-TestPageLoader.queueTest("dom/dom", function(testPage) {
-    describe("core/dom-spec", function() {
-        describe("convertPointFromNodeToPage parameter passing", function() {
-            it("should not fail if no node passed", function() {
+TestPageLoader.queueTest("dom/dom", function (testPage) {
+    describe("core/dom-spec", function () {
+        describe("convertPointFromNodeToPage parameter passing", function () {
+            it("should not fail if no node passed", function () {
                 var result;
-                expect(function() {
+                expect(function () {
                     result = convertPointFromNodeToPage(new Point().init(0,0));
                 }).not.toThrow();
                 expect(result).toBeNull();
             });
-            it("should not fail if null node passed", function() {
+            it("should not fail if null node passed", function () {
                 var result;
-                expect(function() {
+                expect(function () {
                     result = convertPointFromNodeToPage(null,new Point().init(0,0));
                 }).not.toThrow();
                 expect(result).toBeNull();
             });
-            it("should not fail if all null passed", function() {
+            it("should not fail if all null passed", function () {
                 var result;
-                expect(function() {
+                expect(function () {
                     result = convertPointFromNodeToPage(null, null);
                 }).not.toThrow();
                 expect(result).toBeNull();
             });
         });
-        describe("convertPointFromPageToNode parameter passing", function() {
-            it("should not fail if no node passed", function() {
+        describe("convertPointFromPageToNode parameter passing", function () {
+            it("should not fail if no node passed", function () {
                 var result;
-                expect(function() {
+                expect(function () {
                     result = convertPointFromPageToNode(new Point().init(0,0));
                 }).not.toThrow();
                 expect(result).toBeNull();
             });
-            it("should not fail if null node passed", function() {
+            it("should not fail if null node passed", function () {
                 var result;
-                expect(function() {
+                expect(function () {
                     result = convertPointFromPageToNode(null,new Point().init(0,0));
                 }).not.toThrow();
                 expect(result).toBeNull();
             });
-            it("should not fail if all null passed", function() {
+            it("should not fail if all null passed", function () {
                 var result;
-                expect(function() {
+                expect(function () {
                     result = convertPointFromNodeToPage(null, null);
                 }).not.toThrow();
                 expect(result).toBeNull();
             });
         });
-        describe("convertPointFrom functions", function() {
-            describe("heading", function() {
-                it("should return correct position", function() {
+        describe("convertPointFrom functions", function () {
+            describe("heading", function () {
+                it("should return correct position", function () {
                     testConvertPoint(testPage.test.convertPoint1, 46,36,61,236);
                 });
             });
-            describe("paragraph", function() {
-                it("should return correct position", function() {
+            describe("paragraph", function () {
+                it("should return correct position", function () {
                     testConvertPoint(testPage.test.convertPoint2, 46,43,61,243);
                 });
 
-                describe("including a link", function() {
-                    it("should return correct position", function() {
+                describe("including a link", function () {
+                    it("should return correct position", function () {
                         testConvertPoint(testPage.test.convertPoint3, 46,43,61,243);
                     });
                 })
 
-                describe("including a link with border", function() {
-                    it("should return correct position", function() {
+                describe("including a link with border", function () {
+                    it("should return correct position", function () {
                         testConvertPoint(testPage.test.convertPoint4, 46,43,61,243);
                     });
                 });
 
-                describe("translated", function() {
-                    describe("including a link with border", function() {
-                        it("should return correct position", function() {
+                describe("translated", function () {
+                    describe("including a link with border", function () {
+                        it("should return correct position", function () {
                             testConvertPoint(testPage.test.convertPoint5, 56,43,71,243);
                         });
                     });
-                    describe("including a link with border and a break", function() {
-                        it("should return correct position", function() {
+                    describe("including a link with border and a break", function () {
+                        it("should return correct position", function () {
                             testConvertPoint(testPage.test.convertPoint6, 56,43,71,243);
                         });
                     });
-                    describe(", rotated, and scaled including a link with border and a break", function() {
-                        it("should return correct position", function() {
+                    describe(", rotated, and scaled including a link with border and a break", function () {
+                        it("should return correct position", function () {
                             testConvertPoint(testPage.test.convertPoint7, 56,53,3,82);
                         });
                     });
@@ -125,18 +125,18 @@ TestPageLoader.queueTest("dom/dom", function(testPage) {
             });
         });
 
-        describe("classList element property of an HTML element", function() {
-            it("should return the class", function() {
-                expect(function() {
+        describe("classList element property of an HTML element", function () {
+            it("should return the class", function () {
+                expect(function () {
                     testPage.test.html.classList;
                 }).not.toThrow();
                 expect(testPage.test.html.classList.item(0)).toEqual("classOne");
             });
         });
 
-        describe("classList element property of an SVG element", function() {
-            it("should return the class", function() {
-                expect(function() {
+        describe("classList element property of an SVG element", function () {
+            it("should return the class", function () {
+                expect(function () {
                     testPage.test.svg.classList;
                 }).not.toThrow();
                 expect(testPage.test.svg.classList.item(0)).toEqual("classTwo");
@@ -145,7 +145,7 @@ TestPageLoader.queueTest("dom/dom", function(testPage) {
    });
 });
 
-var testConvertPoint = function(element, x1, y1, x2, y2) {
+var testConvertPoint = function (element, x1, y1, x2, y2) {
     var point1, point2;
     point1 = convertPointFromNodeToPage(element, new Point().init(0, 0));
     expect(Math.round(point1.x)).toEqual(x1);

@@ -5,13 +5,13 @@ var UnitDeserializer = Montage.specialize(/** @lends UnitDeserializer# */ {
     _context: {value: null},
 
     create: {
-        value: function() {
+        value: function () {
             return new this();
         }
     },
 
     initWithContext: {
-        value: function(context) {
+        value: function (context) {
             this._context = context;
 
             return this;
@@ -27,7 +27,7 @@ var UnitDeserializer = Montage.specialize(/** @lends UnitDeserializer# */ {
      * that exists and has the format: @<component>:<property>.
      */
     isValidTemplatePropertyReference: {
-        value: function(label) {
+        value: function (label) {
             var templateProperty = this._templatePropertyRegExp.exec(label);
 
             if (templateProperty) {
@@ -45,7 +45,7 @@ var UnitDeserializer = Montage.specialize(/** @lends UnitDeserializer# */ {
     },
 
     getObjectByLabel: {
-        value: function(label) {
+        value: function (label) {
             if (this._context.hasObject(label)) {
                 // All labels that exist are immediately resolved into an object
                 // even if they are a valid template property reference. This

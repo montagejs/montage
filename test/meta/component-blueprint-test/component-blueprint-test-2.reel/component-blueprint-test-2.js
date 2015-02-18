@@ -6,13 +6,13 @@ var Montage = require("montage").Montage,
 var ComponentBlueprintTest2 = exports.ComponentBlueprintTest2 = Component.specialize( {
 
     templateDidLoad: {
-        value: function() {
+        value: function () {
             //console.log("Component Blueprint Test 2 template did load");
         }
     },
 
     deserializedFromTemplate: {
-        value: function() {
+        value: function () {
             //console.log("Component Blueprint Test 2 deserialized from template");
         }
     }

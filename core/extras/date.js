@@ -1,5 +1,6 @@
 /**
 *  Defines extensions to intrinsic `Date` object.
+ *
 *  @module montage/core/extras/date
 *  @see {external:Date}
 */
@@ -11,8 +12,8 @@
 /**
  *  Creates a copy of a date.
  *
- *  @method external:Date#clone
- *  @returns {Date} a new date
+ *  @function external:Date#clone
+ *  @returns {Date} - a new date
 */
 Object.defineProperty(Date.prototype, "clone", {
     value: function () {

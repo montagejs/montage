@@ -7,7 +7,7 @@ var PropertiesDeserializer = Montage.specialize( {
     _context: {value: null},
 
     initWithObjectAndObjectDescriptorAndContext: {
-        value: function(object, objectDescriptor, context) {
+        value: function (object, objectDescriptor, context) {
             this._object = object;
             this._objectDescriptor = objectDescriptor;
             this._context = context;
@@ -17,7 +17,7 @@ var PropertiesDeserializer = Montage.specialize( {
     },
 
     get: {
-        value: function(name) {
+        value: function (name) {
             if (this._objectDescriptor.properties) {
                 return this._objectDescriptor.properties[name];
             }
@@ -25,7 +25,7 @@ var PropertiesDeserializer = Montage.specialize( {
     },
 
     deserializeProperties: {
-        value: function(propertyNames) {
+        value: function (propertyNames) {
             var object = this._object,
                 properties = this._objectDescriptor.properties,
                 propertyName;
@@ -44,7 +44,7 @@ var PropertiesDeserializer = Montage.specialize( {
     },
 
     getObjectByLabel: {
-        value: function(label) {
+        value: function (label) {
             this._context.getObject(label);
         }
     }

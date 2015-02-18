@@ -8,7 +8,7 @@ var Montage = require("../core").Montage;
  * @class ActionEventListener
  * @extends Montage
  */
-var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** @lends ActionEventListener# */ {
+var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** @lends ActionEventListener.prototype # */ {
 
     /**
      * The logical object handling received events
@@ -27,8 +27,9 @@ var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** 
      * actionEventListener as the context.
      *
      * If neither handler nor action is set, the event is ignored.
-     * @type {String|Function}
-     * @default {Event handler} null
+     *
+     * @property {String|Function} value
+     * @default null
      *
      */
     action: {
@@ -38,21 +39,26 @@ var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** 
     /**
      * Returns a new ActionEventListener instance with the specified handler
      * and action.
-     * @method
-     * @param {Object} handler The event handler
-     * @param {String|Function} action The event handler action
-     * @returns {ActionEventListener} The initialized ActionEventListener
+     *
+     * @function
+     * @param {Object} handler - The event handler
+     * @param {String|Function} action - The event handler action
+     * @returns {ActionEventListener} - The initialized ActionEventListener
      * */
     initWithHandler_action_: {
-        value: function(handler, action) {
+        value: function (handler, action) {
             this.handler = handler;
             this.action = action;
             return this;
         }
     },
 
+    /**
+     * @function
+     * @param {Event} event
+     */
     handleEvent: {
-        value: function(event) {
+        value: function (event) {
             if (typeof this.action === "function") {
                 var context = this.handler ? this.handler : this;
                 this.action.call(context, event);
@@ -62,8 +68,12 @@ var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** 
         }
     },
 
+    /**
+     * @function
+     * @param {Serializer} serializer
+     */
     serializeProperties: {
-        value: function(serializer) {
+        value: function (serializer) {
             serializer.set("handler", this.handler, "reference");
             // TODO accepting an actual function is less than ideal from the
             // serialization standpoint
@@ -72,10 +82,7 @@ var ActionEventListener = exports.ActionEventListener = Montage.specialize( /** 
     }
 
 }, {
-
     blueprintModuleId: require("../core")._blueprintModuleIdDescriptor,
-
     blueprint: require("../core")._blueprintDescriptor
-
 });
 

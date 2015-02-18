@@ -1,4 +1,5 @@
 "use strict";
+
 /**
  * @module montage/core/meta/blueprint
  * @requires montage/core/core
@@ -19,18 +20,18 @@ var DerivedPropertyBlueprint = require("./derived-property-blueprint").DerivedPr
 var EventBlueprint = require("./event-blueprint").EventBlueprint;
 var PropertyValidationRule = require("./validation-rule").PropertyValidationRule;
 var deprecate = require("../deprecate");
-
 var logger = require("../logger").logger("blueprint");
 
 var Defaults = {
-    name:"default",
-    customPrototype:false
+    name: "default",
+    customPrototype: false
 };
 
 /**
  * @class Blueprint
+ * @extends Montage
  */
-var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */ {
+var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint.prototype # */ {
 
     FileExtension: {
         value: ".meta"
@@ -45,12 +46,12 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     },
 
     /**
-     * @method
+     * @function
      * @param {string} name The name of the blueprint
      * @returns itself
      */
     initWithName: {
-        value: function(name) {
+        value: function (name) {
             this._name = (name !== null ? name : "default");
             this.customPrototype = false;
 
@@ -59,7 +60,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     },
 
     /**
-     * @method
+     * @function
      * @param {string} name
      * @param {string} moduleId
      * @returns itself
@@ -157,10 +158,10 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      *
      * This is an accessor. It is not writable or observable.
      *
-     * @type {string} this._name
+     * @returns {string} this._name
      */
     name: {
-        get: function() {
+        get: function () {
             return this._name;
         }
     },
@@ -171,13 +172,13 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      * Newly created prototype will be blessed with all the required properties
      * to be well behaved.
      *
-     * @method
+     * @function
      * @param {Object} prototype
      * @param {Object} propertyDescriptor
      * @returns newPrototype
      */
     create: {
-        value: function(aPrototype, propertyDescriptor) {
+        value: function (aPrototype, propertyDescriptor) {
             if ((typeof aPrototype === "undefined") || (Blueprint.prototype.isPrototypeOf(aPrototype))) {
                 var parentCreate = Object.getPrototypeOf(Blueprint).create;
                 return parentCreate.call(this, (typeof aPrototype === "undefined" ? this : aPrototype), propertyDescriptor);
@@ -192,11 +193,11 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
     /**
      * Create a new instance of the target prototype for the blueprint.
-     * @method
-     * @return new instance
+     * @function
+     * @returns new instance
      */
     newInstance: {
-        value: function() {
+        value: function () {
             var prototype = this.newInstancePrototype();
             return (prototype ? new prototype() : null);
         }
@@ -208,21 +209,21 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      * **Note:** This method uses the `customPrototype` property to determine
      * if it needs to require a custom prototype or create a default prototype.
      *
-     * @method
-     * @return new prototype
+     * @function
+     * @returns new prototype
      */
     newInstancePrototype: {
-        value: function() {
+        value: function () {
             // FIXME this function is no missing all the data it needs
             var self = this;
             if (this.customPrototype) {
                 throw new Error("FIXME");
                 var results = Promise.defer();
                 require.async(this.moduleId,
-                    function(exports) {
+                    function (exports) {
                         results.resolve(exports);
                     });
-                return results.promise.then(function(exports) {
+                return results.promise.then(function (exports) {
                         var prototype = exports[self.prototypeName];
                         return (prototype ? prototype : null);
                     }
@@ -232,7 +233,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
                 var newConstructor = Montage.create(parentInstancePrototype, {
                     // Token class
                     init: {
-                        value: function() {
+                        value: function () {
                             return this;
                         }
                     }
@@ -249,12 +250,12 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      *
      * This will return the default if none is declared.
      *
-     * @type {ObjectProperty}
+     * @returns {ObjectProperty}
      */
     ObjectProperty: {
         serializable: false,
         enumerable: true,
-        get: function() {
+        get: function () {
             if (this.binder) {
                 return this.binder.ObjectProperty;
             }
@@ -283,11 +284,11 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     /**
      * The identifier is the same as the name and is used to make the
      * serialization of a blueprint humane.
-     * @type {string}
+     * @returns {string}
      * @default `this.name`
      */
     identifier: {
-        get: function() {
+        get: function () {
             // TODO convert UpperCase to lower-case instead of lowercase
             return [
                 "blueprint",
@@ -301,19 +302,19 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     },
 
     /**
-     * @type {Property}
+     * @returns {Property}
      * @default null
      */
     binder: {
         serializable: false,
-        get: function() {
+        get: function () {
             if (! this._binder) {
                 this._binder = BinderModule.Binder.manager.defaultBinder;
                 this._binder.addBlueprint(this);
             }
             return this._binder;
         },
-        set: function(value) {
+        set: function (value) {
             this._binder = value;
         }
     },
@@ -328,14 +329,14 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
     /**
      * Blueprint parent
-     * @type {?BlueprintReference}
+     * @returns {?BlueprintReference}
      */
     parent: {
         serializable: false,
-        get: function() {
+        get: function () {
             return this._parent;
         },
-        set: function(blueprint) {
+        set: function (blueprint) {
             if (blueprint) {
                 this._parentReference = new BlueprintReference().initWithValue(blueprint);
                 this._parent = blueprint;
@@ -371,7 +372,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      * Is `true` if the blueprint needs to require a custom prototype for
      * creating new instances, `false` if new instance are generic prototypes.
      *
-     * @type {boolean}
+     * @property {boolean} value
      * @default false
      */
     customPrototype: {
@@ -384,10 +385,10 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     },
 
     /**
-     * @type {Array.<PropertyBlueprint>}
+     * @returns {Array.<PropertyBlueprint>}
      */
     propertyBlueprints: {
-        get: function() {
+        get: function () {
             var propertyBlueprints = [];
             propertyBlueprints = propertyBlueprints.concat(this._propertyBlueprints);
             if (this.parent) {
@@ -409,13 +410,13 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      * If that property blueprint was associated with another blueprint it will
      * be removed first.
      *
-     * @method
+     * @function
      * @param {PropertyBlueprint} property blueprint The property blueprint to
      * be added.
      * @returns the property blueprint
      */
     addPropertyBlueprint: {
-        value: function(propertyBlueprint) {
+        value: function (propertyBlueprint) {
             if (propertyBlueprint !== null && propertyBlueprint.name !== null) {
                 var index = this._propertyBlueprints.indexOf(propertyBlueprint);
                 if (index < 0) {
@@ -435,13 +436,13 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      * Removes a property blueprint from the property blueprint list of this
      * blueprint.
      *
-     * @method
+     * @function
      * @param {PropertyBlueprint} property blueprint The property blueprint to
      * be removed.
      * @returns the same property blueprint
      */
     removePropertyBlueprint: {
-        value: function(propertyBlueprint) {
+        value: function (propertyBlueprint) {
             if (propertyBlueprint !== null && propertyBlueprint.name !== null) {
                 var index = this._propertyBlueprints.indexOf(propertyBlueprint);
                 if (index >= 0) {
@@ -464,7 +465,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      * @returns {PropertyBlueprint}
      */
     newPropertyBlueprint: {
-        value: function(name, cardinality) {
+        value: function (name, cardinality) {
             return new PropertyBlueprint().initWithNameBlueprintAndCardinality(name, this, cardinality);
         }
     },
@@ -478,7 +479,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      * @returns {AssociationBlueprint}
      */
     newAssociationBlueprint: {
-        value: function(name, cardinality) {
+        value: function (name, cardinality) {
             return new AssociationBlueprint().initWithNameBlueprintAndCardinality(name, this, cardinality);
         }
     },
@@ -492,44 +493,44 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      * @returns {DerivedPropertyBlueprint}
      */
     newDerivedPropertyBlueprint: {
-        value: function(name, cardinality) {
+        value: function (name, cardinality) {
             return new DerivedPropertyBlueprint().initWithNameBlueprintAndCardinality(name, this, cardinality);
         }
     },
 
     /**
      * Convenience to add one property blueprint.
-     * @method
+     * @function
      * @param {string} name Add to one property blueprint
      * @returns {PropertyBlueprint}
      */
     addToOnePropertyBlueprintNamed: {
-        value: function(name) {
+        value: function (name) {
             return this.addPropertyBlueprint(this.newPropertyBlueprint(name, 1));
         }
     },
 
     /**
      * Convenience to add many property blueprints.
-     * @method
+     * @function
      * @param {string} name Add to many property blueprints
      * @returns {PropertyBlueprint}
      */
     addToManyPropertyBlueprintNamed: {
-        value: function(name) {
+        value: function (name) {
             return this.addPropertyBlueprint(this.newPropertyBlueprint(name, Infinity));
         }
     },
 
     /**
      * Convenience to add an property blueprint to one relationship.
-     * @method
+     * @function
      * @param {string} name
      * @param {string} inverse
      * @returns {AssociationBlueprint}
      */
     addToOneAssociationBlueprintNamed: {
-        value: function(name, inverse) {
+        value: function (name, inverse) {
             var relationship = this.addPropertyBlueprint(this.newAssociationBlueprint(name, 1));
             if (inverse) {
                 relationship.targetBlueprint = inverse.owner;
@@ -541,13 +542,13 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
     /**
      * Convenience to add an property blueprint to many relationships.
-     * @method
+     * @function
      * @param {string} name TODO
      * @param {string} inverse TODO
      * @returns {AssociationBlueprint}
      */
     addToManyAssociationBlueprintNamed: {
-        value: function(name, inverse) {
+        value: function (name, inverse) {
             var relationship = this.addPropertyBlueprint(this.newAssociationBlueprint(name, Infinity));
             if (inverse) {
                 relationship.targetBlueprint = inverse.owner;
@@ -558,12 +559,12 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     },
 
     /**
-     * @method
+     * @function
      * @param {string} name
      * @returns {PropertyBlueprint}
      */
     propertyBlueprintForName: {
-        value: function(name) {
+        value: function (name) {
             var propertyBlueprint = this._propertyBlueprintsTable[name];
             if (typeof propertyBlueprint === "undefined") {
                 propertyBlueprint = UnknownPropertyBlueprint;
@@ -594,10 +595,10 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
     /**
      * List of properties blueprint groups names
-     * @type {Array.<PropertyBlueprint>}
+     * @returns {Array.<PropertyBlueprint>}
      */
     propertyBlueprintGroups: {
-        get: function() {
+        get: function () {
             var groups = [];
             for (var name in this._propertyBlueprintGroups) {
                 groups.push(name);
@@ -615,7 +616,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      * @returns {Array.<PropertyBlueprint>} property blueprint group
      */
     propertyBlueprintGroupForName: {
-        value: function(groupName) {
+        value: function (groupName) {
             var group = this._propertyBlueprintGroups[groupName];
             if ((! group) && (this.parent)) {
                 group = this.parent.propertyBlueprintGroupForName(groupName);
@@ -626,12 +627,12 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
     /**
      * Add a new property blueprint group.
-     * @method
+     * @function
      * @param {string} name of the group
      * @returns {Array.<PropertyBlueprint>} new property blueprint group
      */
     addPropertyBlueprintGroupNamed: {
-        value: function(groupName) {
+        value: function (groupName) {
             var group = this._propertyBlueprintGroups[groupName];
             if (group == null) {
                 group = [];
@@ -643,12 +644,12 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
     /**
      * Remove the property blueprint group.
-     * @method
+     * @function
      * @param {string} name of the group to remove
      * @returns {Array.<PropertyBlueprint>} removed property blueprint group
      */
     removePropertyBlueprintGroupNamed: {
-        value: function(groupName) {
+        value: function (groupName) {
             var group = this._propertyBlueprintGroups[groupName];
             if (group != null) {
                 delete this._propertyBlueprintGroups[groupName];
@@ -660,13 +661,13 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     /**
      * Adds a property blueprint to the group name.
      * if the group does not exist creates it.
-     * @method
+     * @function
      * @param {string} property to add
      * @param {string} name of the group
      * @returns {Array.<PropertyBlueprint>} property blueprint group
      */
     addPropertyBlueprintToGroupNamed: {
-        value: function(propertyBlueprint, groupName) {
+        value: function (propertyBlueprint, groupName) {
             var group = this._propertyBlueprintGroups[groupName];
             if (group == null) {
                 group = this.addPropertyBlueprintGroupNamed(groupName);
@@ -681,13 +682,13 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
     /**
      * Removes a property blueprint from the group name.
-     * @method
+     * @function
      * @param {string} name of the property
      * @param {string} name of the group
      * @returns {Array.<PropertyBlueprint>} property blueprint group
      */
     removePropertyBlueprintFromGroupNamed: {
-        value: function(propertyBlueprint, groupName) {
+        value: function (propertyBlueprint, groupName) {
             var group = this._propertyBlueprintGroups[groupName];
             if ((group != null) && (propertyBlueprint != null)) {
                 var index = group.indexOf(propertyBlueprint);
@@ -704,7 +705,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     },
 
     /**
-     * @type {?Array.<EventBlueprint>}
+     * @property {Array.<EventBlueprint>} value
      */
     eventBlueprints: {
         value: null
@@ -723,12 +724,12 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      * If that property blueprint was associated with another blueprint it will
      * be removed first.
      *
-     * @method
+     * @function
      * @param {string} property blueprint The property blueprint to be added.
      * @returns {PropertyBlueprint}
      */
     addEventBlueprint: {
-        value: function(eventBlueprint) {
+        value: function (eventBlueprint) {
             if (eventBlueprint !== null && eventBlueprint.name !== null) {
                 var index = this._eventBlueprints.indexOf(eventBlueprint);
                 if (index < 0) {
@@ -747,12 +748,12 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     /**
      * Removes an property blueprint from the property blueprint list of this
      * blueprint.
-     * @method
+     * @function
      * @param {Object} property blueprint The property blueprint to be removed.
      * @returns {PropertyBlueprint}
      */
     removeEventBlueprint: {
-        value: function(eventBlueprint) {
+        value: function (eventBlueprint) {
             if (eventBlueprint !== null && eventBlueprint.name !== null) {
                 var index = this._eventBlueprints.indexOf(eventBlueprint);
                 if (index >= 0) {
@@ -772,7 +773,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      * @param {string} name name of the event blueprint to create
      */
     newEventBlueprint: {
-        value: function(name) {
+        value: function (name) {
             return new EventBlueprint().initWithNameAndBlueprint(name, this);
         }
     },
@@ -780,23 +781,23 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
     /**
      * Convenience to add an event blueprint.
-     * @method
+     * @function
      * @param {string} name
      * @returns {EventBlueprint}
      */
     addEventBlueprintNamed: {
-        value: function(name, inverse) {
+        value: function (name, inverse) {
             return this.addEventBlueprint(this.newEventBlueprint(name));
         }
     },
 
     /**
-     * @method
+     * @function
      * @param {string} name
      * @returns {EventBlueprint}
      */
     eventBlueprintForName: {
-        value: function(name) {
+        value: function (name) {
             var eventBlueprint = this._eventBlueprintsTable[name];
             if (typeof eventBlueprint === "undefined") {
                 eventBlueprint = UnknownEventBlueprint;
@@ -827,11 +828,11 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
     /**
      * Gets the list of properties validation rules.
-     * @return {Array.<PropertyValidationRule>} copy of the list of properties
+     * @returns {Array.<PropertyValidationRule>} copy of the list of properties
      * validation rules.
      */
     propertyValidationRules: {
-        get: function() {
+        get: function () {
             var propertyValidationRules = [];
             for (var name in this._propertyValidationRules) {
                 propertyValidationRules.push(this._propertyValidationRules[name]);
@@ -849,7 +850,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
      * @returns {PropertyDescription} property description
      */
     propertyValidationRuleForName: {
-        value: function(name) {
+        value: function (name) {
             var propertyValidationRule = this._propertyValidationRules[name];
             if ((! propertyValidationRule) && (this.parent)) {
                 propertyValidationRule = this.parent.propertyValidationRuleForName(name);
@@ -860,12 +861,12 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
     /**
      * Add a new properties validation rule .
-     * @method
+     * @function
      * @param {string} name of the rule
      * @returns {PropertyDescription} new properties validation rule
      */
     addPropertyValidationRule: {
-        value: function(name) {
+        value: function (name) {
             var propertyValidationRule = this._propertyValidationRules[name];
             if (propertyValidationRule == null) {
                 propertyValidationRule = new PropertyValidationRule().initWithNameAndBlueprint(name, this);
@@ -877,12 +878,12 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
 
     /**
      * Remove the properties validation rule  for the name.
-     * @method
+     * @function
      * @param {string} name of the rule
      * @returns {PropertyDescription} removed properties validation rule
      */
     removePropertyValidationRule: {
-        value: function(name) {
+        value: function (name) {
             var propertyValidationRule = this._propertyValidationRules[name];
             if (propertyValidationRule != null) {
                 delete this._propertyValidationRules[name];
@@ -894,11 +895,11 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint# */
     /**
      * Evaluates the rules based on the object and the properties.
      * @param {Object} object instance to evaluate the rule for
-     * @return {Array.<string>} list of message key for rule that fired. Empty
+     * @returns {Array.<string>} list of message key for rule that fired. Empty
      * array otherwise.
      */
     evaluateRules: {
-        value: function(objectInstance) {
+        value: function (objectInstance) {
             var messages = [];
             for (var name in this._propertyValidationRules) {
                 var rule = this._propertyValidationRules[name];

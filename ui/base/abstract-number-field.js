@@ -67,24 +67,24 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
     },
 
     textFieldShouldBeginEditing: {
-        value: function() {
+        value: function () {
             return this.enabled;
         }
     },
 
     textFieldDidChange: {
-        value: function() {
+        value: function () {
         }
     },
 
     textFieldDidEndEditing: {
-        value: function() {
+        value: function () {
             this.value = this._numberFieldTextFieldComponent.value;
         }
     },
 
     textFieldShouldAcceptValue: {
-        value: function(textField, value) {
+        value: function (textField, value) {
             if (this._activeValueChange === true) {
                 return true;
             }
@@ -93,7 +93,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
 
 
     prepareForActivationEvents: {
-        value: function() {
+        value: function () {
             this._upKeyComposer.addEventListener("keyPress", this, false);
             this._downKeyComposer.addEventListener("keyPress", this, false);
             this._leftKeyComposer.addEventListener("keyPress", this, false);
@@ -102,7 +102,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
     },
 
     draw: {
-        value: function() {
+        value: function () {
             this.element.setAttribute("aria-valuemax", this.max);
             this.element.setAttribute("aria-valuemin", this.min);
             this.element.setAttribute("aria-valuenow", this.value);
@@ -172,7 +172,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
     },
 
     handleKeyPress: {
-        value: function(event) {
+        value: function (event) {
             if (!this.enabled) {
                 return;
             }
@@ -185,7 +185,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
     },
 
     handleAction: {
-        value: function(event) {
+        value: function (event) {
             if (event.target === this._numberFieldTextFieldComponent ||
                 event.target === this._numberFieldMinusComponent ||
                 event.target === this._numberFieldPlusComponent) {

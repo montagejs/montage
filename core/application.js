@@ -1,5 +1,4 @@
 /**
- * This module defines the {Application} prototype.
  * @module core/application
  * @requires event/event-manager
  * @requires template
@@ -19,22 +18,24 @@ var Montage = require("./core").Montage,
 require("./dom");
 
 /**
- * The application is a singleton, it initially loads and oversees the running
- * program.
+ * The application is a singleton, it initially loads and oversees the running program.
  * It is also responsible for window management.
  * The behavior of the application can be modified by implementing a delegate
- * {Application#delegate}.
+ * {@link Application#delegate}.
  * It is also possible to subclass the application by specifying an
- * `applicationPrototype"` in `the package.json`.
+ * `applicationPrototype"` in the `package.json`.
+ *
  * @class Application
  * @extends Target
  */
-var Application = exports.Application = Target.specialize( /** @lends Application# */ {
+var Application = exports.Application = Target.specialize( /** @lends Application.prototype # */ {
 
     /**
      * Provides a reference to the Montage event manager used in the
      * application.
-     * @type {EventManager}
+     *
+     * @property {EventManager} value
+     * @default null
      */
     eventManager: {
         value: null
@@ -42,7 +43,8 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
 
     /**
      * Provides a reference to the parent application.
-     * @type {Application}
+     *
+     * @property {Application} value
      * @default null
      */
     parentApplication: {
@@ -51,11 +53,12 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
 
     /**
      * Provides a reference to the main application.
+     *
      * @type {Application}
      * @default this
      */
     mainApplication: {
-        get: function() {
+        get: function () {
             // JFD TODO: We should cache the result, would need to update it
             // when the window is detached or attached
             var mainApplication = this;
@@ -66,8 +69,11 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
         }
     },
 
-    // possible values: "z-order", "reverse-z-order", "z-order",
-    // "reverse-open-order"
+    /**
+     * possible values: "z-order", "reverse-z-order", "z-order", "reverse-open-order"
+     * @private
+     * @property {String} value
+     */
     _windowsSortOrder: {
         value: "reverse-z-order"
     },
@@ -76,11 +82,12 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
      * Determines the sort order for the Application.windows array.
      * Possible values are: z-order, reverse-z-order, open-order,
      * reverse-open-order
-     * @type {string}
+     *
+     * @returns {string}
      * @default "reverse-z-order"
      */
     windowsSortOrder: {
-        get: function() {
+        get: function () {
             if (this.parentApplication == null) {
                 return this._windowsSortOrder;
             } else {
@@ -88,7 +95,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             }
         },
 
-        set: function(value) {
+        set: function (value) {
             if (this.parentApplication == null) {
                 if (["z-order", "reverse-z-order", "z-order", "reverse-open-order"].indexOf(value) !== -1) {
                     this._windowsSortOrder = value;
@@ -104,10 +111,11 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
      * or any of its descendents, including the main window itself.
      * The list is kept sorted, the sort order is determined by the
      * `Application.windowsSortOrder` property
-     * @type {Array<MontageWindow>}
+     *
+     * @returns {Array<MontageWindow>}
      */
     windows: {
-        get: function() {
+        get: function () {
             var theWindow;
 
             if (this.parentApplication == null) {
@@ -134,10 +142,11 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     /**
      * Provides a reference to the MontageWindow associated with the
      * application.
-     * @type {MontageWindow}
+     *
+     * @returns {MontageWindow}
      */
     window: {
-        get: function() {
+        get: function () {
             if (!this._window && this == this.mainApplication) {
                 var theWindow = new MontageWindow();
                 theWindow.application = this;
@@ -147,7 +156,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             return this._window;
         },
 
-        set: function(value) {
+        set: function (value) {
             if (!this._window) {
                 this._window = value;
             }
@@ -165,12 +174,12 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
 
     /**
      * Returns the event manager for the specified window object.
-     * @method
+     * @function
      * @param {Window} aWindow The browser window whose event manager object should be returned.
      * @returns aWindow.defaultEventMananger
      */
     eventManagerForWindow: {
-        value: function(aWindow) {
+        value: function (aWindow) {
             return aWindow.defaultEventMananger;
         }
     },
@@ -181,7 +190,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
      * @default document.defaultView
      */
     focusWindow: {
-        get: function() {
+        get: function () {
             var windows = this.windows,
                 sortOrder = this.windowsSortOrder;
 
@@ -225,28 +234,29 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
      * The component URL must be in the same domain as the calling script. Can
      * be relative to the main application
      *
-     * @method
+     * @function
      * @param {string} component, the path to the reel component to open in the
      * new window.
      * @param {string} name, the component main class name.
      * @param {Object} parameters, the new window parameters (accept same
      * parameters than window.open).
+     *
      * @example
      * var app = document.application;
      * app.openWindow("docs/help.reel", "Help", "{width:300, height:500}");
      */
     openWindow: {
-        value: function(component, name, parameters) {
+        value: function (component, name, parameters) {
             var thisRef = this,
                 childWindow = new MontageWindow(),
                 childApplication,
                 event,
                 windowParams = {
                     location: false,
-//                  height: <pixels>,
-//                  width: <pixels>,
-//                  left: <pixels>,
-//                  top: <pixels>,
+                    // height: <pixels>,
+                    // width: <pixels>,
+                    // left: <pixels>,
+                    // top: <pixels>,
                     menubar: false,
                     resizable: true,
                     scrollbars: true,
@@ -259,7 +269,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 module: component,
                 name: name,
                 parent: window,
-                callback: function(aWindow, aComponent) {
+                callback: function (aWindow, aComponent) {
                     var sortOrder;
 
                     // Finishing the window object initialization and let the consumer knows the window is loaded and ready
@@ -319,7 +329,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 }
             }
 
-            self.mr.loadPackage({name: "montage"}).then(function(require) {
+            self.mr.loadPackage({name: "montage"}).then(function (require) {
                 var newWindow = window.open(require.location + "window-loader/index.html", "_blank", stringParamaters);
                 newWindow.loadInfo = loadInfo;
             }).done();
@@ -332,11 +342,11 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
      * Attach a window to a parent application.
      * When a window open, it is automatically attached to the Application used
      * to create the window.
-     * @method
+     * @function
      * @param {MontageWindow} window to detach.
      */
     attachWindow: {
-        value: function(montageWindow) {
+        value: function (montageWindow) {
             var parentApplicaton = montageWindow.application.parentApplication,
                 sortOrder;
 
@@ -364,11 +374,11 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
      * Detach the window from its parent application.
      * If no montageWindow is specified, the current application's windows will
      * be detached.
-     * @method
+     * @function
      * @param {MontageWindow} window to detach.
      */
     detachWindow: {
-        value: function(montageWindow) {
+        value: function (montageWindow) {
             var index,
                 parentApplicaton,
                 windows = this.windows;
@@ -404,7 +414,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     },
 
     _load: {
-        value: function(applicationRequire, callback) {
+        value: function (applicationRequire, callback) {
             var rootComponent,
                 self = this;
 
@@ -412,12 +422,12 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             exports.application = self;
 
             require.async("ui/component")
-            .then(function(exports) {
+            .then(function (exports) {
                 rootComponent = exports.__root__;
                 rootComponent.element = document;
 
                 return require("./template").instantiateDocument(window.document, applicationRequire)
-                .then(function(part) {
+                .then(function (part) {
                     self.callDelegateMethod("willFinishLoading", self);
                     rootComponent.needsDraw = true;
                     if (callback) {
@@ -429,17 +439,34 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
         }
     },
 
-    // @private
+    /**
+     * @private
+     */
     _alertPopup: {value: null, enumerable: false},
+    /**
+     * @private
+     */
     _confirmPopup: {value: null, enumerable: false},
+    /**
+     * @private
+     */
     _notifyPopup: {value: null, enumerable: false},
+    /**
+     * @private
+     */
     _zIndex: {value: null},
 
-    _isSystemPopup: {value: function(type) {
+    /**
+     * @private
+     */
+    _isSystemPopup: {value: function (type) {
         return (type === 'alert' || type === 'confirm' || type === 'notify');
     }},
 
-    _createPopupSlot: {value: function(zIndex) {
+    /**
+     * @private
+     */
+    _createPopupSlot: {value: function (zIndex) {
         var slotEl = document.createElement('div');
         document.body.appendChild(slotEl);
         slotEl.style.zIndex = zIndex;
@@ -452,11 +479,11 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
     }},
 
     getPopupSlot: {
-        value: function(type, content, callback) {
+        value: function (type, content, callback) {
 
             var self = this;
             require.async("ui/slot.reel/slot")
-            .then(function(exports) {
+            .then(function (exports) {
                 Slot = Slot || exports.Slot;
                 type = type || "custom";
                 var isSystemPopup = self._isSystemPopup(type), zIndex, slotEl, popupSlot;
@@ -501,7 +528,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
         }
     },
 
-    returnPopupSlot: {value: function(type) {
+    returnPopupSlot: {value: function (type) {
         var self = this;
         if(self.popupSlots && self.popupSlots[type]) {
             var popupSlot = self.popupSlots[type];
@@ -512,9 +539,11 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
 
     }},
 
-    // private
+    /**
+     * @private
+     */
     _getActivePopupSlots: {
-        value: function() {
+        value: function () {
             var arr = [];
             if(this.popupSlots) {
                 var keys = Object.keys(this.popupSlots);
@@ -532,6 +561,5 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             return arr;
         }
     }
-
 });
 

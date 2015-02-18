@@ -20,7 +20,7 @@ var FUNCTION = "function";
  * @function external:Object.getPropertyDescriptor
 */
 Object.defineProperty(Object, "getPropertyDescriptor", {
-    value: function(anObject, propertyName) {
+    value: function (anObject, propertyName) {
         var current = anObject,
             currentDescriptor;
 
@@ -45,7 +45,7 @@ Object.defineProperty(Object, "getPropertyDescriptor", {
  * external:Object.getPrototypeAndDescriptorDefiningProperty
  */
 Object.defineProperty(Object, "getPrototypeAndDescriptorDefiningProperty", {
-    value: function(anObject, propertyName) {
+    value: function (anObject, propertyName) {
         var current = anObject,
             currentDescriptor;
         if (propertyName) {
@@ -72,7 +72,7 @@ Object.defineProperty(Object, "getPrototypeAndDescriptorDefiningProperty", {
  * @returns this
  */
 Object.defineProperty(Object.prototype, "clear", {
-    value: function() {
+    value: function () {
         var keys = Object.keys(this),
             i = keys.length;
 

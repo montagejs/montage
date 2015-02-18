@@ -35,7 +35,7 @@ exports.ComponentNoelement = Component.specialize( {
     hasTemplate: {value: false},
 
     deserializedFromSerialization: {
-        value: function() {
+        value: function () {
             var element = document.createElement("div");
             this.setElementWithParentComponent(element, this.parentOfNoElement);
             this.needsDraw = true;
@@ -43,7 +43,7 @@ exports.ComponentNoelement = Component.specialize( {
     },
 
     draw: {
-        value: function() {
+        value: function () {
             this.element.textContent = this.value;
         }
     }

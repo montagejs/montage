@@ -1,6 +1,11 @@
 /*global require, exports, document, Error*/
-var Montage = require("../../core/core").Montage,
-    Component = require("../component").Component,
+
+/**
+ * @module montage/ui/base/abstract-control
+ * @requires montage/ui/component
+ * @requires collections/dict
+ */
+var Component = require("../component").Component,
     Dict = require("collections/dict");
 
 /**
@@ -8,14 +13,32 @@ var Montage = require("../../core/core").Montage,
  * @classdesc A basis for common behavior of control components.
  * @extends Component
  */
-exports.AbstractControl = Component.specialize( /** @lends AbstractControl# */ {
+exports.AbstractControl = Component.specialize( /** @lends AbstractControl.prototype # */ {
 
+    /**
+     * Dispatched when the button is activated through a mouse click, finger
+     * tap, or when focused and the spacebar is pressed.
+     *
+     * @event AbstractControl#action
+     * @type {Event}
+     * @property {Dict} detail - pass custom data in this property
+     */
+
+    /**
+     * @function
+     * @fires AbstractControl#action
+     */
     dispatchActionEvent: {
-        value: function() {
+        value: function () {
             return this.dispatchEvent(this.createActionEvent());
         }
     },
 
+    /**
+     * @private
+     * @property {Dict} value
+     * @default null
+     */
     _detail: {
         value: null
     },
@@ -25,11 +48,11 @@ exports.AbstractControl = Component.specialize( /** @lends AbstractControl# */ {
      *
      * Example to toggle the complete class: `"detail.get('selectedItem')" : {
      * "<-" : "@repetition:iteration.object"}`
-     * @type {Dict}
-     * @default null
+     *
+     * @returns {Dict}
      */
     detail: {
-        get: function() {
+        get: function () {
             if (this._detail == null) {
                 this._detail = new Dict();
             }
@@ -37,8 +60,15 @@ exports.AbstractControl = Component.specialize( /** @lends AbstractControl# */ {
         }
     },
 
+    /**
+     * Overrides {@link Component#createActionEvent}
+     * by adding {@link AbstractControl#detail} custom data
+     *
+     * @function
+     * @returns {AbstractControl#action}
+     */
     createActionEvent: {
-        value: function() {
+        value: function () {
             var actionEvent = document.createEvent("CustomEvent"),
                 eventDetail;
 

@@ -1,3 +1,6 @@
+/**
+ * @module "montage/ui/flow.reel"
+ */
 var Montage = require("../../core/core").Montage,
     Component = require("../component").Component,
     observeProperty = require("frb/observers").observeProperty,
@@ -10,8 +13,10 @@ var deprecationWarning = require("../../core/deprecate").deprecationWarning;
  * @class Flow
  * @extends Component
  */
-var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
-
+var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
+    /**
+     * @constructs Flow
+     */
     constructor: {
         value: function Flow() {
             this.super();
@@ -1167,7 +1172,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     },
 
     _determineCssPrefixedProperties: {
-        value: function() {
+        value: function () {
             if("webkitTransform" in this.element.style) {
                 this._transform = "webkitTransform";
                 this._transformCss = "-webkit-transform";
@@ -1773,7 +1778,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     // TODO remove, will be obsoleted by inner template, provided we have a way
     // to redraft the innter template with a wrapper node.
     templateDidLoad: {
-        value: function() {
+        value: function () {
             var self = this;
             // TODO consider a two-way binding on needsDraw
             this._repetition.willDraw = function () {
@@ -2139,7 +2144,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow# */ {
     },
 
     serializeSelf: {
-        value: function(serializer) {
+        value: function (serializer) {
             serializer.setAllProperties();
 
             // TODO: we need a way to add nodes to the serialization... we only

@@ -43,9 +43,9 @@ var stripPP = function stripPrettyPrintting(str) {
     return str.replace(/\n\s*/g, "");
 };
 
-TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, function(testPage) {
+TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, function (testPage) {
     var test;
-    beforeEach(function() {
+    beforeEach(function () {
         test = testPage.test;
     });
 
@@ -56,13 +56,13 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
 
         deserializer.init(
             serializationString, require);
-        deserializer.deserialize().then(function(objs) {
+        deserializer.deserialize().then(function (objs) {
             latch = true;
             objects = objs;
         });
 
-        waitsFor(function() { return latch; });
-        runs(function() {
+        waitsFor(function () { return latch; });
+        runs(function () {
             callback(objects);
         });
     }
@@ -71,25 +71,25 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
         var serializer = new Serializer().initWithRequire(require),
             objects;
 
-        testDeserializer(object, function(o) {
+        testDeserializer(object, function (o) {
             objects = o;
             waits(10); // wait for messages to be resolved
-            runs(function() {
+            runs(function () {
                 var serialization = serializer.serializeObject(objects.target);
                 callback(stripPP(serialization));
             });
         });
     }
 
-    describe("core/localizer/serialization-spec", function() {
-        describe("Message", function() {
-            it("localizes the message", function() {
+    describe("core/localizer/serialization-spec", function () {
+        describe("Message", function () {
+            it("localizes the message", function () {
                 return test.message.localized.then(function (localized) {
                     expect(localized).toBe("Welcome to the site, World");
                 });
             });
 
-            it("does not serialize the default localizer", function() {
+            it("does not serialize the default localizer", function () {
                 testSerializer({
                     target: {
                         prototype: "montage/core/localizer[Message]",
@@ -97,12 +97,12 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
                             key: "hello"
                         }
                     }
-                }, function(serialization) {
+                }, function (serialization) {
                     expect(serialization).not.toContain("localizer");
                 });
             });
 
-            it("serializes an non-default localizer", function() {
+            it("serializes an non-default localizer", function () {
                 var serialization = {
                         localizer: {
                             prototype: "montage/core/localizer",
@@ -137,32 +137,32 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
                         }
                     };
 
-                testSerializer(serialization, function(serializationString) {
+                testSerializer(serialization, function (serializationString) {
                     expect(JSON.parse(serializationString))
                     .toEqual(expectedSerialization);
                 });
             });
         });
 
-        describe("localizations unit", function() {
+        describe("localizations unit", function () {
 
-            it("requires a key", function() {
+            it("requires a key", function () {
                 expect(test.missingKey.value).toBe("Pass");
             });
 
-            it("localizes a string", function() {
+            it("localizes a string", function () {
                 expect(test.basic.value).toBe("Pass.");
             });
 
-            it("localizes a string and uses available resources", function() {
+            it("localizes a string and uses available resources", function () {
                 expect(test.resources.value).toBe("Hello");
             });
 
-            it("creates a binding from the localizer to the object", function() {
+            it("creates a binding from the localizer to the object", function () {
                 var iframeRequire = testPage.iframe.contentWindow.mr;
 
                 return iframeRequire.async("montage/core/bindings")
-                .then(function(exports) {
+                .then(function (exports) {
                     var iframeBindings = exports.Bindings,
                         bindings;
 
@@ -172,19 +172,19 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
                     expect(bindings.value).toBeDefined();
 
                     test.bindingInput.value = "Earth";
-                    waitsFor(function() { return test.binding.value !== "Hello World"; });
-                    runs(function() {
+                    waitsFor(function () { return test.binding.value !== "Hello World"; });
+                    runs(function () {
                         expect(test.binding.value).toBe("Hello Earth");
                     });
                 });
             });
 
-            it("can localize two properties", function() {
+            it("can localize two properties", function () {
                 expect(test.twoProperties.value).toBe("On");
                 expect(test.twoProperties.secondValue).toBe("Off");
             });
 
-            it("accepts a binding for the default message", function() {
+            it("accepts a binding for the default message", function () {
                 testDeserializer({
                     source: {
                         value: {value: "Hello, {name}"}
@@ -201,25 +201,25 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
                             }
                         }
                     }
-                }, function(objects) {
-                    waitsFor(function() { return objects.target.value !== ""; });
-                    runs(function() {
+                }, function (objects) {
+                    waitsFor(function () { return objects.target.value !== ""; });
+                    runs(function () {
                         expect(objects.target.value).toBe("Hello, someone");
                         objects.source.value = "Goodbye, {name}";
 
-                        waitsFor(function() { return objects.target.value !== "Hello, someone"; });
-                        runs(function() {
+                        waitsFor(function () { return objects.target.value !== "Hello, someone"; });
+                        runs(function () {
                             expect(objects.target.value).toBe("Goodbye, someone");
                         });
                     });
                 });
             });
 
-            describe("serializer", function() {
+            describe("serializer", function () {
                 var objects,
                     serializer;
 
-                beforeEach(function() {
+                beforeEach(function () {
                     testDeserializer({
                         source: {
                             value: {x: "Hello, {name}"}
@@ -240,14 +240,14 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
                                 }
                             }
                         }
-                    }, function(o) {
+                    }, function (o) {
                         objects = o;
                     });
 
                     serializer = new Serializer().initWithRequire(require);
                 });
 
-                it("doesn't create a localizations block when there are none", function() {
+                it("doesn't create a localizations block when there are none", function () {
                     testSerializer({
                         source: {
                             value: {value: "Hello", identifier: "source"}
@@ -258,12 +258,12 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
                                 "test": {"<-": "@source.value"}
                             }
                         }
-                    }, function(serialization) {
+                    }, function (serialization) {
                         expect(serialization).not.toContain("localizations");
                     });
                 });
 
-                it("serializes simple localization strings", function() {
+                it("serializes simple localization strings", function () {
                     var serialization = {
                             target: {
                                 prototype: "montage",
@@ -290,13 +290,13 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
                             }
                         };
 
-                    testSerializer(serialization, function(serializationString) {
+                    testSerializer(serialization, function (serializationString) {
                         expect(JSON.parse(serializationString))
                         .toEqual(expectedSerialization);
                     });
                 });
 
-                it("serializes default message binding", function() {
+                it("serializes default message binding", function () {
                     var serialization = {
                             source: {
                                 value: {
@@ -338,13 +338,13 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
                             "source": {}
                         };
 
-                    testSerializer(serialization, function(serializationString) {
+                    testSerializer(serialization, function (serializationString) {
                         expect(JSON.parse(serializationString))
                         .toEqual(expectedSerialization);
                     });
                 });
 
-                it("serializes data binding", function() {
+                it("serializes data binding", function () {
                     var serialization = {
                             source: {
                                 value: {
@@ -386,7 +386,7 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
                             "source": {}
                         };
 
-                    testSerializer(serialization, function(serializationString) {
+                    testSerializer(serialization, function (serializationString) {
                         expect(JSON.parse(serializationString))
                         .toEqual(expectedSerialization);
                     });

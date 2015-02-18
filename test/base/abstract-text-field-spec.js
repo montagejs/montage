@@ -37,7 +37,7 @@ describe("test/base/abstract-text-field-spec", function () {
                 aTextField.enterDocument(true);
             });
 
-            it("should be the value of the element when input is fired", function() {
+            it("should be the value of the element when input is fired", function () {
                 aTextField.element.value = "A text";
 
                 var anEvent = document.createEvent("CustomEvent");
@@ -47,7 +47,7 @@ describe("test/base/abstract-text-field-spec", function () {
                 expect(aTextField.value).toBe("A text");
             });
 
-            it("should be the value of the element when change is fired", function() {
+            it("should be the value of the element when change is fired", function () {
                 aTextField.element.value = "A text";
 
                 var anEvent = document.createEvent("CustomEvent");
@@ -57,13 +57,13 @@ describe("test/base/abstract-text-field-spec", function () {
                 expect(aTextField.value).toBe("A text");
             });
 
-            it("should set value when field not selected", function() {
+            it("should set value when field not selected", function () {
                 aTextField._value = "initial";
                 aTextField.value = "updated";
                 expect(aTextField.value).toBe("updated");
             });
 
-            it("should not set value when field selected", function() {
+            it("should not set value when field selected", function () {
                 aTextField._value = "initial";
                 aTextField._hasFocus = true;
                 aTextField.value = "updated";
@@ -78,8 +78,8 @@ describe("test/base/abstract-text-field-spec", function () {
                 aTextField.prepareForActivationEvents();
             });
 
-            it("should not dispatch an action event when enabled is false and KeyComposer fires a keyPress", function() {
-                var callback = jasmine.createSpy().andCallFake(function(event) {
+            it("should not dispatch an action event when enabled is false and KeyComposer fires a keyPress", function () {
+                var callback = jasmine.createSpy().andCallFake(function (event) {
                     expect(event.type).toEqual("action");
                 }),
                 anEvent = MockDOM.keyPressEvent("enter", aTextField.element);
@@ -92,7 +92,7 @@ describe("test/base/abstract-text-field-spec", function () {
                 expect(callback).not.toHaveBeenCalled();
             });
 
-            it("should add the corresponding class name to classList when enabled is false", function() {
+            it("should add the corresponding class name to classList when enabled is false", function () {
                 aTextField.enabled = false;
 
                 expect(aTextField.classList.contains("montage--disabled")).toBe(true);
@@ -156,7 +156,7 @@ describe("test/base/abstract-text-field-spec", function () {
             aTextField.draw();
             expect(aTextField.element.value).toBe("42");
         });
-        it("should display a 0 as 0 in the element", function() {
+        it("should display a 0 as 0 in the element", function () {
             aTextField.value = 0;
             aTextField.draw();
             expect(aTextField.element.value).toEqual("0");
@@ -196,25 +196,25 @@ describe("test/base/abstract-text-field-spec", function () {
             aTextField = new TextField();
             anElement = MockDOM.element();
             listener = {
-                handleEvent: function() {}
+                handleEvent: function () {}
             };
         });
 
-        it("should listen for element input after enterDocument", function() {
+        it("should listen for element input after enterDocument", function () {
             aTextField.element = anElement;
             aTextField.enterDocument(true);
 
             expect(aTextField.element.hasEventListener("input", aTextField)).toBe(true);
         });
 
-        it("should listen for element change after enterDocument", function() {
+        it("should listen for element change after enterDocument", function () {
             aTextField.element = anElement;
             aTextField.enterDocument(true);
 
             expect(aTextField.element.hasEventListener("change", aTextField)).toBe(true);
         });
 
-        it("should listen for keyPress only after prepareForActivationEvents", function() {
+        it("should listen for keyPress only after prepareForActivationEvents", function () {
             var listeners,
                 em = aTextField.eventManager;
 
@@ -233,8 +233,8 @@ describe("test/base/abstract-text-field-spec", function () {
                 aTextField.prepareForActivationEvents();
             });
 
-            it("should fire an 'action' event when the KeyComposer fires a keyPress", function() {
-                var callback = jasmine.createSpy().andCallFake(function(event) {
+            it("should fire an 'action' event when the KeyComposer fires a keyPress", function () {
+                var callback = jasmine.createSpy().andCallFake(function (event) {
                     expect(event.type).toEqual("action");
                 }),
                 anEvent = MockDOM.keyPressEvent("enter", aTextField.element);
@@ -246,8 +246,8 @@ describe("test/base/abstract-text-field-spec", function () {
                 expect(callback).toHaveBeenCalled();
             });
 
-            it("should fire an 'action' event with the contents of the detail property", function() {
-                var callback = jasmine.createSpy().andCallFake(function(event) {
+            it("should fire an 'action' event with the contents of the detail property", function () {
+                var callback = jasmine.createSpy().andCallFake(function (event) {
                     expect(event.detail.get("foo")).toEqual("bar");
                 }),
                 anEvent = MockDOM.keyPressEvent("enter", aTextField.element);
@@ -279,24 +279,24 @@ describe("test/base/abstract-text-field-spec", function () {
                 aTextFieldDelegate.shouldBeginEditing = jasmine.createSpy();
             });
 
-            it("should be called when acceptsActiveTarget consulted ", function() {
+            it("should be called when acceptsActiveTarget consulted ", function () {
                 var accepts = aTextField.acceptsActiveTarget;
                 expect(aTextFieldDelegate.shouldBeginEditing).toHaveBeenCalled();
             });
 
-            it("should be ignored if it returns undefined", function() {
+            it("should be ignored if it returns undefined", function () {
                 aTextFieldDelegate.shouldBeginEditing.andReturn(void 0);
                 var accepts = aTextField.acceptsActiveTarget;
                 expect(accepts).toBeTruthy();
             });
 
-            it("should be able to return false", function() {
+            it("should be able to return false", function () {
                 aTextFieldDelegate.shouldBeginEditing.andReturn(false);
                 var accepts = aTextField.acceptsActiveTarget;
                 expect(accepts).toBeFalsy();
             });
 
-            it("should be able to return true", function() {
+            it("should be able to return true", function () {
                 aTextFieldDelegate.shouldBeginEditing.andReturn(true);
                 var accepts = aTextField.acceptsActiveTarget;
                 expect(accepts).toBeTruthy();
@@ -308,7 +308,7 @@ describe("test/base/abstract-text-field-spec", function () {
                 aTextFieldDelegate.didChange = jasmine.createSpy();
             });
 
-            it("should be ", function() {
+            it("should be ", function () {
                 aTextField.handleChange();
                 expect(aTextFieldDelegate.didChange).toHaveBeenCalled();
             });
@@ -319,7 +319,7 @@ describe("test/base/abstract-text-field-spec", function () {
                 aTextFieldDelegate.didBeginEditing = jasmine.createSpy();
             });
 
-            it("should be called when textfield is focused", function() {
+            it("should be called when textfield is focused", function () {
                 aTextField.willBecomeActiveTarget();
                 expect(aTextFieldDelegate.didBeginEditing).toHaveBeenCalled();
             });
@@ -331,24 +331,24 @@ describe("test/base/abstract-text-field-spec", function () {
                 aTextField.willBecomeActiveTarget();
             });
 
-            it("should be called when textfield receives blur", function() {
+            it("should be called when textfield receives blur", function () {
                 aTextField.surrendersActiveTarget();
                 expect(aTextFieldDelegate.shouldEndEditing).toHaveBeenCalled();
             });
 
-            it("should be ignored if it returns undefined", function() {
+            it("should be ignored if it returns undefined", function () {
                 aTextFieldDelegate.shouldEndEditing.andReturn(void 0);
                 aTextField.surrendersActiveTarget();
                 expect(aTextField.hasFocus).toBeFalsy();
             });
 
-            it("should be prevent textfield being unfocused if it returns false", function() {
+            it("should be prevent textfield being unfocused if it returns false", function () {
                 aTextFieldDelegate.shouldEndEditing.andReturn(false);
                 aTextField.surrendersActiveTarget();
                 expect(aTextField.hasFocus).toBeTruthy();
             });
 
-            it("should not be prevent textfield being unfocused if it returns true", function() {
+            it("should not be prevent textfield being unfocused if it returns true", function () {
                 aTextFieldDelegate.shouldEndEditing.andReturn(true);
                 aTextField.surrendersActiveTarget();
                 expect(aTextField.hasFocus).toBeFalsy();
@@ -361,7 +361,7 @@ describe("test/base/abstract-text-field-spec", function () {
                 aTextFieldDelegate.didEndEditing = jasmine.createSpy();
             });
 
-            it("should be called when textfield receives blur", function() {
+            it("should be called when textfield receives blur", function () {
                 aTextField.surrendersActiveTarget();
                 expect(aTextFieldDelegate.didEndEditing).toHaveBeenCalled();
             });

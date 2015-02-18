@@ -6,7 +6,7 @@ var DelegateMethods = Component.specialize( {
     deserializedFromTemplateCount: {value: 0},
 
     deserializedFromTemplate: {
-        value: function() {
+        value: function () {
             this.deserializedFromTemplateCount++;
         }
     },
@@ -14,7 +14,7 @@ var DelegateMethods = Component.specialize( {
     templateDidLoadCount: {value: 0},
 
     templateDidLoad: {
-        value: function() {
+        value: function () {
             this.templateDidLoadCount++;
         }
     }

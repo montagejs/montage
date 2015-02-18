@@ -17,7 +17,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     initWithBuilderAndLabelerAndRequireAndUnits: {
-        value: function(builder, labeler, require, units) {
+        value: function (builder, labeler, require, units) {
             Visitor.call(this, builder, labeler);
 
             this._require = require;
@@ -29,7 +29,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     getTypeOf: {
-        value: function(object) {
+        value: function (object) {
             // Module and Alias are MontageObject's too so they need to be
             // tested for before.
             if (object.isModuleReference) {
@@ -47,13 +47,13 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     visitMontageReference: {
-        value: function(malker, object, name) {
+        value: function (malker, object, name) {
             this.builder.top.setProperty(name, object.reference);
         }
     },
 
     visitElement: {
-        value: function(malker, element, name) {
+        value: function (malker, element, name) {
             var elementReference,
                 id;
 
@@ -70,7 +70,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     visitModule: {
-        value: function(malker, reference, name) {
+        value: function (malker, reference, name) {
             var referenceReference,
                 moduleId;
 
@@ -89,7 +89,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     visitAlias: {
-        value: function(malker, object) {
+        value: function (malker, object) {
             var label = this.labeler.getTemplatePropertyLabel(object);
 
             var builderObject = this.builder.createCustomObject();
@@ -100,7 +100,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     visitMontageObject: {
-        value: function(malker, object, name) {
+        value: function (malker, object, name) {
             if (this.isObjectSerialized(object)) {
                 this.serializeReferenceToMontageObject(malker, object, name);
             } else {
@@ -110,7 +110,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     handleMontageObject: {
-        value: function(malker, object, name) {
+        value: function (malker, object, name) {
             var builderObject = this.builder.createCustomObject(),
                 substituteObject;
 
@@ -128,7 +128,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     serializeReferenceToMontageObject: {
-        value: function(malker, object, name) {
+        value: function (malker, object, name) {
             var label = this.labeler.getObjectLabel(object),
                 reference = this.builder.createObjectReference(label);
 
@@ -137,7 +137,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     serializeSubstituteObject: {
-        value: function(malker, object, name, builderObject, substituteObject) {
+        value: function (malker, object, name, builderObject, substituteObject) {
             var label,
                 oldLabel,
                 newLabel,
@@ -198,7 +198,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     serializeMontageObject: {
-        value: function(malker, object, builderObject) {
+        value: function (malker, object, builderObject) {
             var selfSerializer,
                 substituteObject,
                 propertiesBuilderObject = this.builder.createObjectLiteral();
@@ -233,7 +233,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     setObjectType: {
-        value: function(object, builderObject) {
+        value: function (object, builderObject) {
             var isInstance = Montage.getInfoForObject(object).isInstance,
                 locationId = this.getObjectLocationId(object),
                 locationIdBuilderObject = this.builder.createString(locationId);
@@ -247,7 +247,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     getObjectModuleId: {
-        value: function(object) {
+        value: function (object) {
             var objectInfo = Montage.getInfoForObject(object);
 
             return this._require.identify(objectInfo.moduleId,
@@ -256,7 +256,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     getObjectLocationId: {
-        value: function(object) {
+        value: function (object) {
             var moduleId = this.getObjectModuleId(object),
                 defaultObjectName,
                 objectInfo = Montage.getInfoForObject(object),
@@ -276,7 +276,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
      * Expected object at the top of the stack: CustomObject
      */
     setObjectProperties: {
-        value: function(malker, object) {
+        value: function (malker, object) {
             var propertiesSerializer,
                 propertiesObject;
 
@@ -299,7 +299,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
      * Expected object at the top of the stack: ObjectLiteral
      */
     setSerializableObjectProperties: {
-        value: function(malker, object) {
+        value: function (malker, object) {
             var type,
                 propertyName,
                 propertyNames = Montage.getSerializablePropertyNames(object),
@@ -314,7 +314,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     hackIsReferenceAllowedForValue: {
-        value: function(value) {
+        value: function (value) {
             // Only serialize as a reference values that are non-null objects,
             // we don't support references to non-objects and elements.
             // There's nothing in the serialization that prevents us to store
@@ -332,7 +332,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
      * Expected object at the top of the stack: ObjectLiteral
      */
     setProperty: {
-        value: function(malker, propertyName, value, type) {
+        value: function (malker, propertyName, value, type) {
             var label;
 
             if (type === "reference" && this.hackIsReferenceAllowedForValue(value)) {
@@ -346,7 +346,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     setObjectCustomUnits: {
-        value: function(malker, object) {
+        value: function (malker, object) {
             for (var unitName in this._units) {
                 this.setObjectCustomUnit(malker, object, unitName);
             }
@@ -354,7 +354,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     setObjectCustomUnit: {
-        value: function(malker, object, unitName) {
+        value: function (malker, object, unitName) {
             var unit = this._units[unitName],
                 value,
                 unitSerializer;
@@ -374,7 +374,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     getExternalObjects: {
-        value: function() {
+        value: function () {
             var externalObjects = {},
                 labels = this.builder.getExternalReferences(),
                 label;
@@ -388,7 +388,7 @@ var MontageVisitor = Montage.specialize.call(Visitor, {
     },
 
     getExternalElements: {
-        value: function() {
+        value: function () {
             return this._elements;
         }
     }

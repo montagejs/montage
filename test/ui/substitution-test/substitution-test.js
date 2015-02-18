@@ -3,7 +3,7 @@ var TestController = require("montage-testing/test-controller").TestController;
 
 exports.SubstitutionTest = TestController.specialize( {
     templateDidLoad: {
-        value: function(documentPart) {
+        value: function (documentPart) {
             this.templateObjects = documentPart.objects;
         }
     }

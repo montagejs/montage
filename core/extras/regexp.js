@@ -19,7 +19,7 @@
 if (!RegExp.isRegExp) {
     var toString = Object.prototype.toString;
     Object.defineProperty(RegExp, "isRegExp", {
-        value: function(obj) {
+        value: function (obj) {
             return toString.call(obj) === "[object RegExp]";
         },
         writable: true,

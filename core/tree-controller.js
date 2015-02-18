@@ -1,3 +1,6 @@
+/**
+ * @module montage/core/tree-controller
+ */
 var Montage = require("./core").Montage;
 var Map = require("collections/map");
 var WeakMap = require("collections/weak-map");
@@ -14,7 +17,7 @@ var Object = require("collections/shim-object");
  * Bind a root node from the data model to a tree controller and bind the tree
  * controller's iterations to a content controller for a repetition.
  */
-var Node = exports.TreeControllerNode = Montage.specialize( /** @lends TreeControllerNode# */ {
+var Node = exports.TreeControllerNode = Montage.specialize( /** @lends TreeControllerNode.prototype # */ {
 
     /**
      * The only meaningful user-defined state for this tree view, whether the
@@ -169,12 +172,14 @@ var Node = exports.TreeControllerNode = Montage.specialize( /** @lends TreeContr
     },
 
     /**
-     * Creates a tree controller node.
+     * @constructs TreeControllerNode
+     * @param controller
      * @param content
-     * @param {string} childenPath
      * @param {Node} parent
      * @param {number} depth
-     * @param {[Number, Node]|null} entry
+     * @param {?Array} entry
+     * @param {Number} entry[0]
+     * @param {Node} entry[1]
      */
     constructor: {
         value: function TreeControllerNode(controller, parent, content, depth, entry) {
@@ -312,8 +317,9 @@ var Node = exports.TreeControllerNode = Montage.specialize( /** @lends TreeContr
 
 /**
  * @class TreeController
+ * @extends Montage
  */
-exports.TreeController = Montage.specialize( /** @lends TreeController# */ {
+exports.TreeController = Montage.specialize( /** @lends TreeController.prototype # */ {
 
     /**
      * The input of a tree controller, an object to serve at the root of the
@@ -463,7 +469,7 @@ exports.TreeController = Montage.specialize( /** @lends TreeController# */ {
      * `nodeForContent <- nodes{[content, this]}.toMap()`
      */
     findNodeByContent: {
-        value: function(content, equals) {
+        value: function (content, equals) {
             if (this.root) {
                 return  this.root.findNodeByContent(content, equals);
             }
@@ -478,7 +484,7 @@ exports.TreeController = Montage.specialize( /** @lends TreeController# */ {
      * The callback is called before continuing the walk on its children.
      */
     preOrderWalk: {
-        value: function(callback) {
+        value: function (callback) {
             if (this.root) {
                 this.root.preOrderWalk(callback);
             }
@@ -490,7 +496,7 @@ exports.TreeController = Montage.specialize( /** @lends TreeController# */ {
      * The callback is called after continuing the walk on its children.
      */
     postOrderWalk: {
-        value: function(callback) {
+        value: function (callback) {
             if (this.root) {
                 this.root.postOrderWalk(callback);
             }

@@ -70,10 +70,10 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
      * @type {boolean}
      */
     checked: {
-        set: function(value) {
+        set: function (value) {
             this._checked = value;
         },
-        get: function() {
+        get: function () {
             return this._checked;
         }
     },
@@ -100,14 +100,14 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
      * @type {RadioButtonController}
      */
     radioButtonController: {
-        set: function(value) {
+        set: function (value) {
             if (this._radioButtonController) {
                 this._radioButtonController.unregisterRadioButton(this);
             }
             this._radioButtonController = value;
             value.registerRadioButton(this);
         },
-        get: function() {
+        get: function () {
             return this._radioButtonController;
         }
     },
@@ -117,7 +117,7 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
     },
 
     enterDocument: {
-        value: function(firstTime) {
+        value: function (firstTime) {
             if (firstTime) {
                 this.element.setAttribute("role", "radio");
                 this._keyComposer.addEventListener("keyPress", this, false);
@@ -127,7 +127,7 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
     },
 
     draw: {
-        value: function() {
+        value: function () {
             if (this.checked) {
                 this.element.setAttribute("aria-checked", "true");
             } else {
@@ -137,7 +137,7 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
     },
 
     handlePressStart: {
-        value: function(event) {
+        value: function (event) {
             this.active = true;
 
             if (event.touch) {
@@ -149,7 +149,7 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
     },
 
     check: {
-        value: function() {
+        value: function () {
             if (!this.enabled || this.checked) {
                 return;
             }
@@ -163,7 +163,7 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
      Handle press event from press composer
      */
     handlePress: {
-        value: function(/* event */) {
+        value: function (/* event */) {
             this.active = false;
             this.check();
         }
@@ -174,27 +174,27 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
      @private
      */
     handlePressCancel: {
-        value: function(/* event */) {
+        value: function (/* event */) {
             this.active = false;
             document.removeEventListener("touchmove", this, false);
         }
     },
 
     handleKeyPress: {
-        value: function() {
+        value: function () {
             this.active = true;
         }
     },
 
     handleKeyRelease: {
-        value: function() {
+        value: function () {
             this.active = false;
             this.check();
         }
     },
 
     prepareForActivationEvents: {
-        value: function() {
+        value: function () {
             this._pressComposer.addEventListener("pressStart", this, false);
             this._pressComposer.addEventListener("press", this, false);
             this._pressComposer.addEventListener("pressCancel", this, false);
@@ -202,7 +202,7 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
     },
 
     activate: {
-        value: function() {
+        value: function () {
             this.check();
         }
     }

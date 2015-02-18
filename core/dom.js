@@ -16,7 +16,7 @@ var Point = require("./geometry/point").Point,
  * @param {number} string
  */
 Object.defineProperty(ElementPrototype, "set", {
-    value: function(aPropertyPath, value, currentIndex) {
+    value: function (aPropertyPath, value, currentIndex) {
         var dotIndex = aPropertyPath.indexOf(".", currentIndex),
             result,
             currentKeyComponent,
@@ -55,11 +55,11 @@ Object.defineProperty(ElementPrototype, "set", {
     enumerable: false
 });
 
-NodePrototype.get = function(key) {
+NodePrototype.get = function (key) {
     return this.getAttribute(key) || this[key];
 };
 
-Object.getPrototypeOf(document).addRule = function(selectorText, definition) {
+Object.getPrototypeOf(document).addRule = function (selectorText, definition) {
     var styleSheet, cssRule;
     if ((styleSheet = document.styleSheets[0]) == null) {
         var style = document.createElement("style");
@@ -74,7 +74,7 @@ Object.getPrototypeOf(document).addRule = function(selectorText, definition) {
     }
 };
 
-Object.getPrototypeOf(document).getRule = function(ruleKey, styleSheet) {
+Object.getPrototypeOf(document).getRule = function (ruleKey, styleSheet) {
     var cssRule;
     if (styleSheet.cssRules) {
         for (var j = 0; (cssRule = styleSheet.cssRules[j]); j++) {
@@ -170,14 +170,14 @@ if (typeof Element !== "undefined") {
 
 }
 
-NodePrototype.parentOf = function(child) {
+NodePrototype.parentOf = function (child) {
     while ((child = child.parentNode) && child !== this) {}
     //If child is defined then we didn't walk all the way up to the root
     return child ? true : false;
 
 };
 
-var _offsetForElement = function(element) {
+var _offsetForElement = function (element) {
     var boundingClientRect,
         elementsDocument = element.ownerDocument,
         elementsDocumentElement,
@@ -213,8 +213,8 @@ var _offsetForElement = function(element) {
 
 var _webKitPoint = null;
 
-var webkitImplementation = function() {
-    exports.convertPointFromNodeToPage = function(element, point) {
+var webkitImplementation = function () {
+    exports.convertPointFromNodeToPage = function (element, point) {
         if(point) {
             _webKitPoint.x = point.x;
             _webKitPoint.y = point.y;
@@ -226,7 +226,7 @@ var webkitImplementation = function() {
         return point ? new Point().init(point.x, point.y) : null;
     };
 
-    exports.convertPointFromPageToNode = function(element, point) {
+    exports.convertPointFromPageToNode = function (element, point) {
         if(point) {
             _webKitPoint.x = point.x;
             _webKitPoint.y = point.y;
@@ -239,8 +239,8 @@ var webkitImplementation = function() {
     };
 };
 
-var shimImplementation = function() {
-    exports.convertPointFromNodeToPage = function(element, point) {
+var shimImplementation = function () {
+    exports.convertPointFromNodeToPage = function (element, point) {
         if (!element || typeof element.x !== "undefined") {
             return null;
         }
@@ -252,7 +252,7 @@ var shimImplementation = function() {
         }
     };
 
-    exports.convertPointFromPageToNode = function(element, point) {
+    exports.convertPointFromPageToNode = function (element, point) {
         if (!element || typeof element.x !== "undefined") {
             return null;
         }

@@ -1,11 +1,17 @@
-
+/**
+ * @module montage/core/module-reference
+ * @requires montage/core/core
+ */
 var Montage = require("./core").Montage;
 
 /**
  * @class ModuleReference
  * @extends Montage
  */
-exports.ModuleReference = Montage.specialize( /** @lends ModuleReference */ {
+exports.ModuleReference = Montage.specialize( /** @lends ModuleReference.prototype */ {
+    /**
+     * @constructs ModuleReference
+     */
     constructor: {
         value: function ModuleReference() {
             return this.super();
@@ -26,7 +32,7 @@ exports.ModuleReference = Montage.specialize( /** @lends ModuleReference */ {
 
     /**
      * The absolute id of the module within the `require` package
-     * @type {string}
+     * @property {string} value
      */
     id: {
         value: null
@@ -34,7 +40,7 @@ exports.ModuleReference = Montage.specialize( /** @lends ModuleReference */ {
 
     /**
      * The require of a package.
-     * @type {function}
+     * @property {function} value
      */
     require: {
         value: null
@@ -46,7 +52,8 @@ exports.ModuleReference = Montage.specialize( /** @lends ModuleReference */ {
     /**
      * A promise for the exports of the module. The exports are loaded lazily
      * when the property is accessed.
-     * @type {Promise.<Object>} The exports of the module.
+     *
+     * @returns {Promise.<Object>} The exports of the module.
      */
     exports: {
         get: function () {
@@ -60,16 +67,19 @@ exports.ModuleReference = Montage.specialize( /** @lends ModuleReference */ {
     /**
      * Resolves this module reference so that it can be required from
      * otherRequire.
-     * @method
-     * @param {function} otherRequire Require from another package that has
+     *
+     * @function
+     * @param {function} otherRequire - Require from another package that has
      * the package of this module as a dependency.
      * @returns {string} The module id to pass to otherRequire that results
      * in this module.
      * @throws {Error} If there is no mapping from this require inside
      * otherRequire.
+     *
      * @example
      * var ref = new ModuleReference().initWithIdAndRequire("core/uuid", montageRequire);
      * ref.resolve(applicationRequire); // => "montage/core/uuid"
+     *
      * @example
      * var ref = new ModuleReference().initWithIdAndRequire("ui/main.reel", applicationRequire);
      * ref.resolve(montageRequire); // => Error

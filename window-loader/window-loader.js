@@ -2,7 +2,7 @@ var parentWindow = window.opener;
 
 // Let's switch to the parent application package context
 require.loadPackage(parentWindow.require.location)
-.then(function(require) {
+.then(function (require) {
     var loadInfo = window.loadInfo,
         module = loadInfo.module,
         name = loadInfo.name,
@@ -13,7 +13,7 @@ require.loadPackage(parentWindow.require.location)
     window.require = window.mr = require;
 
     return require.async("montage/ui/component")
-    .then(function(exports) {
+    .then(function (exports) {
         return require.async("montage/ui/loader.reel")
         .then(function (exports) {
             var mainComponent = exports["Loader"].create();
@@ -24,7 +24,7 @@ require.loadPackage(parentWindow.require.location)
             mainComponent.needsDraw = true;
 
             if (callback) {
-                mainComponent.addEventListener("componentLoaded", function(event) {
+                mainComponent.addEventListener("componentLoaded", function (event) {
                     mainComponent.removeEventListener("componentLoaded", arguments.callee);
                     callback(window, event.detail);
                 });

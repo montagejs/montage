@@ -1,3 +1,6 @@
+/**
+ * @module "montage/ui/label.reel"
+ */
 var Montage = require("../../core/core").Montage,
     Text = require("../text.reel/text").Text,
     PressComposer = require("../../composer/press-composer").PressComposer;
@@ -11,7 +14,7 @@ var Montage = require("../../core/core").Montage,
 
 var Label = exports.Label = Text.specialize({
     constructor: {
-        value: function() {
+        value: function () {
             this.super();
             this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
@@ -19,7 +22,7 @@ var Label = exports.Label = Text.specialize({
     },
 
     prepareForActivationEvents: {
-        value: function() {
+        value: function () {
             this.super();
             this._pressComposer.addEventListener("press", this, false);
         }
@@ -38,7 +41,7 @@ var Label = exports.Label = Text.specialize({
     },
 
     handlePress: {
-        value: function(event) {
+        value: function (event) {
             this.super(event);
             if(this.target && typeof this.target[this.action] == "function") {
                 this.target[this.action]({ from: this });

@@ -30,36 +30,36 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
 
-describe("array-spec", function() {
+describe("array-spec", function () {
 
-    describe("mutator methods", function() {
+    describe("mutator methods", function () {
 
-        describe("when pushing", function() {
+        describe("when pushing", function () {
 
-            describe("a single value", function() {
+            describe("a single value", function () {
 
                 var array,
                     newValue;
 
-                beforeEach(function() {
+                beforeEach(function () {
                     array = [0,1,2];
                     newValue = 3;
                 });
 
                 // Want to double check that the expected behavior still works
-                afterEach(function() {
+                afterEach(function () {
                     expect(array.length).toBe(4);
                     expect(array[3]).toBe(newValue);
                 });
 
-                it("should push the new value on the end of the array", function() {
+                it("should push the new value on the end of the array", function () {
                     array.push(newValue);
                     // Expectations performed automatically
                 });
 
-                it("should notify listeners observing the array for 'change' events, with a collection of the pushed values", function() {
+                it("should notify listeners observing the array for 'change' events, with a collection of the pushed values", function () {
                     var arrayChangeListener = {
-                        changeHandlerFunction: function(event) {
+                        changeHandlerFunction: function (event) {
                             expect(event.minus.length).toBe(0);
                             expect(event.plus[0]).toBe(newValue);
                             expect(event.plus.length).toBe(1);
@@ -76,9 +76,9 @@ describe("array-spec", function() {
                     expect(arrayChangeListener.changeHandlerFunction).toHaveBeenCalled();
                 });
 
-                it("should notify listeners observing the affected index of the array for 'change' events, detailing the diff at that index", function() {
+                it("should notify listeners observing the affected index of the array for 'change' events, detailing the diff at that index", function () {
                     var indexChangeListener = {
-                        changeHandlerFunction: function(event) {
+                        changeHandlerFunction: function (event) {
                             expect(event.minus).not.toBeDefined();
                             expect(event.plus).toBe(newValue);
                         }
@@ -93,9 +93,9 @@ describe("array-spec", function() {
                     expect(indexChangeListener.changeHandlerFunction).toHaveBeenCalled();
                 });
 
-                it("must not notify listeners observing unaffected indices of the array for 'change' events", function() {
+                it("must not notify listeners observing unaffected indices of the array for 'change' events", function () {
                     var indexChangeListener = {
-                        changeHandlerFunction: function(event) {
+                        changeHandlerFunction: function (event) {
                             throw "Did not expect to handle event for " + event.type;
                         }
                     };
@@ -115,30 +115,30 @@ describe("array-spec", function() {
 
             });
 
-            describe("multiple values", function() {
+            describe("multiple values", function () {
 
                 var array,
                     newValues;
 
-                beforeEach(function() {
+                beforeEach(function () {
                     array = [0,1,2];
                     newValues = [3,4];
                 });
 
-                afterEach(function() {
+                afterEach(function () {
                     expect(array.length).toBe(5);
                     expect(array[3]).toBe(newValues[0]);
                     expect(array[4]).toBe(newValues[1]);
                 });
 
-                it("should push the new values on the end of the array", function() {
+                it("should push the new values on the end of the array", function () {
                     array.push.apply(array, newValues);
                     // Expectations performed automatically
                 });
 
-                it("should notify listeners observing the array for 'change' events, detailing the diff", function() {
+                it("should notify listeners observing the array for 'change' events, detailing the diff", function () {
                     var arrayChangeListener = {
-                        changeHandlerFunction: function(event) {
+                        changeHandlerFunction: function (event) {
                             expect(event.minus.length).toBe(0);
                             expect(event.plus.length).toBe(2);
                             expect(event.plus[0]).toBe(newValues[0]);
@@ -155,16 +155,16 @@ describe("array-spec", function() {
                     expect(arrayChangeListener.changeHandlerFunction).toHaveBeenCalled();
                 });
 
-                it("should notify listeners observing the affected index of the array for 'change' events, detailing the diff at those respective indexes", function() {
+                it("should notify listeners observing the affected index of the array for 'change' events, detailing the diff at those respective indexes", function () {
                     var index3ChangeListener = {
-                        index3ChangeHandlerFunction: function(event) {
+                        index3ChangeHandlerFunction: function (event) {
                             expect(event.minus).not.toBeDefined();
                             expect(event.plus).toBe(newValues[0]);
                         }
                     };
 
                     var index4ChangeListener = {
-                        index4ChangeHandlerFunction: function(event) {
+                        index4ChangeHandlerFunction: function (event) {
                             expect(event.minus).not.toBeDefined();
                             expect(event.plus).toBe(newValues[1]);
                         }
@@ -182,9 +182,9 @@ describe("array-spec", function() {
                     expect(index4ChangeListener.index4ChangeHandlerFunction).toHaveBeenCalled();
                 });
 
-                it("must not notify listeners observing unaffected indices of the array for 'change' events", function() {
+                it("must not notify listeners observing unaffected indices of the array for 'change' events", function () {
                     var indexChangeListener = {
-                        changeHandlerFunction: function(event) {
+                        changeHandlerFunction: function (event) {
                             throw "Did not expect to handle event for " + event.type;
                         }
                     };
@@ -206,30 +206,30 @@ describe("array-spec", function() {
 
         });
 
-        describe("when popping", function() {
+        describe("when popping", function () {
 
             var array,
                 poppedValue;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 array = [0, 1, 2];
                 poppedValue = 2;
             });
 
             // We want to make sure our own tinkering doesn't affect the expected behavior, but
             // I don't want to be the focus of these tests necessarily
-            afterEach(function() {
+            afterEach(function () {
                 expect(array.length).toBe(2);
                 expect(array[2]).not.toBeDefined();
             });
 
-            it("should return the last value removed from the end of the array", function() {
+            it("should return the last value removed from the end of the array", function () {
                 expect(array.pop()).toBe(poppedValue);
             });
 
-            it("should notify listeners observing the array for 'change' events, detailing the diff of the change", function() {
+            it("should notify listeners observing the array for 'change' events, detailing the diff of the change", function () {
                 var arrayChangeListener = {
-                    changeHandlerFunction: function(event) {
+                    changeHandlerFunction: function (event) {
                         expect(event.minus[0]).toBe(poppedValue);
                         expect(event.plus.length).toBe(0);
                     }
@@ -244,9 +244,9 @@ describe("array-spec", function() {
                 expect(arrayChangeListener.changeHandlerFunction).toHaveBeenCalled();
             });
 
-            it("should notify listeners observing the affected index of the array for 'change' events, detailing the diff of the change", function() {
+            it("should notify listeners observing the affected index of the array for 'change' events, detailing the diff of the change", function () {
                 var indexChangeListener = {
-                    changeHandlerFunction: function(event) {
+                    changeHandlerFunction: function (event) {
                         expect(event.minus).toBe(poppedValue);
                         expect(event.plus).not.toBeDefined();
                     }
@@ -261,9 +261,9 @@ describe("array-spec", function() {
                 expect(indexChangeListener.changeHandlerFunction).toHaveBeenCalled();
             });
 
-            it ("must not notify listeners observing unaffected indices of the array for 'change' events", function() {
+            it ("must not notify listeners observing unaffected indices of the array for 'change' events", function () {
                 var indexChangeListener = {
-                    changeHandlerFunction: function(event) {
+                    changeHandlerFunction: function (event) {
                         throw "Did not expect to handle event for " + event.type;
                     }
                 };
@@ -281,14 +281,14 @@ describe("array-spec", function() {
             });
         });
 
-        describe("when shifting", function() {
+        describe("when shifting", function () {
 
             var array,
                 shiftedValue,
                 prevArray,
                 newArray;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 prevArray = [0, 1, 2];
                 array = [0, 1, 2];
                 shiftedValue = 0;
@@ -297,31 +297,31 @@ describe("array-spec", function() {
 
             // We want to make sure our own tinkering doesn't affect the expected behavior, but
             // I don't want to be the focus of these tests necessarily
-            afterEach(function() {
+            afterEach(function () {
                 expect(array.length).toBe(2);
                 expect(array[0]).toBe(1);
                 expect(array[1]).toBe(2);
                 expect(array[2]).not.toBeDefined();
             });
 
-            it("should return the first value removed from the front of the array", function() {
+            it("should return the first value removed from the front of the array", function () {
                 expect(array.shift()).toBe(shiftedValue);
             });
 
-            it ("must notify listeners observing affected indices of the array for 'change' events, providing the previous and new values at that index", function() {
+            it ("must notify listeners observing affected indices of the array for 'change' events, providing the previous and new values at that index", function () {
 
                 var indexChangeListener = {
-                    index0ChangeHandlerFunction: function(event) {
+                    index0ChangeHandlerFunction: function (event) {
                         expect(event.minus).toBe(prevArray[0]);
                         expect(event.plus).toBe(newArray[0]);
                     },
 
-                    index1ChangeHandlerFunction: function(event) {
+                    index1ChangeHandlerFunction: function (event) {
                         expect(event.minus).toBe(prevArray[1]);
                         expect(event.plus).toBe(newArray[1]);
                     },
 
-                    index2ChangeHandlerFunction: function(event) {
+                    index2ChangeHandlerFunction: function (event) {
                         expect(event.minus).toBe(prevArray[2]);
                         expect(event.plus).toBe(newArray[2]);
                     }
@@ -344,23 +344,23 @@ describe("array-spec", function() {
 
         });
 
-        describe("when unshifting", function() {
+        describe("when unshifting", function () {
 
-            describe("a single value", function() {
+            describe("a single value", function () {
 
                 var prevArray,
                     array,
                     unshiftedValue,
                     newArray;
 
-                beforeEach(function() {
+                beforeEach(function () {
                     prevArray = [0, 1, 2];
                     array = [0, 1, 2];
                     unshiftedValue = -1;
                     newArray = [-1, 0, 1, 2];
                 });
 
-                afterEach(function() {
+                afterEach(function () {
 
                     expect(array.length).toBe(newArray.length);
 
@@ -369,32 +369,32 @@ describe("array-spec", function() {
                     }
                 });
 
-                it("should add the value to the front of the array", function() {
+                it("should add the value to the front of the array", function () {
                     array.unshift(unshiftedValue);
                 });
 
-                it("should return the new length of the array", function() {
+                it("should return the new length of the array", function () {
                     expect(array.unshift(unshiftedValue)).toBe(newArray.length);
                 });
 
-                it ("should notify listeners observing affected indices of the array for 'change' events, providing the previous and new values at that index", function() {
+                it ("should notify listeners observing affected indices of the array for 'change' events, providing the previous and new values at that index", function () {
                     var indexChangeListener = {
-                        index0ChangeHandlerFunction: function(event) {
+                        index0ChangeHandlerFunction: function (event) {
                             expect(event.minus).toBe(prevArray[0]);
                             expect(event.plus).toBe(newArray[0]);
                         },
 
-                        index1ChangeHandlerFunction: function(event) {
+                        index1ChangeHandlerFunction: function (event) {
                             expect(event.minus).toBe(prevArray[1]);
                             expect(event.plus).toBe(newArray[1]);
                         },
 
-                        index2ChangeHandlerFunction: function(event) {
+                        index2ChangeHandlerFunction: function (event) {
                             expect(event.minus).toBe(prevArray[2]);
                             expect(event.plus).toBe(newArray[2]);
                         },
 
-                        index3ChangeHandlerFunction: function(event) {
+                        index3ChangeHandlerFunction: function (event) {
                             expect(event.minus).toBe(prevArray[3]);
                             expect(event.plus).toBe(newArray[3]);
                         }
@@ -420,21 +420,21 @@ describe("array-spec", function() {
 
             });
 
-            describe("multiple values", function() {
+            describe("multiple values", function () {
 
                 var prevArray,
                     array,
                     unshiftedValues,
                     newArray;
 
-                beforeEach(function() {
+                beforeEach(function () {
                     prevArray = [0, 1, 2];
                     array = [0, 1, 2];
                     unshiftedValues = [-2, -1];
                     newArray = [-2, -1, 0, 1, 2];
                 });
 
-                afterEach(function() {
+                afterEach(function () {
 
                     expect(array.length).toBe(newArray.length);
 
@@ -443,37 +443,37 @@ describe("array-spec", function() {
                     }
                 });
 
-                it("should add the values to the front of the array", function() {
+                it("should add the values to the front of the array", function () {
                     array.unshift.apply(array, unshiftedValues);
                 });
 
-                it("should return the new length of the array", function() {
+                it("should return the new length of the array", function () {
                     expect(array.unshift.apply(array, unshiftedValues)).toBe(newArray.length);
                 });
 
-                it ("should notify listeners observing affected indices of the array for 'change' events, providing the previous and new values at that index", function() {
+                it ("should notify listeners observing affected indices of the array for 'change' events, providing the previous and new values at that index", function () {
                     var indexChangeListener = {
-                        index0ChangeHandlerFunction: function(event) {
+                        index0ChangeHandlerFunction: function (event) {
                             expect(event.minus).toBe(prevArray[0]);
                             expect(event.plus).toBe(newArray[0]);
                         },
 
-                        index1ChangeHandlerFunction: function(event) {
+                        index1ChangeHandlerFunction: function (event) {
                             expect(event.minus).toBe(prevArray[1]);
                             expect(event.plus).toBe(newArray[1]);
                         },
 
-                        index2ChangeHandlerFunction: function(event) {
+                        index2ChangeHandlerFunction: function (event) {
                             expect(event.minus).toBe(prevArray[2]);
                             expect(event.plus).toBe(newArray[2]);
                         },
 
-                        index3ChangeHandlerFunction: function(event) {
+                        index3ChangeHandlerFunction: function (event) {
                             expect(event.minus).toBe(prevArray[3]);
                             expect(event.plus).toBe(newArray[3]);
                         },
 
-                        index4ChangeHandlerFunction: function(event) {
+                        index4ChangeHandlerFunction: function (event) {
                             expect(event.minus).toBe(prevArray[4]);
                             expect(event.plus).toBe(newArray[4]);
                         }
@@ -504,19 +504,19 @@ describe("array-spec", function() {
 
         });
 
-        describe("when reversing", function() {
+        describe("when reversing", function () {
 
             var array,
                 prevArray,
                 newArray;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 prevArray = [0,1,2];
                 array = [0,1,2];
                 newArray = [2,1,0];
             });
 
-            afterEach(function() {
+            afterEach(function () {
                 expect(array.length).toBe(newArray.length);
 
                 for(var i = 0; i < newArray.length; i++) {
@@ -524,23 +524,23 @@ describe("array-spec", function() {
                 }
             });
 
-            it("should reverse the order of the array", function() {
+            it("should reverse the order of the array", function () {
                 array.reverse();
             });
 
-            it("should notify listeners observing affected indices of the array for 'change' events, providing the previous and new values at that index", function() {
+            it("should notify listeners observing affected indices of the array for 'change' events, providing the previous and new values at that index", function () {
                 var indexChangeListener = {
-                    index0ChangeHandlerFunction: function(event) {
+                    index0ChangeHandlerFunction: function (event) {
                         expect(event.minus).toBe(prevArray[0]);
                         expect(event.plus).toBe(newArray[0]);
                     },
 
-                    index1ChangeHandlerFunction: function(event) {
+                    index1ChangeHandlerFunction: function (event) {
                         expect(event.minus).toBe(prevArray[1]);
                         expect(event.plus).toBe(newArray[1]);
                     },
 
-                    index2ChangeHandlerFunction: function(event) {
+                    index2ChangeHandlerFunction: function (event) {
                         expect(event.minus).toBe(prevArray[2]);
                         expect(event.plus).toBe(newArray[2]);
                     }
@@ -563,20 +563,20 @@ describe("array-spec", function() {
 
         });
 
-        describe("when sorting", function() {
+        describe("when sorting", function () {
 
             var myArray, sortedArray;
 
-            beforeEach(function() {
+            beforeEach(function () {
                myArray = ["alice", "eve", "carol", "bob", "david"];
                sortedArray = ["alice", "bob", "carol", "david", "eve"];
             });
 
-            it("should return a reference to the sorted array", function() {
+            it("should return a reference to the sorted array", function () {
                     expect(myArray.sort()).toBe(myArray);
             });
 
-            it("should sort the array without a given sorting function", function() {
+            it("should sort the array without a given sorting function", function () {
                 myArray.sort();
 
                 for (var i = 0; i < sortedArray.length; i++) {
@@ -584,29 +584,29 @@ describe("array-spec", function() {
                 }
             });
 
-            it("TODO should sort the array with a given sorting function", function() {
+            it("TODO should sort the array with a given sorting function", function () {
             });
 
-            describe("when observed for changes at any index", function() {
+            describe("when observed for changes at any index", function () {
 
-                it("TODO should dispatch a change for each index affected by the sort", function() {
+                it("TODO should dispatch a change for each index affected by the sort", function () {
                 });
 
-                it("TODO must not dispatch a change for an index unaffected by the sort", function() {
+                it("TODO must not dispatch a change for an index unaffected by the sort", function () {
                 });
 
             });
 
-            describe("when observed for a change at the array itself", function() {
+            describe("when observed for a change at the array itself", function () {
 
-                it("TODO should dispatch a change for each index affected by the sort", function() {
+                it("TODO should dispatch a change for each index affected by the sort", function () {
                 });
 
             });
 
         });
 
-        describe("when splicing", function() {
+        describe("when splicing", function () {
 
             var array,
                 prevArray,
@@ -615,42 +615,42 @@ describe("array-spec", function() {
                 spliceIndex,
                 spliceLength;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 prevArray = [0, 1, 2];
                 array = [0, 1, 2];
             });
 
-            describe("to add a single object", function() {
+            describe("to add a single object", function () {
 
-                beforeEach(function() {
+                beforeEach(function () {
                     splicedValue = "foo";
                 });
 
-                describe("without replacement", function() {
+                describe("without replacement", function () {
 
-                    beforeEach(function() {
+                    beforeEach(function () {
                         spliceLength = 0;
                     });
 
-                    describe("into the middle of an array", function() {
+                    describe("into the middle of an array", function () {
 
-                        beforeEach(function() {
+                        beforeEach(function () {
                             spliceIndex = 1;
                             newArray = [0, "foo", 1, 2];
                         });
 
-                        it("should insert the element at the index specified", function() {
+                        it("should insert the element at the index specified", function () {
                             array.splice(spliceIndex, spliceLength, splicedValue);
                         });
 
-                        it("should return an array of the removed elements, which will be empty", function() {
+                        it("should return an array of the removed elements, which will be empty", function () {
                             var replacedValues = array.splice(spliceIndex, spliceLength, splicedValue);
                             expect(replacedValues.length).toBe(0);
                         });
 
-                        it("should notify listeners observing the array for 'change' events, providing the previous and new list values", function() {
+                        it("should notify listeners observing the array for 'change' events, providing the previous and new list values", function () {
                             var changeListener = {
-                                changeHandlerFunction: function(event) {
+                                changeHandlerFunction: function (event) {
                                     expect(event.minus.length).toBe(0);
                                     expect(event.plus.length).toBe(1);
                                     expect(event.plus[0]).toBe(splicedValue);
@@ -666,9 +666,9 @@ describe("array-spec", function() {
                             expect(changeListener.changeHandlerFunction).toHaveBeenCalled();
                         });
 
-                        it("must not notify listeners observing unaffected indices of the array for 'change' events", function() {
+                        it("must not notify listeners observing unaffected indices of the array for 'change' events", function () {
                             var indexChangeListener = {
-                                indexChangeHandlerFunction: function(event) {
+                                indexChangeHandlerFunction: function (event) {
                                     throw "Did not expect to handle event for " + event.type;
                                 }
                             };
@@ -684,19 +684,19 @@ describe("array-spec", function() {
                             expect(indexChangeListener.indexChangeHandlerFunction).not.toHaveBeenCalled();
                         });
 
-                        it("should notify listeners observing affected indices of the array for 'change' events, detailing the diff at that index", function() {
+                        it("should notify listeners observing affected indices of the array for 'change' events, detailing the diff at that index", function () {
                             var indexChangeListener = {
-                                index1ChangeHandlerFunction: function(event) {
+                                index1ChangeHandlerFunction: function (event) {
                                     expect(event.minus).toBe(prevArray[1]);
                                     expect(event.plus).toBe(newArray[1]);
                                 },
 
-                                index2ChangeHandlerFunction: function(event) {
+                                index2ChangeHandlerFunction: function (event) {
                                     expect(event.minus).toBe(prevArray[2]);
                                     expect(event.plus).toBe(newArray[2]);
                                 },
 
-                                index3ChangeHandlerFunction: function(event) {
+                                index3ChangeHandlerFunction: function (event) {
                                     expect(event.minus).toBe(prevArray[3]);
                                     expect(event.plus).toBe(newArray[3]);
                                 }
@@ -721,32 +721,32 @@ describe("array-spec", function() {
 
                 });
 
-                describe("with replacement", function() {
+                describe("with replacement", function () {
 
-                    beforeEach(function() {
+                    beforeEach(function () {
                         spliceLength = 1;
                     });
 
-                    describe("into the middle of an array", function() {
+                    describe("into the middle of an array", function () {
 
-                        beforeEach(function() {
+                        beforeEach(function () {
                             spliceIndex = 1;
                             newArray = [0, "foo", 2];
                         });
 
-                        it("should insert the element at the index specified", function() {
+                        it("should insert the element at the index specified", function () {
                             array.splice(spliceIndex, spliceLength, splicedValue);
                         });
 
-                        it("should return an array of the removed elements", function() {
+                        it("should return an array of the removed elements", function () {
                             var replacedValues = array.splice(spliceIndex, spliceLength, splicedValue);
                             expect(replacedValues.length).toBe(1);
                             expect(replacedValues[0]).toBe(1);
                         });
 
-                        it("must not notify listeners observing unaffected indices of the array for 'change' events", function() {
+                        it("must not notify listeners observing unaffected indices of the array for 'change' events", function () {
                             var indexChangeListener = {
-                                indexChangeHandlerFunction: function(event) {
+                                indexChangeHandlerFunction: function (event) {
                                     throw "Did not expect to handle event for " + event.type;
                                 }
                             };
@@ -763,9 +763,9 @@ describe("array-spec", function() {
                             expect(indexChangeListener.indexChangeHandlerFunction).not.toHaveBeenCalled();
                         });
 
-                        it("should notify listeners observing affected indices of the array for 'change' events, providing the previous and new values at that index", function() {
+                        it("should notify listeners observing affected indices of the array for 'change' events, providing the previous and new values at that index", function () {
                             var index1ChangeListener = {
-                                index1ChangeHandlerFunction: function(event) {
+                                index1ChangeHandlerFunction: function (event) {
                                     expect(event.minus).toBe(prevArray[1]);
                                     expect(event.plus).toBe(splicedValue);
                                 }
@@ -784,7 +784,7 @@ describe("array-spec", function() {
 
                 });
 
-                afterEach(function() {
+                afterEach(function () {
                     expect(array.length).toBe(newArray.length);
 
                     for(var i = 0; i < newArray.length; i++) {
@@ -794,40 +794,40 @@ describe("array-spec", function() {
 
             });
 
-            xdescribe("to add multiple objects", function() {
+            xdescribe("to add multiple objects", function () {
 
-                it ("must not notify listeners observing unaffected indices of the array for 'change' events", function() {
+                it ("must not notify listeners observing unaffected indices of the array for 'change' events", function () {
 
                 });
 
             });
 
-            describe("to remove a single object", function() {
+            describe("to remove a single object", function () {
 
-                beforeEach(function() {
+                beforeEach(function () {
                     spliceLength = 1;
                 });
 
-                describe("from the middle of an array", function() {
+                describe("from the middle of an array", function () {
 
-                    beforeEach(function() {
+                    beforeEach(function () {
                         spliceIndex = 1;
                         newArray = [0, 2];
                     });
 
-                    it("should remove the element at the index specified", function() {
+                    it("should remove the element at the index specified", function () {
                         array.splice(spliceIndex, spliceLength);
                     });
 
-                    it("should return an array of the removed elements", function() {
+                    it("should return an array of the removed elements", function () {
                         var replacedValues = array.splice(spliceIndex, spliceLength);
                         expect(replacedValues.length).toBe(1);
                         expect(replacedValues[0]).toBe(1);
                     });
 
-                    it("should notify listeners observing the array for 'change' events, providing the previous and new list values", function() {
+                    it("should notify listeners observing the array for 'change' events, providing the previous and new list values", function () {
                         var changeListener = {
-                            changeHandlerFunction: function(event) {
+                            changeHandlerFunction: function (event) {
                                 expect(event.minus.length).toBe(1);
                                 expect(event.minus[0]).toBe(prevArray[1]);
                                 expect(event.plus.length).toBe(0);
@@ -843,9 +843,9 @@ describe("array-spec", function() {
                         expect(changeListener.changeHandlerFunction).toHaveBeenCalled();
                     });
 
-                    it("must not notify listeners observing unaffected indices of the array for 'change' events", function() {
+                    it("must not notify listeners observing unaffected indices of the array for 'change' events", function () {
                         var indexChangeListener = {
-                            indexChangeHandlerFunction: function(event) {
+                            indexChangeHandlerFunction: function (event) {
                                 throw "Did not expect to handle event for " + event.type;
                             }
                         };
@@ -861,14 +861,14 @@ describe("array-spec", function() {
                         expect(indexChangeListener.indexChangeHandlerFunction).not.toHaveBeenCalled();
                     });
 
-                    it("should notify listeners observing affected indices of the array for 'change' events, providing the previous and new values at that index", function() {
+                    it("should notify listeners observing affected indices of the array for 'change' events, providing the previous and new values at that index", function () {
                         var indexChangeListener = {
-                            index1ChangeHandlerFunction: function(event) {
+                            index1ChangeHandlerFunction: function (event) {
                                 expect(event.minus).toBe(prevArray[1]);
                                 expect(event.plus).toBe(newArray[1]);
                             },
 
-                            index2ChangeHandlerFunction: function(event) {
+                            index2ChangeHandlerFunction: function (event) {
                                 expect(event.minus).toBe(prevArray[2]);
                                 expect(event.plus).toBe(newArray[2]);
                             }
@@ -887,7 +887,7 @@ describe("array-spec", function() {
                     });
                 });
 
-                afterEach(function() {
+                afterEach(function () {
                     expect(array.length).toBe(newArray.length);
 
                     for(var i = 0; i < newArray.length; i++) {
@@ -898,9 +898,9 @@ describe("array-spec", function() {
 
             });
 
-            xdescribe("to remove multiple objects", function() {
+            xdescribe("to remove multiple objects", function () {
 
-                it("must not notify listeners observing unaffected indices of the array for 'change' events", function() {
+                it("must not notify listeners observing unaffected indices of the array for 'change' events", function () {
 
                 });
 
@@ -910,39 +910,39 @@ describe("array-spec", function() {
 
     });
 
-    describe("when detecting any", function() {
+    describe("when detecting any", function () {
 
-        it("should have an any method exposed", function() {
+        it("should have an any method exposed", function () {
             expect([].any).toBeTruthy();
         });
 
-        describe("when no property path is provided", function() {
+        describe("when no property path is provided", function () {
 
-            it("should return false for an empty array", function() {
+            it("should return false for an empty array", function () {
                 expect([].any()).toBe(false);
             });
 
-            it("should return false for an array with no truthy values", function() {
+            it("should return false for an array with no truthy values", function () {
                 expect([0, false, null].any()).toBe(false);
             });
 
-            it("should return true for an array with any truthy values", function() {
+            it("should return true for an array with any truthy values", function () {
                 expect([0, false, null, true].any()).toBe(true);
             });
 
         });
 
-        describe("when a property path is provided", function() {
+        describe("when a property path is provided", function () {
 
-            it("should return false for an empty array", function() {
+            it("should return false for an empty array", function () {
                 expect([].any("a.b")).toBe(false);
             });
 
-            it("should return false for an array with no truthy values", function() {
+            it("should return false for an array with no truthy values", function () {
                 expect([{a: {b: 0}}, {a: {b: false}}, {a: {b: null}}].any("a.b")).toBe(false);
             });
 
-            it("should return true for an array with any truthy values", function() {
+            it("should return true for an array with any truthy values", function () {
                 expect([{a: {b: 0}}, {a: {b: false}}, {a: {b: null}}, {a: {b: true}}].any("a.b")).toBe(true);
             });
 

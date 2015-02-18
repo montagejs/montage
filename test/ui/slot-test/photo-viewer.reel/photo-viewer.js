@@ -34,13 +34,13 @@ var Montage = require("montage").Montage,
 var PhotoViewer = exports.PhotoViewer = Component.specialize( {
 
     templateDidLoad: {
-        value: function() {
+        value: function () {
             //console.log("PHOTOVIEWER REEL DID LOAD");
         }
     },
 
     deserializedFromTemplate: {
-        value: function() {
+        value: function () {
             //console.log("PHOTOVIEWER DESERIALIZED FROM REEL");
         }
     },

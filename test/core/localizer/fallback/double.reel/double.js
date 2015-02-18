@@ -13,10 +13,10 @@ exports.Double = Component.specialize( {
     },
 
     value: {
-        get: function() {
+        get: function () {
             return this._value;
         },
-        set: function(value) {
+        set: function (value) {
             if (this._value !== value) {
                 this._value = value;
                 this.needsDraw = true;
@@ -29,10 +29,10 @@ exports.Double = Component.specialize( {
     },
 
     secondValue: {
-        get: function() {
+        get: function () {
             return this._secondValue;
         },
-        set: function(value) {
+        set: function (value) {
             if (this._secondValue !== value) {
                 this._secondValue = value;
                 this.needsDraw = true;
@@ -71,7 +71,7 @@ exports.Double = Component.specialize( {
     },
 
     enterDocument: {
-        value: function(firstTime) {
+        value: function (firstTime) {
             if (firstTime) {
                 var range = this._RANGE;
                 range.selectNodeContents(this.element);
@@ -85,7 +85,7 @@ exports.Double = Component.specialize( {
     },
 
     draw: {
-        value: function() {
+        value: function () {
             // get correct value
             var value = this._value,
                 displayValue = (value || 0 === value ) ? value : this.defaultValue;

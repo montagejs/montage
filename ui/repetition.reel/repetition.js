@@ -1,5 +1,5 @@
 /**
- * @module montage/ui/repetition.reel
+ * @module "montage/ui/repetition.reel"
  */
 var Montage = require("../../core/core").Montage;
 var Component = require("../component").Component;
@@ -28,8 +28,9 @@ var TIMEOUT_BEFORE_ITERATION_BECOME_ACTIVE = 60;
  * selected.
  *
  * @class Iteration
+ * @extends Montage
  */
-var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */ {
+var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.prototype # */ {
 
     /**
      * The parent repetition component.
@@ -488,6 +489,9 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
 // Give it up for the Repetition...
 
 /**
+ * @class Repetition
+ * @classdesc A component that repeats its inner template for each value in
+ * @desc
  * A component that manages copies of its inner template for each value in its
  * content.  The content is managed by a controller.  The repetition will
  * create a {@link RangeController} for the content if you provide a
@@ -507,12 +511,11 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration# */
  * document, prefering to inject or retract iterations between ones that remain
  * in their respective order, or even just rebind existing iterations to
  * alternate content instead of injecting and retracting in the same position.
- * @class Repetition
- * @classdesc A component that repeats its inner template for each value in
  * some content.
+ *
  * @extends Component
  */
-var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition# */{
+var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition.prototype # */{
 
     // For the creator:
     // ----
@@ -934,7 +937,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     },
 
     _buildIterationTemplate: {
-        value: function() {
+        value: function () {
             var iterationTemplate;
             var serialization;
             var serializationObject;
@@ -969,7 +972,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     },
 
     _rebuildIterationTemplate: {
-        value: function() {
+        value: function () {
             var iterationTemplate = this._iterationTemplate,
                 newIterationTemplate,
                 iterations = this.iterations;
@@ -986,7 +989,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     },
 
     refreshTemplate: {
-        value: function() {
+        value: function () {
             this._rebuildIterationTemplate();
         }
     },
@@ -1035,7 +1038,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     },
 
     _leTagIterationTemplate: {
-        value: function(template) {
+        value: function (template) {
             var body = template.document.body;
 
             if (body.children.length > 0) {
@@ -1088,7 +1091,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     },
 
     _purgeFreeIterations: {
-        value: function() {
+        value: function () {
             for (var i = 0; i < this._freeIterations.length; i++) {
                 var iteration = this._freeIterations[i];
                 for (var j = 0; j < iteration._childComponents.length; j++) {
@@ -1106,7 +1109,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * @private
      */
     _expandIterationTemplateParameters: {
-        value: function(template) {
+        value: function (template) {
             var owner = this,
                 argumentsTemplate,
                 collisionTable,
@@ -1193,7 +1196,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 iteration = new this.Iteration().initWithRepetition(this);
 
             this._iterationCreationPromise = this._iterationCreationPromise
-            .then(function() {
+            .then(function () {
                 var _document = self.element.ownerDocument,
                     instances,
                     promise;
@@ -1211,7 +1214,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 .then(function (part) {
                     part.parentDocumentPart = self._ownerDocumentPart;
                     iteration._templateDocumentPart = part;
-                    part.loadComponentTree().then(function() {
+                    part.loadComponentTree().then(function () {
                         if (logger.isDebug) {
                             logger.debug("Iteration:%s component tree loaded.", Object.hash(iteration));
                         }

@@ -38,7 +38,7 @@ var ComponentSon = exports.ComponentSon = ComponentFather.specialize( {
     _templateModuleId: {value: "../componentfather.reel/componentfather.html"},
 
     draw: {
-        value: function() {
+        value: function () {
             this._element.textContent = "Component Son";
         }
     }

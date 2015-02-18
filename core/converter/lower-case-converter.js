@@ -13,7 +13,7 @@ var Converter = require("./converter").Converter;
 exports.LowerCaseConverter = Converter.specialize( /** @lends LowerCaseConverter# */{
 
     _convert: {
-        value: function(v) {
+        value: function (v) {
             if (v && typeof v === 'string') {
                 return (v.toLowerCase ? v.toLowerCase() : v);
             }
@@ -22,20 +22,20 @@ exports.LowerCaseConverter = Converter.specialize( /** @lends LowerCaseConverter
     },
 
     /**
-     * @method
+     * @function
      * @param {string} v Case format
      * @returns this._convert(v)
      */
-    convert: {value: function(v) {
+    convert: {value: function (v) {
         return this._convert(v);
     }},
 
     /**
-     * @method
+     * @function
      * @param {string} v Case format
      * @returns this._convert(v)
      */
-    revert: {value: function(v) {
+    revert: {value: function (v) {
         return this._convert(v);
     }}
 

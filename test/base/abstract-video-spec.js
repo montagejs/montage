@@ -35,11 +35,11 @@ describe("test/base/abstract-video-spec", function () {
                 aVideoPlayer.enterDocument(true);
             });
 
-            it("should be set after enterDocument()", function() {
+            it("should be set after enterDocument()", function () {
                 expect(aVideoPlayer.videoController).not.toBeNull();
             });
 
-            it("should link native media controller to media element", function() {
+            it("should link native media controller to media element", function () {
                 expect(aVideoPlayer.videoController.mediaController).toEqual(aVideoPlayer.mediaElement.controller);
             });
 
@@ -52,14 +52,14 @@ describe("test/base/abstract-video-spec", function () {
                 aVideoPlayer.mediaElement = MockDOM.element();
             });
 
-            it("should read initial value from original element", function() {
+            it("should read initial value from original element", function () {
                 aVideoPlayer.originalElement.setAttribute("src", "sample.mov");
                 aVideoPlayer.enterDocument(true);
 
                 expect(aVideoPlayer.src).toBe("sample.mov");
             });
 
-            it("should read initial value from child source elements", function() {
+            it("should read initial value from child source elements", function () {
                 var sourceElements = [
                     MockDOM.element(),
                     MockDOM.element()
@@ -71,7 +71,7 @@ describe("test/base/abstract-video-spec", function () {
                 sourceElements[1].setAttribute("src", "movie2.ogg");
                 sourceElements[1].setAttribute("type", "video/ogg");
                 aVideoPlayer.originalElement.childNodes = sourceElements;
-                aVideoPlayer.mediaElement.canPlayType = function(type) {
+                aVideoPlayer.mediaElement.canPlayType = function (type) {
                     if (type === "video/ogg") {
                         return "maybe";
                     }
@@ -81,7 +81,7 @@ describe("test/base/abstract-video-spec", function () {
                 expect(aVideoPlayer.src).toBe("movie1.ogg");
             });
 
-            it("should read initial value from child source elements only with valid type", function() {
+            it("should read initial value from child source elements only with valid type", function () {
                 var sourceElements = [
                     MockDOM.element(),
                     MockDOM.element()
@@ -93,7 +93,7 @@ describe("test/base/abstract-video-spec", function () {
                 sourceElements[1].setAttribute("src", "movie2.ogg");
                 sourceElements[1].setAttribute("type", "video/ogg");
                 aVideoPlayer.originalElement.childNodes = sourceElements;
-                aVideoPlayer.mediaElement.canPlayType = function(type) {
+                aVideoPlayer.mediaElement.canPlayType = function (type) {
                     if (type === "video/ogg") {
                         return "maybe";
                     }
@@ -110,9 +110,9 @@ describe("test/base/abstract-video-spec", function () {
                 aVideoPlayer.element = MockDOM.element();
                 aVideoPlayer.originalElement = MockDOM.element();
                 aVideoPlayer.mediaElement = MockDOM.element();
-                aVideoPlayer.element.ownerDocument.createElement = function() {
+                aVideoPlayer.element.ownerDocument.createElement = function () {
                     var element = MockDOM.element();
-                    element.canPlayType = function(type) {
+                    element.canPlayType = function (type) {
                         if (type === "video/ogg") {
                             return "maybe";
                         }
@@ -122,7 +122,7 @@ describe("test/base/abstract-video-spec", function () {
                 aVideoPlayer.enterDocument(true);
             });
 
-            it("should use first source with known/valid media type", function() {
+            it("should use first source with known/valid media type", function () {
                 aVideoPlayer.sources = [
                     {src: "movie1.ogg", type: "video/ogg"},
                     {src: "movie2.ogg", type: "video/ogg"}
@@ -130,7 +130,7 @@ describe("test/base/abstract-video-spec", function () {
                 expect(aVideoPlayer.src).toBe("movie1.ogg");
             });
 
-            it("should skip sources with unknown/invalid media type", function() {
+            it("should skip sources with unknown/invalid media type", function () {
                 aVideoPlayer.sources = [
                     {src: "movie1.ogg", type: "invalid/type"},
                     {src: "movie2.ogg", type: "video/ogg"}
@@ -138,7 +138,7 @@ describe("test/base/abstract-video-spec", function () {
                 expect(aVideoPlayer.src).toBe("movie2.ogg");
             });
 
-            it("should save all sources", function() {
+            it("should save all sources", function () {
                 var sources = [
                     {src: "movie1.ogg", type: "invalid/type"},
                     {src: "movie2.ogg", type: "video/ogg"}
@@ -199,23 +199,23 @@ describe("test/base/abstract-video-spec", function () {
                 expect(aVideoPlayer.isFullScreen).toBeFalsy();
             });
 
-            it("can not be set directly", function() {
+            it("can not be set directly", function () {
                 aVideoPlayer.isFullScreen = true;
                 expect(aVideoPlayer.isFullScreen).toBeFalsy();
             });
 
-            it("can be toggled", function() {
+            it("can be toggled", function () {
                 aVideoPlayer.toggleFullScreen();
                 expect(aVideoPlayer.isFullScreen).toBeTruthy();
             });
 
-            it("can not be toggled if fullscreen is not supported", function() {
+            it("can not be toggled if fullscreen is not supported", function () {
                 aVideoPlayer.supportsFullScreen = false;
                 aVideoPlayer.toggleFullScreen();
                 expect(aVideoPlayer.isFullScreen).toBeFalsy();
             });
 
-            it("can be toggled back", function() {
+            it("can be toggled back", function () {
                 aVideoPlayer.toggleFullScreen();
                 aVideoPlayer.toggleFullScreen();
                 expect(aVideoPlayer.isFullScreen).toBeFalsy();
@@ -238,7 +238,7 @@ describe("test/base/abstract-video-spec", function () {
                 expect(aVideoPlayer.supportsFullScreen).toBeTruthy();
             });
 
-            it("can be set", function() {
+            it("can be set", function () {
                 aVideoPlayer.supportsFullScreen = false;
                 expect(aVideoPlayer.supportsFullScreen).toBeFalsy();
             });

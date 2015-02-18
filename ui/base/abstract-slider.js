@@ -266,7 +266,7 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
     },
 
     handleKeyPress: {
-        value: function(event) {
+        value: function (event) {
             if (!this.enabled) {
                 return;
             }
@@ -422,7 +422,7 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
     },
 
     _calculateSliderMagnitude: {
-        value: function() {
+        value: function () {
             var computedStyle = window.getComputedStyle(this._element);
 
             if(this.axis === "vertical") {
@@ -442,7 +442,7 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
     },
 
     handleAxisChange: {
-        value: function() {
+        value: function () {
             if (this._translateComposer) {
                 this._translateComposer.axis = this.axis;
             }
@@ -461,7 +461,7 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
     },
 
     handlePropertyChange: {
-        value: function(changeValue, key, object) {
+        value: function (changeValue, key, object) {
             if(key.match(this._propertyRegex) !== null) {
                 if(this._propertyNamesUsed) {
                     this._propertyNamesUsed[key] = true;

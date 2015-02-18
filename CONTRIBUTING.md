@@ -3,20 +3,27 @@ Contributing
 
 Pull requests are gladly accepted. We also really appreciate tests.
 
-Tests
------
 
-Tests can be run by loading the following url in your browser `/test/run.html`.
+## Running Tests
+
+Tests can be run by loading the following url in your browser `/test/run.html`
+
+E.g. of running an individual test: `/test/run.html?spec=events/eventmanager-spec`
+
 
 ### Creating
 
+
 #### Unit test
+
 Here's how to create a new unit test:
 
  1. run `minit create:spec -n myspec`. This will create a `-spec.js` file where you can add your Jasmine assertions.
  2. Add the moduleId of the new spec to `/test/run.js`.
 
+
 #### UI test
+
 Here's how to create a new ui test:
 
  1. run `minit create:test -n mytest`. This will create a `mytest` directory that includes
@@ -31,25 +38,25 @@ The spec file queues up  the ui test and executes the assertions when the page u
 ```javascript
 var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-TestPageLoader.queueTest("mytest", function(testPage) {
-    describe("test/ui/mytest-spec", function() {
+TestPageLoader.queueTest("mytest", function (testPage) {
+    describe("test/ui/mytest-spec", function () {
         ...
     })
 });
 ```
 
-Core Team
-=========
 
-git subtree
------------
+## Notes for Core Team
+
+
+### git subtree
 
 Git subtrees are like submodules, but better and easier for everyone involved. They allow you to import code from a different repository but instead of adding a *reference* to your repository, they add the **actual code** *and commit saying where the code came from*.
 
 The great thing about subtrees is if you do not care about merging or splitting them, they **do not affect you**. You can treat the whole repository as you would normally. If the above describes you, you can stop reading now.
 
-Installing
-----------
+
+#### Installing
 
 If you use OSX and homebrew, then `brew install git` will install the subtree command along with git.
 
@@ -60,19 +67,22 @@ Otherwise it is a single script you can download:
 3. Rename to git-subtree: `mv git-subtree.sh git-subtree`
 4. Move to a directory on your `PATH`
 
-Using
------
+
+#### Using
 
 Each section below has a description and example for each command, and a list of the subtrees in each of the montagejs
 repositories with the command that you can copy and paste. See the Adding section for an example of what a subtree looks
 like.
 
-### Merging/pulling
+
+#### Merging/pulling
+
 This will merge updates from the other repository while keeping any changes made to the subtree locally (for example deleted files).
 
 ```bash
 git subtree pull --squash --prefix=$dir$ git@github.com:$repo$.git $commitOrTag$ -m "Update $name$ to $version$"
 ```
+
 
 #### Mr ↣ Montage
 
@@ -81,13 +91,14 @@ git subtree pull --squash --prefix=packages/mr git@github.com:montagejs/mr.git $
 ```
 
 
-### Splitting
+#### Splitting
 
 Splitting allows you take take changes to the subtree from your repository and commit them to the other one.
 
 TODO: Write after splitting for the first time
 
-### Adding
+
+#### Adding
 
 This will add all the files in `repo` at `commit` under `dir`, and will create 2 commits
 

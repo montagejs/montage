@@ -1,49 +1,42 @@
  /*global require, exports*/
 
 /**
- * @module montage/ui/base/abstract-button.reel
- * @requires montage/core/core
- * @requires montage/ui/component
- * @requires montage/ui/native-control
+ * @module montage/ui/base/abstract-button
+ * @requires montage/ui/base/abstract-control
  * @requires montage/composer/press-composer
  */
-var Montage = require("../../core/core").Montage,
-    AbstractControl = require("./abstract-control").AbstractControl,
+var AbstractControl = require("./abstract-control").AbstractControl,
     PressComposer = require("../../composer/press-composer").PressComposer;
 
 /**
  * @class AbstractButton
  * @extends AbstractControl
- * @fires AbstractButton#action
- * @fires AbstractButton#longAction
  */
-var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @lends AbstractButton# */ {
+var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @lends AbstractButton.prototype # */ {
 
     /**
      * Dispatched when the button is activated through a mouse click, finger
      * tap, or when focused and the spacebar is pressed.
-     * @event action
-     * @memberof AbstractButton
-     * @property {Dict} detail - The detail object as defined in  {@link
-     * AbstractControl#detail}
+     *
+     * @event AbstractButton#action
+     * @property {Dict} detail - The detail object as defined in {@link AbstractControl#detail}
      */
 
     /**
      * Dispatched when the button is pressed for a period of time, set by
      * {@link AbstractButton#holdThreshold}.
-     * @event longAction
-     * @memberof AbstractButton
-     * @property {Dict} detail - The detail object as defined in {@link
-     * AbstractControl#detail}
+     *
+     * @event AbstractButton#longAction
+     * @property {Dict} detail - The detail object as defined in {@link AbstractControl#detail}
      */
 
     /**
-     * @private
+     * @constructs
      */
     constructor: {
         value: function AbstractButton() {
             if(this.constructor ===  AbstractButton) {
-                throw new Error("AbstractControl cannot be instantiated.");
+                throw new Error("AbstractButton cannot be instantiated.");
             }
             this.super();
             this._pressComposer = new PressComposer();
@@ -62,22 +55,24 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
      * button's DOM element during the next draw cycle. When set to `true` the
      * "montage--disabled" CSS class is removed from the element's class
      * list.
-     * @type {boolean}
+     * @property {boolean} value
      */
     enabled: {
         value: true
     },
 
+    /**
+     * @private
+     */
     _preventFocus: {
         value: false
     },
 
     /**
      * Specifies whether the button should receive focus or not.
-     * @type {boolean}
+     *
+     * @property {boolean}
      * @default false
-     * @event longpress
-     * @memberof AbstractButton
      */
     preventFocus: {
         get: function () {
@@ -90,13 +85,13 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     },
 
     acceptsActiveTarget: {
-        value: function() {
+        value: function () {
             return ! this._preventFocus;
         }
     },
 
     willBecomeActiveTarget: {
-        value: function(previousActiveTarget) {
+        value: function (previousActiveTarget) {
 
         }
     },
@@ -108,19 +103,22 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
      */
     _labelNode: {value:undefined, enumerable: false},
 
-    _label: { value: undefined, enumerable: false },
+    _label: {value: undefined, enumerable: false},
 
     /**
-     * The displayed text on the button. In an &lt;input> element this is taken from the element's `value` attribute. On any other element (including &lt;button>) this is the first child node which is a text node. If one isn't found then it will be created.
-     * If the button has a non-null `converter` property, the converter object's `convert()` method is called on the value before being assigned to the button instance.
-     * @type {string}
+     * The displayed text on the button. In an `input` element this is taken from the element's `value` attribute.
+     * On any other element (including `button`) this is the first child node which is a text node.
+     * If one isn't found then it will be created. If the button has a non-null `converter` property,
+     * the converter object's `convert()` method is called on the value before being assigned to the button instance.
+     *
+     * @property {string}
      * @default undefined
      */
     label: {
-        get: function() {
+        get: function () {
             return this._label;
         },
-        set: function(value) {
+        set: function (value) {
             if (typeof value !== "undefined" && this.converter) {
                 try {
                     value = this.converter.convert(value);
@@ -140,17 +138,25 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     /**
      * The amount of time in milliseconds the user must press and hold the
      * button a `longAction` event is dispatched. The default is 1 second.
-     * @type {number}
+     * @property {number} value
      * @default 1000
      */
     holdThreshold: {
         value: 1000
     },
 
+    /**
+     * @property {PressComposer} value
+     * @default null
+     * @private
+     */
     _pressComposer: {
         value: null
     },
 
+    /**
+     * @private
+     */
     _active: {
         value: false
     },
@@ -158,21 +164,22 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     /**
      * This property is true when the button is being interacted with, either
      * through mouse click or touch event, otherwise false.
-     * @type {boolean}
+     *
+     * @property {boolean}
      * @default false
      */
     active: {
-        get: function() {
+        get: function () {
             return this._active;
         },
-        set: function(value) {
+        set: function (value) {
             this._active = value;
             this.needsDraw = true;
         }
     },
 
     prepareForActivationEvents: {
-        value: function() {
+        value: function () {
             this._pressComposer.addEventListener("pressStart", this, false);
             this._pressComposer.addEventListener("press", this, false);
             this._pressComposer.addEventListener("pressCancel", this, false);
@@ -181,7 +188,7 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
 
     // Optimisation
     addEventListener: {
-        value: function(type, listener, useCapture) {
+        value: function (type, listener, useCapture) {
             AbstractControl.addEventListener.call(this, type, listener, useCapture);
             if (type === "longAction") {
                 this._pressComposer.addEventListener("longPress", this, false);
@@ -193,10 +200,11 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
 
     /**
      * Called when the user starts interacting with the component.
+     *
      * @private
      */
     handlePressStart: {
-        value: function(event) {
+        value: function (event) {
             this.active = true;
 
             if (event.touch) {
@@ -213,10 +221,11 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
 
     /**
      * Called when the user has interacted with the button.
+     *
      * @private
      */
     handlePress: {
-        value: function(event) {
+        value: function (event) {
             this.active = false;
             this.dispatchActionEvent();
             document.removeEventListener("touchmove", this, false);
@@ -224,7 +233,7 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     },
 
     handleKeyup: {
-        value: function(event) {
+        value: function (event) {
             // action event on spacebar
             if (event.keyCode === 32) {
                 this.active = false;
@@ -234,7 +243,7 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     },
 
     handleLongPress: {
-        value: function(event) {
+        value: function (event) {
             // When we fire the "longAction" event we don't want to fire the
             // "action" event as well.
             this._pressComposer.cancelPress();
@@ -246,32 +255,35 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     },
 
     /**
-    Called when all interaction is over.
-    @private
-    */
+     * Called when all interaction is over.
+     * @private
+     */
     handlePressCancel: {
-        value: function(event) {
+        value: function (event) {
             this.active = false;
             document.removeEventListener("touchmove", this, false);
         }
     },
 
+    /**
+     * @private
+     */
     handleTouchmove: {
-        value: function(event) {
+        value: function (event) {
             event.preventDefault();
         }
     },
 
     /**
-    If this is an input element then the label is handled differently.
-    @private
-    */
+     * If this is an input element then the label is handled differently.
+     * @private
+     */
     isInputElement: {
         value: false
     },
 
     enterDocument: {
-        value: function(firstDraw) {
+        value: function (firstDraw) {
             if(firstDraw) {
                 this.isInputElement = (this.originalElement.tagName === "INPUT");
                 // Only take the value from the element if it hasn't been set
@@ -299,12 +311,12 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
 
     /**
      * Draws the label to the DOM.
-     * @method
+     * @function
      * @private
      */
     _drawLabel: {
         enumerable: false,
-        value: function(value) {
+        value: function (value) {
             if (this.isInputElement) {
                 this._element.value = value;
             } else if (this._labelNode) {
@@ -314,7 +326,7 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     },
 
     draw: {
-        value: function() {
+        value: function () {
             if (this._elementNeedsTabIndex()) {
                 if (this._preventFocus) {
                     this.element.removeAttribute("tabindex");
@@ -336,7 +348,7 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     },
 
     _elementNeedsTabIndex: {
-        value: function() {
+        value: function () {
             return this.element.tagName.match(this._elementNeedsTabIndexRegex) === null;
         }
     }

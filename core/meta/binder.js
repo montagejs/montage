@@ -1,4 +1,5 @@
 "use strict";
+
 /**
  * @module montage/core/meta/binder
  * @requires montage/core/core
@@ -20,12 +21,14 @@ var _binderManager = null;
 /**
  * @class Binder
  * @classdesc A blueprint binder is a collection of of blueprints for a
- * specific access type.
- * It also includes the connection information.
+ * specific access type. It also includes the connection information.
+ *
  * @extends Montage
  */
-var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
-
+var Binder = exports.Binder = Montage.specialize( /** @lends Binder.prototype # */ {
+    /**
+     * @constructs Binder
+     */
     constructor: {
         value: function Binder() {
             this.superForValue("constructor")();
@@ -38,12 +41,12 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
     },
 
     /**
-     * @method
+     * @function
      * @param {string} name
      * @returns itself
      */
     initWithNameAndRequire: {
-        value: function(name, _require) {
+        value: function (name, _require) {
             if (!name) throw new Error("name is required");
             if (!_require) throw new Error("require is required");
 
@@ -55,7 +58,7 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
     },
 
     serializeSelf: {
-        value: function(serializer) {
+        value: function (serializer) {
             serializer.setProperty("name", this.name);
             if (this.blueprints.length > 0) {
                 serializer.setProperty("blueprints", this.blueprints);
@@ -65,7 +68,7 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
     },
 
     deserializeSelf: {
-        value: function(deserializer) {
+        value: function (deserializer) {
             this._name = deserializer.getProperty("name");
             //copy contents into the blueprints array
             var value = deserializer.getProperty("blueprints");
@@ -83,15 +86,18 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
     /**
      * Name of the object.
      * The name is used to define the property on the object.
-     * @method
+     * @function
      * @type {string}
      */
     name: {
-        get: function() {
+        get: function () {
             return this._name;
         }
     },
 
+    /**
+     * @private
+     */
     _require: {
         value: null
     },
@@ -101,14 +107,17 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
      * All blueprints added must be in this require's package, or in a direct
      * dependency.
      * @readonly
-     * @type {function} a package's `require` function
+     * @returns {function} a package's `require` function
      */
     require: {
-        get: function() {
+        get: function () {
             return this._require;
         }
     },
 
+    /**
+     * @private
+     */
     _blueprintForPrototypeTable: {
         distinct:true,
         value: {}
@@ -117,10 +126,10 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
     /**
      * The identifier is the name of the binder and is used to make the
      * serialization of binders more readable.
-     * @type {string}
+     * @returns {string}
      */
     identifier: {
-        get: function() {
+        get: function () {
             return [
                 "binder",
                 this.name.toLowerCase()
@@ -155,16 +164,16 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
     /**
      * The list of blueprints in this binder.
      * @readonly
-     * @type {Array.<Blueprint>}
+     * @returns {Array.<Blueprint>}
      */
     blueprints: {
-        get: function() {
+        get: function () {
             return this._blueprints;
         }
     },
 
     /**
-     * @method
+     * @function
      * @param {?Blueprint} blueprint
      * @returns blueprint
      */
@@ -185,12 +194,12 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
     },
 
     /**
-     * @method
+     * @function
      * @param {Blueprint} blueprint
      * @returns blueprint
      */
     removeBlueprint: {
-        value: function(blueprint) {
+        value: function (blueprint) {
             if (blueprint !== null) {
                 var index = this.blueprints.indexOf(blueprint);
                 if (index >= 0) {
@@ -203,7 +212,7 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
     },
 
     /**
-     * @method
+     * @function
      * @param {string} name
      * @param {string} moduleID
      * @returns {Blueprint} The new blueprint
@@ -216,7 +225,7 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
 
     /**
      * Return the blueprint associated with this prototype.
-     * @method
+     * @function
      * @param {string} prototypeName
      * @param {string} moduleId
      * @returns {?Blueprint} blueprint
@@ -243,6 +252,9 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
         }
     },
 
+    /**
+     * @private
+     */
     _blueprintObjectProperty: {
         value: null
     },
@@ -253,7 +265,7 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
      * @type {ObjectProperty}
      */
     ObjectProperty: {
-        get: function() {
+        get: function () {
             if (!this._blueprintObjectProperty) {
                 this._blueprintObjectProperty = Binder.manager.defaultBlueprintObjectProperty;
             }
@@ -269,10 +281,10 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder# */ {
 
     /**
      * Returns the blueprint binder manager.
-     * @type {BinderManager}
+     * @returns {BinderManager}
      */
     manager: {
-        get: function() {
+        get: function () {
             if (_binderManager === null) {
                 _binderManager = new BinderManager();
             }

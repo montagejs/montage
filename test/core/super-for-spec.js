@@ -1168,7 +1168,7 @@ describe("test/core/super-for-spec", function () {
             });
         });
         describe("constructors", function () {
-            describe("with three in a row", function() {
+            describe("with three in a row", function () {
                 beforeEach(function () {
                     Vehicle = Montage.specialize( {
                         constructor: {
@@ -1229,7 +1229,7 @@ describe("test/core/super-for-spec", function () {
                     expect(beetleConstructorSpy.callCount).toEqual(2);
                 });
             });
-            describe("with no constructor on Beetle", function() {
+            describe("with no constructor on Beetle", function () {
                 beforeEach(function () {
                     Vehicle = Montage.specialize( {
                         constructor: {
@@ -1263,7 +1263,7 @@ describe("test/core/super-for-spec", function () {
                     expect(carConstructorSpy.callCount).toEqual(2);
                 });
             });
-            describe("with no constructor on Car", function() {
+            describe("with no constructor on Car", function () {
                 beforeEach(function () {
                     Vehicle = Montage.specialize( {
                         constructor: {

@@ -64,11 +64,11 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
     },
 
     url: {
-        set: function(value) {
+        set: function (value) {
             this._url = value;
             this.needsDraw = true;
         },
-        get: function() {
+        get: function () {
             return this._url;
         }
     },
@@ -78,11 +78,11 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
     },
 
     label: {
-        set: function(value) {
+        set: function (value) {
             this._label = value;
             this.needsDraw = true;
         },
-        get: function() {
+        get: function () {
             return this._label;
         }
     },
@@ -92,11 +92,11 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
     },
 
     textAlternative: {
-        set: function(value) {
+        set: function (value) {
             this._textAlternative = value;
             this.needsDraw = true;
         },
-        get: function() {
+        get: function () {
             return this._textAlternative;
         }
     },
@@ -106,17 +106,17 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
     },
 
     opensNewWindow: {
-        set: function(value) {
+        set: function (value) {
             this._opensNewWindow = value;
             this.needsDraw = true;
         },
-        get: function() {
+        get: function () {
             return this._opensNewWindow;
         }
     },
 
     enterDocument: {
-        value: function(firstTime) {
+        value: function (firstTime) {
             if (firstTime) {
                 if (!this.hasOwnProperty("_label")) {
                     this.label = this.element.textContent;
@@ -126,7 +126,7 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
     },
 
     handlePressStart: {
-        value: function(event) {
+        value: function (event) {
             this.active = true;
 
             if (event.touch) {
@@ -142,7 +142,7 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
      * @private
      */
     handlePress: {
-        value: function(/* event */) {
+        value: function (/* event */) {
             this.active = false;
 
             if (!this.enabled) {
@@ -158,14 +158,14 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
      * @private
      */
     handlePressCancel: {
-        value: function(/* event */) {
+        value: function (/* event */) {
             this.active = false;
             document.removeEventListener("touchmove", this, false);
         }
     },
 
     prepareForActivationEvents: {
-        value: function() {
+        value: function () {
             this._pressComposer.addEventListener("pressStart", this, false);
             this._pressComposer.addEventListener("press", this, false);
             this._pressComposer.addEventListener("pressCancel", this, false);

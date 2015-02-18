@@ -105,7 +105,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
     },
 
     labelPropertyName: {
-        set: function(value) {
+        set: function (value) {
             if (value) {
                 this._labelPropertyName = value;
             } else {
@@ -114,7 +114,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
             this._contentIsDirty = true;
             this.needsDraw = true;
         },
-        get: function() {
+        get: function () {
             return this._labelPropertyName;
         }
     },
@@ -124,10 +124,10 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
     },
 
     value: {
-        get: function() {
+        get: function () {
             return this._value;
         },
-        set: function(value) {
+        set: function (value) {
             if (value !== this._value) {
                 this._value = value;
                 // TODO: "value" <-> "values.one()"
@@ -144,10 +144,10 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
     },
 
     values: {
-        get: function() {
+        get: function () {
             return this._values;
         },
-        set: function(value) {
+        set: function (value) {
             var args = [0, this._values.length].concat(value);
             this._values.splice.apply(this._values, args);
 
@@ -164,7 +164,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
     },
 
     prepareForActivationEvents: {
-        value: function() {
+        value: function () {
             this._pressComposer.addEventListener("pressStart", this, false);
             this._pressComposer.addEventListener("press", this, false);
             this._pressComposer.addEventListener("pressCancel", this, false);
@@ -177,7 +177,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
      * Called when the user starts interacting with the component.
      */
     handlePressStart: {
-        value: function(event) {
+        value: function (event) {
             this.active = true;
 
             if (event.touch) {
@@ -192,7 +192,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
      * Called when the user has interacted with the select.
      */
     handlePress: {
-        value: function(event) {
+        value: function (event) {
             this.active = false;
 
             if (!this.enabled) {
@@ -209,20 +209,20 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
      * @private
      */
     handlePressCancel: {
-        value: function(event) {
+        value: function (event) {
             this.active = false;
             document.removeEventListener("touchmove", this, false);
         }
     },
 
     handleTouchmove: {
-        value: function(event) {
+        value: function (event) {
             event.preventDefault();
         }
     },
 
     handleContentRangeChange: {
-        value: function() {
+        value: function () {
             // When the content changes we need to update the "value" if none is
             // set (new content) or if the previous "value" was removed in this
             // range change.
@@ -239,7 +239,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
     },
 
     handleValuesRangeChange: {
-        value: function() {
+        value: function () {
             // TODO: "value" <-> "values.one()"
             if (this.values.length > 0) {
                 this.value = this.values.one();
@@ -249,7 +249,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
     },
 
     handleContentControllerChange: {
-        value: function(value) {
+        value: function (value) {
             if (value) {
                 this._values = value.selection;
                 this.handleValuesRangeChange();
@@ -258,7 +258,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
     },
 
     enterDocument: {
-        value: function(firstDraw) {
+        value: function (firstDraw) {
             if(firstDraw) {
                 this.element.setAttribute("role", "listbox");
             }

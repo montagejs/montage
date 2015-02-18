@@ -13,13 +13,13 @@ var Point = require("./point").Point;
 var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezier# */{
 
     /**
-     * @method
+     * @function
      * @param {Array} controlPoints Control points.
      * @returns itself
      */
     init: {
         enumerable: false,
-        value: function(controlPoints) {
+        value: function (controlPoints) {
             if (controlPoints !== null) {
                 if (controlPoints.length === 2) {
                     this.p1 = controlPoints[0];
@@ -36,7 +36,7 @@ var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezi
     },
 
     /**
-     * @method
+     * @function
      * @param {number} t Control point.
      * @returns itself or `new Point().init(this.p0.x * b1 + this.p1.x * b2 +
      * this.p2.x * b3 + this.p3.x * b4, this.p0.y * b1 + this.p1.y * b2 +
@@ -44,7 +44,7 @@ var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezi
     */
     position: {
         enumerable: false,
-        value: function(t) {
+        value: function (t) {
             if (t < 0 || t > 1) {
                 return;
             }
@@ -61,20 +61,20 @@ var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezi
     },
 
     /**
-     * @method
+     * @function
      * @param {number} t Control point.
      * @returns CubicBezier.create(CubicBezier).init([this.p0, this.p01, this.p012, this.p0123])
      */
     split: {
         enumerable: false,
-        value: function(t) {
+        value: function (t) {
             this.makeScaffolding(t);
             return CubicBezier.create(CubicBezier).init([this.p0, this.p01, this.p012, this.p0123]);
         }
     },
 
     /**
-     * @method
+     * @function
      * @param {number} t Control point.
      * @returns `CubicBezier.create(CubicBezier).init([new
      * Point().init(this.p01.x / xScale, this.p01.y / yScale), new
@@ -82,7 +82,7 @@ var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezi
      */
     splitToTimingFunction: {
         enumerable: false,
-        value: function(t) {
+        value: function (t) {
             this.makeScaffolding(t);
             // p0123 x and y are the scale
             var xScale = this.p0123.x,
@@ -92,12 +92,12 @@ var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezi
     },
 
     /**
-     * @method
+     * @function
      * @param {number} t Control point.
      */
     makeScaffolding: {
         enumerable: false,
-        value: function(t) {
+        value: function (t) {
 
             t = 1 - t;
 

@@ -43,10 +43,10 @@ var Alpha = Montage.specialize( {
 
     foo: {
         enumerable: false,
-        set: function(value) {
+        set: function (value) {
             this._foo = value;
         },
-        get: function() {
+        get: function () {
             return this._foo;
         }
     },
@@ -63,7 +63,7 @@ var Alpha = Montage.specialize( {
 
     getOnly: {
         enumerable: false,
-        get: function() {
+        get: function () {
             return this._getOnly;
         }
     },
@@ -75,7 +75,7 @@ var Alpha = Montage.specialize( {
 
     setOnly: {
         enumerable: false,
-        set: function(value) {
+        set: function (value) {
             this._setOnly = value;
         }
     }
@@ -91,22 +91,22 @@ var Omega = Montage.specialize( {
 
     bar: {
         enumerable: false,
-        set: function(value) {
+        set: function (value) {
             this._bar = value;
         },
-        get: function() {
+        get: function () {
             return this._bar;
         }
     }
 });
 
-describe("bindings/spec", function() {
+describe("bindings/spec", function () {
 
-    describe("a typical installed binding", function() {
+    describe("a typical installed binding", function () {
 
-        describe('that is not one way', function() {
+        describe('that is not one way', function () {
 
-            it("must correctly observe a propertyPath where a get/set property follows a value property", function() {
+            it("must correctly observe a propertyPath where a get/set property follows a value property", function () {
                 var target = new Alpha(),
                     source = new Alpha(),
                     intermediateValue = new Omega();
@@ -126,7 +126,7 @@ describe("bindings/spec", function() {
                 expect(intermediateValue.bar).toBe("hey new value here");
             });
 
-            it("should propagate a change from the source object's source property path to the bound object's bound property path, if the binding is not one way", function() {
+            it("should propagate a change from the source object's source property path to the bound object's bound property path, if the binding is not one way", function () {
                 var target = new Alpha(),
                 source = new Omega();
 
@@ -150,14 +150,14 @@ describe("bindings/spec", function() {
 
             });
 
-            it("must not give the specified converter a chance to modify the value being passed from the bound object to the source object", function() {
+            it("must not give the specified converter a chance to modify the value being passed from the bound object to the source object", function () {
                 var target = new Alpha(),
                         source = new Omega();
 
                 Bindings.defineBinding(target, "foo", {
                     source: source,
                     "<->": "bar",
-                    convert: function() {
+                    convert: function () {
                         return "no!";
                     }
                 });
@@ -169,7 +169,7 @@ describe("bindings/spec", function() {
 
         });
 
-        it("must not propagate a change from the source object's source property path to the bound object's bound property path", function() {
+        it("must not propagate a change from the source object's source property path to the bound object's bound property path", function () {
             var target = new Alpha(),
             source = new Omega();
 
@@ -188,7 +188,7 @@ describe("bindings/spec", function() {
             expect(target.foo).toBeTruthy();
         });
 
-        it("should propagate a change from the bound object's bound property path to the source object's source property path", function() {
+        it("should propagate a change from the bound object's bound property path to the source object's source property path", function () {
             var target = new Alpha(),
             source = new Omega();
 
@@ -202,7 +202,7 @@ describe("bindings/spec", function() {
             expect(target.foo).toBe("foo");
         });
 
-        it("should propagate the original value from the bound object's bound property path to the source object's source property path", function() {
+        it("should propagate the original value from the bound object's bound property path to the source object's source property path", function () {
             var target = new Alpha(),
             source = new Omega();
 
@@ -216,7 +216,7 @@ describe("bindings/spec", function() {
             expect(target.foo).toBe("foo");
         });
 
-        it("should properly install a binding on a property that has only a 'get' in its propertyDescriptor, without making the property 'set-able'", function() {
+        it("should properly install a binding on a property that has only a 'get' in its propertyDescriptor, without making the property 'set-able'", function () {
             var target = new Omega(),
                 source = new Alpha();
 
@@ -246,14 +246,14 @@ describe("bindings/spec", function() {
             expect(target.result).toBe("pass");
         });
 
-        it("should give the specified converter a chance to modify the value being passed from the source object to the bound object", function() {
+        it("should give the specified converter a chance to modify the value being passed from the source object to the bound object", function () {
             var target = new Alpha(),
                     source = new Omega();
 
             Bindings.defineBinding(target, "foo", {
                 source: source,
                 "<-": "bar",
-                convert: function() {
+                convert: function () {
                     return "yay";
                 }
             });
@@ -263,7 +263,7 @@ describe("bindings/spec", function() {
             expect(target.foo).toBe("yay");
         });
 
-        it("should not define a property for a nonexistent property on a bound object", function() {
+        it("should not define a property for a nonexistent property on a bound object", function () {
             // TODO this is what's happening right now, and while it seems a little odd it's basically how you can
             // observe with the expectation that the property may exist later...
             // This makes a lot more sense on arrays than it does on objects, so I'd definitely understand
@@ -281,7 +281,7 @@ describe("bindings/spec", function() {
             expect(source.hasOwnProperty("foo")).toBeTruthy();
         });
 
-        it("should return undefined when defining a binding along a propertyPath that encounters an undefined property", function() {
+        it("should return undefined when defining a binding along a propertyPath that encounters an undefined property", function () {
             var target = new Alpha(),
                 source = new Omega();
 
@@ -295,7 +295,7 @@ describe("bindings/spec", function() {
             expect(target.foo).toBe(undefined);
         });
 
-        it("should update a binding to undefined if the path is broken", function() {
+        it("should update a binding to undefined if the path is broken", function () {
             var target = new Alpha(),
                 source = new Omega(),
                 validObjectInPath = new Omega(),
@@ -316,7 +316,7 @@ describe("bindings/spec", function() {
             expect(target.foo).toBe(undefined);
         });
 
-        it("must throw an error when trying to use a property on a target as the source of a binding at a different path of the same source", function() {
+        it("must throw an error when trying to use a property on a target as the source of a binding at a different path of the same source", function () {
             var target = new Alpha(),
                 source = new Omega();
 
@@ -330,7 +330,7 @@ describe("bindings/spec", function() {
             expect(source.bar).toBe(null);
 
             source.baz = "baz";
-            expect(function() {
+            expect(function () {
                 Bindings.defineBinding(target, "foo", {
                     source: source,
                     "<-": "baz"
@@ -338,7 +338,7 @@ describe("bindings/spec", function() {
             }).toThrow("Can't bind to already bound target, \"foo\"");
         });
 
-        it("must throw an error when trying to use a property on a target as the source of a binding to another object", function() {
+        it("must throw an error when trying to use a property on a target as the source of a binding to another object", function () {
             var target = new Alpha(),
                 source = new Omega(),
                 secondBoundObject = new Omega();
@@ -352,7 +352,7 @@ describe("bindings/spec", function() {
 
             expect(source.bar).toBe(null);
 
-            expect(function() {
+            expect(function () {
                 Bindings.defineBinding(target, "foo", {
                     source: secondBoundObject,
                     "<-": "bar"
@@ -360,9 +360,9 @@ describe("bindings/spec", function() {
             }).toThrow("Can't bind to already bound target, \"foo\"");
         });
 
-        describe("when bound to the same object", function() {
+        describe("when bound to the same object", function () {
 
-            it("should work as expected", function() {
+            it("should work as expected", function () {
                 var target = new Alpha();
 
                 target.valueOnly = "startValue";
@@ -382,7 +382,7 @@ describe("bindings/spec", function() {
 
     });
 
-    describe("two hop binding with boolean", function() {
+    describe("two hop binding with boolean", function () {
 
         var FormatBar,
             DocumentController,
@@ -391,7 +391,7 @@ describe("bindings/spec", function() {
             documentController,
             textItem;
 
-        beforeEach(function() {
+        beforeEach(function () {
 
             FormatBar = Montage.specialize( {boldMode: {value: null}});
             DocumentController = Montage.specialize( {boldMode: {value: null}});
@@ -412,14 +412,14 @@ describe("bindings/spec", function() {
             });
         });
 
-        it("should propagate values to all parties when the change occurs on a two-way bound object", function() {
+        it("should propagate values to all parties when the change occurs on a two-way bound object", function () {
             formatBar.boldMode = true;
             expect(formatBar.boldMode).toBeTruthy();
             expect(documentController.boldMode).toBeTruthy();
             expect(textItem.boldMode).toBeTruthy();
         });
 
-        it("must not propagate values to all parties when the change occurs on a one-way bound object", function() {
+        it("must not propagate values to all parties when the change occurs on a one-way bound object", function () {
             // NOTE this runs this the risk of putting this object out of sync with all the other objects bound together
             textItem.boldMode = false;
 
@@ -428,7 +428,7 @@ describe("bindings/spec", function() {
             expect(textItem.boldMode).toBeFalsy();
         });
 
-        it("must not propagate values to all parties when the value on the two-way binding did not change", function() {
+        it("must not propagate values to all parties when the value on the two-way binding did not change", function () {
             documentController.boldMode = true;
 
             expect(formatBar.boldMode).toBeTruthy();
@@ -438,9 +438,9 @@ describe("bindings/spec", function() {
         });
     });
 
-    describe("involving strings", function() {
+    describe("involving strings", function () {
 
-        it("should probably not bother observing an immutable string for a change at its length property", function() {
+        it("should probably not bother observing an immutable string for a change at its length property", function () {
             var target = new Alpha(),
                 source = "test";
 
@@ -452,7 +452,7 @@ describe("bindings/spec", function() {
                 expect(target.foo).toBe(4);
         });
 
-        it("should propagate a change to a string found at a property when the string's length is being observed", function() {
+        it("should propagate a change to a string found at a property when the string's length is being observed", function () {
             var target = new Alpha(),
                 source = new Alpha();
 
@@ -468,7 +468,7 @@ describe("bindings/spec", function() {
                 expect(target.foo).toBe(11);
         });
 
-        it("should correctly observe the length property of an object if the object at that property was previously a string", function() {
+        it("should correctly observe the length property of an object if the object at that property was previously a string", function () {
             var target = new Alpha(),
                 source = new Alpha();
 
@@ -484,7 +484,7 @@ describe("bindings/spec", function() {
                 expect(target.foo).toBe(12);
         });
 
-        describe("two hop binding with string", function() {
+        describe("two hop binding with string", function () {
 
             var FormatBar,
                 DocumentController,
@@ -493,7 +493,7 @@ describe("bindings/spec", function() {
                 documentController,
                 textItem;
 
-            beforeEach(function() {
+            beforeEach(function () {
 
                 FormatBar = Montage.specialize( {boldMode: {value: null}});
                 DocumentController = Montage.specialize( {boldMode: {value: null}});
@@ -514,21 +514,21 @@ describe("bindings/spec", function() {
                 });
             });
 
-            it("should propagate values to all parties when the change occurs on a two-way bound object", function() {
+            it("should propagate values to all parties when the change occurs on a two-way bound object", function () {
                 formatBar.boldMode = "true";
                 expect(formatBar.boldMode).toEqual("true");
                 expect(documentController.boldMode).toEqual("true");
                 expect(textItem.boldMode).toEqual("true");
           });
 
-            it("must not propagate values to all parties when the change occurs on a one-way bound object", function() {
+            it("must not propagate values to all parties when the change occurs on a one-way bound object", function () {
                 textItem.boldMode = "false";
                 expect(formatBar.boldMode).toBeNull();
                 expect(documentController.boldMode).toBeNull();
                 expect(textItem.boldMode).toEqual("false");
           });
 
-            it("must not propagate values to all parties when the value on the two-way binding did not change", function() {
+            it("must not propagate values to all parties when the value on the two-way binding did not change", function () {
                 documentController.boldMode = "true";
                 expect(formatBar.boldMode).toEqual("true");
                 expect(documentController.boldMode).toEqual("true");
@@ -539,9 +539,9 @@ describe("bindings/spec", function() {
 
     });
 
-    describe("when bound to an array", function() {
+    describe("when bound to an array", function () {
 
-        it("should not go out of its way to protect you from mutations to an object on the left making their way over to the right", function() {
+        it("should not go out of its way to protect you from mutations to an object on the left making their way over to the right", function () {
 
             var target = new Alpha(),
             source = new Omega();
@@ -569,7 +569,7 @@ describe("bindings/spec", function() {
             expect(source.bar[3]).toBe("d"); //but it makes sense, left and right are the same array
         });
 
-        it("should propagate additions from the bound array to the source propertyPath", function() {
+        it("should propagate additions from the bound array to the source propertyPath", function () {
 
             var target = new Alpha(),
             source = new Omega();
@@ -590,7 +590,7 @@ describe("bindings/spec", function() {
             expect(target.foo[3]).toBe("d");
         });
 
-        it("should propagate deletions from the bound array to the source propertyPath", function() {
+        it("should propagate deletions from the bound array to the source propertyPath", function () {
 
             var target = new Alpha(),
             source = new Omega();
@@ -609,7 +609,7 @@ describe("bindings/spec", function() {
             expect(target.foo[1]).toBe("b");
         });
 
-        it("should propagate a change from the bound array index contents to the source propertyPath using splice", function() {
+        it("should propagate a change from the bound array index contents to the source propertyPath using splice", function () {
             var target = new Alpha(),
             source = new Omega();
 
@@ -626,7 +626,7 @@ describe("bindings/spec", function() {
             expect(target.foo).toBe("aa");
         });
 
-        it("should propagate a change from the bound array index contents to the source propertyPath using set", function() {
+        it("should propagate a change from the bound array index contents to the source propertyPath using set", function () {
             var target = new Alpha(),
             source = new Omega();
 
@@ -641,7 +641,7 @@ describe("bindings/spec", function() {
             expect(target.foo).toBe("aa");
         });
 
-        it("should propagate a change from the bound array index contents to the source propertyPath using set when the array changes", function() {
+        it("should propagate a change from the bound array index contents to the source propertyPath using set when the array changes", function () {
             var target = new Alpha(),
             source = new Omega();
 
@@ -656,7 +656,7 @@ describe("bindings/spec", function() {
             expect(target.foo).toBe("aa");
         });
 
-        it("should propagate changes to other objects bound ", function() {
+        it("should propagate changes to other objects bound ", function () {
             var a = new Alpha(),
             b = new Omega(),
             c = new Alpha();
@@ -678,7 +678,7 @@ describe("bindings/spec", function() {
             expect(c.foo[0]).toBe("aa");
         });
 
-        it ("should affect and emit changes on both sides of a two-way binding", function() {
+        it ("should affect and emit changes on both sides of a two-way binding", function () {
             var target = new Alpha(),
                 source = new Omega();
 
@@ -692,11 +692,11 @@ describe("bindings/spec", function() {
             });
 
             var changeListener = {
-                targetListener: function() {
+                targetListener: function () {
                     expect(target.foo.length).toBe(4);
                     expect(target.foo[3]).toBe("d");
                 },
-                sourceListener: function() {
+                sourceListener: function () {
                     expect(source.bar.length).toBe(4);
                     expect(source.bar[3]).toBe("d");
                 }
@@ -714,7 +714,7 @@ describe("bindings/spec", function() {
             expect(changeListener.sourceListener).toHaveBeenCalled();
         });
 
-        it("should remove the last element on a pop, multiple times, when that array index content is bound", function() {
+        it("should remove the last element on a pop, multiple times, when that array index content is bound", function () {
             var target = new Alpha(),
             source = new Omega();
 
@@ -733,7 +733,7 @@ describe("bindings/spec", function() {
             expect(source.bar.length).toBe(0);
         });
 
-        it("should propagate a change from the bound object when the property path includes an array index and that element is removed", function() {
+        it("should propagate a change from the bound object when the property path includes an array index and that element is removed", function () {
             var target = new Alpha(),
                     source = new Omega();
 
@@ -748,7 +748,7 @@ describe("bindings/spec", function() {
             expect(target.foo).toBeUndefined();
         });
 
-        it("must not allow an outright replacement of the value on the target to affect the rightObject in a one wayy binding", function() {
+        it("must not allow an outright replacement of the value on the target to affect the rightObject in a one wayy binding", function () {
             var target = new Alpha(),
                 source = new Omega(),
                 originalObject = ["a", "b", "c"],
@@ -767,7 +767,7 @@ describe("bindings/spec", function() {
             expect(source.bar).toBe(originalObject);
         });
 
-        it("should correctly observe a nonexistent index", function() {
+        it("should correctly observe a nonexistent index", function () {
             var target = new Alpha(),
                 source = new Omega();
 
@@ -783,9 +783,9 @@ describe("bindings/spec", function() {
             expect(target.foo).toBe(42);
         });
 
-        describe("and the 'count' function as part of the property path", function() {
+        describe("and the 'count' function as part of the property path", function () {
 
-            it("should propagate a change to the length when pushing onto to the array", function() {
+            it("should propagate a change to the length when pushing onto to the array", function () {
 
                 var target = new Alpha(),
                 source = new Omega();
@@ -804,7 +804,7 @@ describe("bindings/spec", function() {
                 expect(target.foo).toBe(4);
             });
 
-            it("should propagate a change to the length when popping from the array", function() {
+            it("should propagate a change to the length when popping from the array", function () {
                 var target = new Alpha(),
                 source = new Omega();
 
@@ -822,7 +822,7 @@ describe("bindings/spec", function() {
                 expect(target.foo).toBe(2);
             });
 
-            it("should propagate a change to the length when shifting from the array", function() {
+            it("should propagate a change to the length when shifting from the array", function () {
                 var target = new Alpha(),
                 source = new Omega();
 
@@ -840,7 +840,7 @@ describe("bindings/spec", function() {
                 expect(target.foo).toBe(2);
             });
 
-            it("should propagate a change to the length when unshifting to the array", function() {
+            it("should propagate a change to the length when unshifting to the array", function () {
                 var target = new Alpha(),
                 source = new Omega();
 
@@ -858,7 +858,7 @@ describe("bindings/spec", function() {
                 expect(target.foo).toBe(6);
             });
 
-            it("should propagate a change to the length when splicing to add to the array", function() {
+            it("should propagate a change to the length when splicing to add to the array", function () {
                 var target = new Alpha(),
                 source = new Omega();
 
@@ -876,7 +876,7 @@ describe("bindings/spec", function() {
                 expect(target.foo).toBe(4);
             });
 
-            it("should propagate a change to the length when splicing to remove from the array", function() {
+            it("should propagate a change to the length when splicing to remove from the array", function () {
                 var target = new Alpha(),
                 source = new Omega();
 
@@ -896,11 +896,11 @@ describe("bindings/spec", function() {
 
         });
 
-        describe("using the 'some' function as part of the property path", function() {
+        describe("using the 'some' function as part of the property path", function () {
 
-            describe("with no propertyPath provided to the 'some' function", function() {
+            describe("with no propertyPath provided to the 'some' function", function () {
 
-                it("should propagate a change from false to true", function() {
+                it("should propagate a change from false to true", function () {
                     var target = new Alpha(),
                     source = new Omega();
 
@@ -915,7 +915,7 @@ describe("bindings/spec", function() {
                     expect(target.foo).toBe(true);
                 });
 
-                it("should propagate a change from true to false", function() {
+                it("should propagate a change from true to false", function () {
                     var target = new Alpha(),
                     source = new Omega();
 
@@ -930,7 +930,7 @@ describe("bindings/spec", function() {
                     expect(target.foo).toBe(false);
                 });
 
-                it("should propagate the addition of a true value to an otherwise false array", function() {
+                it("should propagate the addition of a true value to an otherwise false array", function () {
                     var target = new Alpha(),
                     source = new Omega();
 
@@ -945,7 +945,7 @@ describe("bindings/spec", function() {
                     expect(target.foo).toBe(true);
                 });
 
-                it("should propagate the removal of a true value from an otherwise false array", function() {
+                it("should propagate the removal of a true value from an otherwise false array", function () {
                     var target = new Alpha(),
                     source = new Omega();
 
@@ -962,9 +962,9 @@ describe("bindings/spec", function() {
 
             });
 
-            describe("with a propertyPath provided to the 'some' function", function() {
+            describe("with a propertyPath provided to the 'some' function", function () {
 
-                it("should propagate a change from false to true when a false object is pushed to a path after establishing the binding, and then changed to true", function() {
+                it("should propagate a change from false to true when a false object is pushed to a path after establishing the binding, and then changed to true", function () {
                     var target = new Alpha(),
                     source = new Omega();
 
@@ -981,7 +981,7 @@ describe("bindings/spec", function() {
                     expect(target.foo).toBe(true);
                 });
 
-                it("should propagate a change from false to true", function() {
+                it("should propagate a change from false to true", function () {
                     var target = new Alpha(),
                     source = new Omega();
 
@@ -996,7 +996,7 @@ describe("bindings/spec", function() {
                     expect(target.foo).toBe(true);
                 });
 
-                it("should propagate a change from true to false", function() {
+                it("should propagate a change from true to false", function () {
                     var target = new Alpha(),
                     source = new Omega();
 
@@ -1011,7 +1011,7 @@ describe("bindings/spec", function() {
                     expect(target.foo).toBe(false);
                 });
 
-                it("should propagate the addition of a true value to an otherwise false array", function() {
+                it("should propagate the addition of a true value to an otherwise false array", function () {
                     var target = new Alpha(),
                     source = new Omega();
 
@@ -1026,7 +1026,7 @@ describe("bindings/spec", function() {
                     expect(target.foo).toBe(true);
                 });
 
-                it("should propagate the removal of a true value from an otherwise false array", function() {
+                it("should propagate the removal of a true value from an otherwise false array", function () {
                     var target = new Alpha(),
                     source = new Omega();
 
@@ -1041,7 +1041,7 @@ describe("bindings/spec", function() {
                     expect(target.foo).toBe(false);
                 });
 
-                it("should propagate a change from false to true when the array is initially null.", function() {
+                it("should propagate a change from false to true when the array is initially null.", function () {
                     var target = new Alpha(),
                     source = new Omega();
 
@@ -1062,8 +1062,8 @@ describe("bindings/spec", function() {
         });
     });
 
-    describe("bindings deletion", function() {
-        it("should remove a binding on an single level property path", function() {
+    describe("bindings deletion", function () {
+        it("should remove a binding on an single level property path", function () {
             var target = new Alpha(),
             source = new Omega();
 
@@ -1080,7 +1080,7 @@ describe("bindings/spec", function() {
             expect(target.foo).toBe(1);
         });
 
-        it("should remove a binding on an multiple level property path", function() {
+        it("should remove a binding on an multiple level property path", function () {
             var target = new Alpha(),
             source = new Omega();
 
@@ -1097,7 +1097,7 @@ describe("bindings/spec", function() {
             expect(target.foo).toBe(1);
         });
 
-        it("should remove a binding on an property path that includes an array index", function() {
+        it("should remove a binding on an property path that includes an array index", function () {
             var target = new Alpha(),
             source = new Omega();
 
@@ -1115,8 +1115,8 @@ describe("bindings/spec", function() {
         });
     });
 
-    describe("serialization", function() {
-        it("should call \"bindings\" deserialization unit", function() {
+    describe("serialization", function () {
+        it("should call \"bindings\" deserialization unit", function () {
             var Alpha = Montage.specialize( {foo: {value: null}}),
                 Omega = Montage.specialize( {bar: {value: null}}),
                 target = new Alpha(),
@@ -1138,13 +1138,13 @@ describe("bindings/spec", function() {
             spyOn(MontageReviver._unitRevivers, "bindings").andCallThrough();
 
             return deserializer.deserialize(labels)
-            .then(function(objects) {
+            .then(function (objects) {
                 object = objects.root;
                 expect(MontageReviver._unitRevivers.bindings).toHaveBeenCalled();
             });
         });
 
-        it("should serialize a binding to a shorthand format", function() {
+        it("should serialize a binding to a shorthand format", function () {
             var Alpha = Montage.specialize( {foo: {value: null}}),
                 Omega = Montage.specialize( {bar: {value: null}}),
                 target = new Alpha(),
@@ -1176,7 +1176,7 @@ describe("bindings/spec", function() {
             expect(JSON.parse(serialization)).toEqual(expectedSerialization);
         });
 
-        it("should deserialize a one way binding", function() {
+        it("should deserialize a one way binding", function () {
             var deserializer = new Deserializer(),
                 serialization = {
                     "root": {
@@ -1203,7 +1203,7 @@ describe("bindings/spec", function() {
             deserializer.init(
                 serializationString, require);
             return deserializer.deserialize()
-            .then(function(objects) {
+            .then(function (objects) {
                 var root = objects.root,
                     source = objects.source;
 
@@ -1214,7 +1214,7 @@ describe("bindings/spec", function() {
             });
         });
 
-        it("should deserialize a twoway binding", function() {
+        it("should deserialize a twoway binding", function () {
             var deserializer = new Deserializer(),
                 serialization = {
                     "root": {
@@ -1241,7 +1241,7 @@ describe("bindings/spec", function() {
             deserializer.init(
                 serializationString, require);
             return deserializer.deserialize()
-            .then(function(objects) {
+            .then(function (objects) {
                 var root = objects.root,
                     source = objects.source;
 

@@ -7,7 +7,7 @@ var  ParentController = exports.ParentController = ObjectController.specialize( 
 
 
     init: {
-      value: function() {
+      value: function () {
           return this;
       }
     },

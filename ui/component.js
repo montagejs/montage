@@ -2,11 +2,15 @@
 /**
  * @module montage/ui/component
  * @requires montage
- * @requires montage/ui/template
+ * @requires montage/core/target
+ * @requires montage/core/template
+ * @requires montage/core/document-resources
  * @requires montage/core/gate
- * @requires montage/core/logger | component
- * @requires montage/core/logger | drawing
+ * @requires montage/core/promise
+ * @requires montage/core/logger
  * @requires montage/core/event/event-manager
+ * @requires montage/core/serialization/alias
+ * @requires collections/set
  */
 var Montage = require("../core/core").Montage,
     Target = require("../core/target").Target,
@@ -14,29 +18,33 @@ var Montage = require("../core/core").Montage,
     DocumentResources = require("../core/document-resources").DocumentResources,
     Gate = require("../core/gate").Gate,
     Promise = require("../core/promise").Promise,
+    defaultEventManager = require("../core/event/event-manager").defaultEventManager,
+    Alias = require("../core/serialization/alias").Alias,
+
     logger = require("../core/logger").logger("component"),
     drawPerformanceLogger = require("../core/logger").logger("Drawing performance").color.green(),
     drawListLogger = require("../core/logger").logger("drawing list").color.blue(),
     needsDrawLogger = require("../core/logger").logger("drawing needsDraw").color.violet(),
     drawLogger = require("../core/logger").logger("drawing").color.blue(),
-    defaultEventManager = require("../core/event/event-manager").defaultEventManager,
-    Set = require("collections/set"),
-    Alias = require("../core/serialization/alias").Alias;
 
-var ATTR_LE_COMPONENT="data-montage-le-component";
-var ATTR_LE_ARG="data-montage-le-arg";
-var ATTR_LE_ARG_BEGIN="data-montage-le-arg-begin";
-var ATTR_LE_ARG_END="data-montage-le-arg-end";
+    Set = require("collections/set");
 
 /**
- * @requires montage/ui/component-description
+ * @const
+ * @default
+ * @type {string}
  */
+var ATTR_LE_COMPONENT = "data-montage-le-component",
+    ATTR_LE_ARG = "data-montage-le-arg",
+    ATTR_LE_ARG_BEGIN = "data-montage-le-arg-begin",
+    ATTR_LE_ARG_END = "data-montage-le-arg-end";
+
 /**
  * @class Component
  * @classdesc Base class for all Montage components.
- * @extends Montage
+ * @extends Target
  */
-var Component = exports.Component = Target.specialize(/** @lends Component# */ {
+var Component = exports.Component = Target.specialize( /** @lends Component.prototype # */ {
     DOM_ARG_ATTRIBUTE: {value: "data-arg"},
 
     constructor: {
@@ -65,7 +73,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * This property is populated by the template. It is a map of all the
      * instances present in the template's serialization keyed by their label.
      *
-     * @type {Object}
+     * @property {boolean} serializable
+     * @default false
+     * @property {object} value
      * @default null
      */
     templateObjects: {
@@ -73,6 +83,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         value: null
     },
 
+    /**
+     * @private
+     * @property {Target} value
+     */
     _nextTarget: {
         value: null
     },
@@ -87,7 +101,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * To interrupt the propagation path a Target that accepts a falsy
      * nextTarget needs to be set at a component's nextTarget.
      *
-     * @type {Target}
+     * @param {Target} value
+     * @returns {Target}
      */
     nextTarget: {
         get: function () {
@@ -119,7 +134,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * @private
      */
     _dispatchActionEvent: {
-        value: function() {
+        value: function () {
             this.dispatchEvent(this.createActionEvent());
         },
         enumerable: false
@@ -127,11 +142,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     /**
      * Convenience to create a custom event named "action"
-     * @method
+     * @function
      * @returns and event to dispatch upon interaction
      */
     createActionEvent: {
-        value: function() {
+        value: function () {
             var actionEvent = document.createEvent("CustomEvent");
             actionEvent.initCustomEvent("action", true, true, null);
             return actionEvent;
@@ -144,7 +159,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * @private
      */
     canDrawGate: {
-        get: function() {
+        get: function () {
             if (!this._canDrawGate) {
                 this._canDrawGate = new Gate().initWithDelegate(this);
                 this._canDrawGate.setField("componentTreeLoaded", false);
@@ -165,7 +180,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      */
     blockDrawGate: {
         enumerable: false,
-        get: function() {
+        get: function () {
             if (!this._blockDrawGate) {
                 this._blockDrawGate = new Gate().initWithDelegate(this);
                 this._blockDrawGate.setField("element", false);
@@ -249,10 +264,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * @default null
      */
     element: {
-        get: function() {
+        get: function () {
             return this._element;
         },
-        set: function(value) {
+        set: function (value) {
             if (value == null) {
                 console.warn("Tried to set element of ", this, " to ", value);
                 return;
@@ -300,7 +315,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     getElementId: {
-        value: function() {
+        value: function () {
             var element = this._element;
 
             if (element) {
@@ -310,7 +325,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _initDomArguments: {
-        value: function() {
+        value: function () {
             var candidates,
                 domArguments = {},
                 name,
@@ -342,7 +357,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     getDomArgumentNames: {
-        value: function() {
+        value: function () {
             if (!this._domArgumentNames) {
                 this._domArgumentNames = Object.keys(this._domArguments);
             }
@@ -359,13 +374,13 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * When a DOM argument is extracted from a Component it is no longer
      * available
      *
-     * @method
+     * @function
      * @param {string} name The name of the argument, or `"*"` for the entire
      * content.
      * @returns the element
      */
     extractDomArgument: {
-        value: function(name) {
+        value: function (name) {
             var argument;
 
             argument = this._domArguments[name];
@@ -384,7 +399,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * @private
      */
     _getTemplateDomArgument: {
-        value: function(name) {
+        value: function (name) {
             var candidates,
                 node,
                 element,
@@ -428,7 +443,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      */
 
     getTemplateArgumentElement: {
-        value: function(argumentName) {
+        value: function (argumentName) {
             var template = this._ownerDocumentPart.template,
                 element,
                 range,
@@ -464,7 +479,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     getTemplateArgumentSerialization: {
-        value: function(elementIds) {
+        value: function (elementIds) {
             var template = this._ownerDocumentPart.template;
 
             return template._createSerializationWithElementIds(elementIds);
@@ -476,7 +491,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * @private
      */
     resolveTemplateArgumentTemplateProperty: {
-        value: function(templatePropertyName) {
+        value: function (templatePropertyName) {
             var ix = templatePropertyName.indexOf(":"),
                 componentLabel = templatePropertyName.slice(0, ix),
                 propertyName = templatePropertyName.slice(ix),
@@ -510,7 +525,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     setElementWithParentComponent: {
-        value: function(element, parent) {
+        value: function (element, parent) {
             this._alternateParentComponent = parent;
             if (this.element !== element) {
                 this.element = element;
@@ -525,7 +540,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     */
     application: {
         enumerable: false,
-        get: function() {
+        get: function () {
             return require("../core/application").application;
         }
     },
@@ -536,7 +551,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      */
     eventManager: {
         enumerable: false,
-        get: function() {
+        get: function () {
             return defaultEventManager;
         }
     },
@@ -547,19 +562,19 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      */
     rootComponent: {
         enumerable: false,
-        get: function() {
+        get: function () {
             return rootComponent;
         }
     },
 
     /**
-     * @method
+     * @function
      * @returns targetElementController
      * @private
      */
     elementControllerFromEvent: {
         enumerable: false,
-        value: function(event, targetElementController) {
+        value: function (event, targetElementController) {
             return targetElementController;
         }
     },
@@ -576,11 +591,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _parentComponent: {
-        set: function(value) {
+        set: function (value) {
             this.__parentComponent = value;
             this.dispatchOwnPropertyChange("parentComponent", value);
         },
-        get: function() {
+        get: function () {
             return this.__parentComponent;
         }
     },
@@ -597,13 +612,13 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      */
     parentComponent: {
         enumerable: false,
-        get: function() {
+        get: function () {
             return this._parentComponent;
         }
     },
 
     findParentComponent: {
-        value: function() {
+        value: function () {
             var anElement = this.element,
                 aParentNode,
                 eventManager = this.eventManager;
@@ -617,7 +632,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     querySelectorComponent: {
-        value: function(selector) {
+        value: function (selector) {
             if (typeof selector !== "string") {
                 throw "querySelectorComponent: Selector needs to be a string.";
             }
@@ -674,7 +689,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     querySelectorAllComponent: {
-        value: function(selector, owner) {
+        value: function (selector, owner) {
             if (typeof selector !== "string") {
                 throw "querySelectorComponent: Selector needs to be a string.";
             }
@@ -769,12 +784,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     /**
      * @private
      * @deprecated
-     * @method
+     * @function
      * @param {Component} childComponent
      */
     // TODO update all calls to use addChildComponent and remove this method.
     _addChildComponent: {
-        value: function(childComponent) {
+        value: function (childComponent) {
             return this.addChildComponent(childComponent);
         }
     },
@@ -795,7 +810,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     attachToParentComponent: {
-        value: function() {
+        value: function () {
             this.detachFromParentComponent();
             this._parentComponent = null;
 
@@ -823,7 +838,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     detachFromParentComponent: {
-        value: function() {
+        value: function () {
             var parentComponent = this.parentComponent;
 
             if (parentComponent) {
@@ -833,7 +848,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     removeChildComponent: {
-        value: function(childComponent) {
+        value: function (childComponent) {
             var childComponents = this.childComponents,
                 ix = childComponents.indexOf(childComponent);
 
@@ -877,7 +892,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     __exitDocument: {
-        value: function() {
+        value: function () {
             if (this._inDocument && typeof this.exitDocument === "function") {
                 this.exitDocument();
                 this._inDocument = false;
@@ -886,7 +901,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _exitDocument: {
-        value: function() {
+        value: function () {
             var traverse;
 
             if (this._needsEnterDocument) {
@@ -915,7 +930,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     /**
      * Lifecycle method called when this component is removed from the
      * document's DOM tree.
-     * @method
+     * @function
      */
     exitDocument: {
         value: function () {
@@ -926,14 +941,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _prepareForEnterDocument: {
-        value: function() {
+        value: function () {
             // On their first draw components will have their needsDraw = true
             // when they loadComponentTree.
             if (this._firstDraw) {
                 this._needsEnterDocument = true;
             } else {
                 this.needsDraw = true;
-                this.traverseComponentTree(function(component) {
+                this.traverseComponentTree(function (component) {
                     if (component._needsEnterDocument) {
                         return false;
                     }
@@ -981,11 +996,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     /**
      * Remove all bindings and starts buffering the needsDraw.
-     * @method
+     * @function
      * @private
      */
     cleanupDeletedComponentTree: {
-        value: function(cancelBindings) {
+        value: function (cancelBindings) {
             // Deleting bindings in all cases was causing the symptoms expressed in gh-603
             // Until we have a more granular way we shouldn't do this,
             // the cancelBindings parameter is a short term fix.
@@ -993,7 +1008,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 this.cancelBindings();
             }
             this.needsDraw = false;
-            this.traverseComponentTree(function(component) {
+            this.traverseComponentTree(function (component) {
                 // See above comment
                 if (cancelBindings) {
                     component.cancelBindings();
@@ -1010,14 +1025,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     domContent: {
         serializable: false,
-        get: function() {
+        get: function () {
             if (this._element) {
                 return Array.prototype.slice.call(this._element.childNodes, 0);
             } else {
                 return null;
             }
         },
-        set: function(value) {
+        set: function (value) {
             var components,
                 componentsToAdd = [],
                 i,
@@ -1060,7 +1075,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _findAndDetachComponents: {
-        value: function(node, components) {
+        value: function (node, components) {
             // TODO: Check if searching the childComponents of the parent
             //       component can make the search faster..
             var component = node.component,
@@ -1106,7 +1121,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     innerTemplate: {
         serializable: false,
-        get: function() {
+        get: function () {
             var innerTemplate = this._innerTemplate,
                 ownerDocumentPart,
                 ownerTemplate,
@@ -1141,29 +1156,32 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
             return innerTemplate;
         },
-        set: function(value) {
+        set: function (value) {
             this._innerTemplate = value;
         }
     },
 
     /**
      * This method is called right before draw is called.
-     * If ```canDraw()``` returns false, then the component is re-added to the parent's draw list and draw isn't called.
-     * @method
-     * @returns {boolean} true or false
-     * @private this method is evil
+     * If ```canDraw()``` returns false, then the component is re-added to
+     * the parent's draw list and draw isn't called.
+     * This method is evil
+     *
+     * @function
+     * @returns {boolean}
+     * @private
      */
     canDraw: {
-        value: function() {
+        value: function () {
             return this._canDraw;
         }
     },
 
     _canDraw: {
-        get: function() {
+        get: function () {
             return (!this._canDrawGate || this._canDrawGate.value);
         },
-        set: function(value) {
+        set: function (value) {
             rootComponent.componentCanDraw(this, value);
         },
         enumerable: false
@@ -1183,7 +1201,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _updateOwnerCanDrawGate: {
-        value: function() {
+        value: function () {
             if (this._blocksOwnerComponentDraw && this.ownerComponent) {
                 this.ownerComponent.canDrawGate.setField(this.uuid, this.canDrawGate.value);
             }
@@ -1219,7 +1237,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                     this._canDraw = false;
                 }
 
-                this.expandComponent().then(function() {
+                this.expandComponent().then(function () {
                     if (self.hasTemplate || self.shouldLoadComponentTree) {
                         var promises = [],
                             childComponents = self.childComponents,
@@ -1231,7 +1249,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
                         return Promise.all(promises);
                     }
-                }).then(function() {
+                }).then(function () {
                     self._isComponentTreeLoaded = true;
                     // When the component tree is loaded we need to draw if the
                     // component needs to have its enterDocument() called.
@@ -1252,7 +1270,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     /**
      *  Whenever traverseComponentTree reaches the end of a subtree Component#expandComponent~callback is called.
-     * @method
+     * @function
      * @param {Component#traverseComponentTree~visitor} visitor  visitor
      * @param {Component#traverseComponentTree~callback} callback callback object
      * @private
@@ -1282,7 +1300,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 return;
             }
 
-            var visitorFunction = function() {
+            var visitorFunction = function () {
                 if (--childLeftCount === 0 && callback) {
                     callback();
                 }
@@ -1302,16 +1320,16 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * Visitor function for Component#traverseComponentTree. For every component in the tree, the visitor function is
      * called with the current component as an argument.
      * If the function returns false then the traversal is stopped for that subtree.
-     * @method Component#traverseComponentTree~visitor
+     * @function Component#traverseComponentTree~visitor
      * @param Component visitedComponent
      */
     /**
-     * @method Component#traverseComponentTree~callback
+     * @function Component#traverseComponentTree~callback
      */
 
 
     /**
-     * @method
+     * @function
      * @param {Component#expandComponent~callback} callback  TODO
      * @private
      */
@@ -1326,7 +1344,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 this._expandComponentDeferred = deferred;
 
                 if (this.hasTemplate) {
-                    this._instantiateTemplate().then(function() {
+                    this._instantiateTemplate().then(function () {
                         self._isComponentExpanded = true;
                         self._addTemplateStyles();
                         self.needsDraw = true;
@@ -1350,14 +1368,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _setupTemplateObjects: {
-        value: function(objects) {
+        value: function (objects) {
             this.templateObjects = Object.create(null);
             this._addTemplateObjects(objects);
         }
     },
 
     _addTemplateObjects: {
-        value: function(objects) {
+        value: function (objects) {
             var descriptor = this._templateObjectDescriptor,
                 templateObjects = this.templateObjects;
 
@@ -1378,7 +1396,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _makeTemplateObjectGetter: {
-        value: function(owner, label, object) {
+        value: function (owner, label, object) {
             var querySelectorLabel = "@"+label,
                 isRepeated,
                 components,
@@ -1423,9 +1441,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _instantiateTemplate: {
-        value: function() {
+        value: function () {
             var self = this;
-            return this._loadTemplate().then(function(template) {
+            return this._loadTemplate().then(function (template) {
                 if (!self._element) {
                     console.error("Cannot instantiate template without an element.", self);
                     return Promise.reject(new Error("Cannot instantiate template without an element.", self));
@@ -1441,12 +1459,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 self._isTemplateInstantiated = true;
 
                 return template.instantiateWithInstances(instances, _document)
-                .then(function(documentPart) {
+                .then(function (documentPart) {
                     documentPart.parentDocumentPart = self._ownerDocumentPart;
                     self._templateDocumentPart = documentPart;
                     documentPart.fragment = null;
                 })
-                .fail(function(reason) {
+                .fail(function (reason) {
                     var message = reason.stack || reason;
                     console.error("Error in", template.getBaseUrl() + ":", message);
                     throw reason;
@@ -1456,7 +1474,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _templateDidLoad: {
-        value: function(documentPart) {
+        value: function (documentPart) {
             this._setupTemplateObjects(documentPart.objects);
         }
     },
@@ -1473,7 +1491,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
                 promise = this._loadTemplatePromise = Template.getTemplateWithModuleId(
                     this.templateModuleId, info.require)
-                .then(function(template) {
+                .then(function (template) {
                     self._template = template;
                     self._isTemplateLoaded = true;
 
@@ -1491,13 +1509,13 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * @default
      */
     templateModuleId: {
-        get: function() {
+        get: function () {
             return this._templateModuleId || this._getDefaultTemplateModuleId();
         }
     },
 
     _getDefaultTemplateModuleId: {
-        value: function() {
+        value: function () {
             var templateModuleId,
                 slashIndex,
                 moduleId,
@@ -1513,13 +1531,13 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     deserializedFromSerialization: {
-        value: function() {
+        value: function () {
             this.attachToParentComponent();
         }
     },
 
     _deserializedFromTemplate: {
-        value: function(owner, label, documentPart) {
+        value: function (owner, label, documentPart) {
             Montage.getInfoForObject(this).label = label;
             this._ownerDocumentPart = documentPart;
 
@@ -1579,13 +1597,13 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     /**
      * Callback for the ```canDrawGate```.
      * Propagates to the parent and adds the component to the draw list.
-     * @method
+     * @function
      * @param {Gate} gate
      * @see Component#canDrawGate
      * @private
      */
     gateDidBecomeTrue: {
-        value: function(gate) {
+        value: function (gate) {
             if (gate === this._canDrawGate) {
                 this._canDraw = true;
                 this._updateOwnerCanDrawGate();
@@ -1598,7 +1616,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     gateDidBecomeFalse: {
-        value: function(gate) {
+        value: function (gate) {
             if (gate === this._canDrawGate) {
                 this._updateOwnerCanDrawGate();
             }
@@ -1609,7 +1627,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     /**
      * Gate that controls the _canDraw property. When it becomes true it sets
      * _canDraw to true.
-     * @method
+     * @function
      * @returns Gate
      * @private
      */
@@ -1632,7 +1650,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _getArray: {
-        value: function() {
+        value: function () {
             if (this._arrayObjectPool.pool == null) {
                 this._arrayObjectPool.pool = [];
                 for (var i = 0; i < this._arrayObjectPool.size; i++) {
@@ -1649,7 +1667,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _disposeArray: {
-        value: function(array) {
+        value: function (array) {
             if (this._arrayObjectPool.ix > 0) {
                 array.length = 0;
                 this._arrayObjectPool.pool[--this._arrayObjectPool.ix] = array;
@@ -1714,7 +1732,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _updateComponentDom: {
-        value: function() {
+        value: function () {
             var component, composer, length, i;
             if (this._firstDraw) {
 
@@ -1746,7 +1764,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     _replaceElementWithTemplate: {
         enumerable: false,
-        value: function() {
+        value: function () {
             var element = this.element,
                 template = this._templateElement,
                 attributes = this.element.attributes,
@@ -1805,7 +1823,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _addTemplateStyles: {
-        value: function() {
+        value: function () {
             var part = this._templateDocumentPart,
                 resources,
                 styles,
@@ -1848,7 +1866,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _leTagArguments: {
-        value: function() {
+        value: function () {
             //jshint -W106
             var ownerModuleId = this.ownerComponent._montage_metadata.moduleId;
             var label = this._montage_metadata.label;
@@ -1866,7 +1884,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _getNodeFirstElement: {
-        value: function(node) {
+        value: function (node) {
             var element = node.firstElementChild;
 
             if (!element) {
@@ -1883,7 +1901,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _getNodeLastElement: {
-        value: function(node) {
+        value: function (node) {
             var element = node.lastElementChild;
 
             if (!element) {
@@ -1900,7 +1918,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _leTagStarArgument: {
-        value: function(ownerModuleId, label, rootElement) {
+        value: function (ownerModuleId, label, rootElement) {
             var argumentBegin = this._getNodeFirstElement(rootElement);
             var argumentEnd = this._getNodeLastElement(rootElement);
 
@@ -1914,14 +1932,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _leTagNamedArgument: {
-        value: function(ownerModuleId, label, element, name) {
+        value: function (ownerModuleId, label, element, name) {
             element.setAttribute(ATTR_LE_ARG,
                 ownerModuleId + "," + label + "," + name);
         }
     },
 
     _bindTemplateParametersToArguments: {
-        value: function() {
+        value: function () {
             var parameters = this._templateDocumentPart.parameters,
                 parameter,
                 templateArguments,
@@ -1967,7 +1985,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _validateTemplateArguments: {
-        value: function(templateArguments, templateParameters) {
+        value: function (templateArguments, templateParameters) {
             var parameterNames = Object.keys(templateParameters),
                 argumentNames,
                 param;
@@ -2019,7 +2037,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      *
      * The component can implement this method to add event listeners for these
      * events before they are dispatched.
-     * @method
+     * @function
      */
     prepareForActivationEvents: {
         enumerable: false,
@@ -2032,7 +2050,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * @private
      */
     _prepareForActivationEvents: {
-        value: function() {
+        value: function () {
             var i = this.composerList.length, composer;
             for (i = 0; i < this.composerList.length; i++) {
                 composer = this.composerList[i];
@@ -2047,7 +2065,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _performDomContentChanges: {
-        value: function() {
+        value: function () {
             var contents = this._newDomContent,
                 oldContent = this._element.childNodes[0],
                 childNodesCount,
@@ -2094,12 +2112,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * Components should not read the DOM during this phase of the draw cycle
      * as it could force an unwanted reflow from the browser.
      *
-     * @method
+     * @function
      * @see http://montagejs.org/docs/Component-draw-cycle.html
      */
     draw: {
         enumerable: false,
-        value: function() {
+        value: function () {
         }
     },
 
@@ -2113,7 +2131,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * Components should not change the DOM during this phase of the draw cycle
      * as it could force an unwanted reflow from the browser.
      *
-     * @method
+     * @function
      * @see http://montagejs.org/docs/Component-draw-cycle.html
      */
     willDraw: {
@@ -2131,12 +2149,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * Components should not change the DOM during this phase of the draw cycle
      * as it could force an unwanted reflow from the browser.
      *
-     * @method
+     * @function
      * @see http://montagejs.org/docs/Component-draw-cycle.html
      */
     didDraw: {
         enumerable: false,
-        value: function() {
+        value: function () {
         }
     },
 
@@ -2150,7 +2168,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     _addToParentsDrawList: {
         enumerable: false,
-        value: function() {
+        value: function () {
             if (!this._addedToDrawList) {
                 var parentComponent = this.parentComponent;
 
@@ -2196,10 +2214,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      */
     needsDraw: {
         enumerable: false,
-        get: function() {
+        get: function () {
             return !!this._needsDraw;
         },
-        set: function(value) {
+        set: function (value) {
             if (this.isDeserializing) {
                 // Ignore needsDraw(s) which happen during deserialization
                 this._needsDrawInDeserialization = true;
@@ -2233,7 +2251,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     __addToDrawList: {
         enumerable: false,
-        value: function(childComponent) {
+        value: function (childComponent) {
             if (this._drawList === null) {
                 this._drawList = [childComponent];
                 childComponent._addedToDrawList = true;
@@ -2253,7 +2271,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      */
     _addToDrawList: {
         enumerable: false,
-        value: function(childComponent) {
+        value: function (childComponent) {
             this.__addToDrawList(childComponent);
             this._addToParentsDrawList();
         }
@@ -2281,7 +2299,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * The demandingComponent is responsible for claiming the surrendered
      * pointer if it desires.
      *
-     * @method
+     * @function
      * @param {string} pointer The `pointerIdentifier` that the demanding
      * component is asking this component to surrender
      * @param {Object} demandingComponent The component that is asking this
@@ -2289,7 +2307,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * @returns {boolean} true
      */
     surrenderPointer: {
-        value: function(pointer, demandingComponent) {
+        value: function (pointer, demandingComponent) {
             return true;
         }
     },
@@ -2307,11 +2325,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     /**
      * Adds the passed in composer to the component's composer list.
-     * @method
+     * @function
      * @param {Composer} composer
      */
     addComposer: {  // What if the same composer instance is added to more than one component?
-        value: function(composer) {
+        value: function (composer) {
             this.addComposerForElement(composer, composer.element);
         }
     },
@@ -2319,12 +2337,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     /**
      * Adds the passed in composer to the component's composer list and
      * sets the element of the composer to the passed in element.
-     * @method
+     * @function
      * @param {Composer} composer
      * @param {Element} element
      */
     addComposerForElement: {
-        value: function(composer, element) {
+        value: function (composer, element) {
             composer.component = this;
             composer.element = element;
             this.composerList.push(composer);
@@ -2343,11 +2361,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * Adds the passed in composer to the list of composers which will have their
      * frame method called during the next draw cycle.  It causes a draw cycle to be scheduled
      * iff one has not already been scheduled.
-     * @method
+     * @function
      * @param {Composer} composer
      */
     scheduleComposer: {
-        value: function(composer) {
+        value: function (composer) {
             this.rootComponent.addToComposerList(composer);
         }
     },
@@ -2355,11 +2373,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     /**
      * Removes the passed in composer from this component's composer list.  It takes care
      * of calling the composers unload method before removing it from the list.
-     * @method
+     * @function
      * @param {Composer} composer
      */
     removeComposer: {
-        value: function(composer) {
+        value: function (composer) {
             var i, length;
             length = this.composerList.length;
             for (i = 0; i < length; i++) {
@@ -2375,10 +2393,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     /**
      * A convenience method for removing all composers from a component.  This method
      * is responsible for calling unload on each composer before removing it.
-     * @method
+     * @function
      */
     clearAllComposers: {
-        value: function() {
+        value: function () {
             var i, length, composerList = this.composerList;
             length = composerList.length;
             for (i = 0; i < length; i++) {
@@ -2416,7 +2434,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * exports.Main = Component.specialize( {
      *
      *     constructor: {
-     *         value: function() {
+     *         value: function () {
      *             this.localizer = defaultLocalizer;
      *             this.waitForLocalizerMessages = true;
      *         }
@@ -2426,14 +2444,14 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      *
      *     // no draw happens until the localizer's messages have been loaded
      *     enterDocument: {
-     *         value: function(firstTime) {
+     *         value: function (firstTime) {
      *             if (firstTime) {
      *                 this._greeting = _("hello", "Hello {name}!");
      *             }
      *         }
      *     },
      *     draw: {
-     *         value: function() {
+     *         value: function () {
      *             // this is for illustration only. This example is simple enough that
      *             // you should use a localizations binding
      *             this._element.textContent = this._greeting({name: this.name});
@@ -2443,10 +2461,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      */
     waitForLocalizerMessages: {
         enumerable: false,
-        get: function() {
+        get: function () {
             return this._waitForLocalizerMessages;
         },
-        set: function(value) {
+        set: function (value) {
             if (this._waitForLocalizerMessages !== value) {
                 if (value === true && !this.localizer.messages) {
                     if (!this.localizer) {
@@ -2459,7 +2477,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                     logger.debug(this, "waiting for messages from localizer");
                     this.canDrawGate.setField("messages", false);
 
-                    this.localizer.messagesPromise.then(function(messages) {
+                    this.localizer.messagesPromise.then(function (messages) {
                         if (logger.isDebug) {
                             logger.debug(self, "got messages from localizer");
                         }
@@ -2495,7 +2513,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
 
     _getElementAttributeDescriptor: {
-        value: function(attributeName) {
+        value: function (attributeName) {
             var attributeDescriptor, instance = this;
             // walk up the prototype chain from the instance to NativeControl's prototype
             // if _elementAttributeDescriptors is falsy, stop.
@@ -2522,13 +2540,13 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * For example, if the name "title" is passed as the first parameter, a
      * "title" accessor property is created as well a data property named
      * "_title".
-     * @method
+     * @function
      * @param {string} name The property name to add.
      * @param {Object} descriptor An object that specifies the new properties default attributes such as configurable and enumerable.
      * @private
      */
     defineAttribute: {
-        value: function(name, descriptor) {
+        value: function (name, descriptor) {
             descriptor = descriptor || {};
             var _name = '_' + name;
 
@@ -2536,8 +2554,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
             var newDescriptor = {
                 configurable: (typeof descriptor.configurable === 'undefined') ? true: descriptor.configurable,
                 enumerable: (typeof descriptor.enumerable === 'undefined') ?  true: descriptor.enumerable,
-                set: (function(name, attributeName) {
-                    return function(value) {
+                set: (function (name, attributeName) {
+                    return function (value) {
                         var descriptor = this._getElementAttributeDescriptor(name, this);
 
                         // if requested dataType is boolean (eg: checked, readonly etc)
@@ -2560,8 +2578,8 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                         }
                     };
                 }(name, _name)),
-                get: (function(name, attributeName) {
-                    return function() {
+                get: (function (name, attributeName) {
+                    return function () {
                         return this[attributeName];
                     };
                 }(name, _name))
@@ -2577,12 +2595,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 
     /**
      * Add the specified properties as properties of this component.
-     * @method
+     * @function
      * @param {object} properties An object that contains the properties you want to add.
      * @private
      */
     addAttributes: {
-        value: function(properties) {
+        value: function (properties) {
             var i, descriptor, property, object;
             this.prototype._elementAttributeDescriptors = properties;
 
@@ -2611,7 +2629,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      * This function is called when the component element is added to the
      * document's DOM tree.
      *
-     * @method Component#enterDocument
+     * @function Component#enterDocument
      * @param {boolean} firstTime `true` if it's the first time the component
      *                  enters the document.
      */
@@ -2619,7 +2637,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
 // callbacks
 
     _enterDocument: {
-        value: function(firstTime) {
+        value: function (firstTime) {
             var originalElement;
 
             if (firstTime) {
@@ -2689,7 +2707,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     _draw: {
-        value: function() {
+        value: function () {
             var element = this.element, descriptor;
 
             for(var attributeName in this._elementAttributeValues) {
@@ -2728,6 +2746,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
+    /**
+     * @property {Set} value
+     * @private
+     */
     _classList: {
         value: null
     },
@@ -2742,11 +2764,12 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
      *
      * It can also be bound to by binding each class as a property.
      * example to toggle the complete class:
+     *
      * ```json
      * "classList.has('complete')" : { "<-" : "@owner.isComplete"}
      * ```
-     * @type {Set}
-     * @default null
+     *
+     * @returns {Set}
      */
     classList: {
         get: function () {
@@ -2759,8 +2782,11 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
+    /**
+     * @private
+     */
     _initializeClassListFromElement: {
-        value: function(element) {
+        value: function (element) {
             if (element && element.classList && element.classList.length > 0) {
                 // important to initializae the classList first, so that the listener doesn't get installed.
                 var classList = this.classList;
@@ -2775,12 +2801,18 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
         }
     },
 
+    /**
+     * @private
+     */
     _unsubscribeToClassListChanges: {
         value: null
     },
 
+    /**
+     * @private
+     */
     _subscribeToToClassListChanges: {
-        value: function() {
+        value: function () {
             this._unsubscribeToClassListChanges = this._classList.addRangeChangeListener(this, "classList");
         }
     },
@@ -2816,7 +2848,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
     },
 
     dispose: {
-        value: function() {
+        value: function () {
             this.cancelBindings();
             this.detachFromParentComponent();
             if (this._element) {
@@ -2824,7 +2856,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
                 this._element = null;
             }
 
-            this.childComponents.forEach(function(component) {
+            this.childComponents.forEach(function (component) {
                 component.dispose();
             });
         }
@@ -2836,7 +2868,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component# */ {
  * @class RootComponent
  * @extends Component
  */
-var RootComponent = Component.specialize( /** @lends RootComponent# */{
+var RootComponent = Component.specialize( /** @lends RootComponent.prototype # */{
     constructor: {
         value: function RootComponent() {
             this.super();
@@ -2847,21 +2879,21 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
 
     /**
      * @private
-     * @method
+     * @function
      * @returns itself
      */
     init: {
-        value: function() {
+        value: function () {
             return this;
         }
     },
 
     needsDraw: {
         enumerable: true,
-        get: function() {
+        get: function () {
             return false;
         },
-        set: function(value) {
+        set: function (value) {
             if (this._needsDraw !== value) {
                 this._needsDraw = !!value;
                 if (value) {
@@ -2880,7 +2912,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
     },
 
     canDrawGate: {
-        get: function() {
+        get: function () {
             return this._canDrawGate || (this._canDrawGate = new Gate().initWithDelegate(this));
         }
     },
@@ -2898,11 +2930,11 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
     },
 
     /**
-     * @method
+     * @function
      * @param {Object} component
      */
     componentBlockDraw: {
-        value: function(component) {
+        value: function (component) {
             this._cannotDrawList = (this._cannotDrawList ? this._cannotDrawList : {});
             this._cannotDrawList[component.uuid] = component;
             if (this._clearNeedsDrawTimeOut) {
@@ -2914,19 +2946,19 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
 
     // TODO: implement this with a flag on the component
     isComponentWaitingNeedsDraw: {
-        value: function(component) {
+        value: function (component) {
             return component.uuid in this._cannotDrawList ||
                 this._needsDrawList.indexOf(component) >= 0;
         }
     },
 
     /**
-     * @method
+     * @function
      * @param {Object} component
      * @param {number} value
      */
     componentCanDraw: {
-        value: function(component, value) {
+        value: function (component, value) {
             if (value) {
                 if (!this._cannotDrawList) {
                     return;
@@ -2937,7 +2969,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                     if (!this._clearNeedsDrawTimeOut) {
                         var self = this;
                         // Wait to clear the needsDraw list as components could be loaded synchronously
-                        this._clearNeedsDrawTimeOut = window.setTimeout(function() {
+                        this._clearNeedsDrawTimeOut = window.setTimeout(function () {
                             self._clearNeedsDrawList();
                         }, 0);
                     }
@@ -2952,7 +2984,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
     },
 
     _clearNeedsDrawList: {
-        value: function() {
+        value: function () {
             var component, i, length, needsDrawList = this._needsDrawList;
             length = needsDrawList.length;
             for (i = 0; i < length; i++) {
@@ -2965,16 +2997,16 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
                 }
             }
             this._clearNeedsDrawTimeOut = null;
-			needsDrawList.length = 0;	
+			needsDrawList.length = 0;
         }
     },
 
     /**
-     * @method
+     * @function
      * @param {Component} componentId
      */
     removeFromCannotDrawList: {
-        value: function(component) {
+        value: function (component) {
             if (!this._cannotDrawList) {
                 return;
             }
@@ -2984,7 +3016,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
             if (Object.keys(this._cannotDrawList).length === 0 && this._needsDrawList.length > 0) {
                 if (!this._clearNeedsDrawTimeOut) {
                     var self = this;
-                    this._clearNeedsDrawTimeOut = window.setTimeout(function() {
+                    this._clearNeedsDrawTimeOut = window.setTimeout(function () {
                         self._clearNeedsDrawList();
                     }, 0);
                 }
@@ -2993,7 +3025,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
     },
 
     _cancelDrawIfScheduled: {
-        value: function() {
+        value: function () {
             var requestedAnimationFrame = this.requestedAnimationFrame,
                 cancelAnimationFrame = this.cancelAnimationFrame;
             if (requestedAnimationFrame !== null) {
@@ -3017,7 +3049,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
      * @private
      */
     _addToDrawList: {
-        value: function(childComponent) {
+        value: function (childComponent) {
             this.__addToDrawList(childComponent);
             if (drawListLogger.isDebug) {
                 drawListLogger.debug(this, this.canDrawGate.value, this.requestedAnimationFrame);
@@ -3031,11 +3063,11 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
      * Adds the passed in composer to the list of composers to be executed
      * in the next draw cycle and requests a draw cycle if one has not been
      * requested yet.
-     * @method
+     * @function
      * @param {Composer} composer
      */
     addToComposerList: {
-        value: function(composer) {
+        value: function (composer) {
             this.composerList.push(composer);
             if (drawLogger.isDebug) {
                 drawLogger.debug(this, composer, "Added to composer list");
@@ -3076,7 +3108,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
 
     /**
      * @private
-     * @method
+     * @function
      */
     requestAnimationFrame: {
         value: (window.requestAnimationFrame || window.webkitRequestAnimationFrame
@@ -3086,7 +3118,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
 
     /**
      * @private
-     * @method
+     * @function
      */
     cancelAnimationFrame: {
         value: (window.cancelAnimationFrame ||  window.webkitCancelAnimationFrame
@@ -3114,7 +3146,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
     _diff: {
         // Written by John Resig. Used under the Creative Commons Attribution 2.5 License.
         // http://ejohn.org/projects/javascript-diff-algorithm/
-        value: function( o, n ) {
+        value: function ( o, n ) {
             var ns = {};
             var os = {};
 
@@ -3195,10 +3227,10 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
     },
 
     /**
-     * @private
+     * @function
      */
     addStylesheet: {
-        value: function(style) {
+        value: function (style) {
             this._stylesheets.push(style);
             this._needsStylesheetsDraw = true;
         }
@@ -3208,7 +3240,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
      * @private
      */
     drawStylesheets: {
-        value: function() {
+        value: function () {
             var documentResources = this._documentResources,
                 stylesheets = this._stylesheets,
                 stylesheet;
@@ -3248,7 +3280,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
     },
 
     _drawTree: {
-        value: function(timestamp) {
+        value: function (timestamp) {
             var drawPerformanceStartTime;
 
             // Add all stylesheets needed by the components since last
@@ -3310,10 +3342,11 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
             this.drawIfNeeded();
 
             if (drawPerformanceLogger.isDebug) {
+                var drawPerformanceEndTime;
                 if (window.performance) {
-                    var drawPerformanceEndTime = window.performance.now();
+                    drawPerformanceEndTime = window.performance.now();
                 } else {
-                    var drawPerformanceEndTime = Date.now();
+                    drawPerformanceEndTime = Date.now();
                 }
 
                 console.log("Draw Cycle Time: ",
@@ -3349,11 +3382,11 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
     },
 
     /**
-     * @method
+     * @function
      * @param {Component} component Component to add
      */
     addToDrawCycle: {
-        value: function(component) {
+        value: function (component) {
             var needsDrawListIndex = this._readyToDrawListIndex, length, composer;
 
             if (needsDrawListIndex.hasOwnProperty(component.uuid)) {
@@ -3378,14 +3411,14 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
     },
 
     _sortByLevel: {
-        value: function(component1, component2) {
+        value: function (component1, component2) {
             return component1._treeLevel - component2._treeLevel;
         }
     },
 
     /**
      * @private
-     * @method
+     * @function
      * @returns Boolean true if all the components that needed to draw have drawn
     */
     drawIfNeeded:{
@@ -3497,10 +3530,10 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
      * @default null
      */
     element: {
-        get:function() {
+        get:function () {
             return this._element;
         },
-        set:function(value) {
+        set:function (value) {
             defaultEventManager.registerEventHandlerForElement(this, value);
             this._element = value;
             this._documentResources = DocumentResources.getInstanceForDocument(value);
@@ -3509,9 +3542,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent# */{
 });
 
 var rootComponent = new RootComponent().init();
-//if(window.parent && window.parent.jasmine) {
 exports.__root__ = rootComponent;
-//}
 
 function loggerToString (object) {
     if (!object) return "NIL";

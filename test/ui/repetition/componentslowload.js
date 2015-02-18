@@ -39,11 +39,11 @@ var ComponentSlowLoad = exports.ComponentSlowLoad = Component.specialize( {
     delay: {value: 100},
 
     // This code makes the first instantiated component to load after the second
-    loadComponentTree: {value: function(callback) {
+    loadComponentTree: {value: function (callback) {
         var self = this,
             defered = Promise.defer();
 
-        setTimeout(function() {
+        setTimeout(function () {
             self.canDrawGate.setField("componentTreeLoaded", true);
             defered.resolve();
         }, ComponentSlowLoad.delay);

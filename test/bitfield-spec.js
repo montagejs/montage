@@ -32,20 +32,20 @@ var Montage = require("montage").Montage,
     BitField = require("montage/core/bitfield").BitField;
 
 describe("bitfield-spec",
-function() {
+function () {
     describe("creating empty bitfield",
-    function() {
+    function () {
         var bitField = new BitField();
         it("should be true",
-        function() {
+        function () {
             expect(bitField.value).toBeTruthy();
         });
     });
     describe("creation with four false fields",
-    function() {
+    function () {
         var bitField;
 
-        beforeEach(function() {
+        beforeEach(function () {
             bitField = new BitField().initWithDescriptor({
                 A: {
                     value: false
@@ -63,43 +63,43 @@ function() {
         });
 
         it("should have the expected field count",
-        function() {
+        function () {
             expect(bitField._fieldCount).toEqual(4);
         });
 
         describe("set one of its fields to true",
-        function() {
-            beforeEach(function() {
+        function () {
+            beforeEach(function () {
                 bitField.B = true;
             });
-            afterEach(function() {
+            afterEach(function () {
                 bitField.B = false;
             });
             it("should be false",
-            function() {
+            function () {
                 expect(bitField.value).toBeFalsy();
             });
         });
 
         describe("set all of its fields to true",
-        function() {
-            beforeEach(function() {
+        function () {
+            beforeEach(function () {
                 bitField.A = true;
                 bitField.B = true;
                 bitField.C = true;
                 bitField.D = true;
             });
             it("should be true",
-            function() {
+            function () {
                 expect(bitField.value).toBeTruthy();
             });
             describe("add a false field",
-            function() {
-                beforeEach(function() {
+            function () {
+                beforeEach(function () {
                     bitField.addField("E");
                 });
                 it("should be false",
-                function() {
+                function () {
                     expect(bitField.value).toBeFalsy();
                 });
             });

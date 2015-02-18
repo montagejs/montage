@@ -31,18 +31,18 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage;
 
 var Manager = exports.Manager = Montage.specialize({
-    managerId: {set:function(value){this._managerId = value;},get: function() {return this._managerId;}},
-    managerName: {set:function(value){this._managerName = value;},get: function() {return this._managerName;}},
-    managerSalary : {set:function(value){this._managerSalary = value;},get: function() {return this._managerSalary;}},
+    managerId: {set:function (value){this._managerId = value;},get: function () {return this._managerId;}},
+    managerName: {set:function (value){this._managerName = value;},get: function () {return this._managerName;}},
+    managerSalary : {set:function (value){this._managerSalary = value;},get: function () {return this._managerSalary;}},
     _managerId : { value: null },
     _managerName : { value: null },
     _managerSalary : { value: null }
 });
 
 var Employee = exports.Employee = Montage.specialize({
-    employeeId: {set:function(value){this._employeeId = value;},get: function() {return this._employeeId;}},
-    employeeName: {set:function(value){this._employeeName = value;},get: function() {return this._employeeName;}},
-    employeeSalary : {set:function(value){this._employeeSalary = value;},get: function() {return this._employeeSalary;}},
+    employeeId: {set:function (value){this._employeeId = value;},get: function () {return this._employeeId;}},
+    employeeName: {set:function (value){this._employeeName = value;},get: function () {return this._employeeName;}},
+    employeeSalary : {set:function (value){this._employeeSalary = value;},get: function () {return this._employeeSalary;}},
     _employeeId : { value: null },
     _employeeName : { value: null },
     _employeeSalary : { value: null }
@@ -154,28 +154,28 @@ var motorola = exports.motorola = Montage.specialize({
     bigBoss: { value: manager0}
 });
 
-manager0.toString = function(){return "manager0";};
-manager1.toString = function(){return "manager1";};
-manager2.toString = function(){return "manager2";};
-manager3.toString = function(){return "manager3";};
+manager0.toString = function (){return "manager0";};
+manager1.toString = function (){return "manager1";};
+manager2.toString = function (){return "manager2";};
+manager3.toString = function (){return "manager3";};
 
-employee01.toString = function(){return "employee01";};
-employee02.toString = function(){return "employee02";};
-employee03.toString = function(){return "employee03";};
-employee11.toString = function(){return "employee11";};
-employee12.toString = function(){return "employee12";};
-employee13.toString = function(){return "employee13";};
-employee14.toString = function(){return "employee14";};
-employee21.toString = function(){return "employee21";};
-employee22.toString = function(){return "employee22";};
-employee23.toString = function(){return "employee23";};
-employee24.toString = function(){return "employee24";};
-employee31.toString = function(){return "employee31";};
-employee32.toString = function(){return "employee32";};
-employee33.toString = function(){return "employee33";};
+employee01.toString = function (){return "employee01";};
+employee02.toString = function (){return "employee02";};
+employee03.toString = function (){return "employee03";};
+employee11.toString = function (){return "employee11";};
+employee12.toString = function (){return "employee12";};
+employee13.toString = function (){return "employee13";};
+employee14.toString = function (){return "employee14";};
+employee21.toString = function (){return "employee21";};
+employee22.toString = function (){return "employee22";};
+employee23.toString = function (){return "employee23";};
+employee24.toString = function (){return "employee24";};
+employee31.toString = function (){return "employee31";};
+employee32.toString = function (){return "employee32";};
+employee33.toString = function (){return "employee33";};
 
-department0.toString = function(){return "department1";};
-department1.toString = function(){return "department2";};
-department2.toString = function(){return "department3";};
-department3.toString = function(){return "department4";};
+department0.toString = function (){return "department1";};
+department1.toString = function (){return "department2";};
+department2.toString = function (){return "department3";};
+department3.toString = function (){return "department4";};
 

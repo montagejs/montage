@@ -1,3 +1,8 @@
+/**
+ * @module montage/serialization/serialization
+ * @requires montage/core
+ */
+
 var Montage = require("../core").Montage,
     MontageLabeler = require("./serializer/montage-labeler").MontageLabeler,
     MontageReviver = require("./deserializer/montage-reviver").MontageReviver,
@@ -6,14 +11,15 @@ var Montage = require("../core").Montage,
 
 /**
  * @class Serialization
+ * @extends Montage
  */
-var Serialization = Montage.specialize( /** @lends Serialization# */ {
+var Serialization = Montage.specialize( /** @lends Serialization.prototype # */ {
     _serializationString: {value: null},
     _serializationObject: {value: null},
     _serializationLabels: {value: null},
 
     initWithString: {
-        value: function(string) {
+        value: function (string) {
             this._serializationString = string;
             this._serializationObject = null;
             this._serializationLabels = null;
@@ -23,7 +29,7 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
     },
 
     initWithObject: {
-        value: function(object) {
+        value: function (object) {
             this._serializationString = null;
             this._serializationObject = object;
             this._serializationLabels = null;
@@ -33,7 +39,7 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
     },
 
     clone: {
-        value: function() {
+        value: function () {
             var serialization = new Serialization();
 
             serialization.initWithString(this.getSerializationString());
@@ -43,7 +49,7 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
     },
 
     getSerializationObject: {
-        value: function() {
+        value: function () {
             if (!this._serializationObject) {
                 this._serializationObject = JSON.parse(this._serializationString);
             }
@@ -53,7 +59,7 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
     },
 
     getSerializationString: {
-        value: function() {
+        value: function () {
             if (!this._serializationString) {
                 this._serializationString = JSON.stringify(this._serializationObject);
             }
@@ -63,7 +69,7 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
     },
 
     getSerializationLabels: {
-        value: function() {
+        value: function () {
             var serializationObject;
 
             if (!this._serializationLabels) {
@@ -77,7 +83,7 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
     },
 
     getExternalObjectLabels: {
-        value: function() {
+        value: function () {
             var serializationObject = this.getSerializationObject(),
                 labels = [];
 
@@ -92,13 +98,13 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
     },
 
     hasSerializationLabel: {
-        value: function(label) {
+        value: function (label) {
             return label in this.getSerializationObject();
         }
     },
 
     isExternalObject: {
-        value: function(label) {
+        value: function (label) {
             var serializationObject = this.getSerializationObject();
 
             if (serializationObject && label in serializationObject) {
@@ -110,7 +116,7 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
     },
 
     isAlias: {
-        value: function(label) {
+        value: function (label) {
             var serializationObject = this.getSerializationObject();
 
             if (serializationObject && label in serializationObject) {
@@ -122,7 +128,7 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
     },
 
     getElementId: {
-        value: function(label) {
+        value: function (label) {
             var object = this.getSerializationObject();
 
             // TODO: much faster than using the visitor, need to make the visitor
@@ -135,12 +141,12 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
     },
 
     getSerializationLabelsWithElements: {
-        value: function(elementIds) {
+        value: function (elementIds) {
             var inspector = new SerializationInspector(),
                 labels = [];
 
             inspector.initWithSerialization(this);
-            inspector.visitSerialization(function(node) {
+            inspector.visitSerialization(function (node) {
                 // Check if this is one of the elements we're looking for
                 if (node.type === "Element" && elementIds.indexOf(node.data) >= 0) {
                     // Check if it's inside a "properties" block
@@ -160,11 +166,11 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
     },
 
     renameElementReferences: {
-        value: function(elementsTable) {
+        value: function (elementsTable) {
             var inspector = new SerializationInspector();
 
             inspector.initWithSerialization(this);
-            inspector.visitSerialization(function(node) {
+            inspector.visitSerialization(function (node) {
                 if (node.type === "Element" && node.data in elementsTable) {
                     node.data = elementsTable[node.data];
                 }
@@ -173,11 +179,11 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
     },
 
     renameSerializationLabels: {
-        value: function(labelsTable) {
+        value: function (labelsTable) {
             var inspector = new SerializationInspector();
 
             inspector.initWithSerialization(this);
-            inspector.visitSerialization(function(node) {
+            inspector.visitSerialization(function (node) {
                 if (node.label) {
                     var label = node.label;
 
@@ -197,13 +203,13 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
     },
 
     mergeSerialization: {
-        value: function(serialization, delegate) {
+        value: function (serialization, delegate) {
             return SerializationMerger.mergeSerializations(this, serialization, delegate);
         }
     },
 
     extractSerialization: {
-        value: function(labels, externalLabels) {
+        value: function (labels, externalLabels) {
             var extractor = new SerializationExtractor();
 
             extractor.initWithSerialization(this);
@@ -214,8 +220,9 @@ var Serialization = Montage.specialize( /** @lends Serialization# */ {
 
 /**
  * @class SerializationMerger
+ * @extends Montage
  */
-var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerger */ {
+var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerger.prototype */ {
     /**
      * This delegate method is called when merging an object from serialization2
      * into serialization1. It allows the delegate to change how the object is
@@ -236,23 +243,22 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
      *
      * @callback delegateWillMergeObjectWithLabel
      * @param {string} label The object label.
-     * @param {string} newLabel The new label generated by the collision
-     *                 resolver in case of collision.
-     * @return {string|undefined} the new label for this object.
+     * @param {string} newLabel The new label generated by the collision resolver in case of collision.
+     * @returns {string|undefined} the new label for this object.
      */
 
     /**
      * Merges serialization2 into serialization1.
      *
-     * @param {Serialization} serialization1 The serialization to be merged and
-     *        end result of the merge operation.
-     * @param {Serialization} serialization2 The serialization to be merged.
-     * @param {{willMergeObjectWithLabel: delegateWillMergeObjectWithLabel}} delegate The delegate to override the default behavior.
-     * @return {Object} The collision table with the new labels generated for
-     *         label clashes.
+     * @param {Serialization} serialization1 - The serialization to be merged and end result of the merge operation.
+     * @param {Serialization} serialization2 - The serialization to be merged.
+     * @param {{willMergeObjectWithLabel: delegateWillMergeObjectWithLabel}} delegate
+     * - The delegate to override the default behavior.
+     *
+     * @returns {Object} The collision table with the new labels generated for label clashes
      */
     mergeSerializations: {
-        value: function(serialization1, serialization2, delegate) {
+        value: function (serialization1, serialization2, delegate) {
             var serializationObject1,
                 serializationObject2,
                 labels1,
@@ -298,8 +304,12 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
         }
     },
 
+    /**
+     * @private
+     * @function
+     */
     _willMergeObjectWithLabel: {
-        value: function(delegate, serialization1, serialization2, collisionTable) {
+        value: function (delegate, serialization1, serialization2, collisionTable) {
             var newLabel,
                 collisionLabel,
                 collisionLabels,
@@ -310,7 +320,7 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
 
             if (collisionTable) {
                 collisionLabels = [];
-                Object.keys(collisionTable).forEach(function(label) {
+                Object.keys(collisionTable).forEach(function (label) {
                     collisionLabels.push(collisionTable[label]);
                 });
             }
@@ -355,10 +365,11 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
      * This function returns true when the label is part of the serialization,
      * or, if a template property, it refers to a component label that is part
      * of the serialization.
+     *
      * @private
      */
     _isLabelValidInSerialization: {
-        value: function(label, serialization) {
+        value: function (label, serialization) {
             var componentLabel,
                 ix;
 
@@ -397,7 +408,7 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
      * case the component label will also be part of the resulting collision
      * table even if there was no original collision in labels1.
      *
-     * Example:
+     * @example
      * labels1: ["repetition:iteration"]
      * labels2: ["repetition", "repetition:iteration"]
      * collisionTable: {"repetition:iteration": "object:iteration",
@@ -406,7 +417,7 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
      * @private
      */
     _createCollisionTable: {
-        value: function(labels1, labels2, collisionTable, labeler) {
+        value: function (labels1, labels2, collisionTable, labeler) {
             var labeler = labeler || new MontageLabeler(),
                 foundCollisions = false,
                 componentLabel,
@@ -478,16 +489,17 @@ var SerializationMerger = Montage.specialize(null, /** @lends SerializationMerge
 
 /**
  * @class SerializationInspector
+ * @extends Montage
  */
-var SerializationInspector = Montage.specialize(/** @lends SerializationInspector# */ {
+var SerializationInspector = Montage.specialize(/** @lends SerializationInspector.prototype # */ {
     initWithSerialization: {
-        value: function(serialization) {
+        value: function (serialization) {
             this._serialization = serialization;
         }
     },
 
     visitSerialization: {
-        value: function(visitor) {
+        value: function (visitor) {
             var serialization = this._serialization.getSerializationObject();
 
             this._walkRootObjects(visitor, serialization);
@@ -496,7 +508,7 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
     },
 
     visitSerializationObject: {
-        value: function(label, visitor) {
+        value: function (label, visitor) {
             var serialization = this._serialization.getSerializationObject();
 
             if (label in serialization) {
@@ -509,7 +521,7 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
     },
 
     changeLabel: {
-        value: function(oldLabel, newLabel) {
+        value: function (oldLabel, newLabel) {
             var serialization = this._serialization.getSerializationObject(),
                 object;
 
@@ -520,7 +532,7 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
     },
 
     _walkRootObjects: {
-        value: function(visitor, objects) {
+        value: function (visitor, objects) {
             var object,
                 type;
 
@@ -531,7 +543,7 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
     },
 
     _walkRootObject: {
-        value: function(visitor, objects, label) {
+        value: function (visitor, objects, label) {
             var object = objects[label];
 
             if ("value" in object) {
@@ -546,12 +558,11 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
      * @private
      * @param parentObject {Object} The parent object of the object to walk
      * @param key {string} The key of the object in the parent object
-     * @param label {string} Optional label for when the object has no
-     *                       parent
+     * @param label {string} Optional label for when the object has no parent
      * @param parent {Object} The representation of the object's parent
      */
     _walkObject: {
-        value: function(visitor, parentObject, key, label, parent) {
+        value: function (visitor, parentObject, key, label, parent) {
             var object = parentObject[key],
                 type = MontageReviver.getTypeOf(object),
                 value,
@@ -619,7 +630,7 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
     },
 
     _walkCustomObject: {
-        value: function(visitor, objects, label) {
+        value: function (visitor, objects, label) {
             var object = objects[label],
                 value;
 
@@ -651,7 +662,7 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
     },
 
     _walkBindings: {
-        value: function(visitor, parentObject, parent) {
+        value: function (visitor, parentObject, parent) {
             var object = parentObject.bindings,
                 value;
 
@@ -671,7 +682,7 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
     },
 
     _walkBinding: {
-        value: function(visitor, parentObject, key, parent) {
+        value: function (visitor, parentObject, key, parent) {
             var object = parentObject[key],
                 value;
 
@@ -690,14 +701,14 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
     },
 
     _walkBindingData: {
-        value: function(visitor, object, parent) {
+        value: function (visitor, object, parent) {
             var sourcePath,
                 parseTree,
                 modified = false;
 
             sourcePath = object["<-"] || object["<->"];
             parseTree = Object.clone(parse(sourcePath));
-            this._walksBindingReferences(parseTree, function(syntax) {
+            this._walksBindingReferences(parseTree, function (syntax) {
                 var value = {
                     type: "reference",
                     data: syntax.label
@@ -724,7 +735,7 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
     },
 
     _walkLocalizations: {
-        value: function(visitor, parentObject, parent) {
+        value: function (visitor, parentObject, parent) {
             var object = parentObject.localizations,
                 value;
 
@@ -744,7 +755,7 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
     },
 
     _walkLocalization: {
-        value: function(visitor, parentObject, key, parent) {
+        value: function (visitor, parentObject, key, parent) {
             var object = parentObject[key],
                 value,
                 data;
@@ -782,7 +793,7 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
      * @private
      */
     _walksBindingReferences: {
-        value: function(parseTree, visitor) {
+        value: function (parseTree, visitor) {
             var args = parseTree.args;
 
             if (parseTree.type === "component") {
@@ -801,21 +812,29 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
 
 /**
  * @class SerializationExtractor
+ * @extends Montage
  */
-var SerializationExtractor = Montage.specialize( /** @lends SerializationExtractor# */ {
+var SerializationExtractor = Montage.specialize( /** @lends SerializationExtractor.prototype # */ {
+    /**
+     * @private
+     */
     _serialization: {value: null},
 
+    /**
+     * @function
+     */
     initWithSerialization: {
-        value: function(serialization) {
+        value: function (serialization) {
             this._serialization = serialization;
         }
     },
 
     /**
      * Creates a new serialization with the labels given.
+     * @function
      */
     extractSerialization: {
-        value: function(labels, externalLabels) {
+        value: function (labels, externalLabels) {
             var inspector = new SerializationInspector(),
                 serializationObject,
                 objects = {},
@@ -827,7 +846,7 @@ var SerializationExtractor = Montage.specialize( /** @lends SerializationExtract
             for (var i = 0, label; (label = labels[i]); i++) {
                 objects[label] = serializationObject[label];
 
-                inspector.visitSerializationObject(label, function(node) {
+                inspector.visitSerializationObject(label, function (node) {
                     var label;
 
                     if (node.type === "reference") {

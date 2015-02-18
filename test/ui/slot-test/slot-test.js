@@ -70,7 +70,7 @@ var VideoMedia = Media.specialize( {
 var SlotTest = exports.SlotTest = Component.specialize( {
 
     init: {
-        value: function() {
+        value: function () {
             this.video = new VideoMedia();
             this.video.duration = "VIDEO 81 Minutes";
             this.video.description = "VIDEO: The Last Dispatch"
@@ -88,7 +88,7 @@ var SlotTest = exports.SlotTest = Component.specialize( {
     },
 
     deserializedFromTemplate: {
-        value: function() {
+        value: function () {
             this.init();
         }
     },
@@ -197,7 +197,7 @@ var SlotTest = exports.SlotTest = Component.specialize( {
 
     enterDocument: {
         enumerable: false,
-        value: function(firstTime) {
+        value: function (firstTime) {
             if (firstTime) {
                 this.componentWithNoElementButton.addEventListener("action", this);
                 this.componentInPageWithElementButton.addEventListener("action", this);
@@ -214,21 +214,21 @@ var SlotTest = exports.SlotTest = Component.specialize( {
 
     handleComponentWithNoElementButtonPress: {
         enumerable: false,
-        value: function() {
+        value: function () {
             this.showContent(this.componentWithNoElement);
         }
     },
 
     handleComponentInPageWithElementButtonPress: {
         enumerable: false,
-        value: function() {
+        value: function () {
             this.showContent(this.componentInPageWithElement);
         }
     },
 
     handleVideoButtonPress: {
         enumerable: false,
-        value: function() {
+        value: function () {
             this.currentMedia = this.video;
             this.showContent(this.videoViewer);
         }
@@ -236,7 +236,7 @@ var SlotTest = exports.SlotTest = Component.specialize( {
 
     handlePhotoButtonPress: {
         enumerable: false,
-        value: function() {
+        value: function () {
             this.currentMedia = this.photo;
             this.showContent(this.photoViewer);
         }
@@ -244,35 +244,35 @@ var SlotTest = exports.SlotTest = Component.specialize( {
 
     handleBarButtonPress: {
         enumerable: false,
-        value: function() {
+        value: function () {
             this.showContent(this.barContent);
         }
     },
 
     handleBazButtonPress: {
         enumerable: false,
-        value: function() {
+        value: function () {
             this.showContent(this.bazContent);
         }
     },
 
     handleQuxButtonPress: {
         enumerable: false,
-        value: function() {
+        value: function () {
             this.showContent(this.quxContent);
         }
     },
 
     handleEmptyButtonPress: {
         enumerable: false,
-        value: function() {
+        value: function () {
             this.showContent(null);
         }
     },
 
     showContent: {
         enumerable: false,
-        value: function(content) {
+        value: function (content) {
             //console.log("chooser showContent:", content);
             this.slot.content = content;
         }

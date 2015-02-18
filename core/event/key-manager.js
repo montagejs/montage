@@ -256,10 +256,10 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
      * @default 1000
      */
     longPressThreshold: {
-        get: function() {
+        get: function () {
             return this._longPressThreshold;
         },
-        set: function(value) {
+        set: function (value) {
             if (value > 0 && value !== this._longPressThreshold) {
                 this._longPressThreshold = value;
                 if (this._longPressThreshold > this._cleanupThreshold - 100) {
@@ -273,11 +273,11 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
 
     /**
      * Register a composerKey.
-     * @method
+     * @function
      * @param {Object} keyComposer. The key to register.
      */
     registerKey: {
-        value: function(keyComposer) {
+        value: function (keyComposer) {
                 // validates the keys:
             var normalizedKeys = this._normalizeKeySequence(keyComposer.keys),
                 modifiersAndKey,
@@ -324,11 +324,11 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
      * Unregister a composerKey. if a key has been registered multiple time,
      * unregister must be called the same amount of time before the key is
      * actually unregistered.
-     * @method
+     * @function
      * @param {Object} keyComposer The key to unregister.
      */
     unregisterKey: {
-        value: function(keyComposer) {
+        value: function (keyComposer) {
             var map = this._composerKeyMap,
                 mapModifiersEntry,
                 mapKeyEntry,
@@ -361,7 +361,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     constructor: {
-        value: function() {
+        value: function () {
             var userAgent = navigator.userAgent,
                 code;
 
@@ -436,7 +436,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     captureKeydown: {
-        value: function(event) {
+        value: function (event) {
             var keyCode,
                 identifierCode,
                 submap,
@@ -471,7 +471,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     captureKeypress: {
-        value: function(event) {
+        value: function (event) {
             var charCode = event.charCode,
                 keyCode,
                 identifierCode,
@@ -512,7 +512,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     captureKeyup: {
-        value: function(event) {
+        value: function (event) {
             var keyCode = event.keyCode,
                 identifierCode,
                 submap,
@@ -563,7 +563,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     _normalizeKeySequence: {
-        value: function(keySequence) {
+        value: function (keySequence) {
             var modifiersOrder = [MODIFIERS.meta.name, MODIFIERS.alt.name, MODIFIERS.control.name, MODIFIERS.shift.name],
                 keys = keySequence.toLowerCase().replace(/ /g, "").replace(/\+\+/g, "+add").split("+"),
                 nbrKeys = keys.length,
@@ -586,7 +586,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                 }
             }
 
-            normalizedKeys.sort(function(a, b) {
+            normalizedKeys.sort(function (a, b) {
                 return modifiersOrder.indexOf(a) - modifiersOrder.indexOf(b);
             });
 
@@ -605,7 +605,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     _preprocessKeyEvent: {
-        value: function(event) {
+        value: function (event) {
             var thisRef = this,
                 eventType = event.type,
                 keyCode = event.keyCode,
@@ -638,7 +638,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                     if (eventType == "keyup") {
                         // Setup a timeout to force reset the modifier state ~3 seconds after the last key up
                         // This is to recover when we miss a keyup event which seems to occurs once in a while with Opera
-                        this._operaModifierTimeout = setTimeout(function(){
+                        this._operaModifierTimeout = setTimeout(function (){
                             thisRef._shiftKey = false;
                             thisRef._altKey = false;
                             thisRef._metaKey = false;
@@ -680,7 +680,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     _registerListeners: {
-        value: function() {
+        value: function () {
             if (!this._keyEventsListenerInstalled) {
                 window.addEventListener("keydown", this, true);
                 window.addEventListener("keypress", this, true);
@@ -691,7 +691,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     _unregisterListeners: {
-        value: function() {
+        value: function () {
             if (this._keyEventsListenerInstalled) {
                 window.removeEventListener("keydown", this, true);
                 window.removeEventListener("keypress", this, true);
@@ -702,7 +702,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     _dispatchComposerKeyMatches: {
-        value: function(matches, event) {
+        value: function (matches, event) {
             var thisRef = this,
                 stopped = false,
                 keyUp = event.type == "keyup",
@@ -768,7 +768,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
                         continue;
                     }
                     if (keyComposer._shouldDispatchLongPress && !keyComposer._longPressTimeout) {
-                        keyComposer._longPressTimeout = setTimeout(function() {
+                        keyComposer._longPressTimeout = setTimeout(function () {
                             var longPressEvent;
 
                             keyComposer._longPressTimeout = null;
@@ -835,7 +835,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     _cleanup: {
-        value: function() {
+        value: function () {
             var keyComposer,
                 i;
 
@@ -863,7 +863,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     _setupCleanupTimer: {
-        value: function() {
+        value: function () {
             var thisRef = this;
 
             // When a keydown event is stopped, we will not received the corresponding keyup event.
@@ -873,14 +873,14 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
             if (this._cleanupTimeout) {
                 clearTimeout(this._cleanupTimeout);
             }
-            this._cleanupTimeout = setTimeout(function() {
+            this._cleanupTimeout = setTimeout(function () {
                 thisRef._cleanup();
             }, this._cleanupThreshold);
         }
     },
 
     _convertKeysToModifiersAndKeyCode: {
-        value: function(keys) {
+        value: function (keys) {
             var nbrKeys,
                 key,
                 i,
@@ -928,7 +928,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
     },
 
     _decodeKeyIdentifier: {
-        value: function(identifier) {
+        value: function (identifier) {
             if (identifier.match(/U\+/)) {
                 return parseInt(identifier.substring(2), 16);
             }
@@ -938,7 +938,7 @@ var KeyManager = exports.KeyManager = Montage.specialize(/** @lends KeyManager# 
 
 var _defaultKeyManager = null;
 Montage.defineProperty(exports, "defaultKeyManager", {
-    get: function() {
+    get: function () {
         if (!_defaultKeyManager) {
             _defaultKeyManager = new KeyManager();
         }

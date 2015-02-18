@@ -33,7 +33,7 @@ var Montage = require("montage").Montage,
 
 var EventManagerTest = exports.EventManagerTest = Montage.specialize( {
     deserializedFromTemplate: {
-        value: function() {
+        value: function () {
             var dummyComponent = new Component();
             dummyComponent.hasTemplate = false;
             dummyComponent.element = document.body;

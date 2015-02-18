@@ -16,7 +16,7 @@ var UnitSerializer = Montage.specialize.call(Object, {
     },
 
     initWithMalkerAndVisitorAndObject: {
-        value: function(malker, visitor, object) {
+        value: function (malker, visitor, object) {
             this._malker = malker;
             this._visitor = visitor;
             this._object = object;
@@ -26,7 +26,7 @@ var UnitSerializer = Montage.specialize.call(Object, {
     },
 
     getObjectLabel: {
-        value: function(object) {
+        value: function (object) {
             this.addObjectReference(object);
 
             return this._visitor.labeler.getObjectLabel(object);
@@ -34,7 +34,7 @@ var UnitSerializer = Montage.specialize.call(Object, {
     },
 
     addObject: {
-        value: function(object) {
+        value: function (object) {
             if (typeof object === "object") {
                 this._malker.visit(object);
 
@@ -44,7 +44,7 @@ var UnitSerializer = Montage.specialize.call(Object, {
     },
 
     addObjectReference: {
-        value: function(object) {
+        value: function (object) {
             var builder = this._visitor.builder,
                 labeler = this._visitor.labeler,
                 label = labeler.getObjectLabel(object);

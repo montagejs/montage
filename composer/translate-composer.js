@@ -16,9 +16,9 @@ var Composer = require("./composer").Composer,
  *
  * @class TranslateComposer
  * @extends Composer
- * @emits translate
- * @emits translateStart
- * @emits translateEnd
+ * @fires translate
+ * @fires translateStart
+ * @fires translateEnd
  * @classdesc A composer that elevates touch and mouse events into drag events.
  */
 var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @lends TranslateComposer# */ {
@@ -97,7 +97,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     frame: {
-        value: function() {
+        value: function () {
             if (this.isAnimating) {
                 this._animationInterval();
             }
@@ -115,10 +115,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * @default 1
      */
     pointerSpeedMultiplier: {
-        get: function() {
+        get: function () {
             return this._pointerSpeedMultiplier;
         },
-        set: function(value) {
+        set: function (value) {
             this._pointerSpeedMultiplier = value;
         }
     },
@@ -145,10 +145,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * @default false
      */
     allowFloats: {
-        get: function() {
+        get: function () {
             return this._allowFloats;
         },
-        set: function(value) {
+        set: function (value) {
             if (this._allowFloats !== value) {
                 this._allowFloats = value;
                 this.translateX = this._translateX;
@@ -169,10 +169,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * @default 0
      */
     translateX: {
-        get: function() {
+        get: function () {
             return this._translateX;
         },
-        set: function(value) {
+        set: function (value) {
             if (this._axis === "vertical") {
                 this._translateX = this._minTranslateX || 0;
             } else {
@@ -206,10 +206,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * @default 0
      */
     translateY: {
-        get: function() {
+        get: function () {
             return this._translateY;
         },
-        set: function(value) {
+        set: function (value) {
             if (this._axis === "horizontal") {
                 this._translateY = this._minTranslateY || 0;
             } else {
@@ -242,10 +242,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * @default null
     */
     minTranslateX: {
-        get: function() {
+        get: function () {
             return this._minTranslateX;
         },
-        set: function(value) {
+        set: function (value) {
             if (value !== null) {
                 value = parseFloat(value);
             }
@@ -270,10 +270,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * @default null
      */
     maxTranslateX: {
-        get: function() {
+        get: function () {
             return this._maxTranslateX;
         },
-        set: function(value) {
+        set: function (value) {
             if (value !== null) {
                 value = parseFloat(value);
             }
@@ -298,10 +298,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * @default null
      */
     minTranslateY: {
-        get: function() {
+        get: function () {
             return this._minTranslateY;
         },
-        set: function(value) {
+        set: function (value) {
             if (value !== null) {
                 value = parseFloat(value);
             }
@@ -326,10 +326,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * @default null
      */
     maxTranslateY: {
-        get: function() {
+        get: function () {
             return this._maxTranslateY;
         },
-        set: function(value) {
+        set: function (value) {
             if (value !== null) {
                 value = parseFloat(value);
             }
@@ -355,10 +355,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * @default "both"
      */
     axis: {
-        get: function() {
+        get: function () {
             return this._axis;
         },
-        set: function(value) {
+        set: function (value) {
             switch (value) {
             case "vertical":
             case "horizontal":
@@ -386,10 +386,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     */
     invertAxis: {
         depends: ["invertXAxis", "invertYAxis"],
-        get: function() {
+        get: function () {
             return (this._invertXAxis === this._invertYAxis) ? this._invertXAxis : null;
         },
-        set: function(value) {
+        set: function (value) {
             this.invertXAxis = value;
             this.invertYAxis = value;
         }
@@ -407,10 +407,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * @default false
      */
     invertXAxis: {
-        get: function() {
+        get: function () {
             return this._invertXAxis;
         },
-        set: function(value) {
+        set: function (value) {
             this._invertXAxis = !!value;
         }
     },
@@ -427,10 +427,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * @default false
      */
     invertYAxis: {
-        get: function() {
+        get: function () {
             return this._invertYAxis;
         },
-        set: function(value) {
+        set: function (value) {
             this._invertYAxis = !!value;
         }
     },
@@ -459,10 +459,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * @default true
      */
     hasMomentum: {
-        get: function() {
+        get: function () {
             return this._hasMomentum;
         },
-        set: function(value) {
+        set: function (value) {
             this._hasMomentum = value ? true : false;
         }
     },
@@ -472,10 +472,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     _momentumDuration: {
-        get: function() {
+        get: function () {
             return this.__momentumDuration;
         },
-        set: function(value) {
+        set: function (value) {
             //jshint -W016
             this.__momentumDuration = isNaN(value) ? 1 : value >> 0;
             //jshint +W016
@@ -502,7 +502,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     _start: {
-        value: function(x, y, target, timeStamp) {
+        value: function (x, y, target, timeStamp) {
             this.pointerStartEventPosition = {
                 pageX: x,
                 pageY: y,
@@ -539,7 +539,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * @private
      **/
     _shouldPreventDefault: {
-        value: function(event) {
+        value: function (event) {
             return !!event.target.tagName && TranslateComposer._NATIVE_ELEMENTS.indexOf(event.target.tagName) === -1 && !event.target.isContentEditable;
         }
     },
@@ -547,12 +547,12 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     /**
      * Handle the mousedown that bubbled back up from beneath the element
      * If nobody else claimed this pointer, we should handle it now
-     * @method
+     * @function
      * @param {Event} event
      * @private
      */
     handleMousedown: {
-        value: function(event) {
+        value: function (event) {
             if (!this.enabled) return;
 
             this._observedPointer = "mouse";
@@ -565,7 +565,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     captureMousemove: {
-        value: function(event) {
+        value: function (event) {
             if (!this.enabled) return;
 
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
@@ -580,7 +580,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     captureMouseup: {
-        value: function(event) {
+        value: function (event) {
             if (!this.enabled) return;
 
             this._end(event);
@@ -588,7 +588,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     _releaseInterest: { // unload??
-        value: function() {
+        value: function () {
 
             if (window.Touch) {
                 this._element.removeEventListener("touchend", this, true);
@@ -615,7 +615,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     captureTouchstart: {
-        value: function(event) {
+        value: function (event) {
             if (!this.enabled) return;
 
             if (this._shouldPreventDefault(event)) {
@@ -635,7 +635,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     captureTouchmove: {
-        value: function(event) {
+        value: function (event) {
             var timeToMove;
             if (!this.enabled) return;
             if (this.stealChildrenPointer && this._isAxisMovement(event.targetTouches[0])) {
@@ -648,7 +648,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     handleTouchmove: {
-        value: function(event) {
+        value: function (event) {
             if (!this.enabled) return;
 
             var i = 0, len = event.changedTouches.length;
@@ -683,7 +683,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     captureTouchend: {
-        value: function(event) {
+        value: function (event) {
             if (!this.enabled) return;
 
             var i = 0, len = event.changedTouches.length;
@@ -697,7 +697,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     captureTouchcancel: {
-        value: function(event) {
+        value: function (event) {
             var i = 0, len = event.changedTouches.length;
             while (i < len && event.changedTouches[i].identifier !== this._observedPointer) {
                 i++;
@@ -709,7 +709,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     _isAxisMovement: {
-        value: function(event) {
+        value: function (event) {
             var velocity = event.velocity,
                 lowerRight = 0.7853981633974483, // pi/4
                 lowerLeft = 2.356194490192345, // 3pi/4
@@ -763,7 +763,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     captureWheel: {
-        value: function() {
+        value: function () {
             if (!this.eventManager.componentClaimingPointer(this._WHEEL_POINTER)) {
                 this.eventManager.claimPointer(this._WHEEL_POINTER, this.component);
             }
@@ -771,7 +771,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     handleWheel: {
-        value: function(event) {
+        value: function (event) {
             if (!this.enabled) return;
 
             var self = this;
@@ -784,7 +784,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 this.translateY = this._translateY - ((deltaY * 20) / 120);
                 this._dispatchTranslate();
                 window.clearTimeout(this._translateEndTimeout);
-                this._translateEndTimeout = window.setTimeout(function() {
+                this._translateEndTimeout = window.setTimeout(function () {
                     self._dispatchTranslateEnd();
                 }, 400);
 
@@ -800,7 +800,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     _firstMove: {
-        value: function() {
+        value: function () {
             if (this._isFirstMove) {
                 this._dispatchTranslateStart(this._translateX, this._translateY);
                 this._isFirstMove = false;
@@ -818,7 +818,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     _move: {
-        value: function(x, y) {
+        value: function (x, y) {
             var pointerDelta;
 
             this._isSelfUpdate = true;
@@ -842,7 +842,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     _bezierTValue: {
-        value: function(x, p1x, p1y, p2x, p2y) {
+        value: function (x, p1x, p1y, p2x, p2y) {
             var a = 1 - 3 * p2x + 3 * p1x,
                 b = 3 * p2x - 6 * p1x,
                 c = 3 * p1x,
@@ -862,7 +862,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     _dispatchTranslateStart: {
-        value: function(x, y) {
+        value: function (x, y) {
             var translateStartEvent = document.createEvent("CustomEvent");
 
             translateStartEvent.initCustomEvent("translateStart", true, true, null);
@@ -876,7 +876,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     _dispatchTranslateEnd: {
-        value: function() {
+        value: function () {
             var translateEndEvent = document.createEvent("CustomEvent");
 
             translateEndEvent.initCustomEvent("translateEnd", true, true, null);
@@ -889,7 +889,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     _dispatchTranslateCancel: {
-        value: function() {
+        value: function () {
             var translateCancelEvent = document.createEvent("CustomEvent");
 
             translateCancelEvent.initCustomEvent("translateCancel", true, true, null);
@@ -902,7 +902,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     _dispatchTranslate: {
-        value: function() {
+        value: function () {
             var translateEvent = document.createEvent("CustomEvent");
             translateEvent.initCustomEvent("translate", true, true, null);
             translateEvent.translateX = this._translateX;
@@ -1056,7 +1056,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     surrenderPointer: {
-        value: function(pointer, demandingComponent) {
+        value: function (pointer, demandingComponent) {
             return ! this.isMoving &&
                 demandingComponent.stealChildrenPointer &&
                 // assuming that demanding component is a (great)*child
@@ -1065,13 +1065,13 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     eventManager: {
-        get: function() {
+        get: function () {
             return defaultEventManager;
         }
     },
 
     load: {
-        value: function() {
+        value: function () {
             if (window.Touch) {
                 this._element.addEventListener("touchstart", this, true);
                 this._element.addEventListener("touchstart", this, false);
@@ -1100,7 +1100,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      * @param {boolean} use capture instead of bubble
      */
     addEventListener: {
-        value: function(type, listener, useCapture) {
+        value: function (type, listener, useCapture) {
             Composer.addEventListener.call(this, type, listener, useCapture);
             if (type === "translate") {
                 this._shouldDispatchTranslate = true;

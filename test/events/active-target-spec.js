@@ -2,7 +2,7 @@ var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-TestPageLoader.queueTest("active-target-test/active-target-test", function(testPage) {
+TestPageLoader.queueTest("active-target-test/active-target-test", function (testPage) {
     describe("events/active-target-spec", function () {
 
         var testDocument;

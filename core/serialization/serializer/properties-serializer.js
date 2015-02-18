@@ -10,7 +10,7 @@ var PropertiesSerializer = Montage.specialize.call(Object, {
     },
 
     initWithMalkerAndVisitorAndObject: {
-        value: function(malker, visitor, object) {
+        value: function (malker, visitor, object) {
             this._malker = malker;
             this._visitor = visitor;
             this._object = object;
@@ -20,7 +20,7 @@ var PropertiesSerializer = Montage.specialize.call(Object, {
     },
 
     addObject: {
-        value: function(object) {
+        value: function (object) {
             if (typeof object === "object") {
                 this._malker.visit(object);
 
@@ -30,7 +30,7 @@ var PropertiesSerializer = Montage.specialize.call(Object, {
     },
 
     addObjectReference: {
-        value: function(object) {
+        value: function (object) {
             var builder = this._visitor.builder,
                 labeler = this._visitor.labeler,
                 label = labeler.getObjectLabel(object);
@@ -43,13 +43,13 @@ var PropertiesSerializer = Montage.specialize.call(Object, {
     },
 
     set: {
-        value: function(propertyName, value, type) {
+        value: function (propertyName, value, type) {
             this._visitor.setProperty(this._malker, propertyName, value, type);
         }
     },
 
     setAll: {
-        value: function() {
+        value: function () {
             this._visitor.setSerializableObjectProperties(
                 this._malker, this._object);
         }

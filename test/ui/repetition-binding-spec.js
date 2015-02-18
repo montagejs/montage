@@ -35,17 +35,17 @@ var Montage = require("montage").Montage,
 var stripPP = function stripPrettyPrintting(str) {
     return str.replace(/\n\s*/g, "");
 };
-TestPageLoader.queueTest("repetition/repetition-binding", function(testPage) {
-	
-	
-    describe("ui/repetition-binding-spec", function() {
+TestPageLoader.queueTest("repetition/repetition-binding", function (testPage) {
+
+
+    describe("ui/repetition-binding-spec", function () {
         var eventManager,
             application,
-            delegate;			
-        var querySelector = function(s) {
+            delegate;
+        var querySelector = function (s) {
             return testPage.querySelector(s);
         };
-        var querySelectorAll = function(s) {
+        var querySelectorAll = function (s) {
             return testPage.querySelectorAll(s);
         };
 
@@ -55,9 +55,9 @@ TestPageLoader.queueTest("repetition/repetition-binding", function(testPage) {
             delegate = application.delegate;
         });
 
-        describe("Repetition inner Text", function() {
+        describe("Repetition inner Text", function () {
 
-            it("should change when repetition content changes", function() {
+            it("should change when repetition content changes", function () {
 
 	            var repetition20 = delegate.repetition20;
 	            var repetition20 = delegate.repetition20;
@@ -71,7 +71,7 @@ TestPageLoader.queueTest("repetition/repetition-binding", function(testPage) {
 
 				delegate.content = ["c", "d"];
                 testPage.waitForComponentDraw(repetition20,1);
-               runs(function() {
+               runs(function () {
 	                expect(firstChildElement.childNodes[0].data).toBe("c");
 	                expect(secondChildElement.childNodes[0].data).toBe("d");
                 });

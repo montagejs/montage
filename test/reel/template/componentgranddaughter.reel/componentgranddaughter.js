@@ -40,7 +40,7 @@ var ComponentGranddaughter = exports.ComponentGranddaughter = ComponentDaughter.
     },
 
     templateDidLoad: {
-        value: function() {
+        value: function () {
             this.templateDidLoadCallCount++;
         }
     }

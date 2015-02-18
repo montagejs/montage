@@ -40,7 +40,7 @@ describe("test/base/abstract-image-spec", function () {
                 anImage.element = MockDOM.element();
             });
 
-            it("should start loading the new image", function() {
+            it("should start loading the new image", function () {
                 var url = imageURL + "?donotchache=" + Date.now();
                 anImage.src = url;
                 expect(anImage._isLoadingImage).toBeTruthy();
@@ -119,13 +119,13 @@ describe("test/base/abstract-image-spec", function () {
             expect(anImage.element.hasAttribute("crossorigin")).toBe(false);
         });
 
-        it("should draw the rebased relative url if the _ownerDocumentPart is set after src", function() {
+        it("should draw the rebased relative url if the _ownerDocumentPart is set after src", function () {
             var src = "logo.png";
 
             anImage.src = src;
             anImage._ownerDocumentPart = {
                 template: {
-                    getBaseUrl: function() {
+                    getBaseUrl: function () {
                         return "http://montagestudio.com/assets/images/montagejs/";
                     }
                 }
@@ -136,12 +136,12 @@ describe("test/base/abstract-image-spec", function () {
             expect(anImage.element.src).toBe(imageURL);
         });
 
-        it("should draw the rebased relative url if the src is set after _ownerDocumentPart", function() {
+        it("should draw the rebased relative url if the src is set after _ownerDocumentPart", function () {
             var src = "logo.png";
 
              anImage._ownerDocumentPart = {
                 template: {
-                    getBaseUrl: function() {
+                    getBaseUrl: function () {
                         return "http://montagestudio.com/assets/images/montagejs/";
                     }
                 }
@@ -155,7 +155,7 @@ describe("test/base/abstract-image-spec", function () {
 
     });
 
-    describe("rebased src", function() {
+    describe("rebased src", function () {
         var Image = AbstractImage.specialize( {}),
             anImage;
 
@@ -163,7 +163,7 @@ describe("test/base/abstract-image-spec", function () {
             anImage = new Image();
         });
 
-        it("should not rebase http:// urls", function() {
+        it("should not rebase http:// urls", function () {
             var src = imageURL,
                 rebasedSrc;
 
@@ -173,7 +173,7 @@ describe("test/base/abstract-image-spec", function () {
             expect(rebasedSrc).toBe(src);
         });
 
-        it("should not rebase https:// urls", function() {
+        it("should not rebase https:// urls", function () {
             var src = "https://montagestudio.com/assets/images/montagejs/logo.png",
                 rebasedSrc;
 
@@ -186,7 +186,7 @@ describe("test/base/abstract-image-spec", function () {
             expect(rebasedSrc).toBe(src);
         });
 
-        it("should not rebase / urls", function() {
+        it("should not rebase / urls", function () {
             var src = "/montagestudio.com/assets/images/montagejs/logo.png",
                 rebasedSrc;
 
@@ -196,7 +196,7 @@ describe("test/base/abstract-image-spec", function () {
             expect(rebasedSrc).toBe(src);
         });
 
-        it("should not rebase // urls", function() {
+        it("should not rebase // urls", function () {
             var src = "//montagestudio.com/assets/images/montagejs/logo.png",
                 rebasedSrc;
 
@@ -206,7 +206,7 @@ describe("test/base/abstract-image-spec", function () {
             expect(rebasedSrc).toBe(src);
         });
 
-        it("should not rebase data: urls", function() {
+        it("should not rebase data: urls", function () {
             var src = src1,
                 rebasedSrc;
 
@@ -216,7 +216,7 @@ describe("test/base/abstract-image-spec", function () {
             expect(rebasedSrc).toBe(src);
         });
 
-        it("should not rebase protocol: urls", function() {
+        it("should not rebase protocol: urls", function () {
             var src = "protocol://image.jpg",
                 rebasedSrc;
 
@@ -229,7 +229,7 @@ describe("test/base/abstract-image-spec", function () {
             expect(rebasedSrc).toBe(src);
         });
 
-        it("should not rebase empty urls", function() {
+        it("should not rebase empty urls", function () {
             var src = "",
                 rebasedSrc;
 
@@ -239,7 +239,7 @@ describe("test/base/abstract-image-spec", function () {
             expect(rebasedSrc).toBe(null);
         });
 
-        it("should not rebase null urls", function() {
+        it("should not rebase null urls", function () {
             var src = null,
                 rebasedSrc;
 
@@ -249,7 +249,7 @@ describe("test/base/abstract-image-spec", function () {
             expect(rebasedSrc).toBe(null);
         });
 
-        it("should not rebase relative urls when owner document is not available", function() {
+        it("should not rebase relative urls when owner document is not available", function () {
             var src = "logo.png",
                 rebasedSrc;
 
@@ -260,13 +260,13 @@ describe("test/base/abstract-image-spec", function () {
             expect(rebasedSrc).toBe(null);
         });
 
-        it("should not rebase relative urls when base url is not available", function() {
+        it("should not rebase relative urls when base url is not available", function () {
             var src = "logo.png",
                 rebasedSrc;
 
             anImage._ownerDocumentPart = {
                 template: {
-                    getBaseUrl: function() {
+                    getBaseUrl: function () {
                         return null;
                     }
                 }
@@ -277,13 +277,13 @@ describe("test/base/abstract-image-spec", function () {
             expect(rebasedSrc).toBe(null);
         });
 
-        it("should rebase relative urls when base url is not available", function() {
+        it("should rebase relative urls when base url is not available", function () {
             var src = "logo.png",
                 rebasedSrc;
 
             anImage._ownerDocumentPart = {
                 template: {
-                    getBaseUrl: function() {
+                    getBaseUrl: function () {
                         return "http://montagestudio.com/assets/images/montagejs/";
                     }
                 }
@@ -294,13 +294,13 @@ describe("test/base/abstract-image-spec", function () {
             expect(rebasedSrc).toBe(imageURL);
         });
 
-        it("should rebase relative urls as soon as owner template is available", function() {
+        it("should rebase relative urls as soon as owner template is available", function () {
             var src = "logo.png";
 
             anImage.src = src;
             anImage._ownerDocumentPart = {
                 template: {
-                    getBaseUrl: function() {
+                    getBaseUrl: function () {
                         return "http://montagestudio.com/assets/images/montagejs/";
                     }
                 }
@@ -308,13 +308,13 @@ describe("test/base/abstract-image-spec", function () {
             expect(anImage._image.src).toBe(imageURL);
         });
 
-        it("should not change the src to the rebased src", function() {
+        it("should not change the src to the rebased src", function () {
             var src = "logo.png";
 
             anImage.src = src;
             anImage._ownerDocumentPart = {
                 template: {
-                    getBaseUrl: function() {
+                    getBaseUrl: function () {
                         return "http://montagestudio.com/assets/images/montagejs/";
                     }
                 }
@@ -325,19 +325,19 @@ describe("test/base/abstract-image-spec", function () {
 
     });
 
-    describe("cached image", function() {
+    describe("cached image", function () {
         var Image = AbstractImage.specialize({}),
             cachedImage = new Image();
 
-        it("should preload the image", function() {
+        it("should preload the image", function () {
             cachedImage.src = imageURL;
 
-            waitsFor(function() {
+            waitsFor(function () {
                 return !cachedImage._isLoadingImage;
             }, 4000);
         });
 
-        it("should display the cached image", function() {
+        it("should display the cached image", function () {
             var anImage = new Image();
             anImage.src = imageURL;
             expect(anImage._isLoadingImage).toBe(false);

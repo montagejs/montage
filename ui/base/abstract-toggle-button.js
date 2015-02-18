@@ -36,7 +36,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
      * @private
      */
     constructor: {
-        value: function() {
+        value: function () {
             if(this.constructor === AbstractToggleButton) {
                 throw new Error("AbstractToggleButton cannot be instantiated.");
             }
@@ -82,7 +82,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     },
 
     acceptsActiveTarget: {
-        value: function() {
+        value: function () {
             return true;
         }
     },
@@ -107,10 +107,10 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
      * @default undefined
      */
     pressedLabel: {
-        get: function() {
+        get: function () {
             return this._pressedLabel;
         },
-        set: function(value) {
+        set: function (value) {
             this._pressedLabel = "" + value;
             this.needsDraw = true;
         }
@@ -126,10 +126,10 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
      * @default undefined
      */
     unpressedLabel: {
-        get: function() {
+        get: function () {
             return this._unpressedLabel;
         },
-        set: function(value) {
+        set: function (value) {
             this._unpressedLabel = "" + value;
             this.needsDraw = true;
         }
@@ -164,10 +164,10 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
      * @default false
      */
     active: {
-        get: function() {
+        get: function () {
             return this._active;
         },
-        set: function(value) {
+        set: function (value) {
             this._active = value;
             this.needsDraw = true;
         }
@@ -178,19 +178,19 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     },
 
     pressed: {
-        set: function(value) {
+        set: function (value) {
             if (value !== this._pressed) {
                 this._pressed = value;
                 this.needsDraw = true;
             }
         },
-        get: function() {
+        get: function () {
             return this._pressed;
         }
     },
 
     prepareForActivationEvents: {
-        value: function() {
+        value: function () {
             this._pressComposer.addEventListener("pressStart", this, false);
             this._pressComposer.addEventListener("press", this, false);
             this._pressComposer.addEventListener("pressCancel", this, false);
@@ -201,7 +201,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
 
     // Optimisation
     addEventListener: {
-        value: function(type, listener, useCapture) {
+        value: function (type, listener, useCapture) {
             AbstractControl.addEventListener.call(this, type, listener, useCapture);
             if (type === "longAction") {
                 this._pressComposer.addEventListener("longPress", this, false);
@@ -216,7 +216,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
      * @private
      */
     handlePressStart: {
-        value: function(event) {
+        value: function (event) {
             this.active = true;
 
             if (event.touch) {
@@ -232,7 +232,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
      * @private
      */
     handlePress: {
-        value: function(event) {
+        value: function (event) {
             this.active = false;
 
             if (!this.enabled) {
@@ -246,7 +246,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     },
 
     handleKeyPress: {
-        value: function(event) {
+        value: function (event) {
             this.active = false;
 
             if (!this.enabled) {
@@ -259,7 +259,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     },
 
     handleLongPress: {
-        value: function(event) {
+        value: function (event) {
             // When we fire the "longAction" event we don't want to fire the
             // "action" event as well.
             this._pressComposer.cancelPress();
@@ -275,20 +275,20 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
      @private
      */
     handlePressCancel: {
-        value: function(event) {
+        value: function (event) {
             this.active = false;
             document.removeEventListener("touchmove", this, false);
         }
     },
 
     handleTouchmove: {
-        value: function(event) {
+        value: function (event) {
             event.preventDefault();
         }
     },
 
     _toggle: {
-        value: function() {
+        value: function () {
             this.pressed = !this.pressed;
         }
     },
@@ -302,7 +302,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     },
 
     enterDocument: {
-        value: function(firstDraw) {
+        value: function (firstDraw) {
             if(firstDraw) {
                 this.isInputElement = (this.originalElement.tagName === "INPUT");
 
@@ -320,12 +320,12 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
 
     /**
      * Draws the label to the DOM.
-     * @method
+     * @function
      * @private
      */
     _drawLabel: {
         enumerable: false,
-        value: function(value) {
+        value: function (value) {
             if (this.isInputElement) {
                 this._element.setAttribute("value", value);
             } else if (this._labelNode) {
@@ -335,7 +335,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     },
 
     draw: {
-        value: function() {
+        value: function () {
             if (this.pressed) {
                 this._drawLabel(this.pressedLabel);
             } else {

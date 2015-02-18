@@ -14,7 +14,7 @@ var Converter = require("./converter").Converter;
  * @param {string} str String to be trimmed.
  * @returns {string} The trimmed string.
  */
-var trim = exports.trim = function(str) {
+var trim = exports.trim = function (str) {
     // from Google Closure library
     // Since IE doesn't include non-breaking-space (0xa0) in their \s character
     // class (as required by section 7.2 of the ECMAScript spec), we explicitly
@@ -37,7 +37,7 @@ var trim = exports.trim = function(str) {
 exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
 
     _convert: {
-        value: function(v) {
+        value: function (v) {
             if (v && typeof v === 'string') {
                 return trim(v);
             }
@@ -46,21 +46,21 @@ exports.TrimConverter = Converter.specialize( /** @lends TrimConverter# */ {
 
     /**
      * Trims the provided string and returns the new string.
-     * @method
+     * @function
      * @param {string} v The string to trim.
      * @returns this._convert(v)
      */
-    convert: {value: function(v) {
+    convert: {value: function (v) {
         return this._convert(v);
     }},
 
     /**
      * Reverts the conversion.
-     * @method
+     * @function
      * @param {string} v The string to revert.
      * @returns this._convert(v)
      */
-    revert: {value: function(v) {
+    revert: {value: function (v) {
         return this._convert(v);
     }}
 
