@@ -108,17 +108,17 @@ TestPageLoader.queueTest("dom/dom", function(testPage) {
                 describe("translated", function() {
                     describe("including a link with border", function() {
                         it("should return correct position", function() {
-                            testConvertPoint(testPage.test.convertPoint5, 56,43,71,243);
+                            testConvertPoint(testPage.test.convertPoint5, 168, 40, 183, 240);
                         });
                     });
                     describe("including a link with border and a break", function() {
                         it("should return correct position", function() {
-                            testConvertPoint(testPage.test.convertPoint6, 56,43,71,243);
+                            testConvertPoint(testPage.test.convertPoint6, 56, 40, 71, 240);
                         });
                     });
                     describe(", rotated, and scaled including a link with border and a break", function() {
                         it("should return correct position", function() {
-                            testConvertPoint(testPage.test.convertPoint7, 56,53,3,82);
+                            testConvertPoint(testPage.test.convertPoint7, 44, 56, 59, 256);
                         });
                     });
                 });

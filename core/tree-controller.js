@@ -3,6 +3,8 @@ var Map = require("collections/map");
 var WeakMap = require("collections/weak-map");
 var Object = require("collections/shim-object");
 
+var Bindings = require("./core").Bindings;
+
 /**
  * @class TreeControllerNode
  * @extends Montage
@@ -168,6 +170,8 @@ var Node = exports.TreeControllerNode = Montage.specialize( /** @lends TreeContr
         value: null
     },
 
+    foo: {value: null},
+
     /**
      * Creates a tree controller node.
      * @param content
@@ -180,6 +184,50 @@ var Node = exports.TreeControllerNode = Montage.specialize( /** @lends TreeContr
         value: function TreeControllerNode(controller, parent, content, depth, entry) {
             this.super();
 
+            Bindings.defineBinding(this, "index", {
+                "<-": "_entry.0"
+            });
+
+            Bindings.defineBinding(this, "isFinal", {
+                "<-": "index == parent.children.length - 1"
+            });
+
+            // childrenPath -> _childrenContent
+            // waits for depth to be defined to ensure that child nodes know
+            // their depth when they are created by initialization of children
+            Bindings.defineBinding(this, "_childrenContent", {
+                "<-": "depth.defined() ? content.path(_controller.childrenPath ?? 'children') : []"
+            });
+
+            // _childrenContent -> _childrenEntries
+            Bindings.defineBinding(this, "_childrenEntries", {
+                "<-": "_childrenContent.enumerate()"
+            });
+
+            // this + children if expanded -> iterations
+            Bindings.defineBinding(this, "iterations", {
+                "<-": "[this].concat(expanded ? children.flatten{iterations} : [])"
+            });
+
+            // the all nodes binding facilitates the allExpanded binding
+            Bindings.defineBinding(this, "nodes", {
+                "<-": "[this].concat(children.flatten{nodes})"
+            });
+
+            // line art hints
+            Bindings.defineBinding(this, "_junction", {
+                "<-": "isFinal ? 'final' : 'medial'"
+            });
+            Bindings.defineBinding(this, "_followingJunction", {
+                "<-": "isFinal ? 'after' : 'before'"
+            });
+            Bindings.defineBinding(this, "_followingJunctions", {
+                "<-": "(parent._followingJunctions ?? []).concat([_followingJunction])"
+            });
+            Bindings.defineBinding(this, "junctions", {
+                "<-": "(parent._followingJunctions ?? []).concat([_junction])"
+            });
+
             this._controller = controller;
             this.parent = parent;
             this.content = content;
@@ -189,49 +237,9 @@ var Node = exports.TreeControllerNode = Montage.specialize( /** @lends TreeContr
 
             this.children = [];
 
-            this.defineBinding("index", {"<-": "_entry.0"});
-            this.defineBinding("isFinal", {"<-": "index == parent.children.length - 1"});
-
-            // childrenPath -> _childrenContent
-            // waits for depth to be defined to ensure that child nodes know
-            // their depth when they are created by initialization of children
-            this.defineBinding("_childrenContent", {
-                "<-": "depth.defined() ? content.path(_controller.childrenPath ?? 'children') : []"
-            });
-
-            // _childrenContent -> _childrenEntries
-            this.defineBinding("_childrenEntries", {
-                "<-": "_childrenContent.enumerate()"
-            });
-
             // _childrenEntries -> children
             this.handleChildrenEntriesRangeChange(this._childrenEntries, [], 0);
             this._childrenEntries.addRangeChangeListener(this, "childrenEntries");
-
-            // this + children if expanded -> iterations
-            this.defineBinding("iterations", {
-                "<-": "[this].concat(expanded ? children.flatten{iterations} : [])"
-            });
-
-            // the all nodes binding facilitates the allExpanded binding
-            this.defineBinding("nodes", {
-                "<-": "[this].concat(children.flatten{nodes})"
-            });
-
-            // line art hints
-            this.defineBinding("_junction", {
-                "<-": "isFinal ? 'final' : 'medial'"
-            });
-            this.defineBinding("_followingJunction", {
-                "<-": "isFinal ? 'after' : 'before'"
-            });
-            this.defineBinding("_followingJunctions", {
-                "<-": "(parent._followingJunctions ?? []).concat([_followingJunction])"
-            });
-            this.defineBinding("junctions", {
-                "<-": "(parent._followingJunctions ?? []).concat([_junction])"
-            });
-
         }
     },
 
@@ -404,13 +412,13 @@ exports.TreeController = Montage.specialize( /** @lends TreeController# */ {
 
             this._roots = new WeakMap();
             this.addOwnPropertyChangeListener("content", this);
-            this.defineBinding("iterations", {"<-": "root.iterations"});
-            this.defineBinding("nodes", {"<-": "root.nodes"});
-            this.defineBinding(
+            Bindings.defineBinding(this, "iterations", {"<-": "root.iterations"});
+            Bindings.defineBinding(this, "nodes", {"<-": "root.nodes"});
+            Bindings.defineBinding(this,
                 "allExpanded",
                 {"<->": "nodes.every{expanded || children.length == 0}"}
             );
-            this.defineBinding(
+            Bindings.defineBinding(this,
                 "noneExpanded",
                 {"<->": "nodes.every{!expanded}"}
             );
