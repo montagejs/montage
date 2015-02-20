@@ -76,7 +76,9 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
         value: function() {
             this._allChildComponents = this.childComponents.slice(0);
 
-            if (this.switchValue) {
+            if (typeof this.switchValue !== "undefined" && this.switchValue !== null ||
+                (typeof this.switchValue === "string" && this.switchValue.length !== 0)) {
+
                 this._loadSwitchComponentTree(this.switchValue);
             }
         }
@@ -215,7 +217,10 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
     contentDidChange: {
         value: function(newContent, oldContent) {
             this.super();
-            if (this._drawnSwitchValue) {
+
+            if (typeof this._drawnSwitchValue !== "undefined" && this._drawnSwitchValue !== null ||
+                (typeof this._drawnSwitchValue === "string" && this._drawnSwitchValue.length !== 0)) {
+
                 this._switchElements[this._drawnSwitchValue] = oldContent;
             }
             this._drawnSwitchValue = this._switchValue;
