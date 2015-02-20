@@ -37,7 +37,8 @@ function deletePage(page) {
 }
 
 describe("reel/template-spec", function() {
-    var template;
+    var template,
+        baseURI = document.baseURI || window.location.href;
 
     beforeEach(function() {
         template = new Template();
@@ -175,14 +176,14 @@ describe("reel/template-spec", function() {
         it("should resolve relative image's URL", function() {
             var moduleId = "reel/template/template-relative-image.html",
                 expectedResult = {
-                    "src" : URL.resolve(document.baseURI, "reel/template/sample-image.jpeg")
-                }
+                    "src" : URL.resolve(baseURI, "reel/template/sample-image.jpeg")
+                };
 
             return template.initWithModuleId(moduleId, require)
             .then(function() {
-                var domImage = template.document.body.querySelector("img"),
+                var domImage = template.document.getElementById("dom_image"),
                     domSrc = domImage ? domImage.src : "",
-                    svgImage = template.document.body.querySelector("image"),
+                    svgImage = template.document.getElementById("svg_image"),
                     svgSrc = svgImage ? svgImage.getAttributeNS('http://www.w3.org/1999/xlink', "href") : "";
 
                 expect(domSrc).toBe(expectedResult.src);
@@ -470,7 +471,7 @@ describe("reel/template-spec", function() {
                 htmlModification = require("reel/template/template-relative-image.html").content,
                 htmlDocument = document.implementation.createHTMLDocument(""),
                 expectedResult = {
-                    "src" : URL.resolve(document.baseURI, "reel/template/sample-image.jpeg")
+                    "src" : URL.resolve(baseURI, "reel/template/sample-image.jpeg")
                 };
 
             return template.initWithModuleId(moduleId, require)
@@ -484,9 +485,9 @@ describe("reel/template-spec", function() {
 
                 template.replaceNode(node, reference);
 
-                var domImage = template.document.body.querySelector("img"),
+                var domImage = template.document.getElementById("dom_image"),
                     domSrc = domImage ? domImage.src : "",
-                    svgImage = template.document.body.querySelector("image"),
+                    svgImage = template.document.getElementById("svg_image"),
                     svgSrc = svgImage ? svgImage.getAttributeNS('http://www.w3.org/1999/xlink', "href") : "";
 
                 expect(domSrc).toBe(expectedResult.src);
@@ -537,7 +538,7 @@ describe("reel/template-spec", function() {
                     template.replaceNode(node, reference);
 
                     var domImage = template.document.getElementById("empty_src"),
-                        domSrc = domImage ? domImage.src : "";
+                        domSrc = domImage ? domImage.getAttribute('src') : "";
 
                     expect(domSrc).toBe("");
                 }).fail(function() {
@@ -551,8 +552,8 @@ describe("reel/template-spec", function() {
                 htmlModification = require("reel/template/template-relative-image.html").content,
                 htmlDocument = document.implementation.createHTMLDocument(""),
                 expectedResult = {
-                    "src" : URL.resolve(document.baseURI, "reel/template/sample-image.jpeg")
-                }
+                    "src" : URL.resolve(baseURI, "reel/template/sample-image.jpeg")
+                };
 
             return template.initWithModuleId(moduleId, require)
             .then(function() {
@@ -565,9 +566,9 @@ describe("reel/template-spec", function() {
 
                 template.insertNodeBefore(node, reference);
 
-                var domImage = template.document.body.querySelector("img"),
+                var domImage = template.document.getElementById("dom_image"),
                     domSrc = domImage ? domImage.src : "",
-                    svgImage = template.document.body.querySelector("image"),
+                    svgImage = template.document.getElementById("svg_image"),
                     svgSrc = svgImage ? svgImage.getAttributeNS('http://www.w3.org/1999/xlink', "href") : "";
 
                 expect(domSrc).toBe(expectedResult.src);
@@ -582,8 +583,8 @@ describe("reel/template-spec", function() {
                 htmlModification = require("reel/template/template-relative-image.html").content,
                 htmlDocument = document.implementation.createHTMLDocument(""),
                 expectedResult = {
-                    "src" : URL.resolve(document.baseURI, "reel/template/sample-image.jpeg")
-                }
+                    "src" : URL.resolve(baseURI, "reel/template/sample-image.jpeg")
+                };
 
             return template.initWithModuleId(moduleId, require)
             .then(function() {
@@ -596,9 +597,9 @@ describe("reel/template-spec", function() {
 
                 template.appendNode(node, reference);
 
-                var domImage = template.document.body.querySelector("img"),
+                var domImage = template.document.getElementById("dom_image"),
                     domSrc = domImage ? domImage.src : "",
-                    svgImage = template.document.body.querySelector("image"),
+                    svgImage = template.document.getElementById("svg_image"),
                     svgSrc = svgImage ? svgImage.getAttributeNS('http://www.w3.org/1999/xlink', "href") : "";
 
                 expect(domSrc).toBe(expectedResult.src);
@@ -613,8 +614,8 @@ describe("reel/template-spec", function() {
                 htmlModification = require("reel/template/template-relative-image.html").content,
                 htmlDocument = document.implementation.createHTMLDocument(""),
                 expectedResult = {
-                    "src" : URL.resolve(document.baseURI, "reel/template/sample-image.jpeg")
-                }
+                    "src" : URL.resolve(baseURI, "reel/template/sample-image.jpeg")
+                };
 
             return template.initWithModuleId(moduleId, require)
             .then(function() {
@@ -625,9 +626,9 @@ describe("reel/template-spec", function() {
                 template.appendNode(htmlDocument.getElementById("dom_image"), reference);
                 template.appendNode(htmlDocument.getElementById("svg_image"), reference);
 
-                var domImage = template.document.body.querySelector("img"),
+                var domImage = template.document.getElementById("dom_image"),
                     domSrc = domImage ? domImage.src : "",
-                    svgImage = template.document.body.querySelector("image"),
+                    svgImage = template.document.getElementById("svg_image"),
                     svgSrc = svgImage ? svgImage.getAttributeNS('http://www.w3.org/1999/xlink', "href") : "";
 
                 expect(domSrc).toBe(expectedResult.src);
