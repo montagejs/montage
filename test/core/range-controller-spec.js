@@ -14,6 +14,21 @@ describe("core/range-controller-spec", function() {
             it("TODO should not allow duplicates");
             it("TODO should allow new item if duplicate deleted in same splice");
         });
+                
+        it("swap should select an object in case of for no-op when rangeController avoidsEmptySelection", function () {
+            //Save state
+            var avoidsEmptySelection = rangeController.avoidsEmptySelection;
+            var selection = rangeController.selection;
+            //Needed for spec
+            rangeController.avoidsEmptySelection = true;
+            var swapResult = rangeController.selection.swap(0,0,[]);
+            //set property to what it was
+            rangeController.avoidsEmptySelection = avoidsEmptySelection;
+            rangeController.selection = selection;
+            
+            expect(swapResult.toArray()).toEqual([]);
+            expect(rangeController.selection.toArray()).toEqual([0]);
+        });
 
         it("should allow setting selection to null/undefined", function () {
             rangeController.selection = [1];
