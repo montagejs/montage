@@ -98,10 +98,6 @@ var RangeSelection = function(content, rangeController) {
             var minus;
             if (minusLength === 0) {
                 // minus will be empty
-                if (plus.length === 0) {
-                    // at this point if plus is empty there is nothing to do.
-                    return EMPTY_ARRAY; // [], but spare us an instantiation
-                }
                 minus = EMPTY_ARRAY;
             } else {
                 minus = Array.prototype.slice.call(this, start, start + minusLength);
