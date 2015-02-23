@@ -16,11 +16,15 @@
       "mappings": {
         "mr": {
           "name": "mr",
-          "location": "packages/mr"
+          "location": "node_modules/mr"
         },
         "q": {
           "name": "q",
           "location": "packages/mr/packages/q"
+        },
+        "bluebird": {
+          "name": "bluebird",
+          "location": "node_modules/bluebird"
         }
       }
     }
@@ -32,6 +36,7 @@
     "mousse": "~0.3.0",
     "mr": "~0.15.3",
     "q": "1.0.0",
+    "bluebird":"2.9.10",
     "q-io": "~1.11.0"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-/*global require,exports */
+    /*global require,exports */
 
 /**
  * @module montage/core/localizer
@@ -266,7 +266,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
             }).then(function (localesMessages) {
                 return self._collapseMessages(localesMessages);
 
-            }).fail(function (error) {
+            },function(error) {
                 console.error("Could not load messages for '" + self.locale + "': " + error);
                 throw error;
 

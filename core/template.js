@@ -415,11 +415,11 @@ var Template = Montage.specialize( /** @lends Template# */ {
             optimizationPromise = this._optimizeObjectsInstantiation();
 
             if (optimizationPromise) {
-                return optimizationPromise.then(function () {
-                    return deserializer.deserialize(instances, fragment);
+                return optimizationPromise.bind(this).then(function() {
+                    return this._deserializer.deserialize(instances, fragment);
                 });
             } else {
-                return deserializer.deserialize(instances, fragment);
+                return this._deserializer.deserialize(instances, fragment);
             }
         }
     },
@@ -790,8 +790,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     createHtmlDocumentWithModuleId: {
-        value: function (moduleId, _require) {
-            var self = this;
+        value: function(moduleId, _require) {
 
             if (typeof _require !== "function") {
                 return Promise.reject(
@@ -799,8 +798,8 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 );
             }
 
-            return _require.async(moduleId).then(function (exports) {
-                return self.createHtmlDocumentWithHtml(exports.content, exports.directory);
+            return _require.async(moduleId).bind(this).then(function(exports) {
+                return this.createHtmlDocumentWithHtml(exports.content, exports.directory);
             });
         }
     },

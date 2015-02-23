@@ -247,7 +247,8 @@ if (typeof window !== "undefined") {
                     if (params.promiseLocation) {
                         promiseLocation = URL.resolve(Require.getLocation(), params.promiseLocation);
                     } else {
-                        promiseLocation = URL.resolve(montageLocation, "packages/mr/packages/q");
+                        //promiseLocation = URL.resolve(montageLocation, "packages/mr/packages/q");
+                        promiseLocation = URL.resolve(montageLocation, "node_modules/bluebird");
                     }
 
                     return [
@@ -261,7 +262,7 @@ if (typeof window !== "undefined") {
                 .spread(function (montageRequire, promiseRequire) {
                     montageRequire.inject("core/mini-url", URL);
                     montageRequire.inject("core/promise", {Promise: Promise});
-                    promiseRequire.inject("q", Promise);
+                    promiseRequire.inject("bluebird", Promise);
 
                     // install the linter, which loads on the first error
                     config.lint = function (module) {
@@ -464,10 +465,11 @@ if (typeof window !== "undefined") {
             };
         },
 
-        load: function (location) {
+        load: function (location,loadCallback) {
             var script = document.createElement("script");
             script.src = location;
             script.onload = function () {
+                if(loadCallback) loadCallback(script);
                 // remove clutter
                 script.parentNode.removeChild(script);
             };
@@ -553,18 +555,30 @@ if (typeof window !== "undefined") {
 
             // determine which scripts to load
             var pending = {
-                "require": "packages/mr/require.js",
-                "require/browser": "packages/mr/browser.js",
-                "promise": "packages/mr/packages/q/q.js"
-            };
+                "require": "node_modules/mr/require.js",
+                "require/browser": "node_modules/mr/browser.js"
+                /*"promise": "node_modules/bluebird/js/browser/bluebird.js"*/
+                /*"promise": "packages/mr/packages/q/q.js"*/
+            };            
 
             // load in parallel, but only if we're not using a preloaded cache.
             // otherwise, these scripts will be inlined after already
             if (typeof BUNDLE === "undefined") {
                 var montageLocation = resolve(window.location, params.montageLocation);
+                
+                //Special Case bluebird for now:
+                browser.load(resolve(montageLocation, "node_modules/bluebird/js/browser/bluebird.js"),function() {
+                    global.bootstrap("promise", function (require, exports) {
+                        return window.Promise;
+                    });
+                    
+                });
+                
                 for (var id in pending) {
                     browser.load(resolve(montageLocation, pending[id]));
                 }
+                
+                pending.promise = "node_modules/bluebird/js/browser/bluebird.js";
             }
 
             // register module definitions for deferred,
@@ -646,6 +660,28 @@ if (typeof window !== "undefined") {
                 logger("Promise stacktrace support", function (state) {
                     Promise.longStackSupport = !!state;
                 });
+                
+                // Setup bluebird Promise custom scheduler:
+                if (typeof MessageChannel !== "undefined") {
+                    Promise.setScheduler((function() {
+                        // modern browsers
+                        // http://www.nonblocking.io/2011/06/windownexttick.html
+                        var channel = new MessageChannel();
+                        // At least Safari Version 6.0.5 (8536.30.1) intermittently cannot 
+                        // create working message ports the first time a page loads.
+                        var _scheduleExec = function _scheduleExec() {
+                            _scheduleExec.queuedFn();
+                        };
+                        channel.port1.onmessage = _scheduleExec;
+                        var _schedulePost = function _schedulePost(fn)  {
+                            _schedulePost._scheduleExec.queuedFn = fn;
+                            _schedulePost.channel.port2.postMessage(0);
+                        };
+                        _schedulePost.channel = channel;
+                        _schedulePost._scheduleExec = _scheduleExec;
+                        return _schedulePost;
+                    })());
+                }
 
                 // Load the event-manager
                 defaultEventManager = new EventManager().initWithWindow(window);

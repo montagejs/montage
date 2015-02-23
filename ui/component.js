@@ -1219,15 +1219,11 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     _loadComponentTreeDeferred: {value: null},
     loadComponentTree: {
         value: function loadComponentTree() {
-            var self = this,
-                canDrawGate = this.canDrawGate,
-                deferred = this._loadComponentTreeDeferred;
 
-            if (!deferred) {
-                deferred = Promise.defer();
-                this._loadComponentTreeDeferred = deferred;
+            if (!this._loadComponentTreeDeferred) {
+                this._loadComponentTreeDeferred = Promise.defer();
 
-                canDrawGate.setField("componentTreeLoaded", false);
+                this.canDrawGate.setField("componentTreeLoaded", false);
 
                 // only put it in the root component's draw list if the
                 // component has requested to be draw, it's possible to load the
@@ -1237,10 +1233,10 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                     this._canDraw = false;
                 }
 
-                this.expandComponent().then(function () {
-                    if (self.hasTemplate || self.shouldLoadComponentTree) {
+                this.expandComponent().bind(this).then(function() {
+                    if (this.hasTemplate || this.shouldLoadComponentTree) {
                         var promises = [],
-                            childComponents = self.childComponents,
+                            childComponents = this.childComponents,
                             childComponent;
 
                         for (var i = 0; (childComponent = childComponents[i]); i++) {
@@ -1249,22 +1245,22 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
                         return Promise.all(promises);
                     }
-                }).then(function () {
-                    self._isComponentTreeLoaded = true;
+                }).then(function() {
+                    this._isComponentTreeLoaded = true;
                     // When the component tree is loaded we need to draw if the
                     // component needs to have its enterDocument() called.
                     // This is because we explicitly avoid drawing when we set
                     // _needsEnterDocument before the first draw because we
                     // don't want to trigger the draw before its component tree
                     // is loaded.
-                    if (self._needsEnterDocument) {
-                        self.needsDraw = true;
+                    if (this._needsEnterDocument) {
+                        this.needsDraw = true;
                     }
-                    canDrawGate.setField("componentTreeLoaded", true);
-                    deferred.resolve();
-                }, deferred.reject).done();
+                    this.canDrawGate.setField("componentTreeLoaded", true);
+                    this._loadComponentTreeDeferred.resolve();
+                }, this._loadComponentTreeDeferred.reject).done();
             }
-            return deferred.promise;
+            return this._loadComponentTreeDeferred.promise;
         }
     },
 
@@ -1336,27 +1332,24 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     _expandComponentDeferred: {value: null},
     expandComponent: {
         value: function expandComponent() {
-            var self = this,
-                deferred = this._expandComponentDeferred;
 
-            if (!deferred) {
-                deferred = Promise.defer();
-                this._expandComponentDeferred = deferred;
+            if (!this._expandComponentDeferred) {
+                this._expandComponentDeferred = Promise.defer();
 
                 if (this.hasTemplate) {
-                    this._instantiateTemplate().then(function () {
-                        self._isComponentExpanded = true;
-                        self._addTemplateStyles();
-                        self.needsDraw = true;
-                        deferred.resolve();
-                    }, deferred.reject);
+                    this._instantiateTemplate().bind(this).then(function() {
+                        this._isComponentExpanded = true;
+                        this._addTemplateStyles();
+                        this.needsDraw = true;
+                        this._expandComponentDeferred.resolve();
+                    }, this._expandComponentDeferred.reject);
                 } else {
                     this._isComponentExpanded = true;
-                    deferred.resolve();
+                    this._expandComponentDeferred.resolve();
                 }
             }
 
-            return deferred.promise;
+            return this._expandComponentDeferred.promise;
         }
     },
 
@@ -1443,30 +1436,28 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     },
 
     _instantiateTemplate: {
-        value: function () {
-            var self = this;
-            return this._loadTemplate().then(function (template) {
-                if (!self._element) {
-                    console.error("Cannot instantiate template without an element.", self);
-                    return Promise.reject(new Error("Cannot instantiate template without an element.", self));
+        value: function() {
+            return this._loadTemplate().bind(this).then(function(template) {
+                if (!this._element) {
+                    console.error("Cannot instantiate template without an element.", this);
+                    return Promise.reject(new Error("Cannot instantiate template without an element.", this));
                 }
-                var instances = self.templateObjects,
-                    _document = self._element.ownerDocument;
+                var instances = this.templateObjects,
+                    _document = this._element.ownerDocument;
 
                 if (!instances) {
                     instances = Object.create(null);
                 }
-                instances.owner = self;
+                instances.owner = this;
 
-                self._isTemplateInstantiated = true;
+                this._isTemplateInstantiated = true;
 
-                return template.instantiateWithInstances(instances, _document)
-                .then(function (documentPart) {
-                    documentPart.parentDocumentPart = self._ownerDocumentPart;
-                    self._templateDocumentPart = documentPart;
+                return template.instantiateWithInstances(instances, _document).bind(this)
+                .then(function(documentPart) {
+                    documentPart.parentDocumentPart = this._ownerDocumentPart;
+                    this._templateDocumentPart = documentPart;
                     documentPart.fragment = null;
-                })
-                .fail(function (reason) {
+                },function(reason) {
                     var message = reason.stack || reason;
                     console.error("Error in", template.getBaseUrl() + ":", message);
                     throw reason;
@@ -1484,24 +1475,22 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     _loadTemplatePromise: {value: null},
     _loadTemplate: {
         value: function _loadTemplate() {
-            var self = this,
-                promise = this._loadTemplatePromise,
-                info;
+            var info;
 
-            if (!promise) {
+            if (!this._loadTemplatePromise) {
                 info = Montage.getInfoForObject(this);
 
-                promise = this._loadTemplatePromise = Template.getTemplateWithModuleId(
+                this._loadTemplatePromise = Template.getTemplateWithModuleId(
                     this.templateModuleId, info.require)
-                .then(function (template) {
-                    self._template = template;
-                    self._isTemplateLoaded = true;
+                .bind(this).then(function(template) {
+                    this._template = template;
+                    this._isTemplateLoaded = true;
 
                     return template;
                 });
             }
 
-            return promise;
+            return this._loadTemplatePromise;
         }
     },
 
@@ -2475,15 +2464,14 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
                     this._waitForLocalizerMessages = true;
 
-                    var self = this;
                     logger.debug(this, "waiting for messages from localizer");
                     this.canDrawGate.setField("messages", false);
 
-                    this.localizer.messagesPromise.then(function (messages) {
+                    this.localizer.messagesPromise.bind(this).then(function(messages) {
                         if (logger.isDebug) {
-                            logger.debug(self, "got messages from localizer");
+                            logger.debug(this, "got messages from localizer");
                         }
-                        self.canDrawGate.setField("messages", true);
+                        this.canDrawGate.setField("messages", true);
                     });
                 } else {
                     this._waitForLocalizerMessages = false;

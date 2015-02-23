@@ -1192,29 +1192,28 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     _createIteration: {
         value: function () {
-            var self = this,
-                iteration = new this.Iteration().initWithRepetition(this);
+            var iteration = new this.Iteration().initWithRepetition(this);
 
-            this._iterationCreationPromise = this._iterationCreationPromise
-            .then(function () {
-                var _document = self.element.ownerDocument,
+            this._iterationCreationPromise = this._iterationCreationPromise.bind(this)
+            .then(function() {
+                var _document = this.element.ownerDocument,
                     instances,
                     promise;
 
-                self.currentIteration = iteration;
+                this.currentIteration = iteration;
 
                 // We need to extend the instances of the template to add the
                 // iteration object that is specific to each iteration template
                 // instance.
-                instances = self._iterationTemplate.getInstances();
+                instances = this._iterationTemplate.getInstances();
                 instances = Object.create(instances);
-                instances[self._iterationLabel] = iteration;
+                instances[this._iterationLabel] = iteration;
 
-                promise = self._iterationTemplate.instantiateWithInstances(instances, _document)
+                promise = this._iterationTemplate.instantiateWithInstances(instances, _document).bind(this)
                 .then(function (part) {
-                    part.parentDocumentPart = self._ownerDocumentPart;
+                    part.parentDocumentPart = this._ownerDocumentPart;
                     iteration._templateDocumentPart = part;
-                    part.loadComponentTree().then(function () {
+                    part.loadComponentTree().bind(this).then(function() {
                         if (logger.isDebug) {
                             logger.debug("Iteration:%s component tree loaded.", Object.hash(iteration));
                         }
@@ -1226,9 +1225,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                         // based on whether the iteration should be on the DOM
                         // hereafter.
                         iteration._childComponents = part.childComponents;
-                        self.constructIteration(iteration);
+                        this.constructIteration(iteration);
                     }).done();
-                    self.currentIteration = null;
+                    this.currentIteration = null;
                 });
 
                 promise.done(); // radiate an error if necessary

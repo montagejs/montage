@@ -382,7 +382,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
             var promisedUndoableOperation,
                 self = this;
 
-            if (!Promise.isPromiseAlike(operationPromise)) {
+            if (!Promise.isAlike(operationPromise)) {
                 throw new Error("UndoManager expected a promise");
             }
 
@@ -531,7 +531,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
                 throw e;
             }
 
-            if (Promise.isPromiseAlike(opResult)) {
+            if (Promise.isAlike(opResult)) {
                 return opResult.finally(function () {
                     self.undoEntry = null;
                     self.redoEntry = null;
