@@ -75,8 +75,8 @@ var DocumentResources = Montage.specialize({
     },
 
     isResourcePreloading: {
-        value: function (url) {
-            return Promise.isPromise(this._preloaded[url]);
+        value: function(url) {
+            return Promise.is(this._preloaded[url]);
         }
     },
 

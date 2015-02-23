@@ -197,8 +197,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
                 objectName = locationDesc.objectName;
             }
 
-            if (Promise.isPromise(module)) {
-                return module.then(function (exports) {
+            if (Promise.is(module)) {
+                return module.then(function(exports) {
                     return self.instantiateMontageObject(value, exports, objectName, context, label);
                 }, function (error) {
                     if (error.stack) {
@@ -226,8 +226,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
 
             montageObjectDesc = this.reviveObjectLiteral(value, context);
 
-            if (Promise.isPromise(montageObjectDesc)) {
-                return montageObjectDesc.then(function (montageObjectDesc) {
+            if (Promise.is(montageObjectDesc)) {
+                return montageObjectDesc.then(function(montageObjectDesc) {
                     return self.deserializeMontageObject(montageObjectDesc, object, context, label);
                 });
             } else {
@@ -248,8 +248,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
                 context.setUnitsToDeserialize(object, montageObjectDesc, MontageReviver._unitNames);
                 properties = this.deserializeMontageObjectProperties(object, montageObjectDesc.properties, context);
 
-                if (Promise.isPromise(properties)) {
-                    return properties.then(function () {
+                if (Promise.is(properties)) {
+                    return properties.then(function() {
                         return object;
                     });
                 } else {
@@ -285,8 +285,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
                 .initWithObjectAndObjectDescriptorAndContextAndUnitNames(object, objectDesc, context, MontageReviver._unitNames);
             substituteObject = object.deserializeSelf(selfDeserializer);
 
-            if (Promise.isPromise(substituteObject)) {
-                return substituteObject.then(function (substituteObject) {
+            if (Promise.is(substituteObject)) {
+                return substituteObject.then(function(substituteObject) {
                     context.setObjectLabel(substituteObject, label);
                     return substituteObject;
                 });
@@ -359,8 +359,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
 
             value = this._deserializeUnits(context);
 
-            if (Promise.isPromise(value)) {
-                return value.then(function () {
+            if (Promise.is(value)) {
+                return value.then(function() {
                     self._invokeDeserializedFromSerialization(objects, context);
                 });
             } else {

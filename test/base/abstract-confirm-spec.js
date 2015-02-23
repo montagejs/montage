@@ -63,7 +63,7 @@ describe("test/base/abstract-confirm-spec", function () {
             it("should return a promise for the user action", function () {
                 var promise = aConfirm.show();
 
-                expect(Promise.isPromise(promise)).toBeTruthy();
+                expect(Promise.is(promise)).toBeTruthy();
             });
 
             it("should return the same promise for the user action when show is asked twice without any user action", function () {
