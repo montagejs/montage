@@ -26,13 +26,13 @@
     }
   },
   "dependencies": {
+    "bluebird": "^2.9.12",
     "collections": "~1.2.1",
     "frb": "~0.2.18",
     "htmlparser2": "~3.0.5",
     "mousse": "~0.3.0",
     "mr": "~0.15.3",
-    "q": "1.0.0",
-    "q-io": "~1.11.0"
+    "q": "1.0.0"
   },
   "devDependencies": {
     "jshint": "~2.4.4",
