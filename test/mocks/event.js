@@ -23,15 +23,15 @@ var fromEvent = exports.fromEvent = function (event) {
         }
     }
     mockEvent.propagationStopped = false;
-    mockEvent.stopPropagation = function() {
+    mockEvent.stopPropagation = function () {
         mockEvent.propagationStopped = true;
     };
     mockEvent.immediatePropagationStopped = false;
-    mockEvent.stopImmediatePropagation = function() {
+    mockEvent.stopImmediatePropagation = function () {
         mockEvent.immediatePropagationStopped = true;
     };
     mockEvent.defaultPrevented = false;
-    mockEvent.preventDefault = function() {
+    mockEvent.preventDefault = function () {
         mockEvent.defaultPrevented = true;
     };
     return mockEvent;

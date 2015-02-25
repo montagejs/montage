@@ -27,10 +27,10 @@ var Template = Montage.specialize( /** @lends Template# */ {
 
     _objectsString: {value: null},
     objectsString: {
-        get: function() {
+        get: function () {
             return this._objectsString;
         },
-        set: function(value) {
+        set: function (value) {
             this._objectsString = value;
             if (this._serialization) {
                 this._serialization.initWithString(value);
@@ -44,7 +44,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     // Deserializer cache
     __deserializer: {value: null},
     _deserializer: {
-        get: function() {
+        get: function () {
             var deserializer = this.__deserializer,
                 metadata,
                 requires;
@@ -66,7 +66,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
         }
     },
     getDeserializer: {
-        value: function() {
+        value: function () {
             return this._deserializer;
         }
     },
@@ -75,7 +75,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
         value: null
     },
     getSerialization: {
-        value: function() {
+        value: function () {
             var serialiation = this._serialization;
 
             if (!serialiation) {
@@ -92,10 +92,10 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     isDirty: {
-        get: function() {
+        get: function () {
             return this._isDirty;
         },
-        set: function(value) {
+        set: function (value) {
             if (this._isDirty !== value) {
                 this._isDirty = value;
                 this.clearTemplateFromElementContentsCache();
@@ -116,13 +116,13 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     document: {
-        get: function() {
+        get: function () {
             if (this._isDirty) {
                 this.refresh();
             }
             return this._document;
         },
-        set: function(value) {
+        set: function (value) {
             this._document = value;
         }
     },
@@ -136,12 +136,12 @@ var Template = Montage.specialize( /** @lends Template# */ {
     /**
      * Initializes the Template with an empty document.
      *
-     * @method
+     * @function
      * @param {require} _require The require function used to load modules when
      *                           a template is instantiated.
      */
     initWithRequire: {
-        value: function(_require) {
+        value: function (_require) {
             this._require = _require;
             this.document = this.createHtmlDocumentWithHtml("");
             this.objectsString = "";
@@ -153,7 +153,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     /**
      * Initializes the Template with a document.
      *
-     * @method
+     * @function
      * @param {HTMLDocument} _document The document to be used as a template.
      * @param {require} _require The require function used to load modules when
      *                           a template is instantiated.
@@ -161,14 +161,14 @@ var Template = Montage.specialize( /** @lends Template# */ {
      *                    template.
      */
     initWithDocument: {
-        value: function(_document, _require) {
+        value: function (_document, _require) {
             var self = this;
 
             this._require = _require;
             this.setDocument(_document);
 
             return this.getObjectsString(_document)
-            .then(function(objectsString) {
+            .then(function (objectsString) {
                 self.objectsString = objectsString;
                 return self;
             });
@@ -178,7 +178,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     /**
      * Initializes the Template with an HTML string.
      *
-     * @method
+     * @function
      * @param {HTMLDocument} html The HTML string to be used as a template.
      * @param {require} _require The require function used to load modules when
      *                           a template is instantiated.
@@ -186,14 +186,14 @@ var Template = Montage.specialize( /** @lends Template# */ {
      *                    template.
      */
     initWithHtml: {
-        value: function(html, _require) {
+        value: function (html, _require) {
             var self = this;
 
             this._require = _require;
             this.document = this.createHtmlDocumentWithHtml(html);
 
             return this.getObjectsString(this.document)
-            .then(function(objectsString) {
+            .then(function (objectsString) {
                 self.objectsString = objectsString;
                 return self;
             });
@@ -204,7 +204,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      * Initializes the Template with Objects and a DocumentFragment to be
      * used as the body of the document.
      *
-     * @method
+     * @function
      * @param {Object} objects A JSON'able representation of the objects of the
      *                         template.
      * @param {DocumentFragment} html The HTML string to be used as the body.
@@ -214,7 +214,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      *                    template.
      */
     initWithObjectsAndDocumentFragment: {
-        value: function(objects, documentFragment, _require) {
+        value: function (objects, documentFragment, _require) {
             var self = this;
 
             this._require = _require;
@@ -231,7 +231,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     /**
      * Initializes the Template with the HTML document at the module id.
      *
-     * @method
+     * @function
      * @param {string} moduleId The module id of the HTML page to load.
      * @param {require} _require The require function used to load modules when
      *                           a template is instantiated.
@@ -239,20 +239,20 @@ var Template = Montage.specialize( /** @lends Template# */ {
      *                    template.
      */
     initWithModuleId: {
-        value: function(moduleId, _require) {
+        value: function (moduleId, _require) {
             var self = this;
 
             this._require = _require;
 
             return this.createHtmlDocumentWithModuleId(moduleId, _require)
-            .then(function(_document) {
+            .then(function (_document) {
                 var baseUrl = _require(moduleId).directory;
 
                 self.document = _document;
                 self.setBaseUrl(baseUrl);
 
                 return self.getObjectsString(_document)
-                .then(function(objectsString) {
+                .then(function (objectsString) {
                     self.objectsString = objectsString;
 
                     return self;
@@ -262,7 +262,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     clone: {
-        value: function() {
+        value: function () {
             var clonedTemplate = new Template();
 
             clonedTemplate._require = this._require;
@@ -276,7 +276,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     instantiate: {
-        value: function(targetDocument) {
+        value: function (targetDocument) {
             return this.instantiateWithInstances(null, targetDocument);
         }
     },
@@ -290,7 +290,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      *        resultant of the instantiation.
      */
     instantiateWithInstances: {
-        value: function(instances, targetDocument) {
+        value: function (instances, targetDocument) {
             var self = this,
                 fragment,
                 part = new DocumentPart(),
@@ -308,7 +308,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
             templateObjects = this._createTemplateObjects(instances);
 
             return this._instantiateObjects(templateObjects, fragment)
-            .then(function(objects) {
+            .then(function (objects) {
                 var resources;
 
                 part.objects = objects;
@@ -335,11 +335,11 @@ var Template = Montage.specialize( /** @lends Template# */ {
         value: null
     },
     /**
-     * @return {undefined|Promise} A promise if there are objects to optimize,
+     * @returns {undefined|Promise} A promise if there are objects to optimize,
      *         nothing otherwise.
      */
     _optimizeObjectsInstantiation: {
-        value: function() {
+        value: function () {
             var self = this,
                 promise;
 
@@ -349,7 +349,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
 
                     if (promise) {
                         this._optimizeObjectsInstantiationPromise = promise
-                        .then(function() {
+                        .then(function () {
                             self._objectsInstantiationOptimized = true;
                         });
                     } else {
@@ -363,19 +363,19 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     setBaseUrl: {
-        value: function(baseUrl) {
+        value: function (baseUrl) {
             this._baseUrl = baseUrl;
         }
     },
 
     getBaseUrl: {
-        value: function() {
+        value: function () {
             return this._baseUrl;
         }
     },
 
     getResources: {
-        value: function() {
+        value: function () {
             var resources = this._resources;
 
             if (!resources) {
@@ -395,7 +395,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      * @returns {Object} The object with instances and application and template.
      */
     _createTemplateObjects: {
-        value: function(instances) {
+        value: function (instances) {
             var templateObjects = Object.create(instances || null);
 
             if (typeof defaultApplication === "undefined") {
@@ -410,7 +410,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     _instantiateObjects: {
-        value: function(instances, fragment) {
+        value: function (instances, fragment) {
             var self = this,
                 deserializer = this._deserializer,
                 optimizationPromise;
@@ -418,7 +418,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
             optimizationPromise = this._optimizeObjectsInstantiation();
 
             if (optimizationPromise) {
-                return optimizationPromise.then(function() {
+                return optimizationPromise.then(function () {
                     return deserializer.deserialize(instances, fragment);
                 });
             } else {
@@ -428,7 +428,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     _createMarkupDocumentFragment: {
-        value: function(targetDocument) {
+        value: function (targetDocument) {
             var fragment = targetDocument.createDocumentFragment(),
                 nodes = this.document.body.childNodes;
 
@@ -443,19 +443,19 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     getParameterName: {
-        value: function(element) {
+        value: function (element) {
             return element.getAttribute(this.PARAM_ATTRIBUTE);
         }
     },
 
     getParameters: {
-        value: function() {
+        value: function () {
             return this._getParameters(this.document.body);
         }
     },
 
     _getParameters: {
-        value: function(rootElement) {
+        value: function (rootElement) {
             var elements = rootElement.querySelectorAll("*[" + this.PARAM_ATTRIBUTE + "]"),
                 elementsCount = elements.length,
                 element,
@@ -485,13 +485,13 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     hasParameters: {
-        value: function() {
+        value: function () {
             return !!this.document.querySelector("*[" + this.PARAM_ATTRIBUTE + "]");
         }
     },
 
     _invokeDelegates: {
-        value: function(documentPart, instances) {
+        value: function (documentPart, instances) {
             var objects = documentPart.objects,
                 object,
                 owner = objects.owner || instances && instances.owner,
@@ -547,23 +547,23 @@ var Template = Montage.specialize( /** @lends Template# */ {
      * unless a different set of instances is passed in
      * instantiateWithInstances().
      *
-     * @method
+     * @function
      * @param {Object} instances The objects' instances.
      */
     setInstances: {
-        value: function(instances) {
+        value: function (instances) {
             this._instances = instances;
         }
     },
 
     getInstances: {
-        value: function() {
+        value: function () {
             return this._instances;
         }
     },
 
     setObjects: {
-        value: function(objects) {
+        value: function (objects) {
             // TODO: use Serializer.formatSerialization(object|string)
             this.objectsString = JSON.stringify(objects, null, 4);
         }
@@ -580,7 +580,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      * @param {Object} owner The owner object to be given to the object.
      */
     setObjectMetadata: {
-        value: function(label, _require, effectiveLabel, owner) {
+        value: function (label, _require, effectiveLabel, owner) {
             var metadata = this._metadata;
 
             if (!metadata) {
@@ -600,7 +600,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     getObjectMetadata: {
-        value: function(label) {
+        value: function (label) {
             var metadata = this._metadata;
 
             if (metadata && label in metadata) {
@@ -615,7 +615,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     _getObjectOwner: {
-        value: function(label, defaultOwner) {
+        value: function (label, defaultOwner) {
             var objectOwner,
                 metadata = this._metadata;
 
@@ -630,7 +630,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     _getObjectLabel: {
-        value: function(label) {
+        value: function (label) {
             var objectLabel,
                 metadata = this._metadata;
 
@@ -647,13 +647,13 @@ var Template = Montage.specialize( /** @lends Template# */ {
     /**
      * Uses the document markup as the base of the template markup.
      *
-     * @method
+     * @function
      * @param {HTMLDocument} doc The document.
      * @returns {Promise} A promise for the proper initialization of the
      *                    document.
      */
     setDocument: {
-        value: function(_document) {
+        value: function (_document) {
             var html = _document.documentElement.innerHTML;
 
             this.document = this.createHtmlDocumentWithHtml(html, _document.baseURI);
@@ -666,13 +666,13 @@ var Template = Montage.specialize( /** @lends Template# */ {
      * The objects string can live as an inline script in the document or as an
      * external resource that needs to be loaded.
      *
-     * @method
+     * @function
      * @param {HTMLDocument} doc The document with the objects string.
      * @returns {Promise} A promise for the objects string, null if not
      *                    found.
      */
     getObjectsString: {
-        value: function(doc) {
+        value: function (doc) {
             var objectsString;
 
             objectsString = this.getInlineObjectsString(doc);
@@ -688,12 +688,13 @@ var Template = Montage.specialize( /** @lends Template# */ {
     /**
      * Searches for an inline objects string in a document and returns it if
      * found.
-     * @method
+     *
+     * @function
      * @param {HTMLDocument} doc The document with the objects string.
-     * @returns {(String|null)} The objects string or null if not found.
+     * @returns {?String} The objects string or null if not found.
      */
     getInlineObjectsString: {
-        value: function(doc) {
+        value: function (doc) {
             var selector = "script[type='" + this._SERIALIZATON_SCRIPT_TYPE + "']",
                 script = doc.querySelector(selector);
 
@@ -709,13 +710,13 @@ var Template = Montage.specialize( /** @lends Template# */ {
      * Searches for an external objects file in a document and returns its
      * contents if found.
      *
-     * @method
+     * @function
      * @param {string} doc The document to search.
      * @returns {Promise} A promise to the contents of the objects file or null
      *                    if none found.
      */
     getExternalObjectsString: {
-        value: function(doc) {
+        value: function (doc) {
             var link = doc.querySelector('link[rel="serialization"]'),
                 req,
                 url,
@@ -727,7 +728,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 deferred = Promise.defer();
 
                 req.open("GET", url);
-                req.addEventListener("load", function() {
+                req.addEventListener("load", function () {
                     if (req.status == 200) {
                         deferred.resolve(req.responseText);
                     } else {
@@ -736,7 +737,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
                         );
                     }
                 }, false);
-                req.addEventListener("error", function(event) {
+                req.addEventListener("error", function (event) {
                     deferred.reject(
                         new Error("Unable to retrive '" + url + "' with error: " + event.error + ".")
                     );
@@ -751,7 +752,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     createHtmlDocumentWithHtml: {
-        value: function(html, baseURI) {
+        value: function (html, baseURI) {
             var htmlDocument = document.implementation.createHTMLDocument("");
 
             htmlDocument.documentElement.innerHTML = html;
@@ -762,7 +763,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     createHtmlDocumentWithModuleId: {
-        value: function(moduleId, _require) {
+        value: function (moduleId, _require) {
             var self = this;
 
             if (typeof _require !== "function") {
@@ -771,7 +772,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 );
             }
 
-            return _require.async(moduleId).then(function(exports) {
+            return _require.async(moduleId).then(function (exports) {
                 return self.createHtmlDocumentWithHtml(exports.content, exports.directory);
             });
         }
@@ -781,7 +782,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      * Removes all artifacts related to objects string
      */
     _removeObjects: {
-        value: function(doc) {
+        value: function (doc) {
             var elements,
                 selector = "script[type='" + this._SERIALIZATON_SCRIPT_TYPE + "'], link[rel='serialization']";
 
@@ -795,7 +796,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     _addObjects: {
-        value: function(doc, objectsString) {
+        value: function (doc, objectsString) {
             if (objectsString) {
                 var script = doc.createElement("script");
 
@@ -816,7 +817,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     createTemplateFromElementContents: {
-        value: function(elementId) {
+        value: function (elementId) {
             var element,
                 template,
                 range,
@@ -856,7 +857,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     createTemplateFromElement: {
-        value: function(elementId) {
+        value: function (elementId) {
             var element,
                 range;
 
@@ -907,7 +908,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
 
     // TODO: should this be on Serialization?
     _createSerializationWithElementIds: {
-        value: function(elementIds) {
+        value: function (elementIds) {
             var serialization = new Serialization(),
                 labels,
                 extractedSerialization;
@@ -940,7 +941,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      *
      */
     expandParameters: {
-        value: function(templateArgumentProvider) {
+        value: function (templateArgumentProvider) {
             var parameterElements,
                 argumentsElementIds = [],
                 collisionTable,
@@ -996,7 +997,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
             // This approach works because the arguments serialization is
             // created assuming that template properties are just like any other
             // label and are considered external objects.
-            willMergeObjectWithLabel = function(label) {
+            willMergeObjectWithLabel = function (label) {
                 if (label.indexOf(":") > 0) {
                     return templateArgumentProvider
                         .resolveTemplateArgumentTemplateProperty(label);
@@ -1021,7 +1022,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      * already exist in the current template.
      */
     _resolveElementIdCollisions: {
-        value: function(node, labeler) {
+        value: function (node, labeler) {
             var collisionTable,
                 nodeElements,
                 elementIds,
@@ -1054,7 +1055,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     replaceNode: {
-        value: function(newNode, oldNode, labeler) {
+        value: function (newNode, oldNode, labeler) {
             var collisionTable;
 
             collisionTable = this._resolveElementIdCollisions(newNode, labeler);
@@ -1066,7 +1067,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     insertNodeBefore: {
-        value: function(node, reference, labeler) {
+        value: function (node, reference, labeler) {
             var collisionTable;
 
             collisionTable = this._resolveElementIdCollisions(node, labeler);
@@ -1078,7 +1079,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     appendNode: {
-        value: function(node, parentNode, labeler) {
+        value: function (node, parentNode, labeler) {
             var collisionTable;
 
             collisionTable = this._resolveElementIdCollisions(node, labeler);
@@ -1090,7 +1091,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     getElementId: {
-        value: function(element) {
+        value: function (element) {
             if (element.getAttribute) {
                 return element.getAttribute(this._ELEMENT_ID_ATTRIBUTE);
             }
@@ -1098,19 +1099,19 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     setElementId: {
-        value: function(element, elementId) {
+        value: function (element, elementId) {
             element.setAttribute(this._ELEMENT_ID_ATTRIBUTE, elementId);
         }
     },
 
     getElementIds: {
-        value: function() {
+        value: function () {
             return this._getElementIds(this.document.body);
         }
     },
 
     _getElements: {
-        value: function(rootNode) {
+        value: function (rootNode) {
             var selector = "*[" + this._ELEMENT_ID_ATTRIBUTE + "]",
                 elements,
                 result = {},
@@ -1134,7 +1135,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     _getChildrenElementIds: {
-        value: function(rootNode) {
+        value: function (rootNode) {
             // XPath might do a better job here...should test.
             var selector = "*[" + this._ELEMENT_ID_ATTRIBUTE + "]",
                 elements,
@@ -1151,7 +1152,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     _getElementIds: {
-        value: function(rootNode) {
+        value: function (rootNode) {
             var elementIds = this._getChildrenElementIds(rootNode),
                 elementId;
 
@@ -1165,7 +1166,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     getElementById: {
-        value: function(elementId) {
+        value: function (elementId) {
             var selector = "*[" + this._ELEMENT_ID_ATTRIBUTE + "='" + elementId + "']";
 
             return this.document.querySelector(selector);
@@ -1173,7 +1174,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     html: {
-        get: function() {
+        get: function () {
             var _document = this.document;
 
             this._removeObjects(_document);
@@ -1196,7 +1197,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     normalizeRelativeUrls: {
-        value: function(parentNode, baseUrl) {
+        value: function (parentNode, baseUrl) {
             // Resolve component's images relative URLs if we have a valid baseUrl
             if (typeof baseUrl === "string" && baseUrl !== "" && baseUrl !== 'about:blank') {
                 // We are only looking for DOM and SVG image elements
@@ -1237,7 +1238,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     replaceContentsWithTemplate: {
-        value: function(template) {
+        value: function (template) {
             this._require = template._require;
             this._baseUrl = template._baseUrl;
             this._document = template._document;
@@ -1252,7 +1253,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      * Refresh the contents of the template when its dirty.
      */
     refresh: {
-        value: function() {
+        value: function () {
             if (this.isDirty) {
                 if (this.refresher &&
                     typeof this.refresher.refreshTemplate === "function") {
@@ -1273,14 +1274,14 @@ var Template = Montage.specialize( /** @lends Template# */ {
         }
     },
     _getTemplateCacheKey: {
-        value: function(moduleId, _require) {
+        value: function (moduleId, _require) {
             // Transforms relative module ids into absolute module ids
             moduleId = _require.resolve(moduleId);
             return _require.location + "#" + moduleId;
         }
     },
     getTemplateWithModuleId: {
-        value: function(moduleId, _require) {
+        value: function (moduleId, _require) {
             var cacheKey,
                 template;
 
@@ -1307,7 +1308,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     _NORMALIZED_TAG_NAMES_SELECTOR: {
-        get: function() {
+        get: function () {
             if (!this.__NORMALIZED_TAG_NAMES_SELECTOR) {
                 this.__NORMALIZED_TAG_NAMES_SELECTOR = this._NORMALIZED_TAG_NAMES.join(",");
             }
@@ -1334,25 +1335,25 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
     },
 
     initWithTemplate: {
-        value: function(template) {
+        value: function (template) {
             this.template = template;
         }
     },
 
     hasResources: {
-        value: function() {
+        value: function () {
             return this.getStyles().length > 0 || this.getScripts().length > 0;
         }
     },
 
     resourcesLoaded: {
-        value: function() {
+        value: function () {
             return this._resourcesLoaded;
         }
     },
 
     loadResources: {
-        value: function(targetDocument) {
+        value: function (targetDocument) {
             this._resourcesLoaded = true;
 
             return Promise.all([
@@ -1363,7 +1364,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
     },
 
     getScripts: {
-        value: function() {
+        value: function () {
             var scripts = this._resources.scripts,
                 script,
                 type,
@@ -1390,7 +1391,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
     },
 
     loadScripts: {
-        value: function(targetDocument) {
+        value: function (targetDocument) {
             var scripts,
                 promises = [];
 
@@ -1407,7 +1408,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
     },
 
     loadScript: {
-        value: function(script, targetDocument) {
+        value: function (script, targetDocument) {
             var url,
                 documentResources,
                 newScript;
@@ -1423,7 +1424,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
     },
 
     _cloneScriptElement: {
-        value: function(scriptTemplate, _document) {
+        value: function (scriptTemplate, _document) {
             var script = _document.createElement("script"),
                 attributes = scriptTemplate.attributes,
                 attribute;
@@ -1440,7 +1441,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
     },
 
     getStyles: {
-        value: function() {
+        value: function () {
             var styles = this._resources.styles,
                 template,
                 templateStyles,
@@ -1461,7 +1462,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
     },
 
     loadStyles: {
-        value: function(targetDocument) {
+        value: function (targetDocument) {
             var promises = [],
                 styles;
 
@@ -1478,7 +1479,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
     },
 
     loadStyle: {
-        value: function(element, targetDocument) {
+        value: function (element, targetDocument) {
             var url,
                 documentResources;
 
@@ -1494,7 +1495,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
     },
 
     createStylesForDocument: {
-        value: function(targetDocument) {
+        value: function (targetDocument) {
             var styles = this.getStyles(),
                 newStyle,
                 stylesForDocument = [];
@@ -1523,7 +1524,7 @@ function instantiateDocument(_document, _require, instances) {
     clonedDocument = template.createHtmlDocumentWithHtml(html, _document.location.href);
 
     return template.initWithDocument(clonedDocument, _require)
-    .then(function() {
+    .then(function () {
         template.setBaseUrl(_document.location.href);
         // Instantiate it using the document given since we don't want to clone
         // the document markup
@@ -1531,7 +1532,7 @@ function instantiateDocument(_document, _require, instances) {
         part.initWithTemplateAndFragment(template);
 
         return template._instantiateObjects(templateObjects, rootElement)
-        .then(function(objects) {
+        .then(function (objects) {
             part.objects = objects;
             template._invokeDelegates(part);
 
@@ -1548,7 +1549,7 @@ var TemplateArgumentProvider = Montage.specialize({
      * @private
      */
     getTemplateArgumentElement: {
-        value: function(argumentName) {}
+        value: function (argumentName) {}
     },
 
     /**
@@ -1559,7 +1560,7 @@ var TemplateArgumentProvider = Montage.specialize({
      * @private
      */
     getTemplateArgumentSerialization: {
-        value: function(elementIds) {}
+        value: function (elementIds) {}
     },
 
     /**
@@ -1572,7 +1573,7 @@ var TemplateArgumentProvider = Montage.specialize({
      * @private
      */
     resolveTemplateArgumentTemplateProperty: {
-        value: function(templatePropertyLabel) {}
+        value: function (templatePropertyLabel) {}
     }
 });
 

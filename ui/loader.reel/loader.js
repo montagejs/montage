@@ -1,7 +1,6 @@
- /**
-    @module montage/ui/loader
+/**
+ * @module "montage/ui/loader.reel"
  */
-
 var Montage = require("../../core/core").Montage,
     Component = require("../component").Component,
     logger = require("../../core/logger").logger("loader"),
@@ -11,8 +10,14 @@ var Montage = require("../../core/core").Montage,
     MONTAGE_LOADER_ELEMENT_ID = "montage-app-loader",
     BOOTSTRAPPING_CLASS_NAME = "montage-app-bootstrapping",
     LOADING_CLASS_NAME = "montage-app-loading",
-    LOADED_CLASS_NAME = "montage-app-loaded",
-    PRELOADING = 0,
+    LOADED_CLASS_NAME = "montage-app-loaded";
+
+/**
+ * @const
+ * @type {number}
+ * @default
+ */
+var PRELOADING = 0,
     BOOTSTRAPPING = 1,
     LOADING = 2,
     LOADED = 3;
@@ -21,9 +26,10 @@ var Montage = require("../../core/core").Montage,
  @class Loader
  @extends Component
  */
-
-exports.Loader = Component.specialize( /** @lends Loader# */ {
-
+exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
+    /**
+     * @constructs Loader
+     */
     constructor: {
         value: function Loader() {
             this.super();
@@ -76,14 +82,14 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
     initializedModules: {
         dependencies: ["includeFrameworkModules"],
         enumerable: false,
-        get: function() {
+        get: function () {
             if (!this._initializedModules || this.includeFrameworkModules) {
                 return this._initializedModules;
             } else {
                 return this._initializedModules.slice(this._frameworkModuleCount - 1);
             }
         },
-        set: function(value) {
+        set: function (value) {
             this._initializedModules = value;
         }
     },
@@ -97,14 +103,14 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
     requiredModules: {
         dependencies: ["includeFrameworkModules"],
         enumerable: false,
-        get: function() {
+        get: function () {
             if (!this._requiredModules || this.includeFrameworkModules) {
                 return this._requiredModules;
             } else {
                 return this._requiredModules.slice(this._frameworkModuleCount - 1);
             }
         },
-        set: function(value) {
+        set: function (value) {
             this._requiredModules = value;
         }
     },
@@ -118,10 +124,10 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
     /**
      */
     currentStage: {
-        get: function() {
+        get: function () {
             return this._currentStage;
         },
-        set: function(value) {
+        set: function (value) {
             if (value === this._currentStage) {
                 return;
             }
@@ -150,10 +156,10 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
     /**
      */
     readyToShowLoader: {
-        get: function() {
+        get: function () {
             return this._readyToShowLoader;
         },
-        set: function(value) {
+        set: function (value) {
             if (value !== this._readyToShowLoader) {
                 return;
             }
@@ -167,7 +173,7 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
      * Specifies whether the main component is ready to be displayed.
      */
     readyToShowMainComponent: {
-        get: function() {
+        get: function () {
             return !!this._mainComponent;
         }
     },
@@ -205,7 +211,7 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
     // Implementation
 
     templateDidLoad: {
-        value: function() {
+        value: function () {
 
             if (logger.isDebug) {
                 logger.debug(this, "templateDidLoad");
@@ -239,7 +245,7 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
                     if (logger.isDebug) {
                         logger.debug(this, "still need to show bootstrapper for another " + remainingBootstrappingDelay + "ms");
                     }
-                    this._showLoadingTimeout = setTimeout(function() {
+                    this._showLoadingTimeout = setTimeout(function () {
                         self._revealLoader();
                     }, remainingBootstrappingDelay);
                 } else {
@@ -256,7 +262,7 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
     },
 
     _revealLoader: {
-        value: function() {
+        value: function () {
 
             if (logger.isDebug) {
                 logger.debug(this, "_revealLoader");
@@ -286,7 +292,7 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
     },
 
     _revealMainComponent: {
-        value: function() {
+        value: function () {
             if (logger.isDebug) {
                 logger.debug(this, "_revealMainComponent");
             }
@@ -295,7 +301,7 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
     },
 
     _loadMainComponent: {
-        value: function() {
+        value: function () {
             if (logger.isDebug) {
                 logger.debug(this, "_loadMainComponent");
             }
@@ -313,7 +319,7 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
     },
 
     _mainLoadedCallback: {
-        value: function(exports) {
+        value: function (exports) {
             if (logger.isDebug) {
                 logger.debug(this, "_mainLoadedCallback");
             }
@@ -331,7 +337,7 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
     },
 
     mainComponentEnterDocument: {
-        value: function() {
+        value: function () {
             var self = this,
                 insertionElement;
 
@@ -441,7 +447,7 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
 
     /**
      * Specifies whether to remove the loading content when load is completed.
-     * @type {boolean}
+     * @property {boolean} value
      * @default true
     */
     removeContentOnLoad: {
@@ -462,14 +468,14 @@ exports.Loader = Component.specialize( /** @lends Loader# */ {
      * Forces a manual removal of loading content.
      */
     removeContent: {
-        value: function() {
+        value: function () {
             this._forceContentRemoval = true;
             this.needsDraw = true;
         }
     },
 
     draw: {
-        value: function() {
+        value: function () {
             // start loading the mainComponent if we haven't already
             if (!this.readyToShowMainComponent && !this.isLoadingMainComponent) {
                 if (logger.isDebug) {

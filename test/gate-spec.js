@@ -32,20 +32,20 @@ var Montage = require("montage").Montage,
     Gate = require("montage/core/gate").Gate;
 
 describe("gate-spec",
-function() {
+function () {
     describe("creating empty gate",
-    function() {
+    function () {
         var gate = new Gate().init();
         it("should be true",
-        function() {
+        function () {
             expect(gate.value).toBeTruthy();
         });
     });
     describe("creation with four false fields",
-    function() {
+    function () {
         var gate;
 
-        beforeEach(function() {
+        beforeEach(function () {
             gate = new Gate().initWithDescriptor({
                 A: {
                     value: false
@@ -63,43 +63,43 @@ function() {
         });
 
         it("should have the expected false field count",
-        function() {
+        function () {
             expect(gate.count).toEqual(4);
         });
 
         describe("set one of its fields to true",
-        function() {
-            beforeEach(function() {
+        function () {
+            beforeEach(function () {
                 gate.setField("B",true);
             });
-            afterEach(function() {
+            afterEach(function () {
                 gate.setField("B",false);
             });
             it("should be false",
-            function() {
+            function () {
                 expect(gate.value).toBeFalsy();
             });
         });
 
         describe("set all of its fields to true",
-        function() {
-            beforeEach(function() {
+        function () {
+            beforeEach(function () {
                 gate.setField("A",true);
                 gate.setField("B",true);
                 gate.setField("C",true);
                 gate.setField("D",true);
             });
             it("should be true",
-            function() {
+            function () {
                 expect(gate.value).toBeTruthy();
             });
             describe("add a false field",
-            function() {
-                beforeEach(function() {
+            function () {
+                beforeEach(function () {
                     gate.setField("E");
                 });
                 it("should be false",
-                function() {
+                function () {
                     expect(gate.value).toBeFalsy();
                 });
             });

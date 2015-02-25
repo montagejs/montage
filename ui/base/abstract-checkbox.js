@@ -66,10 +66,10 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
      * @default false
      */
     checked: {
-        set: function(value) {
+        set: function (value) {
             this._checked = value;
         },
-        get: function() {
+        get: function () {
             return this._checked;
         }
     },
@@ -89,7 +89,7 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
     },
 
     enterDocument: {
-        value: function(firstTime) {
+        value: function (firstTime) {
             if (firstTime) {
                 this.element.setAttribute("role", "checkbox");
             }
@@ -97,7 +97,7 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
     },
 
     draw: {
-        value: function() {
+        value: function () {
             if (this.checked) {
                 this.element.setAttribute("aria-checked", "true");
             } else {
@@ -107,7 +107,7 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
     },
 
     toggleChecked: {
-        value: function() {
+        value: function () {
             if (!this.enabled) {
                 return;
             }
@@ -117,7 +117,7 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
     },
 
     handlePressStart: {
-        value: function(event) {
+        value: function (event) {
             this.active = true;
 
             if (event.touch) {
@@ -132,7 +132,7 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
      * Handle press event from press composer
      */
     handlePress: {
-        value: function(/* event */) {
+        value: function (/* event */) {
             this.active = false;
             this.toggleChecked();
         }
@@ -143,14 +143,14 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
      * @private
      */
     handlePressCancel: {
-        value: function(/* event */) {
+        value: function (/* event */) {
             this.active = false;
             document.removeEventListener("touchmove", this, false);
         }
     },
 
     prepareForActivationEvents: {
-        value: function() {
+        value: function () {
             this._pressComposer.addEventListener("pressStart", this, false);
             this._pressComposer.addEventListener("press", this, false);
             this._pressComposer.addEventListener("pressCancel", this, false);
@@ -158,7 +158,7 @@ var AbstractCheckbox = exports.AbstractCheckbox = AbstractControl.specialize( /*
     },
 
     activate: {
-        value: function() {
+        value: function () {
             this.toggleChecked();
         }
     }

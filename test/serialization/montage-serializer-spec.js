@@ -8,7 +8,7 @@ var Montage = require("montage/core/core").Montage,
         getSerializablePropertyNames = Montage.getSerializablePropertyNames;
 
         spyOn(Montage, "getSerializablePropertyNames")
-        .andCallFake(function(obj) {
+        .andCallFake(function (obj) {
             if (obj === object) {
                 return returnValues;
             } else {
@@ -20,7 +20,7 @@ var Montage = require("montage/core/core").Montage,
     function createFakeElement(id) {
         var isElement = Element.isElement,
             element = {
-                getAttribute: function(attributeName) {
+                getAttribute: function (attributeName) {
                     if (attributeName === "data-montage-id") {
                         return id;
                     }
@@ -28,7 +28,7 @@ var Montage = require("montage/core/core").Montage,
             };
 
         spyOn(Element, "isElement")
-        .andCallFake(function(obj) {
+        .andCallFake(function (obj) {
             if (obj === element) {
                 return true;
             } else {
@@ -43,22 +43,22 @@ var Montage = require("montage/core/core").Montage,
         return new ModuleReference().initWithIdAndRequire(id, _require || require);
     }
 
-describe("serialization/montage-serializer-spec", function() {
+describe("serialization/montage-serializer-spec", function () {
     var serializer;
     var originalUnits;
 
-    beforeEach(function() {
+    beforeEach(function () {
         originalUnits = MontageSerializer._units;
         MontageSerializer._units = {};
         serializer = new MontageSerializer().initWithRequire(require);
         serializer.setSerializationIndentation(4);
     });
 
-    afterEach(function() {
+    afterEach(function () {
         MontageSerializer._units = originalUnits;
     });
 
-    it("should still serialize native types", function() {
+    it("should still serialize native types", function () {
         var object = {
                 string: "string",
                 number: 42,
@@ -109,10 +109,10 @@ describe("serialization/montage-serializer-spec", function() {
             .toEqual(expectedSerialization);
     });
 
-    describe("Montage objects serialization", function() {
+    describe("Montage objects serialization", function () {
 
-        describe("types", function() {
-            it("should serialize an empty class object", function() {
+        describe("types", function () {
+            it("should serialize an empty class object", function () {
                 var object = objects.Empty,
                     serialization,
                     expectedSerialization;
@@ -131,7 +131,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize an empty instance object", function() {
+            it("should serialize an empty instance object", function () {
                 var object = new objects.Empty(),
                     serialization,
                     expectedSerialization;
@@ -150,7 +150,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize without the object name", function() {
+            it("should serialize without the object name", function () {
                 var object = objects.TestobjectsV2.create(),
                     serialization,
                     expectedSerialization;
@@ -170,8 +170,8 @@ describe("serialization/montage-serializer-spec", function() {
             });
         });
 
-        describe("elements", function() {
-            it("should serialize an element", function() {
+        describe("elements", function () {
+            it("should serialize an element", function () {
                 var object = createFakeElement("id"),
                     serialization,
                     expectedSerialization;
@@ -187,7 +187,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize an element as an object property", function() {
+            it("should serialize an element as an object property", function () {
                 var object = new objects.OneProp(),
                     element = createFakeElement("id"),
                     serialization,
@@ -211,7 +211,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize an element multiple times", function() {
+            it("should serialize an element multiple times", function () {
                 var object = new objects.TwoProps(),
                     element = createFakeElement("id"),
                     serialization,
@@ -236,7 +236,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize an element from a different document", function() {
+            it("should serialize an element from a different document", function () {
                 var context = createJavaScriptContext(),
                     object = context.document.createElement("div"),
                     serialization,
@@ -257,8 +257,8 @@ describe("serialization/montage-serializer-spec", function() {
             });
         });
 
-        describe("modules", function() {
-            it("should serialize a module reference", function() {
+        describe("modules", function () {
+            it("should serialize a module reference", function () {
                 var object = createFakeModuleReference("pass"),
                     serialization,
                     expectedSerialization;
@@ -274,7 +274,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize an module reference as an object property", function() {
+            it("should serialize an module reference as an object property", function () {
                 var object = new objects.OneProp(),
                     ref = createFakeModuleReference("pass"),
                     serialization,
@@ -298,7 +298,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize an module reference multiple times", function() {
+            it("should serialize an module reference multiple times", function () {
                 var object = new objects.TwoProps(),
                     ref = createFakeModuleReference("pass"),
                     serialization,
@@ -323,7 +323,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a module reference from a different package", function() {
+            it("should serialize a module reference from a different package", function () {
                 var montageRequire = require.getPackage({name: "montage"}),
                     object = createFakeModuleReference("core/module-reference", montageRequire),
                     serialization,
@@ -341,7 +341,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should throw when there is no mapping to the module from a different package", function() {
+            it("should throw when there is no mapping to the module from a different package", function () {
                 var montageRequire = require.getPackage({name: "montage"}),
                     object = createFakeModuleReference("pass", require),
                     serialization;
@@ -357,8 +357,8 @@ describe("serialization/montage-serializer-spec", function() {
             });
         });
 
-        describe("properties", function() {
-            it("shouldn't serialize undefined values", function() {
+        describe("properties", function () {
+            it("shouldn't serialize undefined values", function () {
                 var object = new objects.OneProp(),
                     undefined,
                     serialization,
@@ -380,7 +380,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize an instance object with an array property", function() {
+            it("should serialize an instance object with an array property", function () {
                 var object = new objects.OneProp(),
                     serialization,
                     expectedSerialization;
@@ -402,7 +402,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize an instance object with a distinct array property", function() {
+            it("should serialize an instance object with a distinct array property", function () {
                 var object = new objects.DistinctArrayProp(),
                     serialization,
                     expectedSerialization;
@@ -421,7 +421,7 @@ describe("serialization/montage-serializer-spec", function() {
                 expect(JSON.parse(serialization)).toEqual(expectedSerialization);
             });
 
-            it("should serialize an instance object with a distinct literal property", function() {
+            it("should serialize an instance object with a distinct literal property", function () {
                 var object = new objects.DistinctLiteralProp(),
                     serialization,
                     expectedSerialization;
@@ -441,7 +441,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize an instance object with native type properties", function() {
+            it("should serialize an instance object with native type properties", function () {
                 var object = new objects.Simple(),
                     serialization,
                     expectedSerialization;
@@ -462,7 +462,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize according to the 'serializer' attribute", function() {
+            it("should serialize according to the 'serializer' attribute", function () {
                 var object = new objects.SerializableAttribute(),
                     prop1 = new objects.OneProp(),
                     prop2 = new objects.OneProp(),
@@ -503,8 +503,8 @@ describe("serialization/montage-serializer-spec", function() {
             });
         });
 
-        describe("multiple references to the same object", function() {
-            it("should serialize the same object first as reference then value", function() {
+        describe("multiple references to the same object", function () {
+            it("should serialize the same object first as reference then value", function () {
                 var object = new objects.SerializableAttribute(),
                     empty = new objects.Empty(),
                     serialization,
@@ -536,7 +536,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize the same object first as value then reference", function() {
+            it("should serialize the same object first as value then reference", function () {
                 var object = new objects.SerializableAttribute(),
                     empty = new objects.Empty(),
                     serialization,
@@ -569,7 +569,7 @@ describe("serialization/montage-serializer-spec", function() {
             });
         });
 
-        it("should serialize two connected objects", function() {
+        it("should serialize two connected objects", function () {
             var object = new objects.OneProp(),
                 simple = new objects.Simple(),
                 serialization,
@@ -600,7 +600,7 @@ describe("serialization/montage-serializer-spec", function() {
             expect(JSON.parse(serialization)).toEqual(expectedSerialization);
         });
 
-        it("should serialize two disconnected objects", function() {
+        it("should serialize two disconnected objects", function () {
             var object = new objects.Empty(),
                 simple = new objects.Simple(),
                 serialization,
@@ -630,8 +630,8 @@ describe("serialization/montage-serializer-spec", function() {
             expect(JSON.parse(serialization)).toEqual(expectedSerialization);
         });
 
-        describe("cycles", function() {
-            it("should serialize an instance object that references itself", function() {
+        describe("cycles", function () {
+            it("should serialize an instance object that references itself", function () {
                 var object = new objects.OneProp(),
                     serialization,
                     expectedSerialization;
@@ -653,7 +653,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize two instance objects with a mutual dependence", function() {
+            it("should serialize two instance objects with a mutual dependence", function () {
                 var object = new objects.OneProp(),
                     oneProp = new objects.OneProp(),
                     serialization,
@@ -686,8 +686,8 @@ describe("serialization/montage-serializer-spec", function() {
             });
         });
 
-        describe("serializeProperties delegate", function() {
-            it("should serialize native type property", function() {
+        describe("serializeProperties delegate", function () {
+            it("should serialize native type property", function () {
                 var object = new objects.Empty(),
                     serialization,
                     expectedSerialization;
@@ -701,7 +701,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeProperties = function(serializer) {
+                object.serializeProperties = function (serializer) {
                     serializer.set("number", 42);
                 };
 
@@ -710,7 +710,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize an object property", function() {
+            it("should serialize an object property", function () {
                 var object = new objects.Empty(),
                     empty = new objects.Empty(),
                     serialization,
@@ -732,7 +732,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeProperties = function(serializer) {
+                object.serializeProperties = function (serializer) {
                     serializer.set("object", empty);
                 };
 
@@ -741,7 +741,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize an object property as an external reference", function() {
+            it("should serialize an object property as an external reference", function () {
                 var object = new objects.Empty(),
                     empty = new objects.Empty(),
                     serialization,
@@ -757,7 +757,7 @@ describe("serialization/montage-serializer-spec", function() {
                     empty: {}
                 };
 
-                object.serializeProperties = function(serializer) {
+                object.serializeProperties = function (serializer) {
                     serializer.set("object", empty, "reference");
                 };
 
@@ -766,7 +766,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize an external reference to an object that implements serializeSelf", function() {
+            it("should serialize an external reference to an object that implements serializeSelf", function () {
                 var object = new objects.Empty(),
                     empty = new objects.Empty(),
                     serialization,
@@ -782,11 +782,11 @@ describe("serialization/montage-serializer-spec", function() {
                     empty: {}
                 };
 
-                object.serializeProperties = function(serializer) {
+                object.serializeProperties = function (serializer) {
                     serializer.set("object", empty, "reference");
                 };
 
-                empty.serializeSelf = function(serializer) {
+                empty.serializeSelf = function (serializer) {
                     serializer.setProperty("object", {});
                 };
 
@@ -795,7 +795,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize all properties", function() {
+            it("should serialize all properties", function () {
                 var object = new objects.CustomAllProperties(),
                     serialization,
                     expectedSerialization;
@@ -825,7 +825,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize references to native types as value", function() {
+            it("should serialize references to native types as value", function () {
                 var object = new objects.Empty(),
                     serialization,
                     expectedSerialization;
@@ -842,7 +842,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeProperties = function(serializer) {
+                object.serializeProperties = function (serializer) {
                     serializer.set("string", "string", "reference");
                     serializer.set("number", 42, "reference");
                     serializer.set("boolean", true, "reference");
@@ -854,7 +854,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should add objects", function() {
+            it("should add objects", function () {
                 var object = new objects.Empty(),
                     empty = new objects.Empty(),
                     serialization,
@@ -873,7 +873,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeProperties = function(serializer) {
+                object.serializeProperties = function (serializer) {
                     serializer.addObject(empty);
                 };
 
@@ -882,7 +882,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should ignore adding a native type as an object", function() {
+            it("should ignore adding a native type as an object", function () {
                 var object = new objects.Empty(),
                     serialization,
                     expectedSerialization;
@@ -893,7 +893,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeProperties = function(serializer) {
+                object.serializeProperties = function (serializer) {
                     serializer.addObject("string");
                 };
 
@@ -903,10 +903,10 @@ describe("serialization/montage-serializer-spec", function() {
             });
         });
 
-        describe("serializeSelf delegate", function() {
-            beforeEach(function() {
+        describe("serializeSelf delegate", function () {
+            beforeEach(function () {
                 MontageSerializer.defineSerializationUnit("unitA",
-                function(serializer, object) {
+                function (serializer, object) {
                     if (object._unitA) {
                         return {
                             content: object._unitA
@@ -914,7 +914,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 });
                 MontageSerializer.defineSerializationUnit("unitB",
-                function(serializer, object) {
+                function (serializer, object) {
                     if (object._unitB) {
                         return {
                             content: object._unitB
@@ -930,7 +930,7 @@ describe("serialization/montage-serializer-spec", function() {
                 serializeSelfTestObject._unitB = "unit-b content";
             });
 
-            it("should only serialize the type", function() {
+            it("should only serialize the type", function () {
                 var object = new objects.Empty(),
                     serialization,
                     expectedSerialization;
@@ -941,7 +941,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                 };
 
                 serialization = serializer.serializeObject(object);
@@ -949,7 +949,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should only serialize the the properties", function() {
+            it("should only serialize the the properties", function () {
                 var object = serializeSelfTestObject,
                     serialization,
                     expectedSerialization;
@@ -965,7 +965,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     serializer.setAllProperties();
                 };
 
@@ -974,7 +974,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should only serialize unit A", function() {
+            it("should only serialize unit A", function () {
                 var object = serializeSelfTestObject,
                     serialization,
                     expectedSerialization;
@@ -988,7 +988,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     serializer.setUnit("unitA");
                 };
 
@@ -997,7 +997,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should only serialize unit A and unit B explicitly", function() {
+            it("should only serialize unit A and unit B explicitly", function () {
                 var object = serializeSelfTestObject,
                     serialization,
                     expectedSerialization;
@@ -1014,7 +1014,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     serializer.setUnit("unitA");
                     serializer.setUnit("unitB");
                 };
@@ -1024,7 +1024,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should only serialize all units", function() {
+            it("should only serialize all units", function () {
                 var object = serializeSelfTestObject,
                     serialization,
                     expectedSerialization;
@@ -1041,7 +1041,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     serializer.setAllUnits();
                 };
 
@@ -1050,7 +1050,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a native type property", function() {
+            it("should serialize a native type property", function () {
                 var object = new objects.Empty(),
                     serialization,
                     expectedSerialization;
@@ -1064,7 +1064,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     serializer.setProperty("manchete", 42);
                 };
 
@@ -1073,7 +1073,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize an object property", function() {
+            it("should serialize an object property", function () {
                 var object = new objects.Empty(),
                     empty = new objects.Empty(),
                     serialization,
@@ -1095,7 +1095,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     serializer.setProperty("object", empty);
                 };
 
@@ -1104,7 +1104,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize an object property as an external reference", function() {
+            it("should serialize an object property as an external reference", function () {
                 var object = new objects.Empty(),
                     empty = new objects.Empty(),
                     serialization,
@@ -1120,7 +1120,7 @@ describe("serialization/montage-serializer-spec", function() {
                     empty: {}
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     serializer.setProperty("object", empty, "reference");
                 };
 
@@ -1129,7 +1129,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a subtitute object", function() {
+            it("should serialize a subtitute object", function () {
                 var object = new objects.Simple(),
                     empty = new objects.Empty(),
                     serialization,
@@ -1144,7 +1144,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     return empty;
                 };
 
@@ -1153,7 +1153,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a subtitute object that is an object literal", function() {
+            it("should serialize a subtitute object that is an object literal", function () {
                 var object = new objects.Simple(),
                     serialization,
                     expectedSerialization;
@@ -1166,7 +1166,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     return {
                         substituteObject: true
                     };
@@ -1177,7 +1177,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a substitute object that has already been serialized", function() {
+            it("should serialize a substitute object that has already been serialized", function () {
                 var object = new objects.TwoProps(),
                     simple = new objects.Simple(),
                     empty = new objects.Empty(),
@@ -1202,12 +1202,12 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeProperties = function(serializer) {
+                object.serializeProperties = function (serializer) {
                     serializer.set("prop1", simple);
                     serializer.set("prop2", empty);
                 };
 
-                empty.serializeSelf = function(serializer) {
+                empty.serializeSelf = function (serializer) {
                     return simple;
                 };
 
@@ -1217,7 +1217,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a reference to a substitute object, when serializing a reference to the proxy object, that has already been serialized", function() {
+            it("should serialize a reference to a substitute object, when serializing a reference to the proxy object, that has already been serialized", function () {
                 var object = new objects.TwoProps(),
                     simple = new objects.Simple(),
                     empty = new objects.Empty(),
@@ -1242,12 +1242,12 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeProperties = function(serializer) {
+                object.serializeProperties = function (serializer) {
                     serializer.set("prop1", empty);
                     serializer.set("prop2", empty, "reference");
                 };
 
-                empty.serializeSelf = function(serializer) {
+                empty.serializeSelf = function (serializer) {
                     return simple;
                 };
 
@@ -1257,7 +1257,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a substitute object for an object that has a user defined label", function() {
+            it("should serialize a substitute object for an object that has a user defined label", function () {
                 var object = new objects.Simple(),
                     empty = new objects.Empty(),
                     serialization,
@@ -1272,7 +1272,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     return empty;
                 };
 
@@ -1281,7 +1281,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a substitute object, with a self reference, for an object that has a user defined label", function() {
+            it("should serialize a substitute object, with a self reference, for an object that has a user defined label", function () {
                 var object = new objects.Simple(),
                     oneProp = new objects.OneProp(),
                     serialization,
@@ -1297,7 +1297,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     return oneProp;
                 };
 
@@ -1308,7 +1308,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a substitute object, with a reference to the substituted object, for an object that has a user defined label", function() {
+            it("should serialize a substitute object, with a reference to the substituted object, for an object that has a user defined label", function () {
                 var object = new objects.Simple(),
                     oneProp = new objects.OneProp(),
                     serialization,
@@ -1324,7 +1324,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     return oneProp;
                 };
 
@@ -1335,7 +1335,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a substitute object, that has already been serialized, for an object that has a user defined label", function() {
+            it("should serialize a substitute object, that has already been serialized, for an object that has a user defined label", function () {
                 var object = new objects.TwoProps(),
                     simple = new objects.Simple(),
                     empty = new objects.Empty(),
@@ -1360,12 +1360,12 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeProperties = function(serializer) {
+                object.serializeProperties = function (serializer) {
                     serializer.set("prop1", simple);
                     serializer.set("prop2", empty);
                 };
 
-                empty.serializeSelf = function(serializer) {
+                empty.serializeSelf = function (serializer) {
                     return simple;
                 };
 
@@ -1374,7 +1374,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a substitute object for an object where both object and substitute object have a user defined label", function() {
+            it("should serialize a substitute object for an object where both object and substitute object have a user defined label", function () {
                 var object = new objects.Simple(),
                     empty = new objects.Empty(),
                     serialization,
@@ -1389,7 +1389,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     return empty;
                 };
 
@@ -1398,7 +1398,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a substitute object of an object that was added with serializeProperties' addObject", function() {
+            it("should serialize a substitute object of an object that was added with serializeProperties' addObject", function () {
                 var object = new objects.Empty(),
                     simple = new objects.Simple(),
                     empty = new objects.Empty(),
@@ -1420,11 +1420,11 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeProperties = function(serializer) {
+                object.serializeProperties = function (serializer) {
                     serializer.addObject(empty);
                 };
 
-                empty.serializeSelf = function(serializer) {
+                empty.serializeSelf = function (serializer) {
                     return simple;
                 };
 
@@ -1433,7 +1433,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a substitute object of an object that was added with serializeSelf's addObject", function() {
+            it("should serialize a substitute object of an object that was added with serializeSelf's addObject", function () {
                 var object = new objects.Empty(),
                     simple = new objects.Simple(),
                     empty = new objects.Empty(),
@@ -1455,11 +1455,11 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     serializer.addObject(empty);
                 };
 
-                empty.serializeSelf = function(serializer) {
+                empty.serializeSelf = function (serializer) {
                     return simple;
                 };
 
@@ -1468,7 +1468,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a chain of substitute objects", function() {
+            it("should serialize a chain of substitute objects", function () {
                 var object = new objects.Empty(),
                     simple = new objects.Simple(),
                     oneProp = new objects.OneProp(),
@@ -1485,11 +1485,11 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     return simple;
                 };
 
-                simple.serializeSelf = function(serializer) {
+                simple.serializeSelf = function (serializer) {
                     return oneProp;
                 };
 
@@ -1498,7 +1498,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should add objects", function() {
+            it("should add objects", function () {
                 var object = new objects.Empty(),
                     empty = new objects.Empty(),
                     serialization,
@@ -1517,7 +1517,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     serializer.addObject(empty);
                 };
 
@@ -1526,7 +1526,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should ignore adding a native type as an object", function() {
+            it("should ignore adding a native type as an object", function () {
                 var object = new objects.Empty(),
                     serialization,
                     expectedSerialization;
@@ -1537,7 +1537,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     serializer.addObject("string");
                 };
 
@@ -1546,7 +1546,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a substitute object when both object and substitute object have a user defined label", function() {
+            it("should serialize a substitute object when both object and substitute object have a user defined label", function () {
                 var object = new objects.TwoProps(),
                     simple = new objects.Simple(),
                     empty = new objects.Empty(),
@@ -1574,12 +1574,12 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                object.serializeProperties = function(serializer) {
+                object.serializeProperties = function (serializer) {
                     serializer.set("prop1", simple);
                     serializer.set("prop2", empty);
                 };
 
-                empty.serializeSelf = function(serializer) {
+                empty.serializeSelf = function (serializer) {
                     return simple;
                 };
 
@@ -1589,8 +1589,8 @@ describe("serialization/montage-serializer-spec", function() {
             });
         });
 
-        describe("labels", function() {
-            it("should serialize an object using its identifier property as the label", function() {
+        describe("labels", function () {
+            it("should serialize an object using its identifier property as the label", function () {
                 var object = new objects.OneProp(),
                     empty = new objects.Empty(),
                     serialization,
@@ -1621,7 +1621,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should not serialize an object using its identifier property as the label if it's invalid", function() {
+            it("should not serialize an object using its identifier property as the label if it's invalid", function () {
                 var object = new objects.OneProp(),
                     empty = new objects.Empty(),
                     serialization,
@@ -1652,7 +1652,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should avoid name clashes between given labels and generated labels from identifier", function() {
+            it("should avoid name clashes between given labels and generated labels from identifier", function () {
                 var object = new objects.OneProp(),
                     empty = new objects.Empty(),
                     serialization,
@@ -1684,8 +1684,8 @@ describe("serialization/montage-serializer-spec", function() {
             });
         });
 
-        describe("external references", function() {
-            it("should serialize an external reference", function() {
+        describe("external references", function () {
+            it("should serialize an external reference", function () {
                 var object = new objects.OneReferenceProp(),
                     empty = new objects.Empty(),
                     serialization,
@@ -1708,13 +1708,13 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should not consider an object that was referenced and then serialized as an external object", function() {
+            it("should not consider an object that was referenced and then serialized as an external object", function () {
                 var object = new objects.OneProp(),
                     oneProp = new objects.OneProp(),
                     externalObjects,
                     serialization;
 
-                object.serializeProperties = function(serializer) {
+                object.serializeProperties = function (serializer) {
                     serializer.set("object1", oneProp, "reference");
                     serializer.set("object2", oneProp);
                 };
@@ -1725,14 +1725,14 @@ describe("serialization/montage-serializer-spec", function() {
                 expect(Object.keys(externalObjects).length).toBe(0);
             });
 
-            it("should return all external objects", function() {
+            it("should return all external objects", function () {
                 var object = new objects.Empty(),
                     empty = new objects.Empty(),
                     simple = new objects.Simple(),
                     serialization,
                     externalObjects;
 
-                object.serializeSelf = function(serializer) {
+                object.serializeSelf = function (serializer) {
                     serializer.setProperty("external", simple, "reference");
                     serializer.setProperty("internal", empty);
                 };
@@ -1745,8 +1745,8 @@ describe("serialization/montage-serializer-spec", function() {
             })
         });
 
-        describe("serialization units", function() {
-            it("should serialize native values in serialization unit", function() {
+        describe("serialization units", function () {
+            it("should serialize native values in serialization unit", function () {
                 var object = new objects.Empty(),
                     serialization,
                     expectedSerialization;
@@ -1764,7 +1764,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                MontageSerializer.defineSerializationUnit("testing", function(serializer, object) {
+                MontageSerializer.defineSerializationUnit("testing", function (serializer, object) {
                     return {
                         number: 42,
                         string: "string"
@@ -1777,7 +1777,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize references in serialization unit", function() {
+            it("should serialize references in serialization unit", function () {
                 var object = new objects.Empty(),
                     simple = new objects.Simple(),
                     serialization,
@@ -1797,7 +1797,7 @@ describe("serialization/montage-serializer-spec", function() {
                     simple: {}
                 };
 
-                MontageSerializer.defineSerializationUnit("testing", function(serializer, object) {
+                MontageSerializer.defineSerializationUnit("testing", function (serializer, object) {
                     var simpleRef = serializer.addObjectReference(simple);
 
                     return {
@@ -1813,7 +1813,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should first serialize the object then a reference in serialization unit", function() {
+            it("should first serialize the object then a reference in serialization unit", function () {
                 var object = new objects.Empty(),
                     simple = new objects.Simple(),
                     serialization,
@@ -1840,7 +1840,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                MontageSerializer.defineSerializationUnit("testing", function(serializer, _object) {
+                MontageSerializer.defineSerializationUnit("testing", function (serializer, _object) {
                     if (_object !== object) {
                         return;
                     }
@@ -1860,7 +1860,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should first serialize a reference then the object in serialization unit", function() {
+            it("should first serialize a reference then the object in serialization unit", function () {
                 var object = new objects.Empty(),
                     simple = new objects.Simple(),
                     serialization,
@@ -1887,7 +1887,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                MontageSerializer.defineSerializationUnit("testing", function(serializer, _object) {
+                MontageSerializer.defineSerializationUnit("testing", function (serializer, _object) {
                     if (_object !== object) {
                         return;
                     }
@@ -1906,7 +1906,7 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
             });
 
-            it("should serialize a parentless object in serialization unit", function() {
+            it("should serialize a parentless object in serialization unit", function () {
                 var object = new objects.Simple(),
                     empty = new objects.Empty(),
                     serialization,
@@ -1929,7 +1929,7 @@ describe("serialization/montage-serializer-spec", function() {
                     }
                 };
 
-                MontageSerializer.defineSerializationUnit("testing", function(serializer, _object) {
+                MontageSerializer.defineSerializationUnit("testing", function (serializer, _object) {
                     if (_object !== object) {
                         return;
                     }
@@ -1946,8 +1946,8 @@ describe("serialization/montage-serializer-spec", function() {
         });
     });
 
-    describe("Template properties serialization", function() {
-        it("should serialize a template property alias", function() {
+    describe("Template properties serialization", function () {
+        it("should serialize a template property alias", function () {
             var object = {
                     ":templateProperty": new Alias().init("@component:propertyName")
                 },
@@ -1965,52 +1965,52 @@ describe("serialization/montage-serializer-spec", function() {
                 .toEqual(expectedSerialization);
         });
 
-        it("should not serialize a alias outside a template property", function() {
+        it("should not serialize a alias outside a template property", function () {
             var object = {
                     "property": new Alias().init("@component:propertyName")
                 };
 
-            expect(function() {
+            expect(function () {
                 serializer.serialize(object);
             }).toThrow();
         });
 
-        it("should not serialize a value with a template property label", function() {
+        it("should not serialize a value with a template property label", function () {
             var object = {
                 ":property": 42
             };
 
-            expect(function() {
+            expect(function () {
                 serializer.serialize(object);
             }).toThrow();
         });
 
-        it("should not serialize an object literal with a template property label", function() {
+        it("should not serialize an object literal with a template property label", function () {
             var object = {
                 ":property": {}
             };
 
-            expect(function() {
+            expect(function () {
                 serializer.serialize(object);
             }).toThrow();
         });
 
-        it("should not serialize a regexp with a template property label", function() {
+        it("should not serialize a regexp with a template property label", function () {
             var object = {
                 ":property": /regexp/
             };
 
-            expect(function() {
+            expect(function () {
                 serializer.serialize(object);
             }).toThrow();
         });
 
-        it("should not serialize a montage object with a template property label", function() {
+        it("should not serialize a montage object with a template property label", function () {
             var object = {
                 ":property": objects.Empty
             };
 
-            expect(function() {
+            expect(function () {
                 serializer.serialize(object);
             }).toThrow();
         });

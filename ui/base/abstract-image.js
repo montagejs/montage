@@ -43,7 +43,7 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
     },
 
     src: {
-        set: function(value) {
+        set: function (value) {
             if (this._src !== value) {
                 this._src = value;
 
@@ -57,13 +57,13 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
                 this.needsDraw = true;
             }
         },
-        get: function() {
+        get: function () {
             return this._src;
         }
     },
 
     _loadImage: {
-        value: function(src) {
+        value: function (src) {
             this._image.src = src;
             this._isLoadingImage = !this._image.complete;
         }
@@ -90,11 +90,11 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
     },
 
     textAlternative: {
-        set: function(value) {
+        set: function (value) {
             this._textAlternative = value;
             this.needsDraw = true;
         },
-        get: function() {
+        get: function () {
             return this._textAlternative;
         }
     },
@@ -104,19 +104,19 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
     },
 
     crossOrigin: {
-        set: function(value) {
+        set: function (value) {
             if (value !== this._crossOrigin) {
                 this._crossOrigin = value;
                 this.needsDraw = true;
             }
         },
-        get: function() {
+        get: function () {
             return this._crossOrigin;
         }
     },
 
     _rebaseSrc: {
-        value: function() {
+        value: function () {
             var value;
 
             value = this._getRebasedSrc();
@@ -135,7 +135,7 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
     // If the "src" property is an absolute url ("http://" "https://" "/" "//"
     // "data:") then no operation is performed and the "src" ir returned as is.
     _getRebasedSrc: {
-        value: function() {
+        value: function () {
             var url = this._src,
                 baseUrl,
                 // Check for "<protocol>:", "/" and "//"
@@ -157,7 +157,7 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
     },
 
     enterDocument: {
-        value: function(firstTime) {
+        value: function (firstTime) {
             if (firstTime) {
                 this.element.setAttribute("role", "img");
             }
@@ -165,7 +165,7 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
     },
 
     draw: {
-        value: function() {
+        value: function () {
             var src;
 
             if (this._isLoadingImage || this._isInvalidSrc) {
@@ -192,7 +192,7 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
     },
 
     handleImageLoad: {
-        value: function() {
+        value: function () {
             this._isLoadingImage = false;
             this.needsDraw = true;
         }

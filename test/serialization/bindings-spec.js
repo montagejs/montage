@@ -103,19 +103,19 @@ describe("serialization/bindings-spec", function () {
         return deserialize(serializationString, require)
         .then(function (object) {
             expect("deserialization").toBe("fail");
-        }).fail(function() {
+        }).fail(function () {
             // it should fail
         });
     });
 
-    describe("template properties' bindings", function() {
+    describe("template properties' bindings", function () {
         var deserializer;
 
-        beforeEach(function() {
+        beforeEach(function () {
             deserializer = new Deserializer();
         });
 
-        it("should not allow binding to a template property of a component that does not exist", function() {
+        it("should not allow binding to a template property of a component that does not exist", function () {
             var serialization = {
                     "component": {
                         "prototype": "montage/ui/component",
@@ -129,14 +129,14 @@ describe("serialization/bindings-spec", function () {
             deserializer.init(serializationString, require);
 
             return deserializer.deserialize()
-            .then(function() {
+            .then(function () {
                 expect("deserialization").toBe("failed");
-            }).fail(function() {
+            }).fail(function () {
                 // it should fail
             });
         });
 
-        it("should allow binding to a template property of a component that exists", function() {
+        it("should allow binding to a template property of a component that exists", function () {
             var serialization = {
                     "known": {},
 
@@ -155,12 +155,12 @@ describe("serialization/bindings-spec", function () {
             deserializer.init(serializationString, require);
 
             return deserializer.deserialize(instances)
-            .then(function() {
+            .then(function () {
                 // this is here just to consume the promise result
             });
         });
 
-        it("should bind correctly to a component with a colon", function() {
+        it("should bind correctly to a component with a colon", function () {
             // This "trick" can be used to speed up template properties'
             // resolution at bind time.
             var serialization = {
@@ -184,7 +184,7 @@ describe("serialization/bindings-spec", function () {
             deserializer.init(serializationString, require);
 
             return deserializer.deserialize(instances)
-            .then(function(objects) {
+            .then(function (objects) {
                 expect(objects.component.value).toBe(instances["owner:templateProperty"]);
             });
         });

@@ -12,7 +12,7 @@ var Montage = require("../../core/core").Montage,
  * other component.
  * @extends Component
  */
-exports.Slot = Component.specialize( /** @lends Slot# */ {
+exports.Slot = Component.specialize( /** @lends Slot.prototype # */ {
 
     hasTemplate: {
         enumerable: false,
@@ -60,10 +60,10 @@ exports.Slot = Component.specialize( /** @lends Slot# */ {
      * @default null
     */
     content: {
-        get: function() {
+        get: function () {
             return this._content;
         },
-        set: function(value) {
+        set: function (value) {
             var element,
                 content;
 
@@ -100,12 +100,12 @@ exports.Slot = Component.specialize( /** @lends Slot# */ {
     /**
      * Informs the `delegate` that `slotDidSwitchContent(slot, newContent,
      * oldContent)`
-     * @method
+     * @function
      * @param newContent
      * @param oldContent
      */
     contentDidChange: {
-        value: function(newContent, oldContent) {
+        value: function (newContent, oldContent) {
             if (this.delegate && typeof this.delegate.slotDidSwitchContent === "function") {
                 this.delegate.slotDidSwitchContent(this, newContent, (newContent ? newContent.component : null), oldContent, (oldContent ? oldContent.component : null));
             }

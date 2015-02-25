@@ -33,7 +33,7 @@ exports = typeof exports !== "undefined" ? exports : {};
 var Montage = require("montage").Montage,
     Uuid = require("montage/core/uuid").Uuid;
 
-var TestObject = (function() {
+var TestObject = (function () {
     var instances = [];
     // used to cleanup cached urn's.
     var level = 0;
@@ -56,7 +56,7 @@ var TestObject = (function() {
         if (typeof value !== "object") {
             return JSON.stringify(value);
         } else if (Array.isArray(value)) {
-            return "[" + value.map(function(el) {
+            return "[" + value.map(function (el) {
                 return serValue(el);
             }).join(",") + "]";
         } else {
@@ -64,21 +64,21 @@ var TestObject = (function() {
         }
     }
 
-    return function(props, isClass) {
+    return function (props, isClass) {
         var object = {};
         var isInstance = !isClass;
 
         instances.push(object);
 
-        object.urn = function() {
+        object.urn = function () {
             return 'm-obj://' + this.info.objectName + (isInstance ? '/' + (this.obj.UID||'FAIL') : '');
         }
 
-        object.furn = function() {
+        object.furn = function () {
             return 'm-obj://' + this.info.objectName + (isInstance ? '/' + (this.obj.UID||'FAIL') : '') + '?mId=' + this.info.moduleId;
         }
 
-        object.ser = function() {
+        object.ser = function () {
             var ser;
             var names = Montage.getSerializablePropertyNames(this.obj);
             var serProps = [];
@@ -99,7 +99,7 @@ var TestObject = (function() {
             if (level === 0) cleanup();
             return ser;
         };
-        object.ref = function() {
+        object.ref = function () {
             return 'U("' + this.urn() + '")';
         };
         for (var key in props) if (props.hasOwnProperty(key)) {
@@ -150,13 +150,13 @@ TestObjectsDesc.simpleA = TestObject({
         moduleId: "testobjects",
         objectName: "Simple"
     },
-    ser: function() {
+    ser: function () {
         return TestObjectsDesc.simple.ser(this.obj) ;
     }
 });
 
-var Klass = exports.Klass = function() {
-    this.hello = function(name) {
+var Klass = exports.Klass = function () {
+    this.hello = function (name) {
         return "hello " + name;
     }
     this.foo = 226;
@@ -167,7 +167,7 @@ TestObjectsDesc.klass = TestObject({
         moduleId: "testobjects",
         objectName: "Klass"
     },
-    ser: function(instance) {
+    ser: function (instance) {
         return 'U("m-obj://Klass' + (instance ? '/' + (instance.UID||'FAIL') : '') + '?mId=testobjects", {})';
     }
 });
@@ -191,7 +191,7 @@ TestObjectsDesc.composedA = TestObject({
         moduleId: "testobjects",
         objectName: "Composed"
     },
-    ser: function() {
+    ser: function () {
         return 'U("' + this.furn(this.obj) + '", {"tags": ["object","composed","test"],"simpleObj": ' + TestObjectsDesc.simpleA.ser() + '})';
     }
 });
@@ -206,7 +206,7 @@ TestObjectsDesc.selfCycleA = TestObject({
         moduleId: "montage",
         objectName: "Montage"
     },
-    ser: function() {
+    ser: function () {
         return 'U("' + this.furn(this.obj) + '", {"self": ' + this.ref(this.obj)+ '})';
     }
 });
@@ -219,7 +219,7 @@ TestObjectsDesc.indirectCycleA = TestObject({
         moduleId: "montage",
         objectName: "Montage"
     },
-    ser: function() {
+    ser: function () {
         return 'U("' + this.furn(this.obj) + '", {"B": ' + TestObjectsDesc.indirectCycleB.ser(indirectCycleB)+ '})';
     }
 });
@@ -232,7 +232,7 @@ TestObjectsDesc.indirectCycleB = TestObject({
         moduleId: "montage",
         objectName: "Montage"
     },
-    ser: function() {
+    ser: function () {
         return 'U("' + this.furn(this.obj) + '", {"A": ' + TestObjectsDesc.indirectCycleA.ref(indirectCycleA)+ '})';
     }
 });
@@ -243,11 +243,11 @@ Montage.defineProperty(indirectCycleB, "A", {value: indirectCycleA, serializable
 var Custom = exports.Custom = Montage.specialize( {
     manchete: {value: 42},
 
-    serializeSelf: {value: function(serializer) {
+    serializeSelf: {value: function (serializer) {
         serializer.set("manchete", 226);
     }},
 
-    deserializeSelf: {value: function(serializer) {
+    deserializeSelf: {value: function (serializer) {
         this.manchete = serializer.get("manchete");
     }}
 });
@@ -258,7 +258,7 @@ TestObjectsDesc.custom = TestObject({
         moduleId: "testobjects",
         objectName: "Custom"
     },
-    ser: function(instance) {
+    ser: function (instance) {
         return 'U("m-obj://Custom' + (instance ? '/'+instance.UID : '') + '?mId=testobjects", {"manchete": 226})';
     }
 });
@@ -270,7 +270,7 @@ TestObjectsDesc.customA = TestObject({
         moduleId: "testobjects",
         objectName: "Custom"
     },
-    ser: function() {
+    ser: function () {
         return TestObjectsDesc.custom.ser(this.obj);
     }
 });

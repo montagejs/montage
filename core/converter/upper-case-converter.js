@@ -13,7 +13,7 @@ var Converter = require("./converter").Converter;
 exports.UpperCaseConverter = Converter.specialize( /** @lends UpperCaseConverter# */ {
 
     _convert: {
-        value: function(v) {
+        value: function (v) {
             if (v && typeof v === 'string') {
                 return (v.toUpperCase ? v.toUpperCase() : v);
             }
@@ -23,21 +23,21 @@ exports.UpperCaseConverter = Converter.specialize( /** @lends UpperCaseConverter
 
     /**
      * Converts the specified string to all upper case letters.
-     * @method
+     * @function
      * @param {string} v The string to convert.
      * @returns {string} The converted string.
      */
-    convert: {value: function(v) {
+    convert: {value: function (v) {
         return this._convert(v);
     }},
 
     /**
      * Reverts the specified string.
-     * @method
+     * @function
      * @param {string} v The specified string.
      * @returns {string}
      */
-    revert: {value: function(v) {
+    revert: {value: function (v) {
         return this._convert(v);
     }}
 

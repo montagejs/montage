@@ -50,8 +50,8 @@ var SubProto = exports.SubProto = Proto.specialize( {
     prototypeUuid: {value: "c"}
 });
 
-var Funktion = exports.Funktion = function() {
-    this.foo = function() {
+var Funktion = exports.Funktion = function () {
+    this.foo = function () {
         return 42;
     };
 }

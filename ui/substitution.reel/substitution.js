@@ -54,7 +54,7 @@ var Slot = require("../slot.reel").Slot,
  * at a time.
  * @extends Slot
  */
-exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
+exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
 
     hasTemplate: {
         enumerable: false,
@@ -73,7 +73,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
     },
 
     deserializedFromTemplate: {
-        value: function() {
+        value: function () {
             this._allChildComponents = this.childComponents.slice(0);
 
             if (this.switchValue) {
@@ -97,7 +97,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
      *
      * Throws when the `element` given has a parent node.
      *
-     * @method
+     * @function
      * @param {string} key The key that identifies the content given, similar to
      *                 `data-arg` when declaring the content in the template.
      * @param {Node} element The element that will be shown when the `key` is
@@ -106,7 +106,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
      *               have a parent node.
      */
     addSwitchElement: {
-        value: function(key, element) {
+        value: function (key, element) {
             if (element.parentNode) {
                 throw new Error("Can't handle elements inside the DOM.");
             }
@@ -117,7 +117,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
     },
 
     _findFringeComponents: {
-        value: function(element, components) {
+        value: function (element, components) {
             var nodes;
 
             components = components || [];
@@ -151,10 +151,10 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
      * @type {string}
      */
     switchValue: {
-        get: function() {
+        get: function () {
             return this._switchValue;
         },
-        set: function(value) {
+        set: function (value) {
 
             if (this._switchValue === value || this._isSwitchingContent) {
                 return;
@@ -173,7 +173,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
     },
 
     enterDocument: {
-        value: function(firstTime) {
+        value: function (firstTime) {
             var argumentNames;
 
             Slot.enterDocument.apply(this, arguments);
@@ -195,7 +195,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
     },
 
     _loadContent: {
-        value: function(value) {
+        value: function (value) {
             // If the value being loaded is already in the document then use it
             // instead of the element in the switchElements. The element in the
             // document could be a diferent one (if it is a component that had
@@ -213,7 +213,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
     },
 
     contentDidChange: {
-        value: function(newContent, oldContent) {
+        value: function (newContent, oldContent) {
             this.super();
             if (this._drawnSwitchValue) {
                 this._switchElements[this._drawnSwitchValue] = oldContent;
@@ -223,7 +223,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
     },
 
     _loadSwitchComponentTree: {
-        value: function(value) {
+        value: function (value) {
             var self = this,
                 childComponents = this._allChildComponents,
                 element = this._switchElements[value],
@@ -259,7 +259,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
             if (promises.length > 0) {
                 canDrawGate.setField(value + "ComponentTreeLoaded", false);
 
-                Promise.all(promises).then(function() {
+                Promise.all(promises).then(function () {
                     self._switchComponentTreeLoaded[value] = true;
                     canDrawGate.setField(value + "ComponentTreeLoaded", true);
                     self._canDraw = true;
@@ -280,7 +280,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution# */ {
     * @private
     */
     _getSubstitutionDomArgument: {
-        value: function(name) {
+        value: function (name) {
             var candidates,
                 node,
                 element,

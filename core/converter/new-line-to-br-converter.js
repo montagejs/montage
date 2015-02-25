@@ -14,7 +14,7 @@ var Converter = require("./converter").Converter;
  * @param {string} str The string to format.
  * @returns {string} The formatted string.
  */
-var newLineToBr = function(str) {
+var newLineToBr = function (str) {
     return str.replace(/(\r\n|\r|\n)/g, '<br />');
 };
 
@@ -25,7 +25,7 @@ var newLineToBr = function(str) {
 exports.NewLineToBrConverter = Converter.specialize( /** @lends NewLineToBrConverter# */{
 
     _convert: {
-        value: function(v) {
+        value: function (v) {
             if (v && typeof v === 'string') {
                 return newLineToBr(v);
             }
@@ -34,20 +34,20 @@ exports.NewLineToBrConverter = Converter.specialize( /** @lends NewLineToBrConve
     },
 
     /**
-     * @method
+     * @function
      * @param {string} v Case format
      * @returns this._convert(v)
      */
-    convert: {value: function(v) {
+    convert: {value: function (v) {
         return this._convert(v);
     }},
 
     /**
-     * @method
+     * @function
      * @param {string} v Case format
      * @returns this._convert(v)
      */
-    revert: {value: function(v) {
+    revert: {value: function (v) {
         return this._convert(v);
     }}
 

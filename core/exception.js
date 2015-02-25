@@ -44,32 +44,32 @@ var Exception = exports.Exception = Montage.specialize(/** @lends Exception# */ 
     },
 
     /**
-     * @method
+     * @function
      * @param {string} message The message to be initialized.
      * @returns this.initWithMessageTargetAndMethod(message, null, null)
      */
     initWithMessage : {
         enumerable: true,
-        value: function(message) {
+        value: function (message) {
             return this.initWithMessageTargetAndMethod(message, null, null);
         }
     },
 
     /**
-     * @method
+     * @function
      * @param {string} message The message to be initialized.
      * @param {string} target The target to be initialized.
      * @returns this.initWithMessageTargetAndMethod(message, target, null)
      */
     initWithMessageAndTarget : {
         enumerable: true,
-        value: function(message, target) {
+        value: function (message, target) {
             return this.initWithMessageTargetAndMethod(message, target, null);
         }
     },
 
     /**
-     * @method
+     * @function
      * @param {string} message The message to be initialized.
      * @param {string} target The target to be initialized.
      * @param {Function} method The method to be initialized.
@@ -77,7 +77,7 @@ var Exception = exports.Exception = Montage.specialize(/** @lends Exception# */ 
      */
     initWithMessageTargetAndMethod : {
         enumerable: true,
-        value: function(message, target, method) {
+        value: function (message, target, method) {
             this.message = (typeof message !== 'undefined' ? message : null);
             Object.defineProperty(this, "message", {writable: false});
             this.target = (typeof target !== 'undefined' ? target : null);
@@ -89,12 +89,12 @@ var Exception = exports.Exception = Montage.specialize(/** @lends Exception# */ 
     },
 
     /**
-     * @method
+     * @function
      * @returns The exception
      */
     toString: {
         enumerable: false,
-        value: function() {
+        value: function () {
             return "Exception: " + (this.message !== null ? this.message + " " : null) + (this.target !== null ? this.target + " " : null) + (this.method !== null ? this.method + " " : null);
         }
     }

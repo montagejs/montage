@@ -30,7 +30,7 @@ exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends Deri
     },
 
     serializeSelf: {
-        value: function(serializer) {
+        value: function (serializer) {
             if (this.dependencies.length > 0) {
                 this._setPropertyWithDefaults(serializer, "dependencies", this.dependencies);
             }
@@ -40,7 +40,7 @@ exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends Deri
     },
 
     deserializeSelf: {
-        value: function(deserializer) {
+        value: function (deserializer) {
             this.dependencies = this._getPropertyWithDefaults(deserializer, "dependencies");
             this.getterDefinition = this._getPropertyWithDefaults(deserializer, "getterDefinition");
             this.setterDefinition = this._getPropertyWithDefaults(deserializer, "setterDefinition");
@@ -67,7 +67,7 @@ exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends Deri
      * @default true
      */
     isDerived: {
-        get: function() {
+        get: function () {
             return true;
         },
         serializable: false

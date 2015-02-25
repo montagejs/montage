@@ -26,13 +26,13 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
 
     /**
      * Initialize a newly allocated blueprint validation rule.
-     * @method
+     * @function
      * @param {string} rule name
      * @param {Blueprint} blueprint
      * @returns itself
      */
     initWithNameAndBlueprint: {
-        value: function(name, blueprint) {
+        value: function (name, blueprint) {
             this._name = name;
             this._owner = blueprint;
             return this;
@@ -40,7 +40,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
     },
 
     serializeSelf: {
-        value: function(serializer) {
+        value: function (serializer) {
             serializer.setProperty("name", this.name);
             serializer.setProperty("blueprint", this.owner, "reference");
             //            serializer.setProperty("validationSelector", this._validationSelector, "reference");
@@ -50,7 +50,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
     },
 
     deserializeSelf: {
-        value: function(deserializer) {
+        value: function (deserializer) {
             this._name = deserializer.getProperty("name");
             this._owner = deserializer.getProperty("blueprint");
             //            this._validationSelector = deserializer.getProperty("validationSelector");
@@ -74,7 +74,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
      * @type {Blueprint}
      */
     owner: {
-        get: function() {
+        get: function () {
             return this._owner;
         }
     },
@@ -84,7 +84,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
      * @type {string}
      */
     identifier: {
-        get: function() {
+        get: function () {
             return [
                 this.blueprint.identifier,
                 "rule",
@@ -101,7 +101,7 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
      * Name of the property being described
      */
     name: {
-        get: function() {
+        get: function () {
             return this._name;
         }
     },
@@ -117,13 +117,13 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
      */
     validationSelector: {
         serializable: false,
-        get: function() {
+        get: function () {
             if (!this._validationSelector) {
                 this._validationSelector = Selector['false'];
             }
             return this._validationSelector;
         },
-        set: function(value) {
+        set: function (value) {
             this._validationSelector = value;
         }
     },
@@ -137,13 +137,13 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
      */
     messageKey: {
         serializable: false,
-        get: function() {
+        get: function () {
             if ((!this._messageKey) || (this._messageKey.length === 0)) {
                 return this._name;
             }
             return this._messageKey;
         },
-        set: function(value) {
+        set: function (value) {
             this._messageKey = value;
         }
     },
@@ -152,13 +152,13 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
         value: null
     },
 
-    /*
+    /**
      * Evaluates the rules based on the blueprint and the properties.
      * @param {Object} object instance to evaluate the rule for
-     * @return {boolean} true if the rules fires, false otherwise.
+     * @returns {boolean} true if the rules fires, false otherwise.
      */
     evaluateRule: {
-        value: function(objectInstance) {
+        value: function (objectInstance) {
             if (this._propertyValidationEvaluator === null) {
                 var propertyValidationSemantics = new PropertyValidationSemantics().initWithBlueprint(this.blueprint);
                 this._propertyValidationEvaluator = propertyValidationSemantics.compile(this.selector.syntax);

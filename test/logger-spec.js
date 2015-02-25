@@ -32,29 +32,29 @@ var Montage = require("montage").Montage,
     loggerRequire = require("montage/core/logger");
 
 describe("logger-spec",
-function() {
+function () {
     describe("get a logger",
-    function() {
+    function () {
         it("shoud be the same logger for the same name",
-        function() {
+        function () {
             var loggerA = loggerRequire.logger("testMyName", null, true);
             var loggerB = loggerRequire.logger("testMyName", null, true);
             expect(loggerA).toBe(loggerB);
         });
     });
     describe("defaults",
-    function() {
+    function () {
         it("should be disabled by default",
-        function() {
+        function () {
             var loggerA = loggerRequire.logger("testLogger", null, true);
             expect(loggerA.isDebug).toBeFalsy();
             expect(loggerA.isError).toBeTruthy();
         });
     });
     describe("activation",
-    function() {
+    function () {
         it("should activated by assigning truthy value",
-        function() {
+        function () {
             var loggerA = loggerRequire.logger("testLogger2", null, true);
             expect(loggerA.isDebug).toBeFalsy();
             loggerA.isDebug = true;

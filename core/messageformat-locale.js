@@ -1,11 +1,11 @@
 // jshint -W015, -W106
-exports.am = function(n) {
+exports.am = function (n) {
   if (n === 0 || n == 1) {
     return 'one';
   }
   return 'other';
 };
-exports.ar = function(n) {
+exports.ar = function (n) {
   if (n === 0) {
     return 'zero';
   }
@@ -137,7 +137,7 @@ exports.fi = function ( n ) {
   }
   return "other";
 };
-exports.fil = function(n) {
+exports.fil = function (n) {
   if (n === 0 || n == 1) {
     return 'one';
   }
@@ -182,7 +182,7 @@ exports.he = function ( n ) {
   }
   return "other";
 };
-exports.hi = function(n) {
+exports.hi = function (n) {
   if (n === 0 || n == 1) {
     return 'one';
   }
@@ -202,13 +202,13 @@ exports.hr = function (n) {
   }
   return 'other';
 };
-exports.hu = function(n) {
+exports.hu = function (n) {
   return 'other';
 };
-exports.id = function(n) {
+exports.id = function (n) {
   return 'other';
 };
-exports["in"] = function(n) {
+exports["in"] = function (n) {
   return 'other';
 };
 exports.is = function ( n ) {
@@ -247,7 +247,7 @@ exports.lag = function (n) {
   }
   return 'other';
 };
-exports.ln = function(n) {
+exports.ln = function (n) {
   if (n === 0 || n == 1) {
     return 'one';
   }
@@ -378,7 +378,7 @@ exports.ru = function (n) {
   }
   return 'other';
 };
-exports.shi = function(n) {
+exports.shi = function (n) {
   if (n >= 0 && n <= 1) {
     return 'one';
   }
@@ -455,13 +455,13 @@ exports.te = function ( n ) {
 exports.th = function ( n ) {
   return "other";
 };
-exports.tl = function(n) {
+exports.tl = function (n) {
   if (n === 0 || n == 1) {
     return 'one';
   }
   return 'other';
 };
-exports.tr = function(n) {
+exports.tr = function (n) {
   return 'other';
 };
 exports.uk = function (n) {

@@ -53,12 +53,12 @@ exports.CurrencyConverter = NumberConverter.specialize( /** @lends CurrencyConve
     },
 
     /**
-     * @method
+     * @function
      * @param {number} amount
      * @returns {string} The formatted currency value.
      */
     convert: {
-        value: function(amount) {
+        value: function (amount) {
             var stringValue = this.super(amount);
             if ((amount < 0) && this.useParensForNegative) {
                 stringValue = '(' + stringValue.substring(1, stringValue.length) + ')';

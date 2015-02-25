@@ -7,7 +7,7 @@ exports.TemplateObjects = Component.specialize( {
     templateObjectsPresent: {value: false},
 
     templateDidLoad: {
-        value: function() {
+        value: function () {
             this.templateObjectsPresent = !!this.templateObjects;
         }
     }

@@ -1,5 +1,5 @@
 /**
- * @module montage/ui/text.reel
+ * @module "montage/ui/text.reel"
  */
 var Component = require("../component").Component;
 
@@ -15,8 +15,10 @@ var Component = require("../component").Component;
  * @classdesc A component that displays a string of plain text.
  * @extends Component
  */
-exports.Text = Component.specialize( /** @lends Text# */ {
-
+exports.Text = Component.specialize( /** @lends Text.prototype # */ {
+    /**
+     * @constructs Text
+     */
     constructor: {
         value: function Text() {
             this.super();
@@ -37,10 +39,10 @@ exports.Text = Component.specialize( /** @lends Text# */ {
      * @default null
      */
     value: {
-        get: function() {
+        get: function () {
             return this._value;
         },
-        set: function(value) {
+        set: function (value) {
             if (this._value !== value) {
                 this._value = value;
                 this.needsDraw = true;
@@ -77,7 +79,7 @@ exports.Text = Component.specialize( /** @lends Text# */ {
     },
 
     enterDocument: {
-        value: function(firstTime) {
+        value: function (firstTime) {
             if (firstTime) {
                 var range = this._RANGE;
                 range.selectNodeContents(this.element);
@@ -90,7 +92,7 @@ exports.Text = Component.specialize( /** @lends Text# */ {
     },
 
     draw: {
-        value: function() {
+        value: function () {
             // get correct value
             var value = this._value, displayValue = (value || 0 === value ) ? value : this.defaultValue;
 

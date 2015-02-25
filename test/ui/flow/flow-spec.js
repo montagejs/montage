@@ -1,21 +1,21 @@
 var Montage = require("montage").Montage;
 var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
-TestPageLoader.queueTest("flow-test", function(testPage) {
+TestPageLoader.queueTest("flow-test", function (testPage) {
 
-    describe("ui/flow/flow-spec", function() {
-        it("should load", function() {
+    describe("ui/flow/flow-spec", function () {
+        it("should load", function () {
             expect(testPage.loaded).toBe(true);
         });
 
-        describe("Flow", function() {
+        describe("Flow", function () {
             var flow;
 
             beforeEach(function () {
                 flow = testPage.test.flow;
             });
 
-            it("can be created", function() {
+            it("can be created", function () {
                 expect(testPage.test.flow).toBeDefined();
             });
 

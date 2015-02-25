@@ -32,13 +32,13 @@ var Montage = require("montage").Montage;
 var MutableEvent = require("montage/core/event/mutable-event").MutableEvent;
 var Target = require("montage/core/target").Target;
 
-describe("events/mutable-event-spec", function() {
+describe("events/mutable-event-spec", function () {
 
-    describe("custom events using fromType", function() {
+    describe("custom events using fromType", function () {
 
         var type, target, listener, event;
 
-        beforeEach(function() {
+        beforeEach(function () {
             type = "myCustomEventType";
             listener = {};
             target = new Target();
@@ -46,30 +46,30 @@ describe("events/mutable-event-spec", function() {
             target.addEventListener(type, listener);
         });
 
-        afterEach(function() {
+        afterEach(function () {
             spyOn(listener, "handleEvent").andCallThrough();
             target.dispatchEvent(event);
             expect(listener.handleEvent).toHaveBeenCalledWith(event);
         });
 
-        it("should preserve target upon dispatching", function() {
-            listener.handleEvent = function(evt) {
+        it("should preserve target upon dispatching", function () {
+            listener.handleEvent = function (evt) {
                 expect(evt.target).toBe(target);
             }
 
             event = MutableEvent.fromType(type);
         });
 
-        it("should preserve type upon dispatching", function() {
-            listener.handleEvent = function(evt) {
+        it("should preserve type upon dispatching", function () {
+            listener.handleEvent = function (evt) {
                 expect(evt.type).toBe(type);
             }
 
             event = MutableEvent.fromType(type);
         });
 
-        it("should preserve custom properties upon dispatching", function() {
-            listener.handleEvent = function(evt) {
+        it("should preserve custom properties upon dispatching", function () {
+            listener.handleEvent = function (evt) {
                 expect(evt.foo).toBe("foo in properties");
             }
 
@@ -77,8 +77,8 @@ describe("events/mutable-event-spec", function() {
             event.foo = "foo in properties";
         });
 
-        it("should preserve detail upon dispatching", function() {
-            listener.handleEvent = function(evt) {
+        it("should preserve detail upon dispatching", function () {
+            listener.handleEvent = function (evt) {
                 expect(evt.detail.foo).toBe("foo in detail");
             }
 
@@ -87,32 +87,32 @@ describe("events/mutable-event-spec", function() {
             });
         });
 
-        it("should preserve truthy canBubble upon dispatching", function() {
-            listener.handleEvent = function(evt) {
+        it("should preserve truthy canBubble upon dispatching", function () {
+            listener.handleEvent = function (evt) {
                 expect(evt.canBubble).toBeTruthy;
             }
 
             event = MutableEvent.fromType(type, true);
         });
 
-        it("should preserve falsy canBubble upon dispatching", function() {
-            listener.handleEvent = function(evt) {
+        it("should preserve falsy canBubble upon dispatching", function () {
+            listener.handleEvent = function (evt) {
                 expect(evt.canBubble).toBeFalsy;
             }
 
             event = MutableEvent.fromType(type, false);
         });
 
-        it("should preserve truthy cancelability upon dispatching", function() {
-            listener.handleEvent = function(evt) {
+        it("should preserve truthy cancelability upon dispatching", function () {
+            listener.handleEvent = function (evt) {
                 expect(evt.cancelable).toBeTruthy;
             }
 
             event = MutableEvent.fromType(type, false, true);
         });
 
-        it("should preserve falsy cancelability upon dispatching", function() {
-            listener.handleEvent = function(evt) {
+        it("should preserve falsy cancelability upon dispatching", function () {
+            listener.handleEvent = function (evt) {
                 expect(evt.cancelable).toBeFalsy;
             }
 
@@ -120,11 +120,11 @@ describe("events/mutable-event-spec", function() {
         });
     });
 
-    describe("custom events using dispatchEventNamed", function() {
+    describe("custom events using dispatchEventNamed", function () {
 
         var type, target, listener, event;
 
-        beforeEach(function() {
+        beforeEach(function () {
             type = "myCustomEventType";
             listener = {};
             target = new Target();
@@ -132,12 +132,12 @@ describe("events/mutable-event-spec", function() {
             target.addEventListener(type, listener);
         });
 
-        afterEach(function() {
+        afterEach(function () {
             expect(listener.handleEvent).toHaveBeenCalled();
         });
 
-        it("should preserve target upon dispatching", function() {
-            listener.handleEvent = function(evt) {
+        it("should preserve target upon dispatching", function () {
+            listener.handleEvent = function (evt) {
                 expect(evt.target).toBe(target);
             }
 
@@ -145,8 +145,8 @@ describe("events/mutable-event-spec", function() {
             target.dispatchEventNamed(type);
         });
 
-        it("should preserve type upon dispatching", function() {
-            listener.handleEvent = function(evt) {
+        it("should preserve type upon dispatching", function () {
+            listener.handleEvent = function (evt) {
                 expect(evt.type).toBe(type);
             }
 
@@ -154,8 +154,8 @@ describe("events/mutable-event-spec", function() {
             target.dispatchEventNamed(type);
         });
 
-        it("should preserve detail upon dispatching", function() {
-            listener.handleEvent = function(evt) {
+        it("should preserve detail upon dispatching", function () {
+            listener.handleEvent = function (evt) {
                 expect(evt.detail.foo).toBe("foo in detail");
             }
 
@@ -165,8 +165,8 @@ describe("events/mutable-event-spec", function() {
             });
         });
 
-        it("should preserve truthy canBubble upon dispatching", function() {
-            listener.handleEvent = function(evt) {
+        it("should preserve truthy canBubble upon dispatching", function () {
+            listener.handleEvent = function (evt) {
                 expect(evt.canBubble).toBeTruthy;
             }
 
@@ -174,8 +174,8 @@ describe("events/mutable-event-spec", function() {
             target.dispatchEventNamed(type, true);
         });
 
-        it("should preserve falsy canBubble upon dispatching", function() {
-            listener.handleEvent = function(evt) {
+        it("should preserve falsy canBubble upon dispatching", function () {
+            listener.handleEvent = function (evt) {
                 expect(evt.canBubble).toBeFalsy;
             }
 
@@ -183,8 +183,8 @@ describe("events/mutable-event-spec", function() {
             target.dispatchEventNamed(type, false);
         });
 
-        it("should preserve truthy cancelability upon dispatching", function() {
-            listener.handleEvent = function(evt) {
+        it("should preserve truthy cancelability upon dispatching", function () {
+            listener.handleEvent = function (evt) {
                 expect(evt.cancelable).toBeTruthy;
             }
 
@@ -192,8 +192,8 @@ describe("events/mutable-event-spec", function() {
             target.dispatchEventNamed(type, false, true);
         });
 
-        it("should preserve falsy cancelability upon dispatching", function() {
-            listener.handleEvent = function(evt) {
+        it("should preserve falsy cancelability upon dispatching", function () {
+            listener.handleEvent = function (evt) {
                 expect(evt.cancelable).toBeFalsy;
             }
 
@@ -205,7 +205,7 @@ describe("events/mutable-event-spec", function() {
 
 
 
-    describe("methods", function() {
+    describe("methods", function () {
         var event;
         beforeEach(function () {
             event = MutableEvent.fromType("mousedown");

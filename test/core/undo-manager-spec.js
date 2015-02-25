@@ -445,7 +445,7 @@ describe('core/undo-manager-spec', function () {
 
     describe("batch operations", function () {
 
-        beforeEach(function() {
+        beforeEach(function () {
             roster._members = ["Alice", "Bob", "Carol"];
         });
 
@@ -527,7 +527,7 @@ describe('core/undo-manager-spec', function () {
 
     describe("nested batch operations", function () {
 
-        beforeEach(function() {
+        beforeEach(function () {
             roster._members = ["Alice", "Bob", "Carol"];
         });
 

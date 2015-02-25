@@ -23,14 +23,14 @@ exports.AssociationBlueprint = PropertyBlueprint.specialize( /** @lends Associat
     },
 
     serializeSelf: {
-        value: function(serializer) {
+        value: function (serializer) {
             serializer.setProperty("targetBlueprint", this._targetBlueprintReference);
             PropertyBlueprint.serializeSelf.call(this, serializer);
         }
     },
 
     deserializeSelf: {
-        value: function(deserializer) {
+        value: function (deserializer) {
             PropertyBlueprint.deserializeSelf.call(this, deserializer);
             this._targetBlueprintReference = deserializer.getProperty("targetBlueprint");
         }
@@ -51,10 +51,10 @@ exports.AssociationBlueprint = PropertyBlueprint.specialize( /** @lends Associat
      */
     targetBlueprint: {
         serializable: false,
-        get: function() {
+        get: function () {
             return this._targetBlueprintReference.promise(this.require);
         },
-        set: function(blueprint) {
+        set: function (blueprint) {
             this._targetBlueprintReference = new BlueprintReference().initWithValue(blueprint);
         }
     },
@@ -64,7 +64,7 @@ exports.AssociationBlueprint = PropertyBlueprint.specialize( /** @lends Associat
      * @default false
      */
     isAssociationBlueprint: {
-        get: function() {
+        get: function () {
             return true;
         }
     }

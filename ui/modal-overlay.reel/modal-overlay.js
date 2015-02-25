@@ -1,5 +1,5 @@
 /**
- * @module ui/modal-overlay.reel
+ * @module "ui/modal-overlay.reel"
  */
 var Overlay = require("../overlay.reel").Overlay,
     Promise = require("../../core/promise").Promise;
@@ -8,10 +8,12 @@ var CLASS_PREFIX = "montage-ModalOverlay";
 
 /**
  * @class ModalOverlay
- * @extends Component
+ * @extends Overlay
  */
-exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay# */ {
-
+exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay.prototype # */ {
+    /**
+     * @constructs ModalOverlay
+     */
     constructor: {
         value: function ModalOverlay() {
             this.super();
@@ -19,7 +21,7 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay# */ {
     },
 
     enterDocument: {
-        value: function(firstTime) {
+        value: function (firstTime) {
             var body;
 
             this.super(firstTime);
@@ -54,7 +56,7 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay# */ {
      * overlay be shown.
      */
     show: {
-        value: function() {
+        value: function () {
             var queue = this._queue,
                 ix = queue.indexOf(this),
                 promise;
@@ -90,7 +92,7 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay# */ {
     },
 
     hide: {
-        value: function() {
+        value: function () {
             var queue = this._queue,
                 ix = queue.indexOf(this),
                 nextOverlay;
@@ -111,7 +113,7 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay# */ {
     },
 
     draw: {
-        value: function() {
+        value: function () {
             this.super();
 
             if (this._isShown && this.hasModalMask) {

@@ -239,14 +239,14 @@ describe("core/tree-controller-spec", function () {
 
                 it("should be able to find the root", function () {
                     var seek =  {id: "1"};
-                    var equality = function(x,y) { return x.id === y.id; };
+                    var equality = function (x,y) { return x.id === y.id; };
                     node = treeController.findNodeByContent(seek, equality);
                     expect(node.content).toBe(tree);
                 });
 
                 it("should be able to find any level", function () {
                     var seek =  {id: "3"};
-                    var equality = function(x,y) { return x.id === y.id; };
+                    var equality = function (x,y) { return x.id === y.id; };
                     node = treeController.findNodeByContent(seek, equality);
                     expect(node.content).toBe(tree.children[1]);
                 });
@@ -254,7 +254,7 @@ describe("core/tree-controller-spec", function () {
       });
 
         // 4 + 2 * 2 -> pre= +4*22; post= 422+*
-        describe("walk tree", function(){
+        describe("walk tree", function (){
             var ast = {
                 value: "+",
                 children: [{
@@ -277,13 +277,13 @@ describe("core/tree-controller-spec", function () {
             treeController = new TreeController();
             treeController.content = ast;
             var res = "";
-            treeController.preOrderWalk(function(node){
+            treeController.preOrderWalk(function (node){
                 res +=  node.content.value;
             });
             expect(res).toBe("+4*22");
 
             res = "";
-            treeController.postOrderWalk(function(node){
+            treeController.postOrderWalk(function (node){
                 res +=  node.content.value;
             });
             expect(res).toBe("422*+");

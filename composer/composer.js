@@ -37,10 +37,10 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
      * @default null
      */
     component: {
-        get: function() {
+        get: function () {
             return this._component;
         },
-        set: function(component) {
+        set: function (component) {
             this._component = component;
         }
     },
@@ -62,10 +62,10 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
      * @default null
      */
     element: {
-        get: function() {
+        get: function () {
             return this._element;
         },
-        set: function(element) {
+        set: function (element) {
             this._element = element;
         }
     },
@@ -100,7 +100,7 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
      * @default false
      */
     needsFrame: {
-        set: function(value) {
+        set: function (value) {
             if (this._needsFrame !== value) {
                 this._needsFrame = value;
                 if (this._component) {
@@ -110,7 +110,7 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
                 }
             }
         },
-        get: function() {
+        get: function () {
             return this._needsFrame;
         }
     },
@@ -119,11 +119,11 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
      * This method will be invoked by the framework at the beginning of a draw
      * cycle. This is where a composer may implement its update logic if it
      * needs to respond to draws by its component.
-     * @method
+     * @function
      * @param {Date} timestamp The time that the draw cycle started
      */
     frame: {
-        value: function(timestamp) {
+        value: function (timestamp) {
 
         }
     },
@@ -135,7 +135,7 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
      * @private
      */
     _resolveDefaults: {
-        value: function() {
+        value: function () {
             if (this.element == null && this.component != null) {
                 this.element = this.component.element;
             }
@@ -147,7 +147,7 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
      * @private
      */
     _load: {
-        value: function() {
+        value: function () {
             if (!this.element) {
                 this._resolveDefaults();
             }
@@ -163,10 +163,10 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
      * Subclasses should override `load` with their DOM initialization. Most
      * composers attach DOM event listeners to `this.element` in `load`.
      *
-     * @method
+     * @function
      */
     load: {
-        value: function() {
+        value: function () {
 
         }
     },
@@ -178,10 +178,10 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
      * Subclasses should override `unload` to do any necessary cleanup, such as
      * removing event listeners.
      *
-     * @method
+     * @function
      */
     unload: {
-        value: function() {
+        value: function () {
 
         }
     },
@@ -192,7 +192,7 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
      * @private
      */
     deserializedFromTemplate: {
-        value: function() {
+        value: function () {
             if (this.component) {
                 this.component.addComposer(this);
             }

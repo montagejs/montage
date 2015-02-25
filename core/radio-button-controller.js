@@ -57,13 +57,13 @@ exports.RadioButtonController = Montage.specialize(/** @lends RadioButtonControl
      * The currently-selected option.
     */
     value: {
-        set: function(value) {
+        set: function (value) {
             if (this._value !== value) {
                 this._value = value;
                 this._updateRadioButtons();
             }
         },
-        get: function() {
+        get: function () {
             return this._value;
         }
     },
@@ -80,7 +80,7 @@ exports.RadioButtonController = Montage.specialize(/** @lends RadioButtonControl
     },
 
     _updateRadioButtons: {
-        value: function() {
+        value: function () {
             var value = this._value;
 
             for (var i = 0, ii = this._radioButtons.length; i < ii; i++) {
@@ -94,12 +94,12 @@ exports.RadioButtonController = Montage.specialize(/** @lends RadioButtonControl
 
     /**
      * Add a radio button to be managed by this controller.
-     * @method
+     * @function
      * @param {RadioButton} radioButton
      * @returns {undefined}
      */
     registerRadioButton: {
-        value: function(radioButton) {
+        value: function (radioButton) {
             if (this._radioButtons.indexOf(radioButton) === -1) {
                 this._radioButtons.push(radioButton);
                 this._updateRadioButtons();
@@ -109,12 +109,12 @@ exports.RadioButtonController = Montage.specialize(/** @lends RadioButtonControl
 
     /**
      * Remove a radio button from being managed by this controller.
-     * @method
+     * @function
      * @param {RadioButton} radioButton
      * @returns {undefined}
      */
     unregisterRadioButton: {
-        value: function(radioButton) {
+        value: function (radioButton) {
             var ix = this._radioButtons.indexOf(radioButton);
             if (ix >= 0) {
                 this._radioButtons.splice(ix, 1);
@@ -126,7 +126,7 @@ exports.RadioButtonController = Montage.specialize(/** @lends RadioButtonControl
     },
 
     handleRadioButtonChange: {
-        value: function(plus, minus, index) {
+        value: function (plus, minus, index) {
             if (plus[0] === true) {
                 for (var i = 0, ii = this._radioButtons.length; i < ii; i++) {
                     if (i === index) {

@@ -37,7 +37,7 @@ exports.AppDelegate = Montage.specialize( {
     },
 
     willFinishLoading: {
-        value: function(application) {
+        value: function (application) {
             this.willFinishLoadingCalled = true;
         }
     }

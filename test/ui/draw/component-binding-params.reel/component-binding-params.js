@@ -3,12 +3,12 @@ var Montage = require("montage").Montage,
 
 exports.ComponentBindingParams = Component.specialize( {
     _bindTemplateParametersToArguments: {
-        value: function() {
+        value: function () {
         }
     },
 
     _replaceElementWithTemplate: {
-        value: function() {
+        value: function () {
 
         }
     }

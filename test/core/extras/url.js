@@ -7,8 +7,6 @@ describe("core/extras/url", function () {
         var savedBaseElem = document.head.querySelector("base"),
             baseElem = document.createElement("base");
 
-        console.log(document.head)
-
         it("should be an absolute URL", function () {
             expect(URL.resolve("http://montagejs.org/", "./logo.jpeg")).toBe("http://montagejs.org/logo.jpeg");
         });

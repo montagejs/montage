@@ -29,7 +29,7 @@ exports.BinderReference = RemoteReference.create(RemoteReference, {
      * @type {string}
      */
     identifier: {
-        get: function() {
+        get: function () {
             if (!this._reference) {
                 this._reference = this.referenceFromValue(this._value);
             }
@@ -42,7 +42,7 @@ exports.BinderReference = RemoteReference.create(RemoteReference, {
     },
 
     valueFromReference: {
-        value: function(references, require) {
+        value: function (references, require) {
             var binderName = references.binderName;
             var binderModuleId = references.binderModuleId;
 
@@ -73,7 +73,7 @@ exports.BinderReference = RemoteReference.create(RemoteReference, {
     },
 
     referenceFromValue: {
-        value: function(value) {
+        value: function (value) {
             var references = {};
             references.binderName = value.name;
             references.binderModuleId = value.binderModuleId;

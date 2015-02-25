@@ -2,19 +2,19 @@ var Montage = require("montage").Montage;
 var RangeController = require("montage/core/range-controller").RangeController;
 var Set = require("montage/collections/set");
 
-describe("core/range-controller-spec", function() {
+describe("core/range-controller-spec", function () {
     var rangeController;
 
     beforeEach(function () {
         rangeController = RangeController.create().initWithContent([0, 1, 2]);
     });
 
-    describe("selection", function() {
-        describe("constrained by uniqueness", function() {
+    describe("selection", function () {
+        describe("constrained by uniqueness", function () {
             it("TODO should not allow duplicates");
             it("TODO should allow new item if duplicate deleted in same splice");
         });
-                
+
         it("swap should select an object in case of for no-op when rangeController avoidsEmptySelection", function () {
             //Save state
             var avoidsEmptySelection = rangeController.avoidsEmptySelection;
@@ -25,7 +25,7 @@ describe("core/range-controller-spec", function() {
             //set property to what it was
             rangeController.avoidsEmptySelection = avoidsEmptySelection;
             rangeController.selection = selection;
-            
+
             expect(swapResult.toArray()).toEqual([]);
             expect(rangeController.selection.toArray()).toEqual([0]);
         });
@@ -42,16 +42,16 @@ describe("core/range-controller-spec", function() {
             expect(rangeController.selection.length).toBe(0);
         });
 
-        describe("constrained to content", function() {
-            it("should allow selection if subset of content", function() {
+        describe("constrained to content", function () {
+            it("should allow selection if subset of content", function () {
                 rangeController.selection.add(1);
                 expect(rangeController.selection.toArray()).toEqual([1]);
             });
-            it("should disallow selection if not in content", function() {
+            it("should disallow selection if not in content", function () {
                 rangeController.selection.add(5);
                 expect(rangeController.selection.toArray()).toEqual([]);
             });
-            it("should remove selection if selected content is removed", function() {
+            it("should remove selection if selected content is removed", function () {
                 rangeController.selection.add(2);
                 rangeController.pop();
                 expect(rangeController.selection.toArray()).toEqual([]);
@@ -73,7 +73,7 @@ describe("core/range-controller-spec", function() {
                 expect(rangeController.selection.toArray()).toEqual([1]);
             });
         });
-        describe("constrained by multiSelect", function() {
+        describe("constrained by multiSelect", function () {
             beforeEach(function () {
                 rangeController.selection.add(0);
                 expect(rangeController.selection.toArray()).toEqual([0]);
@@ -97,7 +97,7 @@ describe("core/range-controller-spec", function() {
 
                 it("TODO: test two-way bindings with multiple values");
 
-                it("multiSelect splicing and setting", function() {
+                it("multiSelect splicing and setting", function () {
                     rangeController.selection.splice(1, 0, 2);
                     expect(rangeController.selection.toArray()).toEqual([2]);
                     rangeController.selection.splice(0, 1, 0, 1);
@@ -132,25 +132,25 @@ describe("core/range-controller-spec", function() {
                 });
             });
 
-            describe("when true", function() {
-                beforeEach(function() {
+            describe("when true", function () {
+                beforeEach(function () {
                     rangeController.multiSelect = true;
                 });
 
-                it("allows multiple selected items to be added", function() {
+                it("allows multiple selected items to be added", function () {
                     rangeController.selection.add(1);
                     rangeController.selection.add(2);
                     expect(rangeController.selection.toArray()).toEqual([0, 1, 2]);
                 });
 
-                it("allows multiple selected items to be set", function() {
+                it("allows multiple selected items to be set", function () {
                     rangeController.selection.splice(0, 1, 1, 2);
                     expect(rangeController.selection.toArray()).toEqual([1, 2]);
                 });
             });
         });
 
-        describe("constrained by avoidsEmptySelection", function() {
+        describe("constrained by avoidsEmptySelection", function () {
             beforeEach(function () {
                 rangeController.multiSelect = true;
                 rangeController.selection.splice(0, 0, 0, 1);
@@ -209,7 +209,7 @@ describe("core/range-controller-spec", function() {
             });
         });
 
-        describe("constrained to always have one selection", function() {
+        describe("constrained to always have one selection", function () {
             beforeEach(function () {
                 rangeController.avoidsEmptySelection = false;
                 rangeController.avoidsEmptySelection = true;
@@ -324,7 +324,7 @@ describe("core/range-controller-spec", function() {
     describe("When content has a custom contentEquals", function () {
         beforeEach(function () {
             var content = [0, 1, 2];
-            content.contentEquals = function(){ return true; };
+            content.contentEquals = function (){ return true; };
             expect(content.find(42)).toBe(0);
 
             rangeController = RangeController.create().initWithContent(content);

@@ -31,7 +31,7 @@ exports.BlueprintReference = RemoteReference.specialize( {
      * @default this.name
      */
     identifier: {
-        get: function() {
+        get: function () {
             if (!this._reference) {
                 this._reference = this.referenceFromValue(this._value);
             }
@@ -44,7 +44,7 @@ exports.BlueprintReference = RemoteReference.specialize( {
     },
 
     valueFromReference: {
-        value: function(references, targetRequire) {
+        value: function (references, targetRequire) {
             var blueprintName = references.blueprintName;
             var blueprintModule = references.blueprintModule;
             var prototypeName = references.prototypeName;
@@ -56,7 +56,7 @@ exports.BlueprintReference = RemoteReference.specialize( {
                 binderPromise = BinderReference.valueFromReference(binderReference, require);
             }
 
-            return binderPromise.then(function(binder) {
+            return binderPromise.then(function (binder) {
                 if (binder) {
                     var ModuleBlueprintModule = require("./module-blueprint");
                     return ModuleBlueprintModule.ModuleBlueprint.getBlueprintWithModuleId(blueprintModule.id, blueprintModule.require).then(function (blueprint) {
@@ -75,7 +75,7 @@ exports.BlueprintReference = RemoteReference.specialize( {
     },
 
     referenceFromValue: {
-        value: function(value) {
+        value: function (value) {
             // the value is a blueprint we need to serialize the binder and the blueprint reference
             var references = {};
             references.blueprintName = value.name;

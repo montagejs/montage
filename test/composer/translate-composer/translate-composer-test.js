@@ -35,70 +35,70 @@ var TranslateComposerTest = exports.TranslateComposerTest = Montage.specialize( 
     //     value: null
     // },
     // example: {
-    //     get: function() {
+    //     get: function () {
     //         return this._example;
     //     },
-    //     set: function(value) {
+    //     set: function (value) {
     //         this._example = value;
     //     }
     // },
 
     x: {
-        get: function() {
+        get: function () {
             return this.example.element.style.left;
         },
-        set: function(value) {
+        set: function (value) {
             this.example.element.style.left = value + "px";
         }
     },
 
     y: {
-        get: function() {
+        get: function () {
             return this.example.element.style.top;
         },
-        set: function(value) {
+        set: function (value) {
             this.example.element.style.top = value + "px";
         }
     },
 
     inner_x: {
-        get: function() {
+        get: function () {
             return this.innermover.element.style.left;
         },
-        set: function(value) {
+        set: function (value) {
             this.innermover.element.style.left = value + "px";
         }
     },
 
     inner_y: {
-        get: function() {
+        get: function () {
             return this.innermover.element.style.top;
         },
-        set: function(value) {
+        set: function (value) {
             this.innermover.element.style.top = value + "px";
         }
     },
 
     outer_x: {
-        get: function() {
+        get: function () {
             return this.outermover.element.style.left;
         },
-        set: function(value) {
+        set: function (value) {
             this.outermover.element.style.left = value + "px";
         }
     },
 
     outer_y: {
-        get: function() {
+        get: function () {
             return this.outermover.element.style.top;
         },
-        set: function(value) {
+        set: function (value) {
             this.outermover.element.style.top = value + "px";
         }
     },
 
     handleTranslate: {
-        value: function(event) {
+        value: function (event) {
         }
     }
 });

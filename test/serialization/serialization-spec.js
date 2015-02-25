@@ -6,14 +6,14 @@ var Montage = require("montage").Montage,
     Serialization = require("montage/core/serialization/serialization").Serialization,
     Promise = require("montage/core/promise").Promise;
 
-describe("reel/serialization/serialization-spec", function() {
+describe("reel/serialization/serialization-spec", function () {
     var serialization;
 
-    beforeEach(function() {
+    beforeEach(function () {
         serialization = new Serialization();
     });
 
-    it("should clone", function() {
+    it("should clone", function () {
         var objects = {
                 "one": {
                     "properties": {
@@ -31,8 +31,8 @@ describe("reel/serialization/serialization-spec", function() {
         expect(serializationClone.getSerializationString()).toBe(serialization.getSerializationString());
     });
 
-    describe("hasSerializationLabel", function() {
-        it("should know if a label exists in the serialization", function() {
+    describe("hasSerializationLabel", function () {
+        it("should know if a label exists in the serialization", function () {
             var objects = {
                     "one": {}
                 },
@@ -44,7 +44,7 @@ describe("reel/serialization/serialization-spec", function() {
             expect(hasLabel).toBe(true);
         });
 
-        it("should know if a label does not exist in the serialization", function() {
+        it("should know if a label does not exist in the serialization", function () {
             var objects = {
                     "one": {}
                 },
@@ -57,8 +57,8 @@ describe("reel/serialization/serialization-spec", function() {
         });
     });
 
-    describe("isAlias", function() {
-        it("should know that an object is an alias", function() {
+    describe("isAlias", function () {
+        it("should know that an object is an alias", function () {
             var objects = {
                     "one": {
                         "alias": "@component:propertyName"
@@ -73,7 +73,7 @@ describe("reel/serialization/serialization-spec", function() {
             expect(isAlias).toBe(true);
         });
 
-        it("should know that an object is not an alias", function() {
+        it("should know that an object is not an alias", function () {
             var objects = {
                     "one": {}
                 },
@@ -86,7 +86,7 @@ describe("reel/serialization/serialization-spec", function() {
         });
     });
 
-    it("should find the labels of objects with a specific element id", function() {
+    it("should find the labels of objects with a specific element id", function () {
         var objects = {
                 "one": {
                     "properties": {
@@ -117,7 +117,7 @@ describe("reel/serialization/serialization-spec", function() {
         expect(labels).toContain("three");
     });
 
-    it("should rename an element reference", function() {
+    it("should rename an element reference", function () {
         var objects = {
                 "one": {
                     "properties": {
@@ -147,7 +147,7 @@ describe("reel/serialization/serialization-spec", function() {
     });
 
 
-    it("should find no external object labels", function() {
+    it("should find no external object labels", function () {
         var object = {
                 "one": {
                     "value": 1
@@ -169,7 +169,7 @@ describe("reel/serialization/serialization-spec", function() {
         expect(labels.length).toBe(0);
     });
 
-    it("should find all external object labels", function() {
+    it("should find all external object labels", function () {
         var object = {
                 "one": {},
 
@@ -189,7 +189,7 @@ describe("reel/serialization/serialization-spec", function() {
         expect(labels).toContain("three");
     });
 
-    it("should get the element id of a component's element", function() {
+    it("should get the element id of a component's element", function () {
         var object = {
                 "one": {
                     "properties": {
@@ -205,8 +205,8 @@ describe("reel/serialization/serialization-spec", function() {
         expect(elementId).toBe("mid");
     });
 
-    describe("isExternalObject", function() {
-        beforeEach(function() {
+    describe("isExternalObject", function () {
+        beforeEach(function () {
             var object = {
                     "one": {},
 
@@ -220,18 +220,18 @@ describe("reel/serialization/serialization-spec", function() {
 
             serialization.initWithObject(object);
         });
-        it("can determine an external object", function() {
+        it("can determine an external object", function () {
             expect(serialization.isExternalObject("one")).toBe(true);
         });
-        it("can determine an internal object", function() {
+        it("can determine an internal object", function () {
             expect(serialization.isExternalObject("two")).toBe(false);
         });
 
-        describe("without a serialization object", function() {
-            beforeEach(function() {
+        describe("without a serialization object", function () {
+            beforeEach(function () {
                 serialization.initWithObject(null);
             });
-            it("returns false", function() {
+            it("returns false", function () {
                 expect(serialization.isExternalObject("one")).toBe(false);
             });
         });

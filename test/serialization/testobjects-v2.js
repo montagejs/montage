@@ -47,7 +47,7 @@ exports.OneProp = Target.specialize( {
     prop: {value: null, serializable: true},
 
     deserializedFromSerializationCount: {value: 0, serializable: false},
-    deserializedFromSerialization: {value: function() {
+    deserializedFromSerialization: {value: function () {
         this.deserializedFromSerializationCount++;
     }}
 });
@@ -79,11 +79,11 @@ exports.DistinctLiteralProp = Montage.specialize( {
 exports.CustomProperties = Montage.specialize( {
     manchete: {value: 42},
 
-    serializeProperties: {value: function(serializer) {
+    serializeProperties: {value: function (serializer) {
         serializer.set("manchete", 226);
     }},
 
-    deserializeProperties: {value: function(serializer) {
+    deserializeProperties: {value: function (serializer) {
         this.manchete = serializer.get("manchete");
     }}
 });
@@ -91,11 +91,11 @@ exports.CustomProperties = Montage.specialize( {
 exports.CustomPropertiesRef = Montage.specialize( {
     object: {value: new exports.Empty()},
 
-    serializeProperties: {value: function(serializer) {
+    serializeProperties: {value: function (serializer) {
         serializer.set("object", this.object, "reference");
     }},
 
-    deserializeProperties: {value: function(deserializer) {
+    deserializeProperties: {value: function (deserializer) {
         this.object = deserializer.get("object");
     }}
 });
@@ -106,11 +106,11 @@ exports.CustomAllProperties = Montage.specialize( {
     luz: {value: new exports.Empty(), serializable: true},
     tarantino: {value: 105, serializable: false},
 
-    serializeProperties: {value: function(serializer) {
+    serializeProperties: {value: function (serializer) {
         serializer.setAll();
     }},
 
-    deserializeProperties: {value: function(serializer) {
+    deserializeProperties: {value: function (serializer) {
         this.manchete = serializer.get("manchete");
     }}
 });
@@ -118,11 +118,11 @@ exports.CustomAllProperties = Montage.specialize( {
 exports.CustomRef = Montage.specialize( {
     object: {value: new exports.Empty()},
 
-    serializeSelf: {value: function(serializer) {
+    serializeSelf: {value: function (serializer) {
         serializer.setProperty("object", this.object, "reference");
     }},
 
-    deserializeSelf: {value: function(deserializer) {
+    deserializeSelf: {value: function (deserializer) {
         this.object = deserializer.getProperty("object");
     }}
 });
@@ -130,7 +130,7 @@ exports.CustomRef = Montage.specialize( {
 exports.Singleton = Montage.specialize( {
     instance: {value: {another: "object"}},
 
-    deserializeSelf: {value: function(serializer) {
+    deserializeSelf: {value: function (serializer) {
         return this.instance;
     }}
 });
@@ -139,11 +139,11 @@ exports.Comp = Montage.specialize( {
     element: {value: null, serializable: true},
     child: {value: null, serializable: true},
     templateDidLoadCount: {value: 0},
-    templateDidLoad: {value: function() {
+    templateDidLoad: {value: function () {
         this.templateDidLoadCount++;
     }},
     deserializedFromTemplateCount: {value: 0},
-    deserializedFromTemplate: {value: function() {
+    deserializedFromTemplate: {value: function () {
         this.deserializedFromTemplateCount++;
     }},
 });

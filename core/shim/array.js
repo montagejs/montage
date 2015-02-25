@@ -23,7 +23,7 @@
  */
 if (!Array.isArray) {
     Object.defineProperty(Array, "isArray", {
-        value: function(obj) {
+        value: function (obj) {
             return Object.prototype.toString.call(obj) === "[object Array]";
         },
         writable: true,

@@ -127,7 +127,7 @@ describe("test/base/abstract-button-spec", function () {
             });
         });
 
-        describe("converter", function() {
+        describe("converter", function () {
             var Button = AbstractButton.specialize( {});
             beforeEach(function () {
                 aButton = new Button();
@@ -136,7 +136,7 @@ describe("test/base/abstract-button-spec", function () {
                 aButton.originalElement = aButton.element;
                 aButton.element.firstChild = MockDOM.element();
                 aButton.converter = {
-                    convert: function(v) {
+                    convert: function (v) {
                         return v.replace(/fail/gi, "pass");
                     }
                 };
@@ -157,10 +157,10 @@ describe("test/base/abstract-button-spec", function () {
                 aButton = new Button();
                 anElement = MockDOM.element();
                 listener = {
-                    handleEvent: function() {}
+                    handleEvent: function () {}
                 }
             });
-            it("should listen for pressStart only after prepareForActivationEvents", function() {
+            it("should listen for pressStart only after prepareForActivationEvents", function () {
                 var listeners,
                     em = aButton.eventManager;
 
@@ -172,7 +172,7 @@ describe("test/base/abstract-button-spec", function () {
                 listeners = em.registeredEventListenersForEventType_onTarget_("pressStart", aButton._pressComposer);
                 expect(listeners[aButton.uuid].listener).toBe(aButton);
             });
-            it("should listen for longPress on PressComposer on demand", function() {
+            it("should listen for longPress on PressComposer on demand", function () {
                 var listeners,
                     em = aButton.eventManager;
 
@@ -184,7 +184,7 @@ describe("test/base/abstract-button-spec", function () {
                 listeners = em.registeredEventListenersForEventType_onTarget_("longPress", aButton._pressComposer);
                 expect(listeners[aButton.uuid].listener).toBe(aButton);
             });
-            it("should fires a 'longAction' event when the PressComposer fires a longPress", function() {
+            it("should fires a 'longAction' event when the PressComposer fires a longPress", function () {
                 var callback = jasmine.createSpy();
                 aButton.addEventListener("longAction", callback, false);
                 aButton._pressComposer.dispatchEventNamed("longPress");
@@ -195,8 +195,8 @@ describe("test/base/abstract-button-spec", function () {
                     aButton.element = anElement;
                     aButton.prepareForActivationEvents();
                 });
-                it("should fire an 'action' event when the PressComposer fires a pressStart + press", function() {
-                    var callback = jasmine.createSpy().andCallFake(function(event) {
+                it("should fire an 'action' event when the PressComposer fires a pressStart + press", function () {
+                    var callback = jasmine.createSpy().andCallFake(function (event) {
                         expect(event.type).toEqual("action");
                     });
                     aButton.addEventListener("action", callback, false);
@@ -206,8 +206,8 @@ describe("test/base/abstract-button-spec", function () {
 
                     expect(callback).toHaveBeenCalled();
                 });
-                it("shouldn't fire an 'action' event when the PressComposer fires a pressStart + pressCancel", function() {
-                    var callback = jasmine.createSpy().andCallFake(function(event) {
+                it("shouldn't fire an 'action' event when the PressComposer fires a pressStart + pressCancel", function () {
+                    var callback = jasmine.createSpy().andCallFake(function (event) {
                         expect(event.type).toEqual("action");
                     });
                     aButton.addEventListener("action", callback, false);
@@ -217,8 +217,8 @@ describe("test/base/abstract-button-spec", function () {
 
                     expect(callback).not.toHaveBeenCalled();
                 });
-                it("should fire an 'action' event with the contents of the detail property", function() {
-                     var callback = jasmine.createSpy().andCallFake(function(event) {
+                it("should fire an 'action' event with the contents of the detail property", function () {
+                     var callback = jasmine.createSpy().andCallFake(function (event) {
                         expect(event.detail.get("foo")).toEqual("bar");
                     });
                     aButton.addEventListener("action", callback, false);

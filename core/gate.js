@@ -11,7 +11,7 @@ var Montage = require("./core").Montage,
  * @class Gate
  * @extends Montage
  */
-var Gate = exports.Gate = Montage.specialize(/** @lends Gate# */ {
+var Gate = exports.Gate = Montage.specialize(/** @lends Gate.prototype # */ {
 
     constructor: {
         value: function Gate() {
@@ -20,25 +20,25 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate# */ {
     },
 
     /**
-     * @method
+     * @function
      * @returns {Gate} A new Gate instance.
      */
     init: {
         enumerable: false,
-        value: function() {
+        value: function () {
             this.reset();
             return this;
         }
     },
 
     /**
-     * @method
+     * @function
      * @param {string} delegate The delegate to be initialized.
      * @returns itself
     */
     initWithDelegate: {
         enumerable: false,
-        value: function(delegate) {
+        value: function (delegate) {
             this.reset();
             this.delegate = delegate;
             return this;
@@ -46,13 +46,13 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate# */ {
     },
 
     /**
-     * @method
+     * @function
      * @param {string} propertyDescriptor The propertyDescriptor to be initialized.
      * @returns itself
      */
     initWithDescriptor: {
         enumerable: false,
-        value: function(propertyDescriptor) {
+        value: function (propertyDescriptor) {
             var fieldName;
             this.reset();
             for (fieldName in propertyDescriptor) {
@@ -79,26 +79,26 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate# */ {
     },
 
     /**
-     * @method
+     * @function
      * @param {Array} aFieldName The aFieldName array.
      * @returns !table or table[aFieldName]
      */
     getField: {
         enumerable: false,
-        value: function(aFieldName) {
+        value: function (aFieldName) {
             var table = this.table;
             return !table || table[aFieldName];
         }
     },
 
     /**
-     * @method
+     * @function
      * @param {Array} aFieldName The aFieldName array.
      * @param {number} value The count on the array.
      */
     setField: {
         enumerable: false,
-        value: function(aFieldName, value) {
+        value: function (aFieldName, value) {
             var table = this.table,
                 fieldValue,
                 oldCount = this.count;
@@ -129,12 +129,12 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate# */ {
     },
 
     /**
-     * @method
+     * @function
      * @param {Array} aFieldName The aFieldName array to be removed.
      */
     removeField: {
         enumerable: false,
-        value: function(aFieldName) {
+        value: function (aFieldName) {
             var table = this.table, fieldValue = table[aFieldName];
             if (typeof fieldValue !== "undefined" && !fieldValue) {
                 // if the value was false decrement the count
@@ -154,11 +154,11 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate# */ {
     },
 
     /**
-     * @method
+     * @function
      * @param {number} value The value to be called.
      */
     callDelegateMethod: {
-        value: function(value) {
+        value: function (value) {
             var delegateMethod;
             if (this.delegate && typeof (delegateMethod = this.delegate["gateDidBecome" + (value ? "True" : "False")]) === "function") {
                 delegateMethod.call(this.delegate, this);
@@ -173,28 +173,28 @@ var Gate = exports.Gate = Montage.specialize(/** @lends Gate# */ {
      */
     value: {
         enumerable: false,
-        get: function() {
+        get: function () {
             return this.count === 0;
         }
     },
 
     /**
-     * @method
+     * @function
      */
     reset: {
         enumerable: false,
-        value: function() {
+        value: function () {
             this.table = {};
             this.count = 0;
         }
     },
 
     /**
-     * @method
+     * @function
      * @returns {string} result
      */
     toString: {
-        value: function() {
+        value: function () {
             var fieldNames = this._fields,
                 i,
                 iField,

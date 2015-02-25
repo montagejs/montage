@@ -30,26 +30,26 @@ var List = exports.List = Component.specialize(/** @lends module:"matte/ui/list.
 
     _content: {value: null},
     content: {
-        set: function(value) {
+        set: function (value) {
             this._content = value;
             this.defineBinding("_repetition.content", {
                 "<-": "_content"
             });
         },
-        get: function() {
+        get: function () {
             return this._content;
         }
     },
 
     _contentController: {value: null},
     contentController: {
-        set: function(value) {
+        set: function (value) {
             this._contentController = value;
             this.defineBinding("_repetition.contentController", {
                 "<-": "_contentController"
             });
         },
-        get: function() {
+        get: function () {
             return this._contentController;
         }
     },

@@ -14,14 +14,14 @@ var MontageBuilder = Montage.specialize.call(Builder, /** @lends MontageBuilder#
     },
 
     createElementReference: {
-        value: function(id) {
+        value: function (id) {
             return new MontageAst.ElementReference()
                 .initWithRootAndId(this._root, id);
         }
     },
 
     createModuleReference: {
-        value: function(moduleId) {
+        value: function (moduleId) {
             return new MontageAst.ModuleReference()
                 .initWithRootAndModuleId(this._root, moduleId);
         }

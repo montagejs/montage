@@ -12,14 +12,14 @@ var ElementReference = Montage.specialize.call(Value, /** @lends ElementReferenc
     },
 
     initWithRootAndId: {
-        value: function(root, id) {
+        value: function (root, id) {
             Value.call(this, root, id);
             return this;
         }
     },
 
     _getSerializationValue: {
-        value: function() {
+        value: function () {
             return {"#": this.value};
         }
     }
@@ -36,14 +36,14 @@ var ModuleReference = Montage.specialize.call(Value, /** @lends ModuleReference#
     },
 
     initWithRootAndModuleId: {
-        value: function(root, moduleId) {
+        value: function (root, moduleId) {
             Value.call(this, root, moduleId);
             return this;
         }
     },
 
     _getSerializationValue: {
-        value: function() {
+        value: function () {
             return {"%": this.value};
         }
     }

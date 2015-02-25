@@ -49,7 +49,7 @@ exports.AbstractAlert = Component.specialize(/** @lends AbstractAlert# */ {
     },
 
     enterDocument: {
-        value: function(firstTime) {
+        value: function (firstTime) {
             var constructor;
 
             if (firstTime) {
@@ -69,7 +69,7 @@ exports.AbstractAlert = Component.specialize(/** @lends AbstractAlert# */ {
      * Returns a promise for the close of the alert
      */
     show: {
-        value: function() {
+        value: function () {
             if (!this._userActionDeferred) {
                 this._overlay.hasModalMask = false;
                 this._overlay.show();
@@ -81,7 +81,7 @@ exports.AbstractAlert = Component.specialize(/** @lends AbstractAlert# */ {
     },
 
     handleAction: {
-        value: function(event) {
+        value: function (event) {
             if (event.target === this._okButton) {
                 this._userActionDeferred.resolve();
                 this._userActionDeferred = null;
@@ -103,7 +103,7 @@ exports.AbstractAlert = Component.specialize(/** @lends AbstractAlert# */ {
      * on the AbstractAlert but on the type that extends it.
      */
     _nextMessageDeferred: {
-        get: function() {
+        get: function () {
             if (!this.hasOwnProperty("__nextMessageDeferred")) {
                 this.__nextMessageDeferred = Promise.defer();
             }
@@ -121,10 +121,10 @@ exports.AbstractAlert = Component.specialize(/** @lends AbstractAlert# */ {
     },
 
     _nextMessagePromise: {
-        set: function(value) {
+        set: function (value) {
             this.__nextMessagePromise = value;
         },
-        get: function() {
+        get: function () {
             if (!this.hasOwnProperty("__nextMessagePromise")) {
                 this.__nextMessagePromise = this._nextMessageDeferred.promise;
             }
@@ -134,7 +134,7 @@ exports.AbstractAlert = Component.specialize(/** @lends AbstractAlert# */ {
     },
 
     _setupInstance: {
-        value: function() {
+        value: function () {
             var instance;
 
             instance = this._instance = new this();
@@ -149,7 +149,7 @@ exports.AbstractAlert = Component.specialize(/** @lends AbstractAlert# */ {
     },
 
     show: {
-        value: function(message, title) {
+        value: function (message, title) {
             var instance,
                 self = this;
 
@@ -159,7 +159,7 @@ exports.AbstractAlert = Component.specialize(/** @lends AbstractAlert# */ {
 
             instance = this._instance;
 
-            return this._nextMessagePromise = this._nextMessagePromise.then(function() {
+            return this._nextMessagePromise = this._nextMessagePromise.then(function () {
                 if (title) {
                     instance.title = title;
                 } else {

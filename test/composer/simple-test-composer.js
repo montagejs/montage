@@ -8,19 +8,19 @@ exports.SimpleTestComposer = Composer.specialize( {
     },
 
     load: {
-        value: function() {
+        value: function () {
             this._loadWasCalled = true;
         }
     },
 
     unload: {
-        value: function() {
+        value: function () {
 
         }
     },
 
     frame: {
-        value: function(timestamp) {
+        value: function (timestamp) {
 
         }
     }
@@ -38,19 +38,19 @@ exports.LazyLoadTestComposer = Composer.specialize( {
     },
 
     load: {
-        value: function() {
+        value: function () {
             this._loadWasCalled = true;
         }
     },
 
     unload: {
-        value: function() {
+        value: function () {
 
         }
     },
 
     frame: {
-        value: function(timestamp) {
+        value: function (timestamp) {
 
         }
     }

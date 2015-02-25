@@ -1,7 +1,7 @@
 //Setup Config
 jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
 
-queryString = function(parameter) {
+queryString = function (parameter) {
     var i, key, value, equalSign;
     var loc = location.search.substring(1, location.search.length);
     var params = loc.split('&');
@@ -37,28 +37,28 @@ function createJavaScriptContext() {
     return context;
 }
 
-var updateReporter = function() {
+var updateReporter = function () {
     var runner = jasmine.getEnv().currentRunner();
     runner.finishCallback();
 }
 
-addMontageMetadataToProto = function(objectName, moduleId, proto) {
+addMontageMetadataToProto = function (objectName, moduleId, proto) {
     Object.defineProperty(proto, "_montage_metadata", { value: { moduleId: moduleId, objectName: objectName, isInstance: false }, enumerable: false});
 };
 
-var waitsThen = function(promise, resolved) {
-    waitsFor(function() {
+var waitsThen = function (promise, resolved) {
+    waitsFor(function () {
         return promise.isResolved();
     }, "promise", 500);
-    runs(function() {
+    runs(function () {
         resolved(promise.valueOf());
     })
 };
 
-var expectationToDispatch = function(object, expectation, handleEvent) {
+var expectationToDispatch = function (object, expectation, handleEvent) {
 
     var handler = {
-        handleEvent: handleEvent? handleEvent : function(event) {}
+        handleEvent: handleEvent? handleEvent : function (event) {}
     };
 
     if (typeof expectation === "string") {
@@ -67,7 +67,7 @@ var expectationToDispatch = function(object, expectation, handleEvent) {
         object.addEventListener(expectation, handler, false);
     }
 
-    return function(negate) {
+    return function (negate) {
         if (negate) {
             expect(handler.handleEvent).not.toHaveBeenCalled();
         } else {
@@ -119,14 +119,14 @@ jasmine.Block.prototype.execute = function (onComplete) {
     }
 };
 
-beforeEach(function() {
+beforeEach(function () {
     this.addMatchers({
-        toHave: function(expected) {
+        toHave: function (expected) {
             var actual = this.actual,
                 notText = this.isNot ? " not" : "",
                 isArray = jasmine.isArray_(actual);
 
-            this.message = function() {
+            this.message = function () {
                 if (isArray) {
                     return "Expected " + actual + " to" + notText + " have " + expected;
                 } else {

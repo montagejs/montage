@@ -13,14 +13,14 @@ var MontageSerializer = Montage.specialize.call(Serializer, {
 
     _findObjectNameRegExp: {value: /([^\/]+?)(\.reel)?$/},
     _toCamelCaseRegExp: {value: /(?:^|-)([^-])/g},
-    _replaceToCamelCase: {value: function(_, g1){return g1.toUpperCase();}},
+    _replaceToCamelCase: {value: function (_, g1){return g1.toUpperCase();}},
 
     constructor: {
         value: function MontageSerializer() {}
     },
 
     initWithRequire: {
-        value: function(_require) {
+        value: function (_require) {
             this._require = _require;
 
             this._builder = new MontageBuilder();
@@ -39,13 +39,13 @@ var MontageSerializer = Montage.specialize.call(Serializer, {
     },
 
     getExternalObjects: {
-        value: function() {
+        value: function () {
             return this._visitor.getExternalObjects();
         }
     },
 
     getExternalElements: {
-        value: function() {
+        value: function () {
             return this._visitor.getExternalElements();
         }
     }
@@ -55,13 +55,13 @@ var MontageSerializer = Montage.specialize.call(Serializer, {
     },
 
     defineSerializationUnit: {
-        value: function(name, funktion) {
+        value: function (name, funktion) {
             this._units[name] = funktion;
         }
     },
 
     getDefaultObjectNameForModuleId: {
-        value: function(moduleId) {
+        value: function (moduleId) {
             this._findObjectNameRegExp.test(moduleId);
 
             return RegExp.$1.replace(this._toCamelCaseRegExp, this._replaceToCamelCase);
@@ -71,7 +71,7 @@ var MontageSerializer = Montage.specialize.call(Serializer, {
 });
 
 exports.MontageSerializer = MontageSerializer;
-exports.serialize = function(object, _require) {
+exports.serialize = function (object, _require) {
     return new MontageSerializer().initWithRequire(_require)
         .serializeObject(object);
 };

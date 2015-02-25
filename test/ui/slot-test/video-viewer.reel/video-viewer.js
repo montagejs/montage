@@ -34,13 +34,13 @@ var Montage = require("montage").Montage,
 var VideoViewer = exports.VideoViewer = Component.specialize( {
 
     templateDidLoad: {
-        value: function() {
+        value: function () {
             //console.log("VIDEOVIEWER REEL DID LOAD");
         }
     },
 
     deserializedFromTemplate: {
-        value: function() {
+        value: function () {
             //console.log("VIDEOVIEWER DESERIALIZED FROM REEL");
         }
     },

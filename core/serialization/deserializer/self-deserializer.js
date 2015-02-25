@@ -9,13 +9,13 @@ var SelfDeserializer = Montage.specialize( {
     _objectUnitNames: {value: null},
 
     create: {
-        value: function() {
+        value: function () {
             return new this();
         }
     },
 
     initWithObjectAndObjectDescriptorAndContextAndUnitNames: {
-        value: function(object, objectDescriptor, context, unitNames) {
+        value: function (object, objectDescriptor, context, unitNames) {
             this._object = object;
             this._objectDescriptor = objectDescriptor;
             this._context = context;
@@ -26,7 +26,7 @@ var SelfDeserializer = Montage.specialize( {
     },
 
     getProperty: {
-        value: function(name) {
+        value: function (name) {
             if (this._objectDescriptor.properties) {
                 return this._objectDescriptor.properties[name];
             }
@@ -34,7 +34,7 @@ var SelfDeserializer = Montage.specialize( {
     },
 
     getType: {
-        value: function() {
+        value: function () {
             if ("prototype" in this._objectDescriptor) {
                 return "prototype";
             } else if ("object" in this._objectDescriptor) {
@@ -44,19 +44,19 @@ var SelfDeserializer = Montage.specialize( {
     },
 
     getTypeValue: {
-        value: function() {
+        value: function () {
             return this._objectDescriptor.prototype || this._objectDescriptor.object;
         }
     },
 
     getObjectByLabel: {
-        value: function(label) {
+        value: function (label) {
             this._context.getObject(label);
         }
     },
 
     deserializeProperties: {
-        value: function(propertyNames) {
+        value: function (propertyNames) {
             var object = this._object,
                 properties = this._objectDescriptor.properties,
                 propertyName;
@@ -75,7 +75,7 @@ var SelfDeserializer = Montage.specialize( {
     },
 
     deserializeUnit: {
-        value: function(name) {
+        value: function (name) {
             var objectUnitNames = this._objectUnitNames;
 
             if (!objectUnitNames) {
@@ -88,7 +88,7 @@ var SelfDeserializer = Montage.specialize( {
     },
 
     deserializeUnits: {
-        value: function() {
+        value: function () {
             var objectUnitNames = this._objectUnitNames;
 
             if (!objectUnitNames) {

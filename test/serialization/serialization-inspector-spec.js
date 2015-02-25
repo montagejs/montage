@@ -6,15 +6,15 @@ var Montage = require("montage").Montage,
     SerializationInspector = require("montage/core/serialization/serialization").SerializationInspector,
     Serialization = require("montage/core/serialization/serialization").Serialization;
 
-describe("reel/serialization/serialization-inspector-spec", function() {
+describe("reel/serialization/serialization-inspector-spec", function () {
     var inspector;
 
-    beforeEach(function() {
+    beforeEach(function () {
         inspector = new SerializationInspector();
     });
 
-    describe("visitor", function() {
-        it("should visit a number", function() {
+    describe("visitor", function () {
+        it("should visit a number", function () {
             var object = {
                     "object": {
                         "value": 42
@@ -33,7 +33,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toBe(object.object.value);
         });
 
-        it("should visit a string", function() {
+        it("should visit a string", function () {
             var object = {
                     "object": {
                         "value": "a string"
@@ -52,7 +52,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toBe(object.object.value);
         });
 
-        it("should visit a regexp", function() {
+        it("should visit a regexp", function () {
             var object = {
                     "object": {
                         "value": {"/": {"source": "regexp"}}
@@ -71,7 +71,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toEqual(object.object.value["/"]);
         });
 
-        it("should visit a null", function() {
+        it("should visit a null", function () {
             var object = {
                     "object": {
                         "value": null
@@ -90,7 +90,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toBe(object.object.value);
         });
 
-        it("should visit an array", function() {
+        it("should visit an array", function () {
             var object = {
                     "object": {
                         "value": ["a string", 42]
@@ -119,7 +119,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toBe(object.object.value[1]);
         });
 
-        it("should visit an object", function() {
+        it("should visit an object", function () {
             var object = {
                     "object": {
                         "value": {
@@ -151,7 +151,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toBe(object.object.value.id);
         });
 
-        it("should visit a reference", function() {
+        it("should visit a reference", function () {
             var object = {
                     "object": {
                         "value": {"@": "label"}
@@ -170,7 +170,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toBe(object.object.value["@"]);
         });
 
-        it("should visit an element", function() {
+        it("should visit an element", function () {
             var object = {
                     "object": {
                         "value": {"#": "label"}
@@ -189,7 +189,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toBe(object.object.value["#"]);
         });
 
-        it("should visit a single object", function() {
+        it("should visit a single object", function () {
             var object = {
                     "object": {
                         "value": {
@@ -219,7 +219,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toEqual(object.foo.value);
         });
 
-        it("should visit a montage object", function() {
+        it("should visit a montage object", function () {
             var object = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
@@ -249,7 +249,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toEqual(object.text.properties.identifier);
         });
 
-        it("should visit bindings", function() {
+        it("should visit bindings", function () {
             var object = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
@@ -271,7 +271,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toEqual(object.text.bindings);
         });
 
-        it("should visit a binding", function() {
+        it("should visit a binding", function () {
             var object = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
@@ -294,7 +294,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toEqual(object.text.bindings.value);
         });
 
-        it("should visit a binding reference", function() {
+        it("should visit a binding reference", function () {
             var object = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
@@ -316,7 +316,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toBe("object");
         });
 
-        it("should visit complex binding references", function() {
+        it("should visit complex binding references", function () {
             var object = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
@@ -342,7 +342,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toBe("owner");
         });
 
-        it("should visit a binding converter", function() {
+        it("should visit a binding converter", function () {
             var serialization = new Serialization().initWithObject({
                     "text": {
                         "prototype": "montage/ui/text.reel",
@@ -366,7 +366,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toBe("converter");
         });
 
-        it("should visit localizations", function() {
+        it("should visit localizations", function () {
             var object = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
@@ -388,7 +388,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toEqual(object.text.localizations);
         });
 
-        it("should visit a localization", function() {
+        it("should visit a localization", function () {
             var object = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
@@ -411,7 +411,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
             expect(args[0].data).toEqual(object.text.localizations.value);
         });
 
-        it("should visit localization references", function() {
+        it("should visit localization references", function () {
             var object = {
                     "text": {
                         "prototype": "montage/ui/text.reel",
@@ -436,8 +436,8 @@ describe("reel/serialization/serialization-inspector-spec", function() {
         });
     });
 
-    describe("modifications", function() {
-        it("should modify a number", function() {
+    describe("modifications", function () {
+        it("should modify a number", function () {
             var serialization = new Serialization().initWithObject({
                     "object": {
                         "value": 42
@@ -452,7 +452,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 visitorSpy,
                 args;
 
-            visitor = function(node) {
+            visitor = function (node) {
                 node.data = 3.14;
             };
 
@@ -465,7 +465,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 .toEqual(expectedSerialization);
         });
 
-        it("should modify a string", function() {
+        it("should modify a string", function () {
             var serialization = new Serialization().initWithObject({
                     "object": {
                         "value": "a string"
@@ -480,7 +480,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 visitorSpy,
                 args;
 
-            visitor = function(node) {
+            visitor = function (node) {
                 node.data = "another string";
             };
 
@@ -493,7 +493,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 .toEqual(expectedSerialization);
         });
 
-        it("should modify a regexp", function() {
+        it("should modify a regexp", function () {
             var serialization = new Serialization().initWithObject({
                     "object": {
                         "value": {"/": {"source": "regexp"}}
@@ -508,7 +508,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 visitorSpy,
                 args;
 
-            visitor = function(node) {
+            visitor = function (node) {
                 node.data.flags = "gi";
             };
 
@@ -521,7 +521,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 .toEqual(expectedSerialization);
         });
 
-        it("should modify a null", function() {
+        it("should modify a null", function () {
             var serialization = new Serialization().initWithObject({
                     "object": {
                         "value": null
@@ -536,7 +536,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 visitorSpy,
                 args;
 
-            visitor = function(node) {
+            visitor = function (node) {
                 node.data = "not a null";
             };
 
@@ -549,7 +549,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 .toEqual(expectedSerialization);
         });
 
-        it("should modify an array", function() {
+        it("should modify an array", function () {
             var serialization = new Serialization().initWithObject({
                     "object": {
                         "value": [1, 2, 3]
@@ -564,7 +564,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 visitorSpy,
                 args;
 
-            visitor = function(node) {
+            visitor = function (node) {
                 if (node.type === "array") {
                     node.data = [4, 5, 6];
                 }
@@ -579,7 +579,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 .toEqual(expectedSerialization);
         });
 
-        it("should modify an object", function() {
+        it("should modify an object", function () {
             var serialization = new Serialization().initWithObject({
                     "object": {
                         "value": {
@@ -598,7 +598,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 visitorSpy,
                 args;
 
-            visitor = function(node) {
+            visitor = function (node) {
                 if (node.type === "object") {
                     node.data = {number: 42};
                 }
@@ -613,7 +613,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 .toEqual(expectedSerialization);
         });
 
-        it("should modify a reference", function() {
+        it("should modify a reference", function () {
             var serialization = new Serialization().initWithObject({
                     "object": {
                         "value": {"@": "string"}
@@ -628,7 +628,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 visitorSpy,
                 args;
 
-            visitor = function(node) {
+            visitor = function (node) {
                 node.data = "number";
             };
 
@@ -641,7 +641,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 .toEqual(expectedSerialization);
         });
 
-        it("should modify a label", function() {
+        it("should modify a label", function () {
             var serialization = new Serialization().initWithObject({
                     "object1": {
                         "value": {
@@ -670,7 +670,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 visitorSpy,
                 args;
 
-            visitor = function(node) {
+            visitor = function (node) {
                 if (node.label === "object1") {
                     node.label = "object";
                 }
@@ -685,7 +685,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 .toEqual(expectedSerialization);
         });
 
-        it("should modify a label of a montage object", function() {
+        it("should modify a label of a montage object", function () {
             var serialization = new Serialization().initWithObject({
                     "object1": {
                         "prototype": "montage/ui/text.reel"
@@ -700,7 +700,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 visitorSpy,
                 args;
 
-            visitor = function(node) {
+            visitor = function (node) {
                 if (node.label === "object1") {
                     node.label = "object";
                 }
@@ -715,7 +715,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 .toEqual(expectedSerialization);
         });
 
-        it("should modify binding references", function() {
+        it("should modify binding references", function () {
             var serialization = new Serialization().initWithObject({
                     "text": {
                         "prototype": "montage/ui/text.reel",
@@ -735,7 +735,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 visitorSpy,
                 visitor;
 
-            visitor = function(node) {
+            visitor = function (node) {
                 if (node.type === "reference") {
                     node.data = "array";
                 }
@@ -749,7 +749,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 .toEqual(expectedSerialization);
         });
 
-        it("should modify complex binding references", function() {
+        it("should modify complex binding references", function () {
             var serialization = new Serialization().initWithObject({
                     "text": {
                         "prototype": "montage/ui/text.reel",
@@ -769,7 +769,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 visitorSpy,
                 visitor;
 
-            visitor = function(node) {
+            visitor = function (node) {
                 if (node.type === "reference") {
                     if (node.data == "objects") {
                         node.data = "objects2";
@@ -787,7 +787,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 .toEqual(expectedSerialization);
         });
 
-        it("should modify a binding converter label", function() {
+        it("should modify a binding converter label", function () {
             var serialization = new Serialization().initWithObject({
                     "text": {
                         "prototype": "montage/ui/text.reel",
@@ -813,7 +813,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 visitorSpy,
                 visitor;
 
-            visitor = function(node) {
+            visitor = function (node) {
                 if (node.type === "reference") {
                     if (node.data == "converter") {
                         node.data = "converterNewLabel";
@@ -829,7 +829,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 .toEqual(expectedSerialization);
         });
 
-        it("should modify a localization reference", function() {
+        it("should modify a localization reference", function () {
             var serialization = new Serialization().initWithObject({
                     "text": {
                         "prototype": "montage/ui/text.reel",
@@ -853,7 +853,7 @@ describe("reel/serialization/serialization-inspector-spec", function() {
                 visitorSpy,
                 visitor;
 
-            visitor = function(node) {
+            visitor = function (node) {
                 if (node.type === "reference") {
                     node.data = "foo";
                 }

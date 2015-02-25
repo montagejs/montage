@@ -156,7 +156,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     play: {
         value: function () {
@@ -178,7 +178,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     pause: {
         value: function () {
@@ -192,7 +192,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     unpause: {
         value: function () {
@@ -209,7 +209,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      * @returns {boolean} !playing (true if it is now playing)
      */
     playPause: {
@@ -301,7 +301,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     rewind: {
         value: function () {
@@ -316,7 +316,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     fastForward: {
         value: function () {
@@ -331,7 +331,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     stop: {
         value: function () {
@@ -378,7 +378,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     volumeIncrease: {
         value: function () {
@@ -387,7 +387,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     volumeDecrease: {
         value: function () {
@@ -396,7 +396,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     toggleMute: {
         value: function () {
@@ -424,7 +424,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
      -----------------------------------------------------------------------------*/
 
     /**
-     * @method
+     * @function
      * @returns itself
      */
     handleLoadedmetadata: {
@@ -455,7 +455,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     handleTimeupdate: {
         value: function () {
@@ -470,7 +470,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     handlePlay: {
         value: function () {
@@ -482,7 +482,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     handlePlaying: {
         value: function () {
@@ -494,7 +494,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     handlePause: {
         value: function () {
@@ -513,7 +513,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     handleEnded: {
         value: function () {
@@ -528,7 +528,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     handleAbort: {
         value: function () {
@@ -540,7 +540,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      * @param {Event} event TODO
      */
     handleError: {
@@ -575,7 +575,7 @@ var MediaController = exports.MediaController = Target.specialize(/** @lends Med
     },
 
     /**
-     * @method
+     * @function
      */
     handleEmptied: {
         value: function () {

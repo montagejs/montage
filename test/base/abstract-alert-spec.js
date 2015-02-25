@@ -26,11 +26,11 @@ AbstractAlert.prototype.hasTemplate = false;
 
 describe("test/base/abstract-alert-spec", function () {
     describe("creation", function () {
-        beforeEach(function() {
+        beforeEach(function () {
             setupMockRootComponent();
         });
 
-        afterEach(function() {
+        afterEach(function () {
             setdownMockRootComponent();
         });
 
@@ -56,8 +56,8 @@ describe("test/base/abstract-alert-spec", function () {
             anAlert = new Alert();
             anAlert.element = MockDOM.element(_document);
             anAlert._overlay = MockComponent.component();
-            anAlert._overlay.show = function(){};
-            anAlert._overlay.hide = function(){};
+            anAlert._overlay.show = function (){};
+            anAlert._overlay.hide = function (){};
             anAlert._okButton = MockComponent.component();
         });
 
@@ -76,8 +76,8 @@ describe("test/base/abstract-alert-spec", function () {
             });
         });
 
-        describe("user action", function() {
-            it("should resolve the user action promise when the ok button is pressed", function() {
+        describe("user action", function () {
+            it("should resolve the user action promise when the ok button is pressed", function () {
                 var event = {target: anAlert._okButton},
                     promise = anAlert.show();
 
@@ -86,24 +86,24 @@ describe("test/base/abstract-alert-spec", function () {
             })
         });
 
-        describe("static show", function() {
+        describe("static show", function () {
             var AlertSubtype;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 setupMockRootComponent();
                 AlertSubtype = AbstractAlert.specialize({});
             });
 
-            afterEach(function() {
+            afterEach(function () {
                 setdownMockRootComponent();
             });
 
-            it("should create an instance to show the alert", function() {
+            it("should create an instance to show the alert", function () {
                 AlertSubtype.show("message");
                 expect(AlertSubtype._instance).toBeDefined();
             });
 
-            it("should create an instance to show the alert and add it to the document", function() {
+            it("should create an instance to show the alert and add it to the document", function () {
                 AlertSubtype.show("message");
 
                 expect(AlertSubtype._instance.element).toBeDefined();
@@ -112,134 +112,134 @@ describe("test/base/abstract-alert-spec", function () {
                     .toBe(_document.body);
             });
 
-            it("should create an instance to show the alert and add it to the component tree", function() {
+            it("should create an instance to show the alert and add it to the component tree", function () {
                 AlertSubtype.show("message");
 
                 expect(AlertSubtype._instance.parentComponent)
                     .toBe(_document.rootComponent);
             });
 
-            it("should create an instance to show the alert and add request it to draw", function() {
+            it("should create an instance to show the alert and add request it to draw", function () {
                 AlertSubtype.show("message");
 
                 expect(AlertSubtype._instance.needsDraw).toBeTruthy();
             });
 
-            it("should return a promise of user action", function() {
+            it("should return a promise of user action", function () {
                 var promise = AlertSubtype.show("message");
 
                 expect(Promise.isPromise(promise)).toBeTruthy();
             });
 
-            it("should configure the alert with the message upon entering the document", function() {
+            it("should configure the alert with the message upon entering the document", function () {
                 AlertSubtype.show("message");
 
                 AlertSubtype._instance._overlay = MockComponent.component();
-                AlertSubtype._instance._overlay.show = function(){};
-                AlertSubtype._instance._overlay.hide = function(){};
+                AlertSubtype._instance._overlay.show = function (){};
+                AlertSubtype._instance._overlay.hide = function (){};
                 AlertSubtype._instance._okButton = MockComponent.component();
                 AlertSubtype._instance.enterDocument(true);
 
                 spyOn(AlertSubtype._instance, "show").andCallThrough();
 
-                waitsFor(function() {
+                waitsFor(function () {
                     return AlertSubtype._instance.show.calls.length === 1;
                 });
-                runs(function() {
+                runs(function () {
                     expect(AlertSubtype._instance.message).toBe("message");
                 });
             });
 
-            it("should configure the alert with the title upon entering the document", function() {
+            it("should configure the alert with the title upon entering the document", function () {
                 AlertSubtype.show("message", "a title");
 
                 AlertSubtype._instance._overlay = MockComponent.component();
-                AlertSubtype._instance._overlay.show = function(){};
-                AlertSubtype._instance._overlay.hide = function(){};
+                AlertSubtype._instance._overlay.show = function (){};
+                AlertSubtype._instance._overlay.hide = function (){};
                 AlertSubtype._instance._okButton = MockComponent.component();
                 AlertSubtype._instance.enterDocument(true);
 
                 spyOn(AlertSubtype._instance, "show").andCallThrough();
 
-                waitsFor(function() {
+                waitsFor(function () {
                     return AlertSubtype._instance.show.calls.length === 1;
                 });
-                runs(function() {
+                runs(function () {
                     expect(AlertSubtype._instance.title).toBe("a title");
                 });
             });
 
-            it("should configure the alert with the next title when the current alert is closed", function() {
+            it("should configure the alert with the next title when the current alert is closed", function () {
                 AlertSubtype.show("message", "a title");
                 AlertSubtype.show("another message", "another title");
 
                 AlertSubtype._instance._overlay = MockComponent.component();
-                AlertSubtype._instance._overlay.show = function(){};
-                AlertSubtype._instance._overlay.hide = function(){};
+                AlertSubtype._instance._overlay.show = function (){};
+                AlertSubtype._instance._overlay.hide = function (){};
                 AlertSubtype._instance._okButton = MockComponent.component();
                 AlertSubtype._instance.enterDocument(true);
 
                 spyOn(AlertSubtype._instance, "show").andCallThrough();
 
-                waitsFor(function() {
+                waitsFor(function () {
                     return AlertSubtype._instance.show.calls.length === 1;
                 });
-                runs(function() {
+                runs(function () {
                     AlertSubtype._instance.handleAction({target: AlertSubtype._instance._okButton});
 
-                    waitsFor(function() {
+                    waitsFor(function () {
                         return AlertSubtype._instance.show.calls.length === 2;
                     });
 
-                    runs(function() {
+                    runs(function () {
                         expect(AlertSubtype._instance.title).toBe("another title");
                     });
                 });
             });
 
-            it("should configure the alert with the default message when the current alert is closed", function() {
+            it("should configure the alert with the default message when the current alert is closed", function () {
                 AlertSubtype.show("message", "a title");
                 AlertSubtype.show("another message");
 
                 AlertSubtype._instance._overlay = MockComponent.component();
-                AlertSubtype._instance._overlay.show = function(){};
-                AlertSubtype._instance._overlay.hide = function(){};
+                AlertSubtype._instance._overlay.show = function (){};
+                AlertSubtype._instance._overlay.hide = function (){};
                 AlertSubtype._instance._okButton = MockComponent.component();
                 AlertSubtype._instance.enterDocument(true);
 
                 spyOn(AlertSubtype._instance, "show").andCallThrough();
 
-                waitsFor(function() {
+                waitsFor(function () {
                     return AlertSubtype._instance.show.calls.length === 1;
                 });
-                runs(function() {
+                runs(function () {
                     AlertSubtype._instance.handleAction({target: AlertSubtype._instance._okButton});
 
-                    waitsFor(function() {
+                    waitsFor(function () {
                         return AlertSubtype._instance.show.calls.length === 2;
                     });
 
-                    runs(function() {
+                    runs(function () {
                         expect(AlertSubtype._instance.title).toBe(AlertSubtype.prototype.title);
                     });
                 });
             });
 
-            it("should fulfill the show promise when the alert is closed", function() {
+            it("should fulfill the show promise when the alert is closed", function () {
                 var promise = AlertSubtype.show("message");
 
                 AlertSubtype._instance._overlay = MockComponent.component();
-                AlertSubtype._instance._overlay.show = function(){};
-                AlertSubtype._instance._overlay.hide = function(){};
+                AlertSubtype._instance._overlay.show = function (){};
+                AlertSubtype._instance._overlay.hide = function (){};
                 AlertSubtype._instance._okButton = MockComponent.component();
                 AlertSubtype._instance.enterDocument(true);
 
                 spyOn(AlertSubtype._instance, "show").andCallThrough();
 
-                waitsFor(function() {
+                waitsFor(function () {
                     return AlertSubtype._instance.show.calls.length === 1;
                 });
-                runs(function() {
+                runs(function () {
                     AlertSubtype._instance.handleAction({target: AlertSubtype._instance._okButton});
 
                     expect(Promise.isFulfilled(promise)).toBeTruthy();

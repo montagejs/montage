@@ -23,7 +23,7 @@ exports.RemoteReference = Montage.specialize({
     },
 
     initWithValue: {
-        value: function(value) {
+        value: function (value) {
             this._value = value;
             this._reference = null;
             this._promise = null;
@@ -32,7 +32,7 @@ exports.RemoteReference = Montage.specialize({
     },
 
     serializeSelf: {
-        value: function(serializer) {
+        value: function (serializer) {
             if (!this._reference) {
                 this._reference = this.referenceFromValue(this._value);
             }
@@ -41,7 +41,7 @@ exports.RemoteReference = Montage.specialize({
     },
 
     deserializeSelf: {
-        value: function(deserializer) {
+        value: function (deserializer) {
             this._value = null;
             this._reference = deserializer.getProperty("valueReference");
             this._promise = null;
@@ -61,7 +61,7 @@ exports.RemoteReference = Montage.specialize({
     },
 
     promise: {
-        value: function(iRequire) {
+        value: function (iRequire) {
             if (!this._promise) {
                 if (this._value) {
                     this._promise = Promise.resolve(this._value);
@@ -82,7 +82,7 @@ exports.RemoteReference = Montage.specialize({
      * @param {boolean} isRequire
      */
     valueFromReference: {
-        value: function(reference, iRequire) {
+        value: function (reference, iRequire) {
             return Promise.resolve(null);
         }
     },
@@ -94,7 +94,7 @@ exports.RemoteReference = Montage.specialize({
      * subtypes.
      */
     referenceFromValue: {
-        value: function(value) {
+        value: function (value) {
             return {};
         }
     },

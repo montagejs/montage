@@ -14,13 +14,13 @@ var Converter = require("./converter").Converter;
  */
 var InvertConverter = exports.InvertConverter = Converter.specialize( {
     convert: {
-        value: function(v) {
+        value: function (v) {
             return !v;
         }
     },
 
     revert: {
-        value: function(v) {
+        value: function (v) {
             return !v;
         }
     }

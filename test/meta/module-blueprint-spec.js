@@ -40,12 +40,12 @@ describe("meta/module-blueprint-spec", function () {
         describe("serialization", function () {
             var serializer;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 serializer = new Serializer().initWithRequire(require);
                 serializer.setSerializationIndentation(4);
             });
 
-            it("should serialize correctly", function() {
+            it("should serialize correctly", function () {
                 var expectedSerialization,
                     serialization;
 

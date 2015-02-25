@@ -38,7 +38,7 @@ var MyText = exports.MyText = Text.specialize( {
         value: false
     },
     deserializedFromTemplate: {
-        value: function() {
+        value: function () {
             this.didDeserializedFromTemplate = true;
         }
     }

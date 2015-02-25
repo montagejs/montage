@@ -6,7 +6,7 @@ var Montage = require("montage").Montage,
 var  TestController = exports.TestController = ObjectController.specialize( {
 
     init: {
-      value: function() {
+      value: function () {
           return this;
       }
     },

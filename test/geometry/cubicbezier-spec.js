@@ -33,17 +33,17 @@ var Montage = require("montage").Montage,
     CubicBezier = require("montage/core/geometry/cubic-bezier").CubicBezier;
 
 describe("geometry/cubicbezier-spec",
-function() {
+function () {
     describe("creation with no args",
-    function() {
+    function () {
         var cubicBezier;
 
-        beforeEach(function() {
+        beforeEach(function () {
             cubicBezier = new CubicBezier();
         });
 
         it("should be a linear CubicBezier",
-        function() {
+        function () {
             expect(cubicBezier.p0).toEqual(new Point().init(0, 0));
             expect(cubicBezier.p1).toEqual(new Point().init(0, 0));
             expect(cubicBezier.p2).toEqual(new Point().init(1, 1));
@@ -51,21 +51,21 @@ function() {
         });
     });
     describe("position along curve",
-    function() {
+    function () {
         var cubicBezier;
 
-        beforeEach(function() {
+        beforeEach(function () {
             cubicBezier = CubicBezier.create(CubicBezier).init([new Point().init(.42, 0), new Point().init(.58, 1)]);
         });
 
         it("is undefined @ t < 1 & t > 1",
-        function() {
+        function () {
             expect(cubicBezier.position( - 1)).not.toBeDefined();
             expect(cubicBezier.position( 2)).not.toBeDefined();
         });
 
         it("is correct",
-        function() {
+        function () {
             expect(cubicBezier.position(0)).toEqual(new Point().init(0, 0));
             expect(cubicBezier.position(0.1)).toEqual(new Point().init(.11871999999999998, .02799999999999999));
             expect(cubicBezier.position(0.5)).toEqual(new Point().init(.5, .5));
@@ -74,16 +74,16 @@ function() {
         });
     });
     describe("makeScaffolding for curve",
-    function() {
+    function () {
         var cubicBezier;
 
-        beforeEach(function() {
+        beforeEach(function () {
             cubicBezier = CubicBezier.create(CubicBezier).init([new Point().init(.42, 0), new Point().init(.58, 1)]);
             cubicBezier.makeScaffolding(.25);
         });
 
         it("is correct",
-        function() {
+        function () {
             expect(cubicBezier.p01).toEqual(new Point().init(.315, 0));
             expect(cubicBezier.p12).toEqual(new Point().init(.54, .75));
             expect(cubicBezier.p23).toEqual(new Point().init(.895, 1));
@@ -93,16 +93,16 @@ function() {
         });
     });
     describe("split for curve",
-    function() {
+    function () {
         var cubicBezier;
 
-        beforeEach(function() {
+        beforeEach(function () {
             cubicBezier = cubicBezier = CubicBezier.create(CubicBezier).init([new Point().init(.42, 0), new Point().init(.58, 1)]);
             cubicBezier = cubicBezier.split(.25);
         });
 
         it("is correct",
-        function() {
+        function () {
             expect(cubicBezier.p0).toEqual(new Point().init(0, 0));
             expect(cubicBezier.p1).toEqual(new Point().init(.315, 0));
             expect(cubicBezier.p2).toEqual(new Point().init(.48375, .5625));
@@ -110,16 +110,16 @@ function() {
         });
     });
     describe("splitToTimingFunction for curve",
-    function() {
+    function () {
         var cubicBezier;
 
-        beforeEach(function() {
+        beforeEach(function () {
             cubicBezier = cubicBezier = CubicBezier.create(CubicBezier).init([new Point().init(.42, 0), new Point().init(.58, 1)]);
             cubicBezier = cubicBezier.splitToTimingFunction(.25);
         });
 
         it("is correct",
-        function() {
+        function () {
             expect(cubicBezier.p0).toEqual(new Point().init(0, 0));
             expect(cubicBezier.p1).toEqual(new Point().init(.434108527131783, 0));
             expect(cubicBezier.p2).toEqual(new Point().init(.6666666666666667, .6666666666666666));

@@ -7,10 +7,10 @@ var Montage = require("montage").Montage,
     defaultEventManager = require("montage/core/event/event-manager").defaultEventManager;
     defaultKeyManager = require("montage/core/event/key-manager").defaultKeyManager;
 
-describe("ui/overlay-spec", function() {
+describe("ui/overlay-spec", function () {
     var anOverlay;
 
-    beforeEach(function() {
+    beforeEach(function () {
         defaultEventManager._activeTarget = null;
         anOverlay = new Overlay();
         anOverlay.hasTemplate = false;
@@ -22,14 +22,14 @@ describe("ui/overlay-spec", function() {
         anOverlay.enterDocument(true);
     });
 
-    describe("position calculation", function() {
-        it("should use the overlay position property", function() {
+    describe("position calculation", function () {
+        it("should use the overlay position property", function () {
             anOverlay.position = {left: 100, top: 100};
             anOverlay._calculatePosition();
             expect(anOverlay._drawPosition).toEqual({left: 100, top: 100});
         });
 
-        it("should calculate the overlay position to be in the middle of the screen when no position hints are given", function() {
+        it("should calculate the overlay position to be in the middle of the screen when no position hints are given", function () {
             var aWindow = anOverlay.element.ownerDocument.defaultView;
 
             aWindow.innerWidth = 700;
@@ -41,8 +41,8 @@ describe("ui/overlay-spec", function() {
             expect(anOverlay._drawPosition).toEqual({left: 300, top: 275});
         });
 
-        describe("element position", function() {
-            it("should find the position of an element with no offset parent", function() {
+        describe("element position", function () {
+            it("should find the position of an element with no offset parent", function () {
                 var anElement = MockDOM.element(),
                     position;
 
@@ -54,7 +54,7 @@ describe("ui/overlay-spec", function() {
                 expect(position.left).toBe(200);
             });
 
-            it("should find the position of an element with an offset parent", function() {
+            it("should find the position of an element with an offset parent", function () {
                 var anElement = MockDOM.element(),
                     anElementParent = MockDOM.element(),
                     position;
@@ -71,8 +71,8 @@ describe("ui/overlay-spec", function() {
             });
         });
 
-        describe("anchor position", function() {
-            it("should center the element bellow the anchor", function() {
+        describe("anchor position", function () {
+            it("should center the element bellow the anchor", function () {
                 var anAnchor = MockDOM.element();
 
                 anAnchor.offsetTop = 100;
@@ -88,7 +88,7 @@ describe("ui/overlay-spec", function() {
                 expect(anOverlay._drawPosition).toEqual({left: 225, top: 200});
             });
 
-            it("should center the element bellow the anchor and bump it to the right because it's left outside the screen", function() {
+            it("should center the element bellow the anchor and bump it to the right because it's left outside the screen", function () {
                 var anAnchor = MockDOM.element();
 
                 anAnchor.offsetTop = 100;
@@ -106,13 +106,13 @@ describe("ui/overlay-spec", function() {
         });
     });
 
-    describe("delegate", function() {
+    describe("delegate", function () {
         var delegate;
         beforeEach(function () {
             delegate = anOverlay.delegate = {};
         });
 
-        it("should call willPositionOverlay", function() {
+        it("should call willPositionOverlay", function () {
             delegate.willPositionOverlay = jasmine.createSpy();
 
             anOverlay.position = {
@@ -125,7 +125,7 @@ describe("ui/overlay-spec", function() {
             expect(delegate.willPositionOverlay).toHaveBeenCalledWith(anOverlay, anOverlay.position);
         });
 
-        it("should call didHideOverlay", function() {
+        it("should call didHideOverlay", function () {
             delegate.didHideOverlay = jasmine.createSpy();
 
             anOverlay._isShown = false;
@@ -135,7 +135,7 @@ describe("ui/overlay-spec", function() {
             expect(delegate.didHideOverlay).toHaveBeenCalledWith(anOverlay);
         });
 
-        it("should call didShowOverlay", function() {
+        it("should call didShowOverlay", function () {
             delegate.didShowOverlay = jasmine.createSpy();
 
             anOverlay._isShown = true;
@@ -146,8 +146,8 @@ describe("ui/overlay-spec", function() {
             expect(delegate.didShowOverlay).toHaveBeenCalledWith(anOverlay);
         });
 
-        describe("shouldDismissOverlay", function() {
-            it("should hide the overlay when a pressStart is fired outside the overlay and it returns true", function() {
+        describe("shouldDismissOverlay", function () {
+            it("should hide the overlay when a pressStart is fired outside the overlay and it returns true", function () {
                 delegate.shouldDismissOverlay = jasmine.createSpy().andReturn(true);
 
                 var event = Event.event();
@@ -164,7 +164,7 @@ describe("ui/overlay-spec", function() {
                 expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target, "pressStart");
             });
 
-            it("should not be called when a pressStart is fired inside the overlay", function() {
+            it("should not be called when a pressStart is fired inside the overlay", function () {
                 delegate.shouldDismissOverlay = jasmine.createSpy().andReturn(true);
 
                 var event = Event.event();
@@ -184,7 +184,7 @@ describe("ui/overlay-spec", function() {
                 expect(delegate.shouldDismissOverlay).not.toHaveBeenCalled();
             });
 
-            it("should not hide the overlay when a pressStart is fired outside the overlay and it returns false", function() {
+            it("should not hide the overlay when a pressStart is fired outside the overlay and it returns false", function () {
                 delegate.shouldDismissOverlay = jasmine.createSpy().andReturn(false);
 
                 var event = Event.event();
@@ -201,7 +201,7 @@ describe("ui/overlay-spec", function() {
                 expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.target, "pressStart");
             });
 
-            it("should be called when the escape key is pressed", function() {
+            it("should be called when the escape key is pressed", function () {
                 delegate.shouldDismissOverlay = jasmine.createSpy().andReturn(true);
 
                 anOverlay.enterDocument(true);
@@ -218,7 +218,7 @@ describe("ui/overlay-spec", function() {
                 expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.targetElement, "keyPress");
             });
 
-            it("should not hide the overlay when the delegate returns false", function() {
+            it("should not hide the overlay when the delegate returns false", function () {
                 delegate.shouldDismissOverlay = jasmine.createSpy().andReturn(false);
 
                 anOverlay.enterDocument(true);
@@ -237,7 +237,7 @@ describe("ui/overlay-spec", function() {
                 expect(delegate.shouldDismissOverlay).toHaveBeenCalledWith(anOverlay, event.targetElement, "keyPress");
             });
 
-            it("should return activeTarget to the component that had it before", function() {
+            it("should return activeTarget to the component that had it before", function () {
                 var previousTarget = new Component();
                 defaultEventManager.activeTarget = previousTarget;
 
@@ -248,7 +248,7 @@ describe("ui/overlay-spec", function() {
                 expect(defaultEventManager.activeTarget).toBe(previousTarget);
             });
 
-            it("should not change the activeTarget if it's non-modal", function() {
+            it("should not change the activeTarget if it's non-modal", function () {
                 var previousTarget = new Component();
                 defaultEventManager.activeTarget = previousTarget;
 
@@ -260,9 +260,9 @@ describe("ui/overlay-spec", function() {
                 expect(defaultEventManager.activeTarget).toBe(previousTarget);
             });
 
-            it("should not show if the overlay isn't able to be the activeTarget", function() {
+            it("should not show if the overlay isn't able to be the activeTarget", function () {
                 var previousTarget = new Component();
-                previousTarget.surrendersActiveTarget = function() {
+                previousTarget.surrendersActiveTarget = function () {
                     return false;
                 };
                 defaultEventManager.activeTarget = previousTarget;
@@ -275,8 +275,8 @@ describe("ui/overlay-spec", function() {
 
     });
 
-    describe("_isDisplayed", function() {
-        it("should be false before it is measurable", function() {
+    describe("_isDisplayed", function () {
+        it("should be false before it is measurable", function () {
             anOverlay._isShown = false;
             anOverlay._isDisplayed = true;
 
@@ -285,7 +285,7 @@ describe("ui/overlay-spec", function() {
             expect(anOverlay._isDisplayed).toBe(false);
         });
 
-        it("should be true after it is measurable", function() {
+        it("should be true after it is measurable", function () {
             anOverlay._isShown = true;
             anOverlay._isDisplayed = false;
 
@@ -295,8 +295,8 @@ describe("ui/overlay-spec", function() {
         });
     });
 
-    describe("dismissOnExternalInteraction", function() {
-        it("should hide the overlay when a pressStart is fired outside the overlay and dismissOnExternalInteraction is true", function() {
+    describe("dismissOnExternalInteraction", function () {
+        it("should hide the overlay when a pressStart is fired outside the overlay and dismissOnExternalInteraction is true", function () {
             var event = Event.event();
 
             anOverlay.dismissOnExternalInteraction = true;
@@ -309,7 +309,7 @@ describe("ui/overlay-spec", function() {
             expect(anOverlay._isShown).toBe(false);
         });
 
-        it("should not hide the overlay when a pressStart is fired inside the overlay and dismissOnExternalInteraction is true", function() {
+        it("should not hide the overlay when a pressStart is fired inside the overlay and dismissOnExternalInteraction is true", function () {
             var event = Event.event();
 
             anOverlay.dismissOnExternalInteraction = true;
@@ -324,7 +324,7 @@ describe("ui/overlay-spec", function() {
             expect(anOverlay._isShown).toBe(true);
         });
 
-        it("should not hide the overlay when a pressStart is fired outside the overlay and dismissOnExternalInteraction is false", function() {
+        it("should not hide the overlay when a pressStart is fired outside the overlay and dismissOnExternalInteraction is false", function () {
             var event = Event.event();
 
             anOverlay.dismissOnExternalInteraction = false;
@@ -339,21 +339,21 @@ describe("ui/overlay-spec", function() {
         });
     });
 
-    describe("enterDocument", function() {
-        it("should move the element to be a child of the body", function() {
+    describe("enterDocument", function () {
+        it("should move the element to be a child of the body", function () {
             expect(anOverlay.element.ownerDocument.body.childNodes).toContain(anOverlay.element);
         });
     });
 
-    describe("draw", function() {
-        beforeEach(function() {
+    describe("draw", function () {
+        beforeEach(function () {
             var aWindow = anOverlay.element.ownerDocument.defaultView;
 
             aWindow.innerWidth = 700;
             aWindow.innerHeight = 600;
         });
 
-        it("should be requested after show() when hidden", function() {
+        it("should be requested after show() when hidden", function () {
             anOverlay._isShown = false;
 
             anOverlay.show();
@@ -362,7 +362,7 @@ describe("ui/overlay-spec", function() {
             expect(anOverlay.classList.has("montage-Overlay--visible")).toBe(true);
         });
 
-        it("should be requested after hide() when shown", function() {
+        it("should be requested after hide() when shown", function () {
             anOverlay._isShown = true;
 
             anOverlay.hide();
@@ -371,7 +371,7 @@ describe("ui/overlay-spec", function() {
             expect(anOverlay.classList.has("montage-Overlay--visible")).toBe(false);
         });
 
-        it("should not calculate position on willDraw when content is not shown", function() {
+        it("should not calculate position on willDraw when content is not shown", function () {
             anOverlay._isDisplayed = false;
             anOverlay._isShown = true;
 
@@ -380,7 +380,7 @@ describe("ui/overlay-spec", function() {
             expect(anOverlay._drawPosition).toBe(null);
         });
 
-        it("should turn the element invisible when it's not measurable and request another draw", function() {
+        it("should turn the element invisible when it's not measurable and request another draw", function () {
             anOverlay._isDisplayed = false;
             anOverlay._isShown = true;
 
@@ -391,7 +391,7 @@ describe("ui/overlay-spec", function() {
             expect(anOverlay.needsDraw).toBe(true);
         });
 
-        it("should calculate the position on willDraw", function() {
+        it("should calculate the position on willDraw", function () {
             spyOn(anOverlay, "_calculatePosition");
             anOverlay._isDisplayed = true;
             anOverlay._isShown = true;
@@ -401,7 +401,7 @@ describe("ui/overlay-spec", function() {
             expect(anOverlay._calculatePosition).toHaveBeenCalled();
         });
 
-        it("should position the element when it's measurable", function() {
+        it("should position the element when it's measurable", function () {
             anOverlay._isDisplayed = true;
             anOverlay._isShown = true;
             anOverlay.element.offsetWidth = 100;
@@ -415,7 +415,7 @@ describe("ui/overlay-spec", function() {
             expect(anOverlay.element.style.left).toBe("300px");
         });
 
-        it("should be requested on window resize when shown", function() {
+        it("should be requested on window resize when shown", function () {
             anOverlay.needsDraw = false;
             anOverlay._isShown = true;
             anOverlay.handleResize();
@@ -423,7 +423,7 @@ describe("ui/overlay-spec", function() {
             expect(anOverlay.needsDraw).toBe(true);
         });
 
-        it("should not be requested on window resize when hidden", function() {
+        it("should not be requested on window resize when hidden", function () {
             anOverlay.needsDraw = false;
             anOverlay._isShown = false;
             anOverlay.handleResize();
@@ -432,8 +432,8 @@ describe("ui/overlay-spec", function() {
         });
     });
 
-    describe("dismissal", function() {
-        it("should hide the overlay when a pressStart is fired outside the overlay", function() {
+    describe("dismissal", function () {
+        it("should hide the overlay when a pressStart is fired outside the overlay", function () {
             var event = Event.event();
 
             anOverlay._isShown = true;
@@ -443,7 +443,7 @@ describe("ui/overlay-spec", function() {
             expect(anOverlay._isShown).toBe(false);
         });
 
-        it("should not hide the overlay when a pressStart is fired inside the overlay", function() {
+        it("should not hide the overlay when a pressStart is fired inside the overlay", function () {
             var event = Event.event();
 
             anOverlay._isShown = true;
@@ -455,7 +455,7 @@ describe("ui/overlay-spec", function() {
             expect(anOverlay._isShown).toBe(true);
         });
 
-        it("should hide the overlay when the escape key is pressed", function() {
+        it("should hide the overlay when the escape key is pressed", function () {
             anOverlay.enterDocument(true);
             anOverlay.show();
 
@@ -469,15 +469,15 @@ describe("ui/overlay-spec", function() {
         });
     });
 
-    describe("keyPress", function() {
-        it("should be loaded when the overlay is shown", function() {
+    describe("keyPress", function () {
+        it("should be loaded when the overlay is shown", function () {
             anOverlay.enterDocument(true);
             anOverlay.show();
 
             expect(anOverlay._keyComposer._isLoaded).toBe(true);
         });
 
-        it("should not be loaded when the overlay is shown", function() {
+        it("should not be loaded when the overlay is shown", function () {
             anOverlay.enterDocument(true);
             anOverlay.show();
             anOverlay.hide();
@@ -485,7 +485,7 @@ describe("ui/overlay-spec", function() {
             expect(anOverlay._keyComposer._isLoaded).toBe(false);
         });
 
-        it("should be loaded when the overlay is hidden and shown again", function() {
+        it("should be loaded when the overlay is hidden and shown again", function () {
             anOverlay.enterDocument(true);
             anOverlay.show();
             anOverlay.hide();
@@ -495,8 +495,8 @@ describe("ui/overlay-spec", function() {
         });
     });
 
-    describe("events", function() {
-        it("should fire dismiss event when overlay is dismissed", function() {
+    describe("events", function () {
+        it("should fire dismiss event when overlay is dismissed", function () {
             var event = Event.event(),
                 callback = jasmine.createSpy();
 
@@ -533,9 +533,9 @@ describe("ui/overlay-spec", function() {
         });
     });
 
-    describe("show", function() {
+    describe("show", function () {
 
-        it("should enter the document", function() {
+        it("should enter the document", function () {
             var componentA = new Component();
             componentA.hasTemplate = false;
             componentA.element = MockDOM.element();

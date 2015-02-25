@@ -20,10 +20,10 @@ var NUMERIC_SCALE_PREFIXES_BYTES = [
  * Binary conversion.
  * @function
  * @param {string} stringValue String to be converted to numeric value.
- * @return {number} Numeric value for string.
+ * @returns {number} Numeric value for string.
  * @private
  */
-var stringToNumBytes = function(stringValue) {
+var stringToNumBytes = function (stringValue) {
     return _stringToNumericValue(stringValue, NUMERIC_SCALES_BINARY_);
 };
 
@@ -37,10 +37,10 @@ var stringToNumBytes = function(stringValue) {
  * Defaults to 2.
  * @param {?boolean} suffix=true If true, include trailing 'B' in returned
  * string. Default is true.
- * @return {string} String representation of number of bytes.
+ * @returns {string} String representation of number of bytes.
  * @private
  */
-var numBytesToString = function(val, opt_decimals, opt_suffix) {
+var numBytesToString = function (val, opt_decimals, opt_suffix) {
     var suffix = '';
     if (!isDef(opt_suffix) || opt_suffix) {
         suffix = 'B';
@@ -54,10 +54,10 @@ var numBytesToString = function(val, opt_decimals, opt_suffix) {
  * @param {number} bytes The number of bytes to show.
  * @param {number} decimals=2 The number of decimals to use.
  * Defaults to 2.
- * @return {string} The human readable form of the byte size.
+ * @returns {string} The human readable form of the byte size.
  * @private
  */
-var fileSize = function(bytes, opt_decimals) {
+var fileSize = function (bytes, opt_decimals) {
     return numBytesToString(bytes, opt_decimals, false);
 };
 
@@ -80,7 +80,7 @@ exports.BytesConverter = Converter.specialize( /** @lends BytesConverter# */ {
 
     /**
      * Converts the specified value to byte format.
-     * @method
+     * @function
      * @param {Property} v The value to format.
      * @returns {string} The value converted to byte format.
      * @example
@@ -94,14 +94,14 @@ exports.BytesConverter = Converter.specialize( /** @lends BytesConverter# */ {
      * // Reverted: 12341234
      */
     convert: {
-        value: function(v) {
+        value: function (v) {
             return fileSize(v, this.decimals);
         }
     },
 
     /**
      * Reverts a formatted byte string to a standard number.
-     * @method
+     * @function
      * @param {string} v The value to revert.
      * @returns {string} v
      * @see BytesConverter#convert
@@ -114,7 +114,7 @@ exports.BytesConverter = Converter.specialize( /** @lends BytesConverter# */ {
      * // Reverted: 12341234
      */
     revert: {
-        value: function(v) {
+        value: function (v) {
             return v;
         }
     }

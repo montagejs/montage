@@ -9,7 +9,7 @@ var MontageInterpreter = Montage.specialize.call(Interpreter, {
     _reviver: {value: null},
 
     init: {
-        value: function(_require, objectRequires) {
+        value: function (_require, objectRequires) {
             if (typeof _require !== "function") {
                 throw new Error("Function 'require' missing.");
             }
@@ -23,7 +23,7 @@ var MontageInterpreter = Montage.specialize.call(Interpreter, {
     },
 
     instantiate: {
-        value: function(serialization, objects, element) {
+        value: function (serialization, objects, element) {
             var context;
 
             context = new MontageContext()
@@ -34,7 +34,7 @@ var MontageInterpreter = Montage.specialize.call(Interpreter, {
     },
 
     preloadModules: {
-        value: function(serialization) {
+        value: function (serialization) {
             var reviver = this._reviver,
                 moduleLoader = reviver.moduleLoader,
                 object,
@@ -71,13 +71,13 @@ var MontageContext = Montage.specialize.call(Context, {
     _require: {value: null},
 
     constructor: {
-        value: function() {
+        value: function () {
             this._unitsToDeserialize = [];
         }
     },
 
     init: {
-        value: function(serialization, reviver, objects, element, _require) {
+        value: function (serialization, reviver, objects, element, _require) {
             Context.call(this, serialization, reviver, objects);
 
             this._element = element;
@@ -88,7 +88,7 @@ var MontageContext = Montage.specialize.call(Context, {
     },
 
     hasObject: {
-        value: function(label) {
+        value: function (label) {
             return label in this._serialization;
         }
     },
@@ -100,13 +100,13 @@ var MontageContext = Montage.specialize.call(Context, {
     },
 
     getElement: {
-        value: function() {
+        value: function () {
             return this._element;
         }
     },
 
     getElementById: {
-        value: function(id) {
+        value: function (id) {
             var selector = '*[' + this._ELEMENT_ID_ATTRIBUTE + '="' + id + '"]';
 
             return this._element.querySelector(selector);
@@ -114,7 +114,7 @@ var MontageContext = Montage.specialize.call(Context, {
     },
 
     setUnitsToDeserialize: {
-        value: function(object, objectDesc, unitNames) {
+        value: function (object, objectDesc, unitNames) {
             this._unitsToDeserialize.push({
                 object: object,
                 objectDesc: objectDesc,
@@ -124,7 +124,7 @@ var MontageContext = Montage.specialize.call(Context, {
     },
 
     getUnitsToDeserialize: {
-        value: function() {
+        value: function () {
             return this._unitsToDeserialize;
         }
     }

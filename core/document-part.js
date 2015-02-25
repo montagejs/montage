@@ -18,7 +18,7 @@ var DocumentPart = Montage.specialize({
     },
 
     initWithTemplateAndFragment: {
-        value: function(template, fragment) {
+        value: function (template, fragment) {
             this.template = template;
             this.fragment = fragment;
             this.objects = null;
@@ -28,7 +28,7 @@ var DocumentPart = Montage.specialize({
     },
 
     startActingAsTopComponent: {
-        value: function() {
+        value: function () {
             if (this.fragment) {
                 defaultEventManager.registerEventHandlerForElement(
                     this, this.fragment);
@@ -37,7 +37,7 @@ var DocumentPart = Montage.specialize({
     },
 
     stopActingAsTopComponent: {
-        value: function() {
+        value: function () {
             if (this.fragment) {
                 defaultEventManager.unregisterEventHandlerForElement(
                     this.fragment);
@@ -46,7 +46,7 @@ var DocumentPart = Montage.specialize({
     },
 
     addChildComponent: {
-        value: function(childComponent) {
+        value: function (childComponent) {
             if (this.childComponents.indexOf(childComponent) == -1) {
                 this.childComponents.push(childComponent);
             }
@@ -54,7 +54,7 @@ var DocumentPart = Montage.specialize({
     },
 
     removeChildComponent: {
-        value: function(childComponent) {
+        value: function (childComponent) {
             var childComponents = this.childComponents,
                 ix = childComponents.indexOf(childComponent);
 
@@ -67,12 +67,12 @@ var DocumentPart = Montage.specialize({
     },
 
     _addToDrawList: {
-        value: function() {}
+        value: function () {}
     },
 
     _componentTreeLoadedDeferred: {value: null},
     loadComponentTree: {
-        value: function() {
+        value: function () {
             var deferred = this._componentTreeLoadedDeferred,
                 promises;
 
@@ -82,11 +82,11 @@ var DocumentPart = Montage.specialize({
 
                 promises = [];
 
-                this.childComponents.forEach(function(childComponent) {
+                this.childComponents.forEach(function (childComponent) {
                     promises.push(childComponent.loadComponentTree());
                 });
 
-                Promise.all(promises).then(function() {
+                Promise.all(promises).then(function () {
                     deferred.resolve();
                 }, deferred.reject).done();
             }

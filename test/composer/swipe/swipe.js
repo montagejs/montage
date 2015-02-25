@@ -5,7 +5,7 @@ var Montage = require("montage").Montage,
 exports.Swipe = Montage.specialize( {
 
     deserializedFromTemplate: {
-        value: function() {
+        value: function () {
             var dummyComponent = new Component();
             dummyComponent.hasTemplate = false;
             dummyComponent.element = document.body;
@@ -19,12 +19,12 @@ exports.Swipe = Montage.specialize( {
     },
 
     handleSwipe: {
-        value: function(event) {
+        value: function (event) {
         }
     },
 
     handleSwipemove: {
-        value: function(event) {
+        value: function (event) {
         }
     }
 

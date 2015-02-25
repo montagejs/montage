@@ -8,8 +8,9 @@ var Montage = require("./core").Montage,
  * Montage application.
  *
  * @class Target
+ * @extends Montage
  */
-exports.Target = Montage.specialize( /** @lends Target# */ {
+exports.Target = Montage.specialize( /** @lends Target # */ {
 
     constructor: {
         value: function Target() {
@@ -51,7 +52,7 @@ exports.Target = Montage.specialize( /** @lends Target# */ {
 
     /**
      * Called prior to this target becoming the activeTarget
-     * @method
+     * @function
      * @param {Target} oldTarget the current activeTarget
      */
     willBecomeActiveTarget: {
@@ -60,7 +61,7 @@ exports.Target = Montage.specialize( /** @lends Target# */ {
 
     /**
      * Called after to this target became the activeTarget
-     * @method
+     * @function
      */
     didBecomeActiveTarget: {
         value: Function.noop
@@ -68,10 +69,10 @@ exports.Target = Montage.specialize( /** @lends Target# */ {
 
     /**
      * Ask this target to surrender its activeTarget status.
-     * @method
+     * @function
      * @param {Target} newTarget the Target that is about to become the
      * `activeTarget`
-     * @return {boolean} Whether or not to surrender activeTarget status
+     * @returns {boolean} Whether or not to surrender activeTarget status
      */
     surrendersActiveTarget: {
         value: function (newTarget) {
@@ -82,7 +83,8 @@ exports.Target = Montage.specialize( /** @lends Target# */ {
     /**
      * Which target to distribute an event after this when distributing events
      * throughout a graph of targets.
-     * @type {Component}
+     * @property {boolean} serializable
+     * @property {Component} value
      */
     nextTarget: {
         serializable: false,
@@ -92,11 +94,11 @@ exports.Target = Montage.specialize( /** @lends Target# */ {
     /**
      * Dispatches the specified event with this target
      * as the event's proximal target
-     * @method
+     * @function
      * @param {Event} event The event object to dispatch
      */
     dispatchEvent: {
-        value: function(event) {
+        value: function (event) {
             var targettedEvent = event;
 
             if (! (event instanceof MutableEvent)) {
@@ -113,14 +115,14 @@ exports.Target = Montage.specialize( /** @lends Target# */ {
     /**
      * Creates and dispatches an event with the specified properties with this
      * target as the event's proximal target
-     * @method
+     * @function
      * @param {string} type The type of the event to dispatch
      * @param {boolean} canBubble Whether or not the event can bubble
      * @param {boolean} cancelable Whether or not the event can be cancelled
      * @param {Object} detail The optional detail object of the event
      */
     dispatchEventNamed: {
-        value: function(type, canBubble, cancelable, detail) {
+        value: function (type, canBubble, cancelable, detail) {
             var event = MutableEvent.fromType(type, canBubble, cancelable, detail);
             event.target = this;
             defaultEventManager.handleEvent(event);
@@ -131,7 +133,7 @@ exports.Target = Montage.specialize( /** @lends Target# */ {
 
     /**
      * Adds an event listener to the object.
-     * @method
+     * @function
      * @param {string} type The event type to listen for.
      * @param {object | function} listener The listener object or function.
      * @param {boolean} useCapture Specifies whether to listen for the event during the bubble or capture phases.
@@ -146,7 +148,7 @@ exports.Target = Montage.specialize( /** @lends Target# */ {
 
     /**
      * Removes an event listener from the object.
-     * @method
+     * @function
      * @param {string} type The event type.
      * @param {object | function} listener The listener object or function.
      * @param {boolean} useCapture The phase of the event listener.

@@ -28,23 +28,23 @@ var ObjectController = exports.ObjectController = Montage.specialize( /** @lends
     },
 
     /**
-     * @method
+     * @function
      * @returns new this.objectPrototype()
      */
     newObject: {
         enumerable: false,
-        value: function() {
+        value: function () {
             return new this.objectPrototype();
         }
     },
 
     /**
-     * @method
+     * @function
      * @param {Property} content TODO
      * @returns itself
      */
     initWithContent: {
-        value: function(content) {
+        value: function (content) {
             this.content = content;
             return this;
         }

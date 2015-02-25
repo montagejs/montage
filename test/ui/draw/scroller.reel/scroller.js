@@ -3,7 +3,7 @@ var Montage = require("montage").Montage,
 
 exports.Scroller = Component.specialize( {
     canDraw: {
-        value: function() {
+        value: function () {
             this.needsDraw = true;
             return Component.canDraw.apply(this, arguments);
         }

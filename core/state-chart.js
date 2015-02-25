@@ -23,12 +23,12 @@ var State = exports.State = Montage.specialize( /** @lends State# */{
 
     /**
      * Initializes a State object with a set of options.
-     * @method
+     * @function
      * @param {string} options The options for the new State.
      * @returns {State}
      */
     init: {
-        value: function(options) {
+        value: function (options) {
 
             this.substates = {};
             this.enterState = null;
@@ -83,13 +83,13 @@ var State = exports.State = Montage.specialize( /** @lends State# */{
      * @default {string} null
      */
     initialSubstate: {
-        get: function() {
+        get: function () {
             if (typeof this._initialSubstate === "string") {
                 this._initialSubstate = this[this._initialSubstate];
             }
             return this._initialSubstate;
         },
-        set: function(value) {
+        set: function (value) {
             this._initialSubstate = value;
         }
     },
@@ -126,7 +126,7 @@ var State = exports.State = Montage.specialize( /** @lends State# */{
     path: {
         // TODO add dependency on parentState, remember to clear cached value
         enumerable: false,
-        get: function() {
+        get: function () {
             if (!this._path) {
 
                 if (this.parentState && this.parentState.path) {
@@ -158,14 +158,14 @@ var State = exports.State = Montage.specialize( /** @lends State# */{
     },
 
     /**
-     * @method
+     * @function
      * @param {string} otherState
      * @returns `!!this.path.match(new RegExp(".?" + otherState + ".?"))`
      */
     // TODO XXX @returns block should be in code
     isInState: {
         enumerable: false,
-        value: function(otherState) {
+        value: function (otherState) {
 
             if (typeof otherState !== "string") {
                 otherState = otherState.name;
@@ -176,8 +176,8 @@ var State = exports.State = Montage.specialize( /** @lends State# */{
     },
 
     _encloseGotoState: {
-        value: function(state) {
-            return (function(stateChart, owner) {
+        value: function (state) {
+            return (function (stateChart, owner) {
                 // Not relying on original implementation to save an extra function call, despite duplicated code
                 return this._stateChart._gotoState(state, owner);
             });
@@ -185,20 +185,20 @@ var State = exports.State = Montage.specialize( /** @lends State# */{
     },
 
     /**
-     * @method
+     * @function
      * @param {Property} state
      * @param {Property} owner
      * @returns this._stateChart._gotoState(state, owner)
      */
     gotoState: {
-        value: function(state, owner) {
+        value: function (state, owner) {
             return this._stateChart._gotoState(state, owner);
         }
     },
 
     _performAction: {
         enumerable: null,
-        value: function(actionName, stateChart, owner) {
+        value: function (actionName, stateChart, owner) {
             if (this[actionName]) {
                 // TODO what should the context be inside the action function:
                 // state or stateChart?  state makes sense but requires that
@@ -217,12 +217,12 @@ var State = exports.State = Montage.specialize( /** @lends State# */{
     },
 
     /**
-     * @method
+     * @function
      * @returns "[State " + this.path + " ]"
      */
     toString: {
         enumerable: false,
-        value: function() {
+        value: function () {
             return "[State " + this.path + " ]";
         }
     }
@@ -276,11 +276,11 @@ var StateChart = exports.StateChart = Montage.specialize(/** @lends StateChart# 
 
     /**
      * The current state.
-     * @method
+     * @function
      * @returns The current state.
      */
     currentState: {
-        get: function() {
+        get: function () {
             return this.ownerStateProperty ? null : this._currentState;
         }
     },
@@ -288,12 +288,12 @@ var StateChart = exports.StateChart = Montage.specialize(/** @lends StateChart# 
     /**
      * Initializes a StateChart with a State object, and returns the
      * StateChart.
-     * @method
+     * @function
      * @param {string} state TODO
      * @returns {StateChart}
     */
     initWithState: {
-        value: function(state) {
+        value: function (state) {
 
             this._states = {};
 
@@ -314,12 +314,12 @@ var StateChart = exports.StateChart = Montage.specialize(/** @lends StateChart# 
 
     /**
      * The default state.
-     * @method
+     * @function
      * @returns this._defaultState
      */
     defaultState: {
         enumerable: false,
-        get: function() {
+        get: function () {
             if (!this._defaultState) {
 
                 var deepestState, nextState;
@@ -337,12 +337,12 @@ var StateChart = exports.StateChart = Montage.specialize(/** @lends StateChart# 
     },
 
     /**
-     * @method
+     * @function
      * @returns this.defaultState
      */
     enterDefaultState: {
         enumerable: false,
-        value: function() {
+        value: function () {
             if (this.ownerStateProperty && !this.owner) {
                 throw "This stateChart has been configured to require an owner to execute this function";
             }
@@ -391,7 +391,7 @@ var StateChart = exports.StateChart = Montage.specialize(/** @lends StateChart# 
 
     _prepareState: {
         enumerable: false,
-        value: function(state) {
+        value: function (state) {
             state._stateChart = this;
 
             // Keep a record of all states other than the root
@@ -412,24 +412,24 @@ var StateChart = exports.StateChart = Montage.specialize(/** @lends StateChart# 
     },
 
     /**
-     * @method
+     * @function
      * @param {Property} stateName TODO
      * @returns {Array} this._states[stateName]
      */
     stateWithName: {
         enumerable: false,
-        value: function(stateName) {
+        value: function (stateName) {
             return this._states[stateName];
         }
     },
 
     /**
-     * @method
+     * @function
      * @param {string} action TODO
      * @param {string} owner TODO
      */
     performAction: {
-        value: function(action, owner) {
+        value: function (action, owner) {
 
             if (this.ownerStateProperty && !owner) {
                 throw "This stateChart has been configured to require an owner to execute this function";
@@ -451,7 +451,7 @@ var StateChart = exports.StateChart = Montage.specialize(/** @lends StateChart# 
     },
 
     _gotoState: {
-        value: function(state, owner) {
+        value: function (state, owner) {
 
             if (this.ownerStateProperty && !owner) {
                 throw "This stateChart has been configured to require an owner to execute this function";

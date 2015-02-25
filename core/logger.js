@@ -14,7 +14,7 @@ var Montage = require("./core").Montage,
 
 loggers = exports.loggers = {};
 
-getFunctionName = function(montageObject) {
+getFunctionName = function (montageObject) {
     var aCaller = getFunctionName.caller.caller,
         aFunctionName;
     aFunctionName = aCaller.name;
@@ -24,7 +24,7 @@ getFunctionName = function(montageObject) {
     return aFunctionName;
 };
 
-toTimeString = function(date) {
+toTimeString = function (date) {
     if (date.getHours) {
         var hours = date.getHours(),
         mins = date.getMinutes(),
@@ -33,10 +33,10 @@ toTimeString = function(date) {
     }
 };
 
-emptyLoggerFunction = function() {
+emptyLoggerFunction = function () {
 };
 
-consoleLog = function() {
+consoleLog = function () {
     console.log(arguments);
 };
 
@@ -54,13 +54,13 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
     },
 
     /**
-     * @method
+     * @function
      * @param {string} name The name of the logger.
      * @param {State} [dontStoreState=false] If true, don't store the isDebug state of the logger in localStorage .
      * @returns itself
      */
     init: {
-        value: function(name, onStateChange, dontStoreState) {
+        value: function (name, onStateChange, dontStoreState) {
             this.name = name;
             this._onStateChange = onStateChange;
             this._storeState = !dontStoreState;
@@ -108,7 +108,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
      * Log all the contents the logger's buffer.
      */
     flush: {
-        value: function() {
+        value: function () {
             var buffer = this.buffer,
                 args,
                 i;
@@ -123,10 +123,10 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
      * @type {boolean}
      */
     isDebug: {
-        get: function() {
+        get: function () {
             return this.debug !== emptyLoggerFunction;
         },
-        set: function(value) {
+        set: function (value) {
             if (value) {
                 this.debug = this._consoleLogMontage;
             } else {
@@ -140,10 +140,10 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
      * @type {boolean}
      */
     isError: {
-        get: function() {
+        get: function () {
             return this.error !== emptyLoggerFunction;
         },
-        set: function(value) {
+        set: function (value) {
             if (value) {
                 this.error = this._consoleLogMontage;
             } else {
@@ -153,7 +153,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
     },
 
     _consoleLogMontage: {
-        value: function() {
+        value: function () {
             var firstArgument = arguments[0],
                 //jshint -W106
                 metadata = firstArgument._montage_metadata,
@@ -208,7 +208,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
     },
 
     /**
-     * @method Logger#debug
+     * @function Logger#debug
      * @param {Function|String} object If the first argument is a function the logger with print its name
      * @param {string} [...]
      */
@@ -217,7 +217,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
     },
 
     /**
-     * @method Logger#error
+     * @function Logger#error
      * @param {Function|String} object If the first argument is a function the logger with print its name
      * @param {string} [...]
      */
@@ -226,7 +226,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
     },
 
     /**
-     * @method Logger#toTimeString
+     * @function Logger#toTimeString
      * @description Prints the current time in format HH:MM:SS.000
      */
     toTimeString: {
@@ -248,8 +248,8 @@ function addColorProperty (logger) {
         return this;
     };
     for (var name in SOLARIZED_COLORS) {
-        _color[name] = function(name) {
-            return function() {
+        _color[name] = function (name) {
+            return function () {
                 return logger.color(SOLARIZED_COLORS[name]);
             }
         }(name);
@@ -279,7 +279,7 @@ var SOLARIZED_COLORS = {
 /**
  * @function module:montage/core/logger#logger
  */
-exports.logger = function(loggerName, onStateChange, dontStoreState) {
+exports.logger = function (loggerName, onStateChange, dontStoreState) {
     var logger;
     if ((logger = loggers[loggerName]) == null) {
         logger = new Logger().init(loggerName, onStateChange, dontStoreState);
@@ -299,7 +299,7 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
     },
 
     init: {
-        value: function() {
+        value: function () {
             if (document.nativeAddEventListener) {
                 document.nativeAddEventListener("keyup", this, false);
                 document.nativeAddEventListener("keydown", this, false);
@@ -336,7 +336,7 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
     },
 
     keyup: {
-        value: function(event) {
+        value: function (event) {
             if (event.which == 17) {
                 this.isCtrl = false;
             }
@@ -347,7 +347,7 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
     },
 
     keydown: {
-        value: function(event) {
+        value: function (event) {
             if (event.which == 17) {
                 this.isCtrl = true;
             }
@@ -366,7 +366,7 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
     },
 
     change: {
-        value: function(event) {
+        value: function (event) {
             var value = event.target.checked,
                 name = event.target.value,
                 logger = loggers[name];
@@ -381,13 +381,13 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
     },
 
     mouseup: {
-        value: function(event) {
+        value: function (event) {
             this.hideInspector();
         }
     },
 
     showInspector: {
-        value: function() {
+        value: function () {
             if (! this.inspectorElement) {
                 var i = 0,
                     iLogger,
@@ -483,7 +483,7 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
     },
 
     hideInspector: {
-        value: function() {
+        value: function () {
             if (document.getElementById("_montage_logger_inspector")) {
                 this.shown = false;
                 this.m_dontRemove.removeChild(this.inspectorElement);
@@ -495,7 +495,7 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
 
     handleEvent: {
         enumerable: false,
-        value: function(event) {
+        value: function (event) {
             if (this[event.type]) {
                 this[event.type](event);
             }
@@ -503,7 +503,7 @@ LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
     }
 });
 
-var setupUI = function() {
+var setupUI = function () {
     new LoggerUI().init();
 };
 if (typeof window !== "undefined") {

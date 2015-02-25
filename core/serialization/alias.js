@@ -44,11 +44,11 @@ exports.Alias = Montage.specialize({ /** @lends Alias# */
      * @type {string}
      */
     value: {
-        get: function() {
+        get: function () {
             return this._value;
         },
 
-        set: function(value) {
+        set: function (value) {
             var split = this._aliasRegExp.exec(value);
 
             if (!split) {
@@ -76,7 +76,7 @@ exports.Alias = Montage.specialize({ /** @lends Alias# */
      * @readonly
      */
     componentLabel: {
-        get: function() {
+        get: function () {
             return this._componentLabel;
         }
     },
@@ -95,13 +95,13 @@ exports.Alias = Montage.specialize({ /** @lends Alias# */
      * @readonly
      */
     propertyName: {
-        get: function() {
+        get: function () {
             return this._propertyName;
         }
     },
 
     init: {
-        value: function(value) {
+        value: function (value) {
             this.value = value;
 
             return this;

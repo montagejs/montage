@@ -1,3 +1,6 @@
+/**
+ * @module montage/core/core
+ */
 
 require("collections/shim");
 require("./shim/object");
@@ -42,6 +45,7 @@ var CONSTRUCTOR_COMPATIBILITY = true;
  * The Montage constructor provides conveniences for sub-typing
  * ([specialize]{@link Montage.specialize}) and common methods for Montage
  * prototype chains.
+ *
  * @class Montage
  * @classdesc The basis of all types using the MontageJS framework.
  */
@@ -63,14 +67,14 @@ var FUNCTION_PROPERTIES = Object.getOwnPropertyNames(Function);
  * for common usage in MontageJS.
  *
  * See {@link Montage.defineProperty}
- * @method Montage.specialize
+ * @function Montage.specialize
  * @param {Object} prototypeProperties a object mapping property names to
  * customized Montage property descriptors, to be applied to the new
  * prototype
  * @param {?Object} constructorProperties a object mapping property names to
  * customized Montage property descriptors, to be applied to the new
  * constructor
- * @return {function} a constructor function for the new type, which
+ * @returns {function} a constructor function for the new type, which
  * derrives prototypically from `this`, with a prototype that inherits
  * `this.prototype`, with the given property descriptors applied.
  */
@@ -110,7 +114,7 @@ Object.defineProperty(Montage, "specialize", {
             }
             constructor.__constructorProto__ = parent;
             Montage.defineProperty(constructor, "isPrototypeOf", {
-                value: function(object) {
+                value: function (object) {
                     while (object !== null) {
                         if(Object.getPrototypeOf(object) === this) {
                             return true;
@@ -150,7 +154,7 @@ Object.defineProperty(Montage, "specialize", {
 
         if (CONSTRUCTOR_COMPATIBILITY) {
             // to catch class properties
-            constructorProperty = function(original, constructor, propertyName) {
+            constructorProperty = function (original, constructor, propertyName) {
                 function deprecationWrapper() {
                     if(this === constructor) {
                         deprecate.deprecationWarning(Montage.getInfoForObject(constructor).objectName + "."
@@ -181,7 +185,7 @@ Object.defineProperty(Montage, "specialize", {
             }
             Montage.defineProperties(constructor, prototypeProperties);
             Montage.defineProperty(constructor, "create", {
-                value: function() {
+                value: function () {
                     return new constructor();
                 },
                 enumerable: false
@@ -226,7 +230,7 @@ if (!PROTO_IS_SUPPORTED) {
 // DEPRECATED
 Object.defineProperty(Montage, "create", {
     configurable: true,
-    value: function(aPrototype, propertyDescriptors) {
+    value: function (aPrototype, propertyDescriptors) {
         if (aPrototype !== undefined && (typeof aPrototype !== "object"
                 && /* CONSTRUCTOR_COMPATIBILITY*/typeof aPrototype !== "function")) {
             throw new TypeError("Object prototype may only be an Object or null, not '" + aPrototype + "'");
@@ -257,7 +261,7 @@ var extendedPropertyAttributes = [SERIALIZABLE];
 /**
  * @member external:Object#extendedPropertyAttributes
  */
-extendedPropertyAttributes.forEach(function(name) {
+extendedPropertyAttributes.forEach(function (name) {
     Object.defineProperty(Object.prototype, UNDERSCORE + name + ATTRIBUTE_PROPERTIES, {
         enumerable: false,
         configurable: false,
@@ -283,7 +287,7 @@ extendedPropertyAttributes.forEach(function(name) {
  *    ill-defined and temperamental.
  *
  * @function Montage.defineProperty
- * @method Montage.defineProperty
+ * @function Montage.defineProperty
  * @param {Object} object The object on which to define the property.
  * @param {string} name The name of the property to define, or modify.
  * @param {Object} descriptor A descriptor object that defines the properties
@@ -298,7 +302,7 @@ extendedPropertyAttributes.forEach(function(name) {
  */
 Object.defineProperty(Montage, "defineProperty", {
 
-    value: function(obj, prop, descriptor) {
+    value: function (obj, prop, descriptor) {
         if (! (typeof obj === "object" || typeof obj === "function") || obj === null) {
             throw new TypeError("Object must be an object, not '" + obj + "'");
         }
@@ -353,8 +357,8 @@ Object.defineProperty(Montage, "defineProperty", {
         // TODO replace this with Object.clone from collections - @kriskowal
         //this is added to enable value properties with [] or Objects that are new for every instance
         if (descriptor.distinct === true && typeof descriptor.value === "object") {
-            (function(prop,internalProperty, value, obj) {
-                var defineInternalProperty = function(obj, internalProperty, value) {
+            (function (prop,internalProperty, value, obj) {
+                var defineInternalProperty = function (obj, internalProperty, value) {
                     Object.defineProperty(obj, internalProperty, {
                         enumerable: false,
                         configurable: true,
@@ -367,7 +371,7 @@ Object.defineProperty(Montage, "defineProperty", {
                     if (Object.keys(value).length !== 0) {
                         Object.defineProperty(obj, prop, {
                             configurable: true,
-                            get: function() {
+                            get: function () {
                                 //Special case for object to copy the values
                                 var returnValue = this[internalProperty];
                                 if (!returnValue) {
@@ -384,7 +388,7 @@ Object.defineProperty(Montage, "defineProperty", {
                                 }
                                 return returnValue;
                             },
-                            set: function(value) {
+                            set: function (value) {
                                 if(!this.hasOwnProperty(internalProperty)) {
                                     defineInternalProperty(this, internalProperty, value);
                                 } else {
@@ -395,7 +399,7 @@ Object.defineProperty(Montage, "defineProperty", {
                     } else {
                         Object.defineProperty(obj, prop, {
                             configurable: true,
-                            get: function() {
+                            get: function () {
                                 var returnValue = this[internalProperty];
                                 if (!returnValue) {
                                     returnValue = {};
@@ -407,7 +411,7 @@ Object.defineProperty(Montage, "defineProperty", {
                                 }
                                 return returnValue;
                             },
-                            set: function(value) {
+                            set: function (value) {
                                 if(!this.hasOwnProperty(internalProperty)) {
                                     defineInternalProperty(this, internalProperty, value);
                                 } else {
@@ -422,7 +426,7 @@ Object.defineProperty(Montage, "defineProperty", {
                     if (value.length !== 0) {
                         Object.defineProperty(obj, prop, {
                             configurable: true,
-                            get: function() {
+                            get: function () {
                                 //Special case for object to copy the values
                                 var returnValue = this[internalProperty];
                                 if (!returnValue) {
@@ -439,7 +443,7 @@ Object.defineProperty(Montage, "defineProperty", {
                                 }
                                 return returnValue;
                             },
-                            set: function(value) {
+                            set: function (value) {
                                 if(!this.hasOwnProperty(internalProperty)) {
                                     defineInternalProperty(this, internalProperty, value);
                                 } else {
@@ -451,7 +455,7 @@ Object.defineProperty(Montage, "defineProperty", {
                     } else {
                         Object.defineProperty(obj, prop, {
                             configurable: true,
-                            get: function() {
+                            get: function () {
                                 var returnValue = this[internalProperty];
                                 if (!returnValue) {
                                     returnValue = [];
@@ -463,7 +467,7 @@ Object.defineProperty(Montage, "defineProperty", {
                                 }
                                 return returnValue;
                             },
-                            set: function(value) {
+                            set: function (value) {
                                 if(!this.hasOwnProperty(internalProperty)) {
                                     defineInternalProperty(this, internalProperty, value);
                                 } else {
@@ -476,7 +480,7 @@ Object.defineProperty(Montage, "defineProperty", {
                 } else if (value.constructor.prototype === Object.getPrototypeOf(value)) {
                     Object.defineProperty(obj, prop, {
                         configurable: true,
-                        get: function() {
+                        get: function () {
                             //Special case for object to copy the values
                             var returnValue = this[internalProperty];
                             if (!returnValue) {
@@ -493,7 +497,7 @@ Object.defineProperty(Montage, "defineProperty", {
                             }
                             return returnValue;
                         },
-                        set: function(value) {
+                        set: function (value) {
                             if(!this.hasOwnProperty(internalProperty)) {
                                 defineInternalProperty(this, internalProperty, value);
                             } else {
@@ -506,7 +510,7 @@ Object.defineProperty(Montage, "defineProperty", {
                 } else {
                     Object.defineProperty(obj, prop, {
                         configurable: true,
-                        get: function() {
+                        get: function () {
                             var returnValue = this[internalProperty];
                             if (!returnValue) {
                                 returnValue = Object.create(value.__proto__ || Object.getPrototypeOf(value));
@@ -518,7 +522,7 @@ Object.defineProperty(Montage, "defineProperty", {
                             }
                             return returnValue;
                         },
-                        set: function(value) {
+                        set: function (value) {
                             if(!this.hasOwnProperty(internalProperty)) {
                                 defineInternalProperty(this, internalProperty, value);
                             } else {
@@ -564,7 +568,7 @@ Object.defineProperty(Montage, "defineProperty", {
  * @param {Object} properties An object that maps names to Montage property
  * descriptors.
  */
-Object.defineProperty(Montage, "defineProperties", {value: function(obj, properties) {
+Object.defineProperty(Montage, "defineProperties", {value: function (obj, properties) {
     if (typeof properties !== "object" || properties === null) {
         throw new TypeError("Properties must be an object, not '" + properties + "'");
     }
@@ -613,7 +617,7 @@ Montage.defineProperty(Montage, "didCreate", {
     value: Function.noop
 });
 
-var getSuper = function(object, method) {
+var getSuper = function (object, method) {
     var propertyNames, proto, i, propCount, propertyName, func, context, foundSuper, property;
     if (!(method._superPropertyName && method._superPropertyType)) {
         Montage.defineProperty(method, "_superPropertyType", {value:null});
@@ -701,8 +705,8 @@ var superForImplementation = function (object, propertyType, propertyName) {
 
     // is the super for this method in the cache?
     if (cacheObject._superCache && cacheObject._superCache[cacheId]) {
-        boundSuper = (function(cacheId, object, superObject, superFunction) {
-            return function() {
+        boundSuper = (function (cacheId, object, superObject, superFunction) {
+            return function () {
                 object._superContext[cacheId] = superObject;
                 var retVal = superFunction.apply(object, arguments);
                 delete object._superContext[cacheId];
@@ -741,8 +745,8 @@ var superForImplementation = function (object, propertyType, propertyName) {
         // and immediately clears it again after the super has been called. This is needed
         // in case superFunction also calls superFor*() so superForImplementation() knows
         // which object owns the calling method.
-        boundSuper = (function(cacheId, object, superObject, superFunction) {
-            return function() {
+        boundSuper = (function (cacheId, object, superObject, superFunction) {
+            return function () {
                 object._superContext[cacheId] = superObject;
                 var retVal = superFunction.apply(object, arguments);
                 delete object._superContext[cacheId];
@@ -781,8 +785,8 @@ var superForSetImplementation = function (propertyName) {
  * Calls the method with the same name as the caller from the parent of the
  * constructor that contains the caller, falling back to a no-op if no such
  * method exists.
- * @method Montage.super
- * @return {function} this constructor’s parent constructor.
+ * @function Montage.super
+ * @returns {function} this constructor’s parent constructor.
  */
 Montage.defineProperty(Montage, "super", {
     get: superImplementation,
@@ -846,7 +850,7 @@ Montage.defineProperty(Montage.prototype, "superForSet", {
  * @returns {Array} An array containing the names of the serializable
  * properties belonging to `anObject`.
  */
-Montage.defineProperty(Montage, "getSerializablePropertyNames", {value: function(anObject) {
+Montage.defineProperty(Montage, "getSerializablePropertyNames", {value: function (anObject) {
 
     var propertyNames = [],
         attributes = anObject._serializableAttributeProperties;
@@ -871,7 +875,7 @@ Montage.defineProperty(Montage, "getSerializablePropertyNames", {value: function
     @param {string} attributeName The name of a property's attribute.
     @returns attributes array
 */
-Montage.defineProperty(Montage, "getPropertyAttribute", {value: function(anObject, propertyName, attributeName) {
+Montage.defineProperty(Montage, "getPropertyAttribute", {value: function (anObject, propertyName, attributeName) {
 
     var attributePropertyName = UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES,
         attributes = anObject[attributePropertyName];
@@ -923,7 +927,7 @@ var _functionInstanceMetadataDescriptor = {
  * constructors and prototypes from instances.
  */
 Montage.defineProperty(Montage, "getInfoForObject", {
-    value: function(object) {
+    value: function (object) {
         var metadata;
         var instanceMetadataDescriptor;
 
@@ -979,7 +983,7 @@ if (typeof window !== "undefined") {
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
-var uuidGetGenerator = function() {
+var uuidGetGenerator = function () {
 
     var uuid = UUID.generate(),
         info = Montage.getInfoForObject(this);
@@ -987,7 +991,7 @@ var uuidGetGenerator = function() {
         if (info !== null && info.isInstance === false) {
             this._uuid = uuid;
             Object.defineProperty(this, "uuid", {
-                get: function() {
+                get: function () {
                     if (this.hasOwnProperty("uuid")) {
                         // we are calling uuid on the prototype
                         return this._uuid;
@@ -1055,7 +1059,7 @@ Object.defineProperty(Object.prototype, "_uuid", {
 Object.defineProperty(Object.prototype, "uuid", {
     configurable: true,
     get: defaultUuidGet,
-    set: function() {
+    set: function () {
     }
 });
 
@@ -1070,14 +1074,14 @@ Montage.defineProperty(Montage.prototype, "identifier", {
 
 /**
  * Returns true if two objects are equal, otherwise returns false.
- * @method Montage#equals
+ * @function Montage#equals
  * @param {Object} anObject The object to compare for equality.
  * @returns {boolean} Returns `true` if the calling object and
  * `anObject` are identical and their `uuid` properties
  * are also equal. Otherwise, returns `false`.
  */
 Montage.defineProperty(Montage.prototype, "equals", {
-    value: function(anObject) {
+    value: function (anObject) {
         if (!anObject) return false;
         return this === anObject || this.uuid === anObject.uuid;
     }
@@ -1091,11 +1095,11 @@ Montage.defineProperty(Montage, "equals", {
  * This method calls the method named with the identifier prefix if it exists.
  * Example: If the name parameter is "shouldDoSomething" and the caller's identifier is "bob", then
  * this method will try and call "bobShouldDoSomething"
- * @method Montage#callDelegateMethod
+ * @function Montage#callDelegateMethod
  * @param {string} name
 */
 Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
-    value: function(name) {
+    value: function (name) {
         var delegate = this.delegate, delegateFunctionName, delegateFunction;
         if (typeof this.identifier === "string") {
             delegateFunctionName = this.identifier + name.toCapitalized();
@@ -1131,7 +1135,7 @@ Object.addEach(Montage.prototype, PropertyChanges.prototype);
  * `handle` + PropertyName + `WillChange` then `handlePropertyWillChange`.  The
  * arguments to the handler are `value`, `name`, and this.
  *
- * @method Montage#addOwnPropertyChangeListener
+ * @function Montage#addOwnPropertyChangeListener
  * @param {string} name The name of the property to observe.
  * @param {object|function} handler On which to dispatch change notifications.
  * @param {boolean} beforeChange Whether to observer changes before they occur.
@@ -1146,7 +1150,7 @@ Object.addEach(Montage.prototype, PropertyChanges.prototype);
  * Cancels a change listener established with the same given parameters.  For
  * the meanings of the parameters, see `addOwnPropertyChangeListener`.
  * @see Montage#addOwnPropertyChangeListener
- * @method Montage#removeOwnPropertyChangeListener
+ * @function Montage#removeOwnPropertyChangeListener
  * @param {string} name
  * @param {object|function} handler
  * @param {boolean} beforeChange
@@ -1156,7 +1160,7 @@ Object.addEach(Montage.prototype, PropertyChanges.prototype);
  * Adds a listener that will be notified *before* a property changes.  See
  * `addOwnPropertyChangeListener` for details.
  * @see Montage#addOwnPropertyChangeListener
- * @method Montage#addBeforeOwnPropertyChangeListener
+ * @function Montage#addBeforeOwnPropertyChangeListener
  * @param {string} name
  * @param {object|function} handler
  * @returns {function} cancel
@@ -1168,7 +1172,7 @@ Object.addEach(Montage.prototype, PropertyChanges.prototype);
  * Call with the same arguments used to set up the observer.
  * @see Montage#addOwnPropertyChangeListener
  * @see Montage#addBeforeOwnPropertyChangeListener
- * @method Montage#removeBeforeOwnPropertyChangeListener
+ * @function Montage#removeBeforeOwnPropertyChangeListener
  * @param {string} name
  * @param {object|function} handler
  */
@@ -1181,7 +1185,7 @@ Object.addEach(Montage.prototype, PropertyChanges.prototype);
  * `addBeforeOwnPropertyChangeListener`.
  * @see Montage#addOwnPropertyChangeListener
  * @see Montage#addBeforeOwnPropertyChangeListener
- * @method Montage#getOwnPropertyChangeDescriptor
+ * @function Montage#getOwnPropertyChangeDescriptor
  * @param {string} name
  * @returns the property change descriptor for this name, created if necessary.
  */
@@ -1194,7 +1198,7 @@ Object.addEach(Montage.prototype, PropertyChanges.prototype);
  * it modifies its own value, but if changing `celicius` has a side effect on
  * `fahrenheit`, they can manually dispatch changes to the other. Be sure
  * to dispatch both the change and before the change.
- * @method Montage#dispatchOwnPropertyChange
+ * @function Montage#dispatchOwnPropertyChange
  * @param {string} name
  * @param value
  * @param {boolean} beforeChange Avoid the boolean trap and use
@@ -1206,7 +1210,7 @@ Object.addEach(Montage.prototype, PropertyChanges.prototype);
  * Manually dispatches a notification that a property is about to change.
  * See `dispatchOwnPropertyChange`.
  * @see Montage#dispatchOwnPropertyChange
- * @method Montage#dispatchBeforeOwnPropertyChange
+ * @function Montage#dispatchBeforeOwnPropertyChange
  * @param {string} name
  * @param value
  */
@@ -1215,19 +1219,22 @@ Object.addEach(Montage.prototype, PropertyChanges.prototype);
  * An overridable method for ensuring that changes to the named property
  * dispatch notifications. The default behavior is to wrap the property with a
  * getter and setter.
- * @method Montage#makePropertyObservable
+ * @function Montage#makePropertyObservable
  * @param {string} name
  */
 
 /**
  * Determines whether a property has ever been observed. Removing all property
  * change listeners does not destroy this record.
- * @method Montage#hasOwnPropertyChangeDescriptor
+ * @function Montage#hasOwnPropertyChangeDescriptor
  * @param {string} name
  */
 
-// Bindings
-
+/**
+ * @class Bindings
+ * @extends frb
+ * @typedef {string} FRBExpression
+ */
 var Bindings = exports.Bindings = require("frb");
 
 var bindingPropertyDescriptors = {
@@ -1251,7 +1258,7 @@ var bindingPropertyDescriptors = {
      * `converter`, but the polarity is reversed. This is useful for reusing
      * converters that were designed for data flowing the “wrong” way.  The
      * `descriptor` may also provide a `trace` flag for console debugging.
-     * @method Montage#defineBinding
+     * @function Montage#defineBinding
      */
     // The `commonDescriptor` is deliberately not documented as its use is
     // specific to the `defineBindings` implementation and not intended to
@@ -1265,7 +1272,7 @@ var bindingPropertyDescriptors = {
     /**
      * Establishes multiple bindings.
      * @see Montage#defineBinding
-     * @method Montage#defineBindings
+     * @function Montage#defineBindings
      * @param descriptors {object} an object for which every property is a
      * source path and every value is a binding descriptor as described by
      * `defineBinding`.
@@ -1284,7 +1291,8 @@ var bindingPropertyDescriptors = {
      * far reaching objects for the binding to be canceled.  A component should
      * call this if the binding reaches into objects it does not itself own to
      * ensure that they are available for garbage collection.
-     * @method Montage#cancelBinding
+     *
+     * @function
      * @param {string} targetPath The target path used to establish the
      * binding.
      */
@@ -1296,7 +1304,8 @@ var bindingPropertyDescriptors = {
 
     /**
      * Cancels all registered bindings on this object.
-     * @method Montage#cancelBindings
+     *
+     * @function
      */
     cancelBindings: {
         value: function () {
@@ -1306,11 +1315,11 @@ var bindingPropertyDescriptors = {
 
     /**
      * Gets the binding descriptor for a target path.
-     * @method Montage#getBinding
+     *
+     * @function
      * @param {string} targetPath
-     * @returns {object} the descriptor for the binding. See `defineBinding`
-     * for information on the descriptor type.
-     * @see Montage#defineBinding
+     * @returns {object} the descriptor for the binding
+     * @see {@link Montage#defineBinding} for information on the descriptor type.
      */
     getBinding: {
         value: function (targetPath) {
@@ -1320,7 +1329,7 @@ var bindingPropertyDescriptors = {
 
     /**
      * Gets the binding descriptors for all target paths.
-     * @method Montage#getBindings
+     * @function Montage#getBindings
      * @returns {object} an object that maps traget paths to binding
      * descriptors.
      * See `defineBinding` for information on the descriptor type.
@@ -1359,9 +1368,9 @@ var pathPropertyDescriptors = {
     /**
      * Evaluates an FRB expression from this object and returns the value.
      * The evaluator does not establish any change listeners.
-     * @method Montage#getPath
+     * @function Montage#getPath
      * @param {string} path an FRB expression
-     * @return the current value of the expression
+     * @returns the current value of the expression
      */
     getPath: {
         value: function (path, parameters, document, components) {
@@ -1379,7 +1388,7 @@ var pathPropertyDescriptors = {
      * Assigns a value to the FRB expression from this object. Not all
      * expressions can be assigned to. Property chains will work, but will
      * silently fail if the target object does not exist.
-     * @method Montage#setPath
+     * @function Montage#setPath
      * @param {string} path an FRB expression designating the value to replace
      * @param value the new value
      */
@@ -1399,12 +1408,12 @@ var pathPropertyDescriptors = {
     /**
      * Observes changes to the value of an FRB expression.  The content of the
      * emitted value may react to changes, particularly if it is an array.
-     * @method Montage#observePath
+     * @function Montage#observePath
      * @param {string} path an FRB expression
      * @param {function} emit a function that receives new values in response
      * to changes.  The emitter may return a `cancel` function if it manages
      * event listeners that must be collected when the value changes.
-     * @return {function} a canceler function that will remove all involved
+     * @returns {function} a canceler function that will remove all involved
      * change listeners, prevent new values from being observed, and prevent
      * previously emitted values from reacting to any further changes.
      */
@@ -1421,7 +1430,7 @@ var pathPropertyDescriptors = {
      * The handler will receive “ranged content change” messages.  When a
      * change listener is added, the handler will be immediately invoked with
      * the initial content added at index 0 for the expression.
-     * @method Montage#addRangeAtPathChangeListener
+     * @function Montage#addRangeAtPathChangeListener
      * @param {string} path an FRB expression that produces content changes
      * @param handler a function that accepts `plus`, `minus`, and `index`
      * arguments, or a handler object with a designated method by that
@@ -1469,7 +1478,7 @@ var pathPropertyDescriptors = {
      * Returns an internal index of all of the path change descriptors
      * associated with this instance.
      * @see Montage#getPathChangeDescriptor
-     * @method Montage#getPathChangeDescriptors
+     * @function Montage#getPathChangeDescriptors
      * @returns an object that maps property names to an object with two
      * Maps, `changeListeners` and `willChangeListeners`. Each of these
      * maps handler objects to path change descriptors. See
@@ -1487,7 +1496,7 @@ var pathPropertyDescriptors = {
     /**
      * Gets the path change descriptor object for an observer established
      * previously by `addPathChangeListener` or `addBeforePathChangeListener`.
-     * @method Montage#getPathChangeDescriptor
+     * @function Montage#getPathChangeDescriptor
      * @param {string} path an FRB expression
      * @param handler a function that will receive a value change notification,
      * or an object with a method that will receive the change notifications
@@ -1540,7 +1549,7 @@ var pathPropertyDescriptors = {
      *
      * Use `removePathChangeListener` to cancel all involved change listeners.
      *
-     * @method Montage#addPathChangeListener
+     * @function Montage#addPathChangeListener
      * @param {string} path an FRB expression.
      * @param {object|function} handler an object with a handler method, or a
      * function. The handler will be called with `value`, `path`, and this as
@@ -1615,7 +1624,7 @@ var pathPropertyDescriptors = {
      * `addPathChangeListener`. The given arguments must match the original.
      * See `addPathChangeListener` for descriptions of their meaning.
      * @see Montage#addPathChangeListener
-     * @method Montage#removePathChangeListener
+     * @function Montage#removePathChangeListener
      * @param {string} path
      * @param {object|function}
      * @param {string} handlerMethodName
@@ -1657,7 +1666,7 @@ var pathPropertyDescriptors = {
      * notification when the value of an FRB expression is about to change.
      * See `addPathChangeListener` for details.
      * @see Montage#addPathChangeListener
-     * @method Montage#addBeforePathChangeListener
+     * @function Montage#addBeforePathChangeListener
      * @param {string} path
      * @param {object|function}
      * @param {string} handlerMethodName
@@ -1674,7 +1683,7 @@ var pathPropertyDescriptors = {
      * original. See `addPathChangeListener` for descriptions of their meaning.
      * @see Montage#addBeforePathChangeListener
      * @see Montage#addPathChangeListener
-     * @method Montage#removeBeforePathChangeListener
+     * @function Montage#removeBeforePathChangeListener
      * @param {string} path
      * @param {object|function}
      * @param {string} handlerMethodName

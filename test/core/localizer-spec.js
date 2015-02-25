@@ -35,22 +35,22 @@ var Montage = require("montage").Montage,
     Bindings = require("montage/core/bindings").Bindings,
     Map = require("montage/collections/map");
 
-describe("core/localizer-spec", function() {
+describe("core/localizer-spec", function () {
 
-    describe("Message", function() {
+    describe("Message", function () {
         var message;
-        beforeEach(function() {
+        beforeEach(function () {
             message = new Localizer.Message();
         });
 
-        it("has an init method that accepts key and default", function() {
+        it("has an init method that accepts key and default", function () {
             message = new Localizer.Message().init("hello", "Hello");
             return message.localized.then(function (localized) {
                 expect(localized).toBe("Hello");
             });
         });
 
-        it("has an init method that accepts a key, default and data", function() {
+        it("has an init method that accepts a key, default and data", function () {
             var object = {
                 name: "World"
             };
@@ -61,14 +61,14 @@ describe("core/localizer-spec", function() {
 
         });
 
-        it("sets the localized property to the default message", function() {
+        it("sets the localized property to the default message", function () {
             message.key = "Hello";
             return message.localized.then(function (localized) {
                 expect(localized).toBe("Hello");
             });
         });
 
-        it("localizes the messages when message binding update", function() {
+        it("localizes the messages when message binding update", function () {
             var def = {
                 key: "Hello, {name}"
             };
@@ -92,7 +92,7 @@ describe("core/localizer-spec", function() {
             });
         });
 
-        it("localizes the messages when data bindings update", function() {
+        it("localizes the messages when data bindings update", function () {
             message.key = "Hello, {name}";
 
             var object = {
@@ -120,7 +120,7 @@ describe("core/localizer-spec", function() {
             });
         });
 
-        it("localizes the messages when other data bindings update", function() {
+        it("localizes the messages when other data bindings update", function () {
             message.key = "Hello, {name}";
 
             var otherObject = {
@@ -149,7 +149,7 @@ describe("core/localizer-spec", function() {
             });
         });
 
-        it("automatically localizes the messages when data property updates", function() {
+        it("automatically localizes the messages when data property updates", function () {
             message.key = "Hello, {name}";
 
             message.data = {
@@ -166,7 +166,7 @@ describe("core/localizer-spec", function() {
             });
         });
 
-        it("waits for the localizer to have messages", function() {
+        it("waits for the localizer to have messages", function () {
             var localizeDeferred = Promise.defer();
             var mockLocalizer = {
                 localize: function () {
@@ -178,7 +178,7 @@ describe("core/localizer-spec", function() {
             message.key = "test";
 
             expect(message.localized.isFulfilled()).toBe(false);
-            localizeDeferred.resolve(function() { return "pass"; });
+            localizeDeferred.resolve(function () { return "pass"; });
 
             return message.localized.then(function (localized) {
                 expect(localized).toBe("pass");
@@ -186,19 +186,19 @@ describe("core/localizer-spec", function() {
         });
     });
 
-    describe("Localizer", function(){
+    describe("Localizer", function (){
         var l;
-        beforeEach(function() {
+        beforeEach(function () {
             l = new Localizer.Localizer().init("en");
         });
 
-        it("can be created with a foreign language code", function() {
+        it("can be created with a foreign language code", function () {
             var l = new Localizer.Localizer().init("no");
             expect(l.messageFormat).not.toBe(null);
         });
 
-        describe("locale", function() {
-            it("can't be set to an invalid tag", function() {
+        describe("locale", function () {
+            it("can't be set to an invalid tag", function () {
                 var threw = false;
                 try {
                     l.locale = "123-en-US";
@@ -210,8 +210,8 @@ describe("core/localizer-spec", function() {
             });
         });
 
-        describe("messages", function() {
-            it("can't be set to a non-object", function() {
+        describe("messages", function () {
+            it("can't be set to a non-object", function () {
                 var threw = false;
                 try {
                     l.messages = "hello";
@@ -219,7 +219,7 @@ describe("core/localizer-spec", function() {
                 expect(l.messages).not.toBe("hello");
                 expect(threw).toBe(true);
             });
-            it("can be set to an object", function() {
+            it("can be set to an object", function () {
                 var input = {"hello": "ahoy!"};
                 l.messages = input;
 
@@ -227,11 +227,11 @@ describe("core/localizer-spec", function() {
             });
         });
 
-        describe("localize", function() {
-            beforeEach(function() {
+        describe("localize", function () {
+            beforeEach(function () {
                 l.messages = {
                     "hello_name": "Hei {name}!",
-                    "hello_name_function": function(d){
+                    "hello_name_function": function (d){
                         var r = "";
                         r += "Hei ";
                         if(!d){
@@ -246,33 +246,33 @@ describe("core/localizer-spec", function() {
                 };
             });
 
-            it("returns a function with toString for simple messages", function() {
+            it("returns a function with toString for simple messages", function () {
                 var x = l.localizeSync("love you");
                 expect(x()).toBe("Jeg elsker deg");
                 expect("" + x).toBe("Jeg elsker deg");
             });
-            it("returns a function if it takes variables", function() {
+            it("returns a function if it takes variables", function () {
                 var fn = l.localizeSync("hello_name");
                 expect(typeof fn).toBe("function");
                 expect(fn({name: "Ingrid"})).toBe("Hei Ingrid!");
             });
-            it("caches the compiled functions", function() {
+            it("caches the compiled functions", function () {
                 var fn = l.localizeSync("hello_name");
                 var fn2 = l.localizeSync("hello_name");
                 expect(fn).toBe(fn2);
             });
-            it("returns precompiled functions", function() {
+            it("returns precompiled functions", function () {
                 var fn = l.localizeSync("hello_name_function");
                 expect(typeof fn).toBe("function");
                 expect(fn({name: "Ingrid"})).toBe("Hei Ingrid!");
             });
-            it("uses the default if the key does not exist", function() {
+            it("uses the default if the key does not exist", function () {
                 expect(l.localizeSync("missing", "Missing key")()).toBe("Missing key");
             });
-            it("returns the key if the key does not exist and no fallback is given", function() {
+            it("returns the key if the key does not exist and no fallback is given", function () {
                 expect(l.localizeSync("missing")()).toBe("missing");
             });
-            it("throws if the message object does not contain a 'message' property", function() {
+            it("throws if the message object does not contain a 'message' property", function () {
                 var threw = false;
                 try {
                     l.localizeSync("wrong object");
@@ -283,52 +283,52 @@ describe("core/localizer-spec", function() {
             });
         });
 
-        describe("loadMessages", function() {
-            it("fails when package.json has no manifest", function() {
-                return require.loadPackage(module.directory + "localizer/no-package-manifest/", {}).then(function(r){
+        describe("loadMessages", function () {
+            it("fails when package.json has no manifest", function () {
+                return require.loadPackage(module.directory + "localizer/no-package-manifest/", {}).then(function (r){
                     l.require = r;
                     return l.loadMessages();
-                }).then(function(messages) {
+                }).then(function (messages) {
                     return Promise.reject("expected messages not to load but got " + JSON.stringify(messages));
-                }, function(err) {
+                }, function (err) {
                     return void 0;
                 });
             });
-            it("fails when package has no manifest.json", function() {
-                return require.loadPackage(module.directory + "localizer/no-manifest/", {}).then(function(r){
+            it("fails when package has no manifest.json", function () {
+                return require.loadPackage(module.directory + "localizer/no-manifest/", {}).then(function (r){
                     l.require = r;
                     return l.loadMessages();
-                }).then(function(messages) {
+                }).then(function (messages) {
                     return Promise.reject("expected messages not to load but got " + JSON.stringify(messages));
-                }, function(err) {
+                }, function (err) {
                     return void 0;
                 });
             });
-            it("fails when package has no manifest.json", function() {
-                return require.loadPackage(module.directory + "localizer/no-manifest-files/", {}).then(function(r){
+            it("fails when package has no manifest.json", function () {
+                return require.loadPackage(module.directory + "localizer/no-manifest-files/", {}).then(function (r){
                     l.require = r;
                     return l.loadMessages();
-                }).then(function(messages) {
+                }).then(function (messages) {
                     return Promise.reject("expected messages not to load but got " + JSON.stringify(messages));
-                }, function(err) {
+                }, function (err) {
                     return void 0;
                 });
             });
 
-            it("can load a simple messages.json (promise)", function() {
-                return require.loadPackage(module.directory + "localizer/simple/", {}).then(function(r){
+            it("can load a simple messages.json (promise)", function () {
+                return require.loadPackage(module.directory + "localizer/simple/", {}).then(function (r){
                     l.require = r;
                     return l.loadMessages();
-                }).then(function(messages) {
+                }).then(function (messages) {
                     expect(messages.hello).toBe("Hello, World!");
                 });
             });
 
-            it("can load a simple messages.json (callback)", function() {
+            it("can load a simple messages.json (callback)", function () {
                 var deferred = Promise.defer();
-                require.loadPackage(module.directory + "localizer/simple/", {}).then(function(r){
+                require.loadPackage(module.directory + "localizer/simple/", {}).then(function (r){
                     l.require = r;
-                    l.loadMessages(null, function(messages) {
+                    l.loadMessages(null, function (messages) {
                         expect(messages.hello).toBe("Hello, World!");
                         deferred.resolve();
                     });
@@ -336,34 +336,34 @@ describe("core/localizer-spec", function() {
                 return deferred.promise;
             });
 
-            it("has a timeout", function() {
-                return require.loadPackage(module.directory + "localizer/simple/", {}).then(function(r){
+            it("has a timeout", function () {
+                return require.loadPackage(module.directory + "localizer/simple/", {}).then(function (r){
                     l.require = r;
                     return l.loadMessages(1);
-                }).then(function() {
+                }).then(function () {
                     return Promise.reject("expected a timeout");
-                }, function(err) {
+                }, function (err) {
                     return void 0;
                 });
             });
 
-            it("loads non-English messages", function() {
+            it("loads non-English messages", function () {
                 var l = new Localizer.Localizer().init("no");
-                return require.loadPackage(module.directory + "localizer/fallback/", {}).then(function(r){
+                return require.loadPackage(module.directory + "localizer/fallback/", {}).then(function (r){
                     l.require = r;
                     return l.loadMessages();
-                }).then(function(messages) {
+                }).then(function (messages) {
                     expect(messages.hello).toBe("Hei");
                 });
 
             });
 
-            it("loads the fallback messages", function() {
+            it("loads the fallback messages", function () {
                 var l = new Localizer.Localizer().init("no-x-compiled");
-                return require.loadPackage(module.directory + "localizer/fallback/", {}).then(function(r){
+                return require.loadPackage(module.directory + "localizer/fallback/", {}).then(function (r){
                     l.require = r;
                     return l.loadMessages();
-                }).then(function(messages) {
+                }).then(function (messages) {
                     expect(messages.hello).toBe("Hei");
                     expect(typeof messages.welcome).toBe("function");
                     var num_albums = l.localizeSync("num_albums");
@@ -374,26 +374,26 @@ describe("core/localizer-spec", function() {
         });
     });
 
-    describe("defaultLocalizer", function() {
-        beforeEach(function() {
+    describe("defaultLocalizer", function () {
+        beforeEach(function () {
             Localizer.defaultLocalizer.reset();
         });
 
-        describe("locale", function() {
-            it("defaults to navigator.language", function() {
+        describe("locale", function () {
+            it("defaults to navigator.language", function () {
                 expect(Localizer.defaultLocalizer.locale).toBe(window.navigator.language);
             });
-            it("saves the value to local storage", function() {
+            it("saves the value to local storage", function () {
                 Localizer.defaultLocalizer.locale = "en-x-test";
                 expect(Localizer.defaultLocalizer.locale).toBe("en-x-test");
                 expect(window.localStorage.getItem("montage_locale")).toBe("en-x-test");
             });
         });
 
-        describe("delegate", function() {
-            it("is called to determine the default locale to use", function() {
+        describe("delegate", function () {
+            it("is called to determine the default locale to use", function () {
                 var delegate = {
-                    getDefaultLocale: function() {
+                    getDefaultLocale: function () {
                         return "en-x-delegate";
                     }
                 };

@@ -10,7 +10,7 @@ var SelfSerializer = Montage.specialize.call(Object, {
     },
 
     initWithMalkerAndVisitorAndObject: {
-        value: function(malker, visitor, object) {
+        value: function (malker, visitor, object) {
             this._malker = malker;
             this._visitor = visitor;
             this._object = object;
@@ -20,13 +20,13 @@ var SelfSerializer = Montage.specialize.call(Object, {
     },
 
     getObjectLabel: {
-        value: function(object) {
+        value: function (object) {
             return this._visitor.labeler.getObjectLabel(object);
         }
     },
 
     addObject: {
-        value: function(object) {
+        value: function (object) {
             if (typeof object === "object") {
                 this._malker.visit(object);
 
@@ -36,7 +36,7 @@ var SelfSerializer = Montage.specialize.call(Object, {
     },
 
     addObjectReference: {
-        value: function(object) {
+        value: function (object) {
             var builder = this._visitor.builder,
                 labeler = this._visitor.labeler,
                 label = labeler.getObjectLabel(object);
@@ -49,7 +49,7 @@ var SelfSerializer = Montage.specialize.call(Object, {
     },
 
     setProperty: {
-        value: function(propertyName, value, type) {
+        value: function (propertyName, value, type) {
             var builder = this._visitor.builder,
                 propertiesObject;
 
@@ -63,7 +63,7 @@ var SelfSerializer = Montage.specialize.call(Object, {
     },
 
     setAllProperties: {
-        value: function() {
+        value: function () {
             var builder = this._visitor.builder,
                 propertiesObject;
 
@@ -77,13 +77,13 @@ var SelfSerializer = Montage.specialize.call(Object, {
     },
 
     setUnit: {
-        value: function(unitName) {
+        value: function (unitName) {
             this._visitor.setObjectCustomUnit(this._malker, this._object, unitName);
         }
     },
 
     setAllUnits: {
-        value: function(unitName) {
+        value: function (unitName) {
             this._visitor.setObjectCustomUnits(this._malker, this._object);
         }
     }

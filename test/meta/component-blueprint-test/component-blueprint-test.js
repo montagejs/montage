@@ -6,7 +6,7 @@ var Montage = require("montage").Montage,
 var  ComponentBlueprintTest = exports. ComponentBlueprintTest = Component.specialize( {
 
     init: {
-        value: function() {
+        value: function () {
             return this;
         }
     },
@@ -55,5 +55,5 @@ var  ComponentBlueprintTest = exports. ComponentBlueprintTest = Component.specia
         enumerable: false,
         value: null
     }
-    
+
 });

@@ -23,13 +23,13 @@ if (!Object.create) {
     Object._creator = function _ObjectCreator() {
         this.__proto__ = _ObjectCreator.prototype;
     };
-    Object.create = function(o, properties) {
+    Object.create = function (o, properties) {
         this._creator.prototype = o || Object.prototype;
         //Still needs to add properties....
         return new this._creator;
     };
 
-    Object.getPrototypeOf = function(o) {
+    Object.getPrototypeOf = function (o) {
         return o.__proto__;
     };
 }
@@ -40,7 +40,7 @@ if (!Object.create) {
 // TODO documentation
 if (!Object.isSealed) {
     Object.defineProperty(Object, "isSealed", {
-        value: function() {
+        value: function () {
             return false;
         },
         writable: true,
@@ -51,7 +51,7 @@ if (!Object.isSealed) {
 // TODO documentation
 if (!Object.seal) {
     Object.defineProperty(Object, "seal", {
-        value: function(object) {
+        value: function (object) {
             return object;
         },
         writable: true,

@@ -37,7 +37,7 @@ describe("test/base/abstract-text-area-spec", function () {
                 aTextArea.enterDocument(true);
             });
 
-            it("should be the value of the element when input is fired", function() {
+            it("should be the value of the element when input is fired", function () {
                 aTextArea.element.value = "A text";
 
                 var anEvent = document.createEvent("CustomEvent");
@@ -47,7 +47,7 @@ describe("test/base/abstract-text-area-spec", function () {
                 expect(aTextArea.value).toBe("A text");
             });
 
-            it("should be the value of the element when change is fired", function() {
+            it("should be the value of the element when change is fired", function () {
                 aTextArea.element.value = "A text";
 
                 var anEvent = document.createEvent("CustomEvent");
@@ -64,7 +64,7 @@ describe("test/base/abstract-text-area-spec", function () {
                 aTextArea.element = MockDOM.element();
             });
 
-            it("should add the corresponding class name to classList when enabled is false", function() {
+            it("should add the corresponding class name to classList when enabled is false", function () {
                 aTextArea.enabled = false;
 
                 expect(aTextArea.classList.contains("montage--disabled")).toBe(true);
@@ -160,18 +160,18 @@ describe("test/base/abstract-text-area-spec", function () {
             aTextArea = new TextArea();
             anElement = MockDOM.element();
             listener = {
-                handleEvent: function() {}
+                handleEvent: function () {}
             };
         });
 
-        it("should listen for element input after enterDocument", function() {
+        it("should listen for element input after enterDocument", function () {
             aTextArea.element = anElement;
             aTextArea.enterDocument(true);
 
             expect(aTextArea.element.hasEventListener("input", aTextArea)).toBe(true);
         });
 
-        it("should listen for element change after enterDocument", function() {
+        it("should listen for element change after enterDocument", function () {
             aTextArea.element = anElement;
             aTextArea.enterDocument(true);
 

@@ -8,7 +8,7 @@ exports.Main = Component.specialize( /** @lends Main# */ {
     },
 
     draw: {
-        value: function() {
+        value: function () {
             this.element.textContent = this.text;
         }
     }

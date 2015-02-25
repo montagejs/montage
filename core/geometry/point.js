@@ -12,7 +12,7 @@ var Montage = require("../core").Montage;
 exports.Point = Montage.specialize( /** @lends Point# */ {
     init: {
         enumerable: false,
-        value: function(x, y) {
+        value: function (x, y) {
             this.x = x === null ? 0 : x;
             this.y = y === null ? 0 : y;
             return this;
@@ -52,7 +52,7 @@ exports.Point = Montage.specialize( /** @lends Point# */ {
      */
     interpolate: {
         enumerable: false,
-        value: function(percent, point0, point1, precision) {
+        value: function (percent, point0, point1, precision) {
             var xValue,
                 yValue;
             xValue = point0.x + (point1.x - point0.x) * percent;

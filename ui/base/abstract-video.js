@@ -114,7 +114,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
     },
 
     /**
-     * @method
+     * @function
      */
     loadMedia: {
         value: function () {
@@ -150,7 +150,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
     },
 
     /**
-     * @method
+     * @function
      */
     toggleRepeat: {
         value: function () {
@@ -176,7 +176,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
     },
 
     /**
-     * @method
+     * @function
      */
     showPoster: {
         value: function () {
@@ -210,7 +210,7 @@ var AbstractVideo = exports.AbstractVideo = Component.specialize(/** @lends Abst
 
     /**
      * Toggles full-screen playback mode.
-     * @method
+     * @function
      */
     toggleFullScreen: {
         value: function () {

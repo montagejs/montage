@@ -32,11 +32,11 @@ var Montage = require("montage").Montage,
     objects = require("./testobjects");
 
 describe("core-require-spec",
-function() {
+function () {
     describe("Object Information",
-    function() {
+    function () {
         it("should describe a class object",
-        function() {
+        function () {
             var info = Montage.getInfoForObject(objects.Proto);
 
             expect(info.objectName).toBe("Proto");
@@ -44,7 +44,7 @@ function() {
             expect(info.moduleId).toBe("core/testobjects");
         });
         it("should describe a subclass object",
-        function() {
+        function () {
             var info = Montage.getInfoForObject(objects.SubProto);
 
             expect(info.objectName).toBe("SubProto");
@@ -52,7 +52,7 @@ function() {
             expect(info.moduleId).toBe("core/testobjects");
         });
         it("should describe a class instance object",
-        function() {
+        function () {
             var instance = new objects.Simple();
             var info = Montage.getInfoForObject(instance);
 
@@ -62,7 +62,7 @@ function() {
         });
 
         it("should describe a function instance object",
-        function() {
+        function () {
             var instance = new objects.Funktion();
             var info = Montage.getInfoForObject(instance);
 
@@ -72,7 +72,7 @@ function() {
         });
 
         it("should describe a class object that accessed getInfoForObject before being exported",
-        function() {
+        function () {
             var info = Montage.getInfoForObject(objects.FunkyProto);
 
             expect(info.objectName).toBe("FunkyProto");

@@ -49,7 +49,7 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     },
 
     acceptsActiveTarget: {
-        get: function() {
+        get: function () {
             var shouldBeginEditing = this.callDelegateMethod("shouldBeginEditing", this);
             return (shouldBeginEditing !== false);
         }
@@ -68,11 +68,11 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     },
 
     placeholderValue: {
-        set: function(value) {
+        set: function (value) {
             this._placeholderValue = value;
             this.needsDraw = true;
         },
-        get: function() {
+        get: function () {
             return this._placeholderValue;
         }
     },
@@ -100,7 +100,7 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     },
 
     hasFocus: {
-        get: function() {
+        get: function () {
             return this._hasFocus;
         }
     },
@@ -110,7 +110,7 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     },
 
     handleKeyPress: {
-        value: function(evt) {
+        value: function (evt) {
             if (!this.enabled || evt.keyComposer !== this._keyComposer) {
                 return;
             }
@@ -120,13 +120,13 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     },
 
     prepareForActivationEvents: {
-        value: function() {
+        value: function () {
             this._keyComposer.addEventListener("keyPress", this, false);
         }
     },
 
     enterDocument: {
-        value: function(firstTime) {
+        value: function (firstTime) {
             if (firstTime) {
                 this.element.addEventListener("input", this, false);
                 this.element.addEventListener("change", this, false);
@@ -135,7 +135,7 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     },
 
     draw: {
-        value: function() {
+        value: function () {
             var value = this.value;
             if (value === null ||  typeof value === "undefined") {
                 this.element.value = "";
@@ -151,26 +151,26 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     },
 
     handleChange: {
-        value: function() {
+        value: function () {
             this._updateValueFromDom();
         }
     },
 
     handleInput: {
-        value: function(event) {
+        value: function (event) {
             this._updateValueFromDom();
         }
     },
 
     willBecomeActiveTarget: {
-        value: function(event) {
+        value: function (event) {
             this._hasFocus = true;
             this.callDelegateMethod("didBeginEditing", this);
         }
     },
 
     surrendersActiveTarget: {
-        value: function(event) {
+        value: function (event) {
             var shouldEnd = this.callDelegateMethod("shouldEndEditing", this);
             if (shouldEnd === false) {
                 return false;
@@ -183,7 +183,7 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     },
 
     _updateValueFromDom: {
-        value: function() {
+        value: function () {
             if (this._value !== this.element.value) {
                 this._value = this.element.value;
                 this.dispatchOwnPropertyChange("value", this._value);

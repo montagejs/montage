@@ -6,13 +6,13 @@ var SerializationExtractor = Montage.specialize( {
     _serialization: {value: null},
 
     initWithSerialization: {
-        value: function(serialization) {
+        value: function (serialization) {
             this._serialization = serialization;
         }
     },
 
     extractObjects: {
-        value: function(labels, externalLabels) {
+        value: function (labels, externalLabels) {
             var serialization = this._serialization,
                 objects = {};
 
@@ -36,7 +36,7 @@ var SerializationExtractor = Montage.specialize( {
     },
 
     _findLabels: {
-        value: function(label, labels) {
+        value: function (label, labels) {
             var serialization;
 
             if (labels.indexOf(label) === -1) {
@@ -53,7 +53,7 @@ var SerializationExtractor = Montage.specialize( {
     },
 
     _collectLabels: {
-        value: function(serialization, labels) {
+        value: function (serialization, labels) {
             var type = MontageReviver.getTypeOf(serialization),
                 label;
 
@@ -73,7 +73,7 @@ var SerializationExtractor = Montage.specialize( {
     },
 
     _collectLabelsInUnits: {
-        value: function(objectSerialization, objects) {
+        value: function (objectSerialization, objects) {
             if ("bindings" in objectSerialization) {
                 this._collectLabelsInBindings(objectSerialization.bindings, objects);
             } else if ("localizations" in objectSerialization) {
@@ -87,7 +87,7 @@ var SerializationExtractor = Montage.specialize( {
     //
 
     _collectLabelsInBindings: {
-        value: function(unitSerialization, labels) {
+        value: function (unitSerialization, labels) {
             var binding,
                 sourcePath;
 
@@ -100,18 +100,18 @@ var SerializationExtractor = Montage.specialize( {
     },
 
     _collectLabelsInBindingPath: {
-        value: function(path, labels) {
+        value: function (path, labels) {
             var self = this,
                 parseTree = parse(path);
 
-            this._traverseBindingParseTree(parseTree, function(syntax) {
+            this._traverseBindingParseTree(parseTree, function (syntax) {
                 self._findLabels(syntax.label, labels);
             });
         }
     },
 
     _traverseBindingParseTree: {
-        value: function(parseTree, visitor) {
+        value: function (parseTree, visitor) {
             var args = parseTree.args;
 
             if (parseTree.type === "component") {
@@ -131,7 +131,7 @@ var SerializationExtractor = Montage.specialize( {
     //
 
     _collectLabelsInLocalizations: {
-        value: function(unitSerialization, labels) {
+        value: function (unitSerialization, labels) {
             var property,
                 data;
 
@@ -143,7 +143,7 @@ var SerializationExtractor = Montage.specialize( {
     },
 
     _collectLabelsInLocalizationProperty: {
-        value: function(property, labels) {
+        value: function (property, labels) {
             var data;
 
             if ("key" in property) {
@@ -168,7 +168,7 @@ var SerializationExtractor = Montage.specialize( {
     },
 
     _collectLabelsInLocalizationBinding: {
-        value: function(binding, labels) {
+        value: function (binding, labels) {
             var sourcePath = binding["<-"] || binding["<->"];
 
             if (sourcePath) {

@@ -38,7 +38,7 @@ describe("meta/event-blueprint-spec", function () {
         describe("serialization", function () {
             var serializer, blueprintSerialization;
 
-            beforeEach(function() {
+            beforeEach(function () {
                 blueprintSerialization = {
                     "root": {
                         "prototype": "montage/core/meta/event-blueprint",
@@ -54,7 +54,7 @@ describe("meta/event-blueprint-spec", function () {
                 serializer.setSerializationIndentation(4);
             });
 
-            it("should serialize correctly", function() {
+            it("should serialize correctly", function () {
                 var expectedSerialization,
                     serialization;
 

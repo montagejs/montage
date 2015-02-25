@@ -32,37 +32,37 @@ var Montage = require("montage").Montage,
     Enum = require("montage/core/enum").Enum;
 
 describe("enum-spec",
-function() {
+function () {
     describe("initialization",
-    function() {
+    function () {
         var TestEnum = new Enum().initWithMembers("ZERO","ONE","TWO");
         it("should define properties",
-        function() {
+        function () {
             expect(Object.getOwnPropertyDescriptor(TestEnum, "ZERO")).not.toBeNull();
             expect(Object.getOwnPropertyDescriptor(TestEnum, "ONE")).not.toBeNull();
             expect(Object.getOwnPropertyDescriptor(TestEnum, "TWO")).not.toBeNull();
         });
         it("should be use incremental values",
-        function() {
+        function () {
             expect(TestEnum.ZERO).toEqual(0);
             expect(TestEnum.ONE).toEqual(1);
             expect(TestEnum.TWO).toEqual(2);
         });
         it("should not be editable",
-        function() {
+        function () {
             TestEnum.ZERO = 666;
             expect(TestEnum.ZERO).toEqual(0);
         });
         it("should not be extensible",
-        function() {
+        function () {
             TestEnum = new Enum().initWithMembers("ZERO","ONE","TWO");
-            expect(function() {
+            expect(function () {
                 TestEnum.addMember("THREE");
             }).toThrow();
          });
      });
     describe("adding a member",
-    function() {
+    function () {
         var TestEnum = new Enum().init();
         TestEnum.addMember("ZERO");
         TestEnum.addMember("ONE");
@@ -70,11 +70,11 @@ function() {
         TestEnum.addMember("THREE");
         TestEnum.seal();
         it("should define a property",
-        function() {
+        function () {
             expect(Object.getOwnPropertyDescriptor(TestEnum, "THREE")).not.toBeNull();
         });
         it("should be use incremental values",
-        function() {
+        function () {
             expect(TestEnum.THREE).toEqual(3);
         });
     });

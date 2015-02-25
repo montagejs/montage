@@ -35,24 +35,24 @@ var Montage = require("montage").Montage,
 var TestConverter = Converter.specialize( {
 
     convert: {
-        value: function(value) {
+        value: function (value) {
             return "CONVERT" + value;
         }
     },
 
     revert: {
-        value: function(value) {
+        value: function (value) {
             return value.replace("CONVERT", "");
         }
     }
 
 });
 
-describe("bindings/binding-converter-spec", function() {
+describe("bindings/binding-converter-spec", function () {
 
     var target, source, bindingDescriptor;
 
-    beforeEach(function() {
+    beforeEach(function () {
         target = new Montage();
         source = new Montage();
 
@@ -63,9 +63,9 @@ describe("bindings/binding-converter-spec", function() {
         };
     })
 
-    describe("involved in a two way binding", function() {
+    describe("involved in a two way binding", function () {
 
-        it("should convert the value passed to the source when the binding is established", function() {
+        it("should convert the value passed to the source when the binding is established", function () {
             source.bar = "bar";
 
             Bindings.defineBinding(target, "foo", bindingDescriptor);
@@ -73,7 +73,7 @@ describe("bindings/binding-converter-spec", function() {
             expect(target.foo).toBe("CONVERTbar")
         });
 
-        it("should convert the value passed to the source when the bound object's value changes", function() {
+        it("should convert the value passed to the source when the bound object's value changes", function () {
             source.bar = "bar";
 
             Bindings.defineBinding(target, "foo", bindingDescriptor);
@@ -84,7 +84,7 @@ describe("bindings/binding-converter-spec", function() {
         });
 
 
-        it("should revert the value passed to the bound object when the source object's value changes", function() {
+        it("should revert the value passed to the bound object when the source object's value changes", function () {
             source.bar = "bar";
 
             Bindings.defineBinding(target, "foo", bindingDescriptor);
@@ -96,14 +96,14 @@ describe("bindings/binding-converter-spec", function() {
 
     });
 
-    describe("involved in a one way binding", function() {
+    describe("involved in a one way binding", function () {
 
-        beforeEach(function() {
+        beforeEach(function () {
             bindingDescriptor["<-"] = bindingDescriptor["<->"];
             delete bindingDescriptor["<->"];
         });
 
-        it("should convert the value passed to the source when the binding is established", function() {
+        it("should convert the value passed to the source when the binding is established", function () {
             source.bar = "bar";
 
             Bindings.defineBinding(target, "foo", bindingDescriptor);
@@ -111,7 +111,7 @@ describe("bindings/binding-converter-spec", function() {
             expect(target.foo).toBe("CONVERTbar")
         });
 
-        it("should convert the value passed to the source when the bound object's value changes", function() {
+        it("should convert the value passed to the source when the bound object's value changes", function () {
             source.bar = "bar";
 
             Bindings.defineBinding(target, "foo", bindingDescriptor);
@@ -121,7 +121,7 @@ describe("bindings/binding-converter-spec", function() {
             expect(target.foo).toBe("CONVERTbaz")
         });
 
-        it("must not enable propagating a value from the source object to the bound object", function() {
+        it("must not enable propagating a value from the source object to the bound object", function () {
             source.bar = "bar";
 
             Bindings.defineBinding(target, "foo", bindingDescriptor);

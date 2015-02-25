@@ -16,7 +16,7 @@ http.createServer(function (req, res) {
 }).listen(port);
 
 function serveWithDelay(req, res, delay) {
-    setTimeout(function() {
+    setTimeout(function () {
         serve(req, res);
     }, delay);
 }
@@ -25,7 +25,7 @@ function serve(req, res) {
     var path = getUrlPath(req);
 
     if (path === "/resource.js") {
-        fs.readFile('./resource.js', function(err, data) {
+        fs.readFile('./resource.js', function (err, data) {
             res.writeHead(200, {'Content-Type': 'text/javascript'});
             res.end(data);
         });

@@ -93,7 +93,7 @@ var UNDO_OPERATION = 0,
  *
  *        this.undoManager.register("Add Random", deferredUndo.promise);
  *
- *        return this.randomNumberGeneratorService.next().then(function(rand) {
+ *        return this.randomNumberGeneratorService.next().then(function (rand) {
  *            deferredUndo.resolve(["Add " + rand, self.subtract, self, rand];
  *            var result = self.total = self.total + number;
  *            return result
@@ -374,7 +374,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
      * @param {string} label A label to associate with this undo entry.
      * @param {promise} operationPromise A promise for an undoable operation
      * @returns a promise for the resolution of the operationPromise
-     * @method
+     * @function
      */
     register: {
         value: function (label, operationPromise) {
@@ -440,7 +440,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
     },
 
     _resolveUndoEntry: {
-        value: function(entry, operationInfo) {
+        value: function (entry, operationInfo) {
             var label,
                 undoFunction,
                 context,
@@ -554,7 +554,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
 
     /**
      * Removes all items from the undo stack.
-     * @method
+     * @function
      */
     clearUndo: {
         value: function () {
@@ -564,7 +564,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
 
     /**
      * Removes all items from the redo stack.
-     * @method
+     * @function
      */
     clearRedo: {
         value: function () {
@@ -600,7 +600,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
 
     /**
      * Schedules the next undo operation for invocation as soon as possible
-     * @method
+     * @function
      * @returns {Promise} A promise resolving to true when this undo request has been performed
      */
     undo: {
@@ -621,7 +621,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
 
     /**
      * Schedules the next redo operation for invocation as soon as possible
-     * @method
+     * @function
      * @returns {Promise} A promise resolving to true when this redo request has been performed
      */
     redo: {

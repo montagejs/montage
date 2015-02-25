@@ -59,17 +59,17 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
      * @type {boolean}
      */
     enabled: {
-        get: function() {
+        get: function () {
             return this._enabled;
         },
-        set: function(value) {
+        set: function (value) {
             this._enabled = value;
             this.needsDraw = true;
         }
     },
 
     acceptsActiveTarget: {
-        value: function() {
+        value: function () {
             return this.enabled;
         }
     },
@@ -83,17 +83,17 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
     },
 
     checked: {
-        get: function() {
+        get: function () {
             return this._checked;
         },
-        set: function(value) {
+        set: function (value) {
             this._checked = value;
             this.needsDraw = true;
         }
     },
 
     prepareForActivationEvents: {
-        value: function() {
+        value: function () {
             this._pressComposer.addEventListener("press", this, false);
         }
     },
@@ -103,7 +103,7 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
      * @private
      */
     handlePress: {
-        value: function(event) {
+        value: function (event) {
             if(!this.enabled) {
                 return;
             }
@@ -114,7 +114,7 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
     },
 
     handleKeyup: {
-        value: function(event) {
+        value: function (event) {
             if(!this.enabled) {
                 return;
             }
@@ -128,14 +128,14 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
     },
 
     enterDocument: {
-        value: function(firstDraw) {
+        value: function (firstDraw) {
             this.element.setAttribute("role", "checkbox");
             this.element.addEventListener("keyup", this, false);
         }
     },
 
     draw: {
-        value: function() {
+        value: function () {
             this.element.setAttribute("aria-checked", this._checked);
             this.element.setAttribute("aria-disabled", !this._enabled);
         }

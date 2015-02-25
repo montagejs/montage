@@ -112,10 +112,10 @@ var NUMERIC_SCALES_BINARY_ = exports.NUMERIC_SCALES_BINARY_ = {
  * @param {Object} conversion Dictionary of scaling factors.
  * @param {number} opt_decimals The number of decimals to use.  Default is 2.
  * @param {string} opt_suffix Optional suffix to append.
- * @return {string} The human readable form of the byte size.
+ * @returns {string} The human readable form of the byte size.
  * @private
  */
-var _numericValueToString = exports._numericValueToString = function(val, conversion, opt_decimals, opt_suffix, prefixes) {
+var _numericValueToString = exports._numericValueToString = function (val, conversion, opt_decimals, opt_suffix, prefixes) {
     prefixes = prefixes || NUMERIC_SCALE_PREFIXES_;
     var orig_val = val;
     var symbol = '';
@@ -147,10 +147,10 @@ var _numericValueToString = exports._numericValueToString = function(val, conver
  * @memberof module:montage/converter#
  * @param {string} stringValue String to be converted to numeric value.
  * @param {Object} conversion Dictionary of conversion scales.
- * @return {number} Numeric value for string.  If it cannot be converted, returns NaN.
+ * @returns {number} Numeric value for string.  If it cannot be converted, returns NaN.
  * @private
  */
-var _stringToNumericValue = function(stringValue, conversion) {
+var _stringToNumericValue = function (stringValue, conversion) {
     var match = stringValue.match(SCALED_NUMERIC_RE_);
     if (!match) {
         return NaN;
@@ -169,9 +169,9 @@ var _stringToNumericValue = function(stringValue, conversion) {
  * @memberof module:montage/core/converter#
  * @function
  * @param {string} val String value to check.
- * @return {boolean} true If the string could be converted to a numeric value.
+ * @returns {boolean} true If the string could be converted to a numeric value.
  */
-var isConvertableScaledNumber = function(val) {
+var isConvertableScaledNumber = function (val) {
     return SCALED_NUMERIC_RE_.test(val);
 };
 
@@ -182,9 +182,9 @@ var isConvertableScaledNumber = function(val) {
  * @memberof module:montage/core/converter#
  * @function
  * @param {string} stringValue String to be converted to numeric value.
- * @return {number} Numeric value for string.
+ * @returns {number} Numeric value for string.
  */
-var stringToNumericValue = exports.stringToNumericValue = function(stringValue) {
+var stringToNumericValue = exports.stringToNumericValue = function (stringValue) {
     if (stringValue.endsWith('B')) {
         return _stringToNumericValue(
             stringValue, NUMERIC_SCALES_BINARY_);
@@ -203,7 +203,7 @@ var stringToNumericValue = exports.stringToNumericValue = function(stringValue) 
  * @param {number} opt_decimals The number of decimals to use. Defaults to 2.
  * @returns {string} String representation of number.
  */
-var numericValueToString = exports.numericValueToString = function(val, opt_decimals) {
+var numericValueToString = exports.numericValueToString = function (val, opt_decimals) {
     return _numericValueToString(val, NUMERIC_SCALES_SI_, opt_decimals);
 };
 
@@ -238,14 +238,14 @@ var NumberValidator = exports.NumberValidator = Validator.specialize( /** @lends
 
     /**
      * Determines if the parameter `v` is a number or not.
-     * @method
+     * @function
      * @param {string} v The value to validate as a number.
      * @returns {number} num An integer or float, if the value provided to the
      * function can parsed as a number;
      * otherwise returns an error.
      */
     validate: {
-        value: function(v) {
+        value: function (v) {
             var num;
             v = v || '';
             v = v.replace(/,/g, '');
@@ -345,7 +345,7 @@ var NumberConverter = exports.NumberConverter = Converter.specialize( /** @lends
 
     // credit: sugar.js - https://github.com/andrewplummer/Sugar
     _makeReadable: {
-        value: function(num, comma, period) {
+        value: function (num, comma, period) {
             comma = comma || ',';
             period = period || '.';
             var split = num.toString().split('.');
@@ -368,12 +368,12 @@ var NumberConverter = exports.NumberConverter = Converter.specialize( /** @lends
     },
 
     /**
-     * @method
+     * @function
      * @param {number} value The value to convert.
      * @returns {string}
      */
     convert: {
-        value: function(v) {
+        value: function (v) {
             if (this.shorten) {
                 // shorten the number to 10K, 100K, 1M etc
                 return numericValueToString(v, this.decimals);
@@ -393,7 +393,7 @@ var NumberConverter = exports.NumberConverter = Converter.specialize( /** @lends
     },
 
     /**
-     * @method
+     * @function
      * @param {string} stringValue The string representation of a number.
      * @returns {number} The numeric value validated with to {@link
      * NumberConverter#validator}.
@@ -404,7 +404,7 @@ var NumberConverter = exports.NumberConverter = Converter.specialize( /** @lends
      * @see NumberConverter#allowNegative
      */
     revert: {
-        value: function(stringValue) {
+        value: function (stringValue) {
             // use a Validator to validate first
             this.validator.allowFloat = this.allowFloat;
             this.validator.allowNegative = this.allowNegative;

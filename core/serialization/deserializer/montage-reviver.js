@@ -13,7 +13,7 @@ var ModuleLoader = Montage.specialize( {
     _objectRequires: {value: null},
 
     init: {
-        value: function(_require, objectRequires) {
+        value: function (_require, objectRequires) {
             if (typeof _require !== "function") {
                 throw new Error("Function 'require' missing.");
             }
@@ -35,7 +35,7 @@ var ModuleLoader = Montage.specialize( {
     },
 
     getExports: {
-        value: function(_require, moduleId) {
+        value: function (_require, moduleId) {
             var module;
 
             // Transforms relative module ids into absolute module ids
@@ -55,7 +55,7 @@ var ModuleLoader = Montage.specialize( {
     },
 
     getModule: {
-        value: function(moduleId, label) {
+        value: function (moduleId, label) {
             var objectRequires = this._objectRequires,
                 _require,
                 module;
@@ -90,7 +90,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
      *        serialization.
      */
     init: {
-        value: function(_require, objectRequires) {
+        value: function (_require, objectRequires) {
             this.moduleLoader = new ModuleLoader()
                                  .init(_require, objectRequires);
 
@@ -99,7 +99,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     getTypeOf: {
-        value: function(value) {
+        value: function (value) {
             if (value !== null &&
                 typeof value === "object" &&
                 Object.keys(value).length === 1
@@ -116,7 +116,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     _checkLabel: {
-        value: function(label, isTemplateProperty) {
+        value: function (label, isTemplateProperty) {
             if (isTemplateProperty && label[0] !== ":") {
                 return new Error("Aliases can only be defined in template properties (start with a colon (:)), \"" + label + "\".");
             } else if (!isTemplateProperty && label[0] === ":") {
@@ -126,7 +126,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     reviveRootObject: {
-        value: function(value, context, label) {
+        value: function (value, context, label) {
             var error,
                 isAlias = "alias" in value;
 
@@ -145,7 +145,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     reviveElement: {
-        value: function(value, context, label) {
+        value: function (value, context, label) {
             var elementId = value["#"],
                 element = context.getElementById(elementId);
 
@@ -161,7 +161,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     reviveModule: {
-        value: function(value, context, label) {
+        value: function (value, context, label) {
             var moduleId = value["%"],
                 _require = context.getRequire();
 
@@ -173,7 +173,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     reviveCustomObject: {
-        value: function(value, context, label) {
+        value: function (value, context, label) {
             if ("alias" in value) {
                 return this.reviveAlias(value, context, label);
             } else {
@@ -183,7 +183,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     reviveMontageObject: {
-        value: function(value, context, label) {
+        value: function (value, context, label) {
             var self = this,
                 module,
                 locationDesc,
@@ -198,7 +198,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
             }
 
             if (Promise.isPromise(module)) {
-                return module.then(function(exports) {
+                return module.then(function (exports) {
                     return self.instantiateMontageObject(value, exports, objectName, context, label);
                 }, function (error) {
                     if (error.stack) {
@@ -215,7 +215,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     instantiateMontageObject: {
-        value: function(value, module, objectName, context, label) {
+        value: function (value, module, objectName, context, label) {
             var self = this,
                 object,
                 montageObjectDesc;
@@ -227,7 +227,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
             montageObjectDesc = this.reviveObjectLiteral(value, context);
 
             if (Promise.isPromise(montageObjectDesc)) {
-                return montageObjectDesc.then(function(montageObjectDesc) {
+                return montageObjectDesc.then(function (montageObjectDesc) {
                     return self.deserializeMontageObject(montageObjectDesc, object, context, label);
                 });
             } else {
@@ -237,7 +237,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     deserializeMontageObject: {
-        value: function(montageObjectDesc, object, context, label) {
+        value: function (montageObjectDesc, object, context, label) {
             var properties;
 
             if (typeof object.deserializeSelf === "function") {
@@ -249,7 +249,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
                 properties = this.deserializeMontageObjectProperties(object, montageObjectDesc.properties, context);
 
                 if (Promise.isPromise(properties)) {
-                    return properties.then(function() {
+                    return properties.then(function () {
                         return object;
                     });
                 } else {
@@ -260,7 +260,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     deserializeMontageObjectProperties: {
-        value: function(object, properties, context) {
+        value: function (object, properties, context) {
             var value;
 
             if (typeof object.deserializeProperties === "function") {
@@ -278,7 +278,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     deserializeCustomMontageObject: {
-        value: function(object, objectDesc, context, label) {
+        value: function (object, objectDesc, context, label) {
             var substituteObject;
 
             var selfDeserializer = new SelfDeserializer()
@@ -286,7 +286,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
             substituteObject = object.deserializeSelf(selfDeserializer);
 
             if (Promise.isPromise(substituteObject)) {
-                return substituteObject.then(function(substituteObject) {
+                return substituteObject.then(function (substituteObject) {
                     context.setObjectLabel(substituteObject, label);
                     return substituteObject;
                 });
@@ -300,7 +300,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     getMontageObject: {
-        value: function(value, module, objectName, context, label) {
+        value: function (value, module, objectName, context, label) {
             var object;
 
             if (context.hasUserObject(label)) {
@@ -343,7 +343,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     reviveAlias: {
-        value: function(value, context, label) {
+        value: function (value, context, label) {
             var alias = new Alias();
             alias.value = value.alias;
 
@@ -353,14 +353,14 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     didReviveObjects: {
-        value: function(objects, context) {
+        value: function (objects, context) {
             var self = this,
                 value;
 
             value = this._deserializeUnits(context);
 
             if (Promise.isPromise(value)) {
-                return value.then(function() {
+                return value.then(function () {
                     self._invokeDeserializedFromSerialization(objects, context);
                 });
             } else {
@@ -371,7 +371,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
 
     // TODO: can deserializeSelf make deserializedFromSerialization irrelevant?
     _invokeDeserializedFromSerialization: {
-        value: function(objects, context) {
+        value: function (objects, context) {
             var object;
 
             for (var label in objects) {
@@ -393,7 +393,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     _deserializeUnits: {
-        value: function(context) {
+        value: function (context) {
             var unitsToDeserialize = context.getUnitsToDeserialize(),
                 units = MontageReviver._unitRevivers,
                 unitNames,
@@ -428,7 +428,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
         value: /(?:^|-)([^-])/g
     },
     _replaceToCamelCase: {
-        value: function(_, g1) { return g1.toUpperCase(); }
+        value: function (_, g1) { return g1.toUpperCase(); }
     },
     // Cache of location descriptors indexed by locationId
     _locationDescCache: {value: Object.create(null)},
@@ -447,7 +447,7 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     //
     // @returns {moduleId, objectName}
     parseObjectLocationId: {
-        value: function(locationId) {
+        value: function (locationId) {
             var locationDescCache = this._locationDescCache,
                 locationDesc,
                 bracketIndex,
@@ -483,14 +483,14 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
 
     defineUnitReviver: {
-        value: function(name, funktion) {
+        value: function (name, funktion) {
             this._unitRevivers[name] = funktion;
             this._unitNames.push(name);
         }
     },
 
     getTypeOf: {
-        value: function(value) {
+        value: function (value) {
             return this.prototype.getTypeOf.call(this, value);
         }
     }

@@ -7,14 +7,14 @@ var Montage = require("montage").Montage,
     Serialization = require("montage/core/serialization/serialization").Serialization,
     MontageLabeler = require("montage/core/serialization/serializer/montage-labeler").MontageLabeler;
 
-describe("reel/serialization/serialization-merger-spec", function() {
+describe("reel/serialization/serialization-merger-spec", function () {
     var merger;
 
-    beforeEach(function() {
+    beforeEach(function () {
         merger = new SerializationMerger();
     });
 
-    it("should merge two non-colliding serializations", function() {
+    it("should merge two non-colliding serializations", function () {
         var serialization1 = new Serialization().initWithObject({
                 "object1": {
                     "value": {
@@ -49,7 +49,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
             .toEqual(expectedSerialization);
     });
 
-    it("should merge two colliding serializations", function() {
+    it("should merge two colliding serializations", function () {
         var serialization1 = new Serialization().initWithObject({
                 "object": {
                     "value": {
@@ -84,7 +84,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
             .toEqual(expectedSerialization);
     });
 
-    it("should return a collision table when merging serializations", function() {
+    it("should return a collision table when merging serializations", function () {
         var serialization1 = new Serialization().initWithObject({
                 "object": {
                     "value": {
@@ -107,9 +107,9 @@ describe("reel/serialization/serialization-merger-spec", function() {
         expect("object" in collisionTable).toBe(true);
     });
 
-    describe("delegate", function() {
-        describe("willMergeObjectWithLabel", function() {
-            it("should not change the merge behavior", function() {
+    describe("delegate", function () {
+        describe("willMergeObjectWithLabel", function () {
+            it("should not change the merge behavior", function () {
                 var serialization1 = new Serialization().initWithObject({
                         "object1": {
                             "value": {
@@ -138,7 +138,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
                         }
                     },
                     delegate = {
-                        willMergeObjectWithLabel: function(label) {
+                        willMergeObjectWithLabel: function (label) {
                         }
                     };
 
@@ -148,7 +148,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
                     .toEqual(expectedSerialization);
             });
 
-            it("should merge object2 as object1", function() {
+            it("should merge object2 as object1", function () {
                 var serialization1 = new Serialization().initWithObject({
                         "object1": {
                             "value": {
@@ -184,7 +184,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
                         }
                     },
                     delegate = {
-                        willMergeObjectWithLabel: function(label) {
+                        willMergeObjectWithLabel: function (label) {
                             if (label === "object2") {
                                 return "object1";
                             }
@@ -196,7 +196,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
                     .toEqual(expectedSerialization);
             });
 
-            it("should merge object2 as object1 from serialization1 even though there's another on in serialization2", function() {
+            it("should merge object2 as object1 from serialization1 even though there's another on in serialization2", function () {
                 var serialization1 = new Serialization().initWithObject({
                         "object1": {
                             "value": {
@@ -241,7 +241,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
                         }
                     },
                     delegate = {
-                        willMergeObjectWithLabel: function(label) {
+                        willMergeObjectWithLabel: function (label) {
                             if (label === "object2") {
                                 return "object1";
                             }
@@ -253,7 +253,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
                     .toEqual(expectedSerialization);
             });
 
-            it("should rename a template property to a label that refers to a component that exists in serialization1", function() {
+            it("should rename a template property to a label that refers to a component that exists in serialization1", function () {
                 var serialization1 = new Serialization().initWithObject({
                         "object1": {
                             "value": {
@@ -273,7 +273,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
                         "object1:cell": {}
                     },
                     delegate = {
-                        willMergeObjectWithLabel: function(label) {
+                        willMergeObjectWithLabel: function (label) {
                             if (label === "object2:cell") {
                                 return "object1:cell";
                             }
@@ -285,7 +285,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
                     .toEqual(expectedSerialization);
             });
 
-            it("should rename an object label when merging", function() {
+            it("should rename an object label when merging", function () {
                 var serialization1 = new Serialization().initWithObject({
                         "x": {
                             "value": {
@@ -313,7 +313,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
                         }
                     },
                     delegate = {
-                        willMergeObjectWithLabel: function(label) {
+                        willMergeObjectWithLabel: function (label) {
                             if (label === "y") {
                                 return "z";
                             }
@@ -325,7 +325,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
                     .toEqual(expectedSerialization);
             });
 
-            it("should rename an object label when merging even when there's a collision", function() {
+            it("should rename an object label when merging even when there's a collision", function () {
                 var serialization1 = new Serialization().initWithObject({
                         "x": {
                             "value": {
@@ -353,7 +353,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
                         }
                     },
                     delegate = {
-                        willMergeObjectWithLabel: function(label) {
+                        willMergeObjectWithLabel: function (label) {
                             if (label === "x") {
                                 return "z";
                             }
@@ -365,7 +365,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
                     .toEqual(expectedSerialization);
             });
 
-            it("should throw when willMergeObjectWithLabel returns a labels that already exists in the origin serialization", function() {
+            it("should throw when willMergeObjectWithLabel returns a labels that already exists in the origin serialization", function () {
                 var serialization1 = new Serialization().initWithObject({
                         "x": {
                             "value": {
@@ -386,7 +386,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
                         }
                     }),
                     delegate = {
-                        willMergeObjectWithLabel: function(label) {
+                        willMergeObjectWithLabel: function (label) {
                             if (label === "x") {
                                 return "z";
                             }
@@ -398,7 +398,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
                 }).toThrow();
             });
 
-            it("should throw when willMergeObjectWithLabel returns a labels that was generated to solve a collision", function() {
+            it("should throw when willMergeObjectWithLabel returns a labels that was generated to solve a collision", function () {
                 var serialization1 = new Serialization().initWithObject({
                         "x": {
                             "value": {
@@ -424,7 +424,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
                         }
                     }),
                     delegate = {
-                        willMergeObjectWithLabel: function(label) {
+                        willMergeObjectWithLabel: function (label) {
                             if (label === "x") {
                                 return "x4";
                             }
@@ -437,7 +437,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
             });
         });
 
-        describe("labeler", function() {
+        describe("labeler", function () {
             var serialization1 = new Serialization().initWithObject({
                     "object": {
                         "value": {
@@ -464,8 +464,8 @@ describe("reel/serialization/serialization-merger-spec", function() {
         });
     });
 
-    describe("creation of collision table", function() {
-        it("should find no collisions", function() {
+    describe("creation of collision table", function () {
+        it("should find no collisions", function () {
             var labels1 = ["foo"],
                 labels2 = ["bar"],
                 foundCollisions;
@@ -475,7 +475,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
             expect(foundCollisions).toBe(false);
         });
 
-        it("should find collisions", function() {
+        it("should find collisions", function () {
             var labels1 = ["foo"],
                 labels2 = ["foo", "bar"],
                 collisionTable = {},
@@ -487,7 +487,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
             expect(collisionTable.foo).toBeDefined();
         });
 
-        it("should find a collision from the template property", function() {
+        it("should find a collision from the template property", function () {
             var labels1 = ["repetition:iteration"],
                 labels2 = ["repetition"],
                 collisionTable = {},
@@ -499,7 +499,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
             expect(collisionTable.repetition).toBeDefined();
         });
 
-        it("should reuse the new label given to the component label", function() {
+        it("should reuse the new label given to the component label", function () {
             var labels1 = ["repetition"],
                 labels2 = ["repetition", "repetition:iteration"],
                 collisionTable = {},
@@ -513,7 +513,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
             expect(collisionTable.repetition).toBe(newLabel);
         });
 
-        it("should rename the component label when the template property is renamed", function() {
+        it("should rename the component label when the template property is renamed", function () {
             var labels1 = ["repetition:iteration"],
                 labels2 = ["repetition:iteration", "repetition"],
                 collisionTable = {},
@@ -527,7 +527,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
             expect(collisionTable.repetition).toBe(newLabel);
         });
 
-        it("should rename the template property when it finds its component label colides", function() {
+        it("should rename the template property when it finds its component label colides", function () {
             var labels1 = ["repetition"],
                 labels2 = ["repetition:iteration"],
                 collisionTable = {},
@@ -539,7 +539,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
             expect(collisionTable["repetition:iteration"]).toBeDefined();
         });
 
-        it("should rename the component to the same new label the template property got", function() {
+        it("should rename the component to the same new label the template property got", function () {
             var labels1 = ["repetition"],
                 labels2 = ["repetition:iteration", "repetition"],
                 collisionTable = {},
@@ -553,7 +553,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
             expect(collisionTable.repetition).toBe(newLabel);
         });
 
-        it("should not solve a conflict by using a label that exists in the source labels", function() {
+        it("should not solve a conflict by using a label that exists in the source labels", function () {
             var labels1 = ["owner"],
                 labels2 = ["object", "owner"],
                 collisionTable = {};
@@ -562,7 +562,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
             expect(collisionTable.owner).not.toBe("object");
         });
 
-        it("should not solve a conflict by using a template property label that exists in the source labels", function() {
+        it("should not solve a conflict by using a template property label that exists in the source labels", function () {
             var labels1 = ["owner:foo"],
                 labels2 = ["object:foo", "owner:foo"],
                 collisionTable = {};
@@ -571,7 +571,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
             expect(collisionTable["owner:foo"]).not.toBe("object:foo");
         });
 
-        it("should not find a conflict just because the label exists in the labeler", function() {
+        it("should not find a conflict just because the label exists in the labeler", function () {
             var labels1 = ["owner"],
                 labels2 = ["object"],
                 collisionTable = {},
@@ -584,7 +584,7 @@ describe("reel/serialization/serialization-merger-spec", function() {
         });
     });
 
-    xit("template", function() {
+    xit("template", function () {
         var serialization1 = new Serialization().initWithObject({
                 "object1": {
                     "value": {

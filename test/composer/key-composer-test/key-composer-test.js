@@ -41,13 +41,13 @@ var KeyComposerTest = exports.KeyComposerTest = Montage.specialize( {
     },
 
     handleKKeyPress: {
-        value: function(event) {
+        value: function (event) {
             this.keyPressCalled = true;
         }
     },
 
     handleKKeyRelease: {
-        value: function(event) {
+        value: function (event) {
             this.keyReleaseCalled = true;
         }
     }
