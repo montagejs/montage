@@ -33,21 +33,22 @@ POSSIBILITY OF SUCH DAMAGE.
 <head>
     <title></title>
     <script type="text/montage-serialization">
-{
-    "dynamictext1": {
-        "prototype": "montage/ui/text.reel",
-        "properties": {
-            "element": {"#": "dynamictext"},
-            "value": "Custom Test Value"
-        }
-    },
-    "owner": {
-        "prototype": "ui/drawing/component/custom.reel",
-        "properties": {
-            "element": {"#": "custom"}
+    {
+        "owner": {
+            "prototype": "ui/drawing/component/custom.reel",
+            "properties": {
+                "element": {"#": "custom"},
+                "dynamictext1": {"@": "dynamictext1"}
+            }
+        },
+        "dynamictext1": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "dynamictext"},
+                "value": "Custom Test Value"
+            }
         }
     }
-}
     </script>
 
 </head>

@@ -34,55 +34,61 @@ POSSIBILITY OF SUCH DAMAGE.
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
     <script type="text/montage-serialization">
-{
-    "test": {
-        "prototype": "ui/drawing/test",
-        "properties": {
-            "repetition1": {"@": "repetition1"},
-            "repetition": {"@": "repetition2"}
-        }
-    },
-    "dynamictext": {
-        "prototype": "montage/ui/text.reel",
-        "properties": {
-            "element": {"#": "dynamictext"},
-            "value": "Test Value"
-        }
-    },
-    "repetition1": {
-        "prototype": "montage/ui/repetition.reel",
-        "properties": {
-            "element": {"#": "list1"},
-            "content": [
-                1,
-                2,
-                3
-            ]
-        }
-    },
-    "custom": {
-        "prototype": "ui/drawing/component/custom.reel",
-        "properties": {
-            "element": {"#": "custom"}
-        }
-    },
-    "repetition2": {
-        "prototype": "montage/ui/repetition.reel",
-        "properties": {
-            "element": {"#": "list2"},
-            "content": [
-                1,
-                2,
-                3
-            ]
+    {
+        "test": {
+            "prototype": "ui/drawing/test",
+            "properties": {
+                "repetition1": {"@": "repetition1"},
+                "repetition2": {"@": "repetition2"},
+                "dynamicText": {"@": "dynamictext"},
+                "custom": {"@": "custom"}
+            }
+        },
+        "dynamictext": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "dynamictext"},
+                "value": "Test Value"
+            }
+        },
+        "repetition1": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "list1"},
+                "content": [
+                    1,
+                    2,
+                    3
+                ]
+            }
+        },
+        "custom": {
+            "prototype": "ui/drawing/component/custom.reel",
+            "properties": {
+                "element": {"#": "custom"}
+            }
+        },
+        "repetition2": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "list2"},
+                "content": [
+                    1,
+                    2,
+                    3
+                ]
+            }
         }
     }
-}
     </script>
 
 </head>
 <body>
-<div data-montage-id="list1" class="list1"><div data-montage-id="dynamictext"></div></div>
-<div data-montage-id="list2" class="list2"><span><div data-montage-id="custom"></div></span></div>
+    <div data-montage-id="list1" class="list1">
+        <div data-montage-id="dynamictext"></div>
+    </div>
+    <div data-montage-id="list2" class="list2">
+        <div data-montage-id="custom"></div>
+    </div>
 </body>
 </html>

@@ -34,40 +34,41 @@ POSSIBILITY OF SUCH DAMAGE.
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
     <script type="text/montage-serialization">
-{
-    "test1": {
-        "prototype": "ui/drawing/test",
-        "properties": {
-
-        }
-    },
-    "custom1": {
-        "prototype": "ui/drawing/component/custom.reel",
-        "properties": {
-            "element": {"#": "custom"}
-        }
-    },
-    "dynamictext1": {
-        "prototype": "montage/ui/text.reel",
-        "properties": {
-            "element": {"#": "dynamictext"},
-            "value": "Test Value"
-        }
-    },
-
-    "onlyStyle": {
-        "prototype": "ui/drawing/component/only-style.reel",
-        "properties": {
-            "element": {"#": "onlyStyle"}
+    {
+        "test": {
+            "prototype": "ui/drawing/test",
+            "properties": {
+                "custom1": {"@": "custom1"},
+                "dynamictext1": {"@": "dynamictext1"},
+                "onlyStyle": {"@": "onlyStyle"}
+            }
+        },
+        "custom1": {
+            "prototype": "ui/drawing/component/custom.reel",
+            "properties": {
+                "element": {"#": "custom"}
+            }
+        },
+        "dynamictext1": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "dynamictext"},
+                "value": "Test Value"
+            }
+        },
+        "onlyStyle": {
+            "prototype": "ui/drawing/component/only-style.reel",
+            "properties": {
+                "element": {"#": "onlyStyle"}
+            }
         }
     }
-}
     </script>
 
 </head>
 <body>
-<div data-montage-id="dynamictext" class="dynamictext"></div>
-<div data-montage-id="custom"></div>
-<div data-montage-id="onlyStyle" class="onlyStyle"></div>
+    <div data-montage-id="dynamictext" class="dynamictext"></div>
+    <div data-montage-id="custom"></div>
+    <div data-montage-id="onlyStyle" class="onlyStyle"></div>
 </body>
 </html>
