@@ -1,0 +1,20 @@
+.Main-CollapsiblePanel {
+    border: 1px solid #bbbbbb;
+    border-radius: 5px;
+    margin-bottom: 3px;
+    overflow: hidden;
+}
+
+/* Header */
+.Main-CollapsiblePanel > :nth-child(1) {
+    padding: 5px;
+    background: #eeeeee;
+    -webkit-user-select: none; /* Chrome and Safari */
+    -moz-user-select: none; /* FireFox */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+}
+
+/* Body */
+.Main-CollapsiblePanel > :nth-child(2) > :nth-child(1) {
+    padding: 10px;
+}
