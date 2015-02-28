@@ -6,7 +6,7 @@ var Component = require("montage/ui/component").Component,
     PressComposer = require("montage/composer/press-composer").PressComposer;
 
 /**
- * A Menu node
+ * A Menu node.
  *
  * @class MenuNode
  * @extends Component
@@ -73,7 +73,7 @@ exports.MenuNode = Component.specialize(/** @lends MenuNode# */ {
     },
 
     /**
-     * Expand or collapse child menu node when click on a menu node if it has children
+     * Expand or collapse child menu node when click on a menu node if it has children.
      *
      * @method
      * @private
