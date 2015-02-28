@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="menu-node.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"}
+            },
+            "bindings": {
+                "classList.has('montage-MenuNode--active')": {"<-": "@owner._isExpanded"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <li data-montage-id="owner" class="montage-MenuNode">
+        <div data-param="title"></div>
+        <ul data-param="node"></ul>
+    </li>
+</body>
+</html>
