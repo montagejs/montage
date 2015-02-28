@@ -46,21 +46,16 @@
     min-width: 100px;
 }
 
-.Main-menu-customItem{
+.Main-menu-subMenuNode-container{
     background-color: #e0e0e0;
     padding: 20px;
 }
 
-.Main-menu-customItem select{
-    width: 100px;
-    margin-top: 10px;
-}
-
-.Main-menu-customItem select{
+.Main-menu-subMenuNode-container select{
     width: 200px;
     margin-top: 10px;
 }
 
-.Main-menu-customItem p{
+.Main-menu-subMenuNode-container p{
     width: 500px;
 }
