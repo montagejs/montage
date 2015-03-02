@@ -1,0 +1,20 @@
+/* Autoprefixer > 1%, last 2 versions, Firefox ESR, Opera 12.1 */
+
+/* Horizontal; vertical is set in draw in js */
+.montage-SegmentedBar,
+.montage-SegmentedBar-container {
+    height: 100%;
+}
+
+.montage-SegmentedBar-container {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-box-direction: normal;
+}
+
+.selected {
+    color: red;
+}

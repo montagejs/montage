@@ -95,5 +95,6 @@ require("montage-testing").run(require, [
     "ui/repetition-binding-spec",
     "ui/slot-spec",
     "ui/substitution-spec",
-    "ui/text/text-spec"
+    "ui/text/text-spec",
+    "ui/segmented-bar/segmented-bar-spec"
 ]);

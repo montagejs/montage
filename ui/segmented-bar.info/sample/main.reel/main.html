@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Main</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
+
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "main"}
+            }
+        },
+        "rangeController": {
+            "prototype": "core/range-controller",
+            "bindings": {
+                "content": {"<-": "@owner.data"}
+            }
+        },
+        "treeController": {
+            "prototype": "core/tree-controller",
+            "properties": {
+                "childrenPath": "regions"
+            },
+            "bindings": {
+                "content": {"<-": "@owner.tree"}
+            }
+        },
+        "text": {
+            "prototype": "ui/text.reel",
+            "properties": {
+                "element": {"#": "text"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.currentSegment"}
+            }
+        },
+        "segmentedBar1": {
+            "prototype": "ui/segmented-bar.reel",
+            "properties": {
+                "element": {"#": "segmentedBar1"}
+            },
+            "bindings": {
+                "data": {"<-": "@owner.data"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "segment1": {
+            "prototype": "ui/segment.reel",
+            "properties": {
+                "element": {"#": "segment1"}
+            },
+            "bindings": {
+                "label": {"<-": "@segmentedBar1:segment.object.region"},
+                "length": {"<-": "@segmentedBar1:segment.object.size"}
+            }
+        },
+        "segmentedBar2": {
+            "prototype": "ui/segmented-bar.reel",
+            "properties": {
+                "element": {"#": "segmentedBar2"},
+                "dataController": {"@": "rangeController"},
+                "enabled": false
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "segment2": {
+            "prototype": "ui/segment.reel",
+            "properties": {
+                "element": {"#": "segment2"}
+            },
+            "bindings": {
+                "label": {"<-": "@segmentedBar2:segment.object.region"},
+                "length": {"<-": "@segmentedBar2:segment.object.size"}
+            }
+        },
+        "segmentedBar3": {
+            "prototype": "ui/segmented-bar.reel",
+            "properties": {
+                "element": {"#": "segmentedBar3"},
+                "dataController": {"@": "treeController"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "segment3": {
+            "prototype": "ui/segment.reel",
+            "properties": {
+                "element": {"#": "segment3"}
+            },
+            "bindings": {
+                "label": {"<-": "@segmentedBar3:segment.object.content.region"},
+                "length": {"<-": "@segmentedBar3:segment.object.content.size"}
+            }
+        },
+        "segmentedBar4": {
+            "prototype": "ui/segmented-bar.reel",
+            "properties": {
+                "element": {"#": "segmentedBar4"},
+                "dataController": {"@": "rangeController"},
+                "orientation": "vertical"
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "segment4": {
+            "prototype": "ui/segment.reel",
+            "properties": {
+                "element": {"#": "segment4"}
+            },
+            "bindings": {
+                "label": {"<-": "@segmentedBar4:segment.object.region"},
+                "length": {"<-": "@segmentedBar4:segment.object.size"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Main">
+        <h1>Data from event listener</h1>
+        ActionEvent is fired upon press even when data didn't change; please open console to see log of events being fired.
+        <pre data-montage-id="text"></pre>
+
+        <h1>Desktop - data array</h1>
+        <div class="desktop">
+            <div data-montage-id="segmentedBar1">
+                <div data-montage-id="segment1"></div>
+            </div>
+        </div>
+        <br/>
+
+        <h1>Desktop - RangeController + bootstrap, enabled=false</h1>
+        <div class="desktop">
+            <div data-montage-id="segmentedBar2" class="progress">
+                <div data-montage-id="segment2" class="progress-bar progress-bar-striped"></div>
+            </div>
+        </div>
+        <br/>
+
+        <h1>Desktop - TreeController</h1>
+        <div class="desktop">
+            <div data-montage-id="segmentedBar3">
+                <div data-montage-id="segment3"></div>
+            </div>
+        </div>
+        <br/>
+
+        <h1>Phone-portrait, orientation = vertical</h1>
+        <div class="phone-portrait">
+            <div data-montage-id="segmentedBar4">
+                <div data-montage-id="segment4"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

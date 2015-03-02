@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SegmentedBar</title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+    {
+        "test": {
+            "prototype": "ui/segmented-bar/segmented-bar-test"
+        },
+        "rangeController": {
+            "prototype": "montage/core/range-controller",
+            "bindings": {
+                "content": {"<-": "@test.data"}
+            }
+        },
+        "treeController": {
+            "prototype": "montage/core/tree-controller",
+            "properties": {
+                "childrenPath": "regions"
+            },
+            "bindings": {
+                "content": {"<-": "@test.tree"}
+            }
+        },
+        "segmentedBar1": {
+            "prototype": "montage/ui/segmented-bar.reel",
+            "properties": {
+                "element": {"#": "segmentedBar1"}
+            },
+            "bindings": {
+                "data": {"<-": "@test.data"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "test"}
+                }
+            ]
+        },
+        "segment1": {
+            "prototype": "montage/ui/segment.reel",
+            "properties": {
+                "element": {"#": "segment1"}
+            },
+            "bindings": {
+                "label": {"<-": "@segmentedBar1:segment.object.region"},
+                "length": {"<-": "@segmentedBar1:segment.object.size"}
+            }
+        },
+        "segmentedBar2": {
+            "prototype": "montage/ui/segmented-bar.reel",
+            "properties": {
+                "element": {"#": "segmentedBar2"},
+                "dataController": {"@": "rangeController"},
+                "enabled": false
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "test"}
+                }
+            ]
+        },
+        "segment2": {
+            "prototype": "montage/ui/segment.reel",
+            "properties": {
+                "element": {"#": "segment2"}
+            },
+            "bindings": {
+                "label": {"<-": "@segmentedBar2:segment.object.region"},
+                "length": {"<-": "@segmentedBar2:segment.object.size"}
+            }
+        },
+        "segmentedBar3": {
+            "prototype": "montage/ui/segmented-bar.reel",
+            "properties": {
+                "element": {"#": "segmentedBar3"},
+                "dataController": {"@": "treeController"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "test"}
+                }
+            ]
+        },
+        "segment3": {
+            "prototype": "montage/ui/segment.reel",
+            "properties": {
+                "element": {"#": "segment3"}
+            },
+            "bindings": {
+                "label": {"<-": "@segmentedBar3:segment.object.content.region"},
+                "length": {"<-": "@segmentedBar3:segment.object.content.size"}
+            }
+        },
+        "segmentedBar4": {
+            "prototype": "montage/ui/segmented-bar.reel",
+            "properties": {
+                "element": {"#": "segmentedBar4"},
+                "dataController": {"@": "rangeController"},
+                "orientation": "vertical"
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "test"}
+                }
+            ]
+        },
+        "segment4": {
+            "prototype": "montage/ui/segment.reel",
+            "properties": {
+                "element": {"#": "segment4"}
+            },
+            "bindings": {
+                "label": {"<-": "@segmentedBar4:segment.object.region"},
+                "length": {"<-": "@segmentedBar4:segment.object.size"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div style="width: 960px; height: 30px;">
+        <div data-montage-id="segmentedBar1" id="segmentedBar1">
+            <div data-montage-id="segment1"></div>
+        </div>
+    </div>
+
+    <div data-montage-id="segmentedBar2" id="segmentedBar2">
+        <div data-montage-id="segment2"></div>
+    </div>
+
+    <div data-montage-id="segmentedBar3" id="segmentedBar3">
+        <div data-montage-id="segment3"></div>
+    </div>
+
+    <div style="width: 30px; height: 960px;">
+        <div data-montage-id="segmentedBar4" id="segmentedBar4">
+            <div data-montage-id="segment4"></div>
+        </div>
+    </div>
+</body>
+</html>
