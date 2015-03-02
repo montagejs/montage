@@ -497,7 +497,6 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
 
                 if(this.removeContentOnLoad || this._forceContentRemoval) {
                     this._contentToRemove.extractContents();
-                    this._contentToRemove.detach();
                     this._contentToRemove = null;
                 }
 
