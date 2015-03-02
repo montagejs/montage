@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
-    Bindings = require("montage/core/bindings").Bindings,
+    Bindings = require("montage/core/core").Bindings,
     Converter = require("montage/core/converter/converter").Converter;
 
 var TestConverter = Converter.specialize( {

@@ -1,6 +1,6 @@
 
 var Montage = require("montage").Montage;
-var Bindings = require("montage/core/bindings").Bindings;
+var Bindings = require("montage/core/core").Bindings;
 var serialize = require("montage/core/serialization").serialize;
 var deserialize = require("montage/core/serialization").deserialize;
 var Deserializer = require("montage/core/serialization").Deserializer;
