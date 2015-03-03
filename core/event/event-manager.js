@@ -19,8 +19,8 @@
 var Montage = require("../core").Montage,
     UUID = require("../uuid"),
     MutableEvent = require("./mutable-event").MutableEvent,
-    Serializer = require("../serialization").Serializer,
-    Deserializer = require("../serialization").Deserializer,
+    Serializer = require("core/serialization/serializer/montage-serializer").MontageSerializer,
+    Deserializer = require("core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     defaultEventManager;
 
 // XXX Does not presently function server-side
