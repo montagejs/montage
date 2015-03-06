@@ -227,10 +227,13 @@ if (!PROTO_IS_SUPPORTED) {
     };
 }
 
-// DEPRECATED
+/**
+ * @deprecated
+ */
 Object.defineProperty(Montage, "create", {
     configurable: true,
     value: function (aPrototype, propertyDescriptors) {
+        deprecate.deprecationWarning("Montage.create()", "Montage.specialize() or new Component()");
         if (aPrototype !== undefined && (typeof aPrototype !== "object"
                 && /* CONSTRUCTOR_COMPATIBILITY*/typeof aPrototype !== "function")) {
             throw new TypeError("Object prototype may only be an Object or null, not '" + aPrototype + "'");
