@@ -1,6 +1,6 @@
 /**
  * @module montage/core/bindings
- * @require montage/core/deprecate
+ * @deprecated
  */
 
 require("./deprecate").deprecationWarning("montage/core/bindings", "montage/core/core");

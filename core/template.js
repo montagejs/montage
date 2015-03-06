@@ -1,5 +1,5 @@
 var Montage = require("./core").Montage,
-    Deserializer = require("./serialization").Deserializer,
+    Deserializer = require("core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     DocumentPart = require("./document-part").DocumentPart,
     DocumentResources = require("./document-resources").DocumentResources,
     Serialization = require("./serialization/serialization").Serialization,

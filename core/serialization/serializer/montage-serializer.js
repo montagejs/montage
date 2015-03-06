@@ -1,11 +1,14 @@
-var Montage = require("../../core").Montage;
-var Malker = require("mousse/serialization/malker").Malker;
-var Serializer = require("mousse/serialization/serializer").Serializer;
-var MontageBuilder = require("./montage-builder").MontageBuilder;
-var MontageLabeler = require("./montage-labeler").MontageLabeler;
-var MontageVisitor = require("./montage-visitor").MontageVisitor;
+/**
+ * @module montage/core/serialization/serializer/montage-serializer
+ */
 
-var logger = require("../../logger").logger("montage-serializer");
+var Montage = require("../../core").Montage,
+    Malker = require("mousse/serialization/malker").Malker,
+    Serializer = require("mousse/serialization/serializer").Serializer,
+    MontageBuilder = require("./montage-builder").MontageBuilder,
+    MontageLabeler = require("./montage-labeler").MontageLabeler,
+    MontageVisitor = require("./montage-visitor").MontageVisitor,
+    logger = require("../../logger").logger("montage-serializer");
 
 var MontageSerializer = Montage.specialize.call(Serializer, {
     _require: {value: null},
@@ -13,7 +16,9 @@ var MontageSerializer = Montage.specialize.call(Serializer, {
 
     _findObjectNameRegExp: {value: /([^\/]+?)(\.reel)?$/},
     _toCamelCaseRegExp: {value: /(?:^|-)([^-])/g},
-    _replaceToCamelCase: {value: function (_, g1){return g1.toUpperCase();}},
+    _replaceToCamelCase: {value: function (_, g1) {
+        return g1.toUpperCase();}
+    },
 
     constructor: {
         value: function MontageSerializer() {}
@@ -30,7 +35,8 @@ var MontageSerializer = Montage.specialize.call(Serializer, {
                     this._builder,
                     this._labeler,
                     this._require,
-                    this.constructor._units);
+                    this.constructor._units
+                );
 
             this._malker = new Malker(this._visitor);
 
