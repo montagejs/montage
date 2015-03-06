@@ -1,5 +1,4 @@
 /*global require,exports,describe,it,expect,waits,runs */
-var Montage = require("montage").Montage;
 var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
 TestPageLoader.queueTest("translate-composer-test", function (testPage) {
@@ -9,7 +8,7 @@ TestPageLoader.queueTest("translate-composer-test", function (testPage) {
     });
 
     describe("composer/translate-composer-spec", function () {
-        describe("TranslateComposer", function (){
+        describe("TranslateComposer", function () {
             it("can be created", function () {
                 expect(test.translateComposer).toBeDefined();
             });
@@ -46,7 +45,7 @@ TestPageLoader.queueTest("translate-composer-test", function (testPage) {
                 });
             });
             describe("maxTranslateY", function () {
-                it ("limits translateY", function () {
+                it("limits translateY", function () {
                     testPage.dragElementOffsetTo(test.example.element, 0, 500, null, null, function () {
                         runs(function () {
                             expect(test.translateComposer.translateY).not.toBeGreaterThan(350);
@@ -56,7 +55,7 @@ TestPageLoader.queueTest("translate-composer-test", function (testPage) {
             });
 
             describe("minTranslateX", function () {
-                it ("limits translateX", function () {
+                it("limits translateX", function () {
                     testPage.dragElementOffsetTo(test.example.element, -500, 0, null, null, function () {
                         expect(test.translateComposer.translateX).not.toBeLessThan(20);
                     });
@@ -152,7 +151,7 @@ TestPageLoader.queueTest("translate-composer-test", function (testPage) {
                 });
             });
             describe("pointerSpeedMultiplier", function () {
-                it ("multiplies the translation values by 3 when set to 3", function () {
+                it("multiplies the translation values by 3 when set to 3", function () {
                     test.translateComposer.translateX = 0;
                     test.translateComposer.translateY = 0;
                     test.translateComposer.invertAxis = false;
@@ -173,7 +172,7 @@ TestPageLoader.queueTest("translate-composer-test", function (testPage) {
                     test.translateComposer.translateY = 0;
                     testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function () {
                         waits(100);
-                        runs(function (){
+                        runs(function () {
                             expect(test.translateComposer.translateX).toBeGreaterThan(55);
                             expect(test.translateComposer.translateY).toBeGreaterThan(55);
                             test.translateComposer.hasMomentum = false;
@@ -190,7 +189,7 @@ TestPageLoader.queueTest("translate-composer-test", function (testPage) {
 
                     testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function () {
                         waits(100);
-                        runs(function (){
+                        runs(function () {
                             expect(listener).toHaveBeenCalled();
                             test.translateComposer.hasMomentum = false;
                             test.translateComposer.removeEventListener("translate", listener);
@@ -205,7 +204,7 @@ TestPageLoader.queueTest("translate-composer-test", function (testPage) {
 
                     testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function () {
                         waits(100);
-                        runs(function (){
+                        runs(function () {
                             expect(test.translateComposer.translateX).toBeLessThan(45);
                             expect(test.translateComposer.translateY).toBeLessThan(45);
                             test.translateComposer.hasMomentum = false;
@@ -215,14 +214,14 @@ TestPageLoader.queueTest("translate-composer-test", function (testPage) {
                 });
             });
             describe("translate event", function () {
-                it ("should not dispatch a translate event by default", function () {
+                it("should not dispatch a translate event by default", function () {
                     spyOn(test, 'handleTranslate').andCallThrough();
 
                     testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function () {
                         expect(test.handleTranslate).not.toHaveBeenCalled();
                     });
                 });
-                it ("should dispatch a translate event if an object is listening for it", function () {
+                it("should dispatch a translate event if an object is listening for it", function () {
                     spyOn(test, 'handleTranslate').andCallThrough();
                     test.translateComposer.addEventListener("translate", test.handleTranslate, false);
 
@@ -232,7 +231,7 @@ TestPageLoader.queueTest("translate-composer-test", function (testPage) {
                 });
             });
             describe("nested composer", function () {
-                var inner, outer, outerComposer, innerComposer,outerListener,innerListener;
+                var inner, outer, outerComposer, innerComposer, outerListener, innerListener;
                 beforeEach(function () {
 
                     inner = test.innermover;
@@ -253,22 +252,22 @@ TestPageLoader.queueTest("translate-composer-test", function (testPage) {
                     outerListener.reset();
                     outerComposer.removeEventListener("translate", outerListener);
                 });
-                it ("should dispatch a translate if outer is interacted with", function () {
+                it("should dispatch a translate if outer is interacted with", function () {
                     testPage.dragElementOffsetTo(outer.element, 50, 50, null, null, function () {
                         expect(outerListener).toHaveBeenCalled();
                     });
                 });
-                it ("should dispatch a translate if inner is interacted with", function () {
+                it("should dispatch a translate if inner is interacted with", function () {
                     testPage.dragElementOffsetTo(inner.element, 50, 50, null, null, function () {
                         expect(innerListener).toHaveBeenCalled();
                     });
                 });
-                it ("should not dispatch a translate on the outer if inner is interacted with", function () {
+                it("should not dispatch a translate on the outer if inner is interacted with", function () {
                     testPage.dragElementOffsetTo(inner.element, 50, 50, null, null, function () {
                         expect(outerListener).not.toHaveBeenCalled();
                     });
                 });
-                it ("should not dispatch a translate on the outer even if the inner is on a different axis", function () {
+                it("should not dispatch a translate on the outer even if the inner is on a different axis", function () {
                     innerComposer.axis = "horizontal";
                     outerComposer.axis = "vertical";
 
@@ -278,13 +277,13 @@ TestPageLoader.queueTest("translate-composer-test", function (testPage) {
                 });
             });
             describe("scrolling", function () {
-                it ("should translate on a the wheel event used by this browser", function () {
+                it("should translate on a the wheel event used by this browser", function () {
                     spyOn(test, 'handleTranslate').andCallThrough();
                     test.translateComposer.addEventListener("translate", test.handleTranslate, false);
 
                     var eventName = "mousewheel";
                     var deltaPropertyName = "wheelDeltaY";
-                    if (typeof window.onwheel !== "undefined" || typeof window.WheelEvent !== "undefined" ){
+                    if (typeof window.onwheel !== "undefined" || typeof window.WheelEvent !== "undefined") {
                         eventName = "wheel";
                         deltaPropertyName = "deltaY";
                     }
@@ -303,29 +302,34 @@ TestPageLoader.queueTest("translate-composer-test", function (testPage) {
         });
     });
 });
-var touchOptions = TestPageLoader.options("translate-composer-test", {timeoutLength: 10000}, function () {console.log("translate-composer-test touch callback");});
+
+var touchOptions = TestPageLoader.options(
+    "translate-composer-test",
+    {timeoutLength: 10000},
+    function () {
+        console.log("translate-composer-test touch callback");
+    }
+);
+
 describe("translate-composer-test touch", function () {
     var testPage = TestPageLoader.testPage;
+
     it("should load", function () {
         console.group("translate-composer-touch-test");
-        var frameLoaded = TestPageLoader.testPage.loadFrame(touchOptions).then(function (theTestPage) {
-            theTestPage.window.Touch = function () {};
-        });
-        return testPage.loadTest(frameLoaded, touchOptions).then(function (theTestPage) {
-            expect(theTestPage.loaded).toBe(true);
-        });
+        var frameLoaded = TestPageLoader.testPage.loadFrame(touchOptions)
+            .then(function (theTestPage) {
+                theTestPage.window.Touch = function () {};
+            });
+        // .return null, otherwise throws "Promise fulfilled with unexpected value: [object Object]"
+        return testPage.loadTest(frameLoaded, touchOptions).return();
     });
 
     describe("nested composer", function () {
-        var test;
+        var test, inner, outer, outerComposer, innerComposer,
+            outerListener, innerListener, translateComposer, example;
+
         beforeEach(function () {
             test = testPage.test;
-        });
-
-        var inner, outer, outerComposer, innerComposer,outerListener,innerListener,
-            translateComposer, example;
-        beforeEach(function () {
-
             inner = test.innermover;
             innerComposer = test.innermoverComposer;
             innerListener = jasmine.createSpy(" innerHandleTranslateEvent");
@@ -346,7 +350,8 @@ describe("translate-composer-test touch", function () {
             outerListener.reset();
             outerComposer.removeEventListener("translate", outerListener);
         });
-        it ("should dispatch a translate on the outer if inner is on a different axis", function () {
+
+        it("should dispatch a translate on the outer if inner is on a different axis", function () {
             innerComposer.axis = "horizontal";
             outerComposer.axis = "vertical";
 
@@ -355,32 +360,32 @@ describe("translate-composer-test touch", function () {
                 target: inner.element,
                 identifier: 1,
                 steps: [
-                    { time: 0, touchstart: null },
-                    { time: 1, touchmove: { dx: 25, dy: 0} },
-                    { time: 2, touchmove: { dx: 25, dy: 0} },
-                    { time: 4,  touchend: null }
+                    {time: 0, touchstart: null},
+                    {time: 1, touchmove: {dx: 25, dy: 0}},
+                    {time: 2, touchmove: {dx: 25, dy: 0}},
+                    {time: 4, touchend: null}
                 ]
             }, {
                 type: "touch",
                 target: outer.element,
                 identifier: 2,
                 steps: [
-                    { time: 1, touchstart: null },
-                    { time: 2, touchmove: { dx: 0, dy: 25} },
-                    { time: 3, touchmove: { dx: 0, dy: 25} },
-                    { time: 4, touchend: null }
+                    {time: 1, touchstart: null},
+                    {time: 2, touchmove: {dx: 0, dy: 25}},
+                    {time: 3, touchmove: {dx: 0, dy: 25}},
+                    {time: 4, touchend: null}
                 ]
             }];
 
             testPage.fireEventsOnTimeline(timeline, function (time) {
-                if(time === 4) {
+                if (time === 4) {
                     expect(outerListener).toHaveBeenCalled();
                     expect(innerListener).toHaveBeenCalled();
                 }
             });
         });
 
-        it ("should claim the pointer to the inner in a container->widget situation with a fast flick", function () {
+        it("should claim the pointer to the inner in a container->widget situation with a fast flick", function () {
             outerComposer.axis = "both";
             outerComposer.stealChildrenPointer = true;
             outerComposer.stealChildrenPointerThreshold = 100;
@@ -393,21 +398,21 @@ describe("translate-composer-test touch", function () {
                 target: inner.element,
                 identifier: 1,
                 steps: [
-                    { time: 0, touchstart: null },
-                    { time: 1, touchmove: { dx: 25, dy: 0} },
-                    { time: 2, touchend: null }
+                    {time: 0, touchstart: null},
+                    {time: 1, touchmove: {dx: 25, dy: 0}},
+                    {time: 2, touchend: null}
                 ]
             }];
 
             testPage.fireEventsOnTimeline(timeline, function (time) {
-                if(time === 1) {
+                if (time === 1) {
                     var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
                     expect(claimedByComponent).toBe(outerComposer);
                 }
             });
         });
 
-        it ("should claim the pointer to the inner in a container->widget situation with a fast flick but opposite directions", function () {
+        it("should claim the pointer to the inner in a container->widget situation with a fast flick but opposite directions", function () {
             outerComposer.axis = "vertical";
             outerComposer.stealChildrenPointer = true;
             outerComposer.stealChildrenPointerThreshold = 100;
@@ -420,21 +425,21 @@ describe("translate-composer-test touch", function () {
                 target: inner.element,
                 identifier: 1,
                 steps: [
-                    { time: 0, touchstart: null },
-                    { time: 1, touchmove: { dx: 25, dy: 0} },
-                    { time: 2, touchend: null }
+                    {time: 0, touchstart: null},
+                    {time: 1, touchmove: {dx: 25, dy: 0}},
+                    {time: 2, touchend: null}
                 ]
             }];
 
             testPage.fireEventsOnTimeline(timeline, function (time) {
-                if(time === 1) {
+                if (time === 1) {
                     var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
                     expect(claimedByComponent).toBe(innerComposer);
                 }
             });
         });
 
-        it ("should claim the pointer to the inner in a container->container situation with a fast flick", function () {
+        it("should claim the pointer to the inner in a container->container situation with a fast flick", function () {
             outerComposer.axis = "vertical";
             outerComposer.stealChildrenPointer = true;
             outerComposer.stealChildrenPointerThreshold = 100;
@@ -448,21 +453,21 @@ describe("translate-composer-test touch", function () {
                 target: inner.element,
                 identifier: 1,
                 steps: [
-                    { time: 0, touchstart: null },
-                    { time: 1, touchmove: { dx: 0, dy: 25} },
-                    { time: 2, touchend: null }
+                    {time: 0, touchstart: null},
+                    {time: 1, touchmove: {dx: 0, dy: 25}},
+                    {time: 2, touchend: null}
                 ]
             }];
 
             testPage.fireEventsOnTimeline(timeline, function (time) {
-                if(time === 1) {
+                if (time === 1) {
                     var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
                     expect(claimedByComponent).toBe(innerComposer);
                 }
             });
         });
 
-        it ("should claim the pointer to the outer in a container->container situation with a slow flick", function () {
+        it("should claim the pointer to the outer in a container->container situation with a slow flick", function () {
             outerComposer.axis = "vertical";
             outerComposer.stealChildrenPointer = true;
             outerComposer.stealChildrenPointerThreshold = 100;
@@ -476,21 +481,21 @@ describe("translate-composer-test touch", function () {
                 target: inner.element,
                 identifier: 1,
                 steps: [
-                    { time: 0, touchstart: null },
-                    { time: 150, touchmove: { dx: 0, dy: 25} },
-                    { time: 151, touchend: null }
+                    {time: 0, touchstart: null},
+                    {time: 150, touchmove: {dx: 0, dy: 25}},
+                    {time: 151, touchend: null}
                 ]
             }];
 
             testPage.fireEventsOnTimeline(timeline, function (time) {
-                if(time === 1) {
+                if (time === 1) {
                     var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
                     expect(claimedByComponent).toBe(innerComposer);
                 }
             });
         });
 
-        it ("should claim the pointer to the outer in a container->container situation with a fast flick for the inner and outer", function () {
+        it("should claim the pointer to the outer in a container->container situation with a fast flick for the inner and outer", function () {
             outerComposer.axis = "vertical";
             outerComposer.stealChildrenPointer = true;
             outerComposer.stealChildrenPointerThreshold = 50;
@@ -504,21 +509,21 @@ describe("translate-composer-test touch", function () {
                 target: inner.element,
                 identifier: 1,
                 steps: [
-                    { time: 0, touchstart: null },
-                    { time: 1, touchmove: { dx: 0, dy: 25} },
-                    { time: 2, touchend: null }
+                    {time: 0, touchstart: null},
+                    {time: 1, touchmove: {dx: 0, dy: 25}},
+                    {time: 2, touchend: null}
                 ]
             }];
 
             testPage.fireEventsOnTimeline(timeline, function (time) {
-                if(time === 1) {
+                if (time === 1) {
                     var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
                     expect(claimedByComponent).toBe(outerComposer);
                 }
             });
         });
 
-        it ("should claim the pointer to the inner in a container->container situation with a slow flick for the outer and fast for the inner", function () {
+        it("should claim the pointer to the inner in a container->container situation with a slow flick for the outer and fast for the inner", function () {
             outerComposer.axis = "vertical";
             outerComposer.stealChildrenPointer = true;
             outerComposer.stealChildrenPointerThreshold = 50;
@@ -532,21 +537,21 @@ describe("translate-composer-test touch", function () {
                 target: inner.element,
                 identifier: 1,
                 steps: [
-                    { time: 0, touchstart: null },
-                    { time: 75, touchmove: { dx: 0, dy: 25} },
-                    { time: 76, touchend: null }
+                    {time: 0, touchstart: null},
+                    {time: 75, touchmove: {dx: 0, dy: 25}},
+                    {time: 76, touchend: null}
                 ]
             }];
 
             testPage.fireEventsOnTimeline(timeline, function (time) {
-                if(time === 1) {
+                if (time === 1) {
                     var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
                     expect(claimedByComponent).toBe(innerComposer);
                 }
             });
         });
 
-        it ("should claim the pointer in a widget situation with a slow flick", function () {
+        it("should claim the pointer in a widget situation with a slow flick", function () {
             translateComposer.axis = "vertical";
             translateComposer.stealChildrenPointer = false;
 
@@ -556,21 +561,21 @@ describe("translate-composer-test touch", function () {
                 target: example.element,
                 identifier: 1,
                 steps: [
-                    { time: 0, touchstart: null },
-                    { time: 150, touchmove: { dx: 0, dy: 25} },
-                    { time: 151, touchend: null }
+                    {time: 0, touchstart: null},
+                    {time: 150, touchmove: {dx: 0, dy: 25}},
+                    {time: 151, touchend: null}
                 ]
             }];
 
             testPage.fireEventsOnTimeline(timeline, function (time) {
-                if(time === 1) {
+                if (time === 1) {
                     var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
                     expect(claimedByComponent).toBe(translateComposer);
                 }
             });
         });
 
-        it ("should claim the pointer in a widget situation with a fast flick", function () {
+        it("should claim the pointer in a widget situation with a fast flick", function () {
             translateComposer.axis = "vertical";
             translateComposer.stealChildrenPointer = false;
 
@@ -580,21 +585,21 @@ describe("translate-composer-test touch", function () {
                 target: example.element,
                 identifier: 1,
                 steps: [
-                    { time: 0, touchstart: null },
-                    { time: 1, touchmove: { dx: 0, dy: 25} },
-                    { time: 2, touchend: null }
+                    {time: 0, touchstart: null},
+                    {time: 1, touchmove: {dx: 0, dy: 25}},
+                    {time: 2, touchend: null}
                 ]
             }];
 
             testPage.fireEventsOnTimeline(timeline, function (time) {
-                if(time === 1) {
+                if (time === 1) {
                     var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
                     expect(claimedByComponent).toBe(translateComposer);
                 }
             });
         });
 
-        it ("should claim the pointer in a container situation with a slow flick", function () {
+        it("should claim the pointer in a container situation with a slow flick", function () {
             translateComposer.axis = "vertical";
             translateComposer.stealChildrenPointer = true;
             translateComposer.stealChildrenPointerThreshold = 100;
@@ -605,21 +610,21 @@ describe("translate-composer-test touch", function () {
                 target: example.element,
                 identifier: 1,
                 steps: [
-                    { time: 0, touchstart: null },
-                    { time: 150, touchmove: { dx: 0, dy: 25} },
-                    { time: 151, touchend: null }
+                    {time: 0, touchstart: null},
+                    {time: 150, touchmove: {dx: 0, dy: 25}},
+                    {time: 151, touchend: null}
                 ]
             }];
 
             testPage.fireEventsOnTimeline(timeline, function (time) {
-                if(time === 1) {
+                if (time === 1) {
                     var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
                     expect(claimedByComponent).toBe(translateComposer);
                 }
             });
         });
 
-        it ("should claim the pointer in a container situation with a fast flick", function () {
+        it("should claim the pointer in a container situation with a fast flick", function () {
             translateComposer.axis = "vertical";
             translateComposer.stealChildrenPointer = true;
             translateComposer.stealChildrenPointerThreshold = 100;
@@ -630,24 +635,18 @@ describe("translate-composer-test touch", function () {
                 target: example.element,
                 identifier: 1,
                 steps: [
-                    { time: 0, touchstart: null },
-                    { time: 1, touchmove: { dx: 0, dy: 25} },
-                    { time: 2, touchend: null }
+                    {time: 0, touchstart: null},
+                    {time: 1, touchmove: {dx: 0, dy: 25}},
+                    {time: 2, touchend: null}
                 ]
             }];
 
             testPage.fireEventsOnTimeline(timeline, function (time) {
-                if(time === 1) {
+                if (time === 1) {
                     var claimedByComponent = inner.eventManager.componentClaimingPointer(1);
                     expect(claimedByComponent).toBe(translateComposer);
                 }
             });
         });
     });
-
-    it("should unload", function () {
-        TestPageLoader.testPage.unloadTest();
-        console.groupEnd();
-    });
-
 });

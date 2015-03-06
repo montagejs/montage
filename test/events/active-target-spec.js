@@ -1,10 +1,8 @@
 var Montage = require("montage").Montage;
-var Component = require("montage/ui/component").Component;
 var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader;
 
 TestPageLoader.queueTest("active-target-test/active-target-test", function (testPage) {
     describe("events/active-target-spec", function () {
-
         var testDocument;
 
         beforeEach(function () {
@@ -12,11 +10,9 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function (test
         });
 
         describe("selecting the activeTarget", function () {
-
             var eventManager, proximalElement, proximalComponent;
 
             describe("when interaction starts on a proximal target that accepts focus", function () {
-
                 beforeEach(function () {
                     proximalElement = testDocument.querySelector("[data-montage-id=C0C0B0]");
                     proximalComponent = proximalElement.component;
@@ -32,7 +28,7 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function (test
                     expect(proximalComponent.isActiveTarget).toBeTruthy();
                 });
 
-                if(window.Touch) {
+                if (window.Touch) {
                     it("should focus on a target when a target's own element receives touchstart", function () {
                         testPage.touchEvent({target: proximalElement}, "touchstart");
                         expect(eventManager.activeTarget).toBe(proximalComponent);
@@ -133,7 +129,7 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function (test
                         expect(activeComponent.isActiveTarget).toBeTruthy();
                     });
                 } else {
-                   it("must not focus on the proximal target when the target receives touchstart", function () {
+                    it("must not focus on the proximal target when the target receives touchstart", function () {
                         testPage.touchEvent({target: proximalElement}, "touchstart");
                         expect(proximalComponent.isActiveTarget).toBeFalsy();
                     });

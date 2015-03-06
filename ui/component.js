@@ -260,7 +260,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      * The element of a component can only be assigned once, it's not possible
      * to change it.
      *
-     * @type {DOMElement}
+     * @property {DOMElement}
      * @default null
      */
     element: {
@@ -1395,6 +1395,9 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         }
     },
 
+    /**
+     * @private
+     */
     _makeTemplateObjectGetter: {
         value: function (owner, label, object) {
             var querySelectorLabel = "@"+label,
@@ -1428,8 +1431,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                         // We didn't find any in the component tree
                         // so it was probably removed in the meanwhile.
                         // We return the one that was in the template
-                        // TODO: need to make sure this component hasn't been
-                        // disposed.
+                        // TODO: need to make sure this component hasn't been disposed.
                         return object;
                     }
 
@@ -2209,7 +2211,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      *
      * At the end of the draw cycle this property is set back to `false`.
      *
-     * @type {boolean}
+     * @property {boolean}
      * @default false
      */
     needsDraw: {
