@@ -10,8 +10,7 @@ var Montage = require("./core").Montage,
  * @class Target
  * @extends Montage
  */
-exports.Target = Montage.specialize( /** @lends Target # */ {
-
+exports.Target = Montage.specialize( /** @lends Target.prototype # */ {
     constructor: {
         value: function Target() {
             this.super();

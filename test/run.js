@@ -12,10 +12,10 @@ require("montage-testing").run(require, [
     "string-spec",
     "document-resources-spec",
 
+    "base/abstract-control-spec",
     "base/abstract-alert-spec",
     "base/abstract-button-spec",
     "base/abstract-checkbox-spec",
-    "base/abstract-control-spec",
     "base/abstract-confirm-spec",
     "base/abstract-image-spec",
     "base/abstract-link-spec",

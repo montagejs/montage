@@ -18,8 +18,7 @@ describe("test/base/abstract-control-spec", function () {
         });
 
         it("returns true if the preventDefault was not called on the event", function () {
-            control.addEventListener("action", function (event) {
-            });
+            control.addEventListener("action");
 
             expect(control.dispatchActionEvent()).toBe(true);
         });
