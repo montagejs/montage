@@ -68,6 +68,10 @@
 -  **Mr**
 
    Update the Mr package to version v0.15.6.
+   
+- **Component**
+
+   BREAKING: deprecate `prepareForDraw` in favor of `enterDocument`.
 
 ### v0.14.9
 
