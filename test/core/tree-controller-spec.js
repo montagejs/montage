@@ -1,380 +1,218 @@
-
 var TreeController = require("montage/core/tree-controller").TreeController;
-var Object = require("../collections/shim-object");
 
-Error.stackTraceLimit = Infinity;
+describe("tree-controller-spec", function () {
 
-describe("core/tree-controller-spec", function () {
+    var treeController,
+        treeData,
+        delegate;
 
-    describe("default children structure", function () {
-        var tree,
-            root,
-            treeController;
-
-        beforeEach(function () {
-            tree = {
-                name: "I",
-                "id": "1",
-                children: [
-                    {
-                        "name": "I/A",
-                        "id": "2",
-                        children: []
-                    },
-                    {
-                        "name": "I/B",
-                        "id": "3",
-                        children: [
-                            {
-                                name: "I/B/1",
-                                "id": "4"
-                            }
-                        ]
-                    }
-                ]
-            };
-        });
-
-        describe("expand and collapse", function () {
-
-            it("initialize", function () {
-                treeController = new TreeController();
-                treeController.content = tree;
-                root = treeController.root;
-
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.content.name;
-                })).toEqual(['I']);
-            });
-
-            it("expand the root", function () {
-                root.expanded = true;
-                // + 2 unexpanded children
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.content.name;
-                })).toEqual(['I', 'I/A', 'I/B']);
-            });
-
-            it("expand the left child", function () {
-                root.children[1].expanded = true;
-                // + 1 grandchild
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.content.name;
-                })).toEqual(['I', 'I/A', 'I/B', 'I/B/1']);
-            });
-
-            it("collapse the root", function () {
-                root.expanded = false;
-                // dispite children and grandchildren
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.content.name;
-                })).toEqual(['I']);
-            });
-
-        });
-
-        describe("iteration depths", function () {
-            it("initialize", function () {
-                treeController = new TreeController();
-                treeController.content = tree;
-                root = treeController.root;
-
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.depth
-                })).toEqual([0]);
-            });
-
-            it("expand the root", function () {
-                root.expanded = true;
-                // + 2 unexpanded children
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.depth
-                })).toEqual([0, 1, 1]);
-            });
-
-            it("expand the left child", function () {
-                root.children[1].expanded = true;
-                // + 1 grandchild
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.depth
-                })).toEqual([0, 1, 1, 2]);
-            });
-
-            it("collapse the root", function () {
-                root.expanded = false;
-                // dispite children and grandchildren
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.depth
-                })).toEqual([0]);
-            });
-
-        });
-
-        describe("model changes", function () {
-
-            it("initialize", function () {
-                treeController = new TreeController();
-                treeController.initiallyExpanded = true;
-                treeController.content = tree;
-                root = treeController.root;
-
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.content.name;
-                })).toEqual([
-                    'I', 'I/A', 'I/B', 'I/B/1'
-                ]);
-            });
-
-            it("add child to model", function () {
-                root.children[0].content.children.push({
-                    name: 'I/A/1',
-                    children: []
-                });
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.content.name;
-                })).toEqual([
-                    'I', 'I/A', 'I/A/1', 'I/B', 'I/B/1'
-                ]);
-            });
-
-            it("remove child from model", function () {
-                root.children[1].children = null;
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.content.name;
-                })).toEqual([
-                    'I', 'I/A', 'I/A/1', 'I/B'
-                ]);
-            });
-
-            it("detach model", function () {
-                treeController.content = null;
-                expect(treeController.iterations).toBe(undefined);
-            });
-
-        });
-
-        describe("view model per content", function () {
-
-            var previous;
-            it("should have a fresh view model for a new root", function () {
-                treeController = new TreeController();
-                treeController.content = tree;
-                previous = tree;
-                treeController.root.expanded = true;
-                expect(treeController.nodes.map(function (iteration) {
-                    return iteration.expanded;
-                })).toEqual([true, false, false, false]);
-
-                treeController.content = {
-                    name: 'X',
-                    children: [
-                        {name: 'Y'}
+    beforeEach(function () {
+        treeController = new TreeController();
+        delegate = {
+            changes: 0,
+            handleTreeChange: function () {
+                this.changes++;
+            }
+        };
+        treeController.delegate = delegate;
+        treeController.data =
+        treeData = {
+            "name": "root",
+            "children": [
+                {
+                    "name": "a",
+                    "children": [
+                        {
+                            "name": "aa",
+                            "children": [
+                                {"name": "aaa"},
+                                {"name": "aab"}
+                            ]
+                        }
+                        ,
+                        {
+                            "name": "ab",
+                            "children": [
+                                {"name": "aba"},
+                                {"name": "abb"}
+                            ]
+                        },
+                        {
+                            "name": "ac",
+                            "children": [
+                                {"name": "aca"},
+                                {"name": "acb"}
+                            ]
+                        }
                     ]
-                };
-                expect(treeController.nodes.map(function (iteration) {
-                    return iteration.expanded;
-                })).toEqual([false, false]);
-            });
-
-            it("should restore previous view model", function () {
-                treeController.content = previous;
-                expect(treeController.nodes.map(function (iteration) {
-                    return iteration.expanded;
-                })).toEqual([true, false, false, false]);
-            });
-
-        });
-
-        describe("iteration junctions", function () {
-            it("initialize", function () {
-                treeController = new TreeController();
-                treeController.content = tree;
-                tree.children[0].children = [{
-                    name: "I/A/1"
-                }, {
-                    name: "I/A/2"
-                }, {
-                    name: "I/A/3"
-                }];
-                treeController.allExpanded = true;
-                var ascii = {
-                    "medial": " +-",
-                    "final": " ^-",
-                    "before": " | ",
-                    "after": "   "
-                };
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.junctions.map(function (junction) {
-                        return ascii[junction];
-                    }).join("") + " " + iteration.content.name;
-                })).toEqual([
-                    " I",
-                    " +- I/A",
-                    " |  +- I/A/1",
-                    " |  +- I/A/2",
-                    " |  ^- I/A/3",
-                    " ^- I/B",
-                    "    ^- I/B/1"
-                ]);
-            });
-        });
-
-        describe("find node by content", function (){
-            it("find node by content from root", function () {
-                treeController = new TreeController();
-                treeController.content = tree;
-                root = treeController.root;
-                var seek = tree.children[1];
-                node = root.findNodeByContent(seek);
-                expect(node.content).toBe(seek);
-            });
-
-            describe("find node by content from treeController given equality function", function () {
-
-                beforeEach(function () {
-                    treeController = new TreeController();
-                    treeController.content = tree;
-                    root = treeController.root;
-                });
-
-                it("should be able to find the root", function () {
-                    var seek =  {id: "1"};
-                    var equality = function(x,y) { return x.id === y.id; };
-                    node = treeController.findNodeByContent(seek, equality);
-                    expect(node.content).toBe(tree);
-                });
-
-                it("should be able to find any level", function () {
-                    var seek =  {id: "3"};
-                    var equality = function(x,y) { return x.id === y.id; };
-                    node = treeController.findNodeByContent(seek, equality);
-                    expect(node.content).toBe(tree.children[1]);
-                });
-            });
-      });
-
-        // 4 + 2 * 2 -> pre= +4*22; post= 422+*
-        describe("walk tree", function(){
-            var ast = {
-                value: "+",
-                children: [{
-                    value: "4",
-                    children: []
                 },
                 {
-                    value: "*",
-                    children: [{
-                        value: "2",
-                        children: []
-                    },
-                    {
-                        value: "2",
-                        children: []
-                    },
+                    "name": "b",
+                    "children": [
+                        {
+                            "name": "ba",
+                            "children": [
+                                {"name": "baa"},
+                                {"name": "bab"}
+                            ]
+                        },
+                        {
+                            "name": "bb",
+                            "children": [
+                                {"name": "bba"},
+                                {"name": "bbb"}
+                            ]
+                        },
+                        {
+                            "name": "bc",
+                            "children": [
+                                {"name": "bca"},
+                                {"name": "bcb"}
+                            ]
+                        }
                     ]
-                }]
-            };
-            treeController = new TreeController();
-            treeController.content = ast;
-            var res = "";
-            treeController.preOrderWalk(function(node){
-                res +=  node.content.value;
-            });
-            expect(res).toBe("+4*22");
-
-            res = "";
-            treeController.postOrderWalk(function(node){
-                res +=  node.content.value;
-            });
-            expect(res).toBe("422*+");
-        });
-
+                }
+            ]
+        };
     });
 
-    describe("trees with alternate structures", function () {
-
-        var tree;
-
-        beforeEach(function () {
-            tree = {
-                value: 10,
-                left: {
-                    value: 20,
-                    left: {
-                        value: 30
-                    }
-                },
-                right: {
-                    value: 40,
-                    left: {
-                        value: 50
-                    }
-                }
-            };
+    describe("initialisation and configuration", function () {
+        it("childrenPath should be equal to 'children' by default", function () {
+            treeController = new TreeController();
+            expect(treeController.childrenPath).toEqual("children");
         });
-
-        var childrenPath =  "[left, right].filter{defined()}";
-
-        describe("handle an alternate childrenPath", function () {
-            var treeController;
-
-            it("initialize unexpanded per default", function () {
-                treeController = new TreeController();
-                treeController.childrenPath = childrenPath;
-                treeController.content = tree;
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.getPath("content.value");
-                })).toEqual([10]);
-            });
-
-            it("show immediate children only on expanding the root", function () {
-                treeController.root.expanded = true;
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.getPath("content.value");
-                })).toEqual([10, 20, 40]);
-            });
-
-            it("show the left node's children", function () {
-                treeController.root.children[0].expanded = true;
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.getPath("content.value");
-                })).toEqual([10, 20, 30, 40]);
-            });
-
-            it("show the right node's children", function () {
-                treeController.root.children[1].expanded = true;
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.getPath("content.value");
-                })).toEqual([10, 20, 30, 40, 50]);
-            });
-
-            it("show only the root if the root is collapsed", function () {
-                treeController.root.expanded = false;
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.getPath("content.value");
-                })).toEqual([10]);
-            });
-
-            it("retain the inner expansion state when expanded again", function () {
-                treeController.root.expanded = true;
-                expect(treeController.iterations.map(function (iteration) {
-                    return iteration.getPath("content.value");
-                })).toEqual([10, 20, 30, 40, 50]);
-            });
+        it("data should be null if not set", function () {
+            treeController = new TreeController();
+            expect(treeController.data).toEqual(null);
         });
-
-        it("be configurable as expanded", function () {
-            var treeController = new TreeController();
-            treeController.childrenPath = childrenPath;
-            treeController.content = tree;
-            treeController.allExpanded = true;
-
-            expect(treeController.iterations.map(function (iteration) {
-                return iteration.getPath("content.value");
-            })).toEqual([10, 20, 30, 40, 50]);
+        it("expandAll should not fail if no data is set", function () {
+            treeController = new TreeController();
+            treeController.expandAll();
         });
+        it("getChildren should work properly if childrenPath is not set", function () {
+            expect(treeController.getChildren(treeData)[0].name).toEqual("a");
+        });
+        it("getChildren should work properly if childrenPath is set as 'children'", function () {
+            treeController.childrenPath = "children";
+            expect(treeController.getChildren(treeData)[0].name).toEqual("a");
+        });
+        it("getChildren should work properly if childrenPath is a property literal", function () {
+            treeController = new TreeController();
+            treeController.childrenPath = "foo";
+            treeController.data = {foo: [1]};
+            expect(treeController.getChildren(treeController.data)[0]).toEqual(1);
+        });
+        it("getChildren should work properly if childrenPath is set an FRB expression", function () {
+            treeController = new TreeController();
+            treeController.childrenPath = "foo.0";
+            treeController.data = {foo: [[1]]};
+            expect(treeController.getChildren(treeController.data)[0]).toEqual(1);
+        });
+        it("one change should be handled after setting data for the first time", function () {
+            expect(delegate.changes).toEqual(1);
+        });
+    });
 
+    describe("expanding and collaping the tree", function () {
+        it("expandNode should work as expected", function () {
+            expect(treeController.expandNode(treeData)).toEqual(true);
+            expect(treeController.getNodeIsExpanded(treeData)).toEqual(true);
+        });
+        it("expandNode should work only on not-expanded nodes", function () {
+            expect(treeController.expandNode(treeData)).toEqual(true);
+            expect(treeController.expandNode(treeData)).toEqual(false);
+            expect(treeController.getNodeIsExpanded(treeData)).toEqual(true);
+        });
+        it("collapseNode should work as expected", function () {
+            treeController.expandNode(treeData);
+            expect(treeController.collapseNode(treeData)).toEqual(true);
+            expect(treeController.getNodeIsExpanded(treeData)).toEqual(false);
+        });
+        it("collapseNode should work only onn expanded nodes", function () {
+            treeController.expandNode(treeData);
+            expect(treeController.collapseNode(treeData)).toEqual(true);
+            expect(treeController.collapseNode(treeData)).toEqual(false);
+            expect(treeController.getNodeIsExpanded(treeData)).toEqual(false);
+        });
+        it("expandAll should work as expected", function () {
+            treeController.expandAll();
+            expect(treeController.getNodeIsExpanded(treeData)).toEqual(true);
+            expect(treeController.getNodeIsExpanded(treeData.children[0])).toEqual(true);
+            expect(treeController.getNodeIsExpanded(treeData.children[0].children[0])).toEqual(true);
+            expect(treeController.getNodeIsExpanded(treeData.children[0].children[0].children[0])).toEqual(false);
+            treeController.collapseNode(treeData);
+            expect(treeController.getNodeIsExpanded(treeData)).toEqual(false);
+            expect(treeController.getNodeIsExpanded(treeData.children[0])).toEqual(true);
+        });
+    });
+
+    describe("handling changes in the tree", function () {
+        it("a change if data property changes", function () {
+            treeController.data = {};
+            expect(delegate.changes).toEqual(2);
+        });
+        it("a change after expanding the root", function () {
+            treeController.expandNode(treeData);
+            expect(delegate.changes).toEqual(2);
+        });
+        it("no changes after trying to expand the same node again", function () {
+            treeController.expandNode(treeData);
+            treeController.expandNode(treeData);
+            expect(delegate.changes).toEqual(2);
+        });
+        it("a change after expandAll", function () {
+            treeController.expandAll(treeData);
+            expect(delegate.changes).toEqual(2);
+        });
+        it("a change after collapseNode", function () {
+            treeController.expandNode(treeData);
+            treeController.collapseNode(treeData);
+            expect(delegate.changes).toEqual(3);
+        });
+        it("no changes after trying to collapse the same node again", function () {
+            treeController.expandNode(treeData);
+            treeController.collapseNode(treeData);
+            treeController.collapseNode(treeData);
+            expect(delegate.changes).toEqual(3);
+        });
+        it("a change when data's children change", function () {
+            treeController.expandNode(treeData);
+            treeData.children.push({});
+            expect(delegate.changes).toEqual(3);
+            treeData.children.pop();
+            expect(delegate.changes).toEqual(4);
+            treeData.children = null;
+            expect(delegate.changes).toEqual(5);
+        });
+        it("a change when data descendants change", function () {
+            treeController.expandAll();
+            treeData.children[0].children.push({});
+            expect(delegate.changes).toEqual(3);
+            treeData.children[1].children.pop();
+            expect(delegate.changes).toEqual(4);
+            treeData.children[1].children[0].children = null;
+            expect(delegate.changes).toEqual(5);
+        });
+        it("no changes if changed children have never been reachable", function () {
+            treeData.children.push({});
+            expect(delegate.changes).toEqual(1);
+        });
+        it("no changes if changed children have been reachable but not anymore", function () {
+            treeController.expandAll(treeData);
+            treeController.collapseNode(treeData);
+            treeData.children.push({});
+            treeData.children[1].children.push({});
+            treeData.children[1].children[0].children.push({});
+            expect(delegate.changes).toEqual(3);
+        });
+        it("no changes if data has been detached", function () {
+            treeController.expandAll(treeData);
+            treeController.data = {};
+            treeData.children.push({});
+            treeData.children[1].children.push({});
+            treeData.children[1].children[0].children.push({});
+            expect(delegate.changes).toEqual(3);
+        });
     });
 
 });
-
