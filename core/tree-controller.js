@@ -37,11 +37,11 @@ exports.TreeController = Montage.specialize({
         }
     },
 
-    _childrenPathProperty: {
+    _childrenExpressionProperty: {
         value: "children"
     },
 
-    _childrenPath: {
+    _childrenExpression: {
         value: null
     },
 
@@ -50,18 +50,18 @@ exports.TreeController = Montage.specialize({
      * children, produces an array of that content's children.
      * By default it is "children"
      */
-    childrenPath: {
+    childrenExpression: {
         get: function () {
-            if (this._childrenPath === null) {
+            if (this._childrenExpression === null) {
                 return "children";
             }
-            return this._childrenPath;
+            return this._childrenExpression;
         },
         set: function (value) {
-            if (this._childrenPath !== value) {
+            if (this._childrenExpression !== value) {
                 var parsedValue = null;
 
-                this._childrenPath = value;
+                this._childrenExpression = value;
                 if (value) {
                     if (typeof value === "string") {
                         parsedValue = parse(value);
@@ -72,12 +72,12 @@ exports.TreeController = Montage.specialize({
                         (parsedValue.args.length === 2) &&
                         (parsedValue.args[0].type === "value") &&
                         (parsedValue.args[1].type === "literal")) {
-                        this._childrenPathProperty = parsedValue.args[1].value;
+                        this._childrenExpressionProperty = parsedValue.args[1].value;
                     } else {
-                        this._childrenPathProperty = null;
+                        this._childrenExpressionProperty = null;
                     }
                 } else {
-                    this._childrenPathProperty = "children";
+                    this._childrenExpressionProperty = "children";
                 }
             }
         }
@@ -200,14 +200,14 @@ exports.TreeController = Montage.specialize({
     },
 
     /**
-     * Returns the children of a given node based on childrenPath
+     * Returns the children of a given node based on childrenExpression
      */
     getChildren: {
         value: function (node) {
-            if (this._childrenPathProperty === null) {
-                return evaluate(this._childrenPath, node);
+            if (this._childrenExpressionProperty === null) {
+                return evaluate(this._childrenExpression, node);
             }
-            return node[this._childrenPathProperty];
+            return node[this._childrenExpressionProperty];
         }
     },
 
@@ -244,7 +244,7 @@ exports.TreeController = Montage.specialize({
             this._isOwnUpdate = true;
             treeNode = new TreeNode(expandedNode, this);
             cancelListener = treeNode.addRangeAtPathChangeListener(
-                "data." + (this._childrenPath || "children"),
+                "data." + (this._childrenExpression || "children"),
                 this,
                 "handleTreeChange"
             );
