@@ -14,7 +14,7 @@ var TreeNode = exports.TreeNode = Montage.specialize({
 
     isExpanded: {
         get: function () {
-            return this.controller.getNodeIsExpanded(this.data);
+            return this.controller.isNodeExpanded(this.data);
         },
         set: function (value) {
             if (value) {
@@ -120,7 +120,7 @@ exports.TreeController = Montage.specialize({
 
     _expandNode: {
         value: function (node) {
-            if (!this.getNodeIsExpanded(node)) {
+            if (!this.isNodeExpanded(node)) {
                 this._expansionMap.set(node, {});
                 return true;
             }
@@ -193,7 +193,7 @@ exports.TreeController = Montage.specialize({
     /**
      * Gets the node expansion value - boolean - for a given node
      */
-    getNodeIsExpanded: {
+    isNodeExpanded: {
         value: function (node) {
             return this._expansionMap.has(node);
         }
