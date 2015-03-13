@@ -150,7 +150,7 @@ exports.TreeController = Montage.specialize({
 
     _expandAll: {
         value: function (node) {
-            var childrenData = this.getChildren(node),
+            var childrenData = this.childrenFromNode(node),
                 length,
                 i;
 
@@ -209,7 +209,7 @@ exports.TreeController = Montage.specialize({
     /**
      * Returns the children of a given node based on childrenExpression
      */
-    getChildren: {
+    childrenFromNode: {
         value: function (node) {
 
             // This is a speed optimisation. If childrenExpression
@@ -234,7 +234,7 @@ exports.TreeController = Montage.specialize({
             }
             if (node && (expansionMetadata = this._expansionMap.get(node))) {
                 result.push(node);
-                children = this.getChildren(node);
+                children = this.childrenFromNode(node);
                 if (children) {
                     length = children.length;
                     for (i = 0; i < length; i++) {
