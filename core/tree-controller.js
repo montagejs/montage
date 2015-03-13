@@ -255,7 +255,7 @@ exports.TreeController = Montage.specialize({
             this._isOwnUpdate = true;
             treeNode = new TreeNode(expandedNode, this);
             cancelListener = treeNode.addRangeAtPathChangeListener(
-                "data." + (this._childrenExpression || "children"),
+                this._childrenExpression ? "data.path(controller._childrenExpression)" : "data.children",
                 this,
                 "handleTreeChange"
             );

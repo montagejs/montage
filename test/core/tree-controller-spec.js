@@ -161,7 +161,7 @@ describe("tree-controller-spec", function () {
             expect(delegate.changes).toEqual(2);
         });
         it("a change after expandAll", function () {
-            treeController.expandAll(treeData);
+            treeController.expandAll();
             expect(delegate.changes).toEqual(2);
         });
         it("a change after collapseNode", function () {
@@ -198,7 +198,7 @@ describe("tree-controller-spec", function () {
             expect(delegate.changes).toEqual(1);
         });
         it("no changes if changed children have been reachable but not anymore", function () {
-            treeController.expandAll(treeData);
+            treeController.expandAll();
             treeController.collapseNode(treeData);
             treeData.children.push({});
             treeData.children[1].children.push({});
@@ -206,12 +206,51 @@ describe("tree-controller-spec", function () {
             expect(delegate.changes).toEqual(3);
         });
         it("no changes if data has been detached", function () {
-            treeController.expandAll(treeData);
+            treeController.expandAll();
             treeController.data = {};
             treeData.children.push({});
             treeData.children[1].children.push({});
             treeData.children[1].children[0].children.push({});
             expect(delegate.changes).toEqual(3);
+        });
+        it("changes are registered for FRB paths", function () {
+            delegate.changes = 0;
+            treeController = new TreeController();
+            treeController.delegate = delegate;
+            treeController.childrenExpression = "foo.0";
+            treeController.data = {foo: [[{}]]};
+            treeController.expandNode(treeController.data);
+            treeController.data.foo[0].push({});
+            expect(delegate.changes).toEqual(3);
+        });
+        it("changes are registered for complex FRB expressions", function () {
+            delegate.changes = 0;
+            treeController = new TreeController();
+            treeController.delegate = delegate;
+            treeController.data =
+            treeData = {
+                left: {
+                    left: {},
+                    right: {}
+                },
+                right: {
+                    left: {},
+                    right: {}
+                }
+            };
+            treeController.childrenExpression = "(left ? [left] : []).concat(right ? [right] : [])";
+            treeController.expandNode(treeData);
+            treeController.expandNode(treeData.left);
+            expect(delegate.changes).toEqual(3);
+            treeData.left.right = null;
+            expect(delegate.changes).toEqual(4);
+            treeData.left = null;
+            expect(delegate.changes).toEqual(5);
+            treeData.left = {};
+            treeController.expandNode(treeData.left);
+            expect(delegate.changes).toEqual(7);
+            treeData.left.left = {};
+            expect(delegate.changes).toEqual(8);
         });
     });
 
