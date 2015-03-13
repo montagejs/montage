@@ -63,9 +63,16 @@ exports.TreeController = Montage.specialize({
 
                 this._childrenExpression = value;
                 if (value) {
+
+                    // We parse the given childrenExpression...
+
                     if (typeof value === "string") {
                         parsedValue = parse(value);
                     }
+
+                    // ...and if it is just a property we set _childrenExpressionProperty
+                    //  to be used later for speed optimisation purposes
+
                     if ((parsedValue !== null) &&
                         (parsedValue.type === "property") &&
                         (parsedValue.args) &&
@@ -204,6 +211,10 @@ exports.TreeController = Montage.specialize({
      */
     getChildren: {
         value: function (node) {
+
+            // This is a speed optimisation. If childrenExpression
+            // is just a single property, we don't evaluate it
+
             if (this._childrenExpressionProperty === null) {
                 return evaluate(this._childrenExpression, node);
             }
