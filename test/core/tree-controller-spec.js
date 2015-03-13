@@ -77,9 +77,9 @@ describe("tree-controller-spec", function () {
     });
 
     describe("initialisation and configuration", function () {
-        it("childrenPath should be equal to 'children' by default", function () {
+        it("childrenExpression should be equal to 'children' by default", function () {
             treeController = new TreeController();
-            expect(treeController.childrenPath).toEqual("children");
+            expect(treeController.childrenExpression).toEqual("children");
         });
         it("data should be null if not set", function () {
             treeController = new TreeController();
@@ -89,24 +89,24 @@ describe("tree-controller-spec", function () {
             treeController = new TreeController();
             treeController.expandAll();
         });
-        it("getChildren should work properly if childrenPath is not set", function () {
-            expect(treeController.getChildren(treeData)[0].name).toEqual("a");
+        it("childrenFromNode should work properly if childrenExpression is not set", function () {
+            expect(treeController.childrenFromNode(treeData)[0].name).toEqual("a");
         });
-        it("getChildren should work properly if childrenPath is set as 'children'", function () {
-            treeController.childrenPath = "children";
-            expect(treeController.getChildren(treeData)[0].name).toEqual("a");
+        it("childrenFromNode should work properly if childrenExpression is set as 'children'", function () {
+            treeController.childrenExpression = "children";
+            expect(treeController.childrenFromNode(treeData)[0].name).toEqual("a");
         });
-        it("getChildren should work properly if childrenPath is a property literal", function () {
+        it("childrenFromNode should work properly if childrenExpression is a property literal", function () {
             treeController = new TreeController();
-            treeController.childrenPath = "foo";
+            treeController.childrenExpression = "foo";
             treeController.data = {foo: [1]};
-            expect(treeController.getChildren(treeController.data)[0]).toEqual(1);
+            expect(treeController.childrenFromNode(treeController.data)[0]).toEqual(1);
         });
-        it("getChildren should work properly if childrenPath is set an FRB expression", function () {
+        it("childrenFromNode should work properly if childrenExpression is set an FRB expression", function () {
             treeController = new TreeController();
-            treeController.childrenPath = "foo.0";
+            treeController.childrenExpression = "foo.0";
             treeController.data = {foo: [[1]]};
-            expect(treeController.getChildren(treeController.data)[0]).toEqual(1);
+            expect(treeController.childrenFromNode(treeController.data)[0]).toEqual(1);
         });
         it("one change should be handled after setting data for the first time", function () {
             expect(delegate.changes).toEqual(1);
@@ -116,33 +116,33 @@ describe("tree-controller-spec", function () {
     describe("expanding and collaping the tree", function () {
         it("expandNode should work as expected", function () {
             expect(treeController.expandNode(treeData)).toEqual(true);
-            expect(treeController.getNodeIsExpanded(treeData)).toEqual(true);
+            expect(treeController.isNodeExpanded(treeData)).toEqual(true);
         });
         it("expandNode should work only on not-expanded nodes", function () {
             expect(treeController.expandNode(treeData)).toEqual(true);
             expect(treeController.expandNode(treeData)).toEqual(false);
-            expect(treeController.getNodeIsExpanded(treeData)).toEqual(true);
+            expect(treeController.isNodeExpanded(treeData)).toEqual(true);
         });
         it("collapseNode should work as expected", function () {
             treeController.expandNode(treeData);
             expect(treeController.collapseNode(treeData)).toEqual(true);
-            expect(treeController.getNodeIsExpanded(treeData)).toEqual(false);
+            expect(treeController.isNodeExpanded(treeData)).toEqual(false);
         });
         it("collapseNode should work only onn expanded nodes", function () {
             treeController.expandNode(treeData);
             expect(treeController.collapseNode(treeData)).toEqual(true);
             expect(treeController.collapseNode(treeData)).toEqual(false);
-            expect(treeController.getNodeIsExpanded(treeData)).toEqual(false);
+            expect(treeController.isNodeExpanded(treeData)).toEqual(false);
         });
         it("expandAll should work as expected", function () {
             treeController.expandAll();
-            expect(treeController.getNodeIsExpanded(treeData)).toEqual(true);
-            expect(treeController.getNodeIsExpanded(treeData.children[0])).toEqual(true);
-            expect(treeController.getNodeIsExpanded(treeData.children[0].children[0])).toEqual(true);
-            expect(treeController.getNodeIsExpanded(treeData.children[0].children[0].children[0])).toEqual(false);
+            expect(treeController.isNodeExpanded(treeData)).toEqual(true);
+            expect(treeController.isNodeExpanded(treeData.children[0])).toEqual(true);
+            expect(treeController.isNodeExpanded(treeData.children[0].children[0])).toEqual(true);
+            expect(treeController.isNodeExpanded(treeData.children[0].children[0].children[0])).toEqual(false);
             treeController.collapseNode(treeData);
-            expect(treeController.getNodeIsExpanded(treeData)).toEqual(false);
-            expect(treeController.getNodeIsExpanded(treeData.children[0])).toEqual(true);
+            expect(treeController.isNodeExpanded(treeData)).toEqual(false);
+            expect(treeController.isNodeExpanded(treeData.children[0])).toEqual(true);
         });
     });
 
