@@ -1,12 +1,13 @@
 /*jshint node:true, browser:false */
 
-var FS = require("q-io/fs");
+var Promise = require("bluebird");
+var fs = Promise.promisifyAll(require("fs"));
+var path = require("path");
 
 var MontageBoot = require("./montage");
 
 var Require = require("mr/require");
 require("mr/node");
-var Promise = require("q");
 var URL = require("url");
 
 var htmlparser = require("htmlparser2");
@@ -18,35 +19,40 @@ exports.bootstrap = function () {
     var command = process.argv.slice(0, 3);
     var args = process.argv.slice(2);
     var program = args.shift();
-    return FS.canonical(program).then(function (program) {
+    // refactored from q-io/fs.canonical
+    return fs.realpathAsync(program).then(function (program) {
         return findPackage(program)
-        .fail(function (error) {
-            if (error.message === "Can't find package") {
-                loadFreeModule(program, command, args);
-            } else {
-                throw new Error(error);
-            }
-        })
-        .then(function (directory) {
-            return loadPackagedModule(directory, program, command, args);
-        });
+            .catch(function (error) {
+                if (error.message === "Can't find package") {
+                    loadFreeModule(program, command, args);
+                } else {
+                    throw new Error(error);
+                }
+            })
+            .then(function (directory) {
+                return loadPackagedModule(directory, program, command, args);
+            });
     });
 };
 
 var findPackage = function (path) {
-    var directory = FS.directory(path);
+    // refactored from q-io/fs.directory
+    var directory = path.join(__dirname, '../', path);
     if (directory === path) {
         throw new Error("Can't find package");
     }
-    var packageJson = FS.join(directory, "package.json");
-    return FS.stat(path)
-    .then(function (stat) {
-        if (stat.isFile()) {
-            return directory;
-        } else {
-            return findPackage(directory);
-        }
-    });
+
+    // refactored from q-io/fs.join
+    var packageJson = path.join(directory, "package.json");
+    // refactored from q-io/fs.stat
+    return fs.statAsync(path)
+        .then(function (stat) {
+            if (stat.isFile()) {
+                return directory;
+            } else {
+                return findPackage(directory);
+            }
+        });
 };
 
 var loadFreeModule = function (program, command, args) {
@@ -55,11 +61,11 @@ var loadFreeModule = function (program, command, args) {
 
 var loadPackagedModule = function (directory, program, command, args) {
     return MontageBoot.loadPackage(directory)
-    .then(function (require) {
-        var id = program.slice(directory.length + 1);
-        return require.async(id);
-    })
-    .done();
+        .then(function (require) {
+            var id = program.slice(directory.length + 1);
+            return require.async(id);
+        })
+        .done();
 };
 
 MontageBoot.loadPackage = function (location, config) {
@@ -103,29 +109,30 @@ MontageBoot.TemplateLoader = function (config, load) {
         var reelModule = id.match(/(.*\/)?([^\/]+)\.reel\/\2$/);
         if (html) {
             return load(id, module)
-            .then(function () {
-                module.dependencies = parseHtmlDependencies(module.text, module.location);
-                return module;
-            });
+                .then(function () {
+                    module.dependencies = parseHtmlDependencies(module.text, module.location);
+                    return module;
+                });
         } else if (serialization) {
             return load(id, module)
-            .then(function () {
-                module.dependencies = collectSerializationDependencies(module.text, []);
-                return module;
-            });
+                .then(function () {
+                    module.dependencies = collectSerializationDependencies(module.text, []);
+                    return module;
+                });
         } else if (reelModule) {
             return load(id, module)
-            .then(function () {
-                var reelHtml = URL.resolve(module.location, reelModule[2] + ".html");
-                return FS.stat(URL.parse(reelHtml).pathname)
-                .then(function (stat) {
-                    if (stat.isFile()) {
-                        module.extraDependencies = [id + ".html"];
-                    }
-                }, function (error) {
-                    // not a problem
+                .then(function () {
+                    var reelHtml = URL.resolve(module.location, reelModule[2] + ".html");
+                    // refactored from q-io/fs.stat
+                    return fs.statAsync(URL.parse(reelHtml).pathname)
+                        .then(function (stat) {
+                            if (stat.isFile()) {
+                                module.extraDependencies = [id + ".html"];
+                            }
+                        }, function (error) {
+                            // not a problem
+                        });
                 });
-            });
         } else {
             return load(id, module);
         }
