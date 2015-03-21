@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="/node_modules/normalize.css/normalize.css"/>
     <script type="text/montage-serialization">
         {
             "owner": {
@@ -14,9 +15,7 @@
                     "element": {"#": "select"}
                 },
                 "bindings": {
-                    "content": {
-                        "<-": "@owner.componentList"
-                    }
+                    "content": {"<-": "@owner.componentList"}
                 }
             },
             "substitution": {
@@ -35,6 +34,12 @@
                 "properties": {
                     "element": {"#": "SegmentedBar"}
                 }
+            },
+            "Succession": {
+                "prototype": "ui/succession.info/sample/main.reel",
+                "properties": {
+                    "element": {"#": "Succession"}
+                }
             }
         }
     </script>
@@ -47,8 +52,12 @@
     <hr/>
 
     <div data-montage-id="substitution">
+        <!--blank placeholder-->
+        <div data-arg="Select a .info to render"></div>
+
         <!--add components below-->
         <div data-montage-id="SegmentedBar" data-arg="SegmentedBar"></div>
+        <div data-montage-id="Succession" data-arg="Succession"></div>
     </div>
 </div>
 

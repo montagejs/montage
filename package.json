@@ -35,9 +35,11 @@
     "q-io": "~1.11.0"
   },
   "devDependencies": {
+    "animate.css": "^3.1.1",
     "jshint": "~2.4.4",
     "montage-testing": "~0.4.1",
-    "native": "~0.2.0"
+    "native": "~0.2.0",
+    "normalize.css": "^3.x"
   },
   "scripts": {
     "test": "node test/node/node-spec.js",

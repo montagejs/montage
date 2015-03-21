@@ -1,0 +1,9 @@
+.bar {
+    width: 100%;
+    height: 100%;
+    min-width: 100px;
+    min-height: 100px;
+    background: orange;
+    color: white;
+    overflow: auto;
+}
