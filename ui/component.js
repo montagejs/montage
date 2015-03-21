@@ -837,7 +837,67 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         }
     },
 
+    /**
+     * Prevents multiple transitionend or animationend event handlers from running.
+     * Implemented due to no standard "transitionstart" event.
+     *
+     * @private
+     * @property {boolean}
+     */
+    _isTransitioning: {value: false},
+
+    __animationEventName: {value: null},
+
+    /**
+     * Determine end of animation event name across browsers.
+     * Mainly for Chrome <= 41 & Safari <= 8.
+     *
+     * @private
+     * @readonly
+     * @property {String}
+     */
+    _animationEventName: {
+        get: function () {
+            if (!this.__animationEventName) {
+                this.__animationEventName = this.element.style.animation ?
+                    "animationend" : "webkitAnimationEnd";
+            }
+            return this.__animationEventName
+        }
+    },
+
+    /**
+     * Detach component from parent & component tree; detached components cannot draw anymore.
+     *
+     * @function
+     */
     detachFromParentComponent: {
+        value: function () {
+            var self = this;
+
+            if (!this._firstDraw && this._inDocument && this.buildOutCSSClass) {
+                var detachBuildOutHandler = function detachBuildOutHandler(event) {
+                    event.stopPropagation();
+                    self.classList.remove(self.buildOutCSSClass);
+                    self.element.removeEventListener("transitionend", detachBuildOutHandler);
+                    self.element.removeEventListener(self._animationEventName, detachBuildOutHandler);
+                    self._isTransitioning = false;
+                    self._detachFromParentComponent();
+                };
+
+                this._isTransitioning = true;
+                this.classList.add(this.buildOutCSSClass);
+
+                this.element.addEventListener("transitionend", detachBuildOutHandler);
+                this.element.addEventListener(self._animationEventName, detachBuildOutHandler)
+
+            } else {
+                this._detachFromParentComponent();
+            }
+        }
+    },
+
+    _detachFromParentComponent: {
         value: function () {
             var parentComponent = this.parentComponent;
 
@@ -2070,32 +2130,69 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         value: function () {
             var contents = this._newDomContent,
                 oldContent = this._element.childNodes[0],
-                childNodesCount,
-                element;
+                element,
+                self = this;
 
             if (contents || this._shouldClearDomContentOnNextDraw) {
+                var removeOldContent = function (childNodesCount) {
+                    childNodesCount = childNodesCount || self._element.childNodes.length;
+                    for (var i = 0; i < childNodesCount; i++) {
+                        element.removeChild(element.firstChild);
+                    }
+                }
+
                 element = this._element;
 
-                // Setting the innerHTML to clear the children will not work on
-                // IE because it modifies the underlying child nodes. Here's the
-                // test case that shows this issue: http://jsfiddle.net/89X6F/
-                childNodesCount = this._element.childNodes.length;
-                for (var i = 0; i < childNodesCount; i++) {
-                    element.removeChild(element.firstChild);
+                if (oldContent && oldContent.component && oldContent.component.buildOutCSSClass) {
+                    var domContentBuildOutHandler = function (event) {
+                        event.stopPropagation();
+
+                        oldContent.component.classList.remove(oldContent.component.buildOutCSSClass);
+                        oldContent.component.classList.remove("montage-transition-child");
+                        // todo
+                        //oldContent.parentElement.component.classList.remove("montage-transition-parent");
+
+                        oldContent.component.element.removeEventListener(
+                            "transitionend", domContentBuildOutHandler
+                        );
+                        oldContent.component.element.removeEventListener(
+                            oldContent.component._animationEventName, domContentBuildOutHandler
+                        );
+                        oldContent.component._isTransitioning = false;
+                        removeOldContent(1);
+                    };
+
+                    // detachFromParentComponent may have started transitioning already
+                    if (!oldContent.component._isTransitioning) {
+                        oldContent.component._isTransitioning = true;
+                        oldContent.component.classList.add(oldContent.component.buildOutCSSClass);
+                    }
+
+                    oldContent.parentElement.component.classList.add("montage-transition-parent");
+                    oldContent.component.classList.add("montage-transition-child");
+
+                    oldContent.addEventListener("transitionend", domContentBuildOutHandler);
+                    oldContent.addEventListener(oldContent.component._animationEventName, domContentBuildOutHandler);
+
+                } else {
+                    removeOldContent();
                 }
 
                 if (Element.isElement(contents)) {
                     element.appendChild(contents);
-                } else if(contents != null) {
+                } else if (contents != null) {
                     for (var i = 0, content; (content = contents[i]); i++) {
                         element.appendChild(content);
                     }
                 }
 
                 this._newDomContent = null;
+
+                // call lifecycle hook if implemented
                 if (typeof this.contentDidChange === "function") {
                     this.contentDidChange(this._element.childNodes[0], oldContent);
                 }
+
                 this._shouldClearDomContentOnNextDraw = false;
             }
         }
@@ -2705,33 +2802,43 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 }
             }
 
+            if (this.buildInCSSClassStart) {
+                this.classList.add(this.buildInCSSClassStart);
+                // buildInCSSClassEnd & transitionend is handled in _draw()
+            }
         }
     },
 
+    /**
+     * @private
+     */
     _draw: {
         value: function () {
-            var element = this.element, descriptor;
+            var element = this.element,
+                self = this,
+                descriptor;
 
-            for(var attributeName in this._elementAttributeValues) {
-                if(this._elementAttributeValues.hasOwnProperty(attributeName)) {
+            for (var attributeName in this._elementAttributeValues) {
+                if (this._elementAttributeValues.hasOwnProperty(attributeName)) {
                     var value = this[attributeName];
                     descriptor = this._getElementAttributeDescriptor(attributeName, this);
-                    if(descriptor) {
 
-                        if(descriptor.dataType === 'boolean') {
-                            if(value === true) {
+                    if (descriptor) {
+                        if (descriptor.dataType === 'boolean') {
+                            if (value === true) {
                                 element[attributeName] = true;
                                 element.setAttribute(attributeName, attributeName.toLowerCase());
                             } else {
                                 element[attributeName] = false;
                                 element.removeAttribute(attributeName);
                             }
+
                         } else {
-                            if(typeof value !== 'undefined') {
-                                if(attributeName === 'textContent') {
+                            if (typeof value !== 'undefined') {
+                                if (attributeName === 'textContent') {
                                     element.textContent = value;
                                 } else {
-                                    //https://developer.mozilla.org/en/DOM/element.setAttribute
+                                    // @see https://developer.mozilla.org/en/DOM/element.setAttribute
                                     element.setAttribute(attributeName, value);
                                 }
 
@@ -2744,7 +2851,27 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 }
             }
             // classList
+
             this._drawClassListIntoComponent();
+
+            // transition
+            // buildInCSSClassStart is added in _enterDocument()
+            if (this.classList.contains(this.buildInCSSClassStart)) {
+                var buildInHandler = function (event) {
+                    event.stopPropagation();
+                    self.classList.remove(self.buildInCSSClassStart)
+                    self.classList.remove(self.buildInCSSClassEnd)
+                    self.element.removeEventListener("transitionend", buildInHandler);
+                    self.element.removeEventListener(self._animationEventName, buildInHandler);
+                };
+
+                if (this.buildInCSSClassEnd) {
+                    this.classList.add(this.buildInCSSClassEnd);
+                    this.element.addEventListener("transitionend", buildInHandler)
+                } else {
+                    this.element.addEventListener(self._animationEventName, buildInHandler)
+                }
+            }
         }
     },
 
