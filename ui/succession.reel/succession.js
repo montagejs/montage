@@ -4,7 +4,6 @@
  * @module "montage/ui/succession.reel"
  */
 var Slot = require("ui/slot.reel").Slot,
-    Component = require("ui/component").Component,
     RangeController = require("core/range-controller").RangeController;
 
 /**
@@ -32,7 +31,7 @@ exports.Succession = Slot.specialize(/** @lends Succession.prototype */{
                 "top": {"<-": "this.stack.selection[0] ?? null"},
                 "content": {"<-": "this.top.destination"},
                 /**
-                 * The Transition immedately below the top of Succession stack.
+                 * The Transition immediately below the top of Succession stack.
                  *
                  * @property {Transition} previous
                  * @readonly
@@ -95,11 +94,11 @@ exports.Succession = Slot.specialize(/** @lends Succession.prototype */{
     performTransition: {
         value: function (transition) {
             // execute lifecycle hooks
-            if (transition.source && typeof transition.source.prepareForBuildOut == "function") {
-                transition.source.prepareForBuildOut(transition)
+            if (transition.source && typeof transition.source.prepareForBuildOut === "function") {
+                transition.source.prepareForBuildOut(transition);
             }
-            if (typeof transition.destination.prepareForBuildIn == "function") {
-                transition.destination.prepareForBuildIn(transition)
+            if (typeof transition.destination.prepareForBuildIn === "function") {
+                transition.destination.prepareForBuildIn(transition);
             }
 
             if (transition.sourceData) {

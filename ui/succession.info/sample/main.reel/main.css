@@ -27,6 +27,7 @@
 
 .stack {
     text-align: left;
+    overflow: scroll;
 }
 
 .stack .top::after,
@@ -34,6 +35,7 @@
 .stack .first::after {
     font-size: 0.8em;
     padding-left: 10px;
+    font-weight: bold;
 }
 
 .stack li {

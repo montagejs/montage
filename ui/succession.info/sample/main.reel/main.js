@@ -9,6 +9,9 @@ exports.Main = Component.specialize({
     foo: {
         get: function () {
             var component = new Foo();
+            //component.classList.add("animated");
+            //component.buildInCSSClassStart = "zoomInDown";
+            //component.buildOutCSSClass = "zoomOutDown";
             component.buildInCSSClassStart = "transform-start";
             component.buildInCSSClassEnd = "transform-end";
             component.buildOutCSSClass = "transform-build-out";
@@ -21,6 +24,9 @@ exports.Main = Component.specialize({
             component.classList.add("animated");
             component.buildInCSSClassStart = "zoomInDown";
             component.buildOutCSSClass = "zoomOutDown";
+            //component.buildInCSSClassStart = "transform-start";
+            //component.buildInCSSClassEnd = "transform-end";
+            //component.buildOutCSSClass = "transform-build-out";
             return component;
         }
     },

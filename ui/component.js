@@ -44,7 +44,54 @@ var ATTR_LE_COMPONENT = "data-montage-le-component",
  * @classdesc Base class for all Montage components.
  * @extends Target
  */
-var Component = exports.Component = Target.specialize( /** @lends Component.prototype # */ {
+var Component = exports.Component = Target.specialize(/** @lends Component.prototype */{
+    // Virtual Interface
+
+    /**
+     * A human-friendly display title for the component. Different than {@link Component.identifier}.
+     *
+     * @example "User Settings Panel"
+     *
+     * @name Component#displayTitle
+     * @property {String}
+     */
+
+    /**
+     * An identifier label used to refer to the component in code.
+     * For example, event handler will call `handleIdentifierAction` which uses this identifier.
+     * If not defined, will be the same as serialization object's key.
+     * Different than {@link Component.displayTitle}.
+     *
+     * @example "userSettingsPanel"
+     *
+     * @name Component#identifier
+     * @property {String}
+     */
+
+    /**
+     * @name Component#buildInCSSClassStart
+     * @property {String}
+     */
+
+    /**
+     * @name Component#buildInCSSClassEnd
+     * @property {String}
+     */
+
+    /**
+     * @name Component#buildOutCSSClass
+     * @property {String}
+     */
+
+    /**
+     * @name Component#prepareForBuildIn
+     * @function
+     */
+
+    /**
+     * @name Component#prepareForBuildOut
+     * @function
+     */
     DOM_ARG_ATTRIBUTE: {value: "data-arg"},
 
     constructor: {
@@ -846,26 +893,6 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      */
     _isTransitioning: {value: false},
 
-    __animationEventName: {value: null},
-
-    /**
-     * Determine end of animation event name across browsers.
-     * Mainly for Chrome <= 41 & Safari <= 8.
-     *
-     * @private
-     * @readonly
-     * @property {String}
-     */
-    _animationEventName: {
-        get: function () {
-            if (!this.__animationEventName) {
-                this.__animationEventName = this.element.style.animation ?
-                    "animationend" : "webkitAnimationEnd";
-            }
-            return this.__animationEventName
-        }
-    },
-
     /**
      * Detach component from parent & component tree; detached components cannot draw anymore.
      *
@@ -876,20 +903,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             var self = this;
 
             if (!this._firstDraw && this._inDocument && this.buildOutCSSClass) {
-                var detachBuildOutHandler = function detachBuildOutHandler(event) {
-                    event.stopPropagation();
-                    self.classList.remove(self.buildOutCSSClass);
-                    self.element.removeEventListener("transitionend", detachBuildOutHandler);
-                    self.element.removeEventListener(self._animationEventName, detachBuildOutHandler);
-                    self._isTransitioning = false;
-                    self._detachFromParentComponent();
-                };
-
-                this._isTransitioning = true;
-                this.classList.add(this.buildOutCSSClass);
-
-                this.element.addEventListener("transitionend", detachBuildOutHandler);
-                this.element.addEventListener(self._animationEventName, detachBuildOutHandler)
+                this._performBuildOut(this, false, this._detachFromParentComponent.bind(this));
 
             } else {
                 this._detachFromParentComponent();
@@ -2126,61 +2140,80 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         }
     },
 
+    _performBuildOut: {
+        value: function (component, isNested, callback) {
+            var domContentBuildOutHandler = function (event) {
+                event.stopPropagation();
+                component.element.removeEventListener(
+                    "transitionend", domContentBuildOutHandler
+                );
+                component.element.removeEventListener(
+                    component.rootComponent.CSSAnimationEndEventName, domContentBuildOutHandler
+                );
+
+                component.classList.remove(component.buildOutCSSClass);
+                component.classList.remove("montage-transition-child");
+                // todo doesn't work when replacing too fast;
+                // parentComponent doesn't work, may be already detached from Component tree
+                //component.element.parentElement.component.classList.remove("montage-transition-parent");
+
+                component._isTransitioning = false;
+                callback();
+            };
+
+            // detachFromParentComponent may have started transitioning already
+            component._isTransitioning = true;
+
+            if (isNested) {
+                component.parentComponent.classList.add("montage-transition-parent");
+                component.classList.add("montage-transition-child");
+            }
+
+            //var backupElementStyle = window.getComputedStyle(component.element);
+            //var boundingClientRect = component.element.getBoundingClientRect();
+            //component.element.style.position = "absolute";
+            //component.element.style.width = boundingClientRect.width + 'px';
+            //component.element.style.height = boundingClientRect.height + 'px';
+            //component.element.style.top = boundingClientRect.top + 'px';
+            //component.element.style.left = boundingClientRect.left + 'px';
+            //component.element.style.zIndex = -999;
+
+            component.classList.add(component.buildOutCSSClass);
+
+            component.element.addEventListener("transitionend", domContentBuildOutHandler);
+            component.element.addEventListener(
+                component.rootComponent.CSSAnimationEndEventName, domContentBuildOutHandler
+            );
+        }
+    },
+
     _performDomContentChanges: {
         value: function () {
             var contents = this._newDomContent,
                 oldContent = this._element.childNodes[0],
-                element,
+                element = this._element,
                 self = this;
 
-            if (contents || this._shouldClearDomContentOnNextDraw) {
-                var removeOldContent = function (childNodesCount) {
+            var removeDOMElement = function (childNodesCount) {
+                return function () {
                     childNodesCount = childNodesCount || self._element.childNodes.length;
                     for (var i = 0; i < childNodesCount; i++) {
                         element.removeChild(element.firstChild);
                     }
                 }
+            };
 
-                element = this._element;
-
+            if (contents || this._shouldClearDomContentOnNextDraw) {
                 if (oldContent && oldContent.component && oldContent.component.buildOutCSSClass) {
-                    var domContentBuildOutHandler = function (event) {
-                        event.stopPropagation();
-
-                        oldContent.component.classList.remove(oldContent.component.buildOutCSSClass);
-                        oldContent.component.classList.remove("montage-transition-child");
-                        // todo
-                        //oldContent.parentElement.component.classList.remove("montage-transition-parent");
-
-                        oldContent.component.element.removeEventListener(
-                            "transitionend", domContentBuildOutHandler
-                        );
-                        oldContent.component.element.removeEventListener(
-                            oldContent.component._animationEventName, domContentBuildOutHandler
-                        );
-                        oldContent.component._isTransitioning = false;
-                        removeOldContent(1);
-                    };
-
-                    // detachFromParentComponent may have started transitioning already
-                    if (!oldContent.component._isTransitioning) {
-                        oldContent.component._isTransitioning = true;
-                        oldContent.component.classList.add(oldContent.component.buildOutCSSClass);
-                    }
-
-                    oldContent.parentElement.component.classList.add("montage-transition-parent");
-                    oldContent.component.classList.add("montage-transition-child");
-
-                    oldContent.addEventListener("transitionend", domContentBuildOutHandler);
-                    oldContent.addEventListener(oldContent.component._animationEventName, domContentBuildOutHandler);
+                    this._performBuildOut(oldContent.component, true, removeDOMElement(1));
 
                 } else {
-                    removeOldContent();
+                    removeDOMElement()();
                 }
 
                 if (Element.isElement(contents)) {
                     element.appendChild(contents);
-                } else if (contents != null) {
+                } else if(contents != null) {
                     for (var i = 0, content; (content = contents[i]); i++) {
                         element.appendChild(content);
                     }
@@ -2192,8 +2225,10 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 if (typeof this.contentDidChange === "function") {
                     this.contentDidChange(this._element.childNodes[0], oldContent);
                 }
-
                 this._shouldClearDomContentOnNextDraw = false;
+
+            } else if (oldContent && oldContent.component && oldContent.component.buildOutCSSClass) {
+                this._performBuildOut(oldContent.component, true, removeDOMElement(1))
             }
         }
     },
@@ -2850,28 +2885,36 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                     delete this._elementAttributeValues[attributeName];
                 }
             }
-            // classList
 
             this._drawClassListIntoComponent();
 
-            // transition
             // buildInCSSClassStart is added in _enterDocument()
             if (this.classList.contains(this.buildInCSSClassStart)) {
-                var buildInHandler = function (event) {
-                    event.stopPropagation();
-                    self.classList.remove(self.buildInCSSClassStart)
-                    self.classList.remove(self.buildInCSSClassEnd)
-                    self.element.removeEventListener("transitionend", buildInHandler);
-                    self.element.removeEventListener(self._animationEventName, buildInHandler);
-                };
-
                 if (this.buildInCSSClassEnd) {
                     this.classList.add(this.buildInCSSClassEnd);
-                    this.element.addEventListener("transitionend", buildInHandler)
+                    this.element.addEventListener(
+                        "transitionend", this._buildInHandler.bind(this)
+                    );
+
                 } else {
-                    this.element.addEventListener(self._animationEventName, buildInHandler)
+                    this.element.addEventListener(
+                        self.rootComponent.CSSAnimationEndEventName, this._buildInHandler.bind(this)
+                    );
                 }
             }
+        }
+    },
+
+    _buildInHandler: {
+        value: function (event) {
+            event.stopPropagation();
+            this.element.removeEventListener("transitionend", this._buildInHandler);
+            this.element.removeEventListener(
+                this.rootComponent.CSSAnimationEndEventName, this._buildInHandler
+            );
+
+            this.classList.remove(this.buildInCSSClassStart);
+            this.classList.remove(this.buildInCSSClassEnd);
         }
     },
 
@@ -3666,6 +3709,29 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype # *
             defaultEventManager.registerEventHandlerForElement(this, value);
             this._element = value;
             this._documentResources = DocumentResources.getInstanceForDocument(value);
+        }
+    },
+
+    _CSSAnimationEndEventName: {value: null},
+
+    /**
+     * Determine end of animation event name across browsers.
+     * Mainly for Chrome <= 41 & Safari <= 8.
+     *
+     * @private
+     * @readonly
+     * @property {String}
+     */
+    CSSAnimationEndEventName: {
+        get: function () {
+            if (!this._CSSAnimationEndEventName) {
+                if (window.onanimationend === undefined && window.onwebkitanimationend !== undefined) {
+                    this._CSSAnimationEndEventName = "webkitAnimationEnd";
+                } else {
+                    this._CSSAnimationEndEventName = "animationend";
+                }
+            }
+            return this._CSSAnimationEndEventName
         }
     }
 });
