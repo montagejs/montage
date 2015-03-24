@@ -44,7 +44,54 @@ var ATTR_LE_COMPONENT = "data-montage-le-component",
  * @classdesc Base class for all Montage components.
  * @extends Target
  */
-var Component = exports.Component = Target.specialize( /** @lends Component.prototype # */ {
+var Component = exports.Component = Target.specialize(/** @lends Component.prototype */{
+    // Virtual Interface
+
+    /**
+     * A human-friendly display title for the component. Different than {@link Component.identifier}.
+     *
+     * @example "User Settings Panel"
+     *
+     * @name Component#displayTitle
+     * @property {String}
+     */
+
+    /**
+     * An identifier label used to refer to the component in code.
+     * For example, event handler will call `handleIdentifierAction` which uses this identifier.
+     * If not defined, will be the same as serialization object's key.
+     * Different than {@link Component.displayTitle}.
+     *
+     * @example "userSettingsPanel"
+     *
+     * @name Component#identifier
+     * @property {String}
+     */
+
+    /**
+     * @name Component#buildInCSSClassStart
+     * @property {String}
+     */
+
+    /**
+     * @name Component#buildInCSSClassEnd
+     * @property {String}
+     */
+
+    /**
+     * @name Component#buildOutCSSClass
+     * @property {String}
+     */
+
+    /**
+     * @name Component#prepareForBuildIn
+     * @function
+     */
+
+    /**
+     * @name Component#prepareForBuildOut
+     * @function
+     */
     DOM_ARG_ATTRIBUTE: {value: "data-arg"},
 
     constructor: {
@@ -837,7 +884,34 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         }
     },
 
+    /**
+     * Prevents multiple transitionend or animationend event handlers from running.
+     * Implemented due to no standard "transitionstart" event.
+     *
+     * @private
+     * @property {boolean}
+     */
+    _isTransitioning: {value: false},
+
+    /**
+     * Detach component from parent & component tree; detached components cannot draw anymore.
+     *
+     * @function
+     */
     detachFromParentComponent: {
+        value: function () {
+            var self = this;
+
+            if (!this._firstDraw && this._inDocument && this.buildOutCSSClass) {
+                this._performBuildOut(this, false, this._detachFromParentComponent.bind(this));
+
+            } else {
+                this._detachFromParentComponent();
+            }
+        }
+    },
+
+    _detachFromParentComponent: {
         value: function () {
             var parentComponent = this.parentComponent;
 
@@ -2066,22 +2140,75 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         }
     },
 
+    _performBuildOut: {
+        value: function (component, isNested, callback) {
+            var domContentBuildOutHandler = function (event) {
+                event.stopPropagation();
+                component.element.removeEventListener(
+                    "transitionend", domContentBuildOutHandler
+                );
+                component.element.removeEventListener(
+                    component.rootComponent.CSSAnimationEndEventName, domContentBuildOutHandler
+                );
+
+                component.classList.remove(component.buildOutCSSClass);
+                component.classList.remove("montage-transition-child");
+                // todo doesn't work when replacing too fast;
+                // parentComponent doesn't work, may be already detached from Component tree
+                //component.element.parentElement.component.classList.remove("montage-transition-parent");
+
+                component._isTransitioning = false;
+                callback();
+            };
+
+            // detachFromParentComponent may have started transitioning already
+            component._isTransitioning = true;
+
+            if (isNested) {
+                component.parentComponent.classList.add("montage-transition-parent");
+                component.classList.add("montage-transition-child");
+            }
+
+            //var backupElementStyle = window.getComputedStyle(component.element);
+            //var boundingClientRect = component.element.getBoundingClientRect();
+            //component.element.style.position = "absolute";
+            //component.element.style.width = boundingClientRect.width + 'px';
+            //component.element.style.height = boundingClientRect.height + 'px';
+            //component.element.style.top = boundingClientRect.top + 'px';
+            //component.element.style.left = boundingClientRect.left + 'px';
+            //component.element.style.zIndex = -999;
+
+            component.classList.add(component.buildOutCSSClass);
+
+            component.element.addEventListener("transitionend", domContentBuildOutHandler);
+            component.element.addEventListener(
+                component.rootComponent.CSSAnimationEndEventName, domContentBuildOutHandler
+            );
+        }
+    },
+
     _performDomContentChanges: {
         value: function () {
             var contents = this._newDomContent,
                 oldContent = this._element.childNodes[0],
-                childNodesCount,
-                element;
+                element = this._element,
+                self = this;
+
+            var removeDOMElement = function (childNodesCount) {
+                return function () {
+                    childNodesCount = childNodesCount || self._element.childNodes.length;
+                    for (var i = 0; i < childNodesCount; i++) {
+                        element.removeChild(element.firstChild);
+                    }
+                }
+            };
 
             if (contents || this._shouldClearDomContentOnNextDraw) {
-                element = this._element;
+                if (oldContent && oldContent.component && oldContent.component.buildOutCSSClass) {
+                    this._performBuildOut(oldContent.component, true, removeDOMElement(1));
 
-                // Setting the innerHTML to clear the children will not work on
-                // IE because it modifies the underlying child nodes. Here's the
-                // test case that shows this issue: http://jsfiddle.net/89X6F/
-                childNodesCount = this._element.childNodes.length;
-                for (var i = 0; i < childNodesCount; i++) {
-                    element.removeChild(element.firstChild);
+                } else {
+                    removeDOMElement()();
                 }
 
                 if (Element.isElement(contents)) {
@@ -2093,10 +2220,15 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 }
 
                 this._newDomContent = null;
+
+                // call lifecycle hook if implemented
                 if (typeof this.contentDidChange === "function") {
                     this.contentDidChange(this._element.childNodes[0], oldContent);
                 }
                 this._shouldClearDomContentOnNextDraw = false;
+
+            } else if (oldContent && oldContent.component && oldContent.component.buildOutCSSClass) {
+                this._performBuildOut(oldContent.component, true, removeDOMElement(1))
             }
         }
     },
@@ -2705,33 +2837,43 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 }
             }
 
+            if (this.buildInCSSClassStart) {
+                this.classList.add(this.buildInCSSClassStart);
+                // buildInCSSClassEnd & transitionend is handled in _draw()
+            }
         }
     },
 
+    /**
+     * @private
+     */
     _draw: {
         value: function () {
-            var element = this.element, descriptor;
+            var element = this.element,
+                self = this,
+                descriptor;
 
-            for(var attributeName in this._elementAttributeValues) {
-                if(this._elementAttributeValues.hasOwnProperty(attributeName)) {
+            for (var attributeName in this._elementAttributeValues) {
+                if (this._elementAttributeValues.hasOwnProperty(attributeName)) {
                     var value = this[attributeName];
                     descriptor = this._getElementAttributeDescriptor(attributeName, this);
-                    if(descriptor) {
 
-                        if(descriptor.dataType === 'boolean') {
-                            if(value === true) {
+                    if (descriptor) {
+                        if (descriptor.dataType === 'boolean') {
+                            if (value === true) {
                                 element[attributeName] = true;
                                 element.setAttribute(attributeName, attributeName.toLowerCase());
                             } else {
                                 element[attributeName] = false;
                                 element.removeAttribute(attributeName);
                             }
+
                         } else {
-                            if(typeof value !== 'undefined') {
-                                if(attributeName === 'textContent') {
+                            if (typeof value !== 'undefined') {
+                                if (attributeName === 'textContent') {
                                     element.textContent = value;
                                 } else {
-                                    //https://developer.mozilla.org/en/DOM/element.setAttribute
+                                    // @see https://developer.mozilla.org/en/DOM/element.setAttribute
                                     element.setAttribute(attributeName, value);
                                 }
 
@@ -2743,8 +2885,36 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                     delete this._elementAttributeValues[attributeName];
                 }
             }
-            // classList
+
             this._drawClassListIntoComponent();
+
+            // buildInCSSClassStart is added in _enterDocument()
+            if (this.classList.contains(this.buildInCSSClassStart)) {
+                if (this.buildInCSSClassEnd) {
+                    this.classList.add(this.buildInCSSClassEnd);
+                    this.element.addEventListener(
+                        "transitionend", this._buildInHandler.bind(this)
+                    );
+
+                } else {
+                    this.element.addEventListener(
+                        self.rootComponent.CSSAnimationEndEventName, this._buildInHandler.bind(this)
+                    );
+                }
+            }
+        }
+    },
+
+    _buildInHandler: {
+        value: function (event) {
+            event.stopPropagation();
+            this.element.removeEventListener("transitionend", this._buildInHandler);
+            this.element.removeEventListener(
+                this.rootComponent.CSSAnimationEndEventName, this._buildInHandler
+            );
+
+            this.classList.remove(this.buildInCSSClassStart);
+            this.classList.remove(this.buildInCSSClassEnd);
         }
     },
 
@@ -3539,6 +3709,29 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype # *
             defaultEventManager.registerEventHandlerForElement(this, value);
             this._element = value;
             this._documentResources = DocumentResources.getInstanceForDocument(value);
+        }
+    },
+
+    _CSSAnimationEndEventName: {value: null},
+
+    /**
+     * Determine end of animation event name across browsers.
+     * Mainly for Chrome <= 41 & Safari <= 8.
+     *
+     * @private
+     * @readonly
+     * @property {String}
+     */
+    CSSAnimationEndEventName: {
+        get: function () {
+            if (!this._CSSAnimationEndEventName) {
+                if (window.onanimationend === undefined && window.onwebkitanimationend !== undefined) {
+                    this._CSSAnimationEndEventName = "webkitAnimationEnd";
+                } else {
+                    this._CSSAnimationEndEventName = "animationend";
+                }
+            }
+            return this._CSSAnimationEndEventName
         }
     }
 });

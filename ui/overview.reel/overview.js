@@ -8,6 +8,7 @@ exports.Main = Component.specialize({
         "--------------------",
         // add component class names below, UpperCamelCase
         // e.g.: "SegmentedBar"
-        "SegmentedBar"
+        "SegmentedBar",
+        "Succession"
     ]}
 });
