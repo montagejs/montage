@@ -3,6 +3,7 @@
  */
 var Montage = require("./core").Montage;
 var GenericCollection = require("collections/generic-collection");
+var observableArrayProperties = require("collections/listen/array-changes").observableArrayProperties;
 
 // The content controller is responsible for determining which content from a
 // source collection are visible, their order of appearance, and whether they
@@ -39,102 +40,162 @@ var EMPTY_ARRAY = Object.freeze([]);
  * @class _RangeSelection
  * @private
  */
-var _RangeSelection = function (content, rangeController) {
-    var self = content.clone();
-    self.makeObservable();
+
+var _RangeSelection = function(content, rangeController) {
+    var self = content;
+    //Moved to RangeSelection.prototype for optimization
+    //self.makeObservable();
+    self.__proto__ = _RangeSelection.prototype;
+    
     self.rangeController = rangeController;
     self.contentEquals = content && content.contentEquals || Object.is;
 
-    Object.defineProperty(self, "clone", {
-        value: function () {
-            return self.slice();
-        }
-    });
-
-    var oldSwap = self.swap;
-
-    /**
-     * A custom version of swap to ensure that changes obey the RangeController
-     * invariants:
-     *  - if rC.multiSelect is false, only allow one item in set.
-     *  - if rC.avoidsEmtySelection is true, require at least one item in set.
-     *  - only add items that are present in rC.content
-     *  - enforce uniqueness of items according to the contentEquals of the content
-     *
-     * @function swap
-     * @param {number} start
-     * @param {number} howMany
-     * @param {Object} itemsToAdd
-     *
-     */
-    Object.defineProperty(self, "swap", {
-        configurable: false,
-        value: function (start, howMany, itemsToAdd) {
-            var content = this.rangeController.content;
-            this.contentEquals = content && content.contentEquals || Object.is;
-            start = start >= 0 ? start : this.length + start;
-            var oldLength = this.length;
-            var minusLength = Math.min(howMany, oldLength - start);
-
-			if (itemsToAdd) {
-	            itemsToAdd.contentEquals = this.contentEquals;
-
-	            var plus = itemsToAdd.filter(function (item, index) {
-	                // do not add items to the selection if they aren't in content
-	                if (content && !content.has(item)) {
-	                    return false;
-	                }
-
-	                // if the same item appears twice in the add list, only add it once
-	                if (itemsToAdd.findLast(item) > index) {
-	                    return false;
-	                }
-
-	                // if the item is already in the selection, don't add it
-	                // unless it's in the part that we're about to delete.
-	                var indexInSelection = this.find(item);
-	                return indexInSelection < 0 ||
-	                        (indexInSelection >= start && indexInSelection < start + minusLength);
-
-	            }, this);
-			}
-			else {
-				plus = EMPTY_ARRAY;
-			}
-
-            var minus;
-            if (minusLength === 0) {
-                // minus will be empty
-                minus = EMPTY_ARRAY;
-            } else {
-                // `this` may not have .slice method; .call assumes `this` is array-like
-                minus = Array.prototype.slice.call(this, start, start + minusLength);
-            }
-
-            var diff = plus.length - minus.length;
-            var newLength = Math.max(this.length + diff, start + plus.length);
-            var args;
-
-            if (!this.rangeController.multiSelect && newLength > 1) {
-                // use the last-supplied item as the sole element of the set
-                var last = plus.length ? plus[plus.length-1] : this.one();
-                args = [0, oldLength, [last]];
-            } else if (this.rangeController.avoidsEmptySelection && newLength === 0) {
-                // use the first item in the selection, unless it is no longer in the content
-                if (content.has(this[0])) {
-                    args = [1, this.length-1];
-                } else {
-                    args = [0, this.length, [content.one()]];
-                }
-            } else {
-                args = [start, howMany, plus];
-            }
-
-            return oldSwap.apply(this, args);
-        }
-    });
+    //Moved to _RangeSelection.prototype for optimization
+    // Object.defineProperty(self, "clone", {
+    //     value: function(){
+    //         return this.slice();
+    //     }
+    // });
+     // Object.defineProperty(self, "swap", {
+     //     configurable: false,
+     //     value: _RangeSelection.prototype.swap
+     // });
+     // Object.defineProperty(self, "push", {
+     //     configurable: false,
+     //     value: _RangeSelection.prototype.push
+     // });
     return self;
 };
+_RangeSelection.prototype = Object.create(Array.prototype, observableArrayProperties);
+Object.defineProperty(_RangeSelection.prototype, "clone", {
+    value: function(){
+        return this.slice();
+    }
+});
+var oldSwap = self.swap;
+Object.defineProperty(_RangeSelection.prototype, "oldSwap", {
+    configurable: false,
+    value: observableArrayProperties.swap.value
+});
+Object.defineProperty(_RangeSelection.prototype, "swap", {
+    configurable: false,
+    value: function(start, howMany, itemsToAdd) {
+        return this.swap_or_push(start, howMany, itemsToAdd);
+    }
+});
+_RangeSelection.prototype.oldPush = observableArrayProperties.push.value;
+Object.defineProperty(_RangeSelection.prototype, "push", {
+    configurable: false,
+    value: function() {
+          var i = -1,
+              l = arguments.length,
+              x = Array(l);
+
+          while (++i < l) {
+            x[i] = arguments[i];
+          }
+        
+        this.swap_or_push(this.length, 0, x);
+    }
+});
+    
+/**
+ * A custom version of swap to ensure that changes obey the RangeController
+ * invariants:
+ *  - if rC.multiSelect is false, only allow one item in set.
+ *  - if rC.avoidsEmtySelection is true, require at least one item in set.
+ *  - only add items that are present in rC.content
+ *  - enforce uniqueness of items according to the contentEquals of the content
+ *
+ * @function swap
+ * @param {number} start
+ * @param {number} howMany
+ * @param {Object} itemsToAdd
+ *
+ */
+Object.defineProperty(_RangeSelection.prototype, "swap_or_push", {
+    configurable: false,
+    value: function(start, howMany, itemsToAdd) {
+        var content = this.rangeController.content;
+        this.contentEquals = content && content.contentEquals || Object.is;
+        start = start >= 0 ? start : this.length + start;
+        var oldLength = this.length;
+        var minusLength = Math.min(howMany, oldLength - start);
+
+		if(itemsToAdd) {
+
+            itemsToAdd.contentEquals = this.contentEquals;
+
+            var plus = itemsToAdd.filter(function(item, index){
+                // do not add items to the selection if they aren't in content
+                if (content && !content.has(item)) {
+                    return false;
+                }
+
+                // if the same item appears twice in the add list, only add it once
+                if (itemsToAdd.findLast(item) > index) {
+                    return false;
+                }
+
+                // if the item is already in the selection, don't add it
+                // unless it's in the part that we're about to delete.
+                var indexInSelection = this.find(item);
+                return indexInSelection < 0 ||
+                        (indexInSelection >= start && indexInSelection < start + minusLength);
+
+            }, this);
+		}
+		else {
+			plus = EMPTY_ARRAY;
+		}
+
+
+        var minus;
+        if (minusLength === 0) {
+            // minus will be empty
+            minus = EMPTY_ARRAY;
+        } else {
+            minus = Array.prototype.slice.call(this, start, start + minusLength);
+        }
+        var diff = plus.length - minus.length;
+        var newLength = Math.max(this.length + diff, start + plus.length);
+        var args;
+
+        if (!this.rangeController.multiSelect && newLength > 1) {
+            // use the last-supplied item as the sole element of the set
+            var last = plus.length ? plus[plus.length-1] : this.one();
+            if(oldLength === 0) {
+                this.oldPush(last);
+                return EMPTY_ARRAY;
+            }
+            else {
+                return this.oldSwap(0, oldLength, [last]);
+            }
+        } else if (this.rangeController.avoidsEmptySelection && newLength === 0) {
+            // use the first item in the selection, unless it is no longer in the content
+            if (content.has(this[0])) {
+                if((this.length-1) === 0) {
+                    return EMPTY_ARRAY;
+                }
+                else {
+                    return this.oldSwap(1, this.length-1);
+                }
+            } else {
+                if(this.length === 0) {
+                    this.oldPush(content.one());
+                    return EMPTY_ARRAY;
+                }
+                else {
+                    return this.oldSwap(0, this.length, [content.one()]);
+                }
+            }
+        } else {
+            return this.oldSwap(start, howMany, plus);
+        }
+
+    }
+});
+
 
 /**
  * A `RangeController` is responsible for managing "ranged content", typically
