@@ -36,8 +36,7 @@
   },
   "devDependencies": {
     "jshint": "~2.4.4",
-    "montage-testing": "~0.4.2",
-    "native": "~0.2.0"
+    "montage-testing": "~0.4.2"
   },
   "scripts": {
     "test": "node test/node/node-spec.js",
