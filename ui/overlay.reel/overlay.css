@@ -1,9 +1,9 @@
 .montage-Overlay {
-    display: none;
+    visibility: hidden;
     position: absolute;
-    z-index: 7000;
+    z-index: 9999;
 }
 
 .montage-Overlay--visible {
-    display: block;
+    visibility: visible;
 }

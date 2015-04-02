@@ -21,6 +21,7 @@ var CLASS_PREFIX = "montage-Overlay";
  *
  * @class Overlay
  * @extends Component
+ * @todo documentation needs updates.
  */
 exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
 
@@ -90,10 +91,6 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
         }
     },
 
-    // True when the overlay element is measurable by the browser.
-    _isDisplayed: {
-        value: false
-    },
 
     _resizeHandlerTimeout: {
         value: null
@@ -168,6 +165,8 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
                 body = this.element.ownerDocument.body;
                 body.appendChild(this.element);
                 this.attachToParentComponent();
+
+                this.classList.add(CLASS_PREFIX);
 
                 _window = this.element.ownerDocument.defaultView;
                 _window.addEventListener("resize", this);
@@ -319,7 +318,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
         value: function () {
             // Only calculate the position if the element is part of the layout,
             // otherwise it's not possible to measure the element.
-            if (this._isDisplayed && this._isShown) {
+            if (this._isShown) {
                 this._calculatePosition();
             }
             if (!this._isShown) {
@@ -331,24 +330,13 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
     draw: {
         value: function () {
             if (this._isShown) {
-                // The element is displayed when it is measurable.
-                if (this._isDisplayed) {
-                    this._reposition();
-                    this.element.style.visibility = "visible";
-                } else {
-                    // Make the element part of the layout (this is achieved by
-                    // the "--visible" class) but hide it from view.
-                    // This will make it possible to measure the element in the
-                    // next draw cycle at willDraw without causing a flash.
-                    this.element.style.visibility = "hidden";
-                    this._isDisplayed = true;
-                    this.callDelegateMethod("didShowOverlay", this);
-                    // Trigger the new draw cycle so we can finally measure the
-                    // element.
-                    this.needsDraw = true;
-                }
-            } else {
-                this._isDisplayed = false;
+                var position = this._drawPosition;
+
+                this.element.style.top = position.top + "px";
+                this.element.style.left = position.left + "px";
+
+                this.callDelegateMethod("didShowOverlay", this);
+
             }
         }
     },
@@ -371,18 +359,12 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
     },
 
     _getElementPosition: {
-        value: function (element) {
-            var left = 0,
-                top = 0;
-
-            do {
-                left += element.offsetLeft;
-                top += element.offsetTop;
-            } while (element = /* assignment */ element.offsetParent);
+        value: function(element) {
+            var rect = element.getBoundingClientRect();
 
             return {
-                top: top,
-                left: left
+                top: rect.top,
+                left: rect.left
             };
         }
     },
@@ -415,12 +397,11 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
             var anchor = this.anchor,
                 width = this.element.offsetWidth,
                 anchorPosition = this._getElementPosition(anchor),
-                anchorHeight = anchor.offsetHeight || 0,
                 anchorWidth = anchor.offsetWidth || 0,
                 position;
 
             position = {
-                top: anchorPosition.top + anchorHeight,
+                top: anchorPosition.top,
                 left: anchorPosition.left + (anchorWidth / 2) - (width / 2)
             };
 
