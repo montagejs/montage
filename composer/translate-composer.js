@@ -41,10 +41,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         ]
     },
 
-    _WHEEL_POINTER: {
-        value: "wheel",
-        writable: false
-    },
 
     // When set to true, do not respond to events, claim pointers, or prevent default
     enabled: {
@@ -762,42 +758,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: null
     },
 
-    captureWheel: {
-        value: function () {
-            if (!this.eventManager.componentClaimingPointer(this._WHEEL_POINTER)) {
-                this.eventManager.claimPointer(this._WHEEL_POINTER, this.component);
-            }
-        }
-    },
-
-    handleWheel: {
-        value: function (event) {
-            if (!this.enabled) return;
-
-            var self = this;
-
-            // If this composers' component is claiming the "wheel" pointer then handle the event
-            if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this.component)) {
-                var oldTranslateY = this._translateY;
-                var deltaY = event.wheelDeltaY || -event.deltaY || 0;
-                this._dispatchTranslateStart();
-                this.translateY = this._translateY - ((deltaY * 20) / 120);
-                this._dispatchTranslate();
-                window.clearTimeout(this._translateEndTimeout);
-                this._translateEndTimeout = window.setTimeout(function () {
-                    self._dispatchTranslateEnd();
-                }, 400);
-
-                // If we're not at one of the extremes (i.e. the scroll actually
-                // changed the translate) then we want to preventDefault to stop
-                // the page scrolling.
-                if (oldTranslateY !== this._translateY && this._shouldPreventDefault(event)) {
-                    event.preventDefault();
-                }
-                this.eventManager.forfeitPointer(this._WHEEL_POINTER, this.component);
-            }
-        }
-    },
 
     _firstMove: {
         value: function () {
@@ -1077,15 +1037,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 this._element.addEventListener("touchstart", this, false);
             } else {
                 this._element.addEventListener("mousedown", this, false);
-
-                var wheelEventName;
-                if (typeof window.onwheel !== "undefined" || typeof window.WheelEvent !== "undefined" ){
-                    wheelEventName = "wheel";
-                } else {
-                    wheelEventName = "mousewheel";
-                }
-                this._element.addEventListener(wheelEventName, this, false);
-                this._element.addEventListener(wheelEventName, this, true);
             }
 
             this.eventManager.isStoringPointerEvents = true;
@@ -1124,7 +1075,3 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     }
 
 });
-
-TranslateComposer.prototype.handleMousewheel = TranslateComposer.prototype.handleWheel;
-TranslateComposer.prototype.captureMousewheel = TranslateComposer.prototype.captureWheel;
-
