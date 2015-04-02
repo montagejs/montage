@@ -626,6 +626,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             if (event.targetTouches && event.targetTouches.length === 1) {
                 this._observedPointer = event.targetTouches[0].identifier;
                 this._start(event.targetTouches[0].clientX, event.targetTouches[0].clientY, event.targetTouches[0].target, event.timeStamp);
+                this.eventManager.claimPointer(this._observedPointer, this); //fixme: probably need to be added on the bubble phase.
             }
         }
     },

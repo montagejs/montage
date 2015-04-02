@@ -1756,11 +1756,12 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     // isSelectionEnabled becoming true.
     _enableSelectionTracking: {
         value: function () {
-
             if (window.Touch) {
                 this.element.addEventListener("touchstart", this, true);
+                this.element.addEventListener("touchstart", this, false);
             } else {
                 this.element.addEventListener("mousedown", this, true);
+                this.element.addEventListener("mousedown", this, false);
             }
         }
     },
@@ -1774,8 +1775,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         value: function () {
             if (window.Touch) {
                 this.element.removeEventListener("touchstart", this, true);
+                this.element.removeEventListener("touchstart", this, false);
             } else {
                 this.element.removeEventListener("mousedown", this, true);
+                this.element.removeEventListener("mousedown", this, false);
             }
         }
     },
@@ -1791,7 +1794,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     _observeSelectionPointer: {
         value: function (pointerIdentifier) {
             this._selectionPointer = pointerIdentifier;
-            this.eventManager.claimPointer(pointerIdentifier, this);
+            
+            if (!this.eventManager.componentClaimingPointer(pointerIdentifier)) {
+                this.eventManager.claimPointer(pointerIdentifier, this);
+            } //still listening on some events
 
             var document = this.element.ownerDocument;
 
@@ -1860,7 +1866,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 // other pointers.
                 return;
             }
-            this._observeSelectionPointer("mouse");
+
             var iteration = this._findIterationContainingElement(event.target);
             if (iteration) {
                 this._startX = event.clientX;
@@ -1868,11 +1874,27 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
                 iteration.shouldBecomeActive = true;
                 this._currentActiveIteration = iteration;
-            } else {
-                this._ignoreSelectionPointer();
             }
         }
     },
+
+
+    handleMousedown: {
+        value: function () {
+            if (this._selectionPointer != null) {
+                // If we already have one touch making a selection, ignore any
+                // other pointers.
+                return;
+            }
+
+            this._observeSelectionPointer("mouse");
+
+            if (!this._currentActiveIteration) {
+                this._ignoreSelectionPointer(); //todo check that!! we add then we could remove ???
+            }
+        }
+    },
+
 
     /**
      * @private
@@ -1886,7 +1908,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 return;
             }
 
-            this._observeSelectionPointer(event.changedTouches[0].identifier);
             var iteration = this._findIterationContainingElement(event.target);
 
             if (iteration) {
@@ -1902,6 +1923,24 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             }
         }
     },
+
+
+    handleTouchstart: {
+        value: function (event) {
+            if (this._selectionPointer != null) {
+                // If we already have one touch making a selection, ignore any
+                // other pointers.
+                return;
+            }
+
+            this._observeSelectionPointer(event.changedTouches[0].identifier);
+
+            if (!this._currentActiveIteration) {
+                this._ignoreSelectionPointer(); //todo check that!! we add then we could remove ???
+            }
+        }
+    },
+
 
     // ---
 
@@ -1998,7 +2037,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 return;
             }
 
-            if (this.eventManager.isPointerClaimedByComponent(this._selectionPointer, this)) {
+            //if (this.eventManager.isPointerClaimedByComponent(this._selectionPointer, this)) {
                 // Find the corresponding iteration
                 var iteration = this._findIterationContainingElement(target);
                 // And select it, if there is one
@@ -2008,9 +2047,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                         iteration.selected = true;
                     }
                 }
-            }
+            //}
 
-            this._ignoreSelectionPointer();
+            //this._ignoreSelectionPointer(); // fixme: trust radius? needs discussion
 
             return true;
         }
