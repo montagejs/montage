@@ -14,7 +14,13 @@ function createPage(url) {
     iframe.onload = function () {
         deferred.resolve(iframe.contentWindow);
     };
-    iframe.style.display = "none";
+
+    // Iframe visibility should be hidden, and not display: none
+    // to allow all browsers to measure elements layout inside of it.
+    // At the time of writing Firefox wasn't computing layout if
+    // display is none.
+
+    iframe.style.visibility = "hidden";
     document.body.appendChild(iframe);
 
     iframe.contentWindow.__iframe__ = iframe;
