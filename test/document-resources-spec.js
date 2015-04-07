@@ -400,19 +400,21 @@ describe("document-resources-spec", function () {
             style = page.document.createElement("link");
             style.rel = "stylesheet";
             style.href = url;
-            style.onload = function () {
-                var computedStyle;
 
-                computedStyle = page.getComputedStyle(page.document.body);
-
-                expect(computedStyle.paddingLeft).toBe("42px");
-                expect(page.document.styleSheets.length).toBe(1);
-
-                deletePage(page);
-                deferred.resolve();
+            function checkAreStylesLoaded () {
+                if (resources.areStylesLoaded) {
+                    computedStyle = page.getComputedStyle(page.document.body);
+                    expect(computedStyle.paddingLeft).toBe("42px");
+                    expect(page.document.styleSheets.length).toBe(1);
+                    deletePage(page);
+                    deferred.resolve();
+                } else {
+                    setTimeout(checkAreStylesLoaded, 0);
+                }
             }
 
             resources.addStyle(style);
+            checkAreStylesLoaded();
 
             return deferred.promise;
         }).fail(function (reason) {
