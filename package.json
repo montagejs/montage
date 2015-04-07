@@ -14,10 +14,10 @@
         "montage": "core/core"
       },
       "mappings": {
-        "mr": {
-          "name": "mr",
-          "location": "node_modules/mr"
-        },
+      "mr": {
+        "name": "mr",
+        "location": "node_modules/mr"
+      },
         "q": {
           "name": "q",
           "location": "packages/mr/packages/q"
@@ -36,7 +36,7 @@
     "mousse": "~0.3.0",
     "mr": "~0.15.3",
     "q": "1.0.0",
-    "bluebird":"2.9.10",
+    "bluebird":"marchant/bluebird.git#3.0",
     "q-io": "~1.11.0"
   },
   "devDependencies": {

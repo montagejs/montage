@@ -180,7 +180,6 @@ Object.defineProperty(_RangeSelection.prototype, "swap_or_push", {
                 else {
                     return this.oldSwap(1, this.length-1);
                 }
-                 console.log("(minusLength === 0) && (plus.length === 0) && (this.rangeController.avoidsEmptySelection && newLength === 0)");
             } else {
                 if(this.length === 0) {
                     this.oldPush(content.one());

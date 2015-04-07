@@ -10,6 +10,36 @@ var Montage = require("./core").Montage,
     defaultEventManager = require("./event/event-manager").defaultEventManager,
     defaultApplication;
 
+
+var XHRPromiseHandler = function(url, resolve, reject) {
+    this.url = url;
+    this.resolve = resolve;
+    this.reject = reject;
+    return this;
+};
+XHRPromiseHandler.prototype.url = null;
+XHRPromiseHandler.prototype.resolve = null;
+XHRPromiseHandler.prototype.reject = null;
+XHRPromiseHandler.prototype.handleLoad = function(event) {
+    var req = event.target;
+    if (req.status == 200) {
+        this.resolve(req.responseText);
+    } else {
+        this.reject(
+            new Error("Unable to retrieve '" + this.url + "', code status: " + req.status)
+        );
+    }
+    req.removeEventListener("load", this, false);
+};
+XHRPromiseHandler.prototype.handleError = function(event) {
+        var req = event.target;
+        this.reject(
+            new Error("Unable to retrieve '" + this.url + "' with error: " + event.error + ".")
+        );
+        req.removeEventListener("error", this, false);
+};
+
+
 /**
  * @class Template
  * @extends Montage
@@ -318,8 +348,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
                     // Start preloading the resources as soon as possible, no
                     // need to wait for them as the draw cycle will take care
                     // of that when loading the stylesheets into the document.
-                    resources.loadResources(targetDocument)
-                    .done();
+                    resources.loadResources(targetDocument);
                 }
                 return part;
             });
@@ -719,28 +748,32 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 deferred;
 
             if (link) {
-                req = new XMLHttpRequest();
-                url = link.getAttribute("href");
-                deferred = Promise.defer();
+                deferred = new Promise(function(resolve, reject) {
+                    req = new XMLHttpRequest();
+                    url = link.getAttribute("href");
+                    var handler =  new XHRPromiseHandler(url, resolve, reject);                    
+                    req.open("GET", url);
+                    req.addEventListener("load", handler, false);
+                    req.addEventListener("error", handler, false);
+                    // req.addEventListener("load", function() {
+                    //     if (req.status == 200) {
+                    //         deferred.resolve(req.responseText);
+                    //     } else {
+                    //         deferred.reject(
+                    //             new Error("Unable to retrive '" + url + "', code status: " + req.status)
+                    //         );
+                    //     }
+                    // }, false);
+                    // req.addEventListener("error", function(event) {
+                    //     deferred.reject(
+                    //         new Error("Unable to retrive '" + url + "' with error: " + event.error + ".")
+                    //     );
+                    // }, false);
+                    req.send();
+                    
+                });
 
-                req.open("GET", url);
-                req.addEventListener("load", function () {
-                    if (req.status == 200) {
-                        deferred.resolve(req.responseText);
-                    } else {
-                        deferred.reject(
-                            new Error("Unable to retrive '" + url + "', code status: " + req.status)
-                        );
-                    }
-                }, false);
-                req.addEventListener("error", function (event) {
-                    deferred.reject(
-                        new Error("Unable to retrive '" + url + "' with error: " + event.error + ".")
-                    );
-                }, false);
-                req.send();
-
-                return deferred.promise;
+                return deferred;
             } else {
                 return Promise.resolve(null);
             }

@@ -216,12 +216,13 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint.pro
             var self = this;
             if (this.customPrototype) {
                 throw new Error("FIXME");
-                var results = Promise.defer();
-                require.async(this.moduleId,
-                    function (exports) {
-                        results.resolve(exports);
-                    });
-                return results.promise.then(function (exports) {
+                var resultsPromise = new Promise(function(resolve, reject) {
+                    require.async(self.moduleId,
+                        function(exports) {
+                            resolve(exports);
+                        });
+                });
+                return resultsPromise.then(function(exports) {
                         var prototype = exports[self.prototypeName];
                         return (prototype ? prototype : null);
                     }

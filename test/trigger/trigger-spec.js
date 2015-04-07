@@ -12,21 +12,22 @@ describe("trigger-test", function () {
             console.group("trigger-test");
 
             promiseForFrameLoad = TestPageLoader.testPage.loadFrame(options);
-            return promiseForFrameLoad.then(function (iWindow) {
-                var deferForMontageReady = Promise.defer();
-                testWindow = iWindow;
+            return promiseForFrameLoad.then(function(iWindow) {
+                var deferForMontageReady = new Promise(function(resolve, reject) {
+                    testWindow = iWindow;
 
-                testWindow.postMessage({
-                    type: "isMontageReady"
-                }, "*");
-                testWindow.addEventListener("message", function (event) {
-                    if(event.source === testWindow) {
-                        deferForMontageReady.resolve(event);
-                    }
+                    testWindow.postMessage({
+                        type: "isMontageReady"
+                    }, "*");
+                    testWindow.addEventListener("message", function(event) {
+                        if(event.source === testWindow) {
+                            resolve(event);
+                        }
+                    });
                 });
 
-                return deferForMontageReady.promise
-                    .then(function (event) {
+                return deferForMontageReady
+                    .then(function(event) {
                         expect(event.data.type).toEqual("montageReady");
                         expect(TestPageLoader.testPage.loaded).toBeFalsy();
                     });

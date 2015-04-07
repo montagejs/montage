@@ -382,7 +382,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
             var promisedUndoableOperation,
                 self = this;
 
-            if (!Promise.isAlike(operationPromise)) {
+            if (typeof operationPromise.then !== "function") {
                 throw new Error("UndoManager expected a promise");
             }
 
@@ -496,6 +496,9 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
                         return self._performOperation(entry);
                     }).then(function () {
                         opMap.delete(promise);
+                    }
+                    ,function () {
+                        opMap.delete(promise);
                     });
                 } else {
                     inoperableOperation = true;
@@ -525,27 +528,29 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
 
             var opResult;
             try {
+                console.log("_perform Undo Operation Before:",entry);
                 opResult = entry.undoFunction.apply(entry.context, entry.args);
+                console.log("_perform Undo Operation After:",entry);
             } catch (e) {
-                entry.deferredOperation.reject(e);
+                entry.deferredOperationReject(e);
                 throw e;
             }
 
-            if (Promise.isAlike(opResult)) {
+            if (opResult && typeof opResult.then === "function") {
                 return opResult.finally(function () {
                     self.undoEntry = null;
                     self.redoEntry = null;
                 }).then(function (success) {
-                    entry.deferredOperation.resolve(success);
+                    entry.deferredOperationResolve(success);
                 }, function (failure) {
-                    entry.deferredOperation.reject(failure);
+                    entry.deferredOperationReject(failure);
                 });
             } else {
                 this.undoEntry = null;
                 this.redoEntry = null;
-                entry.deferredOperation.resolve(opResult);
+                entry.deferredOperationResolve(opResult);
             }
-
+            return opResult;
         }
     },
 
@@ -602,6 +607,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
      */
     undo: {
         value: function () {
+            console.log("undo:");
 
             if (0 === this.undoCount) {
                 return Promise.resolve(null);
@@ -640,14 +646,17 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
     _scheduleOperation: {
         value: function (operationPromise, operationType) {
 
-            var deferredOperation = Promise.defer(),
-                entry = this._promiseOperationMap.get(operationPromise);
+            var entry = this._promiseOperationMap.get(operationPromise),
+                deferredOperationPromise = new Promise(function(resolve, reject) {
+                    entry.deferredOperationResolve = resolve;
+                    entry.deferredOperationReject = reject;
+                });
 
-            entry.deferredOperation = deferredOperation;
             entry.operationType = operationType;
 
             this._operationQueue.push(operationPromise);
-            return this._flushOperationQueue().thenResolve(deferredOperation.promise);
+            
+            return this._flushOperationQueue().thenReturn(deferredOperationPromise);
         }
     },
 

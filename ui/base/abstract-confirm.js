@@ -47,14 +47,14 @@ var AbstractConfirm = exports.AbstractConfirm = AbstractAlert.specialize(/** @le
     handleAction: {
         value: function (event) {
             if (event.target === this._okButton) {
-                this._userActionDeferred.resolve(AbstractConfirm.OKButton);
-                this._userActionDeferred = null;
+                this.resolveUserAction(AbstractConfirm.OKButton);
+                this._userActionPromise = null;
                 this._overlay.hide();
             }
 
             if (event.target === this._cancelButton) {
-                this._userActionDeferred.resolve(AbstractConfirm.CancelButton);
-                this._userActionDeferred = null;
+                this.resolveUserAction(AbstractConfirm.CancelButton);
+                this._userActionPromise = null;
                 this._overlay.hide();
             }
         }

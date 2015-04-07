@@ -45,7 +45,7 @@ function xhrSuccess(req) {
 Require.read = function (url) {
 
     var request = new XMLHttpRequest();
-    var response = Promise.defer();
+    var response = new Promise();
 
     function onload() {
         if (xhrSuccess(request)) {
@@ -145,7 +145,7 @@ Require.XhrLoader = function (config) {
 var definitions = {};
 var getDefinition = function (hash, id) {
     definitions[hash] = definitions[hash] || {};
-    definitions[hash][id] = definitions[hash][id] || Promise.defer();
+    definitions[hash][id] = definitions[hash][id] || new Promise();
     return definitions[hash][id];
 };
 
@@ -160,8 +160,7 @@ var loadIfNotPreloaded = function (location, definition, preloaded) {
             if (definition.isPending()) {
                 Require.loadScript(location);
             }
-        })
-        .done();
+        });
     } else if (definition.isPending()) {
         // otherwise preloading has already completed and we don't have the
         // module, so load it

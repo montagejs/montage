@@ -316,8 +316,7 @@ var KeyManagerProxy = Montage.specialize(  {
                             keyManager.registerKey(keyComposer);
                         });
                         thisRef._keysToRegister.length = 0;
-                    })
-                    .done();
+                    });
                 }
             } else {
                 // This will happend only if somebody uses a cached return

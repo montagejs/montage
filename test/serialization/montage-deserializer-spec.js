@@ -67,7 +67,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(Object.getPrototypeOf(root)).toBe(Montage.prototype);
                 expect(root.number).toBe(42);
                 expect(root.string).toBe("a string");
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -121,7 +121,7 @@ describe("serialization/montage-deserializer-spec", function () {
             return deserializer.deserializeObject(instances)
             .then(function (root) {
                 expect(root.simple).toBe(simple);
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -152,7 +152,7 @@ describe("serialization/montage-deserializer-spec", function () {
             return deserializer.deserializeObject(instances)
             .then(function (root) {
                 expect(root.simple).toBe(simple);
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -175,7 +175,7 @@ describe("serialization/montage-deserializer-spec", function () {
             return deserializer.deserializeObject()
             .then(function (root) {
                 expect(root).toBe(objects.Singleton.instance);
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -203,7 +203,7 @@ describe("serialization/montage-deserializer-spec", function () {
             .then(function (root) {
                 expect(root).toBe(instances.root);
                 expect(instances.root.number).toBe(42);
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -230,7 +230,7 @@ describe("serialization/montage-deserializer-spec", function () {
             .then(function (objects) {
                 expect(objects.owner).toBe(instances.owner);
                 expect(instances.owner.number).toBe(42);
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -263,7 +263,7 @@ describe("serialization/montage-deserializer-spec", function () {
 
                 expect(root.deserializedFromSerializationCount).toBe(0);
                 expect(oneprop.deserializedFromSerializationCount).toBe(1);
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -321,7 +321,7 @@ describe("serialization/montage-deserializer-spec", function () {
             .then(function (objects) {
                 expect(isDeserializing).toBeTruthy();
                 expect(objects.root.isDeserializing).toBeUndefined();
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -378,8 +378,9 @@ describe("serialization/montage-deserializer-spec", function () {
             return deserializer.deserialize()
             .then(function () {
                 expect("deserialization").toBe("failed");
-            }).fail(function () {
+            },function() {
                 // it should fail
+                console.log("fail");
             });
         });
 
@@ -396,7 +397,7 @@ describe("serialization/montage-deserializer-spec", function () {
             return deserializer.deserialize()
             .then(function () {
                 expect("deserialization").toBe("failed");
-            }).fail(function () {
+            }).catch(function() {
                 // it should fail
             });
         });
@@ -414,7 +415,7 @@ describe("serialization/montage-deserializer-spec", function () {
             return deserializer.deserialize()
             .then(function () {
                 expect("deserialization").toBe("failed");
-            }).fail(function () {
+            }).catch(function() {
                 // it should fail
             });
         });
@@ -432,7 +433,7 @@ describe("serialization/montage-deserializer-spec", function () {
             return deserializer.deserialize()
             .then(function () {
                 expect("deserialization").toBe("failed");
-            }).fail(function () {
+            }).catch(function() {
                 // it should fail
             });
         });
@@ -450,7 +451,7 @@ describe("serialization/montage-deserializer-spec", function () {
             return deserializer.deserialize()
             .then(function () {
                 expect("deserialization").toBe("failed");
-            }).fail(function () {
+            }).catch(function() {
                 // it should fail
             });
         });
@@ -478,7 +479,7 @@ describe("serialization/montage-deserializer-spec", function () {
 
                 expect(Object.getPrototypeOf(root)).toBe(objects.TestobjectsV2.prototype);
                 expect(root.instance).toBeUndefined();
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -509,7 +510,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(info.objectName).toBe("TestobjectsV2");
                 expect(info.isInstance).toBe(true);
                 expect(root.instance).toBeUndefined();
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -537,7 +538,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(info.moduleId).toBe("serialization/module-name.reel");
                 expect(info.objectName).toBe("ModuleName");
                 expect(info.isInstance).toBe(true);
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -567,7 +568,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(info.objectName).toBe("TestobjectsV2");
                 expect(info.isInstance).toBe(false);
                 expect(root.type).toBeUndefined();
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -597,7 +598,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(info.objectName).toBe("TestobjectsV2");
                 expect(info.isInstance).toBe(false);
                 expect(root.type).toBeUndefined();
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -933,7 +934,7 @@ describe("serialization/montage-deserializer-spec", function () {
                     expect(root.uuid in defaultEventManager.registeredEventListeners.action).toBeFalsy();
                 }
                 expect(root._bindingDescriptors).toBeFalsy();
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -956,7 +957,7 @@ describe("serialization/montage-deserializer-spec", function () {
             .then(function (root) {
                 expect(type).toBe("prototype");
                 expect(typeValue).toBe("serialization/testobjects-v2[CustomDeserialization]");
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -984,7 +985,7 @@ describe("serialization/montage-deserializer-spec", function () {
             .then(function (root) {
                 expect(type).toBe("object");
                 expect(typeValue).toBe("serialization/testobjects-v2[CustomDeserialization]");
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -1004,7 +1005,7 @@ describe("serialization/montage-deserializer-spec", function () {
             return deserializer.deserializeObject()
             .then(function (root) {
                 expect(prop1).toBe(3.14);
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -1027,7 +1028,7 @@ describe("serialization/montage-deserializer-spec", function () {
                     expect(root.uuid in defaultEventManager.registeredEventListeners.action).toBeFalsy();
                 }
                 expect(root._bindingDescriptors).toBeFalsy();
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -1050,7 +1051,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(defaultEventManager.registeredEventListeners.action).toBeDefined();
                 expect(root.uuid in defaultEventManager.registeredEventListeners.action).toBeTruthy();
                 expect(root._bindingDescriptors).toBeFalsy();
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -1075,7 +1076,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 }
 
                 expect(Object.keys(Bindings.getBindings(root)).length).toBeGreaterThan(0);
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -1098,7 +1099,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(defaultEventManager.registeredEventListeners.action).toBeDefined();
                 expect(root.uuid in defaultEventManager.registeredEventListeners.action).toBeTruthy();
                 expect(Object.keys(Bindings.getBindings(root)).length).toBeGreaterThan(0);
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -1117,7 +1118,7 @@ describe("serialization/montage-deserializer-spec", function () {
             return deserializer.deserializeObject()
                 .then(function (root) {
                     expect(root).toBe(newRoot);
-                }).fail(function (reason) {
+                }).catch(function(reason) {
                     console.log(reason.stack);
                     expect("test").toBe("executed");
                 });
@@ -1178,7 +1179,7 @@ describe("serialization/montage-deserializer-spec", function () {
         return deserializer.deserialize(serializationString)
         .then(function (objects) {
             expect(objects.a).toBe(null);
-        }).fail(function (reason) {
+        }).catch(function(reason) {
             console.log(reason.stack);
             expect("test").toBe("executed");
         });
@@ -1217,7 +1218,7 @@ describe("serialization/montage-deserializer-spec", function () {
                 expect(true).toBe(false);
             }, function (reason) {
                 expect(reason).toBeDefined();
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });

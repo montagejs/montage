@@ -32,6 +32,5 @@ require.loadPackage(parentWindow.require.location)
         });
     });
 
-})
-.done();
+});
 

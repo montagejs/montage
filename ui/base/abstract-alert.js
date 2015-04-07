@@ -32,7 +32,7 @@ exports.AbstractAlert = Component.specialize(/** @lends AbstractAlert# */ {
         value: null
     },
 
-    _userActionDeferred: {
+    _userActionPromise: {
         value: null
     },
 
@@ -58,33 +58,44 @@ exports.AbstractAlert = Component.specialize(/** @lends AbstractAlert# */ {
                 // the chain of messages that might be pending.
                 constructor = Object.getPrototypeOf(this).constructor;
                 if (this === constructor._instance) {
-                    constructor._nextMessageDeferred.resolve();
+                    constructor._nextMessagePromiseHandlerResolve();
                 }
                 this._okButton.addEventListener("action", this, false);
             }
         }
+    },
+    
+    resolveUserAction: {
+        value: null
+    },
+    rejectUserAction: {
+        value: null
     },
 
     /**
      * Returns a promise for the close of the alert
      */
     show: {
-        value: function () {
-            if (!this._userActionDeferred) {
+        value: function() {
+            if (!this._userActionPromise) {
                 this._overlay.hasModalMask = false;
                 this._overlay.show();
-                this._userActionDeferred = Promise.defer();
+                var self = this;
+                this._userActionPromise = new Promise(function(resolve, reject) {
+                    self.resolveUserAction = resolve;
+                    self.rejectUserAction = reject;
+                });
             }
 
-            return this._userActionDeferred.promise;
+            return this._userActionPromise;
         }
     },
 
     handleAction: {
         value: function (event) {
             if (event.target === this._okButton) {
-                this._userActionDeferred.resolve();
-                this._userActionDeferred = null;
+                this.resolveUserAction();
+                this._userActionPromise = null;
                 this._overlay.hide();
             }
         }
@@ -94,28 +105,20 @@ exports.AbstractAlert = Component.specialize(/** @lends AbstractAlert# */ {
         value: null
     },
 
-    __nextMessageDeferred: {
-        value: null
-    },
-
     /**
+     * This promise is initially the promise at _nextMessagePromise and is
+     * resolved at enterDocument time, this is when the overlay is available.
+     
      * Implemented with a getter to ensure that this property is not initialized
      * on the AbstractAlert but on the type that extends it.
+     
      */
-    _nextMessageDeferred: {
-        get: function () {
-            if (!this.hasOwnProperty("__nextMessageDeferred")) {
-                this.__nextMessageDeferred = Promise.defer();
-            }
-
-            return this.__nextMessageDeferred;
-        }
-    },
-
-    /**
-     * This promise is initially the promise at _nextMessageDeferred and is
-     * resolved at enterDocument time, this is when the overlay is available.
-     */
+     _nextMessagePromiseHandlerResolve: {
+         value: null
+     },
+     _nextMessagePromiseHandlerReject: {
+         value: null
+     },
     __nextMessagePromise: {
         value: null
     },
@@ -126,7 +129,11 @@ exports.AbstractAlert = Component.specialize(/** @lends AbstractAlert# */ {
         },
         get: function () {
             if (!this.hasOwnProperty("__nextMessagePromise")) {
-                this.__nextMessagePromise = this._nextMessageDeferred.promise;
+                var self = this;
+                this.__nextMessagePromise = new Promise(function(resolve, reject) {
+                     self._nextMessagePromiseHandlerResolve = resolve;
+                     self._nextMessagePromiseHandlerReject = reject;
+                 });
             }
 
             return this.__nextMessagePromise;

@@ -76,7 +76,6 @@ var DocumentPart = Montage.specialize({
             var promises;
 
             if (!this._componentTreeLoadedDeferred) {
-                this._componentTreeLoadedDeferred = Promise.defer();
 
                 promises = [];
 
@@ -84,12 +83,10 @@ var DocumentPart = Montage.specialize({
                     promises.push(childComponent.loadComponentTree());
                 });
 
-                Promise.all(promises).bind(this).then(function() {
-                    this._componentTreeLoadedDeferred.resolve();
-                }, this._componentTreeLoadedDeferred.reject).done();
+                this._componentTreeLoadedDeferred = Promise.all(promises);
             }
 
-            return this._componentTreeLoadedDeferred.promise;
+            return this._componentTreeLoadedDeferred;
         }
     }
 });

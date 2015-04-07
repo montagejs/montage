@@ -1191,7 +1191,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         enumerable: false,
         value: function _prepareCanDraw() {
             if (!this._isComponentTreeLoaded) {
-                this.loadComponentTree().done();
+                return this.loadComponentTree();
             }
         }
     },
@@ -1221,7 +1221,6 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         value: function loadComponentTree() {
 
             if (!this._loadComponentTreeDeferred) {
-                this._loadComponentTreeDeferred = Promise.defer();
 
                 this.canDrawGate.setField("componentTreeLoaded", false);
 
@@ -1233,34 +1232,37 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                     this._canDraw = false;
                 }
 
-                this.expandComponent().bind(this).then(function() {
-                    if (this.hasTemplate || this.shouldLoadComponentTree) {
-                        var promises = [],
-                            childComponents = this.childComponents,
-                            childComponent;
+                this._loadComponentTreeDeferred = this.expandComponent()
+                    .bind(this)
+                    .then(function() {
+                        if (this.hasTemplate || this.shouldLoadComponentTree) {
+                            var promises = [],
+                                childComponents = this.childComponents,
+                                childComponent;
 
-                        for (var i = 0; (childComponent = childComponents[i]); i++) {
-                            promises.push(childComponent.loadComponentTree());
+                            for (var i = 0; (childComponent = childComponents[i]); i++) {
+                                promises.push(childComponent.loadComponentTree());
+                            }
+
+                            return Promise.all(promises);
                         }
-
-                        return Promise.all(promises);
-                    }
-                }).then(function() {
-                    this._isComponentTreeLoaded = true;
-                    // When the component tree is loaded we need to draw if the
-                    // component needs to have its enterDocument() called.
-                    // This is because we explicitly avoid drawing when we set
-                    // _needsEnterDocument before the first draw because we
-                    // don't want to trigger the draw before its component tree
-                    // is loaded.
-                    if (this._needsEnterDocument) {
-                        this.needsDraw = true;
-                    }
-                    this.canDrawGate.setField("componentTreeLoaded", true);
-                    this._loadComponentTreeDeferred.resolve();
-                }, this._loadComponentTreeDeferred.reject).done();
+                    })
+                    .then(function() {
+                        this._isComponentTreeLoaded = true;
+                        // When the component tree is loaded we need to draw if the
+                        // component needs to have its enterDocument() called.
+                        // This is because we explicitly avoid drawing when we set
+                        // _needsEnterDocument before the first draw because we
+                        // don't want to trigger the draw before its component tree
+                        // is loaded.
+                        if (this._needsEnterDocument) {
+                            this.needsDraw = true;
+                        }
+                        this.canDrawGate.setField("componentTreeLoaded", true);
+                    })
+                    .catch(console.error);
             }
-            return this._loadComponentTreeDeferred.promise;
+            return this._loadComponentTreeDeferred;
         }
     },
 
@@ -1329,27 +1331,28 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      * @param {Component#expandComponent~callback} callback  TODO
      * @private
      */
-    _expandComponentDeferred: {value: null},
+    _expandComponentPromise: {value: null},
     expandComponent: {
         value: function expandComponent() {
 
-            if (!this._expandComponentDeferred) {
-                this._expandComponentDeferred = Promise.defer();
-
-                if (this.hasTemplate) {
-                    this._instantiateTemplate().bind(this).then(function() {
+            if (!this._expandComponentPromise) {
+                    if (this.hasTemplate) {
+                        this._expandComponentPromise = this._instantiateTemplate().bind(this).then(function() {
+                            this._isComponentExpanded = true;
+                            this._addTemplateStyles();
+                            this.needsDraw = true;
+                            // resolve();
+                        })
+                        .catch(console.error);
+                    } else {
                         this._isComponentExpanded = true;
-                        this._addTemplateStyles();
-                        this.needsDraw = true;
-                        this._expandComponentDeferred.resolve();
-                    }, this._expandComponentDeferred.reject);
-                } else {
-                    this._isComponentExpanded = true;
-                    this._expandComponentDeferred.resolve();
-                }
+                        this._expandComponentPromise = new Promise(function(resolve,reject){
+                            resolve();
+                        });
+                    }
             }
 
-            return this._expandComponentDeferred.promise;
+            return this._expandComponentPromise;
         }
     },
 
