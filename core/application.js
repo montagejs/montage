@@ -332,7 +332,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             self.mr.loadPackage({name: "montage"}).then(function (require) {
                 var newWindow = window.open(require.location + "window-loader/index.html", "_blank", stringParamaters);
                 newWindow.loadInfo = loadInfo;
-            }).done();
+            });
 
             return childWindow;
         }
@@ -421,8 +421,8 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             // assign to the exports so that it is available in the deserialization of the template
             exports.application = self;
 
-            require.async("ui/component")
-            .then(function (exports) {
+            return require.async("ui/component")
+            .then(function(exports) {
                 rootComponent = exports.__root__;
                 rootComponent.element = document;
 
@@ -433,9 +433,9 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                     if (callback) {
                         callback(self);
                     }
+                    return self;
                 });
-            })
-            .done();
+            });
         }
     },
 
@@ -523,8 +523,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                 popupSlot.content = content;
                 callback.call(this, popupSlot);
 
-            })
-            .done();
+            });
         }
     },
 

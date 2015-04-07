@@ -1297,7 +1297,8 @@ if (typeof window !== "undefined") { // client-side
                 }
                 // console.log("started listening: ", eventType, listenerTarget)
             }
-        },
+        }
+    },
 
         /**
          * @private

@@ -8,26 +8,34 @@ var Montage = require("montage").Montage,
     TemplateResources = require("montage/core/template").TemplateResources,
     Component = require("montage/ui/component").Component,
     MontageLabeler = require("montage/core/serialization/serializer/montage-labeler").MontageLabeler,
-    Promise = require("montage/q"),
+    Promise = require("montage/core/promise").Promise,
     objects = require("serialization/testobjects-v2").objects,
     URL = require("montage/core/mini-url");
 
 var DelegateMethods = require("reel/template/delegate-methods").DelegateMethods;
 
 function createPage(url) {
-    var iframe = document.createElement("iframe"),
-        deferred = Promise.defer();
+        var deferred = new Promise(function(resolve, reject) {
+            var iframe = document.createElement("iframe");
+            iframe.src = url;
+            iframe.onload = function() {
+                resolve(iframe.contentWindow);
+                iframe.onload = null;
+                iframe.onerror = null;
+            };
+            iframe.onerror = function() {
+                reject(new Error("Can't load " + url));
+                iframe.onload = null;
+                iframe.onerror = null;
+            }
+            
+            iframe.style.display = "none";
+            document.body.appendChild(iframe);
 
-    iframe.src = url;
-    iframe.onload = function () {
-        deferred.resolve(iframe.contentWindow);
-    };
-    iframe.style.display = "none";
-    document.body.appendChild(iframe);
+            iframe.contentWindow.__iframe__ = iframe;
+        });
 
-    iframe.contentWindow.__iframe__ = iframe;
-
-    return deferred.promise;
+    return deferred;
 }
 
 function deletePage(page) {
@@ -72,7 +80,7 @@ describe("reel/template-spec", function () {
                 expect(children.length).toBe(1);
                 // there must be a better way to compare DOM tree's...
                 expect(children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
-            }).fail(function () {
+            },function() {
                 expect("test").toBe("executed");
             });
         });
@@ -101,7 +109,7 @@ describe("reel/template-spec", function () {
                 expect(children.length).toBe(1);
                 // there must be a better way to compare DOM tree's...
                 expect(children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
-            }).fail(function () {
+            },function() {
                 expect("test").toBe("executed");
             });
         });
@@ -155,7 +163,7 @@ describe("reel/template-spec", function () {
                 expect(children.length).toBe(1);
                 // there must be a better way to compare DOM tree's...
                 expect(children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
-            }).fail(function () {
+            },function() {
                 expect("test").toBe("executed");
             });
         });
@@ -187,7 +195,7 @@ describe("reel/template-spec", function () {
 
                 expect(domSrc).toBe(expectedResult.src);
                 expect(svgSrc).toBe(expectedResult.src);
-            }).fail(function () {
+            },function() {
                 expect("test").toBe("executed");
             });
         });
@@ -239,7 +247,7 @@ describe("reel/template-spec", function () {
                     expect(text.value).toBe("Hello, World!");
                     expect(text.element).toBe(div);
                 });
-            }).fail(function () {
+            },function() {
                 expect("test").toBe("executed");
             });
         });
@@ -308,7 +316,7 @@ describe("reel/template-spec", function () {
                 expect(element.children.length).toBe(1);
                 expect(element.children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
                 expect(element.children[0]).toNotBe(children[0]);
-            }).fail(function () {
+            },function() {
                 expect("test").toBe("executed");
             });
         });
@@ -491,7 +499,7 @@ describe("reel/template-spec", function () {
 
                 expect(domSrc).toBe(expectedResult.src);
                 expect(svgSrc).toBe(expectedResult.src);
-            }).fail(function () {
+            }, function() {
                 expect("test").toBe("executed");
             });
         });
@@ -515,7 +523,7 @@ describe("reel/template-spec", function () {
                     var domImage = template.document.getElementById("no_src");
 
                     expect(domImage.hasAttribute("src")).toBeFalsy();
-                }).fail(function () {
+                }, function() {
                     expect("test").toBe("executed");
                 });
         });
@@ -540,7 +548,7 @@ describe("reel/template-spec", function () {
                         domSrc = domImage ? domImage.src : "";
 
                     expect(domSrc).toBe("");
-                }).fail(function () {
+                }, function() {
                     expect("test").toBe("executed");
                 });
         });
@@ -572,7 +580,7 @@ describe("reel/template-spec", function () {
 
                 expect(domSrc).toBe(expectedResult.src);
                 expect(svgSrc).toBe(expectedResult.src);
-            }).fail(function () {
+            }, function() {
                 expect("test").toBe("executed");
             });
         });
@@ -603,7 +611,7 @@ describe("reel/template-spec", function () {
 
                 expect(domSrc).toBe(expectedResult.src);
                 expect(svgSrc).toBe(expectedResult.src);
-            }).fail(function () {
+            }, function() {
                 expect("test").toBe("executed");
             });
         });
@@ -632,7 +640,7 @@ describe("reel/template-spec", function () {
 
                 expect(domSrc).toBe(expectedResult.src);
                 expect(svgSrc).toBe(expectedResult.src);
-            }).fail(function () {
+            }, function() {
                 expect("test").toBe("executed");
             });
         });
@@ -656,7 +664,7 @@ describe("reel/template-spec", function () {
                     expect(element.children.length).toBe(1);
                     expect(element.children[0].outerHTML).toBe('<span data-montage-id="text"></span>');
                 })
-            }).fail(function (reason) {
+            }, function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -671,7 +679,7 @@ describe("reel/template-spec", function () {
                 .then(function (documentPart) {
                     expect(documentPart.template).toBe(template);
                 })
-            }).fail(function () {
+            }, function() {
                 expect("test").toBe("executed");
             });
         });
@@ -686,7 +694,7 @@ describe("reel/template-spec", function () {
                     expect(Object.keys(documentPart.objects).length).toBe(1);
                     expect(documentPart.objects.text).toBeDefined();
                 })
-            }).fail(function () {
+            }, function() {
                 expect("test").toBe("executed");
             });
         });
@@ -700,7 +708,7 @@ describe("reel/template-spec", function () {
                 .then(function (documentPart) {
                     expect(documentPart.objects).toEqual({});
                 })
-            }).fail(function () {
+            }, function() {
                 expect("test").toBe("executed");
             });
         });
@@ -717,7 +725,7 @@ describe("reel/template-spec", function () {
                     expect(documentPart.childComponents)
                         .toEqual([objects.title, objects.rows]);
                 });
-            }).fail(function () {
+            }, function() {
                 expect("test").toBe("executed");
             });
         });
@@ -735,7 +743,7 @@ describe("reel/template-spec", function () {
                 .then(function (documentPart) {
                     expect(documentPart.objects.text).toBe(text);
                 })
-            }).fail(function () {
+            }, function() {
                 expect("test").toBe("executed");
             });
         });
@@ -755,7 +763,7 @@ describe("reel/template-spec", function () {
                 .then(function (documentPart) {
                     expect(documentPart.objects.text).toBe(text);
                 })
-            }).fail(function () {
+            }, function() {
                 expect("test").toBe("executed");
             });
         });
@@ -775,7 +783,7 @@ describe("reel/template-spec", function () {
                 .then(function (documentPart) {
                     expect(documentPart.objects.text).toBe(text);
                 })
-            }).fail(function () {
+            }, function() {
                 expect("test").toBe("executed");
             });
         });
@@ -800,7 +808,7 @@ describe("reel/template-spec", function () {
                     expect(objects.one.deserializedFromTemplateCount).toBe(1);
                     expect(objects.two.deserializedFromTemplateCount).toBe(0);
                 });
-            }).fail(function () {
+            }, function() {
                 expect("test").toBe("executed");
             });
         });
@@ -814,7 +822,7 @@ describe("reel/template-spec", function () {
                 .then(function (documentPart) {
                     expect(true).toBe(true);
                 });
-            }).fail(function (reason) {
+            }, function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -833,7 +841,7 @@ describe("reel/template-spec", function () {
                     expect(objects.one.templateDidLoadCount).toBe(0);
                     expect(objects.two.templateDidLoadCount).toBe(0);
                 });
-            }).fail(function () {
+            }, function() {
                 expect("test").toBe("executed");
             });
         });
@@ -853,7 +861,7 @@ describe("reel/template-spec", function () {
 
                     expect(instances.owner.templateDidLoadCount).toBe(1);
                 });
-            }).fail(function (reason) {
+            }, function(reason) {
                 expect("test").toBe("executed");
             });
         })
@@ -873,7 +881,7 @@ describe("reel/template-spec", function () {
 
                     expect(objects.owner.templateDidLoadCount).toBe(0);
                 });
-            }).fail(function () {
+            }, function() {
                 expect("test").toBe("executed");
             });
         });
@@ -893,7 +901,7 @@ describe("reel/template-spec", function () {
 
                     expect(objects.one.deserializedFromTemplateCount).toBe(0);
                 });
-            }).fail(function () {
+            }, function() {
                 expect("test").toBe("executed");
             });
         });
@@ -970,7 +978,7 @@ describe("reel/template-spec", function () {
 
                     expect(objects.one.application).toBeDefined();
                 });
-            }).fail(function (reason) {
+            }, function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -990,7 +998,7 @@ describe("reel/template-spec", function () {
 
                     expect(objects.one.template).toBe(template);
                 });
-            }).fail(function (reason) {
+            }, function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -1015,7 +1023,7 @@ describe("reel/template-spec", function () {
                         deletePage(page);
                     });
                 });
-            }).fail(function (reason) {
+            }, function(reason) {
                 expect("test").toBe("executed");
             });
         });
@@ -1048,7 +1056,7 @@ describe("reel/template-spec", function () {
                         });
                     });
                 });
-            }).fail(function (reason) {
+            }, function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -1081,7 +1089,7 @@ describe("reel/template-spec", function () {
                         deletePage(page2);
                     });
                 });
-            }).fail(function (reason) {
+            }, function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -1104,7 +1112,7 @@ describe("reel/template-spec", function () {
                         deletePage(page);
                     });
                 });
-            }).fail(function (reason) {
+            }, function(reason) {
                 expect("test").toBe("executed");
             });
         });
@@ -1125,7 +1133,7 @@ describe("reel/template-spec", function () {
                         deletePage(page);
                     });
                 });
-            }).fail(function (reason) {
+            }, function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -1145,7 +1153,7 @@ describe("reel/template-spec", function () {
                     node = template.document.getElementById("title");
                     elementIds = template._getChildrenElementIds(node);
                     expect(elementIds.length).toBe(0);
-                }).fail(function (reason) {
+                }, function(reason) {
                     console.log(reason.stack);
                     expect("test").toBe("executed");
                 });
@@ -1164,7 +1172,7 @@ describe("reel/template-spec", function () {
 
                     expect(elementIds.length).toBe(1);
                     expect(elementIds).toContain("item")
-                }).fail(function (reason) {
+                }, function(reason) {
                     console.log(reason.stack);
                     expect("test").toBe("executed");
                 });
@@ -1185,7 +1193,7 @@ describe("reel/template-spec", function () {
                     expect(elementIds).toContain("row");
                     expect(elementIds).toContain("columns");
                     expect(elementIds).toContain("column");
-                }).fail(function (reason) {
+                }, function(reason) {
                     console.log(reason.stack);
                     expect("test").toBe("executed");
                 });
@@ -1213,7 +1221,7 @@ describe("reel/template-spec", function () {
                 objects = JSON.parse(subTemplate.objectsString);
 
                 expect(objects).toEqual(expectedObjects);
-            }).fail(function (reason) {
+            }, function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -1246,7 +1254,7 @@ describe("reel/template-spec", function () {
                 objects = JSON.parse(subTemplate.objectsString);
 
                 expect(objects).toEqual(expectedObjects);
-            }).fail(function (reason) {
+            }, function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -1287,7 +1295,7 @@ describe("reel/template-spec", function () {
                 objects = JSON.parse(subTemplate.objectsString);
 
                 expect(objects).toEqual(expectedObjects);
-            }).fail(function (reason) {
+            }, function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -1307,7 +1315,7 @@ describe("reel/template-spec", function () {
                     //expect(part.fragment).toBe(page.document.documentElement);
                     //expect(part.childComponents.length).toBe(1);
                 });
-            }).fail(function (reason) {
+            }, function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -1326,7 +1334,7 @@ describe("reel/template-spec", function () {
                             expect(part.template).toBeDefined();
                             expect(part.objects.text).toBe(instances.text);
                         });
-                }).fail(function (reason) {
+                }, function(reason) {
                     console.log(reason.stack);
                     expect("test").toBe("executed");
                 });
@@ -1741,7 +1749,7 @@ describe("reel/template-spec", function () {
                         });
                     });
                 });
-            }).fail(function (reason) {
+            }, function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });

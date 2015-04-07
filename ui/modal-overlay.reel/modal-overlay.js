@@ -70,7 +70,11 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay.prototype # */
                     this.super();
                     promise = Promise.resolve();
                 } else {
-                    this._showPromise = Promise.defer();
+                    promise = this._showPromise = {};
+                     this._showPromise.promise = new Promise(function(resolve, reject) {
+                         promise.resolve = resolve;
+                         promise.reject = reject;
+                     });
                     promise = this._showPromise.promise;
                 }
                 queue.push(this);
@@ -81,7 +85,11 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay.prototype # */
                 // queue.
             } else {
                 if (ix === 0) {
-                    this._showPromise = Promise.defer();
+                    promise = this._showPromise = {};
+                     this._showPromise.promise = new Promise(function(resolve, reject) {
+                         promise.resolve = resolve;
+                         promise.reject = reject;
+                     });
                     queue.push(this);
                 }
                 promise = this._showPromise.promise;
@@ -107,7 +115,7 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay.prototype # */
                 }
             } else if (ix > 0) {
                 queue.splice(ix, 1);
-                this._showPromise.reject();
+                this._showPromise.reject(new Error("Modal Overlay position in the queue is not 0"));
             }
         }
     },

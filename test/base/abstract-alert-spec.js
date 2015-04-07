@@ -82,7 +82,7 @@ describe("test/base/abstract-alert-spec", function () {
                     promise = anAlert.show();
 
                 anAlert.handleAction(event);
-                expect(Promise.isFulfilled(promise)).toBeTruthy();
+                expect(promise.isFulfilled()).toBeTruthy();
             })
         });
 
@@ -242,7 +242,7 @@ describe("test/base/abstract-alert-spec", function () {
                 runs(function () {
                     AlertSubtype._instance.handleAction({target: AlertSubtype._instance._okButton});
 
-                    expect(Promise.isFulfilled(promise)).toBeTruthy();
+                    expect(promise.isFulfilled()).toBeTruthy();
                 });
             });
         });

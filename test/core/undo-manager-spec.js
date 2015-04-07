@@ -92,11 +92,14 @@ var Roster = Montage.specialize( {
 
     testableAddMember: {
         value: function (member) {
-            var deferredAdd = Promise.defer();
-
+            var deferredAddResolve,
+                deferredAdd = new Promise(function(resolve, reject) {
+                    deferredAddResolve = resolve;
+                });
+            deferredAdd.resolve = deferredAddResolve;
             this.members.add(member);
 
-            this.undoManager.register("Add Member", deferredAdd.promise);
+            this.undoManager.register("Add Member", deferredAdd);
 
             return deferredAdd;
         }
@@ -121,12 +124,15 @@ var Text = Montage.specialize({
             var promise = isSlow ? Promise.delay(20) : Promise.resolve();
 
             promise = promise.then(function () {
+                console.log("Del: isSlow is ", isSlow," then: self.text is ",self.text);
                 var c = self.text.charAt(self.text.length - 1);
                 self.text = self.text.substring(0, self.text.length - 1);
+                console.log("isSlow is ", isSlow,"then: now self.text is ",self.text);
 
                 return [self.add, self, c, isSlow];
             });
 
+            console.log("undoManager.register Delete character isSlow ", isSlow);
             return self.undoManager.register("Delete character", promise);
         }
     },
@@ -137,11 +143,13 @@ var Text = Montage.specialize({
             var promise = isSlow ? Promise.delay(20) : Promise.resolve();
 
             promise = promise.then(function () {
+                console.log("Add: isSlow is ", isSlow," then: self.text is ",self.text);
                 self.text += c;
 
                 return [self.del, self, isSlow];
             });
 
+            console.log("undoManager.register Add character isSlow ", isSlow);
             return self.undoManager.register("Add character", promise);
         }
     }
@@ -270,13 +278,13 @@ describe('core/undo-manager-spec', function () {
 
         it("should not alter the initial label if no label is provided when resolving the operationPromise", function () {
             var deferredAdditionUndo = roster.testableAddMember("Alice"),
-                entry = undoManager._promiseOperationMap.get(deferredAdditionUndo.promise);
+                entry = undoManager._promiseOperationMap.get(deferredAdditionUndo);
 
             expect(entry.label).toBe("Add Member");
 
             deferredAdditionUndo.resolve([Function.noop, window, "Alice"]);
 
-            deferredAdditionUndo.promise.then(function () {
+            deferredAdditionUndo.then(function () {
                 expect(entry.label).toBe("Add Member");
             });
         });
@@ -407,7 +415,7 @@ describe('core/undo-manager-spec', function () {
             spyOn(spyObject, "removeMember").andCallThrough();
             deferredAdditionUndo.resolve(["Test Label", spyObject.removeMember, spyObject, "Alice"]);
 
-            return undoManager.undo().fail(function (failure) {
+            return undoManager.undo().catch(function (failure) {
                 expect(spyObject.removeMember).toHaveBeenCalled();
                 expect(failure).toBe(error);
             }).timeout(WAITS_FOR_TIMEOUT);
@@ -431,13 +439,18 @@ describe('core/undo-manager-spec', function () {
 
         it("maintains order when an operation is a long running async operation", function () {
             var text = new Text().initWithUndoManager(undoManager);
+            console.log("START maintains order when an operation is a long running async operation: text is ", text.text);
 
+            console.log("SPEC text.del(true)");
             text.del(true);
+            console.log("SPEC text.del(false)");
             text.del(false);
 
-            undoManager.undo().done();
+            console.log("SPEC undoManager.undo()");
+            undoManager.undo();
             return undoManager.undo().then(function () {
                 expect(text.text).toBe("abc");
+                console.log("END maintains order when an operation is a long running async operation: text is ", text.text);
             });
         });
 

@@ -4,28 +4,40 @@ All Rights Reserved.
 </copyright> */
 var Montage = require("montage").Montage,
     DocumentResources = require("montage/core/document-resources").DocumentResources,
-    Promise = require("montage/q");
+    Promise = require("montage/core/promise").Promise;
 
 function createPage(url) {
-    var iframe = document.createElement("iframe"),
-        deferred = Promise.defer();
+        var deferred = new Promise(function(resolve, reject) {
+            var iframe = document.createElement("iframe");
+            iframe.src = url;
+            iframe.onload = function() {
+                resolve(iframe.contentWindow);
+                iframe.onload = null;
+                iframe.onerror = null;
+            };
+            iframe.onerror = function() {
+                reject(new Error("Can't load " + url));
+                iframe.onload = null;
+                iframe.onerror = null;
+            }
 
-    iframe.src = url;
-    iframe.onload = function () {
-        deferred.resolve(iframe.contentWindow);
-    };
+        iframe.src = url;
+        iframe.onload = function () {
+            deferred.resolve(iframe.contentWindow);
+        };
 
-    // Iframe visibility should be hidden, and not display: none
-    // to allow all browsers to measure elements layout inside of it.
-    // At the time of writing Firefox wasn't computing layout if
-    // display is none.
+        // Iframe visibility should be hidden, and not display: none
+        // to allow all browsers to measure elements layout inside of it.
+        // At the time of writing Firefox wasn't computing layout if
+        // display is none.
 
-    iframe.style.visibility = "hidden";
-    document.body.appendChild(iframe);
+        iframe.style.visibility = "hidden";
+        document.body.appendChild(iframe);
 
-    iframe.contentWindow.__iframe__ = iframe;
+            iframe.contentWindow.__iframe__ = iframe;
+        });
 
-    return deferred.promise;
+    return deferred;
 }
 
 function deletePage(page) {
@@ -53,7 +65,7 @@ describe("document-resources-spec", function () {
                 deletePage(page);
             });
 
-        }).fail(function (reason) {
+        }).catch(function(reason) {
             expect("test").toBe("executed");
         });
     });
@@ -76,7 +88,7 @@ describe("document-resources-spec", function () {
                 deletePage(page);
             });
 
-        }).fail(function (reason) {
+        }).catch(function(reason) {
             expect("test").toBe("executed");
         });
     });
@@ -101,7 +113,7 @@ describe("document-resources-spec", function () {
                 deletePage(page);
             });
 
-        }).fail(function (reason) {
+        }).catch(function(reason) {
             expect("test").toBe("executed");
         });
     });
@@ -124,7 +136,7 @@ describe("document-resources-spec", function () {
                 deletePage(page);
             });
 
-        }).fail(function (reason) {
+        }).catch(function(reason) {
             expect("test").toBe("executed");
         });
     });
@@ -153,7 +165,7 @@ describe("document-resources-spec", function () {
                 });
             });
 
-        }).fail(function (reason) {
+        }).catch(function(reason) {
             console.log(reason.stack);
             expect("test").toBe("executed");
         });
@@ -181,7 +193,7 @@ describe("document-resources-spec", function () {
                 expect(page.document.scripts.length).toBe(1);
                 deletePage(page);
             });
-        }).fail(function (reason) {
+        }).catch(function(reason) {
             expect("test").toBe("executed");
         });
     });
@@ -212,7 +224,7 @@ describe("document-resources-spec", function () {
                 deletePage(page);
             });
 
-        }).fail(function (reason) {
+        }).catch(function(reason) {
             expect("test").toBe("executed");
         });
     });
@@ -234,7 +246,7 @@ describe("document-resources-spec", function () {
                 deletePage(page);
             });
 
-        }).fail(function (reason) {
+        }).catch(function(reason) {
             console.log(reason.stack);
             expect("test").toBe("executed");
         });
@@ -257,7 +269,7 @@ describe("document-resources-spec", function () {
                 deletePage(page);
             });
 
-        }).fail(function (reason) {
+        }).catch(function(reason) {
             console.log(reason.stack);
             expect("test").toBe("executed");
         });
@@ -285,7 +297,7 @@ describe("document-resources-spec", function () {
                 expect(finalTime - initialTime).toBeLessThan(60000);
                 deletePage(page);
             });
-        }).fail(function (reason) {
+        }).catch(function(reason) {
             console.log(reason.stack);
             expect("test").toBe("executed");
         });
@@ -358,7 +370,7 @@ describe("document-resources-spec", function () {
             expect(computedStyle.paddingLeft).toBe("42px");
             expect(page.document.styleSheets.length).toBe(1);
             deletePage(page);
-        }).fail(function (reason) {
+        }).catch(function(reason) {
             console.log(reason.stack);
             expect("test").toBe("executed");
         });
@@ -380,7 +392,7 @@ describe("document-resources-spec", function () {
 
                 expect(resources.areStylesLoaded).toBe(true);
                 deletePage(page);
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -391,31 +403,34 @@ describe("document-resources-spec", function () {
             url = "resource.css";
 
         return createPage("reel/template/page.html")
-        .then(function (page) {
-            var deferred = Promise.defer(),
-                style;
+        .then(function(page) {
+            var deferred = new Promise(function(resolve, reject) {
+                var style;
+                resources.initWithDocument(page.document);
 
-            resources.initWithDocument(page.document);
+                style = page.document.createElement("link");
+                style.rel = "stylesheet";
+                style.href = url;
+                style.onload = function() {
+                    var computedStyle;
 
-            style = page.document.createElement("link");
-            style.rel = "stylesheet";
-            style.href = url;
-            style.onload = function () {
-                var computedStyle;
+                    computedStyle = page.getComputedStyle(page.document.body);
 
-                computedStyle = page.getComputedStyle(page.document.body);
+                    expect(computedStyle.paddingLeft).toBe("42px");
+                    expect(page.document.styleSheets.length).toBe(1);
 
-                expect(computedStyle.paddingLeft).toBe("42px");
-                expect(page.document.styleSheets.length).toBe(1);
+                    deletePage(page);
+                    resolve();
+                }
 
-                deletePage(page);
-                deferred.resolve();
-            }
+                resources.addStyle(style);
+                
+            });
+                
 
-            resources.addStyle(style);
 
-            return deferred.promise;
-        }).fail(function (reason) {
+            return deferred;
+        }).catch(function(reason) {
             console.log(reason.stack);
             expect("test").toBe("executed");
         });
@@ -426,9 +441,8 @@ describe("document-resources-spec", function () {
             url = "resource.css";
 
         return createPage("reel/template/page.html")
-        .then(function (page) {
-            var deferred = Promise.defer(),
-                style,
+        .then(function(page) {
+            var style,
                 links;
 
             resources.initWithDocument(page.document);
@@ -443,7 +457,7 @@ describe("document-resources-spec", function () {
             links = page.document.head.querySelectorAll("link");
 
             expect(links.length).toBe(1);
-        }).fail(function (reason) {
+        }).catch(function(reason) {
             console.log(reason.stack);
             expect("test").toBe("executed");
         });
@@ -454,26 +468,27 @@ describe("document-resources-spec", function () {
             url = "resource.css";
 
         return createPage("reel/template/page.html")
-        .then(function (page) {
-            var deferred = Promise.defer(),
-                style;
+        .then(function(page) {
+            var deferred = new Promise(function(resolve, reject) {
+                var style;
 
-            resources.initWithDocument(page.document);
+                resources.initWithDocument(page.document);
 
-            style = page.document.createElement("link");
-            style.rel = "stylesheet";
-            style.href = url;
-            style.onload = function () {
-                expect(resources.areStylesLoaded).toBeTruthy();
+                style = page.document.createElement("link");
+                style.rel = "stylesheet";
+                style.href = url;
+                style.onload = function() {
+                    expect(resources.areStylesLoaded).toBeTruthy();
 
-                deletePage(page);
-                deferred.resolve();
-            };
+                    deletePage(page);
+                    resolve();
+                };
 
-            resources.addStyle(style);
+                resources.addStyle(style);
+            });
 
-            return deferred.promise;
-        }).fail(function (reason) {
+            return deferred;
+        }).catch(function(reason) {
             console.log(reason.stack);
             expect("test").toBe("executed");
         });
@@ -488,7 +503,7 @@ describe("document-resources-spec", function () {
             resources._expectedStyles.push("resource.css");
 
             expect(resources.areStylesLoaded).toBeFalsy();
-        }).fail(function (reason) {
+        }).catch(function(reason) {
             console.log(reason.stack);
             expect("test").toBe("executed");
         });
@@ -503,7 +518,7 @@ describe("document-resources-spec", function () {
                 resources.initWithDocument(page.document);
                 var src = page.document.querySelector("script").src;
                 expect(resources.hasResource(src)).toBe(true);
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 expect("test").toBe("executed");
             });
         });
@@ -516,7 +531,7 @@ describe("document-resources-spec", function () {
                     resources.initWithDocument(page.document);
                     var src = page.document.querySelector("link").href;
                     expect(resources.hasResource(src)).toBe(true);
-                }).fail(function (reason) {
+                }).catch(function(reason) {
                     expect("test").toBe("executed");
                 });
         });
@@ -537,7 +552,7 @@ describe("document-resources-spec", function () {
                 normalizedUrl = resources.normalizeUrl(url);
 
                 expect(normalizedUrl).toBe(expectedUrl);
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -555,7 +570,7 @@ describe("document-resources-spec", function () {
                 normalizedUrl = resources.normalizeUrl(url);
 
                 expect(normalizedUrl).toBe(expectedUrl);
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });
@@ -574,7 +589,7 @@ describe("document-resources-spec", function () {
                 normalizedUrl = resources.normalizeUrl(url, baseUrl);
 
                 expect(normalizedUrl).toBe(expectedUrl);
-            }).fail(function (reason) {
+            }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");
             });

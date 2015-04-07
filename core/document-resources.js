@@ -126,42 +126,51 @@ var DocumentResources = Montage.specialize({
                 _document = this._document,
                 documentHead = _document.head,
                 scriptLoaded,
-                deferred = Promise.defer(),
+                promise,
                 loadingTimeout,
                 url = script.src;
 
             if (url) {
                 self._addResource(url);
-                // We wait until all scripts are loaded, this is important
-                // because templateDidLoad might need to access objects that
-                // are defined in these scripts, the downsize is that it takes
-                // more time for the template to be considered loaded.
-                scriptLoaded = function (event) {
-                    //if (event.type === "load") {
-                    self.setResourcePreloaded(url);
-                    //}
-                    script.removeEventListener("load", scriptLoaded);
-                    script.removeEventListener("error", scriptLoaded);
+                
+                
+                promise = new Promise(function(resolve, reject){
 
-                    clearTimeout(loadingTimeout);
-                    deferred.resolve();
-                };
-                script.addEventListener("load", scriptLoaded, false);
-                script.addEventListener("error", scriptLoaded, false);
+                    // We wait until all scripts are loaded, this is important
+                    // because templateDidLoad might need to access objects that
+                    // are defined in these scripts, the downsize is that it takes
+                    // more time for the template to be considered loaded.
+                    var scriptLoaded = function(event) {
+                        //if (event.type === "load") {
+                        //}
+                        script.removeEventListener("load", scriptLoaded, false);
+                        script.removeEventListener("error", scriptLoaded, false);
 
-                // Setup the timeout to wait for the script until the resource
-                // is considered loaded. The template doesn't fail loading just
-                // because a single script didn't load.
-                loadingTimeout = setTimeout(function () {
-                    self.setResourcePreloaded(url);
-                    deferred.resolve();
-                }, this._SCRIPT_TIMEOUT);
+                        clearTimeout(loadingTimeout);
+                        resolve(event);
+                    };
 
-                this.setResourcePreloadedPromise(url, deferred.promise);
+                    script.addEventListener("load", scriptLoaded, false);
+                    script.addEventListener("error", scriptLoaded, false);
+
+                    // Setup the timeout to wait for the script until the resource
+                    // is considered loaded. The template doesn't fail loading just
+                    // because a single script didn't load.
+                    var loadingTimeout = setTimeout(function() {
+                        resolve();
+                    }, self._SCRIPT_TIMEOUT);
+                })
+                .bind(this).then(function(event) {
+                    this.setResourcePreloaded(url);
+                });
+                
+                this.setResourcePreloadedPromise(url, promise);
 
             } else {
 
-                deferred.resolve();
+                promise = new Promise(function(resolve,reject){
+                    resolve();
+                });
 
             }
 
@@ -173,7 +182,7 @@ var DocumentResources = Montage.specialize({
             );
             documentHead.appendChild(script);
 
-            return deferred.promise;
+            return promise;
         }
     },
 
@@ -244,14 +253,36 @@ var DocumentResources = Montage.specialize({
     _preloadResource: {
         value: function (url) {
             var self = this,
-                req = new XMLHttpRequest(),
                 loadHandler,
                 loadingTimeout,
-                deferred = Promise.defer();
-
-            req.open("GET", url);
-
-            loadHandler = function (event) {
+                promise;
+                
+                promise = new Promise(function(resolve, reject) {
+                    var req = new XMLHttpRequest();
+                    req.open("GET", url);
+                    req.addEventListener("load", resolve, false);
+                    req.addEventListener("error", resolve, false);
+                    req.addEventListener("timeout", resolve, false);
+                    req.timeout = self._SCRIPT_TIMEOUT;
+                    req.send();
+                    req.listener = resolve; 
+                })
+                .bind(this)
+                .then(function loadHandler(event) {
+                    this.setResourcePreloaded(url);
+                    event.target.removeEventListener("load", event.target.listener);
+                    event.target.removeEventListener("error", event.target.listener);
+                    event.target.removeEventListener("timeout", event.target.listener);
+                });
+                // .timeout(this._SCRIPT_TIMEOUT)
+                // .catch(Promise.TimeoutError, function(e) {
+                //     this.setResourcePreloaded(url);
+                //     req.removeEventListener("load", req.listener);
+                //     req.removeEventListener("error", req.listener);
+                // });
+                
+/*
+            loadHandler = function(event) {
                 //if (event.type === "load") {
                 self.setResourcePreloaded(url);
                 //}
@@ -259,22 +290,20 @@ var DocumentResources = Montage.specialize({
                 req.removeEventListener("error", loadHandler);
 
                 clearTimeout(loadingTimeout);
-                deferred.resolve();
+                resolve();
             };
-            req.addEventListener("load", loadHandler, false);
-            req.addEventListener("error", loadHandler, false);
-            req.send();
 
             // Setup the timeout to wait for the script until the resource
             // is considered loaded.
             loadingTimeout = setTimeout(function () {
                 self.setResourcePreloaded(url);
-                deferred.resolve();
+                resolve();
             }, this._SCRIPT_TIMEOUT);
+            */
 
-            this.setResourcePreloadedPromise(url, deferred.promise);
+            this.setResourcePreloadedPromise(url, promise);
 
-            return deferred.promise;
+            return promise;
         }
     },
 

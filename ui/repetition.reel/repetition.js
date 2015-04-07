@@ -1213,7 +1213,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 .then(function (part) {
                     part.parentDocumentPart = this._ownerDocumentPart;
                     iteration._templateDocumentPart = part;
-                    part.loadComponentTree().bind(this).then(function() {
+                    return part.loadComponentTree().bind(this).then(function() {
                         if (logger.isDebug) {
                             logger.debug("Iteration:%s component tree loaded.", Object.hash(iteration));
                         }
@@ -1226,11 +1226,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                         // hereafter.
                         iteration._childComponents = part.childComponents;
                         this.constructIteration(iteration);
-                    }).done();
+                    });
                     this.currentIteration = null;
                 });
 
-                promise.done(); // radiate an error if necessary
                 return promise.then(null, function () {
                     // but regardless of whether this iteration failed, allow
                     // another iteration to be created
