@@ -177,8 +177,8 @@ var DocumentResources = Montage.specialize({
                     //if (event.type === "load") {
                     self.setResourcePreloaded(url);
                     //}
-                    script.removeEventListener("load", scriptLoaded);
-                    script.removeEventListener("error", scriptLoaded);
+                    script.removeEventListener("load", scriptLoaded, false);
+                    script.removeEventListener("error", scriptLoaded, false);
 
                     clearTimeout(loadingTimeout);
                     deferred.resolve();
