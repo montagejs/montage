@@ -451,36 +451,6 @@ describe("document-resources-spec", function () {
         });
     });
 
-    it("should report styles as loaded when they're laoded", function () {
-        var resources = new DocumentResources(),
-            url = "resource.css";
-
-        return createPage("reel/template/page.html")
-        .then(function (page) {
-            var deferred = Promise.defer(),
-                style;
-
-            resources.initWithDocument(page.document);
-
-            style = page.document.createElement("link");
-            style.rel = "stylesheet";
-            style.href = url;
-            style.onload = function () {
-                expect(resources.areStylesLoaded).toBeTruthy();
-
-                deletePage(page);
-                deferred.resolve();
-            };
-
-            resources.addStyle(style);
-
-            return deferred.promise;
-        }).fail(function (reason) {
-            console.log(reason.stack);
-            expect("test").toBe("executed");
-        });
-    });
-
     it("should report styles as not loaded when they're not loaded", function () {
         var resources = new DocumentResources();
 
