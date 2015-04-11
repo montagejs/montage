@@ -2230,7 +2230,7 @@ var JSHINT = (function (setup) {
 
 
     function statements(begin) {
-        var a = [], f, p;
+        var a = [];
 
         while (!nexttoken.reach && nexttoken.id !== '(end)') {
             if (nexttoken.id === ';') {

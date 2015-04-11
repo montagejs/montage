@@ -6,7 +6,6 @@
  */
 var Montage = require("../core").Montage;
 var Converter = require("./converter");
-var numericValueToString = require("./number-converter").numericValueToString;
 var NumberConverter = require("./number-converter").NumberConverter;
 
 /**

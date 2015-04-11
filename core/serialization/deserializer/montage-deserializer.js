@@ -21,7 +21,7 @@ var MontageDeserializer = Montage.specialize.call(Deserializer, {
             }
 
             Deserializer.call(this, serializationString);
-            this._origin;
+
             this._serialization = null;
             this._interpreter = new MontageInterpreter()
                 .init(_require, objectRequires);

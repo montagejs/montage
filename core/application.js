@@ -116,8 +116,6 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
      */
     windows: {
         get: function () {
-            var theWindow;
-
             if (this.parentApplication == null) {
                 if (!this._windows) {
                     var theWindow = new MontageWindow();
@@ -486,7 +484,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             .then(function (exports) {
                 Slot = Slot || exports.Slot;
                 type = type || "custom";
-                var isSystemPopup = self._isSystemPopup(type), zIndex, slotEl, popupSlot;
+                var isSystemPopup = self._isSystemPopup(type), zIndex, popupSlot;
                 self.popupSlots = self.popupSlots || {};
 
                 if(isSystemPopup) {
@@ -548,7 +546,7 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             if(this.popupSlots) {
                 var keys = Object.keys(this.popupSlots);
                 if(keys && keys.length > 0) {
-                    var i=0, len = keys.length, slot;
+                    var i, len = keys.length, slot;
                     for(i=0; i< len; i++) {
                         slot = this.popupSlots[keys[i]];
                         if(slot && slot.content !== null) {

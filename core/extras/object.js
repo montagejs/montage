@@ -4,14 +4,6 @@
     @module montage/core/extras/object
 */
 
-var WeakMap = require("collections/weak-map");
-
-// string table, for strings that might be constructed multiple times
-// seems to reduce allocations in a version of Firefox I once heard tell
-var MODIFY = "modify";
-var STRING = "string";
-var FUNCTION = "function";
-
 /**
  * Returns the descriptor object for an object's property.
  * @param {Object} anObject The object containing the property.

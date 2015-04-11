@@ -215,8 +215,6 @@ var Template = Montage.specialize( /** @lends Template# */ {
      */
     initWithObjectsAndDocumentFragment: {
         value: function (objects, documentFragment, _require) {
-            var self = this;
-
             this._require = _require;
             this.document = this.createHtmlDocumentWithHtml("");
             this.document.body.appendChild(
@@ -411,8 +409,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
 
     _instantiateObjects: {
         value: function (instances, fragment) {
-            var self = this,
-                deserializer = this._deserializer,
+            var deserializer = this._deserializer,
                 optimizationPromise;
 
             optimizationPromise = this._optimizeObjectsInstantiation();
@@ -783,8 +780,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      */
     _removeObjects: {
         value: function (doc) {
-            var elements,
-                selector = "script[type='" + this._SERIALIZATON_SCRIPT_TYPE + "'], link[rel='serialization']";
+            var selector = "script[type='" + this._SERIALIZATON_SCRIPT_TYPE + "'], link[rel='serialization']";
 
             Array.prototype.forEach.call(
                 doc.querySelectorAll(selector),
@@ -1115,8 +1111,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
             var selector = "*[" + this._ELEMENT_ID_ATTRIBUTE + "]",
                 elements,
                 result = {},
-                elementId,
-                nodes;
+                elementId;
 
             elements = rootNode.querySelectorAll(selector);
 
@@ -1367,7 +1362,6 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
         value: function () {
             var scripts = this._resources.scripts,
                 script,
-                type,
                 template,
                 templateScripts;
 
@@ -1409,8 +1403,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
 
     loadScript: {
         value: function (script, targetDocument) {
-            var url,
-                documentResources,
+            var documentResources,
                 newScript;
 
             documentResources = DocumentResources.getInstanceForDocument(targetDocument);
@@ -1512,8 +1505,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
 
 // Used to create a DocumentPart from a document without a Template
 function instantiateDocument(_document, _require, instances) {
-    var self = this,
-        template = new Template(),
+    var template = new Template(),
         html = _document.documentElement.outerHTML,
         part = new DocumentPart(),
         clonedDocument,

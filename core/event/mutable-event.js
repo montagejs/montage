@@ -8,7 +8,6 @@ var Montage = require("../core").Montage;
 if (typeof window !== "undefined") {
 
     var _eventConstructorsByType = {};
-    var nullDescriptor = {value: null};
 
     var wrapProperty = function (obj, key) {
 
