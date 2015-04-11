@@ -1,10 +1,9 @@
 var Montage = require("../../core").Montage,
-    Interpreter = require("mousse/deserialization/interpreter").Interpreter,
     Context = require("mousse/deserialization/context").Context,
     MontageReviver = require("./montage-reviver").MontageReviver,
     Promise = require("../../promise").Promise;
 
-var MontageInterpreter = Montage.specialize.call(Interpreter, {
+var MontageInterpreter = Montage.specialize({
     _require: {value: null},
     _reviver: {value: null},
 
