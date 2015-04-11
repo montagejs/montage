@@ -1,5 +1,4 @@
 var Montage = require("../../core").Montage;
-var Interpreter = require("mousse/deserialization/interpreter").Interpreter;
 var Deserializer = require("mousse/deserialization/deserializer").Deserializer;
 var MontageInterpreter = require("./montage-interpreter").MontageInterpreter;
 var MontageReviver = require("./montage-reviver").MontageReviver;

@@ -1,5 +1,4 @@
 var Bindings = require("frb"),
-    parse = require("frb/parse"),
     stringify = require("frb/stringify"),
     expand = require("frb/expand"),
     Scope = require("frb/scope"),

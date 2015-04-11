@@ -1,5 +1,4 @@
 var Montage = require("../../core").Montage;
-var Promise = require("../../promise").Promise;
 
 var SelfDeserializer = Montage.specialize( {
     _object: {value: null},

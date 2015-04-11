@@ -3,8 +3,7 @@
 /**
  * @module montage/ui/base/abstract-toggle-button.reel
  */
-var Montage = require("../../core/core").Montage,
-    AbstractControl = require("./abstract-control").AbstractControl,
+var AbstractControl = require("./abstract-control").AbstractControl,
     PressComposer = require("../../composer/press-composer").PressComposer,
     KeyComposer = require("../../composer/key-composer").KeyComposer;
 

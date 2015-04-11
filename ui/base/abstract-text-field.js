@@ -1,8 +1,6 @@
 /*global require, exports, document, Error*/
-var Montage = require("../../core/core").Montage,
-    AbstractControl = require("./abstract-control").AbstractControl,
-    KeyComposer = require("../../composer/key-composer").KeyComposer,
-    Dict = require("collections/dict");
+var AbstractControl = require("./abstract-control").AbstractControl,
+    KeyComposer = require("../../composer/key-composer").KeyComposer;
 
 var CLASS_PREFIX = "montage-TextField";
 

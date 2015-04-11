@@ -2,7 +2,6 @@
 
 /**
  * @module montage/ui/base/abstract-slider.reel
- * @requires montage/core/core
  * @requires montage/ui/component
  * @requires montage/ui/native-control
  * @requires montage/composer/press-composer
@@ -10,8 +9,7 @@
 
 var AbstractControl = require("./abstract-control").AbstractControl,
     TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
-    KeyComposer = require("../../composer/key-composer").KeyComposer,
-    Dict = require("collections/dict");
+    KeyComposer = require("../../composer/key-composer").KeyComposer;
 
 /**
  * @class AbstractSlider

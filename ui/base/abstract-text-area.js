@@ -1,7 +1,5 @@
 /*global require, exports, document, Error*/
-var Montage = require("../../core/core").Montage,
-    Component = require("../component").Component,
-    Dict = require("collections/dict");
+var Component = require("../component").Component;
 
 var CLASS_PREFIX = "montage-TextArea";
 

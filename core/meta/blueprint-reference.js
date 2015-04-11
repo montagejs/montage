@@ -2,12 +2,10 @@
 
 /**
  * @module montage/core/meta/blueprint-reference
- * @requires montage/core/core
  * @requires core/exception
  * @requires core/promise
  * @requires core/logger
  */
-var Montage = require("../core").Montage;
 var Promise = require("../promise").Promise;
 var BlueprintModule = require("./blueprint");
 var BinderModule = require("./binder");
