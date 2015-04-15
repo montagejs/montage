@@ -407,22 +407,28 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
             });
 
             it("should draw one>five iterations on the nested repetition w/ component", function () {
+                console.log("***** should draw one>five iterations START");
                 delegate.list3Objects = [[{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}], [{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}, {text: "iteration 4"}, {text: "iteration 5"}]];
+                console.log("testPage.waitForComponentDraw(delegate.repetition4)");
                 testPage.waitForComponentDraw(delegate.repetition4);
-
                 var expectationFunction = function () {
+                    console.log("should draw one>five iterations –expectationFunction START");
                     expect(querySelectorAll(".list3 > li").length).toBe(2);
+                    console.log("should draw one>five iterations –expectationFunction expect 1 passed");
 
                     // BUG: Chrome outputs 0 on this..
                     // expects(querySelector("#list3 > li:nth-child(2) > ul#list4-1").length).toBe(5);
                     var list3a = testPage.evaluateNode("//*[@class='list3']/li[2]/ul[@class='list3a']");
                     expect(list3a.querySelectorAll("li").length).toBe(5);
+                    console.log("should draw one>five iterations –expectationFunction expect 2 passed");
 
                     var inputs = list3a.querySelectorAll("input.textfield2");
+                    console.log("should draw one>five iterations –expectationFunction inputs:",inputs);
                     for (var i = 0; i < 5; i++) {
                         expect(inputs[i]).toBeDefined();
                         expect(inputs[i].value).toBe("iteration " + (i+1));
                     }
+                    console.log("***** should draw one>five iterations END");
                 };
 
                 runs(function () {
@@ -433,9 +439,12 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                     var innerRepetition = delegate.repetition4.element.querySelector(".list3a").component;
 
                     if (innerRepetition.needsDraw) {
+                        console.log("testPage.waitForComponentDraw(innerRepetition)");
                         testPage.waitForComponentDraw(innerRepetition);
+                        console.log("should draw one>five iterations –runs(expectationFunction)");
                         runs(expectationFunction);
                     } else {
+                        console.log("should draw one>five iterations –expectationFunction()");
                         expectationFunction();
                     }
                 });

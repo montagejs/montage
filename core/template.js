@@ -10,36 +10,6 @@ var Montage = require("./core").Montage,
     defaultEventManager = require("./event/event-manager").defaultEventManager,
     defaultApplication;
 
-
-var XHRPromiseHandler = function(url, resolve, reject) {
-    this.url = url;
-    this.resolve = resolve;
-    this.reject = reject;
-    return this;
-};
-XHRPromiseHandler.prototype.url = null;
-XHRPromiseHandler.prototype.resolve = null;
-XHRPromiseHandler.prototype.reject = null;
-XHRPromiseHandler.prototype.handleLoad = function(event) {
-    var req = event.target;
-    if (req.status == 200) {
-        this.resolve(req.responseText);
-    } else {
-        this.reject(
-            new Error("Unable to retrieve '" + this.url + "', code status: " + req.status)
-        );
-    }
-    req.removeEventListener("load", this, false);
-};
-XHRPromiseHandler.prototype.handleError = function(event) {
-        var req = event.target;
-        this.reject(
-            new Error("Unable to retrieve '" + this.url + "' with error: " + event.error + ".")
-        );
-        req.removeEventListener("error", this, false);
-};
-
-
 /**
  * @class Template
  * @extends Montage
@@ -447,11 +417,11 @@ var Template = Montage.specialize( /** @lends Template# */ {
             optimizationPromise = this._optimizeObjectsInstantiation();
 
             if (optimizationPromise) {
-                return optimizationPromise.bind(this).then(function() {
-                    return this._deserializer.deserialize(instances, fragment);
+                return optimizationPromise.then(function () {
+                    return deserializer.deserialize(instances, fragment);
                 });
             } else {
-                return this._deserializer.deserialize(instances, fragment);
+                return deserializer.deserialize(instances, fragment);
             }
         }
     },
@@ -747,32 +717,28 @@ var Template = Montage.specialize( /** @lends Template# */ {
     getExternalObjectsString: {
         value: function (doc) {
             var link = doc.querySelector('link[rel="serialization"]'),
-                req,
-                url,
                 deferred;
 
             if (link) {
                 deferred = new Promise(function(resolve, reject) {
-                    req = new XMLHttpRequest();
-                    url = link.getAttribute("href");
-                    var handler =  new XHRPromiseHandler(url, resolve, reject);                    
+                    var req = new XMLHttpRequest();
+                    var url = link.getAttribute("href");
                     req.open("GET", url);
-                    req.addEventListener("load", handler, false);
-                    req.addEventListener("error", handler, false);
-                    // req.addEventListener("load", function() {
-                    //     if (req.status == 200) {
-                    //         deferred.resolve(req.responseText);
-                    //     } else {
-                    //         deferred.reject(
-                    //             new Error("Unable to retrive '" + url + "', code status: " + req.status)
-                    //         );
-                    //     }
-                    // }, false);
-                    // req.addEventListener("error", function(event) {
-                    //     deferred.reject(
-                    //         new Error("Unable to retrive '" + url + "' with error: " + event.error + ".")
-                    //     );
-                    // }, false);
+                    req.addEventListener("load", function(event) {
+                        var req = event.target;
+                        if (req.status == 200) {
+                            resolve(req.responseText);
+                        } else {
+                            reject(
+                                new Error("Unable to retrive '" + url + "', code status: " + req.status)
+                            );
+                        }
+                    }, false);
+                    req.addEventListener("error", function(event) {
+                        reject(
+                            new Error("Unable to retrive '" + url + "' with error: " + event.error + ".")
+                        );
+                    }, false);
                     req.send();
                     
                 });
@@ -796,7 +762,8 @@ var Template = Montage.specialize( /** @lends Template# */ {
     },
 
     createHtmlDocumentWithModuleId: {
-        value: function(moduleId, _require) {
+        value: function (moduleId, _require) {
+            var self = this;
 
             if (typeof _require !== "function") {
                 return Promise.reject(
@@ -804,8 +771,8 @@ var Template = Montage.specialize( /** @lends Template# */ {
                 );
             }
 
-            return _require.async(moduleId).bind(this).then(function(exports) {
-                return this.createHtmlDocumentWithHtml(exports.content, exports.directory);
+            return _require.async(moduleId).then(function (exports) {
+                return self.createHtmlDocumentWithHtml(exports.content, exports.directory);
             });
         }
     },

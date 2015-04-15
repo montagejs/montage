@@ -142,6 +142,7 @@ var DocumentResources = Montage.specialize({
                     // more time for the template to be considered loaded.
                     var scriptLoaded = function(event) {
                         //if (event.type === "load") {
+                        self.setResourcePreloaded(url);
                         //}
                         script.removeEventListener("load", scriptLoaded, false);
                         script.removeEventListener("error", scriptLoaded, false);
@@ -159,9 +160,6 @@ var DocumentResources = Montage.specialize({
                     var loadingTimeout = setTimeout(function() {
                         resolve();
                     }, self._SCRIPT_TIMEOUT);
-                })
-                .bind(this).then(function(event) {
-                    this.setResourcePreloaded(url);
                 });
                 
                 this.setResourcePreloadedPromise(url, promise);
@@ -258,21 +256,31 @@ var DocumentResources = Montage.specialize({
                 promise;
                 
                 promise = new Promise(function(resolve, reject) {
+                    
+                    function loadHandler(event) {
+                        resolve();
+                        self.setResourcePreloaded(url);
+                        event.target.removeEventListener("load", event.target.listener);
+                        event.target.removeEventListener("error", event.target.listener);
+                        event.target.removeEventListener("timeout", event.target.listener);
+                    }
+                    
                     var req = new XMLHttpRequest();
                     req.open("GET", url);
-                    req.addEventListener("load", resolve, false);
-                    req.addEventListener("error", resolve, false);
-                    req.addEventListener("timeout", resolve, false);
+                    req.addEventListener("load", loadHandler, false);
+                    req.addEventListener("error", loadHandler, false);
+                    req.addEventListener("timeout", loadHandler, false);
                     req.timeout = self._SCRIPT_TIMEOUT;
                     req.send();
-                    req.listener = resolve; 
-                })
-                .bind(this)
-                .then(function loadHandler(event) {
-                    this.setResourcePreloaded(url);
-                    event.target.removeEventListener("load", event.target.listener);
-                    event.target.removeEventListener("error", event.target.listener);
-                    event.target.removeEventListener("timeout", event.target.listener);
+                    req.listener = loadHandler; 
+                    
+                    // Setup the timeout to wait for the script until the resource
+                    // is considered loaded.
+                    loadingTimeout = setTimeout(function () {
+                        self.setResourcePreloaded(url);
+                        resolve();
+                    }, this._SCRIPT_TIMEOUT);
+                    
                 });
                 // .timeout(this._SCRIPT_TIMEOUT)
                 // .catch(Promise.TimeoutError, function(e) {
@@ -293,12 +301,6 @@ var DocumentResources = Montage.specialize({
                 resolve();
             };
 
-            // Setup the timeout to wait for the script until the resource
-            // is considered loaded.
-            loadingTimeout = setTimeout(function () {
-                self.setResourcePreloaded(url);
-                resolve();
-            }, this._SCRIPT_TIMEOUT);
             */
 
             this.setResourcePreloadedPromise(url, promise);
