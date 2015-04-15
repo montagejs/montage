@@ -168,10 +168,8 @@ var DocumentResources = Montage.specialize({
                 url = script.src;
 
             if (url) {
-                self._addResource(url);                
-                
+                self._addResource(url);
                 promise = new Promise(function(resolve, reject){
-
                     // We wait until all scripts are loaded, this is important
                     // because templateDidLoad might need to access objects that
                     // are defined in these scripts, the downsize is that it takes
@@ -184,7 +182,7 @@ var DocumentResources = Montage.specialize({
                         script.removeEventListener("error", scriptLoaded, false);
 
                         clearTimeout(loadingTimeout);
-                        deferred.resolve();
+                        resolve(event);
                     };
                     script.addEventListener("load", scriptLoaded, false);
                     script.addEventListener("error", scriptLoaded, false);
@@ -194,13 +192,10 @@ var DocumentResources = Montage.specialize({
                     // because a single script didn't load.
                     loadingTimeout = setTimeout(function () {
                         self.setResourcePreloaded(url);
-                        deferred.resolve();
+                        resolve();
                     }, this._SCRIPT_TIMEOUT);
-                })
-                .bind(this).then(function(event) {
-                    this.setResourcePreloaded(url);
                 });
-                
+
                 this.setResourcePreloadedPromise(url, promise);
 
             } else {

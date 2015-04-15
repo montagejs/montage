@@ -1231,36 +1231,39 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 if (this.needsDraw || this.hasTemplate) {
                     this._canDraw = false;
                 }
+                var self = this;
+                this._loadComponentTreeDeferred = new Promise(function(resolve, reject) {
+                
+                    self.expandComponent()
+                        .then(function() {
+                            if (self.hasTemplate || self.shouldLoadComponentTree) {
+                                var promises = [],
+                                    childComponents = self.childComponents,
+                                    childComponent;
 
-                this._loadComponentTreeDeferred = this.expandComponent()
-                    .bind(this)
-                    .then(function() {
-                        if (this.hasTemplate || this.shouldLoadComponentTree) {
-                            var promises = [],
-                                childComponents = this.childComponents,
-                                childComponent;
+                                for (var i = 0; (childComponent = childComponents[i]); i++) {
+                                    promises.push(childComponent.loadComponentTree());
+                                }
 
-                            for (var i = 0; (childComponent = childComponents[i]); i++) {
-                                promises.push(childComponent.loadComponentTree());
+                                return Promise.all(promises);
                             }
-
-                            return Promise.all(promises);
-                        }
-                    })
-                    .then(function() {
-                        this._isComponentTreeLoaded = true;
-                        // When the component tree is loaded we need to draw if the
-                        // component needs to have its enterDocument() called.
-                        // This is because we explicitly avoid drawing when we set
-                        // _needsEnterDocument before the first draw because we
-                        // don't want to trigger the draw before its component tree
-                        // is loaded.
-                        if (this._needsEnterDocument) {
-                            this.needsDraw = true;
-                        }
-                        this.canDrawGate.setField("componentTreeLoaded", true);
-                    })
-                    .catch(console.error);
+                        })
+                        .then(function() {
+                            self._isComponentTreeLoaded = true;
+                            // When the component tree is loaded we need to draw if the
+                            // component needs to have its enterDocument() called.
+                            // This is because we explicitly avoid drawing when we set
+                            // _needsEnterDocument before the first draw because we
+                            // don't want to trigger the draw before its component tree
+                            // is loaded.
+                            if (self._needsEnterDocument) {
+                                self.needsDraw = true;
+                            }
+                            self.canDrawGate.setField("componentTreeLoaded", true);
+                            resolve();
+                        },reject)
+                        .catch(console.error);
+                });
             }
             return this._loadComponentTreeDeferred;
         }
@@ -1337,18 +1340,19 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
             if (!this._expandComponentPromise) {
                     if (this.hasTemplate) {
-                        this._expandComponentPromise = this._instantiateTemplate().bind(this).then(function() {
-                            this._isComponentExpanded = true;
-                            this._addTemplateStyles();
-                            this.needsDraw = true;
-                            // resolve();
-                        })
-                        .catch(console.error);
+                        var self = this;
+                        this._expandComponentPromise = new Promise(function(resolve, reject) {
+                            self._instantiateTemplate().then(function() {
+                                self._isComponentExpanded = true;
+                                self._addTemplateStyles();
+                                self.needsDraw = true;
+                                resolve();
+                            },reject)
+                            .catch(console.error);
+                        });                        
                     } else {
                         this._isComponentExpanded = true;
-                        this._expandComponentPromise = new Promise(function(resolve,reject){
-                            resolve();
-                        });
+                        this._expandComponentPromise = Promise.resolve();
                     }
             }
 
@@ -1440,25 +1444,26 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
     _instantiateTemplate: {
         value: function() {
-            return this._loadTemplate().bind(this).then(function(template) {
-                if (!this._element) {
-                    console.error("Cannot instantiate template without an element.", this);
-                    return Promise.reject(new Error("Cannot instantiate template without an element.", this));
+            var self = this;
+            return this._loadTemplate().then(function(template) {
+                if (!self._element) {
+                    console.error("Cannot instantiate template without an element.", self);
+                    return Promise.reject(new Error("Cannot instantiate template without an element.", self));
                 }
-                var instances = this.templateObjects,
-                    _document = this._element.ownerDocument;
+                var instances = self.templateObjects,
+                    _document = self._element.ownerDocument;
 
                 if (!instances) {
                     instances = Object.create(null);
                 }
-                instances.owner = this;
+                instances.owner = self;
 
-                this._isTemplateInstantiated = true;
+                self._isTemplateInstantiated = true;
 
-                return template.instantiateWithInstances(instances, _document).bind(this)
+                return template.instantiateWithInstances(instances, _document)
                 .then(function(documentPart) {
-                    documentPart.parentDocumentPart = this._ownerDocumentPart;
-                    this._templateDocumentPart = documentPart;
+                    documentPart.parentDocumentPart = self._ownerDocumentPart;
+                    self._templateDocumentPart = documentPart;
                     documentPart.fragment = null;
                 },function(reason) {
                     var message = reason.stack || reason;
@@ -1481,13 +1486,14 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             var info;
 
             if (!this._loadTemplatePromise) {
+                var self = this;
                 info = Montage.getInfoForObject(this);
 
                 this._loadTemplatePromise = Template.getTemplateWithModuleId(
                     this.templateModuleId, info.require)
-                .bind(this).then(function(template) {
-                    this._template = template;
-                    this._isTemplateLoaded = true;
+                .then(function(template) {
+                    self._template = template;
+                    self._isTemplateLoaded = true;
 
                     return template;
                 });
@@ -2470,11 +2476,12 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                     logger.debug(this, "waiting for messages from localizer");
                     this.canDrawGate.setField("messages", false);
 
-                    this.localizer.messagesPromise.bind(this).then(function(messages) {
+                    var self = this;
+                    this.localizer.messagesPromise.then(function(messages) {
                         if (logger.isDebug) {
                             logger.debug(this, "got messages from localizer");
                         }
-                        this.canDrawGate.setField("messages", true);
+                        self.canDrawGate.setField("messages", true);
                     });
                 } else {
                     this._waitForLocalizerMessages = false;
@@ -3504,6 +3511,17 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype # *
                     drawLogger.debug("Level " + component._treeLevel + " " + loggerToString(component));
                 }
             }
+            
+            //Now root Component:
+            if (!this._completedFirstDraw) {
+                firstDrawEvent = document.createEvent("CustomEvent");
+                firstDrawEvent.initCustomEvent("firstDraw", true, false, null);
+                this.dispatchEvent(firstDrawEvent);
+                this._completedFirstDraw = true;
+            }
+            
+            
+            
             if (drawLogger.isDebug) {
                 console.groupEnd();
             }
