@@ -1,0 +1,227 @@
+{
+    "blueprint_button_enabled": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "enabled",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "boolean",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_button_formaction": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "formaction",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "url",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_button_formenctype": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "formenctype",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "enum",
+            "enumValues": [
+                "application/x-www-form-urlencoded",
+                "multipart/form-data",
+                "text/plain"
+            ],
+            "helpKey": ""
+        }
+    },
+    "blueprint_button_formmethod": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "formmethod",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "enum",
+            "enumValues": [
+                "get",
+                "post"
+            ],
+            "helpKey": ""
+        }
+    },
+    "blueprint_button_formnovalidate": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "formnovalidate",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "boolean",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_button_formtarget": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "formtarget",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_button_label": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "label",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_button_type": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "type",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "enum",
+            "enumValues": [
+                "button",
+                "reset",
+                "submit"
+            ],
+            "helpKey": ""
+        }
+    },
+    "blueprint_control_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Control",
+                "prototypeName": "Control",
+                "blueprintModule": {
+                    "%": "ui/control.meta"
+                }
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "button",
+            "customPrototype": false,
+            "parent": {
+                "@": "blueprint_control_reference"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "blueprint_button_enabled"
+                },
+                {
+                    "@": "blueprint_button_formaction"
+                },
+                {
+                    "@": "blueprint_button_formenctype"
+                },
+                {
+                    "@": "blueprint_button_formmethod"
+                },
+                {
+                    "@": "blueprint_button_formnovalidate"
+                },
+                {
+                    "@": "blueprint_button_formtarget"
+                },
+                {
+                    "@": "blueprint_button_label"
+                },
+                {
+                    "@": "blueprint_button_type"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "button": [
+                    {
+                        "@": "blueprint_button_label"
+                    },
+                    {
+                        "@": "blueprint_button_type"
+                    },
+                    {
+                        "@": "blueprint_button_enabled"
+                    }
+                ],
+                "button-form": [
+                    {
+                        "@": "blueprint_button_formaction"
+                    },
+                    {
+                        "@": "blueprint_button_formenctype"
+                    },
+                    {
+                        "@": "blueprint_button_formmethod"
+                    },
+                    {
+                        "@": "blueprint_button_formnovalidate"
+                    },
+                    {
+                        "@": "blueprint_button_formtarget"
+                    }
+                ]
+            },
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "ui/button.reel/button.meta"
+            },
+            "exportName": "Button",
+            "module": {
+                "%": "ui/button.reel"
+            }
+        }
+    }
+}

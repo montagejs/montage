@@ -1,0 +1,186 @@
+{
+    "blueprint_control_autofocus": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "autofocus",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_control_disabled": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "disabled",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "boolean",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_control_form": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "form",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_control_name": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "name",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_control_readonly": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "readonly",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "boolean",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_control_value": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "value",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_control_active": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "active",
+            "valueType": "boolean",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_component_reference": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Component",
+                "prototypeName": "Component",
+                "blueprintModule": {
+                    "%": "ui/component.meta"
+                }
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "Control",
+            "customPrototype": false,
+            "parent": {
+                "@": "blueprint_component_reference"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "blueprint_control_autofocus"
+                },
+                {
+                    "@": "blueprint_control_disabled"
+                },
+                {
+                    "@": "blueprint_control_form"
+                },
+                {
+                    "@": "blueprint_control_name"
+                },
+                {
+                    "@": "blueprint_control_readonly"
+                },
+                {
+                    "@": "blueprint_control_value"
+                },
+                {
+                    "@": "blueprint_control_active"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "control": [
+                {
+                    "@": "blueprint_control_autofocus"
+                },
+                {
+                    "@": "blueprint_control_disabled"
+                },
+                {
+                    "@": "blueprint_control_form"
+                },
+                {
+                    "@": "blueprint_control_name"
+                },
+                {
+                    "@": "blueprint_control_readonly"
+                },
+                {
+                    "@": "blueprint_control_value"
+                },
+                {
+                    "@": "blueprint_control_active"
+                }
+            ]
+            },
+            "propertyValidationRules": {},
+            "blueprintModule": {
+                "%": "ui/control.meta"
+            },
+            "exportName": "Control",
+            "module": {
+                "%": "ui/control"
+            }
+        }
+    }
+}
