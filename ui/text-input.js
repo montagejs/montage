@@ -54,26 +54,28 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
         set: function(value, fromInput) {
 
             if(value !== this._value) {
-                if(this.converter) {
-                    var convertedValue;
-                    try {
-                        convertedValue = this.converter.revert(value);
-                        this.error = null;
-                        this._value = convertedValue;
-                    } catch(e) {
-                        // unable to convert - maybe error
+                if (!this.hasFocus || this.callDelegateMethod("shouldAcceptValue", this, value)) {
+                    if(this.converter) {
+                        var convertedValue;
+                        try {
+                            convertedValue = this.converter.revert(value);
+                            this.error = null;
+                            this._value = convertedValue;
+                        } catch(e) {
+                            // unable to convert - maybe error
+                            this._value = value;
+                            this.error = e;
+                        }
+                    } else {
                         this._value = value;
-                        this.error = e;
                     }
-                } else {
-                    this._value = value;
-                }
 
-                if (fromInput) {
-                    this._valueSyncedWithInputField = true;
-                } else {
-                    this._valueSyncedWithInputField = false;
-                    this.needsDraw = true;
+                    if (fromInput) {
+                        this._valueSyncedWithInputField = true;
+                    } else {
+                        this._valueSyncedWithInputField = false;
+                        this.needsDraw = true;
+                    }
                 }
             }
         }
@@ -87,6 +89,7 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
         value: function() {
             var newValue = this.element.value;
             Object.getPropertyDescriptor(this, "value").set.call(this, newValue, true);
+            this.callDelegateMethod("didChange", this);
         }
     },
 
@@ -242,6 +245,7 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
         enumerable: false,
         value: function(event) {
             this._setValue();
+            this.dispatchActionEvent();
             this._hasFocus = false;
         }
     },
