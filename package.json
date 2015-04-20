@@ -1,6 +1,6 @@
 {
   "name": "montage",
-  "version": "0.14.15",
+  "version": "0.15.0",
   "description": "Build your next application with a browser based platform that really gets the web.",
   "repository": {
     "type": "git",
@@ -36,8 +36,7 @@
   },
   "devDependencies": {
     "jshint": "~2.4.4",
-    "montage-testing": "~0.4.2",
-    "native": "~0.2.0"
+    "montage-testing": "~0.4.2"
   },
   "scripts": {
     "test": "node test/node/node-spec.js",

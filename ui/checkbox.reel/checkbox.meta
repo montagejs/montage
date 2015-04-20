@@ -1,0 +1,60 @@
+{
+    "checked_property": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "checked",
+            "valueType": "boolean",
+            "blueprint": {
+                "@": "root"
+            }
+        }
+    },
+    "blueprint_parent": {
+        "prototype": "core/meta/blueprint-reference",
+        "properties": {
+            "valueReference": {
+                "blueprintName": "Control",
+                "prototypeName": "Control",
+                "blueprintModule": {
+                    "%": "ui/control.meta"
+                }
+            }
+        }
+    },
+    "root": {
+        "prototype": "core/meta/module-blueprint",
+        "properties": {
+            "name": "AbstractCheckbox",
+            "parent": {
+                "@": "blueprint_parent"
+            },
+            "propertyBlueprints": [
+                {
+                    "@": "checked_property"
+                },
+                {
+                    "@": "active_property"
+                }
+            ],
+            "propertyBlueprintGroups": {
+                "Main": [
+                    {
+                        "@": "checked_property"
+                    }
+                ],
+                "Options": [
+                    {
+                        "@": "active_property"
+                    }
+                ]
+            },
+            "blueprintModule": {
+                "%": "ui/base/abstract-checkbox.meta"
+            },
+            "exportName": "AbstractCheckbox",
+            "module": {
+                "%": "ui/base/abstract-checkbox"
+            }
+        }
+    }
+}

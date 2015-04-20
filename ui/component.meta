@@ -41,6 +41,210 @@
             "helpKey": ""
         }
     },
+    "blueprint_component_accesskey": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "accesskey",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_component_contenteditable": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "contenteditable",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "enum",
+            "enumValues": [
+                "true",
+                "false",
+                "inherit"
+            ],
+            "helpKey": ""
+        }
+    },
+    "blueprint_component_contextmenu": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "contextmenu",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_component_dir": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "dir",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "enum",
+            "enumValues": [
+                "ltr",
+                "rtl",
+                "auto"
+            ],
+            "helpKey": ""
+        }
+    },
+    "blueprint_component_draggable": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "draggable",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "enum",
+            "enumValues": [
+                "true",
+                "false",
+                "auto"
+            ],
+            "helpKey": ""
+        }
+    },
+    "blueprint_component_dropzone": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "dropzone",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_component_hidden": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "hidden",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "boolean",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_component_lang": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "lang",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_component_spellcheck": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "spellcheck",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "boolean",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_component_style": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "style",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_component_tabindex": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "tabindex",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "number",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
+    "blueprint_component_title": {
+        "prototype": "core/meta/property-blueprint",
+        "properties": {
+            "name": "title",
+            "blueprint": {
+                "@": "root"
+            },
+            "cardinality": 1,
+            "mandatory": false,
+            "denyDelete": false,
+            "readOnly": false,
+            "valueType": "string",
+            "enumValues": [],
+            "helpKey": ""
+        }
+    },
     "root": {
         "prototype": "core/meta/module-blueprint",
         "properties": {
@@ -55,6 +259,42 @@
                 },
                 {
                     "@": "blueprint_component_classList"
+                },
+                {
+                    "@": "blueprint_component_accesskey"
+                },
+                {
+                    "@": "blueprint_component_contenteditable"
+                },
+                {
+                    "@": "blueprint_component_contextmenu"
+                },
+                {
+                    "@": "blueprint_component_dir"
+                },
+                {
+                    "@": "blueprint_component_draggable"
+                },
+                {
+                    "@": "blueprint_component_dropzone"
+                },
+                {
+                    "@": "blueprint_component_hidden"
+                },
+                {
+                    "@": "blueprint_component_lang"
+                },
+                {
+                    "@": "blueprint_component_spellcheck"
+                },
+                {
+                    "@": "blueprint_component_style"
+                },
+                {
+                    "@": "blueprint_component_tabindex"
+                },
+                {
+                    "@": "blueprint_component_title"
                 }
             ],
             "propertyBlueprintGroups": {
@@ -62,7 +302,49 @@
                     {
                         "@": "blueprint_component_identifier"
                     }
+                ],
+                "element": [
+                    {
+                        "@": "blueprint_component_classList"
+                    },
+                    {
+                        "@": "blueprint_component_accesskey"
+                    },
+                    {
+                        "@": "blueprint_component_contenteditable"
+                    },
+                    {
+                        "@": "blueprint_component_contextmenu"
+                    },
+                    {
+                        "@": "blueprint_component_dir"
+                    },
+                    {
+                        "@": "blueprint_component_draggable"
+                    },
+                    {
+                        "@": "blueprint_component_dropzone"
+                    },
+                    {
+                        "@": "blueprint_component_hidden"
+                    },
+                    {
+                        "@": "blueprint_component_lang"
+                    },
+                    {
+                        "@": "blueprint_component_spellcheck"
+                    },
+                    {
+                        "@": "blueprint_component_style"
+                    },
+                    {
+                        "@": "blueprint_component_tabindex"
+                    },
+                    {
+                        "@": "blueprint_component_title"
+                    }
                 ]
+                
             },
             "propertyValidationRules": {},
             "blueprintModule": {
