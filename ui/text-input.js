@@ -228,7 +228,7 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
                 if (this.converter.allowPartialConversion === true && this.updateOnInput === true) {
                     this._setValue();
                 }
-            } else {
+            } else if(this.updateOnInput === true){
                 this._setValue();
             }
         }
