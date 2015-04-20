@@ -2532,102 +2532,6 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     },
 
     /**
-     * Adds a property to the component with the specified name.
-     * This method is used internally by the framework convert a DOM element's
-     * standard attributes into bindable properties.
-     * It creates an accessor property (getter/setter) with the same name as
-     * the specified property, as well as a "backing" data property whose name
-     * is prepended with an underscore (_).
-     * The backing variable is assigned the value from the property descriptor.
-     * For example, if the name "title" is passed as the first parameter, a
-     * "title" accessor property is created as well a data property named
-     * "_title".
-     * @function
-     * @param {string} name The property name to add.
-     * @param {Object} descriptor An object that specifies the new properties default attributes such as configurable and enumerable.
-     * @private
-     */
-    defineAttribute: {
-        value: function (name, descriptor) {
-            descriptor = descriptor || {};
-            var _name = '_' + name;
-
-
-            var newDescriptor = {
-                configurable: (typeof descriptor.configurable === 'undefined') ? true: descriptor.configurable,
-                enumerable: (typeof descriptor.enumerable === 'undefined') ?  true: descriptor.enumerable,
-                set: (function (name, attributeName) {
-                    return function (value) {
-                        var descriptor = this._getElementAttributeDescriptor(name, this);
-
-                        // if requested dataType is boolean (eg: checked, readonly etc)
-                        // coerce the value to boolean
-                        if(descriptor && "boolean" === descriptor.dataType) {
-                            value = ( (value || value === "") ? true : false);
-                        }
-
-                        // If the set value is different to the current one,
-                        // update it here, and set it to be updated on the
-                        // element in the next draw cycle.
-                        if((typeof value !== 'undefined') && this[attributeName] !== value) {
-                            this[attributeName] = value;
-                            // at this point we know that we will need it so create it once.
-                            if(this._elementAttributeValues === null) {
-                                this._elementAttributeValues = {};
-                            }
-                            this._elementAttributeValues[name] = value;
-                            this.needsDraw = true;
-                        }
-                    };
-                }(name, _name)),
-                get: (function (name, attributeName) {
-                    return function () {
-                        return this[attributeName];
-                    };
-                }(name, _name))
-            };
-
-            // Define _ property
-            // TODO this.constructor.defineProperty
-            Montage.defineProperty(this.prototype, _name, {value: null});
-            // Define property getter and setter
-            Montage.defineProperty(this.prototype, name, newDescriptor);
-        }
-    },
-
-    /**
-     * Add the specified properties as properties of this component.
-     * @function
-     * @param {object} properties An object that contains the properties you want to add.
-     * @private
-     */
-    addAttributes: {
-        value: function (properties) {
-            var i, descriptor, property, object;
-            this.prototype._elementAttributeDescriptors = properties;
-
-            for(property in properties) {
-                if(properties.hasOwnProperty(property)) {
-                    object = properties[property];
-                    // Make sure that the descriptor is of the correct form.
-                    if(object === null || typeof object === "string") {
-                        descriptor = {value: object, dataType: "string"};
-                        properties[property] = descriptor;
-                    } else {
-                        descriptor = object;
-                    }
-
-                    // Only add the internal property, and getter and setter if
-                    // they don't already exist.
-                    if(typeof this[property] === 'undefined') {
-                        this.defineAttribute(property, descriptor);
-                    }
-                }
-            }
-        }
-    },
-
-    /**
      * This function is called when the component element is added to the
      * document's DOM tree.
      *
@@ -2861,6 +2765,101 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             this.childComponents.forEach(function (component) {
                 component.dispose();
             });
+        }
+    }
+},{
+    /**
+     * Add the specified properties as properties of this component.
+     * @function
+     * @param {object} properties An object that contains the properties you want to add.
+     * @private
+     */
+    addAttributes: {
+        value: function (properties) {
+            var i, descriptor, property, object;
+            this.prototype._elementAttributeDescriptors = properties;
+
+            for(property in properties) {
+                if(properties.hasOwnProperty(property)) {
+                    object = properties[property];
+                    // Make sure that the descriptor is of the correct form.
+                    if(object === null || typeof object === "string") {
+                        descriptor = {value: object, dataType: "string"};
+                        properties[property] = descriptor;
+                    } else {
+                        descriptor = object;
+                    }
+
+                    // Only add the internal property, and getter and setter if
+                    // they don't already exist.
+                    if(typeof this[property] === 'undefined') {
+                        this.defineAttribute(property, descriptor);
+                    }
+                }
+            }
+        }
+    },
+    /**
+     * Adds a property to the component with the specified name.
+     * This method is used internally by the framework convert a DOM element's
+     * standard attributes into bindable properties.
+     * It creates an accessor property (getter/setter) with the same name as
+     * the specified property, as well as a "backing" data property whose name
+     * is prepended with an underscore (_).
+     * The backing variable is assigned the value from the property descriptor.
+     * For example, if the name "title" is passed as the first parameter, a
+     * "title" accessor property is created as well a data property named
+     * "_title".
+     * @function
+     * @param {string} name The property name to add.
+     * @param {Object} descriptor An object that specifies the new properties default attributes such as configurable and enumerable.
+     * @private
+     */
+    defineAttribute: {
+        value: function (name, descriptor) {
+            descriptor = descriptor || {};
+            var _name = '_' + name;
+
+
+            var newDescriptor = {
+                configurable: (typeof descriptor.configurable === 'undefined') ? true: descriptor.configurable,
+                enumerable: (typeof descriptor.enumerable === 'undefined') ?  true: descriptor.enumerable,
+                set: (function (name, attributeName) {
+                    return function (value) {
+                        var descriptor = this._getElementAttributeDescriptor(name, this);
+
+                        // if requested dataType is boolean (eg: checked, readonly etc)
+                        // coerce the value to boolean
+                        if(descriptor && "boolean" === descriptor.dataType) {
+                            value = ( (value || value === "") ? true : false);
+                        }
+
+                        // If the set value is different to the current one,
+                        // update it here, and set it to be updated on the
+                        // element in the next draw cycle.
+                        if((typeof value !== 'undefined') && this[attributeName] !== value) {
+                            this[attributeName] = value;
+                            // at this point we know that we will need it so create it once.
+                            if(this._elementAttributeValues === null) {
+                                this._elementAttributeValues = {};
+                            }
+                            this._elementAttributeValues[name] = value;
+                            this.needsDraw = true;
+                        }
+                    };
+                }(name, _name)),
+                get: (function (name, attributeName) {
+                    return function () {
+                        return this[attributeName];
+                    };
+                }(name, _name))
+            };
+
+            // Define _ property
+            // TODO this.constructor.defineProperty
+            Montage.defineProperty(this.prototype, _name, {value: null});
+            // Define property getter and setter
+            Montage.defineProperty(this.prototype, name, newDescriptor);
         }
     }
 });
@@ -3552,3 +3551,104 @@ function loggerToString (object) {
     return object._montage_metadata.objectName + ":" + Object.hash(object) + " id: " + object.identifier;
     //jshint +W106
 }
+
+//http://www.w3.org/TR/html5/elements.html#global-attributes
+Component.addAttributes( /** @lends module:montage/ui/control.Control# */ {
+
+/**
+    Specifies the shortcut key(s) that gives focuses to or activates the element.
+    @see {@link http://www.w3.org/TR/html5/editing.html#the-accesskey-attribute}
+    @type {string}
+    @default null
+*/
+    accesskey: null,
+
+/**
+    Specifies if the content is editable or not. Valid values are "true", "false", and "inherit".
+    @see {@link http://www.w3.org/TR/html5/editing.html#contenteditable}
+    @type {string}
+    @default null
+
+*/
+    contenteditable: null,
+
+/**
+    Specifies the ID of a <code>menu</code> element in the DOM to use as the element's context menu.
+    @see  {@link http://www.w3.org/TR/html5/interactive-elements.html#attr-contextmenu}
+    @type {string}
+    @default null
+*/
+    contextmenu: null,
+
+/**
+    Specifies the elements element's text directionality. Valid values are "ltr", "rtl", and "auto".
+    @see {@link http://www.w3.org/TR/html5/elements.html#the-dir-attribute}
+    @type {string}
+    @default null
+*/
+    dir: null,
+
+/**
+    Specifies if the element is draggable. Valid values are "true", "false", and "auto".
+    @type {string}
+    @default null
+    @see {@link http://www.w3.org/TR/html5/dnd.html#the-draggable-attribute}
+*/
+    draggable: null,
+
+/**
+    Specifies the behavior that's taken when an item is dropped on the element. Valid values are "copy", "move", and "link".
+    @type {string}
+    @see {@link http://www.w3.org/TR/html5/dnd.html#the-dropzone-attribute}
+*/
+    dropzone: null,
+
+/**
+    When specified on an element, it indicates that the element should not be displayed.
+    @type {boolean}
+    @default false
+*/
+    hidden: {dataType: 'boolean'},
+    //id: null,
+
+/**
+    Specifies the primary language for the element's contents and for any of the element's attributes that contain text.
+    @type {string}
+    @default null
+    @see {@link http://www.w3.org/TR/html5/elements.html#attr-lang}
+*/
+    lang: null,
+
+/**
+    Specifies if element should have its spelling and grammar checked by the browser. Valid values are "true", "false".
+    @type {string}
+    @default null
+    @see {@link http://www.w3.org/TR/html5/editing.html#attr-spellcheck}
+*/
+    spellcheck: null,
+
+// /**
+//     The CSS styling attribute.
+//     @type {string}
+//     @default null
+//     @see {@link http://www.w3.org/TR/html5/elements.html#the-style-attribute}
+// */
+//     style: null,
+
+/**
+     Specifies the relative order of the element for the purposes of sequential focus navigation.
+     @type {number}
+     @default null
+     @see {@link http://www.w3.org/TR/html5/editing.html#attr-tabindex}
+*/
+    tabindex: null,
+
+/**
+    Specifies advisory information about the element, used as a tooltip when hovering over the element, and other purposes.
+    @type {string}
+    @default null
+    @see {@link http://www.w3.org/TR/html5/elements.html#the-title-attribute}
+*/
+    title: null
+});
+
