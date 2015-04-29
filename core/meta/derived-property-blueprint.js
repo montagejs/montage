@@ -1,12 +1,8 @@
 "use strict";
 /**
  * @module montage/core/blueprint
- * @requires montage/core/core
- * @requires core/exception
- * @requires core/promise
  * @requires core/logger
  */
-var Montage = require("../core").Montage;
 var PropertyBlueprint = require("./property-blueprint").PropertyBlueprint;
 
 var logger = require("../logger").logger("blueprint");

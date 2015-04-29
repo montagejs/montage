@@ -9,9 +9,7 @@
  */
 var Montage = require("../core").Montage;
 var Promise = require("../promise").Promise;
-var Deserializer = require("../serialization").Deserializer;
 var ObjectProperty = require("./object-property").ObjectProperty;
-var Enum = require("../enum").Enum;
 var BinderModule = require("./binder");
 var BlueprintReference = require("./blueprint-reference").BlueprintReference;
 var PropertyBlueprint = require("./property-blueprint").PropertyBlueprint;

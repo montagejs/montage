@@ -152,7 +152,7 @@ var Montage = require("../core").Montage,
      * @returns null
      */
     $D.getTimezoneAbbreviation = function (offset) {
-        var z = $C.timezones, p;
+        var z = $C.timezones;
         for (var i = 0; i < z.length; i++) {
             if (z[i].offset === offset) {
                 return z[i].name;
@@ -166,7 +166,7 @@ var Montage = require("../core").Montage,
      * @returns null
      */
     $D.getTimezoneOffset = function (name) {
-        var z = $C.timezones, p;
+        var z = $C.timezones;
         for (var i = 0; i < z.length; i++) {
             if (z[i].name === name.toUpperCase()) {
                 return z[i].offset;

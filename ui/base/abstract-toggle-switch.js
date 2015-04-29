@@ -2,13 +2,9 @@
 
 /**
  * @module montage/ui/base/abstract-toggle-switch.reel
- * @requires montage/core/core
- * @requires montage/ui/component
- * @requires montage/ui/native-control
  * @requires montage/composer/press-composer
 */
-var Montage = require("../../core/core").Montage,
-    AbstractControl = require("./abstract-control").AbstractControl,
+var AbstractControl = require("./abstract-control").AbstractControl,
     PressComposer = require("../../composer/press-composer").PressComposer;
 
 /**

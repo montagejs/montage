@@ -2,18 +2,12 @@
 /**
  * @module montage/core/meta/property-blueprint
  * @requires montage/core/core
- * @requires core/exception
- * @requires core/promise
  * @requires core/logger
  */
 
 var Montage = require("../core").Montage;
-var Enum = require("../enum").Enum;
-
 var logger = require("../logger").logger("blueprint");
 
-var ValueType = new Enum().initWithMembers("string", "number", "boolean", "date", "enum", "url", "object");
-var CollectionValueType = new Enum().initWithMembers("list", "set", "map");
 
 // TODO change Defaults[*] to Defaults.* throughout. Needless performance
 // degredation.

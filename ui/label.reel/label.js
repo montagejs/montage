@@ -1,8 +1,7 @@
 /**
  * @module "montage/ui/label.reel"
  */
-var Montage = require("../../core/core").Montage,
-    Text = require("../text.reel/text").Text,
+var Text = require("../text.reel/text").Text,
     PressComposer = require("../../composer/press-composer").PressComposer;
 
 /* FIXME:

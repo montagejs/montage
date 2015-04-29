@@ -1,8 +1,7 @@
 /**
  * @module "montage/ui/loader.reel"
  */
-var Montage = require("../../core/core").Montage,
-    Component = require("../component").Component,
+var Component = require("../component").Component,
     logger = require("../../core/logger").logger("loader"),
     defaultEventManager = require("../../core/event/event-manager").defaultEventManager,
     bootstrappingTimeoutPropertyName = "_montageStartBootstrappingTimeout",

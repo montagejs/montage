@@ -3,8 +3,7 @@
 /**
  * @module montage/ui/base/abstract-image.reel
  */
-var Montage = require("../../core/core").Montage,
-    Component = require("../component").Component,
+var Component = require("../component").Component,
     URL = require("../../core/mini-url");
 
 /**

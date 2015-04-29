@@ -4,12 +4,10 @@
  * @module montage/core/meta/binder-manager
  * @requires montage/core/core
  * @requires montage/core/meta/object-property
- * @requires montage/core/promise
  * @requires montage/core/meta/binder
  * @requires montage/core/logger
  */
 var Montage = require("../core").Montage,
-    Promise = require("../promise").Promise,
     ObjectProperty = require("./object-property").ObjectProperty,
     BinderModule = require("./binder"),
     logger = require("../logger").logger("blueprint");

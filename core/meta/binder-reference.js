@@ -2,12 +2,10 @@
 
 /**
  * @module montage/core/meta/binder-reference
- * @requires montage/core/core
  * @requires core/exception
  * @requires core/promise
  * @requires core/logger
  */
-var Montage = require("../core").Montage;
 var Promise = require("../promise").Promise;
 var RemoteReference = require("./remote-reference").RemoteReference;
 var BinderModule = require("./binder");

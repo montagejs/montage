@@ -1,5 +1,4 @@
 var Montage = require("../../core").Montage;
-var Promise = require("../../promise").Promise;
 
 var UnitDeserializer = Montage.specialize(/** @lends UnitDeserializer# */ {
     _context: {value: null},

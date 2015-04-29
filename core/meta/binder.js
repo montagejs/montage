@@ -3,14 +3,11 @@
 /**
  * @module montage/core/meta/binder
  * @requires montage/core/core
- * @requires core/promise
  * @requires core/meta/binder-manager
  * @requires core/meta/blueprint
  * @requires core/logger
  */
 var Montage = require("../core").Montage;
-var Promise = require("../promise").Promise;
-var Deserializer = require("../serialization").Deserializer;
 var BinderManager = require("./binder-manager").BinderManager;
 var BlueprintModule = require("./blueprint");
 var deprecate = require("../deprecate");

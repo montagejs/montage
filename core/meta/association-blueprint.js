@@ -1,11 +1,8 @@
 "use strict";
 /**
  * @module montage/core/meta/association-reference
- * @requires montage/core/core
- * @requires core/promise
  * @requires core/logger
  */
-var Montage = require("../core").Montage;
 var BlueprintReference = require("./blueprint-reference").BlueprintReference;
 var PropertyBlueprint = require("./property-blueprint").PropertyBlueprint;
 

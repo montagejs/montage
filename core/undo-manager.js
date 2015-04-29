@@ -473,13 +473,10 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
 
     _flushOperationQueue: {
         value: function () {
-
             var opQueue = this._operationQueue,
                 opCount = opQueue.length,
-                i,
                 completedPromises = [],
                 completedCount,
-                promise,
                 opMap = this._promiseOperationMap,
                 self = this;
 

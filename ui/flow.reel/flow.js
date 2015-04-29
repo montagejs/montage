@@ -1,8 +1,7 @@
 /**
  * @module "montage/ui/flow.reel"
  */
-var Montage = require("../../core/core").Montage,
-    Component = require("../component").Component,
+var Component = require("../component").Component,
     observeProperty = require("frb/observers").observeProperty,
     FlowBezierSpline = require("./flow-bezier-spline").FlowBezierSpline,
     RangeController = require("../../core/range-controller").RangeController;

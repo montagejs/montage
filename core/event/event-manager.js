@@ -48,20 +48,6 @@ if (typeof window !== "undefined") { // client-side
         })();
     }
 
-    var EventListenerDescriptor = Montage.specialize({
-        type: {
-            value: null
-        },
-
-        listener: {
-            value: null
-        },
-
-        capture: {
-            value: null
-        }
-    });
-
     var _PointerStorageMemoryEntry = Montage.specialize({
         constructor: {
             value: function (identifier) {
@@ -1827,7 +1813,6 @@ if (typeof window !== "undefined") { // client-side
                     startTime,
                     iTime,
                     oldTime, oldX, oldY, squaredModule,
-                    difTime = 0,
                     addData = true,
                     data = {
                         x: [],
@@ -1867,7 +1852,7 @@ if (typeof window !== "undefined") { // client-side
         _fitPointerCurve: {
             enumerable: false,
             value: function (bezier, data) {
-                var pos, a, b, c, d, epsilon = 0.0001,
+                var a, b, c, d, epsilon = 0.0001,
                     dl = data.length, e, t, v, t2, t3, i,
                     f0, c0, d0, b0, a0, s0, e0,
                     f1, c1, d1, b1, a1, s1, e1,
@@ -2187,7 +2172,6 @@ if (typeof window !== "undefined") { // client-side
                     j,
                     jListenerEntry,
                     listenerEntryKeys,
-                    listenerEntryKeyCount,
                     jListener,
                     eventPath,
                     eventType = event.type,
@@ -2196,8 +2180,7 @@ if (typeof window !== "undefined") { // client-side
                     bubbleMethodName,
                     identifierSpecificCaptureMethodName,
                     identifierSpecificBubbleMethodName,
-                    mutableEvent,
-                    touchCount;
+                    mutableEvent;
 
                 if ("DOMContentLoaded" === eventType) {
                     loadedWindow = event.target.defaultView;

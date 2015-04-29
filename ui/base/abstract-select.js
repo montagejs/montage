@@ -3,11 +3,9 @@
 /**
  * @module montage/ui/base/abstract-select.reel
  */
-var Montage = require("../../core/core").Montage,
-    AbstractControl = require("./abstract-control").AbstractControl,
+var AbstractControl = require("./abstract-control").AbstractControl,
     PressComposer = require("../../composer/press-composer").PressComposer,
-    RangeController = require("../../core/range-controller").RangeController,
-    Dict = require("collections/dict");
+    RangeController = require("../../core/range-controller").RangeController;
 
 /**
  * @class AbstractSelect

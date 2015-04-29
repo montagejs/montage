@@ -2,12 +2,10 @@
 
 /**
  * @module montage/core/meta/blueprint-reference
- * @requires montage/core/core
  * @requires core/exception
  * @requires core/promise
  * @requires core/logger
  */
-var Montage = require("../core").Montage;
 var Promise = require("../promise").Promise;
 var BlueprintModule = require("./blueprint");
 var BinderModule = require("./binder");
@@ -44,11 +42,8 @@ exports.BlueprintReference = RemoteReference.specialize( {
     },
 
     valueFromReference: {
-        value: function (references, targetRequire) {
-            var blueprintName = references.blueprintName;
+        value: function (references) {
             var blueprintModule = references.blueprintModule;
-            var prototypeName = references.prototypeName;
-            var moduleId = references.moduleId;
 
             var binderReference = references.binderReference;
             var binderPromise = Promise.resolve(BinderModule.Binder.manager.defaultBinder);

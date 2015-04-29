@@ -1,6 +1,5 @@
 /*global require, exports, document, Error*/
-var Montage = require("../../core/core").Montage,
-    AbstractControl = require("./abstract-control").AbstractControl,
+var AbstractControl = require("./abstract-control").AbstractControl,
     PressComposer = require("../../composer/press-composer").PressComposer;
 
 var CLASS_PREFIX = "montage-Checkbox";
