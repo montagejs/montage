@@ -214,6 +214,22 @@ var DocumentResources = Montage.specialize({
         }
     },
 
+    handleEvent: {
+        value: function (event) {
+            var target = event.target,
+                index;
+
+            if (target.tagName === "LINK") {
+                index = this._expectedStyles.indexOf(target.href);
+                if (index >= 0) {
+                    this._expectedStyles.splice(index, 1);
+                }
+                target.removeEventListener("load", this, false);
+                target.removeEventListener("error", this, false);
+            }
+        }
+    },
+
     addStyle: {
         value: function (element) {
             var url = element.getAttribute("href"),
@@ -229,22 +245,10 @@ var DocumentResources = Montage.specialize({
                 this._addResource(url);
                 this._expectedStyles.push(url);
                 if (!this._isPollingDocumentStyleSheets) {
-                    loadHandler = function (event) {
-                        var link = event.target,
-                            index;
-
-                        index = self._expectedStyles.indexOf(link.href);
-                        if (index >= 0) {
-                            self._expectedStyles.splice(index, 1);
-                        }
-                        element.removeEventListener("load", loadHandler);
-                        element.removeEventListener("error", loadHandler);
-                    }
-                    element.addEventListener("load", loadHandler, false);
-                    element.addEventListener("error", loadHandler, false);
+                    element.addEventListener("load", this, false);
+                    element.addEventListener("error", this, false);
                 }
             }
-
             documentHead = this._document.head;
             documentHead.insertBefore(element, documentHead.firstChild);
         }
