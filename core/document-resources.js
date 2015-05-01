@@ -14,6 +14,43 @@ var DocumentResources = Montage.specialize({
         value: function DocumentResources() {
             this.super();
             this._expectedStyles = [];
+            this._isPollingDocumentStyleSheets = !this._isLinkLoadEventAvailable();
+        }
+    },
+
+    /**
+     * Returns major webkit version or null if not webkit
+     */
+    _webkitVersion: {
+        value: function () {
+            var version = /AppleWebKit\/([\d.]+)/.exec(navigator.userAgent);
+
+            if (version) {
+                return parseInt(version[1]);
+            }
+            return null;
+        }
+    },
+
+    /**
+     * Returns if the load event is available for link elements
+     */
+    _isLinkLoadEventAvailable: {
+        value: function () {
+            var link = document.createElement("link"),
+                webkitVersion = this._webkitVersion;
+
+            if ("onload" in link) {
+
+                // In webkits below version 535, onload is in link but
+                // the event doesn't fire when the file has been loaded
+
+                if ((webkitVersion !== null) && (webkitVersion < 535)) {
+                    return false;
+                }
+                return true;
+            }
+            return false;
         }
     },
 
@@ -140,8 +177,8 @@ var DocumentResources = Montage.specialize({
                     //if (event.type === "load") {
                     self.setResourcePreloaded(url);
                     //}
-                    script.removeEventListener("load", scriptLoaded);
-                    script.removeEventListener("error", scriptLoaded);
+                    script.removeEventListener("load", scriptLoaded, false);
+                    script.removeEventListener("error", scriptLoaded, false);
 
                     clearTimeout(loadingTimeout);
                     deferred.resolve();
@@ -177,21 +214,41 @@ var DocumentResources = Montage.specialize({
         }
     },
 
+    handleEvent: {
+        value: function (event) {
+            var target = event.target,
+                index;
+
+            if (target.tagName === "LINK") {
+                index = this._expectedStyles.indexOf(target.href);
+                if (index >= 0) {
+                    this._expectedStyles.splice(index, 1);
+                }
+                target.removeEventListener("load", this, false);
+                target.removeEventListener("error", this, false);
+            }
+        }
+    },
+
     addStyle: {
         value: function (element) {
             var url = element.getAttribute("href"),
-                documentHead;
+                documentHead,
+                loadHandler,
+                self = this;
 
             if (url) {
                 url = this.normalizeUrl(url);
                 if (this.hasResource(url)) {
                     return;
-                } else {
-                    this._addResource(url);
                 }
+                this._addResource(url);
                 this._expectedStyles.push(url);
+                if (!this._isPollingDocumentStyleSheets) {
+                    element.addEventListener("load", this, false);
+                    element.addEventListener("error", this, false);
+                }
             }
-
             documentHead = this._document.head;
             documentHead.insertBefore(element, documentHead.firstChild);
         }
@@ -283,12 +340,14 @@ var DocumentResources = Montage.specialize({
             var styleSheets,
                 ix;
 
-            if (this._expectedStyles.length > 0) {
-                styleSheets = this._document.styleSheets;
-                for (var i = 0, styleSheet; styleSheet = styleSheets[i]; i++) {
-                    ix = this._expectedStyles.indexOf(styleSheet.href);
-                    if (ix >= 0) {
-                        this._expectedStyles.splice(ix, 1);
+            if (this._isPollingDocumentStyleSheets) {
+                if (this._expectedStyles.length > 0) {
+                    styleSheets = this._document.styleSheets;
+                    for (var i = 0, styleSheet; styleSheet = styleSheets[i]; i++) {
+                        ix = this._expectedStyles.indexOf(styleSheet.href);
+                        if (ix >= 0) {
+                            this._expectedStyles.splice(ix, 1);
+                        }
                     }
                 }
             }
