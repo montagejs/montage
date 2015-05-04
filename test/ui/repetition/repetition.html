@@ -59,6 +59,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "repetition12": {"@": "repetition12"},
                     "repetition15": {"@": "repetition15"},
                     "domRepetition": {"@": "domRepetition"},
+                    "tableRepetition": {"@": "tableRepetition"},
                     "repetitionController": {"@": "repetitionController"},
                     "list1Objects": [
 
@@ -654,6 +655,36 @@ POSSIBILITY OF SUCH DAMAGE.
                     "content": [1, 2, 3],
                     "isSelectionEnabled": true
                 }
+            },
+
+            "tableElementA": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "tableElementA"}
+                },
+                "bindings": {
+                    "value": {"<-": "@tableRepetition:iteration.object.a"}
+                }
+            },
+            "tableElementB": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "tableElementB"}
+                },
+                "bindings": {
+                    "value": {"<-": "@tableRepetition:iteration.object.b"}
+                }
+            },
+
+            "tableRepetition": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "tableRepetition"},
+                    "content": [
+                        {"a": "1-1", "b": "1-2"},
+                        {"a": "2-1", "b": "2-2"}
+                    ]
+                }
             }
 
     }</script>
@@ -865,5 +896,13 @@ POSSIBILITY OF SUCH DAMAGE.
             Item being repeated
         </li>
     </ul>
+
+    <h2>Table Repetition</h2>
+    <table data-montage-id="tableRepetition">
+        <tr>
+            <td><span data-montage-id="tableElementA"></span></td>
+            <td><span data-montage-id="tableElementB"></span></td>
+        </tr>
+    </table>
 </body>
 </html>
