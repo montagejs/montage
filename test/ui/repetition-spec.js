@@ -1,38 +1,40 @@
 /* <copyright>
-Copyright (c) 2012, Motorola Mobility LLC.
-All Rights Reserved.
+ Copyright (c) 2012, Motorola Mobility LLC.
+ All Rights Reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
 
-* Redistributions of source code must retain the above copyright notice,
-  this list of conditions and the following disclaimer.
+ * Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
+ * Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
 
-* Neither the name of Motorola Mobility LLC nor the names of its
-  contributors may be used to endorse or promote products derived from this
-  software without specific prior written permission.
+ * Neither the name of Motorola Mobility LLC nor the names of its
+ contributors may be used to endorse or promote products derived from this
+ software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-</copyright> */
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+ </copyright>
+ */
+
 var Montage = require("montage").Montage,
     TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Template = require("montage/core/template").Template;
 
-var stripPP = function stripPrettyPrintting(str) {
+var stripPP = function stripPrettyPrinting(str) {
     return str.replace(/\n\s*/g, "");
 };
 
@@ -128,7 +130,9 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
 
         xit("should not serialize bindings in the iteration template", function () {
             var serialization = delegate.repetition1._iterationTemplate._ownerSerialization;
-            expect(stripPP(serialization)).toBe('{"owner":{"prototype":"montage/ui/repetition.reel","properties":{"element":{"#":"list1"},"_isComponentExpanded":true,"ownerComponent":{"@":"__root__"}}},"__root__":{}}');
+            expect(stripPP(serialization)).toBe(
+                '{"owner":{"prototype":"montage/ui/repetition.reel","properties":{"element":{"#":"list1"},"_isComponentExpanded":true,"ownerComponent":{"@":"__root__"}}},"__root__":{}}'
+            );
         });
 
         describe("The static repetition", function () {
@@ -331,7 +335,7 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                         var inputs = querySelectorAll(".list2 > li > input.textfield1");
                         for (var i = 0, input; i < 4; i++) {
 
-                            expect(inputs[i].value).toBe("item " + (i+1));
+                            expect(inputs[i].value).toBe("item " + (i + 1));
                         }
                     });
                 });
@@ -367,22 +371,46 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                 testPage.waitForComponentDraw(delegate.repetition4);
 
                 runs(function () {
-                    var innerRepetition;
-
-                    expect(querySelectorAll(".list3 > li").length).toBe(1);
-
-                    var expectationFunction = function () {
-                        expect(innerRepetition.element.querySelectorAll("li").length).toBe(1);
-                        var inputs = innerRepetition.element.querySelectorAll("li > input.textfield2");
-                        expect(inputs.length).toBe(1);
-                        expect(inputs[0].value).toBe("iteration 1");
-                    };
-
                     // Depending on timing the inner repetitions might have not
                     // drawn yet so we need to wait till one of the inner
                     // repetitions draws because atm we're not able to draw two
                     // nested repetitions in a single draw.
-                    innerRepetition = innerRepetition = querySelector(".list3 > li > .list3a").component;
+                    var innerRepetition = querySelector(".list3 > li > .list3a").component;
+
+                    expect(querySelectorAll(".list3 > li").length).toBe(1);
+                    expect(innerRepetition.element.querySelectorAll("li").length).toBe(1);
+                    var inputs = innerRepetition.element.querySelectorAll("li > input.textfield2");
+                    expect(inputs.length).toBe(1);
+                    expect(inputs[0].value).toBe("iteration 1");
+                });
+            });
+
+            it("should draw one>three iteration on the nested repetition w/ component", function () {
+                delegate.list3Objects = [
+                    [{text: "iteration 1"}],
+                    [{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}]
+                ];
+                testPage.waitForComponentDraw(delegate.repetition4);
+
+                var expectationFunction = function () {
+                    expect(querySelectorAll(".list3 > li").length).toBe(2);
+
+                    var list3a = testPage.evaluateNode("//*[@class='list3']/li[2]/ul[@class='list3a']");
+                    expect(list3a.querySelectorAll("li").length).toBe(3);
+
+                    var inputs = list3a.querySelectorAll("input.textfield2");
+                    for (var i = 0; i < 3; i++) {
+                        expect(inputs[i]).toBeDefined();
+                        expect(inputs[i].value).toBe("iteration " + (i + 1));
+                    }
+                };
+
+                runs(function () {
+                    // Depending on timing the inner repetitions might have not
+                    // drawn yet so we need to wait till one of the inner
+                    // repetitions draws because atm we're not able to draw two
+                    // nested repetitions in a single draw.
+                    var innerRepetition = delegate.repetition4.element.querySelector(".list3a").component;
 
                     if (innerRepetition.needsDraw) {
                         testPage.waitForComponentDraw(innerRepetition);
@@ -393,35 +421,30 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                 });
             });
 
-            it("should draw one>three iteration on the nested repetition w/ component", function () {
-                delegate.list3Objects = [[{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}]];
-                testPage.waitForComponentDraw(querySelector(".list3 > li > ul.list3a").component);
-
-                runs(function () {
-                    expect(querySelectorAll(".list3 > li").length).toBe(1);
-                    expect(querySelectorAll(".list3 > li > ul.list3a > li").length).toBe(3);
-                    var inputs = querySelectorAll(".list3 > li > ul.list3a > li > input.textfield2");
-                    expect(inputs.length).toBe(3);
-                    expect(inputs[0].value).toBe("iteration 1");
-                });
-            });
-
             it("should draw one>five iterations on the nested repetition w/ component", function () {
-                delegate.list3Objects = [[{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}], [{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}, {text: "iteration 4"}, {text: "iteration 5"}]];
+                delegate.list3Objects = [
+                    [{text: "iteration 1"}],
+                    [{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}],
+                    [
+                        {text: "iteration 1"},
+                        {text: "iteration 2"},
+                        {text: "iteration 3"},
+                        {text: "iteration 4"},
+                        {text: "iteration 5"}
+                    ]
+                ];
                 testPage.waitForComponentDraw(delegate.repetition4);
 
                 var expectationFunction = function () {
-                    expect(querySelectorAll(".list3 > li").length).toBe(2);
+                    expect(querySelectorAll(".list3 > li").length).toBe(3);
 
-                    // BUG: Chrome outputs 0 on this..
-                    // expects(querySelector("#list3 > li:nth-child(2) > ul#list4-1").length).toBe(5);
-                    var list3a = testPage.evaluateNode("//*[@class='list3']/li[2]/ul[@class='list3a']");
+                    var list3a = testPage.evaluateNode("//*[@class='list3']/li[3]/ul[@class='list3a']");
                     expect(list3a.querySelectorAll("li").length).toBe(5);
 
                     var inputs = list3a.querySelectorAll("input.textfield2");
                     for (var i = 0; i < 5; i++) {
                         expect(inputs[i]).toBeDefined();
-                        expect(inputs[i].value).toBe("iteration " + (i+1));
+                        expect(inputs[i].value).toBe("iteration " + (i + 1));
                     }
                 };
 
@@ -446,21 +469,23 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                 testPage.waitForComponentDraw(delegate.repetition4);
 
                 runs(function () {
-                    expect(querySelectorAll(".list3 > li").length).toBe(1);
+                    expect(querySelectorAll(".list3 > li").length).toBe(2);
+
                     // should have not affected the other iteration
-                    expect(querySelectorAll(".list3 > li > ul.list3a > li").length).toBe(5);
+                    var list3a = testPage.evaluateNode("//*[@class='list3']/li[2]/ul[@class='list3a']");
+                    expect(list3a.querySelectorAll("li").length).toBe(5);
                 });
             });
 
             it("should remove one inner iteration on the nested repetition w/ component", function () {
-                var innerArray = delegate.list3Objects[delegate.list3Objects.length-1];
-
+                var innerArray = delegate.list3Objects[1];
                 innerArray.pop();
+
                 testPage.waitForDraw();
                 runs(function () {
-                    expect(querySelectorAll(".list3 > li").length).toBe(1);
-
-                    expect(querySelectorAll(".list3 > li:first-child > ul > li").length).toBe(4);
+                    expect(querySelectorAll(".list3 > li").length).toBe(2);
+                    var list3a = testPage.evaluateNode("//*[@class='list3']/li[2]/ul[@class='list3a']");
+                    expect(list3a.querySelectorAll("li").length).toBe(4);
 
                     for (var i = 1; i < 4; i++) {
                         expect(querySelectorAll(".list3 > li:first-child > ul > li:nth-child(" + i + ")").length).toBe(1);
@@ -609,16 +634,16 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
             });
 
             it("should remove one inner iteration on the nested repetition w/ DCC",
-            function () {
-                var innerArray = delegate.list5Objects[delegate.list5Objects.length-1];
-                innerArray.pop();
-                testPage.waitForDraw();
+                function () {
+                    var innerArray = delegate.list5Objects[delegate.list5Objects.length - 1];
+                    innerArray.pop();
+                    testPage.waitForDraw();
 
-                runs(function () {
-                    expect(querySelectorAll(".list5 > li").length).toBe(1);
-                    expect(querySelectorAll(".list5 > li > ul.list5a > li").length).toBe(4);
+                    runs(function () {
+                        expect(querySelectorAll(".list5 > li").length).toBe(1);
+                        expect(querySelectorAll(".list5 > li > ul.list5a > li").length).toBe(4);
+                    });
                 });
-            });
         });
 
         describe("Repetition of a component with a binding", function () {
@@ -698,7 +723,8 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                 var componentit2 = eventManager.eventHandlerForElement(querySelector(".componentrep2"));
 
                 componentit1.listObjects = [{text: "rep1-0"}, {text: "rep1-1"}];
-                componentit2.listObjects = [{text: "rep2-0"}, {text: "rep2-1"}];;
+                componentit2.listObjects = [{text: "rep2-0"}, {text: "rep2-1"}];
+                ;
 
                 testPage.waitForComponentDraw(querySelector(".componentrep2 > ul").component);
 
@@ -865,7 +891,7 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
 
         it("should draw inner repetitions with their original objects value", function () {
             var lis = querySelectorAll(".list17 > li");
-            expect(lis.length).toBe(3*2);
+            expect(lis.length).toBe(3 * 2);
         })
 
         describe("iteration template", function () {
@@ -1013,7 +1039,7 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
             it("should cause a deprecation warning", function () {
                 var repetition = querySelectorAll(".repetitionWithObjectAtCurrentIteration")[0].component;
                 expectConsoleCallsFrom(function () {
-                    repetition.observeProperty("objectAtCurrentIteration", Function.noop, Function.noop );
+                    repetition.observeProperty("objectAtCurrentIteration", Function.noop, Function.noop);
                 }, testPage.window, "warn").toHaveBeenCalledWith("objectAtCurrentIteration is deprecated, use :iteration.object instead.", "");
             });
         });
@@ -1021,7 +1047,7 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
             it("should cause a deprecation warning", function () {
                 var repetition = querySelectorAll(".repetitionWithObjectAtCurrentIteration")[0].component;
                 expectConsoleCallsFrom(function () {
-                    repetition.observeProperty("contentAtCurrentIteration", Function.noop, Function.noop );
+                    repetition.observeProperty("contentAtCurrentIteration", Function.noop, Function.noop);
                 }, testPage.window, "warn").toHaveBeenCalledWith("contentAtCurrentIteration is deprecated, use :iteration.object instead.", "");
             });
         });
@@ -1029,7 +1055,7 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
             it("should cause a deprecation warning", function () {
                 var repetition = querySelectorAll(".repetitionWithObjectAtCurrentIteration")[0].component;
                 expectConsoleCallsFrom(function () {
-                    repetition.observeProperty("currentIteration", Function.noop, Function.noop );
+                    repetition.observeProperty("currentIteration", Function.noop, Function.noop);
                 }, testPage.window, "warn").toHaveBeenCalledWith("currentIteration is deprecated, use :iteration instead.", "");
             });
         });
