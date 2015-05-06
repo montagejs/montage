@@ -1052,5 +1052,12 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
                 });
             });
         });
+
+        describe("repetitions on tables", function() {
+            it("should preserve the original structure of the table", function() {
+                var repetition = delegate.tableRepetition;
+                expect(repetition.element.querySelectorAll("tr").length).toBe(2);
+            });
+        });
     });
 });
