@@ -473,13 +473,10 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
 
     _flushOperationQueue: {
         value: function () {
-
             var opQueue = this._operationQueue,
                 opCount = opQueue.length,
-                i,
                 completedPromises = [],
                 completedCount,
-                promise,
                 opMap = this._promiseOperationMap,
                 self = this;
 
@@ -498,9 +495,6 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
                     return previous.then(function () {
                         return self._performOperation(entry);
                     }).then(function () {
-                        opMap.delete(promise);
-                    }
-                    ,function () {
                         opMap.delete(promise);
                     });
                 } else {
@@ -531,9 +525,7 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
 
             var opResult;
             try {
-                console.log("_perform Undo Operation Before:",entry);
                 opResult = entry.undoFunction.apply(entry.context, entry.args);
-                console.log("_perform Undo Operation After:",entry);
             } catch (e) {
                 entry.deferredOperationReject(e);
                 throw e;
@@ -610,7 +602,6 @@ var UndoManager = exports.UndoManager = Target.specialize( /** @lends UndoManage
      */
     undo: {
         value: function () {
-            console.log("undo:");
 
             if (0 === this.undoCount) {
                 return Promise.resolve(null);
