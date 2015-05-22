@@ -650,10 +650,9 @@ var Template = Montage.specialize( /** @lends Template# */ {
      *                    document.
      */
     setDocument: {
-        value: function (_document) {
-            var html = _document.documentElement.innerHTML;
+        value: function(_document) {
+            this.document = this.cloneHtmlDocument(_document);
 
-            this.document = this.createHtmlDocumentWithHtml(html, _document.baseURI);
             this.clearTemplateFromElementContentsCache();
         }
     },
@@ -756,6 +755,37 @@ var Template = Montage.specialize( /** @lends Template# */ {
             this.normalizeRelativeUrls(htmlDocument, baseURI);
 
             return htmlDocument;
+        }
+    },
+
+    cloneHtmlDocument: {
+        value: function (htmlDocument) {
+            /*
+             * Temporary fix for the function createHtmlDocumentWithHtml.
+             *
+             * Indeed, innerHTML does not allow us to have a document with some invalid HTML code,
+             * that could belong to an iteration's template for example.
+             *
+             * Such as:
+             *  <body><tr></tr></body> --> <body></body>
+             *
+             * Todo Plus, The DOMImplementation.createHTMLDocument() method has a parameter optional `title`
+             * https://dom.spec.whatwg.org/#domimplementation
+             *
+             * Removing it will improve the performance, but it is not optional for IE.
+             *
+             */
+            var clonedDocument = document.implementation.createHTMLDocument(""),
+                baseURI = htmlDocument.baseURI || (htmlDocument.location ? htmlDocument.location.href : htmlDocument.URL);
+
+            clonedDocument.replaceChild(
+                clonedDocument.importNode(htmlDocument.documentElement, true),
+                clonedDocument.documentElement
+            );
+
+            this.normalizeRelativeUrls(clonedDocument, baseURI);
+
+            return clonedDocument;
         }
     },
 

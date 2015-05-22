@@ -1021,7 +1021,7 @@ if (typeof window !== "undefined") { // client-side
                     eventRegistration = this.registeredEventListeners[eventType];
                 }
 
-                if (!eventRegistration) {
+                if (!eventRegistration || !target) {
                     return null;
                 } else {
                     targetRegistration = eventRegistration[target.uuid];
