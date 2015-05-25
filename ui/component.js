@@ -85,7 +85,14 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      templateObjects: {
          serializable: false,
          get: function() {
-             return this._templateObjects || (this._templateDocumentPart ? this._setupTemplateObjects(this._templateDocumentPart.objects) : (this._templateObjects = {}));
+             if(!this._templateObjects) {
+                 this._templateObjects = Object.create(null);
+             }
+             if(!this._setupTemplateObjectsCompleted && this._templateDocumentPart) {
+                  this._setupTemplateObjects(this._templateDocumentPart.objects);
+             }
+             return this._templateObjects;
+             // return this._templateObjects || (this._templateDocumentPart ? this._setupTemplateObjects(this._templateDocumentPart.objects) : (this._templateObjects = Object.create(null)));
          },
          set: function(value) {
              this._templateObjects = value;
@@ -1380,14 +1387,17 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         value: function (objects) {
             this._templateObjects = this._templateObjects || Object.create(null);
             this._addTemplateObjects(objects);
+            this._setupTemplateObjectsCompleted = true;
             return this._templateObjects;
         }
     },
-
+    _setupTemplateObjectsCompleted: {
+        value: false
+    },
     _addTemplateObjects: {
         value: function (objects) {
             var descriptor = this._templateObjectDescriptor,
-                templateObjects = this.templateObjects;
+                templateObjects = this._templateObjects;
 
             for (var label in objects) {
                 var object = objects[label];
