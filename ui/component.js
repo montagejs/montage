@@ -78,19 +78,10 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      * @property {object} value
      * @default null
      */
-     _templateObjects: {
-         serializable: false,
-         value: null
-     },
-     templateObjects: {
-         serializable: false,
-         get: function() {
-             return this._templateObjects || (this._setupTemplateObjects(this._templateDocumentPart.objects));
-         },
-         set: function(value) {
-             this._templateObjects = value;
-         }
-     },
+    templateObjects: {
+        serializable: false,
+        value: null
+    },
 
     /**
      * @private
@@ -1378,9 +1369,8 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
     _setupTemplateObjects: {
         value: function (objects) {
-            this._templateObjects = Object.create(null);
+            this.templateObjects = Object.create(null);
             this._addTemplateObjects(objects);
-            return this._templateObjects;
         }
     },
 
@@ -1460,7 +1450,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                     console.error("Cannot instantiate template without an element.", self);
                     return Promise.reject(new Error("Cannot instantiate template without an element.", self));
                 }
-                var instances = null,
+                var instances = self.templateObjects,
                     _document = self._element.ownerDocument;
 
                 if (!instances) {
@@ -1475,7 +1465,6 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                     documentPart.parentDocumentPart = self._ownerDocumentPart;
                     self._templateDocumentPart = documentPart;
                     documentPart.fragment = null;
-                    instances = null;
                 })
                 .fail(function (reason) {
                     var message = reason.stack || reason;
@@ -1488,10 +1477,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
     _templateDidLoad: {
         value: function (documentPart) {
-            //This is just set again later to the same value in the then of template.instantiateWithInstances() inside _instantiateTemplate()
-            //This is call as a delegate by the template before returning the document part from instantiateWithInstances(). Objects in their own templateDidLoad() can
-            //call templateObjects, so this._templateDocumentPart is needed here.
-            this._templateDocumentPart = documentPart;
+            this._setupTemplateObjects(documentPart.objects);
         }
     },
 
