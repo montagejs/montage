@@ -85,7 +85,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      templateObjects: {
          serializable: false,
          get: function() {
-             return this._templateObjects || (this._setupTemplateObjects(this._templateDocumentPart.objects));
+             return this._templateObjects || (this._templateDocumentPart ? this._setupTemplateObjects(this._templateDocumentPart.objects) : (this._templateObjects = {}));
          },
          set: function(value) {
              this._templateObjects = value;
@@ -1378,7 +1378,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
     _setupTemplateObjects: {
         value: function (objects) {
-            this._templateObjects = Object.create(null);
+            this._templateObjects = this._templateObjects || Object.create(null);
             this._addTemplateObjects(objects);
             return this._templateObjects;
         }
@@ -1488,10 +1488,12 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
     _templateDidLoad: {
         value: function (documentPart) {
-            //This is just set again later to the same value in the then of template.instantiateWithInstances() inside _instantiateTemplate()
-            //This is call as a delegate by the template before returning the document part from instantiateWithInstances(). Objects in their own templateDidLoad() can
-            //call templateObjects, so this._templateDocumentPart is needed here.
-            this._templateDocumentPart = documentPart;
+            //If templateObjects was used in serialization's bindings, this._templateObjects will be created empty in the getter. We use this a signal that it needs to
+            //be setup
+            //This is call as a delegate by the template before returning the document part from instantiateWithInstances(). 
+            if(this._templateObjects) {
+                this._setupTemplateObjects(documentPart.objects);
+            }
         }
     },
 
