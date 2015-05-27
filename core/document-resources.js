@@ -162,35 +162,34 @@ var DocumentResources = Montage.specialize({
             var self = this,
                 _document = this._document,
                 documentHead = _document.head,
-                scriptLoaded,
                 promise,
-                loadingTimeout,
                 url = script.src;
 
             if (url) {
                 self._addResource(url);
+                
                 promise = new Promise(function(resolve, reject){
                     // We wait until all scripts are loaded, this is important
                     // because templateDidLoad might need to access objects that
                     // are defined in these scripts, the downsize is that it takes
                     // more time for the template to be considered loaded.
-                    scriptLoaded = function (event) {
-                        //if (event.type === "load") {
+                    var scriptLoadedFunction = function scriptLoaded(event) {
                         self.setResourcePreloaded(url);
-                        //}
                         script.removeEventListener("load", scriptLoaded, false);
                         script.removeEventListener("error", scriptLoaded, false);
 
                         clearTimeout(loadingTimeout);
                         resolve(event);
                     };
-                    script.addEventListener("load", scriptLoaded, false);
-                    script.addEventListener("error", scriptLoaded, false);
+                    
+                    script.addEventListener("load", scriptLoadedFunction, false);
+                    script.addEventListener("error", scriptLoadedFunction, false);
 
                     // Setup the timeout to wait for the script until the resource
                     // is considered loaded. The template doesn't fail loading just
                     // because a single script didn't load.
-                    loadingTimeout = setTimeout(function () {
+                    //Benoit: It is odd that we act as if everything was fine here...
+                    var loadingTimeout = setTimeout(function () {
                         self.setResourcePreloaded(url);
                         resolve();
                     }, this._SCRIPT_TIMEOUT);
@@ -326,32 +325,6 @@ var DocumentResources = Montage.specialize({
                     event.target.removeEventListener("error", event.target.listener);
                     event.target.removeEventListener("timeout", event.target.listener);
                 });
-                // .timeout(this._SCRIPT_TIMEOUT)
-                // .catch(Promise.TimeoutError, function(e) {
-                //     this.setResourcePreloaded(url);
-                //     req.removeEventListener("load", req.listener);
-                //     req.removeEventListener("error", req.listener);
-                // });
-                
-/*
-            loadHandler = function(event) {
-                //if (event.type === "load") {
-                self.setResourcePreloaded(url);
-                //}
-                req.removeEventListener("load", loadHandler);
-                req.removeEventListener("error", loadHandler);
-
-                clearTimeout(loadingTimeout);
-                resolve();
-            };
-
-            // Setup the timeout to wait for the script until the resource
-            // is considered loaded.
-            loadingTimeout = setTimeout(function () {
-                self.setResourcePreloaded(url);
-                resolve();
-            }, this._SCRIPT_TIMEOUT);
-            */
 
             this.setResourcePreloadedPromise(url, promise);
 
