@@ -19,7 +19,7 @@ function createPage(url) {
                 reject(new Error("Can't load " + url));
                 iframe.onload = null;
                 iframe.onerror = null;
-            }
+            };
 
             // Iframe visibility should be hidden, and not display: none
             // to allow all browsers to measure elements layout inside of it.
@@ -402,31 +402,26 @@ describe("document-resources-spec", function () {
             var deferred = new Promise(function(resolve, reject) {
                 var style;
                 resources.initWithDocument(page.document);
-
+                
                 style = page.document.createElement("link");
                 style.rel = "stylesheet";
                 style.href = url;
-                style.onload = function() {
-                    var computedStyle;
 
-            style = page.document.createElement("link");
-            style.rel = "stylesheet";
-            style.href = url;
-
-            function checkAreStylesLoaded () {
-                if (resources.areStylesLoaded) {
-                    computedStyle = page.getComputedStyle(page.document.body);
-                    expect(computedStyle.paddingLeft).toBe("42px");
-                    expect(page.document.styleSheets.length).toBe(1);
-                    deletePage(page);
-                    resolve();
-                } else {
-                    setTimeout(checkAreStylesLoaded, 0);
+                function checkAreStylesLoaded () {
+                    if (resources.areStylesLoaded) {
+                        computedStyle = page.getComputedStyle(page.document.body);
+                        expect(computedStyle.paddingLeft).toBe("42px");
+                        expect(page.document.styleSheets.length).toBe(1);
+                        deletePage(page);
+                        resolve();
+                    } else {
+                        setTimeout(checkAreStylesLoaded, 0);
+                    }
                 }
-            }
 
-            resources.addStyle(style);
-            checkAreStylesLoaded();
+                resources.addStyle(style);
+                checkAreStylesLoaded();
+            });
 
             return deferred;
         }).catch(function(reason) {
