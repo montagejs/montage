@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "jshint": "~2.4.4",
-    "montage-testing": "~0.4.2"
+    "montage-testing": "marchant/montage-testing.git#montage-testing-bluebird"
   },
   "scripts": {
     "test": "node test/node/node-spec.js",
