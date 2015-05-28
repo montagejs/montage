@@ -192,7 +192,7 @@ var DocumentResources = Montage.specialize({
                     var loadingTimeout = setTimeout(function () {
                         self.setResourcePreloaded(url);
                         resolve();
-                    }, this._SCRIPT_TIMEOUT);
+                    }, self._SCRIPT_TIMEOUT);
                 });
 
                 this.setResourcePreloadedPromise(url, promise);
