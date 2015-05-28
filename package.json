@@ -33,11 +33,9 @@
     "collections": "~1.2.2",
     "frb": "~0.2.18",
     "htmlparser2": "~3.0.5",
-    "mousse": "~0.3.0",
-    "mr": "~0.15.3",
-    "q": "1.0.0",
-    "bluebird":"marchant/bluebird.git#3.0",
-    "q-io": "~1.11.0"
+    "mousse": "marchant/mousse.git#mousse-bluebird",
+    "mr": "marchant/mr.git#mr-bluebird",
+    "bluebird":"2.9.26",
   },
   "devDependencies": {
     "jshint": "~2.4.4",
