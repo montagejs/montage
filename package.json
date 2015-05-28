@@ -35,7 +35,7 @@
     "htmlparser2": "~3.0.5",
     "mousse": "marchant/mousse.git#mousse-bluebird",
     "mr": "marchant/mr.git#mr-bluebird",
-    "bluebird":"2.9.26",
+    "bluebird":"2.9.26"
   },
   "devDependencies": {
     "jshint": "~2.4.4",
