@@ -78,10 +78,26 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      * @property {object} value
      * @default null
      */
-    templateObjects: {
-        serializable: false,
-        value: null
-    },
+     _templateObjects: {
+         serializable: false,
+         value: null
+     },
+     templateObjects: {
+         serializable: false,
+         get: function() {
+             if(!this._templateObjects) {
+                 this._templateObjects = Object.create(null);
+             }
+             if(!this._setupTemplateObjectsCompleted && this._templateDocumentPart) {
+                  this._setupTemplateObjects(this._templateDocumentPart.objects);
+             }
+             return this._templateObjects;
+             // return this._templateObjects || (this._templateDocumentPart ? this._setupTemplateObjects(this._templateDocumentPart.objects) : (this._templateObjects = Object.create(null)));
+         },
+         set: function(value) {
+             this._templateObjects = value;
+         }
+     },
 
     /**
      * @private
@@ -1369,15 +1385,19 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
     _setupTemplateObjects: {
         value: function (objects) {
-            this.templateObjects = Object.create(null);
+            this._templateObjects = this._templateObjects || Object.create(null);
             this._addTemplateObjects(objects);
+            this._setupTemplateObjectsCompleted = true;
+            return this._templateObjects;
         }
     },
-
+    _setupTemplateObjectsCompleted: {
+        value: false
+    },
     _addTemplateObjects: {
         value: function (objects) {
             var descriptor = this._templateObjectDescriptor,
-                templateObjects = this.templateObjects;
+                templateObjects = this._templateObjects;
 
             for (var label in objects) {
                 var object = objects[label];
@@ -1450,7 +1470,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                     console.error("Cannot instantiate template without an element.", self);
                     return Promise.reject(new Error("Cannot instantiate template without an element.", self));
                 }
-                var instances = self.templateObjects,
+                var instances = null,
                     _document = self._element.ownerDocument;
 
                 if (!instances) {
@@ -1465,7 +1485,8 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                     documentPart.parentDocumentPart = self._ownerDocumentPart;
                     self._templateDocumentPart = documentPart;
                     documentPart.fragment = null;
-                },function(reason) {
+                    instances = null;
+                },function (reason) {
                     var message = reason.stack || reason;
                     console.error("Error in", template.getBaseUrl() + ":", message);
                     throw reason;
@@ -1476,7 +1497,15 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
     _templateDidLoad: {
         value: function (documentPart) {
-            this._setupTemplateObjects(documentPart.objects);
+            //If templateObjects was used in serialization's bindings, this._templateObjects will be created empty in the getter. We use this a signal that it needs to
+            //be setup
+            //This is call as a delegate by the template before returning the document part from instantiateWithInstances(). Objects in their own templateDidLoad() can
+            //call templateObjects, so this._templateDocumentPart is needed here.
+            //This is just set, again, later to the same value in the then() of template.instantiateWithInstances() inside _instantiateTemplate()
+            this._templateDocumentPart = documentPart;
+            if(this._templateObjects) {
+                this._setupTemplateObjects(documentPart.objects);
+            }
         }
     },
 
