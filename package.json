@@ -18,10 +18,6 @@
         "name": "mr",
         "location": "node_modules/mr"
       },
-        "q": {
-          "name": "q",
-          "location": "packages/mr/packages/q"
-        },
         "bluebird": {
           "name": "bluebird",
           "location": "node_modules/bluebird"
