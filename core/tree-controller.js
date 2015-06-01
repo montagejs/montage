@@ -140,7 +140,7 @@ exports.TreeController = Montage.specialize({
      */
     expandNode: {
         value: function (node) {
-            if (this._expandNode(node)) {
+            if (typeof node === "object" && this._expandNode(node)) {
                 this.handleTreeChange();
                 return true;
             }
@@ -189,7 +189,7 @@ exports.TreeController = Montage.specialize({
      */
     collapseNode: {
         value: function (node) {
-            if (this._collapseNode(node)) {
+            if (typeof node === "object" && this._collapseNode(node)) {
                 this.handleTreeChange();
                 return true;
             }

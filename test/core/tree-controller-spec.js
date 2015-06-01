@@ -123,6 +123,9 @@ describe("tree-controller-spec", function () {
             expect(treeController.expandNode(treeData)).toEqual(false);
             expect(treeController.isNodeExpanded(treeData)).toEqual(true);
         });
+        it("expandNode should return false if provided node is not an object", function () {
+            expect(treeController.expandNode()).toEqual(false);
+        });
         it("collapseNode should work as expected", function () {
             treeController.expandNode(treeData);
             expect(treeController.collapseNode(treeData)).toEqual(true);
@@ -133,6 +136,9 @@ describe("tree-controller-spec", function () {
             expect(treeController.collapseNode(treeData)).toEqual(true);
             expect(treeController.collapseNode(treeData)).toEqual(false);
             expect(treeController.isNodeExpanded(treeData)).toEqual(false);
+        });
+        it("collapseNode should return false if provided node is not an object", function () {
+            expect(treeController.collapseNode()).toEqual(false);
         });
         it("expandAll should work as expected", function () {
             treeController.expandAll();
