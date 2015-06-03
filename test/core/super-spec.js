@@ -10,7 +10,8 @@ describe("test/core/super-spec", function () {
     beforeEach(function () {
         calledSpy = [];
         Vehicle = Montage.specialize( {
-            constructor: {value: function Vehicle() {}}
+            constructor: {value: function Vehicle() {}},
+            isVehicle: { value: true }
         });
         Car = Vehicle.specialize( {
             constructor: {value: function Car() {}}
@@ -28,6 +29,12 @@ describe("test/core/super-spec", function () {
         carConstructorSpy = function () {calledSpy.push("carConstructorSpy")};
         beetleConstructorSpy = function () {calledSpy.push("beetleConstructorSpy")};
     });
+    describe("inheritance and hasOwnProperty", function () {
+        it("reports ownProperty correctly", function () {
+            expect(Vehicle.hasOwnProperty("isVehicle")).toBe(true);
+            expect(Car.hasOwnProperty("isVehicle")).toBe(false);
+        });
+    })
     describe("instance", function () {
         describe("methods", function () {
             describe("with direct super", function () {
