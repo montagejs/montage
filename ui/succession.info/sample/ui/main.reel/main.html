@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>succession.info</title>
+
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="../../node_modules/animate.css/animate.min.css"/>
+    <link rel="stylesheet" href="../../node_modules/normalize.css/normalize.css"/>
+
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "Main"}
+            }
+        },
+        "Succession1": {
+            "prototype": "ui/succession.reel",
+            "properties": {
+                "element": {"#": "Succession1"}
+            },
+            "bindings": {
+                "top.destination.destinationData": {"<-": "this.top.destinationData"}
+            }
+        },
+        "pushComponent": {
+            "prototype": "ui/button.reel",
+            "properties": {
+                "element": {"#": "pushComponent"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "push": {
+            "prototype": "ui/button.reel",
+            "properties": {
+                "element": {"#": "push"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "pushx5": {
+            "prototype": "ui/button.reel",
+            "properties": {
+                "element": {"#": "pushx5"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "pop": {
+            "prototype": "ui/button.reel",
+            "properties": {
+                "element": {"#": "pop"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "popx5": {
+            "prototype": "ui/button.reel",
+            "properties": {
+                "element": {"#": "popx5"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "contentComponent": {
+            "prototype": "ui/button.reel",
+            "properties": {
+                "element": {"#": "contentComponent"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "contentNull": {
+            "prototype": "ui/button.reel",
+            "properties": {
+                "element": {"#": "contentNull"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "multiOp": {
+            "prototype": "ui/button.reel",
+            "properties": {
+                "element": {"#": "multiOp"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "toggleOverflow": {
+            "prototype": "ui/button.reel",
+            "properties": {
+                "element": {"#": "toggleOverflow"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "setSuccessionBuildInOut": {
+            "prototype": "ui/button.reel",
+            "properties": {
+                "element": {"#": "setSuccessionBuildInOut"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "clearSuccessionBuildInOut": {
+            "prototype": "ui/button.reel",
+            "properties": {
+                "element": {"#": "clearSuccessionBuildInOut"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+
+
+        "stack": {
+            "prototype": "ui/repetition.reel",
+            "properties": {
+                "element": {"#": "stack"}
+            },
+            "bindings": {
+                "content": {"<-": "@Succession1.content.reversed()"}
+            }
+        },
+        "destinationDisplayTitle": {
+            "prototype": "ui/text.reel",
+            "properties": {
+                "element": {"#": "destinationDisplayTitle"}
+            },
+            "bindings": {
+                "value": {"<-": "@stack:iteration.object.destination.title"},
+                "classList.has('top')": {"<-": "@stack:iteration.object.destination == @Succession1.top.destination"},
+                "classList.has('previous')": {"<-": "@stack:iteration.object.destination == @Succession1.previous.destination"},
+                "classList.has('first')": {"<-": "@stack:iteration.object.destination == @Succession1.first.destination"}
+            }
+        },
+        "buildInOverride": {
+            "prototype": "ui/text.reel",
+            "properties": {
+                "element": {"#": "buildInOverride"}
+            },
+            "bindings": {
+                "value": {"<-": "@Succession1.contentBuildInCssClass || @Succession1.top.buildInCssClass || 'none'"}
+            }
+        },
+        "buildOutOverride": {
+            "prototype": "ui/text.reel",
+            "properties": {
+                "element": {"#": "buildOutOverride"}
+            },
+            "bindings": {
+                "value": {"<-": "@Succession1.contentBuildOutCssClass || @Succession1.top.buildOutCssClass || 'none'"}
+            }
+        },
+        "sourceDisplayTitle": {
+            "prototype": "ui/text.reel",
+            "properties": {
+                "element": {"#": "sourceDisplayTitle"}
+            },
+            "bindings": {
+                "value": {"<-": "@stack:iteration.object.source.title ?? 'N/A'"}
+            }
+        },
+
+
+        "select": {
+            "prototype": "/ui/select.reel",
+            "properties": {
+                "element": {"#": "select"},
+                "content": [
+                    {"label": "Foo"},
+                    {"label": "Bar"}
+                ],
+                "value": {"label": "Foo"}
+            }
+        },
+        "SubstitutionMultiOp": {
+            "prototype": "ui/button.reel",
+            "properties": {
+                "element": {"#": "SubstitutionMultiOp"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "substitution": {
+            "prototype": "ui/substitution.reel",
+            "properties": {
+                "element": {"#": "substitution"}
+            },
+            "bindings": {
+                "switchValue": {
+                    "<->": "@select.value.label"
+                }
+            }
+        },
+        "FooForSubstitution": {
+            "prototype": "ui/succession.info/sample/ui/foo.reel",
+            "properties": {
+                "element": {"#": "FooForSubstitution"}
+            }
+        },
+        "BarForSubstitution": {
+            "prototype": "ui/succession.info/sample/ui/bar.reel",
+            "properties": {
+                "element": {"#": "BarForSubstitution"}
+            }
+        },
+
+
+        "detach": {
+            "prototype": "ui/button.reel",
+            "properties": {
+                "element": {"#": "detach"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "Bar2": {
+            "prototype": "ui/succession.info/sample/ui/bar.reel",
+            "properties": {
+                "element": {"#": "Bar2"}
+            }
+        },
+        "text": {
+            "prototype": "ui/text.reel",
+            "properties": {
+                "element": {"#": "text"},
+                "value": "Hello World.",
+                "buildInCssClass": "transition-build-in",
+                "buildInTransitionCssClass": "transition",
+                "buildOutCssClass": "transition-build-out"
+            }
+        },
+
+        "Slot": {
+            "prototype": "ui/slot.reel",
+            "properties": {
+                "element": {"#": "Slot"},
+                "content": {"@": "Bar3"},
+                "buildInCssClass": "slideInDown"
+            }
+        },
+        "Bar3": {
+            "prototype": "ui/succession.info/sample/ui/bar.reel",
+            "properties": {
+                "element": {"#": "Bar3"},
+                "buildInCssClass": null,
+                "buildInTransitionCssClass": null
+            }
+        },
+
+
+        "Container": {
+            "prototype": "ui/component[Component]",
+            "properties": {
+                "element": {"#": "Container"},
+                "hasTemplate": false
+            }
+        },
+        "innerText": {
+            "prototype": "ui/text.reel",
+            "properties": {
+                "element": {"#": "innerText"},
+                "value": "Text Inside Empty Component"
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="Main" class="main">
+        <button data-montage-id="detach">Detach from Component tree</button>
+
+        <h2>Stand-alone components declared in serialization</h2>
+        <div data-montage-id="Bar2" style="position: static;"></div>
+        <h3 data-montage-id="text"></h3>
+
+        <h2>domContent Test w/o Slot</h2>
+        <div data-montage-id="Container" style="border: 1px blue solid; height: 50px;"></div>
+        <h3 data-montage-id="innerText"></h3>
+
+        <h2>Nested animating components with inner's buildIn disabled</h2>
+        <div class="wrapper">
+            <div data-montage-id="Slot" class="slot wrapper animated">
+                <div data-montage-id="Bar3"
+                     style="background: darkblue; width: 90%; height: 90%; opacity: 0.5; position: static;">
+                </div>
+            </div>
+        </div>
+
+        <h2>Inside Succession with overridden animation</h2>
+        <div>
+            <button data-montage-id="pushComponent">Push Component</button>
+            <button data-montage-id="push">Push</button>
+            <button data-montage-id="pushx5">Push x5</button>
+            <button data-montage-id="pop">Pop</button>
+            <button data-montage-id="popx5">Pop x5</button>
+            <button data-montage-id="contentComponent">Set content to component</button>
+            <button data-montage-id="contentNull">Set content to null</button>
+            <button data-montage-id="multiOp">push x10 pop x5</button>
+        </div>
+        <br/>
+        <div>
+            <button data-montage-id="toggleOverflow">Toggle Overflow</button>
+            <button data-montage-id="setSuccessionBuildInOut">Set Succession build-in / out</button>
+            <button data-montage-id="clearSuccessionBuildInOut">Clear Succession build-in / out</button>
+        </div>
+
+        <div class="wrapper">
+            <div data-montage-id="Succession1" class="container overflow-hidden"></div>
+            <div class="stack">
+                Build-in Override: <code data-montage-id="buildInOverride"></code>
+                <br/>
+                Build-out Override: <code data-montage-id="buildOutOverride"></code>
+
+                <h3>The stack (source -> destination)</h3>
+                <ul data-montage-id="stack">
+                    <li>
+                        <div>
+                            <span data-montage-id="sourceDisplayTitle"></span>
+                            ->
+                            <span data-montage-id="destinationDisplayTitle"></span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>Inside Substitution</h2>
+        <select data-montage-id="select"></select>
+        <button data-montage-id="SubstitutionMultiOp">Switch 3 times between 2 items in 500ms</button>
+        <div class="wrapper">
+            <div data-montage-id="substitution" class="container overflow-hidden">
+                <div data-montage-id="FooForSubstitution" data-arg="Foo"></div>
+                <div data-montage-id="BarForSubstitution" data-arg="Bar"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
