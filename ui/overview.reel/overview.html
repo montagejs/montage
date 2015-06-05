@@ -9,14 +9,14 @@
                 }
             },
             "select": {
-                "prototype": "native/ui/select.reel",
+                "prototype": "ui/select.reel",
                 "properties": {
-                    "element": {"#": "select"}
-                },
-                "bindings": {
-                    "content": {
-                        "<-": "@owner.componentList"
-                    }
+                    "element": {"#": "select"},
+                    "content": [
+                        {"label": "Select a .info to render"},
+                        {"label": "SegmentedBar"},
+                        {"label": "Succession"}
+                    ]
                 }
             },
             "substitution": {
@@ -25,15 +25,19 @@
                     "element": {"#": "substitution"}
                 },
                 "bindings": {
-                    "switchValue": {
-                        "<-": "@select.contentController.selection.0"
-                    }
+                    "switchValue": {"<-": "@select.value.label"}
                 }
             },
             "SegmentedBar": {
                 "prototype": "ui/segmented-bar.info/sample/main.reel",
                 "properties": {
                     "element": {"#": "SegmentedBar"}
+                }
+            },
+            "Succession": {
+                "prototype": "ui/succession.info/sample/ui/main.reel",
+                "properties": {
+                    "element": {"#": "Succession"}
                 }
             }
         }
@@ -47,8 +51,12 @@
     <hr/>
 
     <div data-montage-id="substitution">
+        <!--blank placeholder-->
+        <div data-arg="Select a .info to render"></div>
+
         <!--add components below-->
         <div data-montage-id="SegmentedBar" data-arg="SegmentedBar"></div>
+        <div data-montage-id="Succession" data-arg="Succession"></div>
     </div>
 </div>
 
