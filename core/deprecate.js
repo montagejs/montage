@@ -3,6 +3,9 @@
 /**
  * @module montage/core/deprecate
  */
+ var Montage;   // Not loaded immediately due to circular dependency
+ 
+ var ARRAY_PROTOTYPE = Array.prototype;
 
 /**
  * Prints out a deprecation warning to the console.warn with the format:
@@ -66,6 +69,11 @@ exports.deprecateMethod = function deprecate(scope, deprecatedFunction, name, al
  * @returns {*}
  */
 exports.callDeprecatedFunction = function callDeprecatedFunction(scope, callback, name, alternative/*, ...args */) {
+    if (!Montage) {
+        //Require montage once the method is called rather than during init to avoid a circular dependency
+        Montage = require("./core").Montage;
+    }
+    
     var depth = Error.stackTraceLimit,
         scopeName,
         args;
