@@ -20,6 +20,7 @@ var Montage = require("../core/core").Montage,
     Promise = require("../core/promise").Promise,
     defaultEventManager = require("../core/event/event-manager").defaultEventManager,
     Alias = require("../core/serialization/alias").Alias,
+    Deprecate = require("../core/deprecate"),
 
     logger = require("../core/logger").logger("component"),
     drawPerformanceLogger = require("../core/logger").logger("Drawing performance").color.green(),
@@ -1730,7 +1731,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 rootComponent.addToDrawCycle(this);
             }
             if (firstDraw && this.prepareForDraw) {
-                Montage.callDeprecatedFunction(this, this.prepareForDraw, "prepareForDraw", "enterDocument(firstTime)");
+                Deprecate.callDeprecatedFunction(this, this.prepareForDraw, "prepareForDraw", "enterDocument(firstTime)");
             }
             if (this._needsEnterDocument) {
                 this._needsEnterDocument = false;
