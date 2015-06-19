@@ -40,7 +40,7 @@ TestPageLoader.queueTest("key-composer-test/key-composer-test", function (testPa
             });
 
             it("should not fire keyComposer's event when pressing a composerKey which is not in the target path", function () {
-                var target = test.example.element.parentNode,
+                var target = test.example.element2.element,
                     keyPressCalled = false,
                     keyReleaseCalled = false;
 
@@ -56,8 +56,25 @@ TestPageLoader.queueTest("key-composer-test/key-composer-test", function (testPa
                 });
             });
 
+            it("should fire keyComposer's event when nothing is being focused", function() {
+                var target = test.example.element.parentNode,   // == <body>...</body>
+                    keyPressCalled = false;
+                    keyReleaseCalled = false;
+
+                test.key_composer1.addEventListener("keyPress", function (){keyPressCalled = true});
+                test.key_composer1.addEventListener("keyRelease", function (){keyReleaseCalled = true});
+
+                testPage.keyEvent({target: target, modifiers: command, charCode: 0, keyCode: "J".charCodeAt(0)}, "keydown");
+                waits(50);
+                runs(function (){
+                    testPage.keyEvent({target: target, modifiers: command, charCode: 0, keyCode:"J".charCodeAt(0)}, "keyup");
+                    expect(keyPressCalled).toBeTruthy();
+                    expect(keyPressCalled).toBeTruthy();
+                });
+            });
+
             it("should fire keyPress and KeyRelease on pressing a global key whatever of the target", function () {
-                var target = test.example.element.parentNode;
+                var target = test.example.element2.element;
 
                 test.keyPressCalled = false;
                 test.keyReleaseCalled = false;
