@@ -872,7 +872,10 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
      */
     handleDataMapChange: {
         value: function(event) {
-            this.localized = this._messageFunction.then(this._data.toObject());
+            var self = this;
+            this.localized = this._messageFunction.then(function (fn) {
+                return fn(self._data.toObject())
+                });
         }
     },
 
