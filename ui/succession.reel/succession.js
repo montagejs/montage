@@ -129,7 +129,11 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
                 passage = value;
             }
 
-            this._prepareForBuild(passage);
+            // Push may happen when Succession hasn't enterDocument yet
+            if (this.parentComponent) {
+                this._prepareForBuild(passage);
+            }
+
             this._handleData(passage);
 
             this.content.push(passage);
