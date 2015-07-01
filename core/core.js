@@ -662,7 +662,7 @@ var getSuper = function (object, method) {
             context = proto;
         }
     }
-    return superForImplementation(object, method._superPropertyType, method._superPropertyName);
+    return superForImplementation(object, method._superPropertyType, method._superPropertyName, method);
 };
 
 
@@ -678,7 +678,7 @@ Montage.defineProperty(Montage, "_superContext", {
     value: null
 });
 
-var superForImplementation = function (object, propertyType, propertyName) {
+var superForImplementation = function (object, propertyType, propertyName, method) {
     var superFunction, superObject, property, cacheObject, boundSuper,
         context = object,
         cacheId = propertyName + "." + propertyType;
@@ -733,7 +733,7 @@ var superForImplementation = function (object, propertyType, propertyName) {
         superObject._superDependencies[cacheId].push(cacheObject);
         property = Object.getOwnPropertyDescriptor(superObject, propertyName);
         if (property) {
-            if (typeof property[propertyType] === "function") {
+            if ((typeof property[propertyType] === "function") && (property[propertyType] !== method)) {
                 superFunction = property[propertyType];
                 break;
             } else {
@@ -775,13 +775,13 @@ var superForImplementation = function (object, propertyType, propertyName) {
 };
 
 var superForValueImplementation = function (propertyName) {
-    return superForImplementation(this, "value", propertyName);
+    return superForImplementation(this, "value", propertyName, superForValueImplementation.caller);
 };
 var superForGetImplementation = function (propertyName) {
-    return superForImplementation(this, "get", propertyName);
+    return superForImplementation(this, "get", propertyName, superForGetImplementation.caller);
 };
 var superForSetImplementation = function (propertyName) {
-    return superForImplementation(this, "set", propertyName);
+    return superForImplementation(this, "set", propertyName, superForSetImplementation.caller);
 };
 
 /**
