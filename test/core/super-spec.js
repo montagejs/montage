@@ -28,6 +28,33 @@ describe("test/core/super-spec", function () {
         carConstructorSpy = function () {calledSpy.push("carConstructorSpy")};
         beetleConstructorSpy = function () {calledSpy.push("beetleConstructorSpy")};
     });
+    describe("observed getter/setter calling super", function () {
+        var getBarCounter = 0,
+            setBarCounter = 0,
+            Foo = Montage.specialize({
+                bar: {
+                    get: function getBar() {
+                        getBarCounter++;
+                        if (getBarCounter < 10) {
+                            this.super();
+                        }
+                    },
+                    set: function setBar(value) {
+                        setBarCounter++;
+                        if (setBarCounter < 10) {
+                            this.super(value);
+                        }
+                    }
+                }
+            }),
+            foo = new Foo();
+
+        foo.addOwnPropertyChangeListener("bar", function () {}, false);
+        it("should not enter in a direct infinite loop", function () {
+            foo.bar = foo.bar;
+            expect((getBarCounter < 10) && (setBarCounter < 10)).toBe(true);
+        });
+    });
     describe("instance", function () {
         describe("methods", function () {
             describe("with direct super", function () {
