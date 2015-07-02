@@ -53,17 +53,27 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      * The corresponding content for this iteration.
      * @type {Object}
      */
-    object: {value: null},
 
-    /**
-     * Whether the content for this iteration is selected.  This property is
-     * bound bidirectionally to whether every element on the document for the
-     * corresponding drawn iteration has the `selected` CSS class (synchronized
-     * on draw), and whether the [object]{@link Iteration#object} is in the
-     * `contentController.selection` collection.
-     * @type {boolean}
-     */
-    selected: {value: null},
+    _object: {
+        value: null
+    },
+
+    object: {
+        get: function () {
+            return this._object;
+        },
+        set: function (value) {
+            var selected;
+
+            if (this._object !== value) {
+                this._object = value;
+                selected = this.repetition.contentController.selection.indexOf(value) !== -1;
+                if (this._selected !== selected) {
+                    this.selected = selected;
+                }
+            }
+        }
+    },
 
     /**
      * A `DocumentFragment`, donated by the repetition's `_iterationTemplate`
@@ -120,6 +130,33 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      */
     isDirty: {value: false},
 
+    _selected: {
+        value: null
+    },
+
+    selected: {
+        get: function () {
+            return this._selected;
+        },
+        set: function (value) {
+            value = !!value;
+            if (this._selected !== value) {
+                this._selected = value;
+                if (this.object && this.repetition &&
+                    this.repetition.contentController &&
+                    this.repetition.contentController.selection) {
+                    if (value) {
+                        this.repetition.contentController.selection.add(this.object);
+                    } else {
+                        this.repetition.contentController.selection.delete(this.object);
+                    }
+                    this.repetition._addDirtyClassListIteration(this);
+                    this.repetition.needsDraw = true;
+                }
+            }
+        }
+    },
+
     /**
      * Creates the initial values of all instance state.
      * @private
@@ -134,13 +171,6 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             this.repetition = null;
             this.controller = null;
             this.object = null;
-            // The iteration watches whether it is selected.  If the iteration
-            // is drawn, it enqueue's selection change draw operations and
-            // notifies the repetition it needs to be redrawn.
-            // Dispatches handlePropertyChange with the "selected" key:
-            this.defineBinding("selected", {
-                "<->": "object.defined() ? repetition.contentController.selection.has(object) : selected"
-            });
             // An iteration can be "on" or "off" the document.  When the
             // iteration is added to a document, the "fragment" is depopulated
             // and placed between "topBoundary" and "bottomBoundary" on the
@@ -179,7 +209,6 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
 
             // dispatch handlePropertyChange:
             this.addOwnPropertyChangeListener("active", this);
-            this.addOwnPropertyChangeListener("selected", this);
             this.addOwnPropertyChangeListener("_noTransition", this);
 
             this.addPathChangeListener(
@@ -600,16 +629,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     isSelectionEnabled: {value: null},
 
     /**
-     * A collection of the selected content.  It may be any ranged collection
-     * like Array or SortedSet.  The user may get, set, or modify the selection
-     * directly.  The selection property is bidirectionally bound to the
-     * selection of the content controller.  Every repetition has a content
-     * controller, and will use a RangeController if not given one.
-     * @type {Array.<Object>}
-     */
-    selection: {value: null},
-
-    /**
      * The repetition maintains an array of every visible, selected iteration,
      * in the order of its appearance.  The user should not modify the selected
      * iterations array.
@@ -700,6 +719,62 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     // Implementation:
     // ----
 
+    _selection: {
+        value: null
+    },
+
+    _cancelSelectionRangeChangeListener: {
+        value: null
+    },
+
+    selection: {
+        get: function () {
+            return this._selection;
+        },
+        set: function (value) {
+            if (this._selection !== value) {
+                this._selection = value;
+                if (this.contentController && this.contentController.selection !== value) {
+                    this.contentController.selection = value;
+                }
+                if (this._cancelSelectionRangeChangeListener) {
+                    this._cancelSelectionRangeChangeListener();
+                }
+                if (value) {
+                    this._cancelSelectionRangeChangeListener = (
+                        value.addRangeChangeListener(this, "selection")
+                    );
+                    this.handleSelectionRangeChange(value, []);
+                } else {
+                    this._cancelSelectionRangeChangeListener = null;
+                }
+            }
+        }
+    },
+
+    handleSelectionRangeChange: {
+        value: function (add, remove) {
+            var iterationsMap = new Map(),
+                iteration,
+                length = this.iterations.length,
+                i;
+
+            for (i = 0; i < length; i++) {
+                iterationsMap.set(this.iterations[i].object, this.iterations[i]);
+            }
+            for (i = 0; i < remove.length; i++) {
+                if (iteration = iterationsMap.get(remove[i])) {
+                    iteration.selected = false;
+                }
+            }
+            for (i = 0; i < add.length; i++) {
+                if (iteration = iterationsMap.get(add[i])) {
+                    iteration.selected = true;
+                }
+            }
+        }
+    },
+
     /**
      * @private
      */
@@ -721,7 +796,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // iteration when the user touches.
             this.isSelectionEnabled = false;
             this.defineBinding("selection", {
-                "<->": "contentController.selection"
+                "<-": "contentController.selection"
             });
             this.defineBinding("selectedIterations", {
                 "<-": "iterations.filter{selected}"
@@ -2057,4 +2132,3 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     Iteration: { value: Iteration, serializable: false }
 
 });
-
