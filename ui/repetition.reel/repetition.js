@@ -1494,14 +1494,14 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             if (removeIterationsCount > 0) {
                 // Subtract iterations
                 var freedIterations = iterations.splice(index, removeIterationsCount);
-                freedIterations.forEach(function (iteration) {
-                    // Notify these iterations that they have been recycled,
-                    // particularly so they know to disable animations with the
-                    // "no-transition" CSS class.
-                    iteration.recycle();
-                });
+
+                // Notify these iterations that they have been recycled,
+                // particularly so they know to disable animations with the
+                // "no-transition" CSS class.
                 // Add them back to the free list so they can be reused
-                for (var i = 0, freedIteration; freedIteration = freedIterations[i]; i++) {
+                for (var i = 0, freedIteration; i < removeIterationsCount; i++) {
+                    freedIteration = freedIterations[i];
+                    freedIteration.recycle();
                     if (!freedIteration.isDirty) {
                         this._freeIterations.push(freedIteration);
                     }
