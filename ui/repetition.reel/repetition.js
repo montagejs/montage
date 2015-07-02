@@ -1486,13 +1486,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 logger.debug("Repetition:%s +%s -%s iterations", Object.hash(this), addIterationsCount, removeIterationsCount);
             }
 
-            if (reusableIterationsCount > 0) {
-
-                for (var i = 0; i < reusableIterationsCount; i++, index++) {
-                    iterations[index].object = plus[i];
-                    contentForIteration.set(iterations[index], plus[i]);
-                }
-
+            for (var i = 0; i < reusableIterationsCount; i++, index++) {
+                iterations[index].object = plus[i];
+                contentForIteration.set(iterations[index], plus[i]);
             }
 
             if (removeIterationsCount > 0) {
