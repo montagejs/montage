@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "properties": {
+                    "element": {"#": "main"},
+                    "componentWithNoElement": {"@": "dynamictext3"},
+                    "componentInPageWithElement": {"@": "dynamictext1"},
+                    "photoViewer": {"@": "photoviewer1"},
+                    "videoViewer": {"@": "videoviewer1"},
+                    "barContent": {"@": "slider2"},
+                    "bazContent": {"#": "bazContent"},
+                    "quxContent": {"#": "quxContent"},
+                    "slot": {"@": "slot1"},
+                    "componentWithNoElementButton": {"@": "button1"},
+                    "componentInPageWithElementButton": {"@": "button2"},
+                    "barButton": {"@": "button3"},
+                    "bazButton": {"@": "button4"},
+                    "quxButton": {"@": "button5"},
+                    "emptyButton": {"@": "button6"},
+                    "videoButton": {"@": "button7"},
+                    "photoButton": {"@": "button8"}
+                }
+            },
+            "application": {
+                "prototype": "montage/core/application",
+                "properties": {
+                    "delegate": {"@": "owner"}
+                }
+            },
+            "slot1": {
+                "prototype": "montage/ui/slot.reel",
+                "properties": {
+                    "element": {"#": "slot"}
+                }
+            },
+            "slider1": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "slider"}
+                }
+            },
+            "dynamictext1": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "componentInPageWithElement"},
+                    "value": "This is a component in the page with an element"
+                }
+            },
+            "dynamictext2": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "sliderValue"}
+                },
+                "bindings": {
+                    "value": {"<-": "@slider1.value"}
+                }
+            },
+            "dynamictext3": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "value": "Hey there, I'm the foo component!"
+                }
+            },
+            "photoviewer1": {
+                "prototype": "../photo-viewer.reel",
+                "properties": {
+
+                },
+                "bindings": {
+                    "photo": {"<-": "@owner.currentMedia"}
+                }
+            },
+            "videoviewer1": {
+                "prototype": "../video-viewer.reel",
+                "properties": {
+
+                },
+                "bindings": {
+                    "video": {"<-": "@owner.currentMedia"}
+                }
+            },
+            "slider2": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "value": 20
+                }
+            },
+            "button1Composer": {
+                "prototype": "montage/composer/press-composer",
+                "properties": {
+                    "component": {"@": "button1"},
+                    "identifier": "componentWithNoElementButton"
+                }
+            },
+            "button1": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "componentWithNoElementButton"},
+                    "identifier": "componentWithNoElementButton"
+                }
+            },
+            "button2Composer": {
+                "prototype": "montage/composer/press-composer",
+                "properties": {
+                    "component": {"@": "button2"},
+                    "identifier": "componentInPageWithElementButton"
+                }
+            },
+            "button2": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "componentInPageWithElementButton"},
+                    "identifier": "componentInPageWithElementButton"
+                }
+            },
+            "button3Composer": {
+                "prototype": "montage/composer/press-composer",
+                "properties": {
+                    "component": {"@": "button3"},
+                    "identifier": "barButton"
+                }
+            },
+            "button3": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "barButton"}
+                }
+            },
+            "button4Composer": {
+                "prototype": "montage/composer/press-composer",
+                "properties": {
+                    "component": {"@": "button4"},
+                    "identifier": "bazButton"
+                }
+            },
+            "button4": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "bazButton"},
+                    "identifier": "bazButton"
+                }
+            },
+            "button5Composer": {
+                "prototype": "montage/composer/press-composer",
+                "properties": {
+                    "component": {"@": "button5"},
+                    "identifier": "quxButton"
+                }
+            },
+            "button5": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "quxButton"},
+                    "identifier": "quxButton"
+                }
+            },
+            "button6Composer": {
+                "prototype": "montage/composer/press-composer",
+                "properties": {
+                    "component": {"@": "button6"},
+                    "identifier": "emptyButton"
+                }
+            },
+            "button6": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "emptyButton"},
+                    "identifier": "emptyButton"
+                }
+            },
+            "button7Composer": {
+                "prototype": "montage/composer/press-composer",
+                "properties": {
+                    "component": {"@": "button7"},
+                    "identifier": "videoButton"
+                }
+            },
+            "button7": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "videoButton"},
+                    "identifier": "videoButton"
+                }
+            },
+            "button8Composer": {
+                "prototype": "montage/composer/press-composer",
+                "properties": {
+                    "component": {"@": "button8"},
+                    "identifier": "photoButton"
+                }
+            },
+            "button8": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "photoButton"},
+                    "identifier": "photoButton"
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+    <div data-montage-id="main">
+        <h1>Slot Test</h1>
+
+        <div data-montage-id="slotChooser">
+            <button class="button" data-montage-id="componentWithNoElementButton">Show Component With No Element (Text)</button>
+            <button class="button" data-montage-id="barButton">Show Bar Component in Slot</button>
+            <button class="button" data-montage-id="componentInPageWithElementButton">Show Component In Page With Element</button>
+            <button class="button" data-montage-id="bazButton">Show Baz Element in Slot</button>
+            <button class="button" data-montage-id="quxButton">Show Qux Element in Slot</button>
+            <button class="button" data-montage-id="emptyButton">Show Nothing in Slot</button>
+            <button class="button" data-montage-id="videoButton">Switch to "video"</button>
+            <button class="button" data-montage-id="photoButton">Switch to "photo"</button>
+        </div>
+
+        <div data-montage-id="slot" id="slot">
+            <div>Content inside the slot from the template</div>
+        </div>
+
+        <div data-montage-id="componentInPageWithElement"></div>
+
+        <div data-montage-id="bazContent">This is some content initially outside the slot, but available to put inside the slot</div>
+
+        <div data-montage-id="quxContent">
+            <p>This is some content initially outside the slot, with a component inside, but available to put inside the slot</p>
+            <div data-montage-id="slider"></div>
+        </div>
+
+        <div data-montage-id="sliderValue"></div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+	"name": "overlay.info",
+	"private": true,
+	"dependencies": {
+		"montage": "../.."
+	}
+}

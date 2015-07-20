@@ -1,0 +1,7 @@
+{
+	"name": "modal-overlay.info",
+	"private": true,
+	"dependencies": {
+		"montage": "../.."
+	}
+}
