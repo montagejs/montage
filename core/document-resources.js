@@ -245,6 +245,10 @@ var DocumentResources = Montage.specialize({
                 this._addResource(url);
                 this._expectedStyles.push(url);
                 if (!this._isPollingDocumentStyleSheets) {
+                    // fixme: Quick workaround for IE 11. Need a better patch.
+                    // -> link DOM elements are loaded before they are attached to the DOM
+                    element.setAttribute("href", url);
+                    
                     element.addEventListener("load", this, false);
                     element.addEventListener("error", this, false);
                 }
