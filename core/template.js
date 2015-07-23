@@ -776,7 +776,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
              *
              */
             var clonedDocument = document.implementation.createHTMLDocument(""),
-                baseURI = htmlDocument.baseURI || (htmlDocument.location ? htmlDocument.location.href : htmlDocument.URL);
+                baseURI = htmlDocument.baseURI || htmlDocument.URL;
 
             clonedDocument.replaceChild(
                 clonedDocument.importNode(htmlDocument.documentElement, true),
