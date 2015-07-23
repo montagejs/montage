@@ -38,7 +38,7 @@ var DocumentResources = Montage.specialize({
     _isLinkLoadEventAvailable: {
         value: function () {
             var link = document.createElement("link"),
-                webkitVersion = this._webkitVersion;
+                webkitVersion = this._webkitVersion();
 
             if ("onload" in link) {
 
