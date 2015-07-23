@@ -1332,15 +1332,13 @@ if (typeof window !== "undefined") { // client-side
                         // Prepare any components associated with elements that may receive this event
                         // They need to registered there listeners before the next step, which is to find the components that
                         // observing for this type of event
-                        if ("focus" === eventType || "mousedown" === eventType || "touchstart" === eventType) {
-                            if (evt.changedTouches) {
-                                touchCount = evt.changedTouches.length;
-                                for (var i = 0; i < touchCount; i++) {
-                                    eventManager._prepareComponentsForActivation(evt.changedTouches[i].target);
-                                }
-                            } else {
-                                eventManager._prepareComponentsForActivation(evt.target);
+                        if (evt.changedTouches) {
+                            touchCount = evt.changedTouches.length;
+                            for (var i = 0; i < touchCount; i++) {
+                                eventManager._prepareComponentsForActivation(evt.changedTouches[i].target);
                             }
+                        } else {
+                                eventManager._prepareComponentsForActivation(evt.target);
                         }
 
                     };
@@ -1352,13 +1350,12 @@ if (typeof window !== "undefined") { // client-side
                 // all components from the event target to the window to prepareForPointerEvents
                 // before finding event handlers that were registered for these events
                 if (aWindow.Touch) {
-                    // TODO on iOS the touch doesn't capture up at the window, just the document; interesting
-                    aWindow.document.nativeAddEventListener("touchstart", this._activationHandler, true);
+                    aWindow.nativeAddEventListener("touchstart", this._activationHandler, true);
                 } else {
-                    aWindow.document.nativeAddEventListener("mousedown", this._activationHandler, true);
+                    aWindow.nativeAddEventListener("mousedown", this._activationHandler, true);
                     //TODO also should accommodate mouseenter/mouseover possibly
                 }
-                aWindow.document.nativeAddEventListener("focus", this._activationHandler, true);
+                aWindow.nativeAddEventListener("focus", this._activationHandler, true);
 
                 if (this.application) {
 
@@ -2366,9 +2363,8 @@ if (typeof window !== "undefined") { // client-side
                                 activeTarget = this._findActiveTarget(associatedComponent);
                             }
 
-                            if (!associatedComponent._preparedForActivationEvents) {
+                            if (!associatedComponent.preparedForActivationEvents) {
                                 associatedComponent._prepareForActivationEvents();
-                                associatedComponent._preparedForActivationEvents = true;
                             }
                         }
                     }

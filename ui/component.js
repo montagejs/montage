@@ -1667,7 +1667,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         value: null
     },
 
-    _preparedForActivationEvents: {
+    preparedForActivationEvents: {
         enumerable: false,
         value: false
     },
@@ -2092,6 +2092,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             if (typeof this.prepareForActivationEvents === "function") {
                 this.prepareForActivationEvents();
             }
+            this.preparedForActivationEvents = true;
         }
     },
 
@@ -2381,7 +2382,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             if (!this._firstDraw) {  // prepareForDraw has already happened so do the loading here
                 if (!composer.lazyLoad) {
                     composer._load();
-                } else if (this._preparedForActivationEvents) { // even though it's lazyLoad prepareForActivationEvents has already happened
+                } else if (this.preparedForActivationEvents) { // even though it's lazyLoad prepareForActivationEvents has already happened
                     composer._load();
                 }
             }
