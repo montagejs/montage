@@ -1290,6 +1290,11 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 j,
                 i;
 
+            if (this._needsClearVisibleIndexes) {
+                this._visibleIndexes.splice(newVisibleIndexes.length, Infinity);
+                this._needsClearVisibleIndexes = false;
+            }
+
             // Search for viable holes, leave content at the same visible index
             // whenever possible.
             for (i = 0; i < oldIndexesLength; i++) {
@@ -1432,13 +1437,6 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 pathsLength = paths.length,
                 splinePaths = this.splinePaths;
 
-
-
-            if (this._needsClearVisibleIndexes) {
-                this._visibleIndexes = [];
-                this._visibleIndexes.set(0, 0);
-                this._needsClearVisibleIndexes = false;
-            }
             this.viewportWidth = this._element.clientWidth;
             this.viewportHeight = this._element.clientHeight;
             if (this.__firstIteration) {
