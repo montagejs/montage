@@ -316,6 +316,32 @@
                 "element": {"#": "innerText"},
                 "value": "Text Inside Empty Component"
             }
+        },
+
+        "conditionToggle": {
+            "prototype": "ui/button.reel",
+            "properties": {
+                "element": {"#": "conditionToggle"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "condition": {
+            "prototype": "ui/condition.reel",
+            "properties": {
+                "element": {"#": "condition"},
+                "condition": true
+            }
+        },
+        "baz": {
+            "prototype": "ui/succession.info/sample/ui/baz.reel",
+            "properties": {
+                "element": {"#": "baz"}
+            }
         }
     }
     </script>
@@ -386,6 +412,16 @@
             <div data-montage-id="substitution" class="container overflow-hidden">
                 <div data-montage-id="FooForSubstitution" data-arg="Foo"></div>
                 <div data-montage-id="BarForSubstitution" data-arg="Bar"></div>
+            </div>
+        </div>
+
+        <h2>Drawing outside of draw cycle in condition</h2>
+        <button data-montage-id="conditionToggle">Toggle</button>
+        <div class="wrapper">
+            <div class="container overflow-hidden">
+                <div data-montage-id="condition">
+                    <div data-montage-id="baz"></div>
+                </div>
             </div>
         </div>
     </div>

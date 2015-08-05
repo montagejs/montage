@@ -233,5 +233,11 @@ exports.Main = Component.specialize({
                     self.templateObjects.substitution.switchValue === 'Foo' ? 'Bar' : 'Foo';
             }, 1000)
         }
-    }
+    },
+
+    handleConditionToggleAction: {
+        value: function () {
+            this.templateObjects.condition.condition = !this.templateObjects.condition.condition;
+        }
+    },
 });
