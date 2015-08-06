@@ -755,21 +755,33 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     handleSelectionRangeChange: {
         value: function (add, remove) {
             var iterationsMap = new Map(),
-                iteration,
                 length = this.iterations.length,
-                i;
+                objectIterations,
+                object,
+                iteration,
+                i, j;
 
             for (i = 0; i < length; i++) {
-                iterationsMap.set(this.iterations[i].object, this.iterations[i]);
+                iteration = this.iterations[i];
+                object = iteration.object;
+                if (!(objectIterations = iterationsMap.get(object))) {
+                    objectIterations = [];
+                    iterationsMap.set(object, objectIterations);
+                }
+                objectIterations.push(iteration);
             }
             for (i = 0; i < remove.length; i++) {
-                if (iteration = iterationsMap.get(remove[i])) {
-                    iteration.selected = false;
+                if (objectIterations = iterationsMap.get(remove[i])) {
+                    for (j = 0; j < objectIterations.length; j++) {
+                        objectIterations[j].selected = false;
+                    }
                 }
             }
             for (i = 0; i < add.length; i++) {
-                if (iteration = iterationsMap.get(add[i])) {
-                    iteration.selected = true;
+                if (objectIterations = iterationsMap.get(add[i])) {
+                    for (j = 0; j < objectIterations.length; j++) {
+                        objectIterations[j].selected = true;
+                    }
                 }
             }
         }
