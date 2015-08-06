@@ -719,32 +719,32 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     // Implementation:
     // ----
 
-    _selection: {
-        value: null
-    },
-
     _cancelSelectionRangeChangeListener: {
         value: null
     },
 
     selection: {
         get: function () {
-            return this._selection;
+            if (this.contentController) {
+                return this.contentController.selection;
+            }
+            return null;
         },
         set: function (value) {
-            if (this._selection !== value) {
-                this._selection = value;
-                if (this.contentController && this.contentController.selection !== value) {
-                    this.contentController.selection = value;
+            var controller;
+
+            if (controller = this.contentController) {
+                if (controller.selection !== value) {
+                    controller.selection = value;
                 }
                 if (this._cancelSelectionRangeChangeListener) {
                     this._cancelSelectionRangeChangeListener();
                 }
                 if (value) {
                     this._cancelSelectionRangeChangeListener = (
-                        value.addRangeChangeListener(this, "selection")
+                        controller.selection.addRangeChangeListener(this, "selection")
                     );
-                    this.handleSelectionRangeChange(value, []);
+                    this.handleSelectionRangeChange(controller.selection, []);
                 } else {
                     this._cancelSelectionRangeChangeListener = null;
                 }
