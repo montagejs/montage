@@ -151,10 +151,83 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function (t
                 });
             });
 
+            describe("single selection", function () {
+                it("should properly update the iterations selected property", function () {
+                    var i;
+
+                    repetition.contentController.selection = [];
+                    for (i = 0; i < 6; i++) {
+                        expect(repetition.iterations[i].selected).toBeFalsy();
+                    }
+                    repetition.contentController.selection = [repetition.iterations[0].object];
+                    expect(repetition.iterations[0].selected).toBeTruthy();
+                    for (i = 1; i < 6; i++) {
+                        expect(repetition.iterations[i].selected).toBeFalsy();
+                    }
+                    repetition.contentController.selection = [repetition.iterations[1].object];
+                    expect(repetition.iterations[0].selected).toBeFalsy();
+                    expect(repetition.iterations[1].selected).toBeTruthy();
+                    for (i = 2; i < 6; i++) {
+                        expect(repetition.iterations[i].selected).toBeFalsy();
+                    }
+                });
+            });
+
+            describe("multiple selection", function () {
+                it("should properly update the iterations selected property", function () {
+                    var i;
+
+                    repetition.contentController.multiSelect = true;
+                    repetition.contentController.selection = [
+                        repetition.iterations[0].object,
+                        repetition.iterations[1].object
+                    ];
+                    expect(repetition.iterations[0].selected).toBeTruthy();
+                    expect(repetition.iterations[1].selected).toBeTruthy();
+                    for (i = 2; i < 6; i++) {
+                        expect(repetition.iterations[i].selected).toBeFalsy();
+                    }
+                    repetition.contentController.selection = [
+                        repetition.iterations[2].object,
+                        repetition.iterations[3].object
+                    ];
+                    expect(repetition.iterations[0].selected).toBeFalsy();
+                    expect(repetition.iterations[1].selected).toBeFalsy();
+                    expect(repetition.iterations[2].selected).toBeTruthy();
+                    expect(repetition.iterations[3].selected).toBeTruthy();
+                    expect(repetition.iterations[4].selected).toBeFalsy();
+                    expect(repetition.iterations[5].selected).toBeFalsy();
+                    repetition.contentController.multiSelect = false;
+                });
+            });
+
+        });
+
+        describe("reflecting the Repetition selection into the iterations", function () {
+            it("changes should properly update the iterations selected property", function () {
+                var i;
+
+                repetition.selection = [];
+                for (i = 0; i < 6; i++) {
+                    expect(repetition.iterations[i].selected).toBeFalsy();
+                }
+                repetition.selection = [repetition.iterations[0].object];
+                expect(repetition.iterations[0].selected).toBeTruthy();
+                for (i = 1; i < 6; i++) {
+                    expect(repetition.iterations[i].selected).toBeFalsy();
+                }
+                repetition.selection = [repetition.iterations[1].object];
+                expect(repetition.iterations[0].selected).toBeFalsy();
+                expect(repetition.iterations[1].selected).toBeTruthy();
+                for (i = 2; i < 6; i++) {
+                    expect(repetition.iterations[i].selected).toBeFalsy();
+                }
+            });
         });
 
         describe("changing visibleIndexes in repetition's controller", function () {
             it("should properly update the iteration's selected property", function () {
+                repetition.selection = [];
                 expect(repetition.iterations[0].object).toEqual("Alice");
                 expect(repetition.iterations[1].object).toEqual("Bob");
                 expect(repetition.iterations[0].selected).toBeFalsy();
