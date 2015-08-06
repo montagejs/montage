@@ -754,33 +754,53 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
     handleSelectionRangeChange: {
         value: function (add, remove) {
-            var iterationsMap = new Map(),
+            var iterationsMap,
                 length = this.iterations.length,
                 objectIterations,
                 object,
                 iteration,
                 i, j;
 
-            for (i = 0; i < length; i++) {
-                iteration = this.iterations[i];
-                object = iteration.object;
-                if (!(objectIterations = iterationsMap.get(object))) {
-                    objectIterations = [];
-                    iterationsMap.set(object, objectIterations);
-                }
-                objectIterations.push(iteration);
-            }
-            for (i = 0; i < remove.length; i++) {
-                if (objectIterations = iterationsMap.get(remove[i])) {
-                    for (j = 0; j < objectIterations.length; j++) {
-                        objectIterations[j].selected = false;
+            if ((add.length <= 1) && (remove.length <= 1)) {
+                if (remove.length) {
+                    object = remove[0];
+                    for (i = 0; i < length; i++) {
+                        if (this.iterations[i].object === object) {
+                            this.iterations[i].selected = false;
+                        }
                     }
                 }
-            }
-            for (i = 0; i < add.length; i++) {
-                if (objectIterations = iterationsMap.get(add[i])) {
-                    for (j = 0; j < objectIterations.length; j++) {
-                        objectIterations[j].selected = true;
+                if (add.length) {
+                    object = add[0];
+                    for (i = 0; i < length; i++) {
+                        if (this.iterations[i].object === object) {
+                            this.iterations[i].selected = true;
+                        }
+                    }
+                }
+            } else {
+                iterationsMap = new Map();
+                for (i = 0; i < length; i++) {
+                    iteration = this.iterations[i];
+                    object = iteration.object;
+                    if (!(objectIterations = iterationsMap.get(object))) {
+                        objectIterations = [];
+                        iterationsMap.set(object, objectIterations);
+                    }
+                    objectIterations.push(iteration);
+                }
+                for (i = 0; i < remove.length; i++) {
+                    if (objectIterations = iterationsMap.get(remove[i])) {
+                        for (j = 0; j < objectIterations.length; j++) {
+                            objectIterations[j].selected = false;
+                        }
+                    }
+                }
+                for (i = 0; i < add.length; i++) {
+                    if (objectIterations = iterationsMap.get(add[i])) {
+                        for (j = 0; j < objectIterations.length; j++) {
+                            objectIterations[j].selected = true;
+                        }
                     }
                 }
             }
