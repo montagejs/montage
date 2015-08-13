@@ -225,6 +225,23 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function (t
             });
         });
 
+        describe("Repetition.selection binding", function () {
+            it("should work after a new contentController is set up", function () {
+                var foo = new Montage();
+
+                repetition.contentController.selection = [];
+                foo.repetition = repetition;
+                foo.defineBinding("selected", {"<-": "repetition.selection.0"})
+                repetition.content = repetition.content.slice(0);
+                repetition.iterations[0].selected = true;
+                expect(repetition.selection[0]).toEqual(repetition.iterations[0].object);
+                expect(foo.selected).toEqual(repetition.iterations[0].object);
+                repetition.iterations[1].selected = true;
+                expect(repetition.selection[0]).toEqual(repetition.iterations[1].object);
+                expect(foo.selected).toEqual(repetition.iterations[1].object);
+            });
+        });
+
         describe("changing visibleIndexes in repetition's controller", function () {
             it("should properly update the iteration's selected property", function () {
                 repetition.selection = [];
@@ -234,10 +251,10 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function (t
                 expect(repetition.iterations[1].selected).toBeFalsy();
                 repetition.iterations[0].selected = true;
                 expect(repetition.iterations[0].selected).toBeTruthy();
-                nameController.visibleIndexes = [1];
+                repetition.contentController.visibleIndexes = [1];
                 expect(repetition.iterations[0].object).toEqual("Bob");
                 expect(repetition.iterations[0].selected).toBeFalsy();
-                nameController.visibleIndexes = [0];
+                repetition.contentController.visibleIndexes = [0];
                 expect(repetition.iterations[0].object).toEqual("Alice");
                 expect(repetition.iterations[0].selected).toBeTruthy();
             });
