@@ -2508,7 +2508,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                     var self = this;
                     this.localizer.messagesPromise.then(function(messages) {
                         if (logger.isDebug) {
-                            logger.debug(this, "got messages from localizer");
+                            logger.debug(self, "got messages from localizer");
                         }
                         self.canDrawGate.setField("messages", true);
                     });
