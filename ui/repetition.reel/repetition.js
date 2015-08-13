@@ -140,19 +140,17 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
         },
         set: function (value) {
             value = !!value;
+            if (this.object && this.repetition && this.repetition.contentController) {
+                if (value) {
+                    this.repetition.contentController.selection.add(this.object);
+                } else {
+                    this.repetition.contentController.selection.delete(this.object);
+                }
+            }
             if (this._selected !== value) {
                 this._selected = value;
-                if (this.object && this.repetition &&
-                    this.repetition.contentController &&
-                    this.repetition.contentController.selection) {
-                    if (value) {
-                        this.repetition.contentController.selection.add(this.object);
-                    } else {
-                        this.repetition.contentController.selection.delete(this.object);
-                    }
-                    this.repetition._addDirtyClassListIteration(this);
-                    this.repetition.needsDraw = true;
-                }
+                this.repetition._addDirtyClassListIteration(this);
+                this.repetition.needsDraw = true;
             }
         }
     },
@@ -590,14 +588,18 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * corresponds to the position within the visible region of the controller.
      * @type {Array.<Object>}
      */
+
     content: {
         get: function () {
-            return this.getPath("contentController.content");
+            if (this.contentController) {
+                return this.contentController.content;
+            }
+            return null;
         },
-        set: function (content) {
+        set: function (value) {
             // TODO if we provide an implicit content controller, it should be
             // excluded from a serialization of the repetition.
-            this.contentController = new RangeController().initWithContent(content);
+            this.contentController = new RangeController().initWithContent(value);
         }
     },
 
@@ -723,31 +725,35 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         value: null
     },
 
+    _selection: {
+        value: null
+    },
+
     selection: {
         get: function () {
-            if (this.contentController) {
-                return this.contentController.selection;
-            }
-            return null;
+            return this._selection;
         },
         set: function (value) {
-            var controller;
-
-            if (controller = this.contentController) {
-                if (controller.selection !== value) {
-                    controller.selection = value;
+            if (this.contentController) {
+                if (this.contentController.selection !== value) {
+                    this.contentController.selection = value;
+                }
+                if (this._selection !== this.contentController.selection) {
+                    this._selection = this.contentController.selection;
                 }
                 if (this._cancelSelectionRangeChangeListener) {
                     this._cancelSelectionRangeChangeListener();
                 }
                 if (value) {
                     this._cancelSelectionRangeChangeListener = (
-                        controller.selection.addRangeChangeListener(this, "selection")
+                        this.contentController.selection.addRangeChangeListener(this, "selection")
                     );
-                    this.handleSelectionRangeChange(controller.selection, []);
+                    this.handleSelectionRangeChange(value, []);
                 } else {
                     this._cancelSelectionRangeChangeListener = null;
                 }
+            } else {
+                this._selection = value;
             }
         }
     },
