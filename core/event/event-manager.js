@@ -460,6 +460,11 @@ if (typeof window !== "undefined") { // client-side
         constructor: {
             value: function EventManager () {
                 this.super();
+
+                this._trackingTouchList = {
+                    touchesStart: Object.create(null),
+                    touchesEnd: Object.create(null)
+                };
             }
         },
 
@@ -1378,7 +1383,8 @@ if (typeof window !== "undefined") { // client-side
 
                 var applicationLevelEvents = this.registeredEventListenersOnTarget_(this.application),
                     windowLevelEvents = this.registeredEventListenersOnTarget_(aWindow),
-                    eventType;
+                    eventType,
+                    index;
 
                 for (eventType in applicationLevelEvents) {
                     this._stopObservingTarget_forEventType_(aWindow, eventType);
@@ -1386,6 +1392,11 @@ if (typeof window !== "undefined") { // client-side
 
                 for (eventType in windowLevelEvents) {
                     this._stopObservingTarget_forEventType_(aWindow, eventType);
+                }
+
+                if ((index = this._listeningWindowOnTouchCancel.indexOf(aWindow)) > -1) {
+                    this._listeningWindowOnTouchCancel.splice(index, 1);
+                    // the listener on 'touchCancel' has already been removed by the previous step.
                 }
             }
         },
@@ -2145,6 +2156,223 @@ if (typeof window !== "undefined") { // client-side
             })
         },
 
+        _touchNeedTracking: {
+            value: ["touchstart", "touchend"]
+        },
+
+
+        _mouseEventTypeEmulatedList: {
+            value: ["mousedown", "mouseup", "click"]
+        },
+
+        _trackingTouchList: {
+            value: null
+        },
+
+        _trackingTouchTimeoutIDs: {
+            value: Object.create(null)
+        },
+
+        __isIOSPlatform: {
+            value: null
+        },
+
+        _isIOSPlatform: {
+            get: function () {
+                return this.__isIOSPlatform = this.__isIOSPlatform || (/iphone|ipod|ipad/gi).test(navigator.platform);
+            }
+        },
+
+        _wouldTouchTriggerSimulatedEvent: {
+            value: function (event) {
+                return this._touchNeedTracking.indexOf(event.type) > -1;
+            }
+        },
+
+        _couldEventBeSimulated: {
+            value: function (event) {
+                return this._mouseEventTypeEmulatedList.indexOf(event.type) > -1;
+            }
+        },
+
+        _listeningWindowOnTouchCancel: {
+            value: []
+        },
+
+        _findWindowFromEvent: {
+            value: function (event) {
+                var target = event.target,
+                    aWindow;
+
+                if (target) {
+                    if (target instanceof Window) {
+                        aWindow = target;
+                    }
+
+                    aWindow = target instanceof Window ? target : target.defaultView instanceof Window ?
+                        target.defaultView : target.ownerDocument && target.ownerDocument.defaultView ?
+                        target.ownerDocument.defaultView : null;
+                }
+
+                return aWindow;
+            }
+        },
+
+        _isWindowListeningOnTouchCancel: {
+            value: function (aWindow) {
+                return this._registeredWindows.indexOf(aWindow) > -1 && this._listeningWindowOnTouchCancel.indexOf(aWindow) > -1;
+            }
+        },
+
+        _listenToTouchCancelIfNeeded: {
+            value: function (event) {
+                var aWindow = this._findWindowFromEvent(event);
+
+                if (aWindow && !this._isWindowListeningOnTouchCancel(aWindow)) {
+                    var self = this;
+
+                    aWindow.addEventListener("touchcancel", function (event) {
+                        var changedTouches = event.changedTouches,
+                            touchesStartList = self._trackingTouchList.touchesStart,
+                            identifier;
+
+                        for (var i = 0, length = changedTouches.length; i < length; i++) {
+                            identifier = changedTouches[i].identifier;
+
+                            if (touchesStartList[identifier]) {
+                                delete touchesStartList[identifier];
+                            }
+                        }
+                    }, true);
+
+                    this._listeningWindowOnTouchCancel.push(aWindow);
+                }
+            }
+        },
+
+        /**
+         * @function
+         * @param {Event} event
+         * @description Decides if an event can be dispatched by the EventManager within a montage app.
+         * Filter emulated mouse events (mousedown, mouseup, click) from touch events.
+         *
+         * @Todo: if browsers support pointerEvents the EventManager must dispatch all events.
+         * @private
+         */
+        _shouldDispatchEvent: {
+            value: function (event) {
+                /**
+                 * Under IOS emulated mouse events have a timestamp set to 0.
+                 * Plus, this property can't be used for Firefox.
+                 * Firefox has an open bug since 2004: the property timeStamp is not populated correctly.
+                 * -> https://bugzilla.mozilla.org/show_bug.cgi?id=238041
+                 */
+                if (this._isIOSPlatform) {
+                    return !(event.timeStamp === 0);
+                }
+
+                // Checks if the event may trigger simulated events.
+                if (this._wouldTouchTriggerSimulatedEvent(event)) {
+                    var changedTouches = event.changedTouches;
+
+                    // Needs to clean the tracking touches "start" when a touch event is canceled.
+                    this._listenToTouchCancelIfNeeded(event);
+
+                    for (var i = 0, length = changedTouches.length; i < length; i++) {
+                        this._trackTouch(event, changedTouches[i].identifier);
+                    }
+
+                } else if (this._couldEventBeSimulated(event)) { // Determines if mouse events are simulated.
+                    return !this._isEmulatedEvent(event);
+                }
+
+                return true; // Dispatches all the others.
+            }
+        },
+
+        _trackTouch: {
+            value: function (touchEvent, touchIdentifier) {
+                var touchList = this._trackingTouchList,
+                    timeoutIDs = this._trackingTouchTimeoutIDs;
+
+                if (touchEvent.type === "touchstart") {
+                    /**
+                     * Touch identifiers are not unique for Firefox or Chrome (they are re-used).
+                     * So, we need to clear the timeout that was supposed to clean this tracking touch.
+                     */
+                    var timeoutID = timeoutIDs[touchIdentifier];
+
+                    if (timeoutID) {
+                        clearTimeout(timeoutID);
+                        delete timeoutIDs[touchIdentifier];
+                    }
+
+                    touchList.touchesStart[touchIdentifier] = touchEvent.target;
+
+                } else { // touchend
+                    timeoutIDs[touchIdentifier] = setTimeout(function () {
+                        delete touchList.touchesEnd[touchIdentifier];
+                        delete timeoutIDs[touchIdentifier];
+                    }, 300); // 300ms -> click delay.
+
+                    delete touchList.touchesStart[touchIdentifier];
+                    touchList.touchesEnd[touchIdentifier] = touchEvent.target;
+                }
+            }
+        },
+
+        /**
+         * @function
+         * @param {Event} event
+         * @description Decides if an event is an emualted mouse event.
+         * Checks if a target has already been "activated" by a touch.
+         *
+         * @private
+         */
+        _isEmulatedEvent: {
+            value: function (event) {
+                var trackingTouchList = this._trackingTouchList.touchesStart,
+                    mouseTarget = event.target,
+                    response = false,
+                    identifier;
+
+                /**
+                 * Can't use the position, indeed the emulated mouse events are not at the same position
+                 * than the touch events than triggered them. Doesn't work with a radius as well.
+                 * (using a radius can make it fail with wide fast movements -> FF)
+                 *
+                 * Needs to check both maps for devices with multiples pointers
+                 * (touchstart + mousedown -> mouseup -> click) or (touchstart + delay ≈ 600ms -> mousedown)
+                 */
+                for (identifier in trackingTouchList) {
+                    if ((response = trackingTouchList[identifier] === mouseTarget)) break;
+                }
+
+                if (!response) {
+                    trackingTouchList = this._trackingTouchList.touchesEnd;
+
+                    for (identifier in trackingTouchList) {
+                        if ((response = trackingTouchList[identifier] === mouseTarget)) break;
+                    }
+
+                    // Faster "awake", can be useful for devices with multiple pointers. (simultaneous click/touch)
+                    if (response && event.type === "click") {
+                        var timeoutIDs = this._trackingTouchTimeoutIDs,
+                            timeoutID = timeoutIDs[identifier];
+
+                        if (timeoutID) {
+                            clearTimeout(timeoutID);
+
+                            delete trackingTouchList[identifier];
+                            delete timeoutIDs[identifier];
+                        }
+                    }
+                }
+
+                return response;
+            }
+        },
+
         // Event Handling
 
         /**
@@ -2154,6 +2382,9 @@ if (typeof window !== "undefined") { // client-side
         handleEvent: {
             enumerable: false,
             value: function (event) {
+                if (!this._shouldDispatchEvent(event)) {
+                    return void 0;
+                }
 
                 if (this.monitorDOMModificationInEventHandling) {
                     document.body.addEventListener("DOMSubtreeModified", this.domModificationEventHandler, true);
