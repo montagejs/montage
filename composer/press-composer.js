@@ -71,21 +71,17 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     load: {
         value: function () {
-            if (window.Touch) {
-                this._element.addEventListener("touchstart", this, true);
-            } else {
-                this._element.addEventListener("mousedown", this, true);
-            }
+            //todo: add support pointer events
+            this._element.addEventListener("touchstart", this, false);
+            this._element.addEventListener("mousedown", this, false);
         }
     },
 
     unload: {
         value: function () {
-            if (window.Touch) {
-                this._element.removeEventListener("touchstart", this, true);
-            } else {
-                this._element.removeEventListener("mousedown", this, true);
-            }
+            //todo: add support pointer events
+            this._element.removeEventListener("touchstart", this, false);
+            this._element.removeEventListener("mousedown", this, false);
         }
     },
 
@@ -141,7 +137,6 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     },
 
     _state: {
-        enumerable: false,
         value: 0
     },
     state: {
@@ -151,14 +146,13 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     },
 
     _shouldDispatchLongPress: {
-        enumerable: false,
         value: false
     },
 
     _longPressThreshold: {
-        enumerable: false,
         value: 1000
     },
+
     /**
      * How long a press has to last (in milliseconds) for a longPress event to
      * be dispatched
@@ -176,107 +170,13 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     },
 
     _longPressTimeout: {
-        enumberable: false,
         value: null
     },
 
     // Magic
 
     _observedPointer: {
-        enumerable: false,
         value: null
-    },
-
-    // TODO: maybe this should be split and moved into handleTouchstart
-    // and handleMousedown
-    _startInteraction: {
-        enumerable: false,
-        value: function (event) {
-            if (
-                ("enabled" in this.component && !this.component.enabled) ||
-                this._observedPointer !== null
-            ) {
-                return false;
-            }
-
-            var i = 0, changedTouchCount;
-
-            if (event.type === "touchstart") {
-
-                changedTouchCount = event.changedTouches.length;
-                if (changedTouchCount === 1) {
-                    this._observedPointer = event.changedTouches[0].identifier;
-                }
-
-                document.addEventListener("touchend", this, false);
-                document.addEventListener("touchcancel", this, false);
-            } else if (event.type === "mousedown") {
-                this._observedPointer = "mouse";
-                // Needed to cancel the press if mouseup'd when not on the
-                // component
-                document.addEventListener("mouseup", this, false);
-                // Needed to preventDefault if another component has claimed
-                // the pointer
-                document.addEventListener("click", this, false);
-            }
-
-            // Needed to cancel the press because once a drag is started
-            // no mouse events are fired
-            // http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#initiate-the-drag-and-drop-operation
-            this._element.addEventListener("dragstart", this, false);
-
-            this.component.eventManager.claimPointer(this._observedPointer, this);
-
-            this._dispatchPressStart(event);
-        }
-    },
-
-    /**
-     * Decides what should be done based on an interaction.
-     *
-     * @param {Event} event The event that caused this to be called.
-     * @private
-     */
-    _interpretInteraction: {
-        value: function (event) {
-            // TODO maybe the code should be moved out to handleClick and
-            // handleMouseup
-            var isSurrendered, target, isTarget;
-
-            if (this._observedPointer === null) {
-                this._endInteraction(event);
-                return;
-            }
-
-            isSurrendered = !this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this);
-            target = event.target;
-            while (target !== this._element && target && target.parentNode) {
-                target = target.parentNode;
-            }
-            isTarget = target === this._element;
-
-            if (isSurrendered && event.type === "click") {
-                // Pointer surrendered, so prevent the default action
-                event.preventDefault();
-                // No need to dispatch an event as pressCancel was dispatched
-                // in surrenderPointer, just end the interaction.
-                this._endInteraction(event);
-                return;
-            } else if (event.type === "mouseup") {
-
-                if (!isSurrendered && isTarget) {
-                    this._dispatchPress(event);
-                    this._endInteraction(event);
-                    return;
-                } else if (!isSurrendered && !isTarget) {
-                    this._dispatchPressCancel(event);
-                    this._endInteraction(event);
-                    return;
-                } else {
-                    this._endInteraction(event);
-                }
-            }
-        }
     },
 
     /**
@@ -284,15 +184,17 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
      * @private
      */
     _endInteraction: {
-        value: function (event) {
+        value: function () {
             document.removeEventListener("touchend", this);
             document.removeEventListener("touchcancel", this);
-            document.removeEventListener("click", this);
             document.removeEventListener("mouseup", this);
+
+            this._element.removeEventListener("dragstart", this, false);
 
             if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 this.component.eventManager.forfeitPointer(this._observedPointer, this);
             }
+
             this._observedPointer = null;
             this._state = PressComposer.UNPRESSED;
         }
@@ -339,13 +241,35 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         }
     },
 
-    // Handlers
-
-    captureTouchstart: {
-        value: function (event) {
-            this._startInteraction(event);
+    _shouldPerformPress: {
+        value: function () {
+            return !(("enabled" in this.component && !this.component.enabled) || this._observedPointer !== null);
         }
     },
+
+    // Handlers
+
+    handleTouchstart: {
+        value: function (event) {
+            if (this._shouldPerformPress()) {
+                if (event.changedTouches.length === 1) {
+                    this._observedPointer = event.changedTouches[0].identifier;
+                    this.component.eventManager.claimPointer(this._observedPointer, this);
+                }
+
+                if (this._observedPointer !== null && this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                    document.addEventListener("touchend", this, false);
+                    document.addEventListener("touchcancel", this, false);
+
+                    this._dispatchPressStart(event);
+
+                } else {
+                    this._observedPointer = null;
+                }
+            }
+        }
+    },
+
     handleTouchend: {
         value: function (event) {
             if (this._observedPointer === null) {
@@ -356,39 +280,78 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
             if (this._changedTouchisObserved(event.changedTouches) !== false) {
                 if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                     this._dispatchPress(event);
-                } else {
-                    event.preventDefault();
                 }
+
                 this._endInteraction(event);
             }
         }
     },
+
     handleTouchcancel: {
         value: function (event) {
             if (this._observedPointer === null || this._changedTouchisObserved(event.changedTouches) !== false) {
                 if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                     this._dispatchPressCancel(event);
                 }
+
                 this._endInteraction(event);
             }
         }
     },
 
-    captureMousedown: {
+    handleMousedown: {
         value: function (event) {
-            this._startInteraction(event);
+            if (this._shouldPerformPress()) {
+                this._observedPointer = "mouse";
+                this.component.eventManager.claimPointer(this._observedPointer, this);
+
+                if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                    // Needed to cancel the press if mouseup'd when not on the component
+                    document.addEventListener("mouseup", this, false);
+
+                    document.addEventListener("touchend", this, false);
+
+                    // Needed to cancel the press because once a drag is started
+                    // no mouse events are fired
+                    // http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#initiate-the-drag-and-drop-operation
+                    this._element.addEventListener("dragstart", this, false);
+
+                    this._dispatchPressStart(event);
+                } else{
+                    this._observedPointer = null;
+                }
+            }
         }
     },
-    handleClick: {
-        value: function (event) {
-            this._interpretInteraction(event);
-        }
-    },
+
     handleMouseup: {
         value: function (event) {
-            this._interpretInteraction(event);
+            if (this._observedPointer === null) {
+                this._endInteraction(event);
+                return;
+            }
+
+            var target = event.target;
+
+            if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                while (target !== this._element && target && target.parentNode) {
+                    target = target.parentNode;
+                }
+
+                if (target === this._element) {
+                    this._dispatchPress(event);
+                    this._endInteraction(event);
+
+                } else {
+                    this._endInteraction(event);
+                }
+            } else{
+                this._dispatchPressCancel(event);
+                this._endInteraction(event);
+            }
         }
     },
+
     handleDragstart: {
         value: function (event) {
             this._dispatchPressCancel(event);
@@ -414,9 +377,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
             pressEvent.pointer = this._observedPointer;
             pressEvent.targetElement = event.target;
 
-            if (event.changedTouches &&
-                (index = this._changedTouchisObserved(event.changedTouches)) !== false
-            ) {
+            if (event.changedTouches && (index = this._changedTouchisObserved(event.changedTouches)) !== false) {
                 pressEvent.touch = event.changedTouches[index];
             }
 
@@ -432,6 +393,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
             if (this._shouldDispatchLongPress) {
                 var self = this;
+
                 this._longPressTimeout = setTimeout(function () {
                     self._dispatchLongPress();
                 }, this._longPressThreshold);
