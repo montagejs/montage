@@ -7,6 +7,7 @@ var Template = require("../../core/template").Template;
 var RangeController = require("../../core/range-controller").RangeController;
 var Promise = require("../../core/promise").Promise;
 var browser = require("../../core/browser").browser;
+var PressComposer = require("../../composer/press-composer").PressComposer;
 
 var Map = require("collections/map");
 var Set = require("collections/set");
@@ -716,6 +717,22 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * @private
      */
     clonesChildComponents: {value: true},
+
+    __pressComposer: {value: null},
+
+    _pressComposer: {
+        get: function () {
+            if (!this.__pressComposer) {
+                this.__pressComposer = new PressComposer();
+                this.__pressComposer.lazyLoad = true;
+                this.__pressComposer.eventPhase = Event.CAPTURING_PHASE;
+
+                this.addComposer(this.__pressComposer);
+            }
+
+            return this.__pressComposer;
+        }
+    },
 
 
     // Implementation:
@@ -1865,12 +1882,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     // isSelectionEnabled becoming true.
     _enableSelectionTracking: {
         value: function () {
-
-            if (window.Touch) {
-                this.element.addEventListener("touchstart", this, true);
-            } else {
-                this.element.addEventListener("mousedown", this, true);
-            }
+            this._pressComposer.addEventListener("pressStart", this, false);
         }
     },
 
@@ -1881,57 +1893,45 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     // isSelectionEnabled becoming false.
     _disableSelectionTracking: {
         value: function () {
-            if (window.Touch) {
-                this.element.removeEventListener("touchstart", this, true);
-            } else {
-                this.element.removeEventListener("mousedown", this, true);
+            this._pressComposer.removeEventListener("pressStart", this, false);
+        }
+    },
+
+    handlePressStart: {
+        value: function (pressEvent) {
+            var iteration = this._findIterationContainingElement(pressEvent.targetElement);
+
+            if (iteration) {
+                if (pressEvent.pointer === "mouse") {
+                    this._startX = pressEvent.event.clientX;
+                    this._startY = pressEvent.event.clientY;
+
+                } else { // touch
+                    // The PressComposer is always getting the first touch.
+                    var touch = event.changedTouches[0];
+
+                    this._startX = touch.clientX;
+                    this._startY = touch.clientY;
+                }
+
+                this.__pressComposer.addEventListener("press", this, false);
+                this.__pressComposer.addEventListener("pressCancel", this, false);
+
+                this.element.addEventListener("touchmove", this, false);
+                document.addEventListener("scroll", this, true);
+
+                iteration.shouldBecomeActive = true;
+                this._currentActiveIteration = iteration;
             }
         }
     },
 
-    // ---
-
-    // Called by captureMousedown and captureTouchstart when a gesture begins:
-    /**
-     * @param pointerIdentifier an identifier that can be "mouse" or the
-     * "identifier" property of a "Touch" in a touch change event.
-     * @private
-     */
-    _observeSelectionPointer: {
-        value: function (pointerIdentifier) {
-            this._selectionPointer = pointerIdentifier;
-            this.eventManager.claimPointer(pointerIdentifier, this);
-
-            var document = this.element.ownerDocument;
-
-            if (window.Touch) {
-                // dispatches handleTouchend
-                document.addEventListener("touchend", this, false);
-                // dispatches handleTouchmove
-                document.addEventListener("touchmove", this, false);
-                // dispatches handleTouchcancel
-                document.addEventListener("touchcancel", this, false);
-
-            } else {
-                // dispatches handleMouseup
-                document.addEventListener("mouseup", this, false);
-                // dispatches handleMousemove
-                document.addEventListener("mousemove", this, false);
-            }
-        }
-    },
 
     /**
      * @private
      */
-    _ignoreSelectionPointer: {
+    _ignoreSelection: {
         value: function () {
-            // The pointer may have been already taken
-            if (this.eventManager.isPointerClaimedByComponent(this._selectionPointer, this)) {
-                this.eventManager.forfeitPointer(this._selectionPointer, this);
-            }
-            this._selectionPointer = null;
-
             if (this._currentActiveIteration) {
                 this._currentActiveIteration.shouldBecomeActive = false;
                 this._currentActiveIteration = null;
@@ -1942,94 +1942,32 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             this._startX = 0;
             this._startY = 0;
 
-            var document = this.element.ownerDocument;
+            this.__pressComposer.removeEventListener("press", this, false);
+            this.__pressComposer.removeEventListener("pressCancel", this, false);
 
-            if (window.Touch) {
-                document.removeEventListener("touchend", this, false);
-                document.removeEventListener("touchmove", this, false);
-                document.removeEventListener("touchcancel", this, false);
-
-            } else {
-                document.removeEventListener("mouseup", this, false);
-                document.removeEventListener("mousemove", this, false);
-            }
+            this.element.removeEventListener("touchmove", this, false);
+            document.removeEventListener("scroll", this, true);
         }
     },
 
-    // ---
-
-    /**
-     * @private
-     */
-    // Dispatched by "mousedown" event listener if isSelectionEnabled
-    captureMousedown: {
-        value: function (event) {
-            if (this._selectionPointer != null) {
-                // If we already have one touch making a selection, ignore any
-                // other pointers.
-                return;
-            }
-            this._observeSelectionPointer("mouse");
-            var iteration = this._findIterationContainingElement(event.target);
-            if (iteration) {
-                this._startX = event.clientX;
-                this._startY = event.clientY;
-
-                iteration.shouldBecomeActive = true;
-                this._currentActiveIteration = iteration;
-            } else {
-                this._ignoreSelectionPointer();
-            }
-        }
-    },
-
-    /**
-     * @private
-     */
-    // Dispatched by "touchstart" event listener if isSelectionEnabled
-    captureTouchstart: {
-        value: function (event) {
-            if (this._selectionPointer != null) {
-                // If we already have one touch or mouse making a selection, ignore any
-                // other pointers.
-                return;
-            }
-
-            this._observeSelectionPointer(event.changedTouches[0].identifier);
-            var iteration = this._findIterationContainingElement(event.target);
-
-            if (iteration) {
-                var touch = event.changedTouches[0];
-
-                this._startX = touch.clientX;
-                this._startY = touch.clientY;
-
-                iteration.shouldBecomeActive = true;
-                this._currentActiveIteration = iteration;
-            } else {
-                this._ignoreSelectionPointer();
-            }
-        }
-    },
-
-    // ---
 
     /**
      * @private
      */
     handleTouchmove: {
         value: function (event) {
-            var touch;
+            var changedTouches = event.changedTouches,
+                touch;
 
-            for (var i = 0; i < event.changedTouches.length; i++) {
-                if (event.changedTouches[i].identifier === this._selectionPointer) {
-                    touch = event.changedTouches[i];
+            for (var i = 0, length = changedTouches.length; i < length; i++) {
+                if (changedTouches[i].identifier === this.__pressComposer._observedPointer) {
+                    touch = changedTouches[i];
                     break;
                 }
             }
 
             if (touch) {
-                this._move(touch.clientX, touch.clientY);
+                this._handleMove(touch.clientX, touch.clientY);
             }
         }
     },
@@ -2038,11 +1976,9 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     /**
      * @private
      */
-    handleMousemove: {
+    captureScroll: {
         value: function (event) {
-            if (event) {
-                this._move(event.clientX, event.clientY);
-            }
+            this._ignoreSelection();
         }
     },
 
@@ -2050,7 +1986,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     /**
      * @private
      */
-    _move: {
+    _handleMove: {
         value: function (positionX, positionY) {
             var threshold = this._threshold,
                 dX = positionX - this._startX,
@@ -2058,7 +1994,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
             // Check if the current position is inside the allowed radius of pixels between a touchstart/mousedown and a touchmove/mousemove.
             if (dX * dX + dY * dY > threshold * threshold) {
-                this._ignoreSelectionPointer();
+                this._ignoreSelection();
             }
         }
     },
@@ -2067,61 +2003,27 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     /**
      * @private
      */
-    handleTouchend: {
-        value: function (event) {
-            // TODO consider only grabbing touches that are in target touches
-            for (var i = 0; i < event.changedTouches.length; i++) {
-                if (this._endSelectionOnTarget(event.changedTouches[i].identifier, event.target)) {
-                    break;
-                }
-            }
-
-        }
-    },
-
-    /**
-     * @private
-     */
-    handleTouchcancel: {
+    handlePressCancel: {
         value: function () {
-            this._ignoreSelectionPointer();
+            this._ignoreSelection();
         }
     },
 
-    /**
-     * @private
-     */
-    handleMouseup: {
+
+    handlePress: {
         value: function (event) {
-            this._endSelectionOnTarget("mouse", event.target);
-        }
-    },
+            var iteration = this._findIterationContainingElement(event.targetElement);
 
-    /**
-     * @private
-     */
-    _endSelectionOnTarget: {
-        value: function (identifier, target) {
+            // And select it, if there is one
+            if (iteration && this._currentActiveIteration === iteration) {
+                iteration.active = false;
 
-            if (identifier !== this._selectionPointer) {
-                return;
-            }
-
-            if (this.eventManager.isPointerClaimedByComponent(this._selectionPointer, this)) {
-                // Find the corresponding iteration
-                var iteration = this._findIterationContainingElement(target);
-                // And select it, if there is one
-                if (iteration && this._currentActiveIteration === iteration) {
-                    iteration.active = false;
-                    if (!iteration.selected) {
-                        iteration.selected = true;
-                    }
+                if (!iteration.selected) {
+                    iteration.selected = true;
                 }
             }
 
-            this._ignoreSelectionPointer();
-
-            return true;
+            this._ignoreSelection();
         }
     },
 
