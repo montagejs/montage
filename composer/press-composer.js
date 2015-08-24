@@ -382,10 +382,12 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 contactPoint = pressEvent.touch = event.changedTouches[index];
             }
 
-            pressEvent.clientX = contactPoint.clientX;
-            pressEvent.clientY = contactPoint.clientY;
-            pressEvent.pageX = contactPoint.pageX;
-            pressEvent.pageY = contactPoint.pageY;
+            if (contactPoint) { // a PressCancel event can be dispatched programtically, so with no event.
+                pressEvent.clientX = contactPoint.clientX;
+                pressEvent.clientY = contactPoint.clientY;
+                pressEvent.pageX = contactPoint.pageX;
+                pressEvent.pageY = contactPoint.pageY;
+            }
 
             return pressEvent;
         }
