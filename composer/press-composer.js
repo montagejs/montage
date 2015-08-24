@@ -301,7 +301,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     handleMousedown: {
         value: function (event) {
-            if (this._shouldPerformPress()) {
+            if (event.button === 0 && this._shouldPerformPress()) {
                 this._observedPointer = "mouse";
                 this.component.eventManager.claimPointer(this._observedPointer, this);
 
