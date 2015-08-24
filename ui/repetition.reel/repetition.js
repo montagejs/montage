@@ -1902,17 +1902,8 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             var iteration = this._findIterationContainingElement(pressEvent.targetElement);
 
             if (iteration) {
-                if (pressEvent.pointer === "mouse") {
-                    this._startX = pressEvent.event.clientX;
-                    this._startY = pressEvent.event.clientY;
-
-                } else { // touch
-                    // The PressComposer is always getting the first touch.
-                    var touch = event.changedTouches[0];
-
-                    this._startX = touch.clientX;
-                    this._startY = touch.clientY;
-                }
+                this._startX = pressEvent.clientX;
+                this._startY = pressEvent.clientY;
 
                 this.__pressComposer.addEventListener("press", this, false);
                 this.__pressComposer.addEventListener("pressCancel", this, false);
