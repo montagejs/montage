@@ -341,14 +341,12 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 if (target === this._element) {
                     this._dispatchPress(event);
                     this._endInteraction(event);
-
-                } else {
-                    this._endInteraction(event);
+                    return;
                 }
-            } else{
-                this._dispatchPressCancel(event);
-                this._endInteraction(event);
             }
+
+            this._dispatchPressCancel(event);
+            this._endInteraction(event);
         }
     },
 
