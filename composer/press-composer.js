@@ -364,7 +364,8 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     _createPressEvent: {
         enumerable: false,
         value: function (name, event) {
-            var pressEvent, detail, index;
+            var contactPoint = event,
+                pressEvent, index;
 
             if (!event) {
                 event = document.createEvent("CustomEvent");
@@ -378,8 +379,13 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
             pressEvent.targetElement = event.target;
 
             if (event.changedTouches && (index = this._changedTouchisObserved(event.changedTouches)) !== false) {
-                pressEvent.touch = event.changedTouches[index];
+                contactPoint = pressEvent.touch = event.changedTouches[index];
             }
+
+            pressEvent.clientX = contactPoint.clientX;
+            pressEvent.clientY = contactPoint.clientY;
+            pressEvent.pageX = contactPoint.pageX;
+            pressEvent.pageY = contactPoint.pageY;
 
             return pressEvent;
         }
