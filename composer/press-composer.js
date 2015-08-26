@@ -279,7 +279,15 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
             if (this._changedTouchisObserved(event.changedTouches) !== false) {
                 if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                    this._dispatchPress(event);
+                    var touch = event.changedTouches[0],
+                        elementFromPoint = document.elementFromPoint(touch.clientX, touch.clientY);
+
+                    if (this.element === elementFromPoint || this.element.contains(elementFromPoint)) {
+                        this._dispatchPress(event);
+
+                    } else {
+                        this._dispatchPressCancel(event);
+                    }
                 }
 
                 this._endInteraction(event);
