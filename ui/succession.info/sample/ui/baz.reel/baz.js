@@ -25,19 +25,19 @@ exports.Baz = Component.specialize({
             this.height = parseFloat(computedStyle.getPropertyValue("height"));
         }
     },
-    draw: {
-        value: function () {
-            console.log("draw");
-        }
-    },
-    enterDocument: {
-        value: function (firstTime) {
-            console.log("enterDocument");
-        }
-    },
-    exitDocument: {
-        value: function () {
-            console.log("exitDocument");
-        }
-    }
+    //draw: {
+    //    value: function () {
+    //        console.log("draw");
+    //    }
+    //},
+    //enterDocument: {
+    //    value: function (firstTime) {
+    //        console.log("enterDocument");
+    //    }
+    //},
+    //exitDocument: {
+    //    value: function () {
+    //        console.log("exitDocument");
+    //    }
+    //}
 });

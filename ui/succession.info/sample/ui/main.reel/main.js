@@ -4,9 +4,9 @@ var Component = require("ui/component").Component,
     Montage = require("core/core").Montage,
     Foo = require("ui/succession.info/sample/ui/foo.reel").Foo,
     Bar = require("ui/succession.info/sample/ui/bar.reel").Bar,
-    Passage = require("ui/passage").Passage,
-    observe = require("frb/observe"),
-    generateUUID = require('core/uuid').generate;
+    observe = require("frb/observe");
+    //Passage = require("ui/passage").Passage,
+    //generateUUID = require('core/uuid').generate;
 
 exports.Main = Component.specialize({
     fooCount: {value: 0},
@@ -22,12 +22,15 @@ exports.Main = Component.specialize({
 
             component.identifier = 'Foo' + this.fooCount;
             component.title = component.title + this.fooCount;
+
             //component.buildInCssClass = null;
             //component.buildInTransitionCssClass = null;
             //component.buildOutCssClass = null;
+
             //component.buildInCssClass = "zoomInDown";
             //component.buildInTransitionCssClass = null;
             //component.buildOutCssClass = "zoomOutDown";
+
             //component.classList.add("absolute");
 
             //Object.observe(component, function (changes) {
@@ -57,16 +60,20 @@ exports.Main = Component.specialize({
             component.identifier = 'Bar' + this.barCount;
             component.title = component.title + this.barCount;
 
+            //component.buildInCssClass = null;
+            //component.buildInTransitionCssClass = null;
+            //component.buildOutCssClass = null;
+
             return component;
         }
     },
 
-    handlePushComponentAction: {
+    handlePushAction: {
         value: function () {
             var component;
 
             if (this.templateObjects.Succession1.top) {
-                component = this.templateObjects.Succession1.top.destination instanceof Foo ?
+                component = this.templateObjects.Succession1.top instanceof Foo ?
                     this.bar : this.foo;
             } else {
                 component = this.foo;
@@ -76,31 +83,31 @@ exports.Main = Component.specialize({
         }
     },
 
-    handlePushAction: {
-        value: function () {
-            var source, destination;
-
-            if (this.templateObjects.Succession1.top) {
-                source = this.templateObjects.Succession1.top.destination;
-                destination = this.templateObjects.Succession1.top.destination instanceof Foo ?
-                    this.bar : this.foo;
-            } else {
-                source = null;
-                destination = this.foo;
-            }
-
-            var passage = new Passage();
-            passage.identifier = generateUUID();
-            passage.source = source;
-            passage.destination = destination;
-            //passage.buildInCssClass = "zoomInDown";
-            //passage.buildInTransitionCssClass = null;
-            //passage.buildOutCssClass = "zoomOutDown";
-            passage.sourceData = {};
-
-            this.templateObjects.Succession1.push(passage);
-        }
-    },
+    //handlePushAction: {
+    //    value: function () {
+    //        var source, destination;
+    //
+    //        if (this.templateObjects.Succession1.top) {
+    //            source = this.templateObjects.Succession1.top.destination;
+    //            destination = this.templateObjects.Succession1.top.destination instanceof Foo ?
+    //                this.bar : this.foo;
+    //        } else {
+    //            source = null;
+    //            destination = this.foo;
+    //        }
+    //
+    //        var passage = new Passage();
+    //        passage.identifier = generateUUID();
+    //        passage.source = source;
+    //        passage.destination = destination;
+    //        //passage.buildInCssClass = "zoomInDown";
+    //        //passage.buildInTransitionCssClass = null;
+    //        //passage.buildOutCssClass = "zoomOutDown";
+    //        passage.sourceData = {};
+    //
+    //        this.templateObjects.Succession1.push(passage);
+    //    }
+    //},
 
     handlePopAction: {
         value: function () {
@@ -193,6 +200,7 @@ exports.Main = Component.specialize({
     handleSetSuccessionBuildInOutAction: {
         value: function () {
             this.templateObjects.Succession1.contentBuildInCssClass = "bounceInDown";
+            this.templateObjects.Succession1.contentBuildInTransitionCssClass = null;
             this.templateObjects.Succession1.contentBuildOutCssClass = "bounceOutDown";
         }
     },
@@ -202,6 +210,14 @@ exports.Main = Component.specialize({
             this.templateObjects.Succession1.contentBuildInCssClass = undefined;
             this.templateObjects.Succession1.contentBuildInTransitionCssClass = undefined;
             this.templateObjects.Succession1.contentBuildOutCssClass = undefined;
+        }
+    },
+
+    handleDisableSuccessionBuildInOutAction: {
+        value: function () {
+            this.templateObjects.Succession1.contentBuildInCssClass = null;
+            this.templateObjects.Succession1.contentBuildInTransitionCssClass = null;
+            this.templateObjects.Succession1.contentBuildOutCssClass = null;
         }
     },
 

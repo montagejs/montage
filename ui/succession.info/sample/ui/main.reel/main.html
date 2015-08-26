@@ -24,18 +24,6 @@
                 "top.destination.destinationData": {"<-": "this.top.destinationData"}
             }
         },
-        "pushComponent": {
-            "prototype": "ui/button.reel",
-            "properties": {
-                "element": {"#": "pushComponent"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
-        },
         "push": {
             "prototype": "ui/button.reel",
             "properties": {
@@ -156,6 +144,18 @@
                 }
             ]
         },
+        "disableSuccessionBuildInOut": {
+            "prototype": "ui/button.reel",
+            "properties": {
+                "element": {"#": "disableSuccessionBuildInOut"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
 
 
         "stack": {
@@ -167,25 +167,13 @@
                 "content": {"<-": "@Succession1.content.reversed()"}
             }
         },
-        "destinationDisplayTitle": {
-            "prototype": "ui/text.reel",
-            "properties": {
-                "element": {"#": "destinationDisplayTitle"}
-            },
-            "bindings": {
-                "value": {"<-": "@stack:iteration.object.destination.title"},
-                "classList.has('top')": {"<-": "@stack:iteration.object.destination == @Succession1.top.destination"},
-                "classList.has('previous')": {"<-": "@stack:iteration.object.destination == @Succession1.previous.destination"},
-                "classList.has('first')": {"<-": "@stack:iteration.object.destination == @Succession1.first.destination"}
-            }
-        },
         "buildInOverride": {
             "prototype": "ui/text.reel",
             "properties": {
                 "element": {"#": "buildInOverride"}
             },
             "bindings": {
-                "value": {"<-": "@Succession1.contentBuildInCssClass || @Succession1.top.buildInCssClass || 'none'"}
+                "value": {"<-": "@Succession1.contentBuildInCssClass || 'none'"}
             }
         },
         "buildOutOverride": {
@@ -194,16 +182,34 @@
                 "element": {"#": "buildOutOverride"}
             },
             "bindings": {
-                "value": {"<-": "@Succession1.contentBuildOutCssClass || @Succession1.top.buildOutCssClass || 'none'"}
+                "value": {"<-": "@Succession1.contentBuildOutCssClass || 'none'"}
             }
         },
-        "sourceDisplayTitle": {
+        "displayTitle": {
             "prototype": "ui/text.reel",
             "properties": {
-                "element": {"#": "sourceDisplayTitle"}
+                "element": {"#": "displayTitle"}
             },
             "bindings": {
-                "value": {"<-": "@stack:iteration.object.source.title ?? 'N/A'"}
+                "value": {"<-": "@stack:iteration.object.title ?? 'N/A'"}
+            }
+        },
+        "animation": {
+            "prototype": "ui/text.reel",
+            "properties": {
+                "element": {"#": "animation"}
+            },
+            "bindings": {
+                "value": {"<-": "@stack:iteration.object.buildInCssClass + ' ' + @stack:iteration.object.buildInTransitionCssClass + ' ' + @stack:iteration.object.buildOutCssClass"}
+            }
+        },
+        "animationOverride": {
+            "prototype": "ui/text.reel",
+            "properties": {
+                "element": {"#": "animationOverride"}
+            },
+            "bindings": {
+                "value": {"<-": "@stack:iteration.object.buildInCssClassOverride + ' ' + @stack:iteration.object.buildInTransitionCssClassOverride + ' ' + @stack:iteration.object.buildOutCssClassOverride"}
             }
         },
 
@@ -369,7 +375,7 @@
 
         <h2>Inside Succession with overridden animation</h2>
         <div>
-            <button data-montage-id="pushComponent">Push Component</button>
+            <!--<button data-montage-id="pushComponent">Push Component</button>-->
             <button data-montage-id="push">Push</button>
             <button data-montage-id="pushx5">Push x5</button>
             <button data-montage-id="pop">Pop</button>
@@ -382,23 +388,26 @@
         <div>
             <button data-montage-id="toggleOverflow">Toggle Overflow</button>
             <button data-montage-id="setSuccessionBuildInOut">Set Succession build-in / out</button>
-            <button data-montage-id="clearSuccessionBuildInOut">Clear Succession build-in / out</button>
+            <button data-montage-id="clearSuccessionBuildInOut">Clear Succession build-in / out (undefined)</button>
+            <button data-montage-id="disableSuccessionBuildInOut">Disable Succession build-in / out (null)</button>
         </div>
 
         <div class="wrapper">
-            <div data-montage-id="Succession1" class="container overflow-hidden"></div>
+            <div data-montage-id="Succession1" class="succession container overflow-hidden"></div>
             <div class="stack">
                 Build-in Override: <code data-montage-id="buildInOverride"></code>
                 <br/>
                 Build-out Override: <code data-montage-id="buildOutOverride"></code>
 
-                <h3>The stack (source -> destination)</h3>
+                <h3>The stack</h3>
                 <ul data-montage-id="stack">
                     <li>
                         <div>
-                            <span data-montage-id="sourceDisplayTitle"></span>
-                            ->
-                            <span data-montage-id="destinationDisplayTitle"></span>
+                            <span data-montage-id="displayTitle"></span>
+                            <br>
+                            <span data-montage-id="animation"></span>
+                            <br>
+                            <span data-montage-id="animationOverride"></span>
                         </div>
                     </li>
                 </ul>
@@ -415,7 +424,7 @@
             </div>
         </div>
 
-        <h2>Drawing outside of draw cycle in condition</h2>
+        <h2>Condition, CSS transition, access getComputedStyle properties in willDraw</h2>
         <button data-montage-id="conditionToggle">Toggle</button>
         <div class="wrapper">
             <div class="container overflow-hidden">

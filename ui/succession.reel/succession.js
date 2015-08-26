@@ -3,8 +3,8 @@
 /**
  * @module "montage/ui/succession.reel"
  */
-var Component = require("ui/component").Component,
-    Passage = require("ui/passage").Passage;
+var Component = require("ui/component").Component;
+var WeakMap = require("collections/weak-map");
 
 /**
  * Subclasses Component for its `domContent` behavior.
@@ -66,6 +66,8 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
                  */
                 "first": {"<-": "this.content[0]"}
             });
+
+            //this._backupTransitionProperties = new WeakMap();
         }
     },
 
@@ -83,7 +85,15 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
             return this._content || (this._content = []);
         },
         set: function (value) {
-            this._clear();
+            if (this.content && this.content.length) {
+                this._prepareForBuild();
+                this.domContent = null;
+                //for (var i = 0; i < this.content.length; i++) {
+                //    this._restoreBackupTransitionProperties(this.content[i]);
+                //}
+                this.content.length = 0;
+            }
+
             if (value) {
                 this.push(value);
             }
@@ -108,48 +118,27 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
      */
     push: {
         value: function (value) {
-            var passage, element;
-
-            if (this.top && (value instanceof Passage)) {
-                if ((value.source || value) !== this.top.destination) {
-                    console.error(
-                        new Error("Passage source isn't what's currently on the top of the " +
-                        "Succession stack. Abandoning passage.")
-                    );
-                    return;
-                }
-            }
-
-            // if pushing Component, generate a Passage
-            if (!(value instanceof Passage)) {
-                passage = new Passage();
-                passage.source = this.top ? this.top.destination : null;
-                passage.destination = value;
-            } else {
-                passage = value;
-            }
+            var element;
 
             // Push may happen when Succession hasn't enterDocument yet
             if (this.parentComponent) {
-                this._prepareForBuild(passage);
+                this._prepareForBuild(value);
             }
 
-            this._handleData(passage);
-
-            this.content.push(passage);
+            this.content.push(value);
 
             // update DOM content
-            if (!this.top.destination.element) {
+            if (!this.top.element) {
                 element = document.createElement("div");
-                element.id = this.top.destination.identifier || "appendDiv";
-                this.top.destination.element = element;
+                element.id = this.top.identifier || "appendDiv";
+                this.top.element = element;
 
             } else {
-                element = this.top.destination.element;
+                element = this.top.element;
             }
 
             this.domContent = element;
-            this.top.destination.needsDraw = true;
+            this.top.needsDraw = true;
         }
     },
 
@@ -161,54 +150,22 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
     pop: {
         value: function () {
             if (this.top) {
-                var restore = this.top.destination;
+                var restore = this.top;
 
-                this._swapSourceDestination(this.top);
-                this._prepareForBuild(this.top);
+                this._prepareForBuild(this.previous);
                 this.content.pop();
 
                 if (this.content.length) {
-                    this.domContent = this.top.destination.element;
-                    this.top.destination.needsDraw = true;
+                    this.domContent = this.top.element;
+                    this.top.needsDraw = true;
 
                 } else {
                     this.domContent = null;
                 }
 
                 // restore original passage properties now that component has left the stack
-                this._restoreBackupTransitionProperties(restore);
+                //this._restoreBackupTransitionProperties(restore);
             }
-        }
-    },
-
-    /**
-     * Clear the Stack of Transitions.
-     *
-     * @function
-     * @private
-     */
-    _clear: {
-        value: function () {
-            if (this.content && this.content.length) {
-                this._swapSourceDestination(this.top);
-                this._prepareForBuild(this.top);
-                this.content.length = 0;
-                this.domContent = null;
-            }
-        }
-    },
-
-    /**
-     * Flip source / destination to flip animation overriding in _prepareForBuild
-     *
-     * @function
-     * @private
-     */
-    _swapSourceDestination: {
-        value: function (passage) {
-            var temp = passage.source;
-            passage.source = passage.destination;
-            passage.destination = temp;
         }
     },
 
@@ -219,11 +176,11 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
      * Each component's backup will only be set once, and will always contain component's
      * original passage properties.
      *
-     * @property {Object}
+     * @property {WeakMap}
      */
-    _backupTransitionProperties: {
-        value: {}
-    },
+    //_backupTransitionProperties: {
+    //    value: null
+    //},
 
     /**
      * Override build-in / out animation; checks for whether properties are undefined,
@@ -235,99 +192,82 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
      * @private
      */
     _prepareForBuild: {
-        value: function (passage) {
-            var source,
-                sourceBackup, destinationBackup,
+        value: function (incoming) {
+            var outgoingBackup, incomingBackup,
                 buildInCssClassOverride, buildInTransitionCssClassOverride, buildOutCSSClassOverride;
 
-            if (passage.destination) {
+            if (incoming) {
                 // Backup properties to be restored when components leave the Succession stack
-                destinationBackup = this._backupTransitionProperties[passage.destination.uuid] =
-                    this._backupTransitionProperties[passage.destination.uuid] || {};
+                //if (!this._backupTransitionProperties.has(incoming)) {
+                //    incomingBackup = {
+                //        buildInCssClass: incoming.buildInCssClass,
+                //        buildInTransitionCssClass: incoming.buildInTransitionCssClass,
+                //        buildOutCssClass: incoming.buildOutCssClass
+                //    };
+                //
+                //    this._backupTransitionProperties.set(incoming, incomingBackup);
+                //}
 
-                if (!destinationBackup.buildInCssClass) {
-                    destinationBackup.buildInCssClass = passage.destination.buildInCssClass;
-                }
+                //if (!incomingBackup.buildInCssClass) {
+                //    incomingBackup.buildInCssClass = incoming.buildInCssClass;
+                //}
+                //
+                //if (!incomingBackup.buildInTransitionCssClass) {
+                //    incomingBackup.buildInTransitionCssClass = incoming.buildInTransitionCssClass;
+                //}
+                //
+                //buildInCssClassOverride = this.contentBuildInCssClass || incoming.buildInCssClass;
+                //
+                //// If this.contentBuildInCssClass is defined, this.contentBuildInTransitionCssClass may be undefined,
+                //// but still need to override passage.buildInTransitionCssClass because we may want an animation
+                //buildInTransitionCssClassOverride = this.contentBuildInCssClass ?
+                //    this.contentBuildInTransitionCssClass : incoming.buildInTransitionCssClass;
 
-                if (!destinationBackup.buildInTransitionCssClass) {
-                    destinationBackup.buildInTransitionCssClass = passage.destination.buildInTransitionCssClass;
-                }
+                if (typeof this.contentBuildInCssClass !== 'undefined' &&
+                    incoming.buildInCssClassOverride !== this.contentBuildInCssClass) {
 
-                buildInCssClassOverride = this.contentBuildInCssClass || passage.buildInCssClass;
+                    incoming.buildInCssClassOverride = this.contentBuildInCssClass;
 
-                // If this.contentBuildInCssClass is defined, this.contentBuildInTransitionCssClass may be undefined,
-                // but still need to override passage.buildInTransitionCssClass because we may want an animation
-                buildInTransitionCssClassOverride = this.contentBuildInCssClass ?
-                    this.contentBuildInTransitionCssClass : passage.buildInTransitionCssClass;
-
-                if (typeof buildInCssClassOverride !== 'undefined' &&
-                    passage.destination.buildInCssClass !== buildInCssClassOverride) {
-
-                    passage.destination.buildInCssClass = buildInCssClassOverride;
-
-                    // buildInTransitionCssClass shouldn't overridden if buildInCssClass wasn't overridden
-                    if (passage.destination.buildInTransitionCssClass !== buildInTransitionCssClassOverride) {
-                        passage.destination.buildInTransitionCssClass = buildInTransitionCssClassOverride;
+                    // buildInTransitionCssClass shouldn't be overridden if buildInCssClass wasn't overridden
+                    // not checking undefined b/c we may desire CSS animation instead of transition
+                    if (incoming.buildInTransitionCssClassOverride !== this.contentBuildInTransitionCssClass) {
+                        incoming.buildInTransitionCssClassOverride = this.contentBuildInTransitionCssClass;
                     }
                 }
             }
 
-            if (passage.source) {
-                // Backup properties to be restored when components leave the Succession stack
-                sourceBackup = this._backupTransitionProperties[passage.source.uuid] =
-                    this._backupTransitionProperties[passage.source.uuid] || {};
-
-                if (!sourceBackup.buildOutCssClass) {
-                    sourceBackup.buildOutCssClass = passage.source.buildOutCssClass;
-                }
-
-                buildOutCSSClassOverride = this.contentBuildOutCssClass || passage.buildOutCssClass;
-
-                if (typeof buildOutCSSClassOverride !== 'undefined' &&
-                    passage.source.buildOutCssClass !== buildOutCSSClassOverride) {
-                    passage.source.buildOutCssClass = buildOutCSSClassOverride;
+            if (this.top) { // outgoing
+                if (typeof this.contentBuildOutCssClass !== 'undefined' &&
+                    this.top.buildOutCssClassOverride !== this.contentBuildOutCssClass) {
+                    this.top.buildOutCssClassOverride = this.contentBuildOutCssClass;
                 }
             }
-        }
-    },
-
-    /**
-     * Allow passage source to pass data to destination if desired.
-     *
-     * @private
-     * @function
-     */
-    _handleData: {
-        value: function (passage) {
-            if (passage.sourceData) {
-                passage.destinationData = passage.sourceData;
-            }
-        }
-    },
-
-    /**
-     * @function
-     * @private
-     */
-    _restoreBackupTransitionProperties: {
-        value: function (component) {
-            var backup = this._backupTransitionProperties[component.uuid];
-
-            if (backup.buildOutCssClass) {
-                component.buildOutCssClass = backup.buildOutCssClass;
-                backup.buildOutCssClass = null;
-            }
-
-            if (backup.buildInCssClass) {
-                component.buildInCssClass = backup.buildInCssClass;
-                backup.buildInCssClass = null;
-            }
-
-            if (backup.buildInTransitionCssClass) {
-                component.buildInTransitionCssClass = backup.buildInTransitionCssClass;
-                backup.buildInTransitionCssClass = null;
-            }
-
         }
     }
+
+    /**
+     * @function
+     * @private
+     */
+    //_restoreBackupTransitionProperties: {
+    //    value: function (component) {
+    //        var backup = this._backupTransitionProperties.get(component);
+    //
+    //        if (backup) {
+    //            if (backup.buildOutCssClass) {
+    //                component.buildOutCssClass = backup.buildOutCssClass;
+    //            }
+    //
+    //            if (backup.buildInCssClass) {
+    //                component.buildInCssClass = backup.buildInCssClass;
+    //            }
+    //
+    //            if (backup.buildInTransitionCssClass) {
+    //                component.buildInTransitionCssClass = backup.buildInTransitionCssClass;
+    //            }
+    //
+    //            this._backupTransitionProperties.delete(component)
+    //        }
+    //    }
+    //}
 });
