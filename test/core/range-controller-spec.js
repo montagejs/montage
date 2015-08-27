@@ -353,4 +353,35 @@ describe("core/range-controller-spec", function () {
         });
     });
 
+    describe("filtering, sorting and reversing", function () {
+        it("filterPath should work as expected", function () {
+            rangeController.content = [1, 2, 3, 4, 5];
+            rangeController.filterPath = "%2";
+            expect(rangeController.organizedContent).toEqual([1, 3, 5]);
+            rangeController.content = [1, 2, 3];
+            expect(rangeController.organizedContent).toEqual([1, 3]);
+        });
+        it("sortPath should work as expected", function () {
+            rangeController.content = [3, 1, 5, 2, 4];
+            rangeController.sortPath = "";
+            expect(rangeController.organizedContent).toEqual([1, 2, 3, 4, 5]);
+            rangeController.content = [2, 3, 1];
+            expect(rangeController.organizedContent).toEqual([1, 2, 3]);
+        });
+        it("reversed should work as expected", function () {
+            rangeController.content = [1, 2, 3, 4, 5];
+            rangeController.reversed = true;
+            expect(rangeController.organizedContent).toEqual([5, 4, 3, 2, 1]);
+            rangeController.content = [1, 2, 3];
+            expect(rangeController.organizedContent).toEqual([3, 2, 1]);
+        });
+        it("together should work as expected", function () {
+            rangeController.content = [3, 1, 5, 2, 4];
+            rangeController.filterPath = "%2";
+            rangeController.sortPath = "";
+            rangeController.reversed = true;
+            expect(rangeController.organizedContent).toEqual([5, 3, 1]);
+        });
+    });
+
 });
