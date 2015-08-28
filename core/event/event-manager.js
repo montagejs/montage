@@ -1532,7 +1532,7 @@ if (typeof window !== "undefined") { // client-side
          * @returns {boolean} - Whether or not the pointer was successfully claimed.
          */
         claimPointer: {
-            value: function (pointer, component) {
+            value: function (pointer, component, contactPoint) {
 
                 // if null, undefined, false: complain
                 if (!pointer && pointer !== 0) {
@@ -1552,6 +1552,11 @@ if (typeof window !== "undefined") { // client-side
                 } else if (!claimant) {
                     //Nobody has claimed it; go for it
                     this._claimedPointers[pointer] = component;
+
+                    if (contactPoint) { //Need discussion -> contactPoint can be a Touch or an Event Object. (find another name?)
+                        this._setPointerOwnerForContactPoint(contactPoint, pointer);
+                    }
+
                     return true;
 
                 } else {
@@ -2373,6 +2378,40 @@ if (typeof window !== "undefined") { // client-side
             }
         },
 
+        _setPointerOwnerForContactPoint: {
+            value: function (contactPoint, pointer) {
+                var self = this;
+
+                Object.defineProperty(contactPoint, 'pointerOwner', {
+                    get: function () {
+                        return self._claimedPointers[pointer];
+                    }
+                });
+            }
+        },
+
+        _findClaimedPointerFromEvent: {
+            value: function (mutableEvent) {
+                var event = mutableEvent._event;
+
+                if (typeof MouseEvent !== "undefined" && event instanceof MouseEvent && this._claimedPointers["mouse"]) {
+                    this._setPointerOwnerForContactPoint(mutableEvent, "mouse");
+
+                } else if (typeof TouchEvent !== "undefined" && event instanceof TouchEvent) {
+                    var changedTouches = mutableEvent.changedTouches,
+                        touch;
+
+                    for (var i = 0, length = changedTouches.length; i < length; i++) {
+                        touch = changedTouches[i];
+
+                        if (this._claimedPointers[touch.identifier]) {
+                            this._setPointerOwnerForContactPoint(touch, touch.identifier);
+                        }
+                    }
+                }
+            }
+        },
+
         // Event Handling
 
         /**
@@ -2457,6 +2496,8 @@ if (typeof window !== "undefined") { // client-side
                 if (this._isStoringPointerEvents) {
                     this._pointerStorage.storeEvent(mutableEvent);
                 }
+
+                this._findClaimedPointerFromEvent(mutableEvent);
 
                 // Capture Phase Distribution
                 mutableEvent.eventPhase = CAPTURING_PHASE;
