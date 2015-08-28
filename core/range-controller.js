@@ -46,7 +46,7 @@ var _RangeSelection = function(content, rangeController) {
     //Moved to RangeSelection.prototype for optimization
     //self.makeObservable();
     self.__proto__ = _RangeSelection.prototype;
-    
+
     self.rangeController = rangeController;
     self.contentEquals = content && content.contentEquals || Object.is;
 
@@ -94,11 +94,11 @@ Object.defineProperty(_RangeSelection.prototype, "push", {
           while (++i < l) {
             x[i] = arguments[i];
           }
-        
+
         this.swap_or_push(this.length, 0, x);
     }
 });
-    
+
 /**
  * A custom version of swap to ensure that changes obey the RangeController
  * invariants:
@@ -256,23 +256,26 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
             // The filterPath,
             // sortedPath, reversed, and visibleIndexes are all optional stages
             // in that pipeline and used if non-null and in that order.
-            // The _orderedContent variable is a necessary intermediate stage
-            // From which visibleIndexes plucks visible values.
+            // The _filteredContent, _sortedContent and _reversedContent variables
+            // are intermediate stages from which visibleIndexes plucks visible values.
             this.organizedContent = [];
             // dispatches handleOrganizedContentRangeChange
             this.organizedContent.addRangeChangeListener(this, "organizedContent");
-            this.defineBinding("_orderedContent", {
-                "<-": "content" +
-                    ".($filterPath.defined() ? filter{path($filterPath)} : ())" +
-                    ".($sortPath.defined() ? sorted{path($sortPath)} : ())" +
-                    ".($reversed ?? 0 ? reversed() : ())"
+            this.defineBinding("_filteredContent", {
+                "<-": "$filterPath.defined() ? content.filter{path($filterPath)} : content"
+            });
+            this.defineBinding("_sortedContent", {
+                "<-": "$sortPath.defined() ? _filteredContent.sorted{path($sortPath)} : _filteredContent"
+            });
+            this.defineBinding("_reversedContent", {
+                "<-": "$reversed ?? 0 ? _sortedContent.reversed() : _sortedContent"
             });
             this.defineBinding("organizedContent.rangeContent()", {
-                "<-": "_orderedContent.(" +
+                "<-": "_reversedContent.(" +
                     "$visibleIndexes.defined() ?" +
                     "$visibleIndexes" +
-                        ".filter{<$_orderedContent.length}" +
-                        ".map{$_orderedContent[()]}" +
+                        ".filter{<$_reversedContent.length}" +
+                        ".map{$_reversedContent[()]}" +
                     " : ()" +
                 ").(" +
                     "$start.defined() && $length.defined() ?" +
@@ -418,14 +421,6 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
 
     // Properties managed by the controller
     // ------------------------------------
-
-    /**
-     * The content after it has been sorted, reversed, and filtered, suitable
-     * for plucking visible indexes and/or then the sliding window.
-     *
-     * @private
-     */
-    _orderedContent: {value: null},
 
     /**
      * An array incrementally projected from `content` through sort,
