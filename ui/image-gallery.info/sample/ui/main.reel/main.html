@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Main</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"}
+            }
+        },
+        "currentImageIndex": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "currentImageIndex"}
+            },
+            "bindings": {
+                "value": {"<-": "'Image ' + (@imageGallery.currentImageIndex + 1) + ' of ' + @imageGallery.images.length"}
+            }
+        },
+        "imageGallery": {
+            "prototype": "montage/ui/image-gallery.reel",
+            "properties": {
+                "element": {"#": "imageGallery"},
+                "images": [
+                    "ui/main.reel/asset/cezanne.jpg",
+                    "ui/main.reel/asset/gaugin.jpg",
+                    "ui/main.reel/asset/monet.jpg",
+                    "ui/main.reel/asset/renoir.jpg",
+                    "ui/main.reel/asset/seurat.jpg"
+                ]
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="Main">
+        <div data-montage-id="imageGallery" class="Main-imageGallery"></div>
+        <div data-montage-id="currentImageIndex" class="Main-currentImageIndex"></div>
+        <div class="Main-imageOrigin">Courtesy National Gallery of Art, Washington</div>
+    </div>
+</body>
+</html>
