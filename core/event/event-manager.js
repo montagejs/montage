@@ -2205,10 +2205,6 @@ if (typeof window !== "undefined") { // client-side
                     aWindow;
 
                 if (target) {
-                    if (target instanceof Window) {
-                        aWindow = target;
-                    }
-
                     aWindow = target instanceof Window ? target : target.defaultView instanceof Window ?
                         target.defaultView : target.ownerDocument && target.ownerDocument.defaultView ?
                         target.ownerDocument.defaultView : null;
