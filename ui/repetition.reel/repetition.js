@@ -725,9 +725,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             if (!this.__pressComposer) {
                 this.__pressComposer = new PressComposer();
                 this.__pressComposer.lazyLoad = true;
-                this.__pressComposer.eventPhase = Event.CAPTURING_PHASE;
-
-                this.addComposer(this.__pressComposer);
+                this.addComposerForElement(this.__pressComposer, this.element);
             }
 
             return this.__pressComposer;
