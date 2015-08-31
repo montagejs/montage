@@ -110,7 +110,23 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      * active iteration.
      * @type {boolean}
      */
-    active: {value: null},
+    _active: {value: false},
+
+
+    active: {
+        set: function (_active) {
+            _active = !!_active;
+
+            if (this._active !== _active) {
+                this.repetition._callDelegateSelectionMethod(this._active, "active", this, true);
+                this._active = _active;
+                this.repetition._callDelegateSelectionMethod(_active, "active", this, false);
+            }
+        },
+        get: function () {
+            return this._active;
+        }
+    },
 
     /**
      * A flag that indicates that the "no-transition" CSS class should be added
@@ -148,7 +164,10 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
                 }
             }
             if (this._selected !== value) {
+                this.repetition._callDelegateSelectionMethod(this._selected, "selected", this, true);
                 this._selected = value;
+                this.repetition._callDelegateSelectionMethod(value, "selected", this, false);
+
                 this.repetition._addDirtyClassListIteration(this);
                 this.repetition.needsDraw = true;
             }
@@ -193,8 +212,6 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             // of drawn iterations.
             this._drawnIndex = null;
 
-            // Describes whether a user gesture is touching this iteration.
-            this.active = false;
             // Changes to whether a user is touching the iteration are
             // reflected by the "active" CSS class on each element in the
             // iteration.  This gets updated in the draw cycle, in response to
@@ -2122,6 +2139,30 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             this._ignoreSelectionPointer();
 
             return true;
+        }
+    },
+
+    _callDelegateSelectionMethod: {
+        value: function (value, iterationStatus, iteration, before) {
+            if (this._completedFirstDraw && this.delegate) {
+                if (iterationStatus === "selected") {
+                    if (before && value) {
+                        this.callDelegateMethod("repetitionWillDeselectIteration", this, iteration);
+                    } else if (before && !value) {
+                        this.callDelegateMethod("repetitionWillSelectIteration", this, iteration);
+                    } else if (!before && value) {
+                        this.callDelegateMethod("repetitionDidSelectIteration", this, iteration);
+                    } else {
+                        this.callDelegateMethod("repetitionDidDeselectIteration", this, iteration);
+                    }
+                } else if (iterationStatus === "active") {
+                    if (before && !value) {
+                        this.callDelegateMethod("repetitionWillActivateIteration", this, iteration);
+                    } else if (!before && value) {
+                        this.callDelegateMethod("repetitionDidActivateIteration", this, iteration);
+                    }
+                }
+            }
         }
     },
 
