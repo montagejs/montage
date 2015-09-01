@@ -8,3 +8,7 @@
     background-size: contain;
     background-position: center center;
 }
+
+.montage-ImageGalleryItem-loaderImage {
+    display: none;
+}

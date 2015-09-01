@@ -48,3 +48,27 @@
     text-align: center;
     width: 700px;
 }
+
+.montage-ImageGalleryItem-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url(asset/spinner.svg);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 64px 64px;
+}
+
+.montage-ImageGalleryItem-error {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url(asset/error.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 90px 90px;
+}
