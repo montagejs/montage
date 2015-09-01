@@ -45,6 +45,50 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
         }
     },
 
+    /**
+     * Specifies on which phase of the event flow composers should work.
+     *
+     * @property {boolean}
+     * @public
+     * @default true - Capture Phase
+     */
+    eventPhase: {
+        get: function () {
+            return this._eventPhase;
+        },
+        set: function (eventPhase) {
+            var newEventPhase;
+
+            if (typeof eventPhase === "boolean") {
+                newEventPhase = eventPhase;
+
+            } else if (eventPhase === Event.CAPTURING_PHASE) {
+                newEventPhase = true;
+
+            } else if (eventPhase === Event.BUBBLING_PHASE) {
+                newEventPhase = false;
+            }
+
+            if (typeof newEventPhase !== "undefined" && newEventPhase !== this._eventPhase) {
+                if (this._isLoaded) {
+                    this._unload();
+                    this._eventPhase = newEventPhase;
+                    this._load();
+
+                    if (typeof this._handleEventPhaseChange === "function") {
+                        this._handleEventPhaseChange();
+                    }
+                } else {
+                    this._eventPhase = newEventPhase;
+                }
+            }
+        }
+    },
+
+    _eventPhase: {
+        value: true
+    },
+
     _element: {
         value: null
     },

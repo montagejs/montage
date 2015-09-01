@@ -72,16 +72,16 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     load: {
         value: function () {
             //todo: add support pointer events
-            this._element.addEventListener("touchstart", this, false);
-            this._element.addEventListener("mousedown", this, false);
+            this._element.addEventListener("touchstart", this, this.eventPhase);
+            this._element.addEventListener("mousedown", this, this.eventPhase);
         }
     },
 
     unload: {
         value: function () {
             //todo: add support pointer events
-            this._element.removeEventListener("touchstart", this, false);
-            this._element.removeEventListener("mousedown", this, false);
+            this._element.removeEventListener("touchstart", this, this.eventPhase);
+            this._element.removeEventListener("mousedown", this, this.eventPhase);
         }
     },
 
@@ -185,11 +185,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
      */
     _endInteraction: {
         value: function () {
-            document.removeEventListener("touchend", this);
-            document.removeEventListener("touchcancel", this);
-            document.removeEventListener("mouseup", this);
-
-            this._element.removeEventListener("dragstart", this, false);
+            this._removeEventListeners(this.eventPhase);
 
             if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 this.component.eventManager.forfeitPointer(this._observedPointer, this);
@@ -197,6 +193,37 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
             this._observedPointer = null;
             this._state = PressComposer.UNPRESSED;
+        }
+    },
+
+    _removeEventListeners: {
+        value: function (eventPhase) {
+            if (this._observedPointer === "mouse") {
+                document.removeEventListener("mouseup", this, eventPhase);
+                this._element.removeEventListener("dragstart", this, eventPhase);
+
+            } else if (this._observedPointer !== null) {
+                document.removeEventListener("touchend", this, eventPhase);
+                document.removeEventListener("touchcancel", this, eventPhase);
+            }
+        }
+    },
+
+    _addEventListeners: {
+        value: function (eventPhase) {
+            if (this._observedPointer === "mouse") {
+                // Needed to cancel the press if mouseup'd when not on the component
+                document.addEventListener("mouseup", this, eventPhase);
+
+                // Needed to cancel the press because once a drag is started
+                // no mouse events are fired
+                // http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#initiate-the-drag-and-drop-operation
+                this._element.addEventListener("dragstart", this, eventPhase);
+
+            } else if (this._observedPointer !== null) {
+                document.addEventListener("touchend", this, eventPhase);
+                document.addEventListener("touchcancel", this, eventPhase);
+            }
         }
     },
 
@@ -247,6 +274,15 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         }
     },
 
+    _handleEventPhaseChange: {
+        value: function () {
+            if (this._observedPointer) {
+                this._removeEventListeners(!this.eventPhase);
+                this._addEventListeners(this.eventPhase);
+            }
+        }
+    },
+
     // Handlers
 
     handleTouchstart: {
@@ -258,9 +294,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 }
 
                 if (this._observedPointer !== null && this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                    document.addEventListener("touchend", this, false);
-                    document.addEventListener("touchcancel", this, false);
-
+                    this._addEventListeners(this.eventPhase);
                     this._dispatchPressStart(event);
 
                 } else {
@@ -314,16 +348,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 this.component.eventManager.claimPointer(this._observedPointer, this);
 
                 if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                    // Needed to cancel the press if mouseup'd when not on the component
-                    document.addEventListener("mouseup", this, false);
-
-                    document.addEventListener("touchend", this, false);
-
-                    // Needed to cancel the press because once a drag is started
-                    // no mouse events are fired
-                    // http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#initiate-the-drag-and-drop-operation
-                    this._element.addEventListener("dragstart", this, false);
-
+                    this._addEventListeners(this.eventPhase);
                     this._dispatchPressStart(event);
                 } else{
                     this._observedPointer = null;
@@ -452,6 +477,13 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     }
 
 });
+
+PressComposer.prototype.captureMousedown = PressComposer.prototype.handleMousedown;
+PressComposer.prototype.captureMouseup = PressComposer.prototype.handleMouseup;
+PressComposer.prototype.captureDragstart = PressComposer.prototype.handleDragstart;
+PressComposer.prototype.captureTouchstart = PressComposer.prototype.handleTouchstart;
+PressComposer.prototype.captureTouchend = PressComposer.prototype.handleTouchend;
+PressComposer.prototype.captureTouchcancel = PressComposer.prototype.handleTouchcancel;
 
 /*
  * @class PressEvent
