@@ -1,6 +1,12 @@
 var Component = require("ui/component").Component;
 
 /**
+ * ***Note***: ImageGallery should never be be hidden using `display: none`.
+ * This will prevent it from displaying normally when `display: block` is
+ * restored. Instead use `visibility: hidden`, `opacity: 0`, or a
+ * [Substitution]{@link Substitution} to hide an ImageGallery when that's
+ * necessary.
+ *
  * @class ImageGallery
  * @extends Component
  */
