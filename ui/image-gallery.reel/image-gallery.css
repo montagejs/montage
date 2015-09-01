@@ -1,5 +1,7 @@
 .montage-ImageGallery {
     position: relative;
+    min-width: 1px;
+    min-height: 1px;
 }
 
 .montage-ImageGallery-flow .montage-Flow-Repetition > div {
