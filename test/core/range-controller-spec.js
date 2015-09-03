@@ -123,7 +123,7 @@ describe("core/range-controller-spec", function () {
 
                     // from Repetition#content setter
                     var object = new RangeController().initWithContent(rangeController.selection);
-                    expect(object.organizedContent).toEqual([1]);
+                    expect(object.organizedContent.toArray()).toEqual([1]);
 
                     rangeController.selection.push(2);
 
