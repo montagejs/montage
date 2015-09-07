@@ -17,9 +17,9 @@ var observableArrayProperties = require("collections/listen/array-changes").obse
 // sync.
 
 // The controller can determine which content to display and the order in which
-// to render them in a variety of ways. You can either use a "selector" to
-// filter and sort the content or use a "visibleIndexes" array. The controller
-// binds the content of "organizedContent" depending on which strategy you use.
+// to render them in a variety of ways. You can use a "selector" to
+// filter and sort the content. The controller binds the content of
+// "organizedContent" depending on which strategy you use.
 
 // The content of "organizedContent" is then reflected with corresponding
 // incremental changes to "iterations". The "iterations" array will always
