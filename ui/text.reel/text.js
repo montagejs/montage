@@ -94,7 +94,7 @@ exports.Text = Component.specialize( /** @lends Text.prototype # */ {
     draw: {
         value: function () {
             // get correct value
-            var value = this._value, displayValue = (value || 0 === value ) ? value : this.defaultValue;
+            var value = this._value, displayValue = (typeof value !== "undefined" && value !== null) ? value : this.defaultValue;
 
             if (this.converter) {
                 displayValue = this.converter.convert(displayValue);
