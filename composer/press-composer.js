@@ -72,16 +72,16 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     load: {
         value: function () {
             //todo: add support pointer events
-            this._element.addEventListener("touchstart", this, false);
-            this._element.addEventListener("mousedown", this, false);
+            this._element.addEventListener("touchstart", this, true);
+            this._element.addEventListener("mousedown", this, true);
         }
     },
 
     unload: {
         value: function () {
             //todo: add support pointer events
-            this._element.removeEventListener("touchstart", this, false);
-            this._element.removeEventListener("mousedown", this, false);
+            this._element.removeEventListener("touchstart", this, true);
+            this._element.removeEventListener("mousedown", this, true);
         }
     },
 
@@ -249,7 +249,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     // Handlers
 
-    handleTouchstart: {
+    captureTouchstart: {
         value: function (event) {
             if (this._shouldPerformPress()) {
                 if (event.changedTouches.length === 1) {
@@ -307,7 +307,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         }
     },
 
-    handleMousedown: {
+    captureMousedown: {
         value: function (event) {
             if (event.button === 0 && this._shouldPerformPress()) {
                 this._observedPointer = "mouse";
