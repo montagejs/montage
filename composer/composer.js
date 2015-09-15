@@ -80,10 +80,10 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
      *   `prepareForActivationEvents`.
      *
      * Delaying the creation of event listeners can improve performance.
-     * @default true
+     * @default false
      */
     lazyLoad: {
-        value: true
+        value: false
     },
 
     _needsFrame: {
