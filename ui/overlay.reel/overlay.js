@@ -140,23 +140,6 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
         }
     },
 
-    /**
-     * @constructs Overlay
-     */
-    constructor: {
-        value: function Overlay() {
-            this.super();
-            this._pressComposer = new PressComposer();
-
-            // The composers are only loaded when the overlay is shown.
-            // This is because the composers are added to the document, and so
-            // interferes with the default actions of all clicks by calling
-            // preventDefault on click when the pointer is surrendered (which
-            // is whenever the overlay isn't shown).
-            this._pressComposer.lazyLoad = true;
-        }
-    },
-
     enterDocument: {
         value: function (firstTime) {
             var body,
@@ -171,6 +154,8 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
 
                 _window = this.element.ownerDocument.defaultView;
                 _window.addEventListener("resize", this);
+
+                this._pressComposer = new PressComposer();
                 this.addComposerForElement(this._pressComposer, this.element.ownerDocument);
 
                 if (this._dismissOnExternalInteraction) {
@@ -178,11 +163,9 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
                 }
 
                 this._keyComposer = new KeyComposer();
-                this._keyComposer.component = this;
                 this._keyComposer.keys = "escape";
                 this._keyComposer.identifier = "escape";
-                this.addComposer(this._keyComposer);
-                this._keyComposer.element = window;
+                this.addComposerForElement(this._keyComposer, _window);
             }
         }
     },
@@ -216,8 +199,8 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
 
                 this.attachToParentComponent();
                 this.classList.add(CLASS_PREFIX + "--visible");
-                this._pressComposer.load();
-                this._keyComposer.load();
+                this.loadComposer(this._pressComposer);
+                this.loadComposer(this._keyComposer);
                 this._isShown = true;
                 this.needsDraw = true;
 
@@ -231,8 +214,8 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
             if (this._isShown) {
                 // detachFromParentComponent happens at didDraw
                 this.classList.remove(CLASS_PREFIX + "--visible");
-                this._pressComposer.unload();
-                this._keyComposer.unload();
+                this.unloadComposer(this._pressComposer);
+                this.unloadComposer(this._keyComposer);
                 this._isShown = false;
                 this.needsDraw = true;
 
