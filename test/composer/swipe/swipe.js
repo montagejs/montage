@@ -12,6 +12,7 @@ exports.Swipe = Montage.specialize( {
             dummyComponent.attachToParentComponent();
             dummyComponent.needsDraw = true;
             this.swipeComposer = new SwipeComposer();
+            this.swipeComposer.lazyLoad = false;
             dummyComponent.addComposer(this.swipeComposer);
             this.swipeComposer.addEventListener("swipe", this, false);
             this.swipeComposer.addEventListener("swipemove", this, false);

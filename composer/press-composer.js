@@ -185,18 +185,20 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
      */
     _endInteraction: {
         value: function () {
-            document.removeEventListener("touchend", this);
-            document.removeEventListener("touchcancel", this);
-            document.removeEventListener("mouseup", this);
+            if (this._element) {
+                document.removeEventListener("touchend", this);
+                document.removeEventListener("touchcancel", this);
+                document.removeEventListener("mouseup", this);
 
-            this._element.removeEventListener("dragstart", this, false);
+                this._element.removeEventListener("dragstart", this, false);
 
-            if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                this.component.eventManager.forfeitPointer(this._observedPointer, this);
+                if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                    this.component.eventManager.forfeitPointer(this._observedPointer, this);
+                }
+
+                this._observedPointer = null;
+                this._state = PressComposer.UNPRESSED;
             }
-
-            this._observedPointer = null;
-            this._state = PressComposer.UNPRESSED;
         }
     },
 
