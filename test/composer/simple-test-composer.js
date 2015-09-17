@@ -3,6 +3,10 @@ var Montage = require("montage").Montage,
 
 exports.SimpleTestComposer = Composer.specialize( {
 
+    lazyLoad: {
+        value: false
+    },
+
     _loadWasCalled: {
         value: false
     },
@@ -28,10 +32,6 @@ exports.SimpleTestComposer = Composer.specialize( {
 });
 
 exports.LazyLoadTestComposer = Composer.specialize( {
-
-    lazyLoad: {
-        value: true
-    },
 
     _loadWasCalled: {
         value: false
