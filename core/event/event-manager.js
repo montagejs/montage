@@ -1442,12 +1442,18 @@ if (typeof window !== "undefined") { // client-side
          */
         methodNameForBubblePhaseOfEventType: {
             enumerable: false,
-            value: (function (_methodNameForBubblePhaseByEventType_) {
+            value: (function (_methodNameByEventType_,_methodNameByEventTypeIdentifier_) {
                 return function (eventType, identifier) {
-                    var eventTypeKey = identifier ? eventType + "+" + identifier : eventType;
-                    return _methodNameForBubblePhaseByEventType_[eventTypeKey] || (_methodNameForBubblePhaseByEventType_[eventTypeKey] = ("handle" + (identifier ? identifier.toCapitalized() : "") + eventType.toCapitalized()));
+                  var eventTypeBucket;
+                  if(identifier) {
+                    eventTypeBucket = _methodNameByEventTypeIdentifier_[eventType] || (_methodNameByEventTypeIdentifier_[eventType] = Object.create(null));
+                    return eventTypeBucket[identifier] || (eventTypeBucket[identifier] = ("handle" + identifier.toCapitalized() + eventType.toCapitalized()));
+                  }
+                  else {
+                    return _methodNameByEventType_[eventType] || (_methodNameByEventType_[eventType] = ("handle" + eventType.toCapitalized()));
+                  }
                 };
-            })({})
+            })(Object.create(null), Object.create(null))
         },
 
         /**
@@ -1459,12 +1465,18 @@ if (typeof window !== "undefined") { // client-side
 
         methodNameForCapturePhaseOfEventType: {
             enumerable: false,
-            value: (function (_methodNameForCapturePhaseByEventType_) {
+            value: (function (_methodNameByEventType_,_methodNameByEventTypeIdentifier_) {
                 return function (eventType, identifier) {
-                    var eventTypeKey = identifier ? eventType + "+" + identifier : eventType;
-                    return _methodNameForCapturePhaseByEventType_[eventTypeKey] || (_methodNameForCapturePhaseByEventType_[eventTypeKey] = "capture" + (identifier ? identifier.toCapitalized() : "") + eventType.toCapitalized());
+                  var eventTypeBucket;
+                  if(identifier) {
+                    eventTypeBucket = _methodNameByEventTypeIdentifier_[eventType] || (_methodNameByEventTypeIdentifier_[eventType] = Object.create(null));
+                    return eventTypeBucket[identifier] || (eventTypeBucket[identifier] = ("capture" + identifier.toCapitalized() + eventType.toCapitalized()));
+                  }
+                  else {
+                    return _methodNameByEventType_[eventType] || (_methodNameByEventType_[eventType] = ("capture" + eventType.toCapitalized()));
+                  }
                 };
-            })({})
+              })(Object.create(null), Object.create(null))
         },
 
         // Claimed pointer information
@@ -2847,4 +2859,3 @@ if (typeof window !== "undefined") { // client-side
     });
 
 } // client-side
-
