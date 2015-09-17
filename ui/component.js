@@ -2082,16 +2082,20 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      */
     _prepareForActivationEvents: {
         value: function () {
+            if (typeof this.prepareForActivationEvents === "function") {
+                this.prepareForActivationEvents();
+            }
+
             var i = this.composerList.length, composer;
+
             for (i = 0; i < this.composerList.length; i++) {
                 composer = this.composerList[i];
+
                 if (composer.lazyLoad) {
                     composer._load();
                 }
             }
-            if (typeof this.prepareForActivationEvents === "function") {
-                this.prepareForActivationEvents();
-            }
+
             this.preparedForActivationEvents = true;
         }
     },
