@@ -79,7 +79,6 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
             // Only register the key if somebody is listening for, else let do
             // it later.
             // console.log("--- load", this.identifier);
-            this._isLoaded = true;
             if (this._shouldDispatchEvent && !this._keyRegistered) {
                 KeyManagerProxy.defaultKeyManager.registerKey(this);
                 this._keyRegistered = true;
@@ -89,7 +88,6 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
 
     unload: {
         value: function () {
-            this._isLoaded = false;
             KeyManagerProxy.defaultKeyManager.unregisterKey(this);
             this._keyRegistered = false;
         }
@@ -132,7 +130,7 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
                     }
                     // this keyComposer is not attached to a UI Component,
                     // let's load it manually
-                    this.load();
+                    this.component.loadComposer(this);
                 }
             }
         }
@@ -170,7 +168,7 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
                     }
                     // this keyComposer is not attached to a UI Component,
                     // let's load it manually
-                    this.load();
+                    this.component.loadComposer(this);
                 }
             }
         }

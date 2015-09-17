@@ -135,22 +135,19 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
      */
     _resolveDefaults: {
         value: function () {
-            if (this.element == null && this.component != null) {
+            if (!this.element && this.element == null && this.component != null) {
                 this.element = this.component.element;
             }
         }
     },
 
-    /**
-     * Invoked by the framework to load this composer.
-     * @private
-     */
-    _load: {
-        value: function () {
-            if (!this.element) {
-                this._resolveDefaults();
-            }
-            this.load();
+    _isLoaded: {
+        value: false
+    },
+
+    isLoaded: {
+        get: function () {
+            return this._isLoaded;
         }
     },
 

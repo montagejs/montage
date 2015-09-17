@@ -1774,7 +1774,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 for (i = 0; i < length; i++) {
                     composer = this.composerList[i];
                     if (!composer.lazyLoad) {
-                        composer._load();
+                        this.loadComposer(composer);
                     }
                 }
 
@@ -2092,7 +2092,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 composer = this.composerList[i];
 
                 if (composer.lazyLoad) {
-                    composer._load();
+                    this.loadComposer(composer);
                 }
             }
 
@@ -2385,10 +2385,39 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
             if (!this._firstDraw) {  // prepareForDraw has already happened so do the loading here
                 if (!composer.lazyLoad) {
-                    composer._load();
+                    this.loadComposer(composer);
                 } else if (this.preparedForActivationEvents) { // even though it's lazyLoad prepareForActivationEvents has already happened
-                    composer._load();
+                    this.loadComposer(composer);
                 }
+            }
+        }
+    },
+
+    /**
+     * Load a Composer
+     * @function
+     * @param {Composer} composer
+     */
+    loadComposer: {
+        value: function (composer) {
+            if (this.composerList.indexOf(composer) > -1) {
+                composer._resolveDefaults();
+                composer.load();
+                composer._isLoaded = true;
+            }
+        }
+    },
+
+    /**
+     * Unload a Composer
+     * @function
+     * @param {Composer} composer
+     */
+    unloadComposer: {
+        value: function (composer) {
+            if (this.composerList.indexOf(composer) > -1) {
+                composer.unload();
+                composer._isLoaded = false;
             }
         }
     },
@@ -2418,7 +2447,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             length = this.composerList.length;
             for (i = 0; i < length; i++) {
                 if (this.composerList[i].uuid === composer.uuid) {
-                    this.composerList[i].unload();
+                    this.unloadComposer(this.composerList[i]);
                     this.composerList.splice(i, 1);
                     break;
                 }
@@ -2435,8 +2464,10 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         value: function () {
             var i, length, composerList = this.composerList;
             length = composerList.length;
+
             for (i = 0; i < length; i++) {
-                composerList[i].unload();
+                this.unloadComposer(composerList[i]);
+
             }
             composerList.length = 0;
         }
