@@ -67,7 +67,7 @@ var DocumentPart = Montage.specialize({
     },
 
     _addToDrawList: {
-        value: function () {}
+        value: Function.noop
     },
 
     _componentTreeLoadedDeferred: {value: null},
