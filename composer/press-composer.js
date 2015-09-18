@@ -239,6 +239,8 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
             }
 
             this._dispatchPressCancel();
+            this._endInteraction();
+
             return true;
         }
     },
