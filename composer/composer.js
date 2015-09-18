@@ -122,9 +122,7 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
      * @param {Date} timestamp The time that the draw cycle started
      */
     frame: {
-        value: function (timestamp) {
-
-        }
+        value: Function.noop
     },
 
 
@@ -162,9 +160,7 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
      * @function
      */
     load: {
-        value: function () {
-
-        }
+        value: Function.noop
     },
 
     /**
@@ -177,9 +173,7 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
      * @function
      */
     unload: {
-        value: function () {
-
-        }
+        value: Function.noop
     },
 
     /**

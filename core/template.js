@@ -1568,10 +1568,11 @@ var TemplateArgumentProvider = Montage.specialize({
      * This function asks the provider to return the element that corresponds
      * to the argument with the same name. This element will be used to replace
      * the corresponding element with data-param of the template being expanded.
+     * @param argumentName
      * @private
      */
     getTemplateArgumentElement: {
-        value: function (argumentName) {}
+        value: Function.noop
     },
 
     /**
@@ -1579,10 +1580,11 @@ var TemplateArgumentProvider = Montage.specialize({
      * that refer to the given element ids.
      * The serialization returned will be merged with the serialization of the
      * template being expanded.
+     * @param elementIds
      * @private
      */
     getTemplateArgumentSerialization: {
-        value: function (elementIds) {}
+        value: Function.noop
     },
 
     /**
@@ -1592,10 +1594,11 @@ var TemplateArgumentProvider = Montage.specialize({
      * access to the template where the argument comes from and where the
      * aliases are defined in the serialization block (e.g: ":cell": {alias:
      * "@repetition:iteration"}).
+     * @param templatePropertyLabel
      * @private
      */
     resolveTemplateArgumentTemplateProperty: {
-        value: function (templatePropertyLabel) {}
+        value: Function.noop
     }
 });
 

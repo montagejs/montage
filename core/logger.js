@@ -6,7 +6,6 @@ var Montage = require("./core").Montage,
     Logger,
     loggers,
     consoleLog,
-    emptyLoggerFunction,
     getFunctionName,
     toTimeString,
     LoggerUI,
@@ -31,9 +30,6 @@ toTimeString = function (date) {
         secs = date.getSeconds();
         return (hours.length === 1 ? "0" + hours : hours) + ":" + (mins.length === 1 ? "0" + mins : mins) + ":" + (secs.length === 1 ? "0" + secs : secs) + "." + date.getMilliseconds();
     }
-};
-
-emptyLoggerFunction = function () {
 };
 
 consoleLog = function () {
@@ -124,13 +120,13 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
      */
     isDebug: {
         get: function () {
-            return this.debug !== emptyLoggerFunction;
+            return this.debug !== Function.noop;
         },
         set: function (value) {
             if (value) {
                 this.debug = this._consoleLogMontage;
             } else {
-                this.debug = emptyLoggerFunction;
+                this.debug = Function.noop;
             }
         }
 
@@ -141,13 +137,13 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
      */
     isError: {
         get: function () {
-            return this.error !== emptyLoggerFunction;
+            return this.error !== Function.noop;
         },
         set: function (value) {
             if (value) {
                 this.error = this._consoleLogMontage;
             } else {
-                this.error = emptyLoggerFunction;
+                this.error = Function.noop;
             }
         }
     },
@@ -213,7 +209,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
      * @param {string} [...]
      */
     debug: {
-        value: emptyLoggerFunction
+        value: Function.noop
     },
 
     /**
@@ -222,7 +218,7 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
      * @param {string} [...]
      */
     error: {
-        value: emptyLoggerFunction
+        value: Function.noop
     },
 
     /**
