@@ -1354,12 +1354,19 @@ if (typeof window !== "undefined") { // client-side
                 // when the EM handles them eventually it will need to allow
                 // all components from the event target to the window to prepareForPointerEvents
                 // before finding event handlers that were registered for these events
-                aWindow.nativeAddEventListener("touchstart", this._activationHandler, true);
-                aWindow.nativeAddEventListener("mousedown", this._activationHandler, true);
-                aWindow.nativeAddEventListener("focus", this._activationHandler, true);
-
                 //TODO also should accommodate mouseenter/mouseover possibly
-                //TODO also need to support pointerEvents
+                if (window.PointerEvent) {
+                    aWindow.addEventListener("pointerdown", this._activationHandler, true);
+
+                } else if (window.navigator.msPointerEnabled) {
+                    aWindow.addEventListener("MSPointerDown", this._activationHandler, true);
+
+                } else {
+                    aWindow.nativeAddEventListener("touchstart", this._activationHandler, true);
+                    aWindow.nativeAddEventListener("mousedown", this._activationHandler, true);
+                }
+
+                aWindow.nativeAddEventListener("focus", this._activationHandler, true);
 
                 if (this.application) {
 
