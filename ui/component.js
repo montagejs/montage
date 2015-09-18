@@ -1764,17 +1764,19 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
     _updateComponentDom: {
         value: function () {
-            var component, composer, length, i;
             if (this._firstDraw) {
-
                 this._prepareForDraw();
 
-                // Load any non lazyLoad composers that have been added
-                length = this.composerList.length;
-                for (i = 0; i < length; i++) {
-                    composer = this.composerList[i];
-                    if (!composer.lazyLoad) {
-                        this.loadComposer(composer);
+                if (this._composerList) {
+                    var composer;
+
+                    // Load any non lazyLoad composers that have been added
+                    for (var i = 0, length = this._composerList.length; i < length; i++) {
+                        composer = this._composerList[i];
+
+                        if (!composer.lazyLoad) {
+                            this.loadComposer(composer);
+                        }
                     }
                 }
 
@@ -2086,13 +2088,15 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 this.prepareForActivationEvents();
             }
 
-            var i = this.composerList.length, composer;
+            if (this._composerList) {
+                var composer;
 
-            for (i = 0; i < this.composerList.length; i++) {
-                composer = this.composerList[i];
+                for (var i = 0, length = this._composerList.length; i < length; i++) {
+                    composer = this._composerList[i];
 
-                if (composer.lazyLoad) {
-                    this.loadComposer(composer);
+                    if (composer.lazyLoad) {
+                        this.loadComposer(composer);
+                    }
                 }
             }
 
@@ -2353,9 +2357,19 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      * Variable to track this component's associated composers
      * @private
      */
+    _composerList: {
+        value: null,
+        serializable: false
+    },
+
     composerList: {
-        value: [],
-        distinct: true,
+        get: function () {
+            if (!this._composerList) {
+                this._composerList = [];
+            }
+
+            return this._composerList;
+        },
         serializable: false
     },
 
@@ -2400,7 +2414,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      */
     loadComposer: {
         value: function (composer) {
-            if (this.composerList.indexOf(composer) > -1) {
+            if (this._composerList && this._composerList.indexOf(composer) > -1) {
                 composer._resolveDefaults();
                 composer.load();
                 composer._isLoaded = true;
@@ -2415,7 +2429,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      */
     unloadComposer: {
         value: function (composer) {
-            if (this.composerList.indexOf(composer) > -1) {
+            if (this._composerList && this._composerList.indexOf(composer) > -1) {
                 composer.unload();
                 composer._isLoaded = false;
             }
@@ -2443,13 +2457,13 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      */
     removeComposer: {
         value: function (composer) {
-            var i, length;
-            length = this.composerList.length;
-            for (i = 0; i < length; i++) {
-                if (this.composerList[i].uuid === composer.uuid) {
-                    this.unloadComposer(this.composerList[i]);
-                    this.composerList.splice(i, 1);
-                    break;
+            if (this._composerList) {
+                for (var i = 0, length = this._composerList.length; i < length; i++) {
+                    if (this._composerList[i].uuid === composer.uuid) {
+                        this.unloadComposer(this._composerList[i]);
+                        this._composerList.splice(i, 1);
+                        break;
+                    }
                 }
             }
         }
@@ -2462,14 +2476,16 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      */
     clearAllComposers: {
         value: function () {
-            var i, length, composerList = this.composerList;
-            length = composerList.length;
+            if (this._composerList) {
+                var composerList = this._composerList;
 
-            for (i = 0; i < length; i++) {
-                this.unloadComposer(composerList[i]);
+                for (var i = 0, length = composerList.length; i < length; i++) {
+                    this.unloadComposer(composerList[i]);
 
+                }
+
+                composerList.length = 0;
             }
-            composerList.length = 0;
         }
     },
 
@@ -3135,6 +3151,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype # *
     addToComposerList: {
         value: function (composer) {
             this.composerList.push(composer);
+
             if (drawLogger.isDebug) {
                 drawLogger.debug(this, composer, "Added to composer list");
             }
@@ -3148,8 +3165,17 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype # *
 
     // Create a second composer list so that the lists can be swapped during a draw instead of creating a new array every time
     composerListSwap: {
-        value: [],
-        distinct: true
+        get: function () {
+            if (!this._composerListSwap) {
+                this._composerListSwap = [];
+            }
+
+            return this._composerListSwap;
+        }
+    },
+
+    _composerListSwap: {
+        value: null
     },
 
     /*
@@ -3490,22 +3516,24 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype # *
     drawIfNeeded:{
         value: function drawIfNeeded() {
             var needsDrawList = this._readyToDrawList, component, i, j, start = 0, firstDrawEvent,
-                composerList = this.composerList, composer, composerListLength;
+                composerList = this._composerList, composer, composerListLength;
+
             needsDrawList.length = 0;
-            composerListLength = composerList.length;
             this._readyToDrawListIndex.clear();
 
             // Process the composers first so that any components that need to be newly drawn due to composer changes
             // get added in this cycle
-            if (composerListLength > 0) {
-                this.composerList = this.composerListSwap; // Swap between two arrays instead of creating a new array each draw cycle
+            if (composerList && (composerListLength = composerList.length) > 0) {
+                this._composerList = this.composerListSwap; // Swap between two arrays instead of creating a new array each draw cycle
+
                 for (i = 0; i < composerListLength; i++) {
                     composer = composerList[i];
                     composer.needsFrame = false;
                     composer.frame(this._frameTime);
                 }
+
                 composerList.length = 0;
-                this.composerListSwap = composerList;
+                this._composerListSwap = composerList;
             }
 
             this._drawIfNeeded(0);
