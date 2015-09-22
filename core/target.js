@@ -158,6 +158,36 @@ exports.Target = Montage.specialize( /** @lends Target.prototype # */ {
                 defaultEventManager.unregisterEventListener(this, type, listener, useCapture);
             }
         }
+    },
+
+    /**
+     * Load a Composer
+     * @function
+     * @param {Composer} composer
+     */
+    loadComposer: {
+        value: function (composer) {
+            if (composer && !composer._isLoaded) {
+                composer._resolveDefaults();
+                composer.load();
+                composer._isLoaded = true;
+            }
+        }
+    },
+
+    /**
+     * Unload a Composer
+     * @function
+     * @param {Composer} composer
+     */
+    unloadComposer: {
+        value: function (composer) {
+            if (composer && composer._isLoaded) {
+                composer.unload();
+                composer._isLoaded = false;
+            }
+        }
     }
+
 });
 

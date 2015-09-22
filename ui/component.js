@@ -2415,9 +2415,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     loadComposer: {
         value: function (composer) {
             if (this._composerList && this._composerList.indexOf(composer) > -1) {
-                composer._resolveDefaults();
-                composer.load();
-                composer._isLoaded = true;
+                Target.prototype.loadComposer.call(this, composer);
             }
         }
     },
@@ -2430,8 +2428,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     unloadComposer: {
         value: function (composer) {
             if (this._composerList && this._composerList.indexOf(composer) > -1) {
-                composer.unload();
-                composer._isLoaded = false;
+                Target.prototype.unloadComposer.call(this, composer);
             }
         }
     },
