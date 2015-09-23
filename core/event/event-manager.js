@@ -1356,10 +1356,10 @@ if (typeof window !== "undefined") { // client-side
                 // before finding event handlers that were registered for these events
                 //TODO also should accommodate mouseenter/mouseover possibly
                 if (window.PointerEvent) {
-                    aWindow.addEventListener("pointerdown", this._activationHandler, true);
+                    aWindow.nativeAddEventListener("pointerdown", this._activationHandler, true);
 
                 } else if (window.navigator.msPointerEnabled) {
-                    aWindow.addEventListener("MSPointerDown", this._activationHandler, true);
+                    aWindow.nativeAddEventListener("MSPointerDown", this._activationHandler, true);
 
                 } else {
                     aWindow.nativeAddEventListener("touchstart", this._activationHandler, true);
