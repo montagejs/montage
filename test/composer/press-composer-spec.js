@@ -68,7 +68,6 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
 
                 expect(pressListener).not.toHaveBeenCalled();
                 expect(cancelListener).toHaveBeenCalled();
-                expect(test.press_composer.state).toBe(PressComposer.CANCELLED);
 
                 if (window.Touch) {
                     testPage.touchEvent({target: test.example.element}, "touchend");
