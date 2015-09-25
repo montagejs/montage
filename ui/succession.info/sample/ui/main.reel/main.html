@@ -12,17 +12,28 @@
     {
         "owner": {
             "properties": {
-                "element": {"#": "Main"}
+                "element": {"#": "Main"},
+                "succession1": {"@": "succession1"}
             }
         },
-        "Succession1": {
+        "succession1": {
             "prototype": "ui/succession.reel",
             "properties": {
-                "element": {"#": "Succession1"}
+                "element": {"#": "succession1"}
             },
             "bindings": {
                 "top.destination.destinationData": {"<-": "this.top.destinationData"}
-            }
+            },
+            "listeners": [
+                {
+                    "type": "buildInEnd",
+                    "listener": {"@": "owner"}
+                },
+                {
+                    "type": "buildOutEnd",
+                    "listener": {"@": "owner"}
+                }
+            ]
         },
         "push": {
             "prototype": "ui/button.reel",
@@ -164,7 +175,25 @@
                 "element": {"#": "stack"}
             },
             "bindings": {
-                "content": {"<-": "@Succession1.content.reversed()"}
+                "content": {"<-": "@succession1.content.reversed()"}
+            }
+        },
+        "lastBuildInComponentIdentifier": {
+            "prototype": "ui/text.reel",
+            "properties": {
+                "element": {"#": "lastBuildInComponentIdentifier"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.lastBuildInComponentIdentifier"}
+            }
+        },
+        "lastBuildOutComponentIdentifier": {
+            "prototype": "ui/text.reel",
+            "properties": {
+                "element": {"#": "lastBuildOutComponentIdentifier"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.lastBuildOutComponentIdentifier"}
             }
         },
         "buildInOverride": {
@@ -173,7 +202,7 @@
                 "element": {"#": "buildInOverride"}
             },
             "bindings": {
-                "value": {"<-": "@Succession1.contentBuildInCssClass || 'none'"}
+                "value": {"<-": "@succession1.contentBuildInCssClass || 'none'"}
             }
         },
         "buildOutOverride": {
@@ -182,7 +211,7 @@
                 "element": {"#": "buildOutOverride"}
             },
             "bindings": {
-                "value": {"<-": "@Succession1.contentBuildOutCssClass || 'none'"}
+                "value": {"<-": "@succession1.contentBuildOutCssClass || 'none'"}
             }
         },
         "displayTitle": {
@@ -393,8 +422,12 @@
         </div>
 
         <div class="wrapper">
-            <div data-montage-id="Succession1" class="succession container overflow-hidden"></div>
+            <div data-montage-id="succession1" class="succession container overflow-hidden"></div>
             <div class="stack">
+                Last component which finished build-in: <code data-montage-id="lastBuildInComponentIdentifier"></code>
+                <br/>
+                Last component which finished build-out: <code data-montage-id="lastBuildOutComponentIdentifier"></code>
+                <br/>
                 Build-in Override: <code data-montage-id="buildInOverride"></code>
                 <br/>
                 Build-out Override: <code data-montage-id="buildOutOverride"></code>

@@ -72,14 +72,15 @@ exports.Main = Component.specialize({
         value: function () {
             var component;
 
-            if (this.templateObjects.Succession1.top) {
-                component = this.templateObjects.Succession1.top instanceof Foo ?
+            if (this.succession1.top) {
+                component = this.succession1.top instanceof Foo ?
                     this.bar : this.foo;
             } else {
                 component = this.foo;
             }
 
-            this.templateObjects.Succession1.push(component);
+            component.delegate = this.succession1;
+            this.succession1.push(component);
         }
     },
 
@@ -87,9 +88,9 @@ exports.Main = Component.specialize({
     //    value: function () {
     //        var source, destination;
     //
-    //        if (this.templateObjects.Succession1.top) {
-    //            source = this.templateObjects.Succession1.top.destination;
-    //            destination = this.templateObjects.Succession1.top.destination instanceof Foo ?
+    //        if (this.succession1.top) {
+    //            source = this.succession1.top.destination;
+    //            destination = this.succession1.top.destination instanceof Foo ?
     //                this.bar : this.foo;
     //        } else {
     //            source = null;
@@ -105,25 +106,25 @@ exports.Main = Component.specialize({
     //        //passage.buildOutCssClass = "zoomOutDown";
     //        passage.sourceData = {};
     //
-    //        this.templateObjects.Succession1.push(passage);
+    //        this.succession1.push(passage);
     //    }
     //},
 
     handlePopAction: {
         value: function () {
-            this.templateObjects.Succession1.pop();
+            this.succession1.pop();
         }
     },
 
     handleContentComponentAction: {
         value: function () {
-            this.templateObjects.Succession1.content = this.foo;
+            this.succession1.content = this.foo;
         }
     },
 
     handleContentNullAction: {
         value: function () {
-            this.templateObjects.Succession1.content = null;
+            this.succession1.content = null;
         }
     },
 
@@ -193,31 +194,31 @@ exports.Main = Component.specialize({
 
     handleToggleOverflowAction: {
         value: function () {
-            this.templateObjects.Succession1.classList.toggle("overflow-hidden");
+            this.succession1.classList.toggle("overflow-hidden");
         }
     },
 
     handleSetSuccessionBuildInOutAction: {
         value: function () {
-            this.templateObjects.Succession1.contentBuildInCssClass = "bounceInDown";
-            this.templateObjects.Succession1.contentBuildInTransitionCssClass = null;
-            this.templateObjects.Succession1.contentBuildOutCssClass = "bounceOutDown";
+            this.succession1.contentBuildInCssClass = "bounceInDown";
+            this.succession1.contentBuildInTransitionCssClass = null;
+            this.succession1.contentBuildOutCssClass = "bounceOutDown";
         }
     },
 
     handleClearSuccessionBuildInOutAction: {
         value: function () {
-            this.templateObjects.Succession1.contentBuildInCssClass = undefined;
-            this.templateObjects.Succession1.contentBuildInTransitionCssClass = undefined;
-            this.templateObjects.Succession1.contentBuildOutCssClass = undefined;
+            this.succession1.contentBuildInCssClass = undefined;
+            this.succession1.contentBuildInTransitionCssClass = undefined;
+            this.succession1.contentBuildOutCssClass = undefined;
         }
     },
 
     handleDisableSuccessionBuildInOutAction: {
         value: function () {
-            this.templateObjects.Succession1.contentBuildInCssClass = null;
-            this.templateObjects.Succession1.contentBuildInTransitionCssClass = null;
-            this.templateObjects.Succession1.contentBuildOutCssClass = null;
+            this.succession1.contentBuildInCssClass = null;
+            this.succession1.contentBuildInTransitionCssClass = null;
+            this.succession1.contentBuildOutCssClass = null;
         }
     },
 
@@ -256,4 +257,16 @@ exports.Main = Component.specialize({
             this.templateObjects.condition.condition = !this.templateObjects.condition.condition;
         }
     },
+
+    handleBuildInEnd: {
+        value: function (event) {
+            this.lastBuildInComponentIdentifier = event.target.identifier;
+        }
+    },
+
+    handleBuildOutEnd: {
+        value: function (event) {
+            this.lastBuildOutComponentIdentifier = event.target.identifier;
+        }
+    }
 });
