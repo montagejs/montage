@@ -37,6 +37,20 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
         }
     },
 
+    /**
+     *  How fast the cursor has to be moving before translating starts. Only
+     *  applied when another component has claimed the pointer.
+     *  @type {number}
+     *  @default 500
+     */
+    startTranslateSpeed: {
+        value: 500
+    },
+
+    startTranslateRadius: {
+        value: 8
+    },
+
     // TODO doc
     /**
      */
@@ -244,14 +258,16 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                 this.endX = this.startX = this._pageX;
                 this.endY = this.startY = this._pageY;
 
-                if ((this._hasMomentum) && ((event.velocity.speed>40) || this.translateStrideX || this.translateStrideY)) {
+                var velocity = event.velocity;
+
+                if ((this._hasMomentum) && ((velocity.speed>40) || this.translateStrideX || this.translateStrideY)) {
                     if (this._axis != "vertical") {
-                        this.momentumX = event.velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
+                        this.momentumX = velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
                     } else {
                         this.momentumX = 0;
                     }
                     if (this._axis != "horizontal") {
-                        this.momentumY = event.velocity.y * this._pointerSpeedMultiplier * (this._invertYAxis ? 1 : -1);
+                        this.momentumY = velocity.y * this._pointerSpeedMultiplier * (this._invertYAxis ? 1 : -1);
                     } else {
                         this.momentumY=0;
                     }
@@ -285,6 +301,18 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
 
     _previousDeltaY: {
         value: 0
+    },
+
+    _listenToWheelEvent: {
+        value: true
+    },
+
+    captureWheel: {
+        value: function () {
+            if (!this.eventManager.componentClaimingPointer(this._WHEEL_POINTER)) {
+                this.eventManager.claimPointer(this._WHEEL_POINTER, this.component);
+            }
+        }
     },
 
     // TODO Add wheel event listener for Firefox

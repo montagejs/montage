@@ -1652,12 +1652,13 @@ if (typeof window !== "undefined") { // client-side
                 if (value === true) {
                     if (!this._isStoringPointerEvents) {
                         this._isStoringPointerEvents = true;
-                        if (window.Touch) {
-                            Object.defineProperty(Touch.prototype, "velocity", {
+
+                        var PointerConstructor = window.PointerEvent || window.MSPointerEvent && window.navigator.msPointerEnabled ? window.MSPointerEvent : window.Touch;
+
+                        if (PointerConstructor) {
+                            Object.defineProperty(PointerConstructor.prototype, "velocity", {
                                 get: function () {
                                     return defaultEventManager.pointerMotion(this.identifier).velocity;
-                                },
-                                set: function () {
                                 }
                             });
                         }
@@ -1735,93 +1736,110 @@ if (typeof window !== "undefined") { // client-side
                 isStored: function (identifier) {
                     return (this.memory[identifier] && (this.memory[identifier].size > 0));
                 },
-                storeEvent: function (event) {
-                    var i;
-                    switch (event.type) {
-                        case "mousedown":
-                            defaultEventManager._isMouseDragging = true;
-                        // roll into mousemove. break omitted intentionally.
-                        case "mousemove":
-                            if (defaultEventManager._isStoringMouseEventsWhileDraggingOnly) {
-                                if (defaultEventManager._isMouseDragging) {
-                                    this.add("mouse", {
-                                        clientX: event.clientX,
-                                        clientY: event.clientY,
-                                        timeStamp: event.timeStamp
-                                    });
-                                    Object.defineProperty(event, "velocity", {
-                                        get: function () {
-                                            return defaultEventManager.pointerMotion("mouse").velocity;
-                                        },
-                                        set: function () {
-                                        }
-                                    });
-                                }
-                            } else {
-                                this.add("mouse", {
-                                    clientX: event.clientX,
-                                    clientY: event.clientY,
-                                    timeStamp: event.timeStamp
-                                });
-                                Object.defineProperty(event, "velocity", {
-                                    get: function () {
-                                        return defaultEventManager.pointerMotion("mouse").velocity;
-                                    },
-                                    set: function () {
+                storeEvent: function (mutableEvent) {
+                    var isBrowserSupportPointerEvents = !!(window.PointerEvent || window.navigator.msPointerEnabled),
+                        event = mutableEvent instanceof MutableEvent ? mutableEvent._event : mutableEvent;
+
+                    if ((isBrowserSupportPointerEvents && mutableEvent.pointerType === "mouse") ||
+                        (!isBrowserSupportPointerEvents && event instanceof MouseEvent)) {
+
+                        switch (mutableEvent.type) {
+                            case "pointerdown":
+                            case "MSPointerDown":
+                            case "mousedown":
+                                defaultEventManager._isMouseDragging = true;
+                            // roll into mousemove. break omitted intentionally.
+                            case "pointermove":
+                            case "MSPointerMove":
+                            case "mousemove":
+                                if (defaultEventManager._isStoringMouseEventsWhileDraggingOnly) {
+                                    if (defaultEventManager._isMouseDragging) {
+                                        this._storeMouse(mutableEvent);
                                     }
-                                });
-                            }
-                            break;
-                        case "mouseup":
-                            this.add("mouse", {
-                                clientX: event.clientX,
-                                clientY: event.clientY,
-                                timeStamp: event.timeStamp
-                            });
-                            Object.defineProperty(event, "velocity", {
-                                get: function () {
-                                    return defaultEventManager.pointerMotion("mouse").velocity;
-                                },
-                                set: function () {
+                                } else {
+                                    this._storeMouse(mutableEvent);
                                 }
-                            });
-                            break;
-                        case "touchstart":
-                        case "touchmove":
-                            for (i = 0; i < event.touches.length; i++) {
-                                this.add(event.touches[i].identifier, {
-                                    clientX: event.touches[i].clientX,
-                                    clientY: event.touches[i].clientY,
-                                    timeStamp: event.timeStamp
-                                });
-                            }
-                            break;
-                        case "touchend":
-                            for (i = 0; i < event.changedTouches.length; i++) {
-                                this.add(event.changedTouches[i].identifier, {
-                                    clientX: event.changedTouches[i].clientX,
-                                    clientY: event.changedTouches[i].clientY,
-                                    timeStamp: event.timeStamp
-                                });
-                            }
-                            break;
+                                break;
+
+                            case "pointerup":
+                            case "MSPointerUp":
+                            case "mouseup":
+                                this._storeMouse(mutableEvent);
+                                break;
+                        }
+                    } else if ((isBrowserSupportPointerEvents && mutableEvent.pointerType === "touch") ||
+                        (window.TouchEvent !== void 0 && !isBrowserSupportPointerEvents && event instanceof TouchEvent)) {
+
+                        var i;
+
+                        switch (mutableEvent.type) {
+                            case "pointerdown":
+                            case "MSPointerDown":
+                            case "pointermove":
+                            case "MSPointerMove":
+                            case "touchstart":
+                            case "touchmove":
+                                for (i = 0; i < mutableEvent.touches.length; i++) {
+                                    this.add(mutableEvent.touches[i].identifier, {
+                                        clientX: mutableEvent.touches[i].clientX,
+                                        clientY: mutableEvent.touches[i].clientY,
+                                        timeStamp: mutableEvent.timeStamp
+                                    });
+                                }
+                                break;
+
+                            case "pointerup":
+                            case "MSPointerUp":
+                            case "touchend":
+                                for (i = 0; i < mutableEvent.changedTouches.length; i++) {
+                                    this.add(mutableEvent.changedTouches[i].identifier, {
+                                        clientX: mutableEvent.changedTouches[i].clientX,
+                                        clientY: mutableEvent.changedTouches[i].clientY,
+                                        timeStamp: mutableEvent.timeStamp
+                                    });
+                                }
+                                break;
+                        }
                     }
                 },
-                removeEvent: function (event) {
-                    var i;
-                    switch (event.type) {
-                        case "mouseup":
+
+                removeEvent: function (mutableEvent) {
+                    var isBrowserSupportPointerEvents = !!(window.PointerEvent || window.navigator.msPointerEnabled),
+                        event = mutableEvent instanceof MutableEvent ? mutableEvent._event : mutableEvent;
+
+                    if ((isBrowserSupportPointerEvents && mutableEvent.pointerType === "mouse") ||
+                        (!isBrowserSupportPointerEvents && event instanceof MouseEvent)) {
+
+                        if (event.type === "mouseup" || event.type === "pointerup" || event.type === "MSPointerUp") {
                             defaultEventManager._isMouseDragging = false;
+
                             if (defaultEventManager._isStoringMouseEventsWhileDraggingOnly) {
                                 this.clear("mouse");
                             }
-                            break;
-                        case "touchend":
-                            for (i = 0; i < event.changedTouches.length; i++) {
-                                this.remove(event.changedTouches[i].identifier);
+                        }
+                    } else if ((isBrowserSupportPointerEvents && mutableEvent.pointerType === "touch") ||
+                        (window.TouchEvent !== void 0 && !isBrowserSupportPointerEvents && event instanceof TouchEvent)) {
+
+                        if (event.type === "touchend" || event.type === "pointerup" || event.type === "MSPointerUp") {
+                            for (var i = 0; i < mutableEvent.changedTouches.length; i++) {
+                                this.remove(mutableEvent.changedTouches[i].identifier);
                             }
-                            break;
+                        }
                     }
+                },
+
+                _storeMouse: function (event) {
+                    this.add("mouse", {
+                        clientX: event.clientX,
+                        clientY: event.clientY,
+                        timeStamp: event.timeStamp
+                    });
+
+                    Object.defineProperty(event, "velocity", {
+                        get: function () {
+                            return defaultEventManager.pointerMotion("mouse").velocity;
+                        }
+                    });
                 }
             }
         },

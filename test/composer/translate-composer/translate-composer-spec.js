@@ -281,6 +281,7 @@ TestPageLoader.queueTest("translate-composer-test", function(testPage) {
                 it ("should translate on a the wheel event used by this browser", function() {
                     spyOn(test, 'handleTranslate').andCallThrough();
                     test.translateComposer.addEventListener("translate", test.handleTranslate, false);
+                    test.translateComposer.listenToWheelEvent = true;
 
                     var eventName = "mousewheel";
                     var deltaPropertyName = "wheelDeltaY";
@@ -294,6 +295,7 @@ TestPageLoader.queueTest("translate-composer-test", function(testPage) {
 
                     testPage.wheelEvent(eventInfo, eventName, function() {
                         expect(test.handleTranslate.callCount).toBe(1);
+                        test.translateComposer.listenToWheelEvent = false;
 
                         // test how much we scroll by, learn amounts
                     });
