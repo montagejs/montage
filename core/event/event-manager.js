@@ -2283,43 +2283,48 @@ if (typeof window !== "undefined") { // client-side
             }
         },
 
+        blocksEmulatedEvents: {
+            value: true
+        },
+
         /**
          * @function
          * @param {Event} event
          * @description Decides if an event can be dispatched by the EventManager within a montage app.
          * Filter emulated mouse events (mousedown, mouseup, click) from touch events.
          *
-         * @Todo: if browsers support pointerEvents the EventManager must dispatch all events.
          * @private
          */
         _shouldDispatchEvent: {
             value: function (event) {
-                /**
-                 * Under IOS emulated mouse events have a timestamp set to 0.
-                 * Plus, this property can't be used for Firefox.
-                 * Firefox has an open bug since 2004: the property timeStamp is not populated correctly.
-                 * -> https://bugzilla.mozilla.org/show_bug.cgi?id=238041
-                 */
-                if (this._isIOSPlatform) {
-                    return !(event.timeStamp === 0);
-                }
-
-                // Checks if the event may trigger simulated events.
-                if (this._wouldTouchTriggerSimulatedEvent(event)) {
-                    var changedTouches = event.changedTouches;
-
-                    // Needs to clean the tracking touches "start" when a touch event is canceled.
-                    this._listenToTouchCancelIfNeeded(event);
-
-                    for (var i = 0, length = changedTouches.length; i < length; i++) {
-                        this._trackTouch(event, changedTouches[i].identifier);
+                if (this.blocksEmulatedEvents && !window.PointerEvent && !window.navigator.msPointerEnabled) {
+                    /**
+                     * Under IOS emulated mouse events have a timestamp set to 0.
+                     * Plus, this property can't be used for Firefox.
+                     * Firefox has an open bug since 2004: the property timeStamp is not populated correctly.
+                     * -> https://bugzilla.mozilla.org/show_bug.cgi?id=238041
+                     */
+                    if (this._isIOSPlatform) {
+                        return !(event.timeStamp === 0);
                     }
 
-                } else if (this._couldEventBeSimulated(event)) { // Determines if mouse events are simulated.
-                    return !this._isEmulatedEvent(event);
+                    // Checks if the event may trigger simulated events.
+                    if (this._wouldTouchTriggerSimulatedEvent(event)) {
+                        var changedTouches = event.changedTouches;
+
+                        // Needs to clean the tracking touches "start" when a touch event is canceled.
+                        this._listenToTouchCancelIfNeeded(event);
+
+                        for (var i = 0, length = changedTouches.length; i < length; i++) {
+                            this._trackTouch(event, changedTouches[i].identifier);
+                        }
+
+                    } else if (this._couldEventBeSimulated(event)) { // Determines if mouse events are simulated.
+                        return !this._isEmulatedEvent(event);
+                    }  // else -> Dispatches all the others.
                 }
 
-                return true; // Dispatches all the others.
+                return true;
             }
         },
 
