@@ -283,10 +283,10 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     capturePointerdown: {
         value: function (event) {
-            if (event.pointerType === "touch") {
+            if (event.pointerType === "touch" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
                 this.captureTouchstart(event);
 
-            } else if (event.pointerType === "mouse") {
+            } else if (event.pointerType === "mouse" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE)) {
                 this.captureMousedown(event);
             }
         }
@@ -294,10 +294,10 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     handlePointerup: {
         value: function (event) {
-            if (event.pointerType === "touch") {
+            if (event.pointerType === "touch" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
                 this.handleTouchend(event);
 
-            } else if (event.pointerType === "mouse") {
+            } else if (event.pointerType === "mouse" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE)) {
                 this.handleMouseup(event);
             }
         }

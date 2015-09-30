@@ -590,9 +590,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     capturePointerdown: {
         value: function (event) {
-            if (event.pointerType === "mouse") {
+            if (event.pointerType === "mouse" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE)) {
                 this.captureMousedown(event);
-            } else if (event.pointerType === "touch") {
+            } else if (event.pointerType === "touch" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
                 this.captureTouchstart(event);
             }
         }
@@ -600,9 +600,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     capturePointermove: {
         value: function (event) {
-            if (event.pointerType === "mouse") {
+            if (event.pointerType === "mouse" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE)) {
                 this.captureMousemove(event);
-            } else if (event.pointerType === "touch") {
+            } else if (event.pointerType === "touch" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
                 this.captureTouchmove(event);
             }
         }
@@ -610,9 +610,9 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     handlePointerup: {
         value: function (event) {
-            if (event.pointerType === "mouse") {
+            if (event.pointerType === "mouse" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE)) {
                 this.handleMouseup(event);
-            } else if (event.pointerType === "touch") {
+            } else if (event.pointerType === "touch" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
                 this.handleTouchend(event);
             }
         }
@@ -620,7 +620,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
     handlePointercancel: {
         value: function (event) {
-            if (event.pointerType === "touch") {
+            if (event.pointerType === "touch" || (window.MSPointerEvent && event.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH)) {
                 this.handleTouchcancel(event);
             }
         }

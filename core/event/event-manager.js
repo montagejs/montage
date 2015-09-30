@@ -1740,7 +1740,8 @@ if (typeof window !== "undefined") { // client-side
                     var isBrowserSupportPointerEvents = !!(window.PointerEvent || window.navigator.msPointerEnabled),
                         event = mutableEvent instanceof MutableEvent ? mutableEvent._event : mutableEvent;
 
-                    if ((isBrowserSupportPointerEvents && mutableEvent.pointerType === "mouse") ||
+                    if ((isBrowserSupportPointerEvents &&
+                        (mutableEvent.pointerType === "mouse" || (window.MSPointerEvent && mutableEvent.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE))) ||
                         (!isBrowserSupportPointerEvents && event instanceof MouseEvent)) {
 
                         switch (mutableEvent.type) {
@@ -1767,7 +1768,8 @@ if (typeof window !== "undefined") { // client-side
                                 this._storeMouse(mutableEvent);
                                 break;
                         }
-                    } else if ((isBrowserSupportPointerEvents && mutableEvent.pointerType === "touch") ||
+                    } else if ((isBrowserSupportPointerEvents &&
+                        (mutableEvent.pointerType === "touch" || (window.MSPointerEvent && mutableEvent.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH))) ||
                         (window.TouchEvent !== void 0 && !isBrowserSupportPointerEvents && event instanceof TouchEvent)) {
 
                         var i;
@@ -1807,7 +1809,8 @@ if (typeof window !== "undefined") { // client-side
                     var isBrowserSupportPointerEvents = !!(window.PointerEvent || window.navigator.msPointerEnabled),
                         event = mutableEvent instanceof MutableEvent ? mutableEvent._event : mutableEvent;
 
-                    if ((isBrowserSupportPointerEvents && mutableEvent.pointerType === "mouse") ||
+                    if ((isBrowserSupportPointerEvents &&
+                        (mutableEvent.pointerType === "mouse" || (window.MSPointerEvent && mutableEvent.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE))) ||
                         (!isBrowserSupportPointerEvents && event instanceof MouseEvent)) {
 
                         if (event.type === "mouseup" || event.type === "pointerup" || event.type === "MSPointerUp") {
@@ -1817,7 +1820,8 @@ if (typeof window !== "undefined") { // client-side
                                 this.clear("mouse");
                             }
                         }
-                    } else if ((isBrowserSupportPointerEvents && mutableEvent.pointerType === "touch") ||
+                    } else if ((isBrowserSupportPointerEvents &&
+                        (mutableEvent.pointerType === "touch" || (window.MSPointerEvent && mutableEvent.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH))) ||
                         (window.TouchEvent !== void 0 && !isBrowserSupportPointerEvents && event instanceof TouchEvent)) {
 
                         if (event.type === "touchend" || event.type === "pointerup" || event.type === "MSPointerUp") {
