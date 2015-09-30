@@ -63,39 +63,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: false
     },
 
-    /**
-     * When stealChildrenPointer is set to true the translate composer is able
-     * to claim the pointer in place of its children when the time difference
-     * between touchstart and the first touchmove is within the
-     * stealChildrenPointerThreshold.
-     *
-     * This property should be set to true on translate composers that act as
-     * scrollers so that they can capture the pointer instead of its children
-     * when the user intends to scroll instead of interacting with one of the
-     * children.
-     * The intention of the user is deduced by the time difference between
-     * touchstart and the first touchmove.
-     *
-     * @type {boolean}
-     */
-    stealChildrenPointer: {
-        value: false
-    },
-
-    /**
-     * Time, in ms, between touchstart and touchmove to consider when stealing
-     * the pointer from its children.
-     * The default value is based on the values we got when measuring on different
-     * devices
-     * iPad: 127.5
-     * Nexus 10 (4.2.2): 153.5
-     *
-     * @type {number}
-     */
-    stealChildrenPointerThreshold: {
-        value: 130
-    },
-
     frame: {
         value: function () {
             if (this.isAnimating) {
@@ -155,6 +122,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 this.translateY = this._translateY;
             }
         }
+    },
+
+    allowTranslateOuterExtreme: {
+        value: false
     },
 
     _translateX: {
@@ -435,20 +406,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         }
     },
 
-    /**
-     *  How fast the cursor has to be moving before translating starts. Only
-     *  applied when another component has claimed the pointer.
-     *  @type {number}
-     *  @default 500
-     */
-    startTranslateSpeed: {
-        value: 500
-    },
-
-    startTranslateRadius: {
-        value: 8
-    },
-
     _hasMomentum: {
         value: true
     },
@@ -501,36 +458,290 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: false
     },
 
-    _start: {
-        value: function (x, y, target, timeStamp) {
-            this.pointerStartEventPosition = {
-                pageX: x,
-                pageY: y,
-                target: target,
-                timeStamp: timeStamp
-            };
-            this._pointerX = x;
-            this._pointerY = y;
-            if (window.Touch) {
-                this._element.addEventListener("touchend", this, true);
-                this._element.addEventListener("touchcancel", this, true);
-                this._element.addEventListener("touchmove", this, true);
-                this._element.addEventListener("touchmove", this, false);
-            } else {
-                document.addEventListener("mouseup", this, true);
-                this._element.addEventListener("mousemove", this, true);
-            }
-            if (this.isAnimating) {
-                this.isAnimating = false;
-                this._dispatchTranslateEnd();
-            }
-            this._isFirstMove = true;
-        }
-    },
-
     _observedPointer: {
         value: null
     },
+
+    eventManager: {
+        get: function () {
+            return defaultEventManager;
+        }
+    },
+
+    _mouseRadiusThreshold: {
+        value: 5 //px
+    },
+
+    _touchRadiusThreshold: {
+        value: 12 //px
+    },
+
+    _listenToWheelEvent: {
+        value: false
+    },
+
+    listenToWheelEvent: {
+        set: function (_listenToWheelEvent) {
+            _listenToWheelEvent = !!_listenToWheelEvent;
+
+            if (this._listenToWheelEvent !== _listenToWheelEvent) {
+                this._listenToWheelEvent = _listenToWheelEvent;
+
+                if (this._isLoaded) {
+                    if (_listenToWheelEvent) {
+                        this._addWheelEventListener();
+                    } else {
+                        this._removeWheelEventListener();
+                    }
+                }
+            }
+        },
+        get: function () {
+            return this._listenToWheelEvent;
+        }
+    },
+
+    _claimPointerPolicy: {
+        value: null
+    },
+
+    claimPointerPolicy: {
+        set: function (policy) {
+            if (policy === TranslateComposer.CLAIM_POINTER_POLICIES.DEFAULT || policy === TranslateComposer.CLAIM_POINTER_POLICIES.MOVE) {
+                this._claimPointerPolicy = policy;
+            }
+        },
+        get: function () {
+            if (!this._claimPointerPolicy) {
+                this._claimPointerPolicy = TranslateComposer.CLAIM_POINTER_POLICIES.DEFAULT;
+            }
+
+            return this._claimPointerPolicy;
+        }
+    },
+
+    load: {
+        value: function () {
+            if (window.PointerEvent) {
+                this._element.addEventListener("pointerdown", this, true);
+
+            } else if (window.navigator.msPointerEnabled) {
+                this._element.addEventListener("MSPointerDown", this, true);
+
+            } else {
+                this._element.addEventListener("touchstart", this, true);
+                this._element.addEventListener("mousedown", this, true);
+            }
+
+            if (this._listenToWheelEvent) {
+                this._addWheelEventListener();
+            }
+
+            this.eventManager.isStoringPointerEvents = true;
+        }
+    },
+
+    unload: {
+        value: function () {
+            if (window.PointerEvent) {
+                this._element.removeEventListener("pointerdown", this, true);
+
+            } else if (window.navigator.msPointerEnabled) {
+                this._element.removeEventListener("MSPointerDown", this, true);
+
+            } else {
+                this._element.removeEventListener("touchstart", this, true);
+                this._element.removeEventListener("mousedown", this, true);
+            }
+
+            if (this._listenToWheelEvent) {
+                this._removeWheelEventListener();
+            }
+        }
+    },
+
+    surrenderPointer: {
+        value: function () {
+            var isSurrender = true;
+
+            if (isSurrender && this.isMoving) {
+                this._releaseInterest();
+            }
+
+            return isSurrender;
+        }
+    },
+
+    /*
+     * Add an event listener to receive events generated by the
+     * `TranslateComposer`.
+     * @param {string} event type
+     * @param {object|function} listener object or function
+     * @param {boolean} use capture instead of bubble
+     */
+    addEventListener: {
+        value: function (type, listener, useCapture) {
+            Composer.addEventListener.call(this, type, listener, useCapture);
+            if (type === "translate") {
+                this._shouldDispatchTranslate = true;
+            }
+        }
+    },
+
+    capturePointerdown: {
+        value: function (event) {
+            if (event.pointerType === "mouse") {
+                this.captureMousedown(event);
+            } else if (event.pointerType === "touch") {
+                this.captureTouchstart(event);
+            }
+        }
+    },
+
+    capturePointermove: {
+        value: function (event) {
+            if (event.pointerType === "mouse") {
+                this.captureMousemove(event);
+            } else if (event.pointerType === "touch") {
+                this.captureTouchmove(event);
+            }
+        }
+    },
+
+    handlePointerup: {
+        value: function (event) {
+            if (event.pointerType === "mouse") {
+                this.handleMouseup(event);
+            } else if (event.pointerType === "touch") {
+                this.handleTouchend(event);
+            }
+        }
+    },
+
+    handlePointercancel: {
+        value: function (event) {
+            if (event.pointerType === "touch") {
+                this.handleTouchcancel(event);
+            }
+        }
+    },
+
+    /**
+     * Handle the mousedown
+     * @function
+     * @param {Event} event
+     * @private
+     */
+    captureMousedown: {
+        value: function (event) {
+            if (!this.enabled) return;
+
+            if (event.button === 0) {
+                this._observedPointer = "mouse";
+
+                this._start(event.clientX, event.clientY, event.target, event.timeStamp);
+            }
+        }
+    },
+
+    captureMousemove: {
+        value: function (event) {
+            if (!this.enabled) return;
+
+            this._handleMove(event);
+        }
+    },
+
+    handleMouseup: {
+        value: function (event) {
+            if (!this.enabled) return;
+
+            this._end(event);
+        }
+    },
+
+    //Fixme: there is a graphic issue with popcorn with a chromebook if we don't prevent default.
+    captureTouchstart: {
+        value: function (event) {
+            // If already scrolling, ignore any new touchstarts
+            if (!this.enabled || this._observedPointer !== null) return;
+
+            if (event.pointerId !== void 0) {
+                this._observedPointer = event.pointerId;
+                this._start(event.clientX, event.clientY, event.target, event.timeStamp);
+                this._preventDefaultIfNeeded(event);
+
+            } else {
+                var targetTouches = event.targetTouches;
+
+                if (targetTouches && targetTouches.length === 1) {
+                    var touch = targetTouches[0];
+
+                    this._preventDefaultIfNeeded(event);
+
+                    this._observedPointer = touch.identifier;
+                    this._start(touch.clientX, touch.clientY, touch.target, event.timeStamp);
+                }
+            }
+        }
+    },
+
+    captureTouchmove: {
+        value: function (event) {
+            if (!this.enabled) return;
+
+            if (event.pointerId !== void 0) {
+                this._handleMove(event);
+
+            } else {
+                var touch = this._findObservedTouch(event.changedTouches);
+
+                if (touch) {
+                    this._handleMove(event, touch);
+                }
+            }
+        }
+    },
+
+    handleTouchend: {
+        value: function (event) {
+            if (!this.enabled) return;
+
+            if (event.pointerId !== void 0) {
+                this._end(event);
+
+            } else {
+                var touch = this._findObservedTouch(event.changedTouches);
+
+                if (touch) {
+                    this._end(touch);
+                }
+            }
+        }
+    },
+
+    handleTouchcancel: {
+        value: function (event) {
+            if (!this.enabled) return;
+
+            if (event.pointerId !== void 0) {
+                this._cancel(event);
+
+            } else {
+                var touch = this._findObservedTouch(event.changedTouches);
+
+                if (touch) {
+                    this._cancel(touch);
+                }
+            }
+        }
+    },
+
+
+    /*------------------------------------------------------------------------------------------------------------------
+     *                                             Private Functions.
+     *-----------------------------------------------------------------------------------------------------------------/
+
 
     /**
      * Determines if the composer will call `preventDefault` on the DOM events it interprets.
@@ -544,167 +755,342 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         }
     },
 
-    /**
-     * Handle the mousedown that bubbled back up from beneath the element
-     * If nobody else claimed this pointer, we should handle it now
-     * @function
-     * @param {Event} event
-     * @private
-     */
-    handleMousedown: {
+    _preventDefaultIfNeeded: {
         value: function (event) {
-            if (!this.enabled) return;
+            if (!event.defaultPrevented && this._shouldPreventDefault(event)) {
+                event.preventDefault();
+            }
+        }
+    },
 
-            this._observedPointer = "mouse";
+    _addWheelEventListener: {
+        value: function () {
+            if (this._element) {
+                var wheelEventName = typeof window.onwheel !== "undefined" || typeof window.WheelEvent !== "undefined" ?
+                    "wheel" : "mousewheel";
 
-            if (event.button === 0 && !this.eventManager.componentClaimingPointer(this._observedPointer)) {
-                this._start(event.clientX, event.clientY, event.target, event.timeStamp);
+                this._element.addEventListener(wheelEventName, this, false);
+                this._element.addEventListener(wheelEventName, this, true);
+            }
+        }
+    },
+
+    _removeWheelEventListener: {
+        value: function () {
+            if (this._element) {
+                var wheelEventName = typeof window.onwheel !== "undefined" || typeof window.WheelEvent !== "undefined" ?
+                    "wheel" : "mousewheel";
+
+                this._element.removeEventListener(wheelEventName, this, false);
+                this._element.removeEventListener(wheelEventName, this, true);
+            }
+        }
+    },
+
+    _start: {
+        value: function (x, y, target, timeStamp) {
+            this.pointerStartEventPosition = {
+                pageX: x,
+                pageY: y,
+                target: target,
+                timeStamp: timeStamp
+            };
+
+            this._pointerX = x;
+            this._pointerY = y;
+
+            if (window.PointerEvent) {
+                document.addEventListener("pointermove", this, true);
+                document.addEventListener("pointerup", this, false);
+                document.addEventListener("pointercancel", this, false);
+
+            } else if (window.navigator.msPointerEnabled) {
+                document.addEventListener("MSPointerMove", this, true);
+                document.addEventListener("MSPointerUp", this, false);
+                document.addEventListener("MSPointerCancel", this, false);
+
+            } else {
+                if (this._observedPointer === "mouse") {
+                    document.addEventListener("mousemove", this, true);
+                    document.addEventListener("mouseup", this, false);
+
+                } else {
+                    this._element.addEventListener("touchmove", this, true);
+                    this._element.addEventListener("touchend", this, false);
+                    this._element.addEventListener("touchcancel", this, false);
+                }
+            }
+
+            if (this.isAnimating) {
+                this.isAnimating = false;
+                this._dispatchTranslateEnd();
+            }
+
+            this._isFirstMove = true;
+        }
+    },
+
+    _findObservedTouch: {
+        value: function (changedTouches) {
+            var touch = null, tmp;
+
+            for (var i = 0, length = changedTouches.length; i < length && touch === null; i++) {
+                tmp = changedTouches[i];
+
+                if (tmp.identifier === this._observedPointer) {
+                    touch = tmp;
+                }
+            }
+
+            return touch;
+        }
+    },
+
+    _handleMove: {
+        value: function (event, contactPoint) {
+            if (!contactPoint) {
+                contactPoint = event;
+            }
+
+            if (this._isFirstMove) {
+                var claimant = this.eventManager.componentClaimingPointer(this._observedPointer);
+
+                if (claimant) {
+                    var shouldClaimPointer = true;
+
+                    if (this.claimPointerPolicy === TranslateComposer.CLAIM_POINTER_POLICIES.MOVE) {
+                        var threshold = this._observedPointer === "mouse" ? this._mouseRadiusThreshold : this._touchRadiusThreshold,
+                            dX = this.pointerStartEventPosition.pageX - contactPoint.clientX,
+                            dY = this.pointerStartEventPosition.pageY - contactPoint.clientY;
+
+                        shouldClaimPointer = Composer.isCoordinateOutsideRadius(dX, dY, threshold);
+                    }
+
+                    if (!shouldClaimPointer) {
+                        this._preventDefaultIfNeeded(event);
+
+                        return void 0; // let's wait for the next move event
+                    }
+                }
+
                 this.eventManager.claimPointer(this._observedPointer, this);
             }
-        }
-    },
-
-    captureMousemove: {
-        value: function (event) {
-            if (!this.enabled) return;
 
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                event.preventDefault();
-                if (this._isFirstMove) {
-                    this._firstMove();
-                } else {
-                    this._move(event.clientX, event.clientY);
-                }
+                this._preventDefaultIfNeeded(event);
+
+                if (this.allowTranslateOuterExtreme || this._shouldMove(event, contactPoint.clientX, contactPoint.clientY)) {
+                    if (this._isFirstMove) {
+                        this._firstMove();
+                    } else {
+                        this._move(contactPoint.clientX, contactPoint.clientY);
+                    }
+                }// else -> The translate composer will release interest when the movement will be over.
+                // Indeed while moving the direction can change. (if reach max or min transalate for example)
+            } else {
+                // This component didn't claim the pointer so we stop
+                // listening for further movement.
+                this._releaseInterest();
             }
         }
     },
 
-    captureMouseup: {
-        value: function (event) {
-            if (!this.enabled) return;
+    _shouldMove: {
+        value: function (event, x, y) {
+            var translateY = this._translateY,
+                translateX = this._translateX,
+                canMove = true,
+                isNegativeDeltaY,
+                isNegativeDeltaX,
+                deltaX,
+                deltaY;
 
-            this._end(event);
+            if (event.type === "wheel") {
+                if (this._axis !== "vertical") {
+                    deltaX = ((event.wheelDeltaY || -event.deltaY || 0) * 20) / 120;
+                }
+
+                if (this._axis !== "horizontal") {
+                    deltaY = ((event.wheelDeltaY || -event.deltaY || 0) * 20) / 120;
+                }
+
+            } else {
+                if (this._axis !== "vertical") {
+                    deltaX = -(this._invertXAxis ? (this._pointerX - x) : (x - this._pointerX));
+                }
+
+                if (this._axis !== "horizontal") {
+                    deltaY = -(this._invertYAxis ? (this._pointerY - y) : (y - this._pointerY));
+                }
+            }
+
+            if (deltaY) {
+                isNegativeDeltaY = this._isNegativeNumber(deltaY);
+
+                if (this.minTranslateY !== null) {
+                    // can moves if the current position is at the extreme top, but "scrolling" down or no extreme.
+                    canMove = translateY !== this.minTranslateY || (translateY === this.minTranslateY && isNegativeDeltaY);
+                }
+
+
+                if (this.maxTranslateY !== null) {
+                    if (canMove) {
+                        // can moves if the current position is at the extreme bottom, but "scrolling" up or no extreme.
+                        canMove = translateY !== this.maxTranslateY || (translateY === this.maxTranslateY && !isNegativeDeltaY);
+                    }
+                }
+            }
+
+            if (deltaX) {
+                isNegativeDeltaX = this._isNegativeNumber(deltaX);
+
+                if (this.minTranslateX !== null) {
+                    if (canMove) {
+                        // can moves if the current position is at the extreme left, but "scrolling" right or no extreme.
+                        canMove = translateX !== this.minTranslateX || (translateX === this.minTranslateX && isNegativeDeltaX);
+                    }
+                }
+
+                if (this.maxTranslateX !== null) {
+                    if (canMove) {
+                        // can moves if the current position is at the extreme right, but "scrolling" left or no extreme.
+                        canMove = translateX !== this.maxTranslateX || (translateX === this.maxTranslateX && !isNegativeDeltaX);
+                    }
+                }
+            }
+
+            return canMove;
         }
     },
 
-    _releaseInterest: { // unload??
+    _firstMove: {
         value: function () {
+            if (this._isFirstMove) {
+                this._dispatchTranslateStart(this._translateX, this._translateY);
+                this._isFirstMove = false;
+                this.isMoving = true;
+            }
+        }
+    },
 
-            if (window.Touch) {
-                this._element.removeEventListener("touchend", this, true);
-                this._element.removeEventListener("touchcancel", this, true);
-                if (this._isFirstMove) {
-                    //if we receive an end without ever getting a move
-                    this._element.removeEventListener("touchmove", this, true);
-                }
-                this._element.removeEventListener("touchmove", this, false);
-            } else {
-                document.removeEventListener("mouseup", this, true);
-                if (this._isFirstMove) {
-                    this._element.removeEventListener("mousemove", this, true);
+    _move: {
+        value: function (x, y) {
+            var pointerDelta;
+
+            this._isSelfUpdate = true;
+
+            if (this._axis !== "vertical") {
+                pointerDelta = this._invertXAxis ? (this._pointerX - x) : (x - this._pointerX);
+                this.translateX += pointerDelta * this._pointerSpeedMultiplier;
+            }
+
+            if (this._axis !== "horizontal") {
+                pointerDelta = this._invertYAxis ? (this._pointerY - y) : (y - this._pointerY);
+                this.translateY += pointerDelta * this._pointerSpeedMultiplier;
+            }
+
+            this._isSelfUpdate = false;
+
+            this._pointerX = x;
+            this._pointerY = y;
+
+            if (this._shouldDispatchTranslate) {
+                this._dispatchTranslate();
+            }
+        }
+    },
+
+    _end: {
+        value: function (event) {
+            this.startTime = Date.now();
+
+            this.endX = this.posX = this.startX=this._translateX;
+            this.endY=this.posY=this.startY=this._translateY;
+
+            var velocity = event.velocity;
+
+            if ((this._hasMomentum) && ((velocity.speed>40) || this.translateStrideX || this.translateStrideY)) {
+                if (this._axis !== "vertical") {
+                    this.momentumX = velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
                 } else {
+                    this.momentumX = 0;
+                }
+                if (this._axis !== "horizontal") {
+                    this.momentumY = velocity.y * this._pointerSpeedMultiplier * (this._invertYAxis ? 1 : -1);
+                } else {
+                    this.momentumY=0;
+                }
+                this.endX = this.startX - (this.momentumX * this.__momentumDuration / 2000);
+                this.endY = this.startY - (this.momentumY * this.__momentumDuration / 2000);
+                this.startStrideXTime = null;
+                this.startStrideYTime = null;
+                this.animateMomentum = true;
+            } else {
+                this.animateMomentum = false;
+            }
+
+            if (this.animateMomentum) {
+                this._animationInterval();
+            } else if (!this._isFirstMove) {
+                this.isMoving = false;
+                // Only dispatch a translateEnd if a translate start has occured
+                this._dispatchTranslateEnd();
+            }
+
+            this._releaseInterest();
+        }
+    },
+
+    _cancel: {
+        value: function (event) {
+            this.startTime = Date.now();
+
+            this.endX = this.posX = this.startX=this._translateX;
+            this.endY=this.posY=this.startY=this._translateY;
+            this.animateMomentum = false;
+
+            if (!this._isFirstMove) {
+                this.isMoving = false;
+                // Only dispatch a translateCancel if a translate start has
+                // occurred.
+                this._dispatchTranslateCancel();
+            }
+
+            this._releaseInterest();
+        }
+    },
+
+    _releaseInterest: {
+        value: function () {
+            if (window.PointerEvent) {
+                document.removeEventListener("pointermove", this, true);
+                document.removeEventListener("pointerup", this, false);
+                document.removeEventListener("pointercancel", this, false);
+
+            } else if (window.navigator.msPointerEnabled) {
+                document.removeEventListener("MSPointerMove", this, true);
+                document.removeEventListener("MSPointerUp", this, false);
+                document.removeEventListener("MSPointerCancel", this, false);
+
+            } else {
+                if (this._observedPointer === "mouse") {
                     document.removeEventListener("mousemove", this, true);
+                    document.removeEventListener("mouseup", this, false);
+
+                } else {
+                    this._element.removeEventListener("touchmove", this, true);
+                    this._element.removeEventListener("touchend", this, false);
+                    this._element.removeEventListener("touchcancel", this, false);
                 }
             }
 
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 this.eventManager.forfeitPointer(this._observedPointer, this);
             }
+
             this._observedPointer = null;
-        }
-    },
-
-    captureTouchstart: {
-        value: function (event) {
-            if (!this.enabled) return;
-
-            if (this._shouldPreventDefault(event)) {
-                event.preventDefault();
-            }
-
-            // If already scrolling, ignore any new touchstarts
-            if (this._observedPointer !== null && this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                return;
-            }
-
-            if (event.targetTouches && event.targetTouches.length === 1) {
-                this._observedPointer = event.targetTouches[0].identifier;
-                this._start(event.targetTouches[0].clientX, event.targetTouches[0].clientY, event.targetTouches[0].target, event.timeStamp);
-            }
-        }
-    },
-
-    captureTouchmove: {
-        value: function (event) {
-            var timeToMove;
-            if (!this.enabled) return;
-            if (this.stealChildrenPointer && this._isAxisMovement(event.targetTouches[0])) {
-                timeToMove = event.timeStamp - this.pointerStartEventPosition.timeStamp;
-                if (timeToMove < this.stealChildrenPointerThreshold) {
-                    this.eventManager.claimPointer(this._observedPointer, this);
-                }
-            }
-        }
-    },
-
-    handleTouchmove: {
-        value: function (event) {
-            if (!this.enabled) return;
-
-            var i = 0, len = event.changedTouches.length;
-            while (i < len && event.changedTouches[i].identifier !== this._observedPointer) {
-                i++;
-            }
-
-            if (i < len) {
-                if (this._isFirstMove) {
-                    // The first inner component in the hierarchy will
-                    // claim the pointer if it wasn't claimed during
-                    // capture phase.
-                    if (!this.eventManager.componentClaimingPointer(this._observedPointer)) {
-                        this.eventManager.claimPointer(this._observedPointer, this);
-                    }
-                }
-
-                if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                    event.preventDefault();
-                    if (this._isFirstMove) {
-                        this._firstMove();
-                    } else {
-                        this._move(event.changedTouches[i].clientX, event.changedTouches[i].clientY);
-                    }
-                } else {
-                    // This component didn't claim the pointer so we stop
-                    // listening for further movement.
-                    this._releaseInterest();
-                }
-            }
-        }
-    },
-
-    captureTouchend: {
-        value: function (event) {
-            if (!this.enabled) return;
-
-            var i = 0, len = event.changedTouches.length;
-            while (i < len && event.changedTouches[i].identifier !== this._observedPointer) {
-                i++;
-            }
-            if (i < len) {
-                this._end(event.changedTouches[i]);
-            }
-        }
-    },
-
-    captureTouchcancel: {
-        value: function (event) {
-            var i = 0, len = event.changedTouches.length;
-            while (i < len && event.changedTouches[i].identifier !== this._observedPointer) {
-                i++;
-            }
-            if (i < len) {
-                this._cancel(event.changedTouches[i]);
-            }
+            this._isFirstMove = false;
+            this.isMoving = false;
         }
     },
 
@@ -762,10 +1148,31 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: null
     },
 
+    _handleWheelTimeout: {
+        value: null
+    },
+
+    _isNegativeNumber: {
+        value: function (_number) {
+            _number = +_number;
+
+            if (!isNaN(_number)) {
+                _number = 1/_number; // -> catch -0 (-infinity) && +0 (+infinity)
+            }
+
+            return _number < 0;
+        }
+    },
+
     captureWheel: {
-        value: function () {
-            if (!this.eventManager.componentClaimingPointer(this._WHEEL_POINTER)) {
-                this.eventManager.claimPointer(this._WHEEL_POINTER, this.component);
+        value: function (event) {
+            if (this._shouldMove(event)) {
+                if (!this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this)) {
+                    this.eventManager.claimPointer(this._WHEEL_POINTER, this);
+                }
+
+            } else if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this)) {
+                this.eventManager.forfeitPointer(this._WHEEL_POINTER, this);
             }
         }
     },
@@ -774,69 +1181,39 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function (event) {
             if (!this.enabled) return;
 
-            var self = this;
-
             // If this composers' component is claiming the "wheel" pointer then handle the event
-            if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this.component)) {
-                var oldTranslateY = this._translateY;
-                var deltaY = event.wheelDeltaY || -event.deltaY || 0;
-                this._dispatchTranslateStart();
-                this.translateY = this._translateY - ((deltaY * 20) / 120);
-                this._dispatchTranslate();
-                window.clearTimeout(this._translateEndTimeout);
-                this._translateEndTimeout = window.setTimeout(function () {
-                    self._dispatchTranslateEnd();
-                }, 400);
+            if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this)) {
+                var self = this;
 
-                // If we're not at one of the extremes (i.e. the scroll actually
-                // changed the translate) then we want to preventDefault to stop
-                // the page scrolling.
-                if (oldTranslateY !== this._translateY && this._shouldPreventDefault(event)) {
-                    event.preventDefault();
-                }
-                this.eventManager.forfeitPointer(this._WHEEL_POINTER, this.component);
-            }
-        }
-    },
-
-    _firstMove: {
-        value: function () {
-            if (this._isFirstMove) {
-                this._dispatchTranslateStart(this._translateX, this._translateY);
-                this._isFirstMove = false;
-                this.isMoving = true;
-                //listen to the document for the rest of the move events
-                if (window.Touch) {
-                    this._element.removeEventListener("touchmove", this, true);
+                if (this._translateEndTimeout) {
+                    window.clearTimeout(this._translateEndTimeout);
                 } else {
-                    document.addEventListener("mousemove", this, true);
-                    this._element.removeEventListener("mousemove", this, true);
+                    this._dispatchTranslateStart();
                 }
 
-            }
-        }
-    },
-
-    _move: {
-        value: function (x, y) {
-            var pointerDelta;
-
-            this._isSelfUpdate = true;
-            if (this._axis !== "vertical") {
-                pointerDelta = this._invertXAxis ? (this._pointerX - x) : (x - this._pointerX);
-                this.translateX += pointerDelta * this._pointerSpeedMultiplier;
-            }
-            if (this._axis !== "horizontal") {
-                pointerDelta = this._invertYAxis ? (this._pointerY - y) : (y - this._pointerY);
-                this.translateY += pointerDelta * this._pointerSpeedMultiplier;
-            }
-            this._isSelfUpdate = false;
-
-            this._pointerX = x;
-            this._pointerY = y;
-
-            if (this._shouldDispatchTranslate) {
+                this.translateY = this._translateY - ((event.wheelDeltaY || -event.deltaY || 0)* 20) / 120;
+                this.isMoving = true;
                 this._dispatchTranslate();
+
+                if (typeof this._handleWheelTimeout !== "function") {
+                    var _handleWheelTimeout = function () {
+                        self._translateEndTimeout = null;
+                        self._dispatchTranslateEnd();
+                        self.isMoving = false;
+
+                        if (self.eventManager.isPointerClaimedByComponent(self._WHEEL_POINTER, this)) {
+                            self.eventManager.forfeitPointer(self._WHEEL_POINTER, self);
+                        }
+                    };
+
+                    this._handleWheelTimeout = _handleWheelTimeout.bind(this);
+                }
+
+                this._translateEndTimeout = window.setTimeout(this._handleWheelTimeout, 400);
+
+                // If we're not at one of the extremes (i.e. the scroll actually changed the translate)
+                // then we want to preventDefault to stop the page scrolling.
+                this._preventDefaultIfNeeded(event);
             }
         }
     },
@@ -994,122 +1371,21 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 this._dispatchTranslateEnd();
             }
         }
-    },
+    }
 
+}, {
 
-    _end: {
-        value: function (event) {
-
-            this.startTime=Date.now();
-
-            this.endX = this.posX = this.startX=this._translateX;
-            this.endY=this.posY=this.startY=this._translateY;
-
-            if ((this._hasMomentum) && ((event.velocity.speed>40) || this.translateStrideX || this.translateStrideY)) {
-                if (this._axis !== "vertical") {
-                    this.momentumX = event.velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
-                } else {
-                    this.momentumX = 0;
-                }
-                if (this._axis !== "horizontal") {
-                    this.momentumY = event.velocity.y * this._pointerSpeedMultiplier * (this._invertYAxis ? 1 : -1);
-                } else {
-                    this.momentumY=0;
-                }
-                this.endX = this.startX - (this.momentumX * this.__momentumDuration / 2000);
-                this.endY = this.startY - (this.momentumY * this.__momentumDuration / 2000);
-                this.startStrideXTime = null;
-                this.startStrideYTime = null;
-                this.animateMomentum = true;
-            } else {
-                this.animateMomentum = false;
-            }
-
-            if (this.animateMomentum) {
-                this._animationInterval();
-            } else if (!this._isFirstMove) {
-                this.isMoving = false;
-                // Only dispatch a translateEnd if a translate start has occured
-                this._dispatchTranslateEnd();
-            }
-            this._releaseInterest();
-        }
-    },
-
-    _cancel: {
-        value: function (event) {
-
-            this.startTime=Date.now();
-
-            this.endX = this.posX = this.startX=this._translateX;
-            this.endY=this.posY=this.startY=this._translateY;
-            this.animateMomentum = false;
-
-            if (!this._isFirstMove) {
-                this.isMoving = false;
-                // Only dispatch a translateCancel if a translate start has
-                // occurred.
-                this._dispatchTranslateCancel();
-            }
-            this._releaseInterest();
-        }
-    },
-
-    surrenderPointer: {
-        value: function (pointer, demandingComponent) {
-            return ! this.isMoving &&
-                demandingComponent.stealChildrenPointer &&
-                // assuming that demanding component is a (great)*child
-                demandingComponent.stealChildrenPointerThreshold <= this.stealChildrenPointerThreshold;
-        }
-    },
-
-    eventManager: {
-        get: function () {
-            return defaultEventManager;
-        }
-    },
-
-    load: {
-        value: function () {
-            if (window.Touch) {
-                this._element.addEventListener("touchstart", this, true);
-                this._element.addEventListener("touchstart", this, false);
-            } else {
-                this._element.addEventListener("mousedown", this, false);
-
-                var wheelEventName;
-                if (typeof window.onwheel !== "undefined" || typeof window.WheelEvent !== "undefined" ){
-                    wheelEventName = "wheel";
-                } else {
-                    wheelEventName = "mousewheel";
-                }
-                this._element.addEventListener(wheelEventName, this, false);
-                this._element.addEventListener(wheelEventName, this, true);
-            }
-
-            this.eventManager.isStoringPointerEvents = true;
-        }
-    },
-
-    /*
-     * Add an event listener to receive events generated by the
-    * `TranslateComposer`.
-     * @param {string} event type
-     * @param {object|function} listener object or function
-     * @param {boolean} use capture instead of bubble
-     */
-    addEventListener: {
-        value: function (type, listener, useCapture) {
-            Composer.addEventListener.call(this, type, listener, useCapture);
-            if (type === "translate") {
-                this._shouldDispatchTranslate = true;
-            }
+    CLAIM_POINTER_POLICIES: {
+        value: {
+            DEFAULT: "default", // claiming pointers on the capture phase.
+            MOVE: "move" // claiming pointers on the capture phase + check if a real move has been encountered.
         }
     }
 
 });
 
+TranslateComposer.prototype.captureMSPointerDown = TranslateComposer.prototype.capturePointerdown;
+TranslateComposer.prototype.captureMSPointerMove = TranslateComposer.prototype.capturePointermove;
+TranslateComposer.prototype.handleMSPointerUp = TranslateComposer.prototype.handlePointerup;
+TranslateComposer.prototype.handleMSPointerCancel = TranslateComposer.prototype.handlePointercancel;
 TranslateComposer.prototype.handleMousewheel = TranslateComposer.prototype.handleWheel;
-TranslateComposer.prototype.captureMousewheel = TranslateComposer.prototype.captureWheel;
-

@@ -189,4 +189,12 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
         }
     }
 
+}, {
+
+    isCoordinateOutsideRadius: {
+        value: function (x, y, radius) {
+            return x * x + y * y > radius * radius;
+        }
+    }
+
 });
