@@ -28,13 +28,13 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function (test
                     expect(proximalComponent.isActiveTarget).toBeTruthy();
                 });
 
-                if (window.Touch) {
+                if (!window.PointerEvent && !window.navigator.msPointerEnabled) {
                     it("should focus on a target when a target's own element receives touchstart", function () {
                         testPage.touchEvent({target: proximalElement}, "touchstart");
                         expect(eventManager.activeTarget).toBe(proximalComponent);
                         expect(proximalComponent.isActiveTarget).toBeTruthy();
                     });
-                } else {
+
                     it("should focus on a target when a target's own element receives mousedown", function () {
                         testPage.mouseEvent({target: proximalElement}, "mousedown");
                         expect(eventManager.activeTarget).toBe(proximalComponent);
@@ -45,7 +45,7 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function (test
 
                 //TODO well this will work for now, but this whole forking strategy will need to be rethought (euphemism intended)
                 // The activation eventHandler still works in either/or mode for now
-                if (window.Touch) {
+                if (!window.PointerEvent && !window.navigator.msPointerEnabled) {
                     it("should focus on a target when a target's own element receives touchstart", function () {
                         testPage.touchEvent({target: proximalElement}, "touchstart");
                         expect(eventManager.activeTarget).toBe(proximalComponent);
@@ -122,13 +122,13 @@ TestPageLoader.queueTest("active-target-test/active-target-test", function (test
                     expect(proximalComponent.isActiveTarget).toBeFalsy();
                 });
 
-                if (!window.Touch) {
+                if (!window.PointerEvent && !window.navigator.msPointerEnabled) {
                     it("should focus on some nextTarget that accepts focus when the proximal target receives mousedown", function () {
                         testPage.mouseEvent({target: proximalElement}, "mousedown");
                         expect(eventManager.activeTarget).toBe(activeComponent);
                         expect(activeComponent.isActiveTarget).toBeTruthy();
                     });
-                } else {
+
                     it("must not focus on the proximal target when the target receives touchstart", function () {
                         testPage.touchEvent({target: proximalElement}, "touchstart");
                         expect(proximalComponent.isActiveTarget).toBeFalsy();
