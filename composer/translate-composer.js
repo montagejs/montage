@@ -867,7 +867,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                     }
 
                     if (!shouldClaimPointer) {
-                        this._preventDefaultIfNeeded(event);
+                        event.preventDefault();
 
                         return void 0; // let's wait for the next move event
                     }
@@ -877,7 +877,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             }
 
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                this._preventDefaultIfNeeded(event);
+                event.preventDefault();
 
                 if (this.allowTranslateOuterExtreme || this._shouldMove(event, contactPoint.clientX, contactPoint.clientY)) {
                     if (this._isFirstMove) {
@@ -1213,7 +1213,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
                 // If we're not at one of the extremes (i.e. the scroll actually changed the translate)
                 // then we want to preventDefault to stop the page scrolling.
-                this._preventDefaultIfNeeded(event);
+                event.preventDefault();
             }
         }
     },
