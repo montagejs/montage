@@ -242,5 +242,23 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function (t
             });
         });
 
+        describe("changing visibleIndexes in repetition", function () {
+            it("should properly update the iteration's selected property", function () {
+                repetition.selection = [];
+                expect(repetition.iterations[0].object).toEqual("Alice");
+                expect(repetition.iterations[1].object).toEqual("Bob");
+                expect(repetition.iterations[0].selected).toBeFalsy();
+                expect(repetition.iterations[1].selected).toBeFalsy();
+                repetition.iterations[0].selected = true;
+                expect(repetition.iterations[0].selected).toBeTruthy();
+                repetition.visibleIndexes = [1];
+                expect(repetition.iterations[0].object).toEqual("Bob");
+                expect(repetition.iterations[0].selected).toBeFalsy();
+                repetition.visibleIndexes = [0];
+                expect(repetition.iterations[0].object).toEqual("Alice");
+                expect(repetition.iterations[0].selected).toBeTruthy();
+            });
+        });
+
     });
 });
