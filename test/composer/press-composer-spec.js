@@ -14,7 +14,7 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
     });
 
     describe("composer/press-composer-spec", function () {
-        if (!window.PointerEvent && !window.navigator.msPointerEnabled) {
+        if (!window.PointerEvent && !(window.MSPointerEvent && window.navigator.msPointerEnabled)) {
 
             describe("PressComposer", function () {
 

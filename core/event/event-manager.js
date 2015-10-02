@@ -558,7 +558,22 @@ if (typeof window !== "undefined") { // client-side
                 touchmove: {bubbles: true, cancelable: true}, //TouchEvent
                 touchstart: {bubbles: true, cancelable: true}, //TouchEvent
                 unload: {bubbles: false, cancelable: false}, //DOM2, DOM3
-                wheel: {bubbles: true, cancelable: true} //DOM3
+                wheel: {bubbles: true, cancelable: true}, //DOM3
+                pointerdown: {bubbles: true, cancelable: true}, //PointerEvent
+                pointerup: {bubbles: true, cancelable: true}, //PointerEvent
+                pointerenter: {bubbles: false, cancelable: true}, //PointerEvent
+                pointercancel: {bubbles: true, cancelable: true}, //PointerEvent
+                pointerout: {bubbles: true, cancelable: true}, //PointerEvent
+                pointerover: {bubbles: true, cancelable: true}, //PointerEvent
+                pointerleave: {bubbles: false, cancelable: true}, //PointerEvent
+                pointermove: {bubbles: true, cancelable: true}, //PointerEvent
+                MSPointerDown: {bubbles: true, cancelable: true}, //MSPointerEvent
+                MSPointerMove: {bubbles: true, cancelable: true}, //PointerEvent
+                MSPointerUp: {bubbles: true, cancelable: true}, //MSPointerEvent
+                MSPointerOver: {bubbles: true, cancelable: true}, //MSPointerEvent
+                MSPointerOut: {bubbles: true, cancelable: true}, //MSPointerEvent
+                MSPointerHover: {bubbles: true, cancelable: true}//MSPointerEvent
+
             }
         },
 
@@ -1358,7 +1373,7 @@ if (typeof window !== "undefined") { // client-side
                 if (window.PointerEvent) {
                     aWindow.nativeAddEventListener("pointerdown", this._activationHandler, true);
 
-                } else if (window.navigator.msPointerEnabled) {
+                } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                     aWindow.nativeAddEventListener("MSPointerDown", this._activationHandler, true);
 
                 } else {
@@ -1653,7 +1668,7 @@ if (typeof window !== "undefined") { // client-side
                     if (!this._isStoringPointerEvents) {
                         this._isStoringPointerEvents = true;
 
-                        var PointerConstructor = window.PointerEvent || window.MSPointerEvent && window.navigator.msPointerEnabled ? window.MSPointerEvent : window.Touch;
+                        var PointerConstructor = window.PointerEvent || (window.MSPointerEvent && window.navigator.msPointerEnabled) ? window.MSPointerEvent : window.Touch;
 
                         if (PointerConstructor) {
                             Object.defineProperty(PointerConstructor.prototype, "velocity", {
@@ -1737,7 +1752,7 @@ if (typeof window !== "undefined") { // client-side
                     return (this.memory[identifier] && (this.memory[identifier].size > 0));
                 },
                 storeEvent: function (mutableEvent) {
-                    var isBrowserSupportPointerEvents = !!(window.PointerEvent || window.navigator.msPointerEnabled),
+                    var isBrowserSupportPointerEvents = !!(window.PointerEvent || (window.MSPointerEvent && window.navigator.msPointerEnabled)),
                         event = mutableEvent instanceof MutableEvent ? mutableEvent._event : mutableEvent;
 
                     if ((isBrowserSupportPointerEvents &&
@@ -1806,7 +1821,7 @@ if (typeof window !== "undefined") { // client-side
                 },
 
                 removeEvent: function (mutableEvent) {
-                    var isBrowserSupportPointerEvents = !!(window.PointerEvent || window.navigator.msPointerEnabled),
+                    var isBrowserSupportPointerEvents = !!(window.PointerEvent || (window.MSPointerEvent && window.navigator.msPointerEnabled)),
                         event = mutableEvent instanceof MutableEvent ? mutableEvent._event : mutableEvent;
 
                     if ((isBrowserSupportPointerEvents &&
@@ -2301,7 +2316,7 @@ if (typeof window !== "undefined") { // client-side
          */
         _shouldDispatchEvent: {
             value: function (event) {
-                if (this.blocksEmulatedEvents && !window.PointerEvent && !window.navigator.msPointerEnabled) {
+                if (this.blocksEmulatedEvents && !window.PointerEvent && !(window.MSPointerEvent && window.navigator.msPointerEnabled)) {
                     /**
                      * Under IOS emulated mouse events have a timestamp set to 0.
                      * Plus, this property can't be used for Firefox.

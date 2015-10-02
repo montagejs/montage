@@ -525,7 +525,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             if (window.PointerEvent) {
                 this._element.addEventListener("pointerdown", this, true);
 
-            } else if (window.navigator.msPointerEnabled) {
+            } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 this._element.addEventListener("MSPointerDown", this, true);
 
             } else {
@@ -546,7 +546,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             if (window.PointerEvent) {
                 this._element.removeEventListener("pointerdown", this, true);
 
-            } else if (window.navigator.msPointerEnabled) {
+            } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 this._element.removeEventListener("MSPointerDown", this, true);
 
             } else {
@@ -804,7 +804,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 document.addEventListener("pointerup", this, false);
                 document.addEventListener("pointercancel", this, false);
 
-            } else if (window.navigator.msPointerEnabled) {
+            } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 document.addEventListener("MSPointerMove", this, true);
                 document.addEventListener("MSPointerUp", this, false);
                 document.addEventListener("MSPointerCancel", this, false);
@@ -1067,7 +1067,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 document.removeEventListener("pointerup", this, false);
                 document.removeEventListener("pointercancel", this, false);
 
-            } else if (window.navigator.msPointerEnabled) {
+            } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 document.removeEventListener("MSPointerMove", this, true);
                 document.removeEventListener("MSPointerUp", this, false);
                 document.removeEventListener("MSPointerCancel", this, false);

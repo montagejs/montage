@@ -74,7 +74,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
             if (window.PointerEvent) {
                 this._element.addEventListener("pointerdown", this, true);
 
-            } else if (window.navigator.msPointerEnabled) {
+            } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 this._element.addEventListener("MSPointerDown", this, true);
 
             } else {
@@ -89,7 +89,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
             if (window.PointerEvent) {
                 this._element.removeEventListener("pointerdown", this, true);
 
-            } else if (window.navigator.msPointerEnabled) {
+            } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                 this._element.removeEventListener("MSPointerDown", this, true);
 
             } else {
@@ -200,13 +200,13 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     _endInteraction: {
         value: function () {
             if (this._element) {
-                if (window.navigator.msPointerEnabled) {
-                    document.removeEventListener("MSPointerUp", this, false);
-                    document.removeEventListener("MSPointerCancel", this, false);
-
-                } else if (window.PointerEvent) {
+                if (window.PointerEvent) {
                     document.removeEventListener("pointerup", this, false);
                     document.removeEventListener("pointercancel", this, false);
+
+                } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                    document.removeEventListener("MSPointerUp", this, false);
+                    document.removeEventListener("MSPointerCancel", this, false);
 
                 } else {
                     if (this._observedPointer === "mouse") {
@@ -320,13 +320,13 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 }
 
                 if (this._observedPointer !== null && this.component.eventManager.claimPointer(this._observedPointer, this)) {
-                    if (window.navigator.msPointerEnabled) {
-                        document.addEventListener("MSPointerUp", this, false);
-                        document.addEventListener("MSPointerCancel", this, false);
-
-                    } else if (window.PointerEvent) {
+                    if (window.PointerEvent) {
                         document.addEventListener("pointerup", this, false);
                         document.addEventListener("pointercancel", this, false);
+
+                    } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                        document.addEventListener("MSPointerUp", this, false);
+                        document.addEventListener("MSPointerCancel", this, false);
 
                     } else {
                         document.addEventListener("touchend", this, false);
@@ -351,7 +351,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
             var target;
 
-            if ((window.PointerEvent || window.navigator.msPointerEnabled) && event.pointerId === this._observedPointer)  {
+            if (event.pointerId === this._observedPointer)  {
                 target = event.target;
 
             } else if (this._changedTouchisObserved(event.changedTouches) !== false) {
@@ -392,11 +392,11 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
                 if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                     // Needed to cancel the press if mouseup'd when not on the component
-                    if (window.navigator.msPointerEnabled) {
-                        document.addEventListener("MSPointerUp", this, false);
-
-                    } else if (window.PointerEvent) {
+                    if (window.PointerEvent) {
                         document.addEventListener("pointerup", this, false);
+
+                    } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                        document.addEventListener("MSPointerUp", this, false);
 
                     } else {
                         document.addEventListener("mouseup", this, false);
