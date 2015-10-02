@@ -23,6 +23,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
             // the frustum controller's visibleIndexes.  We manage the
             // array within the flow and use it also in the flow
             // translate composer.
+            this._paths = [];
             this._visibleIndexes = [];
             this._needsClearVisibleIndexes = true;
             // Tracks the elastic scrolling offsets relative to their
@@ -30,7 +31,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
             // FlowBezierSpline.
             this._slideOffsets = {};
             this.defineBinding("_numberOfIterations", {
-                "<-": "_frustumController.content.length"
+                "<-": "contentController.content.length"
             });
             // dispatches handle_numberOfIterationsChange
             this.addOwnPropertyChangeListener("_numberOfIterations", this);
@@ -1244,10 +1245,6 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
     },
 
     /**
-     * The content that governs the repetition is plucked from the original
-     * content using the frustumController's visibleIndexes array, which we
-     * retain a copy of on Flow.
-     *
      * In order to prevent jitter and minimize thrashing on the DOM, the Flow
      * attempts to reuse every iteration, favoring moving them around with CSS
      * transforms over moving them around on the document, and favoring
@@ -1334,7 +1331,6 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                     j++;
                 }
             }
-
             // Don't bother triming the excess. We just make them invisible and
             // leave them on the origin.
         }
@@ -1568,10 +1564,10 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
             var i,
                 length = this._repetition._drawnIterations.length,
                 slideIndex, slideTime,
-                style,
                 j,
                 iteration,
                 element,
+                elementChildren,
                 pathsLength = this._paths.length,
                 pathIndex,
                 pos,
@@ -1615,34 +1611,34 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
             }
             if (this.splinePaths.length) {
                 for (i = 0; i < length; i++) {
-                    offset = this.offset(visibleIndexes[i]);
+                    offset = this.offset(this._visibleIndexes[i]);
                     pathIndex = offset.pathIndex;
                     slideTime = offset.slideTime;
                     indexTime = this._splinePaths[pathIndex]._convertSplineTimeToBezierIndexTime(slideTime);
                     iteration = this._repetition._drawnIterations[i];
                     element = iteration.cachedFirstElement || iteration.firstElement;
                     if (indexTime !== null) {
-                        if (element.children[0]) {
+                        if (elementChildren = element.children[0]) {
                             if (element.classList.contains("selected")) {
-                                element.children[0].classList.add("selected");
+                                elementChildren.classList.add("selected");
                             } else {
-                                element.children[0].classList.remove("selected");
+                                elementChildren.classList.remove("selected");
                             }
                             if (element.classList.contains("active")) {
-                                element.children[0].classList.add("active");
+                                elementChildren.classList.add("active");
                             } else {
-                                element.children[0].classList.remove("active");
+                                elementChildren.classList.remove("active");
                             }
                         }
                         pos = this._splinePaths[pathIndex].getPositionAtIndexTime(indexTime, this._sceneScale);
                         rotation = this._splinePaths[pathIndex].getRotationAtIndexTime(indexTime);
-                        style =
+                        element.setAttribute("style",
                             this._transformCss + ":translate3d(" + (((pos[0] * 100000) >> 0) * .00001) + "px," + (((pos[1] * 100000) >> 0) * .00001) + "px," + (((pos[2] * 100000) >> 0) * .00001) + "px)" +
                             (rotation[2] ? "rotateZ(" + (((rotation[2] * 100000) >> 0) * .00001) + "rad)" : "") +
                             (rotation[1] ? "rotateY(" + (((rotation[1] * 100000) >> 0) * .00001) + "rad)" : "") +
                             (rotation[0] ? "rotateX(" + (((rotation[0] * 100000) >> 0) * .00001) + "rad)" : "") + ";" +
-                            this._splinePaths[pathIndex].getStyleAtIndexTime(indexTime);
-                        element.setAttribute("style", style);
+                            this._splinePaths[pathIndex].getStyleAtIndexTime(indexTime)
+                        );
                     } else {
                         element.setAttribute("style", this._transformCss + ":scale3d(0,0,0);opacity:0");
                     }
