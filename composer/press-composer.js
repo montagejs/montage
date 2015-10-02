@@ -199,12 +199,16 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         value: null
     },
 
-    _initialPositionX: {
+    _initialCenterPositionX: {
         value : 0
     },
 
-    _initialPositionY: {
+    _initialCenterPositionY: {
         value: 0
+    },
+
+    _shouldSaveInitialCenterPosition: {
+        value: false
     },
 
     /**
@@ -222,8 +226,9 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
                 this._observedPointer = null;
                 this._state = PressComposer.UNPRESSED;
-                this._initialPositionX = 0;
-                this._initialPositionY = 0;
+                this._initialCenterPositionX = 0;
+                this._initialCenterPositionY = 0;
+                this._shouldSaveInitialCenterPosition = false;
             }
         }
     },
@@ -319,8 +324,8 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 }
 
                 if (this._observedPointer !== null && this.component.eventManager.claimPointer(this._observedPointer, this)) {
+                    this._shouldSaveInitialCenterPosition = true;
                     this._addEventListeners();
-                    this._saveInitialPosition();
                     this._dispatchPressStart(event);
 
                 } else {
@@ -360,6 +365,18 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         }
     },
 
+    // The PressComposer saves the initial center position after the first move or the first wheel event,
+    // in order to wait for a possible css transform (translate, scale...) appeared on its element
+    // after that the PressStart event has been raised.
+    _saveInitialCenterPositionIfNeeded: {
+        value: function () {
+            if (this._shouldSaveInitialCenterPosition) {
+                this._saveInitialCenterPosition();
+                this._shouldSaveInitialCenterPosition = false;
+            }
+        }
+    },
+
     _handleMove: {
         value: function (event) {
             if (this._observedPointer === null) {
@@ -369,9 +386,13 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
             if ((this._observedPointer === "mouse" || event.pointerId === this._observedPointer ||
                 (event.changedTouches && this._changedTouchisObserved(event.changedTouches) !== false)) &&
-                this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this) && this._positionChanged) {
+                this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
 
-                this._cancelPress(event);
+                this._saveInitialCenterPositionIfNeeded();
+
+                if (this._positionChanged) {
+                    this._cancelPress(event);
+                }
             }
         }
     },
@@ -384,10 +405,13 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
             }
 
             if ((event.target === this.element || event.target === window ||
-                (typeof event.target.contains === "function" && event.target.contains(this.element)) ||
-                this.element.contains(event.target)) && this._positionChanged) {
+                (typeof event.target.contains === "function" && event.target.contains(this.element)) || this.element.contains(event.target))) {
 
-                this._cancelPress(event);
+                this._saveInitialCenterPositionIfNeeded();
+
+                if (this._positionChanged) {
+                    this._cancelPress(event);
+                }
             }
         }
     },
@@ -411,8 +435,8 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 this.component.eventManager.claimPointer(this._observedPointer, this);
 
                 if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                    this._shouldSaveInitialCenterPosition = true;
                     this._addEventListeners();
-                    this._saveInitialPosition();
                     this._dispatchPressStart(event);
                 } else{
                     this._observedPointer = null;
@@ -463,20 +487,22 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         }
     },
 
-    _saveInitialPosition: {
+    _saveInitialCenterPosition: {
         value: function () {
             var boundingClientRect = this.element.getBoundingClientRect();
 
-            this._initialPositionX = boundingClientRect.left;
-            this._initialPositionY = boundingClientRect.top;
+            this._initialCenterPositionX = boundingClientRect.left + (boundingClientRect.width/2);
+            this._initialCenterPositionY = boundingClientRect.top + (boundingClientRect.height/2);
         }
     },
 
     _positionChanged: {
         get: function () {
-            var boundingClientRect = this.element.getBoundingClientRect();
+            var boundingClientRect = this.element.getBoundingClientRect(),
+                newCenterPositionX = boundingClientRect.left + (boundingClientRect.width/2),
+                newCenterPositionY = boundingClientRect.top + (boundingClientRect.height/2);
 
-            return this._initialPositionX !== boundingClientRect.left || this._initialPositionY !== boundingClientRect.top;
+            return this._initialCenterPositionX !== newCenterPositionX || this._initialCenterPositionY !== newCenterPositionY;
         }
     },
 
