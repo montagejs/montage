@@ -1670,10 +1670,14 @@ if (typeof window !== "undefined") { // client-side
                     if (!this._isStoringPointerEvents) {
                         this._isStoringPointerEvents = true;
 
-                        var PointerConstructor = window.PointerEvent || (window.MSPointerEvent && window.navigator.msPointerEnabled) ? window.MSPointerEvent : window.Touch;
-
-                        if (PointerConstructor) {
-                            Object.defineProperty(PointerConstructor.prototype, "velocity", {
+                        if (window.PointerEvent || (window.MSPointerEvent && window.navigator.msPointerEnabled)){
+                            Object.defineProperty(MutableEvent.prototype, "velocity", {
+                                get: function () {
+                                    return defaultEventManager.pointerMotion(this.pointerId).velocity;
+                                }
+                            });
+                        } else {
+                            Object.defineProperty(window.Touch.prototype, "velocity", {
                                 get: function () {
                                     return defaultEventManager.pointerMotion(this.identifier).velocity;
                                 }
@@ -1789,34 +1793,23 @@ if (typeof window !== "undefined") { // client-side
                         (mutableEvent.pointerType === "touch" || (window.MSPointerEvent && mutableEvent.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH))) ||
                         (window.TouchEvent !== void 0 && !isBrowserSupportPointerEvents && event instanceof TouchEvent)) {
 
-                        var i;
-
                         switch (mutableEvent.type) {
                             case "pointerdown":
                             case "MSPointerDown":
                             case "pointermove":
                             case "MSPointerMove":
-                            case "touchstart":
-                            case "touchmove":
-                                for (i = 0; i < mutableEvent.touches.length; i++) {
-                                    this.add(mutableEvent.touches[i].identifier, {
-                                        clientX: mutableEvent.touches[i].clientX,
-                                        clientY: mutableEvent.touches[i].clientY,
-                                        timeStamp: mutableEvent.timeStamp
-                                    });
-                                }
-                                break;
-
                             case "pointerup":
                             case "MSPointerUp":
+                                this._storeTouch(mutableEvent.pointerId, mutableEvent.clientX, mutableEvent.clientY, mutableEvent.timeStamp);
+                                break;
+
+                            case "touchstart":
+                            case "touchmove":
+                                this._storeTouches(mutableEvent.touches, mutableEvent.timeStamp);
+                                break;
+
                             case "touchend":
-                                for (i = 0; i < mutableEvent.changedTouches.length; i++) {
-                                    this.add(mutableEvent.changedTouches[i].identifier, {
-                                        clientX: mutableEvent.changedTouches[i].clientX,
-                                        clientY: mutableEvent.changedTouches[i].clientY,
-                                        timeStamp: mutableEvent.timeStamp
-                                    });
-                                }
+                                this._storeTouches(mutableEvent.changedTouches, mutableEvent.timeStamp);
                                 break;
                         }
                     }
@@ -1842,8 +1835,12 @@ if (typeof window !== "undefined") { // client-side
                         (window.TouchEvent !== void 0 && !isBrowserSupportPointerEvents && event instanceof TouchEvent)) {
 
                         if (mutableEvent.type === "touchend" || mutableEvent.type === "pointerup" || mutableEvent.type === "MSPointerUp") {
-                            for (var i = 0; i < mutableEvent.changedTouches.length; i++) {
-                                this.remove(mutableEvent.changedTouches[i].identifier);
+                            if (mutableEvent.changedTouches) {
+                                for (var i = 0; i < mutableEvent.changedTouches.length; i++) {
+                                    this.remove(mutableEvent.changedTouches[i].identifier);
+                                }
+                            } else {
+                                this.remove(mutableEvent.pointerId);
                             }
                         }
                     }
@@ -1860,6 +1857,23 @@ if (typeof window !== "undefined") { // client-side
                         get: function () {
                             return defaultEventManager.pointerMotion("mouse").velocity;
                         }
+                    });
+                },
+
+                _storeTouches: function (touches, timeStamp) {
+                    var touch;
+
+                    for (var i = 0; i < touches.length; i++) {
+                        touch = touches[i];
+                        this._storeTouch(touch.identifier, touch.clientX, touch.clientY, timeStamp);
+                    }
+                },
+
+                _storeTouch: function (identifier, clientX, clientY, timeStamp) {
+                    this.add(identifier, {
+                        clientX: clientX,
+                        clientY: clientY,
+                        timeStamp: timeStamp
                     });
                 }
             }
