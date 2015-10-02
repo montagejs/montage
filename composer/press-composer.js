@@ -383,7 +383,10 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 return;
             }
 
-            if ((event.target === this.element || event.target.contains(this.element) || this.element.contains(event.target)) && this._positionChanged) {
+            if ((event.target === this.element || event.target === window ||
+                (typeof event.target.contains === "function" && event.target.contains(this.element)) ||
+                this.element.contains(event.target)) && this._positionChanged) {
+
                 this._cancelPress(event);
             }
         }
@@ -420,7 +423,10 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     captureScroll: {
         value: function (event) {
-            if (event.target === this.element || event.target.contains(this.element) || this.element.contains(event.target)) {
+            if (event.target === this.element || event.target === window ||
+                (typeof event.target.contains === "function" && event.target.contains(this.element)) ||
+                this.element.contains(event.target)) {
+
                 this._cancelPress(event);
             }
         }
