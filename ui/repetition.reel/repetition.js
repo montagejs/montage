@@ -1821,15 +1821,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     _selectionPointer: {value: null},
 
 
-    /**
-     * Represents an allowed radius of pixels between a touchstart/mousedown and a touchmove/mousemove
-     * to still consider it as a selection.
-     *
-     * @type {number}
-     * @private
-     */
-    _threshold: { value: 10 },
-
 
     /**
      * Original vertical coordinate of a touchstart/mousedown
@@ -1906,9 +1897,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 this.__pressComposer.addEventListener("press", this, false);
                 this.__pressComposer.addEventListener("pressCancel", this, false);
 
-                this.element.addEventListener("touchmove", this, false);
-                document.addEventListener("scroll", this, true);
-
                 iteration.shouldBecomeActive = true;
                 this._currentActiveIteration = iteration;
             }
@@ -1933,58 +1921,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
             this.__pressComposer.removeEventListener("press", this, false);
             this.__pressComposer.removeEventListener("pressCancel", this, false);
-
-            this.element.removeEventListener("touchmove", this, false);
-            document.removeEventListener("scroll", this, true);
-        }
-    },
-
-
-    /**
-     * @private
-     */
-    handleTouchmove: {
-        value: function (event) {
-            var changedTouches = event.changedTouches,
-                touch;
-
-            for (var i = 0, length = changedTouches.length; i < length; i++) {
-                if (changedTouches[i].identifier === this.__pressComposer._observedPointer) {
-                    touch = changedTouches[i];
-                    break;
-                }
-            }
-
-            if (touch) {
-                this._handleMove(touch.clientX, touch.clientY);
-            }
-        }
-    },
-
-
-    /**
-     * @private
-     */
-    captureScroll: {
-        value: function (event) {
-            this._ignoreSelection();
-        }
-    },
-
-
-    /**
-     * @private
-     */
-    _handleMove: {
-        value: function (positionX, positionY) {
-            var threshold = this._threshold,
-                dX = positionX - this._startX,
-                dY = positionY - this._startY;
-
-            // Check if the current position is inside the allowed radius of pixels between a touchstart/mousedown and a touchmove/mousemove.
-            if (dX * dX + dY * dY > threshold * threshold) {
-                this._ignoreSelection();
-            }
         }
     },
 

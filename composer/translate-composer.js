@@ -737,6 +737,14 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         }
     },
 
+    captureScroll: {
+        value: function (event) {
+            if (event.target.contains(this.element)) {
+                this._cancel(event);
+            }
+        }
+    },
+
 
     /*------------------------------------------------------------------------------------------------------------------
      *                                             Private Functions.
@@ -820,6 +828,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                     this._element.addEventListener("touchcancel", this, false);
                 }
             }
+
+            document.addEventListener("scroll", this, true);
 
             if (this.isAnimating) {
                 this.isAnimating = false;
@@ -1083,6 +1093,8 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                     this._element.removeEventListener("touchcancel", this, false);
                 }
             }
+
+            document.removeEventListener("scroll", this, true);
 
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 this.eventManager.forfeitPointer(this._observedPointer, this);
