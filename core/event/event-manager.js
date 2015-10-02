@@ -1346,8 +1346,7 @@ if (typeof window !== "undefined") { // client-side
                 if (!this._activationHandler) {
                     var eventManager = this;
                     this._activationHandler = function (evt) {
-                        var eventType = evt.type,
-                            touchCount;
+                        var touchCount;
 
                         // Prepare any components associated with elements that may receive this event
                         // They need to registered there listeners before the next step, which is to find the components that
@@ -1358,27 +1357,30 @@ if (typeof window !== "undefined") { // client-side
                                 eventManager._prepareComponentsForActivation(evt.changedTouches[i].target);
                             }
                         } else {
-                                eventManager._prepareComponentsForActivation(evt.target);
+                            eventManager._prepareComponentsForActivation(evt.target);
                         }
-
                     };
                 }
 
                 // The EventManager needs to handle "gateway/pointer/activation events" that we
                 // haven't let children listen for yet
                 // when the EM handles them eventually it will need to allow
-                // all components from the event target to the window to prepareForPointerEvents
+                // all components from the event target to the window to prepareForActivationEvents
                 // before finding event handlers that were registered for these events
-                //TODO also should accommodate mouseenter/mouseover possibly
                 if (window.PointerEvent) {
                     aWindow.nativeAddEventListener("pointerdown", this._activationHandler, true);
+                    aWindow.nativeAddEventListener("pointerenter", this._activationHandler, true);
 
                 } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
                     aWindow.nativeAddEventListener("MSPointerDown", this._activationHandler, true);
+                    // IE10 has no support for pointerenter or pointerleave events.
+                    aWindow.document.nativeAddEventListener("mouseenter", this._activationHandler, true);
 
                 } else {
                     aWindow.nativeAddEventListener("touchstart", this._activationHandler, true);
                     aWindow.nativeAddEventListener("mousedown", this._activationHandler, true);
+                    // mouseenter events are not dispatched from window under Chrome and Safari.
+                    aWindow.document.nativeAddEventListener("mouseenter", this._activationHandler, true);
                 }
 
                 aWindow.nativeAddEventListener("focus", this._activationHandler, true);
