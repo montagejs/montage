@@ -1830,7 +1830,7 @@ if (typeof window !== "undefined") { // client-side
                         (mutableEvent.pointerType === "mouse" || (window.MSPointerEvent && mutableEvent.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE))) ||
                         (!isBrowserSupportPointerEvents && event instanceof MouseEvent)) {
 
-                        if (event.type === "mouseup" || event.type === "pointerup" || event.type === "MSPointerUp") {
+                        if (mutableEvent.type === "mouseup" || mutableEvent.type === "pointerup" || mutableEvent.type === "MSPointerUp") {
                             defaultEventManager._isMouseDragging = false;
 
                             if (defaultEventManager._isStoringMouseEventsWhileDraggingOnly) {
@@ -1841,7 +1841,7 @@ if (typeof window !== "undefined") { // client-side
                         (mutableEvent.pointerType === "touch" || (window.MSPointerEvent && mutableEvent.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH))) ||
                         (window.TouchEvent !== void 0 && !isBrowserSupportPointerEvents && event instanceof TouchEvent)) {
 
-                        if (event.type === "touchend" || event.type === "pointerup" || event.type === "MSPointerUp") {
+                        if (mutableEvent.type === "touchend" || mutableEvent.type === "pointerup" || mutableEvent.type === "MSPointerUp") {
                             for (var i = 0; i < mutableEvent.changedTouches.length; i++) {
                                 this.remove(mutableEvent.changedTouches[i].identifier);
                             }
