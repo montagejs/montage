@@ -102,10 +102,9 @@ exports.Composer = Target.specialize( /** @lends Composer# */ {
         set: function (value) {
             if (this._needsFrame !== value) {
                 this._needsFrame = value;
-                if (this._component) {
-                    if (value) {
-                        this._component.scheduleComposer(this);
-                    }
+
+                if (this._component && value) {
+                    this._component.scheduleComposer(this);
                 }
             }
         },
