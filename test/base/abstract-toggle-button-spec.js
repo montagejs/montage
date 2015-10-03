@@ -219,7 +219,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
             aToggleButton.prepareForActivationEvents();
 
             listeners = em.registeredEventListenersForEventType_onTarget_("pressStart", aToggleButton._pressComposer);
-            expect(listeners[aToggleButton.uuid].listener).toBe(aToggleButton);
+            expect(listeners.has(aToggleButton)).toBe(true);
         });
 
         it("should listen for longPress on PressComposer on demand", function () {
@@ -232,7 +232,7 @@ describe("test/base/abstract-toggle-button-spec", function () {
             aToggleButton.addEventListener("longAction", listener, false);
 
             listeners = em.registeredEventListenersForEventType_onTarget_("longPress", aToggleButton._pressComposer);
-            expect(listeners[aToggleButton.uuid].listener).toBe(aToggleButton);
+            expect(listeners.has(aToggleButton)).toBe(true);
         });
 
         describe("once prepareForActivationEvents is called", function () {

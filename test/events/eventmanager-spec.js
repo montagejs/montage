@@ -206,10 +206,8 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                 var listener = new Montage();
                 testDocument.addEventListener("mousedown", listener, false);
 
-                var listenerEntry = eventManager.registeredEventListeners["mousedown"][testDocument.uuid].listeners[listener.uuid];
-                expect(listenerEntry.bubble).toBe(true);
-                expect(listenerEntry.capture).toBe(false);
-                expect(listenerEntry.listener).toBe(listener);
+                expect(eventManager.registeredEventListenersForEventType_onTarget_("mousedown",testDocument,false).has(listener)).toBe(true);
+                expect(eventManager.registeredEventListenersForEventType_onTarget_("mousedown",testDocument,true)).toBeNull();
             });
 
             it("should add a native event listener when the first listener for an eventType is added for a target", function () {
@@ -279,21 +277,17 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                 var rootEventSpy = {};
                 testDocument.documentElement.addEventListener("foo", rootEventSpy, false);
 
-                var listeners = eventManager.registeredEventListenersForEventType_("foo"),
-                        docListenerEntry = listeners[docEventSpy.uuid],
-                        rootListenerEntry = listeners[rootEventSpy.uuid];
+                var bubbleTestDocumentListeners = eventManager.registeredEventListenersForEventType_onTarget_("foo",testDocument,false);
+                var bubbleTestDocumentElementListeners = eventManager.registeredEventListenersForEventType_onTarget_("foo",testDocument.documentElement,false);
 
-                expect(docListenerEntry).toBeTruthy();
-                expect(rootListenerEntry).toBeTruthy();
+                expect(bubbleTestDocumentListeners.has(docEventSpy)).toBeTruthy();
+                expect(bubbleTestDocumentElementListeners.has(rootEventSpy)).toBeTruthy();
 
-                expect(docListenerEntry.capture).toBeFalsy();
-                expect(rootListenerEntry.capture).toBeFalsy();
+                var captureTestDocumentListeners = eventManager.registeredEventListenersForEventType_onTarget_("foo",testDocument,true);
+                var captureTestDocumentElementListeners = eventManager.registeredEventListenersForEventType_onTarget_("foo",testDocument.documentElement,true);
 
-                expect(docListenerEntry.bubble).toBeTruthy();
-                expect(rootListenerEntry.bubble).toBeTruthy();
-
-                expect(docListenerEntry.listener).toBe(docEventSpy);
-                expect(rootListenerEntry.listener).toBe(rootEventSpy);
+                expect(captureTestDocumentListeners).toBeNull();
+                expect(captureTestDocumentElementListeners).toBeNull();
             });
 
             it("should be able to report all the listeners registered for a specific eventType on a specific target", function () {

@@ -376,7 +376,7 @@ describe("test/base/abstract-select-spec", function () {
             aSelect.prepareForActivationEvents();
 
             listeners = em.registeredEventListenersForEventType_onTarget_("pressStart", aSelect._pressComposer);
-            expect(listeners[aSelect.uuid].listener).toBe(aSelect);
+            expect(listeners.has(aSelect)).toBe(true);
         });
 
         describe("once prepareForActivationEvents is called", function () {
