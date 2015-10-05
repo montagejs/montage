@@ -259,7 +259,7 @@ var RangeController = exports.RangeController = Montage.specialize( /** @lends R
             this.defineBinding("_sortedContent", {
                 "<-": "$sortPath.defined() ? _filteredContent.sorted{path($sortPath)} : _filteredContent"
             });
-            this.defineBinding("organizedContent", {
+            this.defineBinding("organizedContent.rangeContent()", {
                 "<-": "$reversed ?? 0 ? _sortedContent.reversed() : _sortedContent"
             });
 
