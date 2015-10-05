@@ -1195,8 +1195,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
             // If this composers' component is claiming the "wheel" pointer then handle the event
             if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this)) {
-                var self = this;
-
                 if (this._translateEndTimeout) {
                     window.clearTimeout(this._translateEndTimeout);
                 } else {
@@ -1209,12 +1207,12 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
 
                 if (typeof this._handleWheelTimeout !== "function") {
                     var _handleWheelTimeout = function () {
-                        self._translateEndTimeout = null;
-                        self._dispatchTranslateEnd();
-                        self.isMoving = false;
+                        this._translateEndTimeout = null;
+                        this._dispatchTranslateEnd();
+                        this.isMoving = false;
 
-                        if (self.eventManager.isPointerClaimedByComponent(self._WHEEL_POINTER, this)) {
-                            self.eventManager.forfeitPointer(self._WHEEL_POINTER, self);
+                        if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this)) {
+                            this.eventManager.forfeitPointer(this._WHEEL_POINTER, this);
                         }
                     };
 
