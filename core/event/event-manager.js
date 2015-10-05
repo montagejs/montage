@@ -1676,8 +1676,8 @@ if (typeof window !== "undefined") { // client-side
                                     return defaultEventManager.pointerMotion(this.pointerId).velocity;
                                 }
                             });
-                        } else {
-                            Object.defineProperty(window.Touch.prototype, "velocity", {
+                        } else if (window.Touch){
+                            Object.defineProperty(Touch.prototype, "velocity", {
                                 get: function () {
                                     return defaultEventManager.pointerMotion(this.identifier).velocity;
                                 }
