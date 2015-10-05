@@ -227,15 +227,13 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
             // range change.
             // FIXME: we only operate on the selection and not on the "values"
             // to avoid issues with 2-way binding to rangeContent().
-            if (this.contentController.organizedContent) {
-                if (this.contentController.selection.length === 0 &&
-                    this.contentController.organizedContent.length > 0) {
-                    this.contentController.selection.push(this.contentController.organizedContent[0]);
-                }
-
-                this._contentIsDirty = true;
-                this.needsDraw = true;
+            if (this.contentController.selection.length === 0 &&
+                this.contentController.organizedContent.length > 0) {
+                this.contentController.selection.push(this.contentController.organizedContent[0]);
             }
+
+            this._contentIsDirty = true;
+            this.needsDraw = true;
         }
     },
 
