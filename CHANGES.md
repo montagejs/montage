@@ -1,3 +1,17 @@
+### v0.15.2
+
+-  **EventManager**
+
+   Fixes an issue under Firefox and Safari.
+
+-  **RangeController**
+
+   Moves visibleIndexes to Repetition.
+
+-  **Repetition**
+
+   Performance Improvements.
+
 ### v0.15.1
 
 -  **TreeController**
