@@ -1,3 +1,129 @@
+### v0.15.1
+
+-  **TreeController**
+
+   Updates to the new version.
+
+-  **Component**
+
+   Makes creating Component templateObjects lazy and on-demand.
+   Reduces memory consumption.
+
+-  **Core**
+
+   Fixes super infinite loop in observed getter/setters.
+
+-  **DocumentResources**
+
+   Fixes a bug affecting Firefox that was allowing components to be entering the document before their CSS stylesheets were loaded.
+
+-  **EventManager**
+
+   Makes preparedForActivationEvents public.
+   Fixes a case where the first touch in an app would be lost.
+   Adds support of PointerEvents.
+   Adds support of devices with multiples pointer types. (mouse/touch).
+   PrepareForActivationEvents is called when a pointing device (mouse/touch) is moved over a component’s element.
+   Blocks emulated mouse events.
+   Adds a blocksEmulatedEvents option to disable the filtering of emulated mouse events.
+   Fixes an issue that was blocking the logic for prepareForActionEvents on Firefox.
+   Reduces transient string concatenation in bubble/capture identifier based method name lookup/building.
+
+-  **Repetition**
+
+   Uses the PressComposer for managing the selection.
+   Adds support of PointerEvents.
+   Adds support of devices with multiples pointer types. (mouse/touch).
+   Increase performance.
+
+-  **Flow**
+
+   Fixes an issue that was preventing selection when clicking for the first time on an iteration.
+
+-  **PressComposer**
+
+   Adds support of PointerEvents.
+   Adds support of devices with multiples pointer types. (mouse/touch).
+   Makes sure the PressComposer operate just when the main button is pressed.
+   Cancel a press when a scroll or a translate occur.
+
+-  **RangeController**
+
+   Enhance RangeController filter/sort binding speed.
+
+-  **Composer**
+
+   Composers lazily load their logic by default.
+   Reduces unnecessary allocations of empty functions.
+   Adds the property isLoaded.
+
+-  **Target**
+
+   Adds load/unload functions that will load composers.
+
+-  **TranslateComposer**
+
+   Support Pointer Events
+   Support devices with multiple pointer types.
+   Better logic to steal claimed pointers.
+   Fixes issues with composers claiming the same pointer.
+   Does not listener on wheel events by default.
+   Fixes bug with inner scroller Components (were not working).
+   Add unload function (releases listeners).
+   Backwards compatibility for the Flow Translate Composer.
+   Does not listen on wheel events by default.
+   Stops sending translate events when a movement is beyond a extreme (max/min Translate X/Y).
+   Performance improvements (less translateStart events sent when handling wheel event, less listeners, and diverse improvements).
+   Cancel a translate when a scroll occurs.
+
+### v0.15.0
+
+-  **Component**
+
+   Adds Button Component.
+   Adds Checkbox Component.
+   Adds TextField Component.
+
+-  **EventManager**
+
+   Fixes a possible property being accessed on null.
+
+-  **Native**
+
+   Removes the Native package from the devDependencies.
+
+### v0.14.15
+
+-  **MediaController**
+
+   The Montage MediaController does not use the native MediaController Object anymore (just supported  by Safari), it will directly manage a media element.
+
+-  **TranslateComposer**
+
+   Fixes an issue that was making the translateComposer unusable with a wheel button of a pointing device under IE9-11.
+
+-  **RangeController**
+
+   Fixes a bug that prevented a repetition clear selection to work.
+
+-  **SegmentedBar**
+
+   Add SegmentedBar component.
+
+-  **Montage**
+
+   Add .info loader
+
+-  **Collections**
+
+   Update the Collections package to version v1.2.2.
+
+### v0.14.14
+
+-  **Montage**
+
+   Update window loader to transition to .mr in a backward compatible way.
+
 ### v0.14.13
 
 -  **Repetition**
@@ -68,7 +194,7 @@
 -  **Mr**
 
    Update the Mr package to version v0.15.6.
-   
+
 - **Component**
 
    BREAKING: deprecate `prepareForDraw` in favor of `enterDocument`.
