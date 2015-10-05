@@ -10,21 +10,12 @@
                 "properties": {
                     "element": {
                         "#": "montage-flow-repetition"
-                    },
-                    "contentController": {
-                        "@": "frustumController"
                     }
                 },
                 "bindings": {
-                    "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"}
-                }
-            },
-            "frustumController": {
-                "prototype": "core/range-controller",
-                "bindings": {
-                    "content": {"<-": "@owner.contentController.organizedContent ?? @owner.content"},
-                    "selection.0": {"<->": "@owner.contentController.selection.0"},
-                    "visibleIndexes": {"<-": "@owner._visibleIndexes"}
+                    "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"},
+                    "visibleIndexes": {"<-": "@owner._visibleIndexes"},
+                    "contentController": {"<-": "@owner.contentController"}
                 }
             },
             "flowTranslateComposer": {
@@ -67,14 +58,11 @@
                     },
                     "_cameraElement": {
                         "#": "montage-flow-camera"
-                    },
-                    "_frustumController": {
-                        "@": "frustumController"
                     }
                 },
                 "bindings": {
                     "scroll": {"<->": "@flowTranslateComposer.scroll"},
-                    "selection": {"<->": "@frustumController.selection"},
+                    "selection": {"<->": "@repetition.contentController.selection"},
                     "selectedIndexes": {"<-": "@repetition.selectedIndexes"},
                     "activeIndexes": {"<-": "@repetition.activeIndexes"},
                     "draggedSlideIndex": {"<-": "@flowTranslateComposer._closerIndex"},

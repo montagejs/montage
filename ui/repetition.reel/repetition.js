@@ -828,6 +828,127 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         }
     },
 
+    _visibleIndexes: {
+        value: null
+    },
+
+    visibleIndexes: {
+        get: function () {
+            return this._visibleIndexes;
+        },
+        set: function (value) {
+            if (this._visibleIndexes !== value) {
+                if (this._visibleIndexes && this._visibleIndexes.removeRangeChangeListener) {
+                    this._visibleIndexes.removeRangeChangeListener(this, "visibleIndexes");
+                }
+                this._visibleIndexes = value;
+                if (this._visibleIndexes && this._visibleIndexes.addRangeChangeListener) {
+                    this._visibleIndexes.addRangeChangeListener(this, "visibleIndexes");
+                }
+                this._updateOrganizedContent();
+            }
+        }
+    },
+
+    handleVisibleIndexesRangeChange: {
+        value: function (plus, minus, index) {
+            var plusContent,
+                i;
+
+            if (this.__controllerOrganizedContent) {
+                plusContent = [];
+                for (i = 0; i < plus.length; i++) {
+                    plusContent.push(this.__controllerOrganizedContent[plus[i]]);
+                }
+                this.organizedContent.swap(index, minus.length, plusContent);
+                if (this._isListeningToOrganizedContentChanges) {
+                    this.handleOrganizedContentRangeChange(plusContent.length, minus.length, index);
+                    this.needsDraw = true;
+                }
+            }
+        }
+    },
+
+    __controllerOrganizedContent: {
+        value: null
+    },
+
+    _controllerOrganizedContent: {
+        get: function () {
+            return this.__controllerOrganizedContent;
+        },
+        set: function (value) {
+            if (this.__controllerOrganizedContent !== value) {
+                if (this.__controllerOrganizedContent && this.__controllerOrganizedContent.removeRangeChangeListener) {
+                    this.__controllerOrganizedContent.removeRangeChangeListener(this, "controllerOrganizedContent");
+                }
+                this.__controllerOrganizedContent = value;
+                if (this.__controllerOrganizedContent && this.__controllerOrganizedContent.addRangeChangeListener) {
+                    this.__controllerOrganizedContent.addRangeChangeListener(this, "controllerOrganizedContent");
+                }
+                this._updateOrganizedContent();
+            }
+        }
+    },
+
+    handleControllerOrganizedContentRangeChange: {
+        value: function (plus, minus, index) {
+            if (!this._visibleIndexes) {
+                this.organizedContent.swap(index, minus.length, plus);
+                if (this._isListeningToOrganizedContentChanges) {
+                    this.handleOrganizedContentRangeChange(plus.length, minus.length, index);
+                    this.needsDraw = true;
+                }
+            } else {
+                this._updateOrganizedContent();
+            }
+        }
+    },
+
+    _updateOrganizedContent: {
+        value: function () {
+            var previousLength,
+                i;
+
+            if (this.__controllerOrganizedContent) {
+                if (this._visibleIndexes) {
+                    if (this.organizedContent.length > this._visibleIndexes.length) {
+                        this.organizedContent.length = this._visibleIndexes.length;
+                        if (this._isListeningToOrganizedContentChanges) {
+                            this.handleOrganizedContentRangeChange(0, this.organizedContent.length - this._visibleIndexes.length, this._visibleIndexes.length);
+                        }
+                    }
+                    previousLength = this.organizedContent.length;
+                    for (i = 0; i < this._visibleIndexes.length; i++) {
+                        if (this.organizedContent[i] !== this.__controllerOrganizedContent[this._visibleIndexes[i]]) {
+                            this.organizedContent[i] = this.__controllerOrganizedContent[this._visibleIndexes[i]];
+                            if (this._isListeningToOrganizedContentChanges) {
+                                this.handleOrganizedContentRangeChange(1, previousLength > i ? 1 : 0, i);
+                            }
+                        }
+                    }
+                    if (this._isListeningToOrganizedContentChanges) {
+                        this.needsDraw = true;
+                    }
+                } else {
+                    previousLength = this.organizedContent.length;
+                    this.organizedContent.swap(0, previousLength, this.__controllerOrganizedContent);
+                    if (this._isListeningToOrganizedContentChanges) {
+                        this.handleOrganizedContentRangeChange(this.__controllerOrganizedContent.length, previousLength, 0);
+                        this.needsDraw = true;
+                    }
+                }
+            } else {
+                previousLength = this.organizedContent.length;
+                this.organizedContent = [];
+                if (this._isListeningToOrganizedContentChanges) {
+                    this.handleOrganizedContentRangeChange(0, previousLength, 0);
+                    this.needsDraw = true;
+                }
+            }
+        }
+    },
+
     /**
      * @private
      */
@@ -841,7 +962,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
             this.contentController = null;
             this.organizedContent = [];
-            this.defineBinding("organizedContent.rangeContent()", {
+            this.defineBinding("_controllerOrganizedContent", {
                 "<-": "contentController.organizedContent"
             });
             // Determines whether the repetition listens for mouse and touch
@@ -1122,6 +1243,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         }
     },
 
+    _isListeningToOrganizedContentChanges: {
+        value: false
+    },
+
     /**
      * When `_setupRequirements` have all been met, this method produces an
      * iteration template using the `innerTemplate` that has been given to this
@@ -1134,14 +1259,12 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     _setupIterationTemplate: {
         value: function () {
-            var self = this;
-
             this._iterationTemplate = this._buildIterationTemplate();
             // Erase the initial child component trees. The initial document
             // children will be purged on first draw.  We use the innerTemplate
             // as the iteration template and replicate it for each iteration
             // instead of using the initial DOM and components.
-            var childComponents = self.childComponents;
+            var childComponents = this.childComponents;
             var childComponent;
             var index = childComponents.length - 1;
             // pop() each component instead of shift() to avoid bubbling the
@@ -1155,12 +1278,11 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // Begin tracking the controller organizedContent.  We manually
             // dispatch a range change to track all the iterations that have
             // come and gone while we were not watching.
-            self.handleOrganizedContentRangeChange(self.organizedContent, [], 0);
+            this.handleOrganizedContentRangeChange(this.organizedContent.length, 0, 0);
             // Dispatches handleOrganizedContentRangeChange:
-            self.organizedContent.addRangeChangeListener(self, "organizedContent");
-
-            self._canDrawInitialContent = true;
-            self.needsDraw = true;
+            this._isListeningToOrganizedContentChanges = true;
+            this._canDrawInitialContent = true;
+            this.needsDraw = true;
 
         }
     },
@@ -1194,10 +1316,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // iteration template is ready.  (at which point we will manually
             // dispatch handleOrganizedContentRangeChange with the entire
             // content of the array when _setupIterationTemplate has finished)
-            this.organizedContent.removeRangeChangeListener(this, "organizedContent");
+            this._isListeningToOrganizedContentChanges = false;
             // simulate removal of all iterations from the controller to purge
             // the iterations and _drawnIterations.
-            this.handleOrganizedContentRangeChange([], this.organizedContent, 0);
+            this.handleOrganizedContentRangeChange(0, this.organizedContent.length, 0);
 
             // prepare all the free iterations and their child component trees
             // for garbage collection
@@ -1514,13 +1636,22 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * @private
      */
     handleOrganizedContentRangeChange: {
-        value: function (plus, minus, index) {
-            if (logger.isDebug) {
-                logger.debug("Repetition:%s content changed +%s@%s %O -%s %O ", Object.hash(this), (plus?plus.length:0), index, plus, (minus?minus.length:0), minus);
-            }
-            var iterations = this.iterations;
-            var contentForIteration = this._contentForIteration;
+        value: function (plusLength, minusLength, index) {
+            var start = index,
+                freedIterations,
+                freedIteration,
+                iterations = this.iterations,
+                contentForIteration = this._contentForIteration,
+                reusableIterationsCount = Math.min(plusLength, minusLength),
+                removeIterationsCount = minusLength - reusableIterationsCount,
+                addIterationsCount = plusLength - reusableIterationsCount,
+                organizedContent = this.organizedContent,
+                i, j;
 
+            if (logger.isDebug) {
+                logger.debug("Repetition:%s content changed +%s@%s %O -%s %O ", Object.hash(this), plusLength?plusLength:0, index, minusLength?minusLength:0);
+                logger.debug("Repetition:%s +%s -%s iterations", Object.hash(this), addIterationsCount, removeIterationsCount);
+            }
             if (this._iterationTemplate.isDirty) {
                 this._iterationTemplate.refresh();
             }
@@ -1532,27 +1663,21 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // it is unnecessary to splice the corresponding index in and out,
             // and unnecessary to even check whether more iterations need to be
             // allocated.
-            var reusableIterationsCount = Math.min(plus.length, minus.length);
-            var removeIterationsCount = minus.length - reusableIterationsCount;
-            var addIterationsCount = plus.length - reusableIterationsCount;
-            if (logger.isDebug) {
-                logger.debug("Repetition:%s +%s -%s iterations", Object.hash(this), addIterationsCount, removeIterationsCount);
-            }
 
-            for (var i = 0; i < reusableIterationsCount; i++, index++) {
-                iterations[index].object = plus[i];
-                contentForIteration.set(iterations[index], plus[i]);
+            for (i = 0; i < reusableIterationsCount; i++, index++) {
+                iterations[index].object = organizedContent[index];
+                contentForIteration.set(iterations[index], organizedContent[index]);
             }
 
             if (removeIterationsCount > 0) {
                 // Subtract iterations
-                var freedIterations = iterations.splice(index, removeIterationsCount);
+                freedIterations = iterations.splice(index, removeIterationsCount);
 
                 // Notify these iterations that they have been recycled,
                 // particularly so they know to disable animations with the
                 // "no-transition" CSS class.
                 // Add them back to the free list so they can be reused
-                for (var i = 0, freedIteration; i < removeIterationsCount; i++) {
+                for (i = 0; i < removeIterationsCount; i++) {
                     freedIteration = freedIterations[i];
                     freedIteration.recycle();
                     if (!freedIteration.isDirty) {
@@ -1574,14 +1699,14 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 }
                 // Add iterations
                 var plusIterations = new Array(addIterationsCount);
-                for (var i = reusableIterationsCount, j = 0; i < plus.length; i++, j++) {
+                for (i = reusableIterationsCount, j = 0; i < plusLength; i++, j++) {
                     var iteration = this._freeIterations.pop();
                     if (logger.isDebug) {
                         if(!newIterations.has(iteration)) {
                             logger.debug("Repetition:%s reusing %s", Object.hash(this), Object.hash(iteration));
                         }
                     }
-                    var content = plus[i];
+                    var content = organizedContent[start + i];
                     iteration.object = content;
                     // This updates the "repetition.contentAtCurrentIteration"
                     // bindings.
@@ -1594,11 +1719,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             if (removeIterationsCount > 0 || addIterationsCount > 0) {
                 // Update indexes for all subsequent iterations
                 this._updateIndexes(index);
-
             }
-
-            this.needsDraw = true;
-
         }
     },
 

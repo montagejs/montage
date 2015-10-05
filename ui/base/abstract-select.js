@@ -61,6 +61,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
 
             // Need to draw when "content" or "values" change
             this.addRangeAtPathChangeListener("content", this, "handleContentRangeChange");
+
             // TODO: "value" <-> "values.one()"
             this.addRangeAtPathChangeListener("values", this, "handleValuesRangeChange");
             this.classList.add("matte-Select");
