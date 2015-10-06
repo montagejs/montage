@@ -58,6 +58,8 @@ if (typeof window !== "undefined") {
                 location: Require.getLocation()
             };
 
+            exports.Require = Require;
+
             var montageLocation = URL.resolve(config.location, params.montageLocation);
 
             config.moduleTypes = ["html", "meta"];
@@ -90,14 +92,29 @@ if (typeof window !== "undefined") {
             if (typeof BUNDLE === "object") {
                 var bundleDefinitions = {};
                 var getDefinition = function (name) {
-                    return bundleDefinitions[name] =
-                        bundleDefinitions[name] ||
-                            Promise.defer();
+                     if(!bundleDefinitions[name]) {
+                         var defer = bundleDefinitions[name] = {};
+                         var deferPromise = new Promise(function(resolve, reject) {
+                             defer.resolve = resolve;
+                             defer.reject = reject;
+                         });
+                         defer.promise = deferPromise;
+                         return defer;
+                    }
+
+                    return bundleDefinitions[name];
                 };
                 global.bundleLoaded = function (name) {
                     getDefinition(name).resolve();
                 };
-                var preloading = Promise.defer();
+
+                var preloading = {};
+                var preloadingPromise = new Promise(function(resolve, reject) {
+                    preloading.resolve = resolve;
+                    preloading.reject = reject;
+                });
+                preloading.promise = preloadingPromise;
+
                 config.preloaded = preloading.promise;
                 // preload bundles sequentially
                 var preloaded = Promise.resolve();
@@ -145,32 +162,33 @@ if (typeof window !== "undefined") {
                 // allows the bootstrapping to be remote controlled by the
                 // parent window, with a dynamically generated package
                 // description
-                var trigger = Promise.defer();
                 window.postMessage({
                     type: "montageReady"
                 }, "*");
-                var messageCallback = function (event) {
-                    if (
-                        params.remoteTrigger === event.origin &&
-                        (event.source === window || event.source === window.parent)
-                    ) {
-                        switch (event.data.type) {
-                        case "montageInit":
-                            window.removeEventListener("message", messageCallback);
-                            trigger.resolve([event.data.location, event.data.injections]);
-                            break;
-                        case "isMontageReady":
-                            // allow the injector to query the state in case
-                            // they missed the first message
-                            window.postMessage({
-                                type: "montageReady"
-                            }, "*");
+                var trigger = new Promise(function(resolve, reject){
+                    var messageCallback = function (event) {
+                        if (
+                            params.remoteTrigger === event.origin &&
+                            (event.source === window || event.source === window.parent)
+                        ) {
+                            switch (event.data.type) {
+                            case "montageInit":
+                                window.removeEventListener("message", messageCallback);
+                                resolve([event.data.location, event.data.injections]);
+                                break;
+                            case "isMontageReady":
+                                // allow the injector to query the state in case
+                                // they missed the first message
+                                window.postMessage({
+                                    type: "montageReady"
+                                }, "*");
+                            }
                         }
-                    }
-                };
-                window.addEventListener("message", messageCallback);
+                    };
+                    window.addEventListener("message", messageCallback);
+                });
 
-                applicationRequirePromise = trigger.promise.spread(function (location, injections) {
+                applicationRequirePromise = trigger.spread(function (location, injections) {
                     var promise = Require.loadPackage({
                         location: location,
                         hash: applicationHash
@@ -241,8 +259,21 @@ if (typeof window !== "undefined") {
                     if (params.promiseLocation) {
                         promiseLocation = URL.resolve(Require.getLocation(), params.promiseLocation);
                     } else {
-                        promiseLocation = URL.resolve(montageLocation, "packages/mr/packages/q");
+                        //promiseLocation = URL.resolve(montageLocation, "packages/mr/packages/q");
+                        //node tools/build --features="core timers call_get" --browser
+                        promiseLocation = URL.resolve(montageLocation, "node_modules/bluebird");
                     }
+
+                    // var weakMapLocation = URL.resolve(montageLocation,"node_modules/collections/node_modules/weak-map");
+                    // var weakMapDescription = {
+                    //     "name": "weak-map",
+                    //     "version": "1.0.0",
+                    //     "main": "weak-map.js",
+                    //     "readme": "ERROR: No README data found!",
+                    //     "_id": "weak-map@1.0.0",
+                    //     "_from": "weak-map@1.0.0",
+                    //     "scripts": {}
+                    // };
 
                     return [
                         montageRequire,
@@ -250,13 +281,49 @@ if (typeof window !== "undefined") {
                             location: promiseLocation,
                             hash: params.promiseHash
                         })
+                        // ,
+                        // montageRequire.loadPackage({
+                        //     location: weakMapLocation,
+                        //     hash: undefined
+                        // },null,weakMapDescription)
                     ];
                 })
-                .spread(function (montageRequire, promiseRequire) {
+                .spread(function (montageRequire, promiseRequire, weakMapRequire) {
                     montageRequire.inject("core/mini-url", URL);
                     montageRequire.inject("core/promise", {Promise: Promise});
-                    promiseRequire.inject("q", Promise);
+                    promiseRequire.inject("bluebird", Promise);
+                    //This prevents bluebird to be loaded twice by mousse's code
+                    promiseRequire.inject("js/browser/bluebird", Promise);
 
+                    // weakMapRequire.inject("weak-map", window.WeakMap);
+
+                    /*
+                    var weakMapLocation = URL.resolve(montageLocation,"node_modules/weak-map");
+                    var weakMapDescription = {
+                        "name": "weak-map",
+                        "version": "1.0.0",
+                        "main": "weak-map.js",
+                        "readme": "ERROR: No README data found!",
+                        "_id": "weak-map@1.0.0",
+                        "_from": "weak-map@1.0.0",
+                        "scripts": {}
+                    };
+                    var weakMapConfig = Require.makeRequire().config;
+                    var weakMapRequire = function (require, exports) {
+                        module.exports = window.WeakMap;
+                    };
+                    weakMapRequire.config = weakMapConfig;
+                    Require.injectPackageDescription(weakMapLocation, weakMapDescription, montageRequire.config);
+
+                    Require.injectPackageDescription(weakMapLocation, weakMapDescription, weakMapConfig);
+                    Require.injectLoadedPackageDescription(weakMapLocation, weakMapDescription, weakMapConfig, weakMapRequire);
+                    //Require.injectLoadedPackage(weakMapLocation, weakMapDescription, config);
+
+                    //montageRequire.inject("weak-map", );
+                    //montageRequire.inject("weak-map", window.WeakMap);
+                    // montageRequire.inject("collections/weak-map", window.WeakMap);
+                    // montageRequire.inject("weak-map/weak-map", window.WeakMap);
+*/
                     // install the linter, which loads on the first error
                     config.lint = function (module) {
                         montageRequire.async("core/jshint")
@@ -272,16 +339,15 @@ if (typeof window !== "undefined") {
                                     }
                                 });
                             }
-                        })
-                        .done();
+                        });
                     };
 
                     // Fixe me: transition to .mr only
                     self.require = self.mr = applicationRequire;
-                    platform.initMontage(montageRequire, applicationRequire, params);
+                    return platform.initMontage(montageRequire, applicationRequire, params);
                 });
-            })
-            .done();
+                return applicationRequire;
+            });
 
         });
 
@@ -431,37 +497,50 @@ if (typeof window !== "undefined") {
         // mini-url library
         makeResolve: function () {
             var head = document.querySelector("head"),
+                currentBaseElement = head.querySelector("base"),
                 baseElement = document.createElement("base"),
-                relativeElement = document.createElement("a");
+                relativeElement = document.createElement("a"),
+                needsRestore = false;
+
+                if(currentBaseElement) {
+                    needsRestore = true;
+                }
+                else {
+                    currentBaseElement = document.createElement("base");
+                }
+
+                //Optimization, we won't check ogain if there's a base tag.
 
             baseElement.href = "";
 
             return function (base, relative) {
-                var currentBaseElement = head.querySelector("base");
-                if (!currentBaseElement) {
-                    head.appendChild(baseElement);
-                    currentBaseElement = baseElement;
+                var restore;
+
+                if (!needsRestore) {
+                    head.appendChild(currentBaseElement);
                 }
+
                 base = String(base);
                 if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
                     throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
                 }
-                var restore = currentBaseElement.href;
+                if(needsRestore) restore = currentBaseElement.href;
                 currentBaseElement.href = base;
                 relativeElement.href = relative;
                 var resolved = relativeElement.href;
-                currentBaseElement.href = restore;
-                if (currentBaseElement === baseElement) {
+                if(needsRestore) currentBaseElement.href = restore;
+                else {
                     head.removeChild(currentBaseElement);
                 }
                 return resolved;
             };
         },
 
-        load: function (location) {
+        load: function (location,loadCallback) {
             var script = document.createElement("script");
             script.src = location;
             script.onload = function () {
+                if(loadCallback) loadCallback(script);
                 // remove clutter
                 script.parentNode.removeChild(script);
             };
@@ -547,19 +626,11 @@ if (typeof window !== "undefined") {
 
             // determine which scripts to load
             var pending = {
-                "require": "packages/mr/require.js",
-                "require/browser": "packages/mr/browser.js",
-                "promise": "packages/mr/packages/q/q.js"
+                "require": "node_modules/mr/require.js",
+                "require/browser": "node_modules/mr/browser.js",
+                "promise": "node_modules/bluebird/js/browser/bluebird.js"
+                /*"promise": "packages/mr/packages/q/q.js"*/
             };
-
-            // load in parallel, but only if we're not using a preloaded cache.
-            // otherwise, these scripts will be inlined after already
-            if (typeof BUNDLE === "undefined") {
-                var montageLocation = resolve(window.location, params.montageLocation);
-                for (var id in pending) {
-                    browser.load(resolve(montageLocation, pending[id]));
-                }
-            }
 
             // register module definitions for deferred,
             // serial execution
@@ -579,10 +650,61 @@ if (typeof window !== "undefined") {
                 allModulesLoaded();
             };
 
+            // load in parallel, but only if we're not using a preloaded cache.
+            // otherwise, these scripts will be inlined after already
+            if (typeof BUNDLE === "undefined") {
+                var montageLocation = resolve(window.location, params.montageLocation);
+
+                //Special Case bluebird for now:
+                browser.load(resolve(montageLocation, "node_modules/bluebird/js/browser/bluebird.js"),function() {
+                    //global.bootstrap cleans itself from window once all known are loaded. "bluebird" is not known, so needs to do it first
+                    global.bootstrap("bluebird", function (require, exports) {
+                        return window.Promise;
+                    });
+                    global.bootstrap("promise", function (require, exports) {
+                        return window.Promise;
+                    });
+                });
+
+                for (var id in pending) {
+                    browser.load(resolve(montageLocation, pending[id]));
+                }
+
+                //pending.promise = "node_modules/bluebird/js/browser/bluebird.js";
+                //pending["weak-map"] = "node_modules/weak-map/weak-map.js";
+
+            }
+            else {
+                window.nativePromise = window.Promise;
+                Object.defineProperty(window,"Promise",{
+                    set: function(PromiseValue) {
+
+                        Object.defineProperty(window,"Promise",{value:PromiseValue});
+
+                        global.bootstrap("bluebird", function (require, exports) {
+                            return window.Promise;
+                        });
+                        global.bootstrap("promise", function (require, exports) {
+                            return window.Promise;
+                        });
+
+                    }
+                })
+
+            }
+
+
             // one module loaded for free, for use in require.js, browser.js
             global.bootstrap("mini-url", function (require, exports) {
                 exports.resolve = resolve;
             });
+
+            //Special Case WeakMap for now:
+            // if(typeof window.WeakMap === "function") {
+            //     global.bootstrap("weak-map", function (require, exports) {
+            //         module.exports = window.WeakMap;
+            //     });
+            // }
 
             // miniature module system
             var bootModules = {};
@@ -610,8 +732,41 @@ if (typeof window !== "undefined") {
             }
 
         },
+        weakMapModule: function weak_map__weak_map(require, exports, module) {
+            module.exports = window.WeakMap;
+        },
+        weakMapPackageDescription: {
+            "name": "weak-map",
+            "version": "1.0.0",
+            "main": "weak-map.js",
+            "readme": "ERROR: No README data found!",
+            "_id": "weak-map@1.0.0",
+            "_from": "weak-map@1.0.0",
+            "scripts": {}
+        },
+
+        requireWillLoadPackageDescriptionAtLocation: function(location,dependency, config) {
+            if(window.WeakMap && location.indexOf("weak-map") !== -1) {
+                return Promise.resolve(JSON.stringify(this.weakMapPackageDescription));
+            }
+            //console.log("requireWillLoadPackageDescriptionAtLocation(",config,location,")");
+        },
+        didCreatePackage: function(package) {
+            if(package.name === "weak-map") {
+                package.delegate = this;
+            }
+        },
+        packageWillLoadModuleAtLocation: function(module,location) {
+            if(module.id === "weak-map") {
+                module.location = location;
+                module.factory = this.weakMapModule;
+                return Promise.resolve(module);
+            }
+        },
 
         initMontage: function (montageRequire, applicationRequire, params) {
+
+            exports.Require.delegate = this;
 
             var dependencies = [
                 "core/core",
@@ -640,6 +795,28 @@ if (typeof window !== "undefined") {
                 logger("Promise stacktrace support", function (state) {
                     Promise.longStackSupport = !!state;
                 });
+
+                // Setup bluebird Promise custom scheduler:
+                if (typeof MessageChannel !== "undefined") {
+                    Promise.setScheduler((function() {
+                        // modern browsers
+                        // http://www.nonblocking.io/2011/06/windownexttick.html
+                        var channel = new MessageChannel();
+                        // At least Safari Version 6.0.5 (8536.30.1) intermittently cannot
+                        // create working message ports the first time a page loads.
+                        var _scheduleExec = function _scheduleExec() {
+                            _scheduleExec.queuedFn();
+                        };
+                        channel.port1.onmessage = _scheduleExec;
+                        var _schedulePost = function _schedulePost(fn)  {
+                            _schedulePost._scheduleExec.queuedFn = fn;
+                            _schedulePost.channel.port2.postMessage(0);
+                        };
+                        _schedulePost.channel = channel;
+                        _schedulePost._scheduleExec = _scheduleExec;
+                        return _schedulePost;
+                    })());
+                }
 
                 // Load the event-manager
                 defaultEventManager = new EventManager().initWithWindow(window);
@@ -674,11 +851,10 @@ if (typeof window !== "undefined") {
                     });
                     defaultEventManager.application = application;
                     application.eventManager = defaultEventManager;
-                    application._load(applicationRequire, function () {
+                    return application._load(applicationRequire, function() {
                         if (params.module) {
                             // If a module was specified in the config then we initialize it now
-                            applicationRequire.async(params.module)
-                            .done();
+                            applicationRequire.async(params.module);
                         }
                         if (typeof global.montageDidLoad === "function") {
                             global.montageDidLoad();
@@ -686,8 +862,7 @@ if (typeof window !== "undefined") {
                     });
                 });
 
-            })
-            .done();
+            });
 
         }
     };

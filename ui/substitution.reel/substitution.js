@@ -264,7 +264,7 @@ exports.Substitution = Slot.specialize( /** @lends Substitution.prototype # */ {
                     canDrawGate.setField(value + "ComponentTreeLoaded", true);
                     self._canDraw = true;
                     self.needsDraw = true;
-                }).done();
+                });
             } else {
                 this._switchComponentTreeLoaded[value] = true;
                 this.needsDraw = true;

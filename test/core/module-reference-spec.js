@@ -48,7 +48,7 @@ describe("core/module-reference-spec", function () {
                 r("non-existing-module");
             }).toThrow('Can\'t require module "non-existing-module" via "core/module-reference-spec"');
 
-            return ref.exports.fail(function (error) {
+            return ref.exports.catch(function (error) {
                 try {
                     r("non-existing-module");
                     throw new Error("require didn't fail");

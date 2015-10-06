@@ -103,7 +103,7 @@ describe("serialization/bindings-spec", function () {
         return deserialize(serializationString, require)
         .then(function (object) {
             expect("deserialization").toBe("fail");
-        }).fail(function () {
+        }).catch(function() {
             // it should fail
         });
     });
@@ -131,7 +131,7 @@ describe("serialization/bindings-spec", function () {
             return deserializer.deserialize()
             .then(function () {
                 expect("deserialization").toBe("failed");
-            }).fail(function () {
+            }).catch(function() {
                 // it should fail
             });
         });

@@ -200,12 +200,12 @@
             var getDefinition = function (name) {
                 return bundleDefinitions[name] =
                     bundleDefinitions[name] ||
-                        Promise.defer();
+                        new Promise();
             };
             global.bundleLoaded = function (name) {
                 getDefinition(name).resolve();
             };
-            var preloading = Promise.defer();
+            var preloading = new Promise();
             config.preloaded = preloading.promise;
             // preload bundles sequentially
             var preloaded = Promise.resolve();
@@ -254,8 +254,7 @@
                 .invoke('async', moduleId);
             });
 
-        })
-        .done();
+        });
 
     });
 

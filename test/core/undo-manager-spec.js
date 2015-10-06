@@ -92,11 +92,15 @@ var Roster = Montage.specialize( {
 
     testableAddMember: {
         value: function (member) {
-            var deferredAdd = Promise.defer();
-
+            var deferredAddResolve,
+                deferredAdd = new Promise(function(resolve, reject) {
+                    deferredAddResolve = resolve;
+                });
+            deferredAdd.resolve = deferredAddResolve;
+            
             this.members.add(member);
-
-            this.undoManager.register("Add Member", deferredAdd.promise);
+            
+            this.undoManager.register("Add Member", deferredAdd);
 
             return deferredAdd;
         }
@@ -118,8 +122,10 @@ var Text = Montage.specialize({
     del: {
         value: function (isSlow) {
             var self = this;
-            var promise = isSlow ? Promise.delay(20) : Promise.resolve();
-
+            var promise = Promise.resolve();
+            if(isSlow) {
+                promise.delay(20);
+            }
             promise = promise.then(function () {
                 var c = self.text.charAt(self.text.length - 1);
                 self.text = self.text.substring(0, self.text.length - 1);
@@ -270,13 +276,13 @@ describe('core/undo-manager-spec', function () {
 
         it("should not alter the initial label if no label is provided when resolving the operationPromise", function () {
             var deferredAdditionUndo = roster.testableAddMember("Alice"),
-                entry = undoManager._promiseOperationMap.get(deferredAdditionUndo.promise);
+                entry = undoManager._promiseOperationMap.get(deferredAdditionUndo);
 
             expect(entry.label).toBe("Add Member");
 
             deferredAdditionUndo.resolve([Function.noop, window, "Alice"]);
 
-            deferredAdditionUndo.promise.then(function () {
+            deferredAdditionUndo.then(function () {
                 expect(entry.label).toBe("Add Member");
             });
         });
@@ -407,7 +413,7 @@ describe('core/undo-manager-spec', function () {
             spyOn(spyObject, "removeMember").andCallThrough();
             deferredAdditionUndo.resolve(["Test Label", spyObject.removeMember, spyObject, "Alice"]);
 
-            return undoManager.undo().fail(function (failure) {
+            return undoManager.undo().caught(function (failure) {
                 expect(spyObject.removeMember).toHaveBeenCalled();
                 expect(failure).toBe(error);
             }).timeout(WAITS_FOR_TIMEOUT);
@@ -432,11 +438,11 @@ describe('core/undo-manager-spec', function () {
         it("maintains order when an operation is a long running async operation", function () {
             var text = new Text().initWithUndoManager(undoManager);
 
-            text.del(true);
-            text.del(false);
+            text.del(true);//abc -> ab
+            text.del(false);//ab->a
 
-            undoManager.undo().done();
-            return undoManager.undo().then(function () {
+            undoManager.undo();//a->ab
+            return undoManager.undo().then(function () {//ab->abc then
                 expect(text.text).toBe("abc");
             });
         });

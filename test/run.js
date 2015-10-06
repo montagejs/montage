@@ -7,7 +7,6 @@ require("montage-testing").run(require, [
     "gate-spec",
     "logger-spec",
     "paths-spec",
-    "require-spec",
     "state-chart-spec",
     "string-spec",
     "document-resources-spec",

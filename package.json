@@ -14,13 +14,13 @@
         "montage": "core/core"
       },
       "mappings": {
-        "mr": {
-          "name": "mr",
-          "location": "packages/mr"
-        },
-        "q": {
-          "name": "q",
-          "location": "packages/mr/packages/q"
+      "mr": {
+        "name": "mr",
+        "location": "node_modules/mr"
+      },
+        "bluebird": {
+          "name": "bluebird",
+          "location": "node_modules/bluebird"
         }
       }
     }
@@ -29,14 +29,13 @@
     "collections": "~1.2.2",
     "frb": "~0.2.18",
     "htmlparser2": "~3.0.5",
-    "mousse": "~0.3.0",
-    "mr": "~0.15.3",
-    "q": "1.0.0",
-    "q-io": "~1.11.0"
+    "mousse": "marchant/mousse.git#mousse-bluebird",
+    "mr": "marchant/mr.git#mr-bluebird",
+    "bluebird":"2.9.26"
   },
   "devDependencies": {
     "jshint": "~2.4.4",
-    "montage-testing": "~0.4.2"
+    "montage-testing": "marchant/montage-testing.git#montage-testing-bluebird"
   },
   "scripts": {
     "test": "node test/node/node-spec.js",

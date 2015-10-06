@@ -1477,11 +1477,11 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                         // hereafter.
                         iteration._childComponents = part.childComponents;
                         self.constructIteration(iteration);
-                    }).done();
+                    });
                     self.currentIteration = null;
+                    return iteration;
                 });
 
-                promise.done(); // radiate an error if necessary
                 return promise.then(null, function () {
                     // but regardless of whether this iteration failed, allow
                     // another iteration to be created

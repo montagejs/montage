@@ -72,13 +72,10 @@ var DocumentPart = Montage.specialize({
 
     _componentTreeLoadedDeferred: {value: null},
     loadComponentTree: {
-        value: function () {
-            var deferred = this._componentTreeLoadedDeferred,
-                promises;
+        value: function() {
+            var promises;
 
-            if (!deferred) {
-                deferred = Promise.defer();
-                this._componentTreeLoadedDeferred = deferred;
+            if (!this._componentTreeLoadedDeferred) {
 
                 promises = [];
 
@@ -86,12 +83,10 @@ var DocumentPart = Montage.specialize({
                     promises.push(childComponent.loadComponentTree());
                 });
 
-                Promise.all(promises).then(function () {
-                    deferred.resolve();
-                }, deferred.reject).done();
+                this._componentTreeLoadedDeferred = Promise.all(promises);
             }
 
-            return deferred.promise;
+            return this._componentTreeLoadedDeferred;
         }
     }
 });

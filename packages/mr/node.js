@@ -36,7 +36,7 @@ Require.directoryPathToLocation = function directoryPathToLocation(path) {
 };
 
 Require.read = function read(location) {
-    var deferred = Promise.defer();
+    var deferred = new Promise();
     var path = Require.locationToPath(location);
     FS.readFile(path, "utf-8", function (error, text) {
         if (error) {

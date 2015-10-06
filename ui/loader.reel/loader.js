@@ -306,14 +306,13 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
             }
             this.isLoadingMainComponent = true;
             var self = this;
-            mr.async(this.mainModule)
+            return mr.async(this.mainModule)
             .then(function (exports) {
                 if (!(self.mainName in exports)) {
                     throw new Error(self.mainName + " was not found in " + self.mainModule);
                 }
                 return self._mainLoadedCallback(exports);
-            })
-            .done();
+            });
         }
     },
 
@@ -332,6 +331,7 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
             this._mainComponent.attachToParentComponent();
             this._mainComponent._canDrawOutsideDocument = true;
             this._mainComponent.needsDraw = true;
+            return this;
         }
     },
 

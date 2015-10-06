@@ -1754,7 +1754,7 @@ exports._blueprintDescriptor = {
                     var info = Montage.getInfoForObject(self);
 
                     return Blueprint.getBlueprintWithModuleId(blueprintModuleId, info.require)
-                    .fail(function (error) {
+                    .catch(function (error) {
                         // FIXME only generate blueprint if the moduleId
                         // requested does not exist. If any parents do not
                         // exist then the error should still be thrown.

@@ -65,7 +65,7 @@ describe("test/base/abstract-alert-spec", function () {
             it("should return a promise for the user action", function () {
                 var promise = anAlert.show();
 
-                expect(Promise.isPromise(promise)).toBeTruthy();
+                expect(Promise.is(promise)).toBeTruthy();
             });
 
             it("should return the same promise for the user action when show is asked twice without any user action", function () {
@@ -82,7 +82,7 @@ describe("test/base/abstract-alert-spec", function () {
                     promise = anAlert.show();
 
                 anAlert.handleAction(event);
-                expect(Promise.isFulfilled(promise)).toBeTruthy();
+                expect(promise.isFulfilled()).toBeTruthy();
             })
         });
 
@@ -128,7 +128,7 @@ describe("test/base/abstract-alert-spec", function () {
             it("should return a promise of user action", function () {
                 var promise = AlertSubtype.show("message");
 
-                expect(Promise.isPromise(promise)).toBeTruthy();
+                expect(Promise.is(promise)).toBeTruthy();
             });
 
             it("should configure the alert with the message upon entering the document", function () {
@@ -242,7 +242,7 @@ describe("test/base/abstract-alert-spec", function () {
                 runs(function () {
                     AlertSubtype._instance.handleAction({target: AlertSubtype._instance._okButton});
 
-                    expect(Promise.isFulfilled(promise)).toBeTruthy();
+                    expect(promise.isFulfilled()).toBeTruthy();
                 });
             });
         });

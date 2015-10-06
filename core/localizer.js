@@ -1,4 +1,4 @@
-/*global require,exports */
+    /*global require,exports */
 
 /**
  * @module montage/core/localizer
@@ -247,7 +247,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                 throw new Error("Cannot load messages as", this, "require is not set");
             }
 
-            if (timeout === null) {
+            if (typeof timeout !== "number") {
                 timeout = 5000;
             }
             this.messages = null;
@@ -266,7 +266,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
             }).then(function (localesMessages) {
                 return self._collapseMessages(localesMessages);
 
-            }).fail(function (error) {
+            },function(error) {
                 console.error("Could not load messages for '" + self.locale + "': " + error);
                 throw error;
 
@@ -546,7 +546,7 @@ var DefaultLocalizer = Localizer.specialize( /** @lends DefaultLocalizer# */ {
             defaultLocale = defaultLocale || "en";
             this.locale = defaultLocale;
 
-            this.loadMessages().done();
+            this.loadMessages();
 
             return this;
         }
@@ -750,16 +750,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
             var self = this;
             // Set up a new promise now, so anyone accessing it in this tick
             // won't get the old one.
-            var temp = Promise.defer();
-            this._messageFunction = temp.promise;
-
-            // Don't use fcall, so that if the `data` object is completely
-            // changed we have the latest version.
-            this.localized = this._messageFunction.then(function (fn) {
-                return fn(self._data.toObject());
-            });
-
-            Promise.nextTick(function () {
+            var temp = new Promise(function(resolve, reject) {
                 self._isLocalizeQueued = false;
 
                 if (!self._key && !self._defaultMessage) {
@@ -774,15 +765,22 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                     // is still surfaced
                     console.warn("Both key and default message are falsey for",
                         self, "If this is in a repetition this warning can be ignored");
-                    temp.resolve(EMPTY_STRING_FUNCTION);
+                    resolve(EMPTY_STRING_FUNCTION);
                     return;
                 }
 
                 // Replace the _messageFunction promise with the real one.
-                temp.resolve(self._localizer.localize(
+                resolve(self._localizer.localize(
                     self._key,
                     self._defaultMessage
                 ));
+            });
+            this._messageFunction = temp;
+
+            // Don't use fcall, so that if the `data` object is completely
+            // changed we have the latest version.
+            this.localized = this._messageFunction.then(function (fn) {
+                return fn(self._data.toObject());
             });
         }
     },
@@ -830,7 +828,8 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
     },
 
     _localizedDeferred: {
-        value: Promise.defer()
+        //value: new Promise()
+        value: Promise.resolve()
     },
     /**
         The message localized with all variables replaced.
@@ -838,8 +837,9 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
         @default ""
     */
     localized: {
-        get: function () {
-            return this._localizedDeferred.promise;
+        get: function() {
+            this._localize();
+            return this._localizedDeferred;
         },
         set: function (value) {
             if (value === this._localized) {
@@ -850,16 +850,18 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
             // We create our own deferred so that if localized gets set in
             // succession without being resolved, we can replace the old
             // promises with the new one transparently.
-            var deferred = Promise.defer();
-            this._localizedDeferred.resolve(deferred.promise);
-            value.then(deferred.resolve, deferred.reject);
+            if(this._localizedDeferred) {
+                value = Promise.resolve(value);
+            }
+            //this._localizedDeferred.resolve(deferred.promise);
+            //value.then(deferred.resolve, deferred.reject);
 
             // TODO: Remove when possible to bind to promises
-            deferred.promise.then(function (message) {
+            value.then(function (message) {
                 return self.__localizedResolved = message;
-            }).done();
+            });
 
-            this._localizedDeferred = deferred;
+            this._localizedDeferred = value;
         }
     },
 
@@ -869,8 +871,11 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
      * @private
      */
     handleDataMapChange: {
-        value: function (event) {
-            this.localized = this._messageFunction.fcall(this._data.toObject());
+        value: function(event) {
+            var self = this;
+            this.localized = this._messageFunction.then(function (fn) {
+                return fn(self._data.toObject())
+                });
         }
     },
 

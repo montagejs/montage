@@ -318,8 +318,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
                     // Start preloading the resources as soon as possible, no
                     // need to wait for them as the draw cycle will take care
                     // of that when loading the stylesheets into the document.
-                    resources.loadResources(targetDocument)
-                    .done();
+                    resources.loadResources(targetDocument);
                 }
                 return part;
             });
@@ -714,33 +713,33 @@ var Template = Montage.specialize( /** @lends Template# */ {
     getExternalObjectsString: {
         value: function (doc) {
             var link = doc.querySelector('link[rel="serialization"]'),
-                req,
-                url,
                 deferred;
 
             if (link) {
-                req = new XMLHttpRequest();
-                url = link.getAttribute("href");
-                deferred = Promise.defer();
-
-                req.open("GET", url);
-                req.addEventListener("load", function () {
-                    if (req.status == 200) {
-                        deferred.resolve(req.responseText);
-                    } else {
-                        deferred.reject(
-                            new Error("Unable to retrive '" + url + "', code status: " + req.status)
+                deferred = new Promise(function(resolve, reject) {
+                    var req = new XMLHttpRequest();
+                    var url = link.getAttribute("href");
+                    req.open("GET", url);
+                    req.addEventListener("load", function(event) {
+                        var req = event.target;
+                        if (req.status == 200) {
+                            resolve(req.responseText);
+                        } else {
+                            reject(
+                                new Error("Unable to retrive '" + url + "', code status: " + req.status)
+                            );
+                        }
+                    }, false);
+                    req.addEventListener("error", function(event) {
+                        reject(
+                            new Error("Unable to retrive '" + url + "' with error: " + event.error + ".")
                         );
-                    }
-                }, false);
-                req.addEventListener("error", function (event) {
-                    deferred.reject(
-                        new Error("Unable to retrive '" + url + "' with error: " + event.error + ".")
-                    );
-                }, false);
-                req.send();
+                    }, false);
+                    req.send();
+                    
+                });
 
-                return deferred.promise;
+                return deferred;
             } else {
                 return Promise.resolve(null);
             }

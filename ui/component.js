@@ -1207,7 +1207,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         enumerable: false,
         value: function _prepareCanDraw() {
             if (!this._isComponentTreeLoaded) {
-                this.loadComponentTree().done();
+                return this.loadComponentTree();
             }
         }
     },
@@ -1235,15 +1235,10 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     _loadComponentTreeDeferred: {value: null},
     loadComponentTree: {
         value: function loadComponentTree() {
-            var self = this,
-                canDrawGate = this.canDrawGate,
-                deferred = this._loadComponentTreeDeferred;
 
-            if (!deferred) {
-                deferred = Promise.defer();
-                this._loadComponentTreeDeferred = deferred;
+            if (!this._loadComponentTreeDeferred) {
 
-                canDrawGate.setField("componentTreeLoaded", false);
+                this.canDrawGate.setField("componentTreeLoaded", false);
 
                 // only put it in the root component's draw list if the
                 // component has requested to be draw, it's possible to load the
@@ -1252,35 +1247,41 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 if (this.needsDraw || this.hasTemplate) {
                     this._canDraw = false;
                 }
+                var self = this;
+                this._loadComponentTreeDeferred = new Promise(function(resolve, reject) {
+                
+                    self.expandComponent()
+                        .then(function() {
+                            if (self.hasTemplate || self.shouldLoadComponentTree) {
+                                var promises = [],
+                                    childComponents = self.childComponents,
+                                    childComponent;
 
-                this.expandComponent().then(function () {
-                    if (self.hasTemplate || self.shouldLoadComponentTree) {
-                        var promises = [],
-                            childComponents = self.childComponents,
-                            childComponent;
+                                for (var i = 0; (childComponent = childComponents[i]); i++) {
+                                    promises.push(childComponent.loadComponentTree());
+                                }
 
-                        for (var i = 0; (childComponent = childComponents[i]); i++) {
-                            promises.push(childComponent.loadComponentTree());
-                        }
-
-                        return Promise.all(promises);
-                    }
-                }).then(function () {
-                    self._isComponentTreeLoaded = true;
-                    // When the component tree is loaded we need to draw if the
-                    // component needs to have its enterDocument() called.
-                    // This is because we explicitly avoid drawing when we set
-                    // _needsEnterDocument before the first draw because we
-                    // don't want to trigger the draw before its component tree
-                    // is loaded.
-                    if (self._needsEnterDocument) {
-                        self.needsDraw = true;
-                    }
-                    canDrawGate.setField("componentTreeLoaded", true);
-                    deferred.resolve();
-                }, deferred.reject).done();
+                                return Promise.all(promises);
+                            }
+                        })
+                        .then(function() {
+                            self._isComponentTreeLoaded = true;
+                            // When the component tree is loaded we need to draw if the
+                            // component needs to have its enterDocument() called.
+                            // This is because we explicitly avoid drawing when we set
+                            // _needsEnterDocument before the first draw because we
+                            // don't want to trigger the draw before its component tree
+                            // is loaded.
+                            if (self._needsEnterDocument) {
+                                self.needsDraw = true;
+                            }
+                            self.canDrawGate.setField("componentTreeLoaded", true);
+                            resolve();
+                        },reject)
+                        .catch(console.error);
+                });
             }
-            return deferred.promise;
+            return this._loadComponentTreeDeferred;
         }
     },
 
@@ -1349,30 +1350,29 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      * @param {Component#expandComponent~callback} callback  TODO
      * @private
      */
-    _expandComponentDeferred: {value: null},
+    _expandComponentPromise: {value: null},
     expandComponent: {
         value: function expandComponent() {
-            var self = this,
-                deferred = this._expandComponentDeferred;
 
-            if (!deferred) {
-                deferred = Promise.defer();
-                this._expandComponentDeferred = deferred;
-
-                if (this.hasTemplate) {
-                    this._instantiateTemplate().then(function () {
-                        self._isComponentExpanded = true;
-                        self._addTemplateStyles();
-                        self.needsDraw = true;
-                        deferred.resolve();
-                    }, deferred.reject);
-                } else {
-                    this._isComponentExpanded = true;
-                    deferred.resolve();
-                }
+            if (!this._expandComponentPromise) {
+                    if (this.hasTemplate) {
+                        var self = this;
+                        this._expandComponentPromise = new Promise(function(resolve, reject) {
+                            self._instantiateTemplate().then(function() {
+                                self._isComponentExpanded = true;
+                                self._addTemplateStyles();
+                                self.needsDraw = true;
+                                resolve();
+                            },reject)
+                            .catch(console.error);
+                        });                        
+                    } else {
+                        this._isComponentExpanded = true;
+                        this._expandComponentPromise = Promise.resolve();
+                    }
             }
 
-            return deferred.promise;
+            return this._expandComponentPromise;
         }
     },
 
@@ -1463,9 +1463,9 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     },
 
     _instantiateTemplate: {
-        value: function () {
+        value: function() {
             var self = this;
-            return this._loadTemplate().then(function (template) {
+            return this._loadTemplate().then(function(template) {
                 if (!self._element) {
                     console.error("Cannot instantiate template without an element.", self);
                     return Promise.reject(new Error("Cannot instantiate template without an element.", self));
@@ -1481,13 +1481,12 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 self._isTemplateInstantiated = true;
 
                 return template.instantiateWithInstances(instances, _document)
-                .then(function (documentPart) {
+                .then(function(documentPart) {
                     documentPart.parentDocumentPart = self._ownerDocumentPart;
                     self._templateDocumentPart = documentPart;
                     documentPart.fragment = null;
                     instances = null;
-                })
-                .fail(function (reason) {
+                },function (reason) {
                     var message = reason.stack || reason;
                     console.error("Error in", template.getBaseUrl() + ":", message);
                     throw reason;
@@ -1513,16 +1512,15 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     _loadTemplatePromise: {value: null},
     _loadTemplate: {
         value: function _loadTemplate() {
-            var self = this,
-                promise = this._loadTemplatePromise,
-                info;
+            var info;
 
-            if (!promise) {
+            if (!this._loadTemplatePromise) {
+                var self = this;
                 info = Montage.getInfoForObject(this);
 
-                promise = this._loadTemplatePromise = Template.getTemplateWithModuleId(
+                this._loadTemplatePromise = Template.getTemplateWithModuleId(
                     this.templateModuleId, info.require)
-                .then(function (template) {
+                .then(function(template) {
                     self._template = template;
                     self._isTemplateLoaded = true;
 
@@ -1530,7 +1528,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 });
             }
 
-            return promise;
+            return this._loadTemplatePromise;
         }
     },
 
@@ -2553,11 +2551,11 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
                     this._waitForLocalizerMessages = true;
 
-                    var self = this;
                     logger.debug(this, "waiting for messages from localizer");
                     this.canDrawGate.setField("messages", false);
 
-                    this.localizer.messagesPromise.then(function (messages) {
+                    var self = this;
+                    this.localizer.messagesPromise.then(function(messages) {
                         if (logger.isDebug) {
                             logger.debug(self, "got messages from localizer");
                         }
@@ -3603,6 +3601,17 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype # *
                     drawLogger.debug("Level " + component._treeLevel + " " + loggerToString(component));
                 }
             }
+            
+            //Now root Component:
+            if (!this._completedFirstDraw) {
+                firstDrawEvent = document.createEvent("CustomEvent");
+                firstDrawEvent.initCustomEvent("firstDraw", true, false, null);
+                this.dispatchEvent(firstDrawEvent);
+                this._completedFirstDraw = true;
+            }
+            
+            
+            
             if (drawLogger.isDebug) {
                 console.groupEnd();
             }

@@ -20,55 +20,55 @@ var Promise = require("./promise").Promise;
  */
 exports = module.exports = function doRequest(request) {
     request = exports.normalizeRequest(request);
-    var done = Promise.defer();
+    var done = new Promise(function(resolve, reject) {
+        var xhr = request.xhr || new XMLHttpRequest();
+        xhr.open(request.method, request.url, true);
 
-    var xhr = request.xhr || new XMLHttpRequest();
-    xhr.open(request.method, request.url, true);
+        xhr.onload = function() {
+            var response = {
+                status: xhr.status,
+                headers: exports.parseResponseHeaders(xhr.getAllResponseHeaders()),
+                body: xhr.response,
 
-    xhr.onload = function () {
-        var response = {
-            status: xhr.status,
-            headers: exports.parseResponseHeaders(xhr.getAllResponseHeaders()),
-            body: xhr.response,
+                xhr: xhr
+            };
 
-            xhr: xhr
+            resolve(response);
+        };
+        xhr.onerror = function() {
+            reject(new Error("Could not load"));
         };
 
-        done.resolve(response);
-    };
-    xhr.onerror = function () {
-        done.reject(new Error("Could not load"));
-    };
-
-    var headers = request.headers;
-    //jshint -W089
-    for (var name in headers) {
-        var value = headers[name];
-        // The header value can be an array, in which case set all of them
-        if (Array.isArray(value)) {
-            for (var i = 0; i < value.length; i++) {
-                xhr.setRequestHeader(name, value[i]);
+        var headers = request.headers;
+        //jshint -W089
+        for (var name in headers) {
+            var value = headers[name];
+            // The header value can be an array, in which case set all of them
+            if (Array.isArray(value)) {
+                for (var i = 0; i < value.length; i++) {
+                    xhr.setRequestHeader(name, value[i]);
+                }
+            } else {
+                xhr.setRequestHeader(name, value);
             }
-        } else {
-            xhr.setRequestHeader(name, value);
         }
-    }
 
-    // Allow any options to be set on the XHR
-    var options = request.options;
-    for (var o in options) {
-        xhr[o] = options[o];
-    }
+        // Allow any options to be set on the XHR
+        var options = request.options;
+        for (var o in options) {
+            xhr[o] = options[o];
+        }
 
-    // Method can't be passed into options
-    if (request.overrideMimeType) {
-        xhr.overrideMimeType(request.overrideMimeType);
-    }
-    //jshint +W089
+        // Method can't be passed into options
+        if (request.overrideMimeType) {
+            xhr.overrideMimeType(request.overrideMimeType);
+        }
+        //jshint +W089
 
-    xhr.send(request.body);
+        xhr.send(request.body);
+    });
 
-    return done.promise;
+    return done;
 };
 exports.request = exports;
 
@@ -77,7 +77,7 @@ exports.makeOk = function (next) {
         request = exports.normalizeRequest(request);
         var url = request.url;
 
-        return Promise.when(next(request), function (response) {
+        return Promise.resolve(next(request)).then(function (response) {
             if (response.status >= 200 && response.status < 300) {
                 return response;
             } else {
@@ -112,7 +112,7 @@ exports.makeJson = function (next) {
         request.overrideMimeType = request.overrideMimeType || "application/json";
         request.options.responseType = request.options.responseType || "json";
 
-        return Promise.when(next(request), function (response) {
+        return Promise.resolve(next(request)).then(function (response) {
             // If response.body is null then the JSON.parse failed, so do it
             // ourselves to get a informative error
             if (response.body === null || typeof response.body === "string") {
