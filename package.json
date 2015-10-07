@@ -29,13 +29,13 @@
     "collections": "~1.2.2",
     "frb": "~0.2.18",
     "htmlparser2": "~3.0.5",
-    "mousse": "marchant/mousse.git#mousse-bluebird",
-    "mr": "marchant/mr.git#mr-bluebird",
+    "mousse": "montagejs/mousse#7155f978f3d6a2325bca36effd50150f185e1fe4",
+    "mr": "montagejs/mr#cad8762811dd847cf7c1c70f2bc8bbf3ea084254",
     "bluebird":"2.9.26"
   },
   "devDependencies": {
     "jshint": "~2.4.4",
-    "montage-testing": "marchant/montage-testing.git#montage-testing-bluebird"
+    "montage-testing": "montagejs/montage-testing#9eca56fcec3051de6ba0b24e397e309976c14c29"
   },
   "scripts": {
     "test": "node test/node/node-spec.js",
