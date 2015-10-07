@@ -10,8 +10,7 @@
  * @requires ui/slot
  */
 
-var Montage = require("./core").Montage,
-    Target = require("./target").Target,
+var Target = require("./target").Target,
     MontageWindow = require("../window-loader/montage-window").MontageWindow,
     Slot;
 

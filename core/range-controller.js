@@ -159,7 +159,6 @@ Object.defineProperty(_RangeSelection.prototype, "swap_or_push", {
         }
         var diff = plus.length - minus.length;
         var newLength = Math.max(this.length + diff, start + plus.length);
-        var args;
 
         if (!this.rangeController.multiSelect && newLength > 1) {
             // use the last-supplied item as the sole element of the set

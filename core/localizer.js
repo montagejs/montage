@@ -253,7 +253,6 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
             this.messages = null;
 
             var self = this;
-            var messageRequire = this.require;
             var promise = this._manifest;
 
             if (timeout) {
@@ -498,7 +497,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
     */
     localize: {
         value: function (key, defaultMessage, defaultOnFail, callback) {
-            var listener, deferred, promise, self = this;
+            var promise, self = this;
             defaultOnFail = (typeof defaultOnFail === "undefined") ? true : defaultOnFail;
 
             if (!this.messagesPromise) {

@@ -236,9 +236,7 @@ var DocumentResources = Montage.specialize({
     addStyle: {
         value: function (element) {
             var url = element.getAttribute("href"),
-                documentHead,
-                loadHandler,
-                self = this;
+                documentHead;
 
             if (url) {
                 url = this.normalizeUrl(url);
@@ -308,10 +306,7 @@ var DocumentResources = Montage.specialize({
     _preloadResource: {
         value: function (url) {
             var self = this,
-                loadHandler,
-                loadingTimeout,
-                promise;
-                
+
                 promise = new Promise(function(resolve, reject) {
                     var req = new XMLHttpRequest();
                     req.open("GET", url);
@@ -320,7 +315,7 @@ var DocumentResources = Montage.specialize({
                     req.addEventListener("timeout", resolve, false);
                     req.timeout = self._SCRIPT_TIMEOUT;
                     req.send();
-                    req.listener = resolve; 
+                    req.listener = resolve;
                 })
                 .bind(this)
                 .then(function loadHandler(event) {
