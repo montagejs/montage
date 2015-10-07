@@ -442,37 +442,54 @@ if (typeof window !== "undefined") {
         };
     };
 
+    function _endsWith (str, suffix) {
+        if (typeof str.endsWith === "function") {
+            return str.endsWith(suffix);
+        }
+
+        return str.indexOf(suffix, str.length - suffix.length) !== -1;
+    }
+
     /**
      * Allows the reel's html file to be loaded via require.
      *
      * @see Compiler middleware in require/require.js
      * @param config
-     * @param compiler
+     * @param compile
      */
     exports.TemplateCompiler = function (config, compile) {
         return function (module) {
-            if (!module.location)
+            var location = module.location;
+
+            if (!location)
                 return;
-            var match = module.location.match(/(.*\/)?(?=[^\/]+\.html(?:\.load\.js)?$)/);
-            if (match) {
-                module.dependencies = module.dependencies || [];
-                module.exports = {
-                    directory: match[1],
-                    content: module.text
-                };
-                // XXX deprecated
-                Object.defineProperty(module.exports, "root", {
-                    get: function () {
-                        if (typeof console === "object") {
-                            console.warn("'root' property is deprecated on template modules.  Use 'directory' instead of root[1]");
+
+            if (_endsWith(location, ".html") || _endsWith(location, ".html.load.js")) {
+                var match = location.match(/(.*\/)?(?=[^\/]+\.html(?:\.load\.js)?$)/);
+
+                if (match) {
+                    module.dependencies = module.dependencies || [];
+                    module.exports = {
+                        directory: match[1],
+                        content: module.text
+                    };
+
+                    // XXX deprecated
+                    // todo: need to be removed.
+                    Object.defineProperty(module.exports, "root", {
+                        get: function () {
+                            if (typeof console === "object") {
+                                console.warn("'root' property is deprecated on template modules.  Use 'directory' instead of root[1]");
+                            }
+                            return match;
                         }
-                        return match;
-                    }
-                });
-                return module;
-            } else {
-                compile(module);
+                    });
+
+                    return module;
+                }
             }
+
+            compile(module);
         };
     };
 
