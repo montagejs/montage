@@ -1013,8 +1013,7 @@ Object.defineProperty(Object.prototype, "_uuid", {
 Object.defineProperty(Object.prototype, "uuid", {
     configurable: true,
     get: defaultUuidGet,
-    set: function () {
-    }
+    set: Function.noop
 });
 
 Montage.defineProperty(Montage, "identifier", {
