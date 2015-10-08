@@ -47,12 +47,6 @@ var ATTR_LE_COMPONENT = "data-montage-le-component",
 var Component = exports.Component = Target.specialize( /** @lends Component.prototype # */ {
     DOM_ARG_ATTRIBUTE: {value: "data-arg"},
 
-    constructor: {
-        value: function Component() {
-            this.super();
-        }
-    },
-
     /**
      * A delegate is an object that has helper methods specific to particular
      * components.
@@ -2945,10 +2939,9 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
  * @class RootComponent
  * @extends Component
  */
-var RootComponent = Component.specialize( /** @lends RootComponent.prototype # */{
+var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     constructor: {
         value: function RootComponent() {
-            this.super();
             this._drawTree = this._drawTree.bind(this);
             this._readyToDrawListIndex = {};
         }

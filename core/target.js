@@ -10,13 +10,7 @@ var Montage = require("./core").Montage,
  * @class Target
  * @extends Montage
  */
-exports.Target = Montage.specialize( /** @lends Target.prototype # */ {
-    constructor: {
-        value: function Target() {
-            this.super();
-        }
-    },
-
+exports.Target = Montage.specialize( /** @lends Target.prototype */{
     /**
      * Whether or not this target can accept user focus and become the
      * activeTarget This matches up with the `document.activeElement` property
