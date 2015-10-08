@@ -41,15 +41,11 @@ var DocumentResources = Montage.specialize({
                 webkitVersion = this._webkitVersion();
 
             if ("onload" in link) {
-
                 // In webkits below version 535, onload is in link but
                 // the event doesn't fire when the file has been loaded
-
-                if ((webkitVersion !== null) && (webkitVersion < 535)) {
-                    return false;
-                }
-                return true;
+                return !(webkitVersion !== null && webkitVersion < 535);
             }
+
             return false;
         }
     },
