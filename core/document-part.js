@@ -73,15 +73,13 @@ var DocumentPart = Montage.specialize({
     _componentTreeLoadedDeferred: {value: null},
     loadComponentTree: {
         value: function() {
-            var promises;
-
             if (!this._componentTreeLoadedDeferred) {
+                var promises = [],
+                    childComponents = this.childComponents;
 
-                promises = [];
-
-                this.childComponents.forEach(function (childComponent) {
-                    promises.push(childComponent.loadComponentTree());
-                });
+                for (var i = 0, length = childComponents.length; i < length; i++) {
+                    promises.push(childComponents[i].loadComponentTree());
+                }
 
                 this._componentTreeLoadedDeferred = Promise.all(promises);
             }
