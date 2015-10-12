@@ -260,7 +260,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
 
                 var velocity = event.velocity;
 
-                if ((this._hasMomentum) && ((velocity.speed>40) || this.translateStrideX || this.translateStrideY)) {
+                if ((this._hasMomentum) && ((velocity.speed>40) || this.translateStrideX)) {
                     if (this._axis != "vertical") {
                         this.momentumX = velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
                     } else {
@@ -299,7 +299,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
         value: null
     },
 
-    _previousDeltaY: {
+    _previousDelta: {
         value: 0
     },
 
@@ -325,32 +325,48 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
 
             // If this composers' component is claiming the "wheel" pointer then handle the event
             if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this.component)) {
-                var oldPageY = this._pageY,
-                    deltaY = event.wheelDeltaY || -event.deltaY || 0;
+                var oldScroll = this._scroll,
+                    deltaX = event.wheelDeltaX || -event.deltaX || 0,
+                    deltaY = event.wheelDeltaY || -event.deltaY || 0,
+                    delta;
 
                 if (this.translateStrideX) {
                     window.clearTimeout(this._mousewheelStrideTimeout);
-                    if ((this._mousewheelStrideTimeout === null) || (Math.abs(deltaY) > Math.abs(this._previousDeltaY * (this._mousewheelStrideTimeout === null ? 2 : 4)))) {
-                        if (deltaY > 1) {
+                    if (Math.abs(this._linearScrollingVector[0]) > Math.abs(this._linearScrollingVector[1])) {
+                        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                            delta = this._linearScrollingVector[0] * -deltaX / Math.abs(this._linearScrollingVector[0]);
+                        } else {
+                            delta = 0;
+                        }
+                    } else {
+                        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                            delta = 0;
+                        } else {
+                            delta = this._linearScrollingVector[1] * -deltaY / Math.abs(this._linearScrollingVector[1]);
+                        }
+                    }
+                    if ((this._mousewheelStrideTimeout === null) || (Math.abs(delta) > Math.abs(this._previousDelta * (this._mousewheelStrideTimeout === null ? 2 : 4)))) {
+                        if (delta > 1) {
                             this.callDelegateMethod("previousStride", this);
                         } else {
-                            if (deltaY < -1) {
+                            if (delta < -1) {
                                 this.callDelegateMethod("nextStride", this);
                             }
                         }
                     }
                     this._mousewheelStrideTimeout = window.setTimeout(function () {
                         self._mousewheelStrideTimeout = null;
-                        self._previousDeltaY = 0;
+                        self._previousDelta = 0;
                     }, 70);
-                    self._previousDeltaY = deltaY;
-                    if (this._shouldPreventDefault(event)) {
+                    self._previousDelta = delta;
+                    if (delta !== 0 && this._shouldPreventDefault(event)) {
                         event.preventDefault();
                     }
                 } else {
                     if (this._translateEndTimeout === null) {
                         this._dispatchTranslateStart();
                     }
+                    this._pageX = this._pageX + ((deltaX * 20) / 100);
                     this._pageY = this._pageY + ((deltaY * 20) / 100);
                     this._updateScroll();
                     this._dispatchTranslate();
@@ -363,7 +379,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     // If we're not at one of the extremes (i.e. the scroll actually
                     // changed the translate) then we want to preventDefault to stop
                     // the page scrolling.
-                    if (oldPageY !== this._pageY && this._shouldPreventDefault(event)) {
+                    if (oldScroll !== this._scroll && this._shouldPreventDefault(event)) {
                         event.preventDefault();
                     }
                 }
