@@ -3152,47 +3152,34 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
      */
     handleTransitionend: {
         value: function (event) {
-            var buildInCssClass = this.getBuildInCssClass(),
-                buildInTransitionCssClass = this.getBuildInTransitionCssClass(),
-                buildOutCssClass = this.getBuildOutCssClass();
-
-            if (event) {
+            if (event && event.target === this.element) {
                 event.stopPropagation();
-            }
-
-            this.element.removeEventListener("transitionend", this, false);
-            this.element.removeEventListener(
-                ANIMATIONEND_EVENT_NAME, this, false
-            );
-
-            if (this._isBuildingIn) {
-                this._isBuildingIn = false;
-
-                if (this.classList.contains(buildInCssClass)) {
-                    this.classList.remove(buildInCssClass);
+                this.element.removeEventListener("transitionend", this, false);
+                this.element.removeEventListener(ANIMATIONEND_EVENT_NAME, this, false);
+                if (this._isBuildingIn) {
+                    this._isBuildingIn = false;
+                    if (this.classList.contains(this.getBuildInCssClass())) {
+                        this.classList.remove(this.getBuildInCssClass());
+                    }
+                    this.buildInCssClassOverride = undefined;
+                    if (this.classList.contains(this.getBuildInTransitionCssClass())) {
+                        this.classList.remove(this.getBuildInTransitionCssClass());
+                    }
+                    this.buildInTransitionCssClassOverride = undefined;
+                    // IE 10 / 11 do not support CustomEvent constructor
+                    event = document.createEvent("CustomEvent");
+                    event.initCustomEvent("buildInEnd", true, false, null);
+                    this.dispatchEvent(event);
                 }
-                if (this.classList.contains(buildInTransitionCssClass)) {
-                    this.classList.remove(buildInTransitionCssClass);
+                if (this._isBuildingOut) {
+                    this._isBuildingOut = false;
+                    // Parent will take care of removal of class, element, etc.
+                    this.parentComponent._childComponentDidBuildOut(this);
+                    // IE 10 / 11 do not support CustomEvent constructor
+                    event = document.createEvent("CustomEvent");
+                    event.initCustomEvent("buildOutEnd", true, false, null);
+                    this.dispatchEvent(event);
                 }
-
-                this.buildInCssClassOverride = undefined;
-                this.buildInTransitionCssClassOverride = undefined;
-
-                // IE 10 / 11 do not support CustomEvent constructor
-                var buildInEndEvent = document.createEvent("CustomEvent");
-                buildInEndEvent.initCustomEvent("buildInEnd", true, false, null);
-                this.dispatchEvent(buildInEndEvent);
-            }
-
-            if (this._isBuildingOut) {
-                this._isBuildingOut = false;
-                // Parent will take care of removal of class, element, etc.
-                this.parentComponent._childComponentDidBuildOut(this);
-
-                // IE 10 / 11 do not support CustomEvent constructor
-                var buildOutEndEvent = document.createEvent("CustomEvent");
-                buildOutEndEvent.initCustomEvent("buildOutEnd", true, false, null);
-                this.dispatchEvent(buildOutEndEvent);
             }
         }
     },
