@@ -68,13 +68,10 @@ exports.Slot = Component.specialize( /** @lends Slot.prototype # */ {
             if (value && typeof value.needsDraw !== "undefined") {
                 content = this._content;
 
-                if (content && typeof content.needsDraw !== "undefined") {
-                    content.detachFromParentComponent();
-                }
                 // If the incoming content was a component; make sure it has an element before we say it needs to draw
                 if (!value.element) {
                     element = document.createElement("div");
-                    element.id = "appendDiv"; // TODO: This should be uniquely generated
+                    element.id = value.identifier || "appendDiv"; // TODO: This should be uniquely generated
 
                     if (this.delegate && typeof this.delegate.slotElementForComponent === "function") {
                         element = this.delegate.slotElementForComponent(this, value, element);
@@ -85,7 +82,6 @@ exports.Slot = Component.specialize( /** @lends Slot.prototype # */ {
                 }
                 // The child component will need to draw; this may trigger a draw for the slot itself
                 Object.getPropertyDescriptor(Component, "domContent").set.call(this, element);
-                this.addChildComponent(value);
                 value.needsDraw = true;
             } else {
                 Object.getPropertyDescriptor(Component, "domContent").set.call(this, value);

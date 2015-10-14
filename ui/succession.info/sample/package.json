@@ -1,0 +1,14 @@
+{
+  "name": "succession.info",
+  "private": true,
+  "devDependencies": {
+    "animate.css": "^3.2.5",
+    "normalize.css": "^3.0.3"
+  },
+  "scripts": {
+    "postinstall": "npm link ../../.."
+  },
+  "bundle": [
+    "ui/main.reel"
+  ]
+}

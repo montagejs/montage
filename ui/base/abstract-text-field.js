@@ -98,6 +98,9 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
     },
 
     hasFocus: {
+        set: function (value) {
+            this._hasFocus = value;
+        },
         get: function () {
             return this._hasFocus;
         }
@@ -162,7 +165,7 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
 
     willBecomeActiveTarget: {
         value: function (event) {
-            this._hasFocus = true;
+            this.hasFocus = true;
             this.callDelegateMethod("didBeginEditing", this);
         }
     },
@@ -173,7 +176,7 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
             if (shouldEnd === false) {
                 return false;
             } else {
-                this._hasFocus = false;
+                this.hasFocus = false;
                 this.callDelegateMethod("didEndEditing", this);
             }
             return true;
