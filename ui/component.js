@@ -879,7 +879,9 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             }
         }
     },
-
+    _childComponents: {
+        value: null
+    },
     /**
      * The child components of the component.
      * This property is readonly and should never be changed.
@@ -889,8 +891,9 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     */
     childComponents: {
         enumerable: false,
-        distinct: true,
-        value: []
+        get: function() {
+          return this._childComponents || (this._childComponents = []);
+        }
     },
 
     _needsEnterDocument: {
@@ -1243,7 +1246,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 }
                 var self = this;
                 this._loadComponentTreeDeferred = new Promise(function(resolve, reject) {
-                
+
                     self.expandComponent()
                         .then(function() {
                             if (self.hasTemplate || self.shouldLoadComponentTree) {
@@ -1359,7 +1362,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                                 resolve();
                             },reject)
                             .catch(console.error);
-                        });                        
+                        });
                     } else {
                         this._isComponentExpanded = true;
                         this._expandComponentPromise = Promise.resolve();
@@ -3594,7 +3597,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                     drawLogger.debug("Level " + component._treeLevel + " " + loggerToString(component));
                 }
             }
-            
+
             //Now root Component:
             if (!this._completedFirstDraw) {
                 firstDrawEvent = document.createEvent("CustomEvent");
@@ -3602,9 +3605,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                 this.dispatchEvent(firstDrawEvent);
                 this._completedFirstDraw = true;
             }
-            
-            
-            
+
+
+
             if (drawLogger.isDebug) {
                 console.groupEnd();
             }
@@ -3743,4 +3746,3 @@ Component.addAttributes( /** @lends module:montage/ui/control.Control# */ {
 */
     title: null
 });
-

@@ -360,6 +360,16 @@ if (typeof window !== "undefined") {
      @param config
      @param compiler
      */
+    var MontageMetaData = function(require,id,name) {
+      this.require = require;
+      this.module = this.moduleId = id;
+      //moduleId: id, // deprecated
+      this.property = this.objectName = name;
+      //objectName: name, // deprecated
+      this.aliases = [name];
+      this.isInstance = false;
+      return this;
+    };
     var reverseReelExpression = /((.*)\.reel)\/\2$/;
     var reverseReelFunction = function ($0, $1) { return $1; };
     exports.SerializationCompiler = function (config, compile) {
@@ -385,21 +395,7 @@ if (typeof window !== "undefined") {
                             reverseReelExpression,
                             reverseReelFunction
                         );
-                        Object.defineProperty(
-                            object,
-                            "_montage_metadata",
-                            {
-                                value: {
-                                    require: require,
-                                    module: id,
-                                    moduleId: id, // deprecated
-                                    property: name,
-                                    objectName: name, // deprecated
-                                    aliases: [name],
-                                    isInstance: false
-                                }
-                            }
-                        );
+                        object._montage_metadata = new MontageMetaData(require,id,name);
                     }
                 }
             };
@@ -496,6 +492,13 @@ if (typeof window !== "undefined") {
 
         // mini-url library
         makeResolve: function () {
+
+          if(window.URL) {
+            return function (base, relative) {
+              return new URL(relative, base).href;
+            }
+          }
+          else {
             var head = document.querySelector("head"),
                 currentBaseElement = head.querySelector("base"),
                 baseElement = document.createElement("base"),
@@ -534,6 +537,8 @@ if (typeof window !== "undefined") {
                 }
                 return resolved;
             };
+          }
+
         },
 
         load: function (location,loadCallback) {
@@ -781,7 +786,9 @@ if (typeof window !== "undefined") {
             return Promise.all(dependencies.map(montageRequire.deepLoad))
             .then(function () {
 
-                dependencies.forEach(montageRequire);
+                for(var i=0,iDependency;(iDependency = dependencies[i]);i++) {
+                  montageRequire(iDependency);
+                }
 
                 var Montage = montageRequire("core/core").Montage;
                 var EventManager = montageRequire("core/event/event-manager").EventManager;
