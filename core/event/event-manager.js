@@ -465,6 +465,8 @@ if (typeof window !== "undefined") { // client-side
                     touchesStart: Object.create(null),
                     touchesEnd: Object.create(null)
                 };
+                this._claimedPointers = {};
+                return this;
             }
         },
 
@@ -1510,8 +1512,7 @@ if (typeof window !== "undefined") { // client-side
          */
         _claimedPointers: {
             enumerable: false,
-            distinct: true,
-            value: {}
+            value: null
         },
 
         /**
