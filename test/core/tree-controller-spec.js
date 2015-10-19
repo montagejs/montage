@@ -150,6 +150,14 @@ describe("tree-controller-spec", function () {
             expect(treeController.isNodeExpanded(treeData)).toEqual(false);
             expect(treeController.isNodeExpanded(treeData.children[0])).toEqual(true);
         });
+        it("collapseAll should work as expected", function () {
+            treeController.expandAll();
+            treeController.collapseAll();
+            expect(treeController.isNodeExpanded(treeData)).toEqual(false);
+            expect(treeController.isNodeExpanded(treeData.children[0])).toEqual(false);
+            expect(treeController.isNodeExpanded(treeData.children[0].children[0])).toEqual(false);
+            expect(treeController.isNodeExpanded(treeData.children[0].children[0].children[0])).toEqual(false);
+        });
     });
 
     describe("handling changes in the tree", function () {
