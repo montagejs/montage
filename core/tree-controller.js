@@ -198,6 +198,17 @@ exports.TreeController = Montage.specialize({
     },
 
     /**
+     * Collapses all nodes with children in the tree.
+     */
+    collapseAll: {
+        value: function () {
+            this._expansionMap = new WeakMap();
+            this.handleTreeChange();
+            return true
+        }
+    },
+
+    /**
      * Gets the node expansion value - boolean - for a given node
      */
     isNodeExpanded: {
