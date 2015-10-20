@@ -1640,14 +1640,14 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                             this._splinePaths[pathIndex].getStyleAtIndexTime(indexTime)
                         );
                     } else {
-                        element.setAttribute("style", this._transformCss + ":scale3d(0,0,0);opacity:0");
+                        element.setAttribute("style", "display:none");
                     }
                 }
             } else {
                 for (i = 0; i < length; i++) {
                     iteration = this._repetition._drawnIterations[i];
                     element = iteration.cachedFirstElement || iteration.firstElement;
-                    element.setAttribute("style", this._transformCss + ":scale3d(0,0,0);opacity:0");
+                    element.setAttribute("style", "display:none");
                 }
             }
             // Continue animation during elastic scrolling
