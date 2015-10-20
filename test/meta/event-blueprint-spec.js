@@ -1,8 +1,8 @@
 var Blueprint = require("montage/core/meta/blueprint").Blueprint;
 var EventBlueprint = require("montage/core/meta/event-blueprint").EventBlueprint;
 
-var Serializer = require("montage/core/serialization").Serializer;
-var Deserializer = require("montage/core/serialization").Deserializer;
+var Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer;
+var Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer;
 
 describe("meta/event-blueprint-spec", function () {
 

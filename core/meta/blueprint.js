@@ -181,7 +181,15 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint.pro
                 var parentCreate = Object.getPrototypeOf(Blueprint).create;
                 return parentCreate.call(this, (typeof aPrototype === "undefined" ? this : aPrototype), propertyDescriptor);
             }
-            var newConstructor = Montage.create(aPrototype, propertyDescriptor);
+
+            var newConstructor;
+
+            if (!propertyDescriptor) {
+                newConstructor = new aPrototype();
+            } else {
+                newConstructor = aPrototype.specialize(propertyDescriptor);
+            }
+
             this.ObjectProperty.applyWithBlueprint(newConstructor.prototype, this);
             // We have just created a custom prototype lets use it.
             this.customPrototype = true;
@@ -229,7 +237,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint.pro
                 );
             } else {
                 var parentInstancePrototype = (this.parent ? this.parent.newInstancePrototype() : Montage );
-                var newConstructor = Montage.create(parentInstancePrototype, {
+                var newConstructor = parentInstancePrototype.specialize({
                     // Token class
                     init: {
                         value: function () {
@@ -931,7 +939,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint.pro
     createDefaultBlueprintForObject: {
         value:function (object) {
             if (object) {
-                var target = Montage.getInfoForObject(object).isInstance ? Object.getPrototypeOf(object) : object;
+                var target = Montage.getInfoForObject(object).isInstance ? Object.getPrototypeOf(object) : object.prototype;
                 var info = Montage.getInfoForObject(target);
 
                 // Create `new this()` so that subclassing works

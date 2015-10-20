@@ -84,11 +84,11 @@ exports.Slot = Component.specialize( /** @lends Slot.prototype # */ {
                     element = value.element;
                 }
                 // The child component will need to draw; this may trigger a draw for the slot itself
-                Object.getPropertyDescriptor(Component, "domContent").set.call(this, element);
+                Object.getPropertyDescriptor(Component.prototype, "domContent").set.call(this, element);
                 this.addChildComponent(value);
                 value.needsDraw = true;
             } else {
-                Object.getPropertyDescriptor(Component, "domContent").set.call(this, value);
+                Object.getPropertyDescriptor(Component.prototype, "domContent").set.call(this, value);
             }
             this._content = value;
             this.needsDraw = true;

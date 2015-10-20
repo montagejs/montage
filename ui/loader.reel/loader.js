@@ -324,7 +324,7 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
             // We've loaded the class for the mainComponent
             // instantiate it and lets find out what else we need to load
             // based on its template
-            this._mainComponent = exports[this.mainName].create();
+            this._mainComponent = new exports[this.mainName]();
             this._mainComponentEnterDocument = this._mainComponent.enterDocument;
             this._mainComponent.enterDocument = this.mainComponentEnterDocument.bind(this);
             this._mainComponent.setElementWithParentComponent(document.createElement("div"), this);

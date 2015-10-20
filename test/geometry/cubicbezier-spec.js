@@ -55,7 +55,7 @@ function () {
         var cubicBezier;
 
         beforeEach(function () {
-            cubicBezier = CubicBezier.create(CubicBezier).init([new Point().init(.42, 0), new Point().init(.58, 1)]);
+            cubicBezier = (new CubicBezier()).init([new Point().init(.42, 0), new Point().init(.58, 1)]);
         });
 
         it("is undefined @ t < 1 & t > 1",
@@ -78,7 +78,7 @@ function () {
         var cubicBezier;
 
         beforeEach(function () {
-            cubicBezier = CubicBezier.create(CubicBezier).init([new Point().init(.42, 0), new Point().init(.58, 1)]);
+            cubicBezier = (new CubicBezier()).init([new Point().init(.42, 0), new Point().init(.58, 1)]);
             cubicBezier.makeScaffolding(.25);
         });
 
@@ -97,7 +97,7 @@ function () {
         var cubicBezier;
 
         beforeEach(function () {
-            cubicBezier = cubicBezier = CubicBezier.create(CubicBezier).init([new Point().init(.42, 0), new Point().init(.58, 1)]);
+            cubicBezier = (new CubicBezier()).init([new Point().init(.42, 0), new Point().init(.58, 1)]);
             cubicBezier = cubicBezier.split(.25);
         });
 
@@ -114,7 +114,7 @@ function () {
         var cubicBezier;
 
         beforeEach(function () {
-            cubicBezier = cubicBezier = CubicBezier.create(CubicBezier).init([new Point().init(.42, 0), new Point().init(.58, 1)]);
+            cubicBezier = (new CubicBezier()).init([new Point().init(.42, 0), new Point().init(.58, 1)]);
             cubicBezier = cubicBezier.splitToTimingFunction(.25);
         });
 

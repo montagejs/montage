@@ -5,7 +5,7 @@ exports.Scroller = Component.specialize( {
     canDraw: {
         value: function () {
             this.needsDraw = true;
-            return Component.canDraw.apply(this, arguments);
+            return Component.prototype.canDraw.apply(this, arguments);
         }
     }
 });

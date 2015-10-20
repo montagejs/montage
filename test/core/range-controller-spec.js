@@ -6,7 +6,7 @@ describe("core/range-controller-spec", function () {
     var rangeController;
 
     beforeEach(function () {
-        rangeController = RangeController.create().initWithContent([0, 1, 2]);
+        rangeController = (new RangeController()).initWithContent([0, 1, 2]);
     });
 
     describe("selection", function () {
@@ -302,7 +302,7 @@ describe("core/range-controller-spec", function () {
         });
 
         it("should use a default content constructor when no content is available", function () {
-            rangeController = RangeController.create();
+            rangeController = new RangeController();
             var content = rangeController.addContent();
             expect(content).toEqual({});
             expect(rangeController.content).toContain({});
@@ -327,7 +327,7 @@ describe("core/range-controller-spec", function () {
             content.contentEquals = function (){ return true; };
             expect(content.find(42)).toBe(0);
 
-            rangeController = RangeController.create().initWithContent(content);
+            rangeController = (new RangeController()).initWithContent(content);
             rangeController.multiSelect = true;
             rangeController.selection = [0];
 

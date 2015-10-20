@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     logger = require("montage/core/logger").logger("deserializer-spec"),
-    Deserializer = require("montage/core/serialization").Deserializer,
+    Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     Alias = require("montage/core/serialization/alias").Alias,
     Bindings = require("montage/frb"),
     defaultEventManager = require("montage/core/event/event-manager").defaultEventManager,
@@ -174,7 +174,7 @@ describe("serialization/montage-deserializer-spec", function () {
 
             return deserializer.deserializeObject()
             .then(function (root) {
-                expect(root).toBe(objects.Singleton.instance);
+                expect(root).toBe(objects.Singleton.prototype.instance);
             }).catch(function(reason) {
                 console.log(reason.stack);
                 expect("test").toBe("executed");

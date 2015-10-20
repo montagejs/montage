@@ -1,5 +1,5 @@
 var Montage = require("montage/core/core").Montage,
-    MontageSerializer = require("montage/core/serialization").Serializer,
+    MontageSerializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer,
     objects = require("serialization/testobjects-v2").objects,
     ModuleReference = require("montage/core/module-reference").ModuleReference,
     Alias = require("montage/core/serialization/alias").Alias;
@@ -151,7 +151,7 @@ describe("serialization/montage-serializer-spec", function () {
             });
 
             it("should serialize without the object name", function () {
-                var object = objects.TestobjectsV2.create(),
+                var object = new objects.TestobjectsV2(),
                     serialization,
                     expectedSerialization;
 
@@ -921,7 +921,7 @@ describe("serialization/montage-serializer-spec", function () {
                         };
                     }
                 });
-                MontageSerializer.initWithRequire(require);
+                MontageSerializer.prototype.initWithRequire(require);
 
                 serializeSelfTestObject = new objects.TwoProps();
                 serializeSelfTestObject.prop1 = "prop1";

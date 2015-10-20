@@ -22,13 +22,13 @@ exports.AssociationBlueprint = PropertyBlueprint.specialize( /** @lends Associat
     serializeSelf: {
         value: function (serializer) {
             serializer.setProperty("targetBlueprint", this._targetBlueprintReference);
-            PropertyBlueprint.serializeSelf.call(this, serializer);
+            PropertyBlueprint.prototype.serializeSelf.call(this, serializer);
         }
     },
 
     deserializeSelf: {
         value: function (deserializer) {
-            PropertyBlueprint.deserializeSelf.call(this, deserializer);
+            PropertyBlueprint.prototype.deserializeSelf.call(this, deserializer);
             this._targetBlueprintReference = deserializer.getProperty("targetBlueprint");
         }
     },

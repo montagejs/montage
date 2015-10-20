@@ -581,7 +581,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      */
     addEventListener: {
         value: function (type, listener, useCapture) {
-            Composer.addEventListener.call(this, type, listener, useCapture);
+            Composer.prototype.addEventListener.call(this, type, listener, useCapture);
             if (type === "translate") {
                 this._shouldDispatchTranslate = true;
             }
@@ -759,7 +759,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
      **/
     _shouldPreventDefault: {
         value: function (event) {
-            return !!event.target.tagName && TranslateComposer._NATIVE_ELEMENTS.indexOf(event.target.tagName) === -1 && !event.target.isContentEditable;
+            return !!event.target.tagName && this._NATIVE_ELEMENTS.indexOf(event.target.tagName) === -1 && !event.target.isContentEditable;
         }
     },
 

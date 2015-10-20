@@ -109,7 +109,7 @@ var KeyComposer = exports.KeyComposer = Composer.specialize( /** @lends KeyCompo
             // console.log("--- addEventListener", this.identifier);
             var component = this.component;
 
-            Composer.addEventListener.call(this, type, listener, useCapture);
+            Composer.prototype.addEventListener.call(this, type, listener, useCapture);
 
             if (type == KEYPRESS_EVENT_TYPE || type == LONGKEYPRESS_EVENT_TYPE || type == KEYRELEASE_EVENT_TYPE) {
                 this._shouldDispatchEvent = true;

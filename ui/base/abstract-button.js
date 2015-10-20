@@ -189,7 +189,7 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
     // Optimisation
     addEventListener: {
         value: function (type, listener, useCapture) {
-            AbstractControl.addEventListener.call(this, type, listener, useCapture);
+            AbstractControl.prototype.addEventListener.call(this, type, listener, useCapture);
             if (type === "longAction") {
                 this._pressComposer.addEventListener("longPress", this, false);
             }

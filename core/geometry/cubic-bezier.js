@@ -69,7 +69,7 @@ var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezi
         enumerable: false,
         value: function (t) {
             this.makeScaffolding(t);
-            return CubicBezier.create(CubicBezier).init([this.p0, this.p01, this.p012, this.p0123]);
+            return (new CubicBezier()).init([this.p0, this.p01, this.p012, this.p0123]);
         }
     },
 
@@ -87,7 +87,7 @@ var CubicBezier = exports.CubicBezier = Montage.specialize( /** @lends CubicBezi
             // p0123 x and y are the scale
             var xScale = this.p0123.x,
                 yScale = this.p0123.y;
-            return CubicBezier.create(CubicBezier).init([new Point().init(this.p01.x / xScale, this.p01.y / yScale), new Point().init(this.p012.x / xScale, this.p012.y / yScale)]);
+            return (new CubicBezier()).init([new Point().init(this.p01.x / xScale, this.p01.y / yScale), new Point().init(this.p012.x / xScale, this.p012.y / yScale)]);
         }
     },
 

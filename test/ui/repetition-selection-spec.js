@@ -1,6 +1,7 @@
 var Montage = require("montage").Montage,
     TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
-    Promise = require("montage/core/promise").Promise;
+    Promise = require("montage/core/promise").Promise,
+    Application = require("montage/core/application").application;
 
 TestPageLoader.queueTest("repetition/selection-test/selection-test", function (testPage) {
     describe("ui/repetition-selection-spec", function () {
@@ -16,7 +17,7 @@ TestPageLoader.queueTest("repetition/selection-test/selection-test", function (t
 
         it("should load", function () {
             expect(testPage.loaded).toBeTruthy();
-            application = testPage.window.document.application;
+            application = Application;
             eventManager = application.eventManager;
             nameController = testPage.test.nameController;
             repetition = testPage.test.repetition;

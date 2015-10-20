@@ -1,7 +1,7 @@
 
 var Selector = require("montage/core/selector").Selector;
-var serialize = require("montage/core/serialization").serialize;
-var deserialize = require("montage/core/serialization").deserialize;
+var serialize = require("montage/core/serialization/serializer/montage-serializer").serialize;
+var deserialize = require("montage/core/serialization/deserializer/montage-deserializer").deserialize;
 
 describe("core/selector-spec", function () {
 

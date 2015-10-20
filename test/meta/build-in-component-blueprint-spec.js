@@ -18,7 +18,7 @@ var Binder = require("montage/core/meta/blueprint").Binder;
 var PropertyBlueprint = require("montage/core/meta/blueprint").PropertyBlueprint;
 var AssociationBlueprint = require("montage/core/meta/blueprint").AssociationBlueprint;
 
-var Serializer = require("montage/core/serialization").Serializer;
+var Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer;
 
 describe("meta/build-in-component-blueprint-spec", function () {
 

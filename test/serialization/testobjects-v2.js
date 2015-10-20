@@ -145,7 +145,7 @@ exports.Comp = Montage.specialize( {
     deserializedFromTemplateCount: {value: 0},
     deserializedFromTemplate: {value: function () {
         this.deserializedFromTemplateCount++;
-    }},
+    }}
 });
 
 exports.Custom = Montage.specialize( {
@@ -155,13 +155,9 @@ exports.Custom = Montage.specialize( {
     }
 });
 
-exports.CustomDeserialization = Montage.create(exports.TwoProps, {
+exports.CustomDeserialization = exports.TwoProps.specialize();
 
-});
-
-exports.TestobjectsV2 = Montage.create(exports.Empty, {
-
-});
+exports.TestobjectsV2 = exports.Empty.specialize();
 
 exports.objects = {
     Empty: exports.Empty,
