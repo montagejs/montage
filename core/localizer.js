@@ -589,7 +589,12 @@ var DefaultLocalizer = Localizer.specialize( /** @lends DefaultLocalizer# */ {
 
             // If possible, save locale
             if (typeof window !== "undefined" && window.localStorage) {
-                window.localStorage.setItem(LOCALE_STORAGE_KEY, value);
+                try {
+                    window.localStorage.setItem(LOCALE_STORAGE_KEY, value);
+                } catch (e) {
+                    // LocalStorage quota might have been exceeded
+                    // iOS Safari emits a quota exceeded error from private mode always
+                }
             }
         }
     },
