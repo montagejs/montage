@@ -1149,22 +1149,6 @@ describe("serialization/montage-deserializer-spec", function () {
         });
     });
 
-    it("should detect a malformed serialization string", function () {
-        var serializationString = "{root:}",
-            valid;
-
-        valid = deserializer.isSerializationStringValid(serializationString);
-        expect(valid).toBe(false);
-    });
-
-    it("should detect a well formed serialization string", function () {
-        var serializationString = '{"root": {"value": 3}}',
-            valid;
-
-        valid = deserializer.isSerializationStringValid(serializationString);
-        expect(valid).toBe(true);
-    });
-
     it("should deserialize null", function () {
         var serialization = {
                 "a": {
@@ -1206,22 +1190,6 @@ describe("serialization/montage-deserializer-spec", function () {
             } catch (ex) {
                 expect(ex).toBeDefined();
             }
-        });
-
-        it("should fail if serialization is malformed", function () {
-            var serializationString = "{root:}";
-
-            deserializer._serializationString = serializationString;
-
-            return deserializer.deserialize().then(function () {
-                // should never execute
-                expect(true).toBe(false);
-            }, function (reason) {
-                expect(reason).toBeDefined();
-            }).catch(function(reason) {
-                console.log(reason.stack);
-                expect("test").toBe("executed");
-            });
         });
 
         it("should fail initialization if serialization is malformed", function () {

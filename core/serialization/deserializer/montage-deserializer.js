@@ -1,60 +1,61 @@
-var Montage = require("../../core").Montage;
-var Deserializer = require("mousse/deserialization/deserializer").Deserializer;
-var MontageInterpreter = require("./montage-interpreter").MontageInterpreter;
-var MontageReviver = require("./montage-reviver").MontageReviver;
-var Promise = require("../../promise").Promise;
-var JSHINT = require("../../jshint").JSHINT;
+var Montage = require("../../core").Montage,
+    MontageInterpreter = require("./montage-interpreter").MontageInterpreter,
+    MontageReviver = require("./montage-reviver").MontageReviver;
 
-var logger = require("../../logger").logger("montage-deserializer");
+if (!require.config.production) {
+    var JSHINT = require("../../jshint").JSHINT;
+}
 
-var MontageDeserializer = Montage.specialize.call(Deserializer, {
-    _interpreter: {value: null},
-    _serializationString: {value: null},
-    _serialization: {value: null},
+var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
+
+    _interpreter: {
+        value: null
+    },
+
+    _serializationString: {
+        value: null
+    },
+
+    _serialization: {
+        value: null
+    },
+
+    serialization: {
+        value: {
+            get: function () {
+                return this._serialization;
+            }
+        }
+    },
 
     init: {
-        value: function (serializationString, _require, objectRequires, origin) {
-            if (! this.isSerializationStringValid(serializationString)) {
-                throw new Error(
-                    this._formatSerializationSyntaxError(serializationString)
-                );
+        value: function (serializationString, _require, objectRequires) {
+            try {
+                this._serialization = JSON.parse(serializationString);
+            } catch (ex) {
+                throw new Error(this._formatSerializationSyntaxError(serializationString));
             }
 
-            Deserializer.call(this, serializationString);
-
-            this._serialization = null;
-            this._interpreter = new MontageInterpreter()
-                .init(_require, objectRequires);
+            this._serializationString = serializationString;
+            this._interpreter = new MontageInterpreter().init(_require, objectRequires);
 
             return this;
         }
     },
 
-    serialization: {
-        get: function () {
-            var serialization = this._serialization;
+    deserialize: {
+        value: function (instances, element) {
+            var serialization = JSON.parse(this._serializationString);
 
-            if (!serialization) {
-                serialization = JSON.parse(this._serializationString);
-                this._serialization = serialization;
-            }
-
-            return serialization;
+            return this._interpreter.instantiate(serialization, instances, element);
         }
     },
 
-    deserialize: {
-        value: function (instances, element) {
-            var serialization;
-
-            try {
-                serialization = JSON.parse(this._serializationString);
-            } catch (error) {
-                return Promise.reject(error);
-            }
-
-            return this._interpreter.instantiate(
-                serialization, instances, element);
+    deserializeObject: {
+        value: function(objects) {
+            return this.deserialize(objects).then(function(objects) {
+                return objects.root;
+            });
         }
     },
 
@@ -68,7 +69,7 @@ var MontageDeserializer = Montage.specialize.call(Deserializer, {
 
     getExternalObjectLabels: {
         value: function () {
-            var serialization = this.serialization,
+            var serialization = this._serialization,
                 labels = [];
 
             for (var label in serialization) {
@@ -78,17 +79,6 @@ var MontageDeserializer = Montage.specialize.call(Deserializer, {
             }
 
             return labels;
-        }
-    },
-
-    isSerializationStringValid: {
-        value: function (serializationString) {
-            try {
-                JSON.parse(serializationString);
-                return true;
-            } catch (ex) {
-                return false;
-            }
         }
     },
 
@@ -124,20 +114,13 @@ var MontageDeserializer = Montage.specialize.call(Deserializer, {
         }
     }
 
-}, {
-
-    defineDeserializationUnit: {
-        value: function (name, funktion) {
-            MontageReviver.defineUnitReviver(name, funktion);
-        }
-    }
-
 });
 
-exports.MontageDeserializer = MontageDeserializer;
-exports.deserialize = function (serializationString, _require) {
-    return new MontageDeserializer().
-        init(serializationString, _require)
-        .deserializeObject();
+
+MontageDeserializer.defineDeserializationUnit = function (name, funktion) {
+    MontageReviver.defineUnitReviver(name, funktion);
 };
 
+exports.deserialize = function (serializationString, _require) {
+    return new MontageDeserializer().init(serializationString, _require).deserializeObject();
+};

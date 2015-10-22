@@ -1,5 +1,4 @@
 var Montage = require("../../core").Montage;
-var Reviver = require("mousse/deserialization/reviver").Reviver;
 var PropertiesDeserializer = require("./properties-deserializer").PropertiesDeserializer;
 var SelfDeserializer = require("./self-deserializer").SelfDeserializer;
 var UnitDeserializer = require("./unit-deserializer").UnitDeserializer;
@@ -80,7 +79,7 @@ var ModuleLoader = Montage.specialize( {
 /**
  * @class MontageReviver
  */
-var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /** @lends MontageReviver# */ {
+var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends MontageReviver# */ {
     moduleLoader: {value: null},
 
     /**
@@ -100,18 +99,25 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
 
     getTypeOf: {
         value: function (value) {
-            if (value !== null &&
-                typeof value === "object" &&
-                Object.keys(value).length === 1
-            ) {
-                if ("#" in value) {
+            var typeOf = typeof value;
+
+            if (value === null) {
+                return "null";
+            } else if (Array.isArray(value)) {
+                return "array";
+            } else if (typeOf === "object" && Object.keys(value).length === 1) {
+                if ("@" in value) {
+                    return "reference";
+                } else if ("/" in value) {
+                    return "regexp";
+                } else if ("#" in value) {
                     return "Element";
                 } else if ("%" in value) {
                     return "Module";
-                }
+                } // else return typeOf -> object
             }
 
-            return Reviver.prototype.getTypeOf.call(this, value);
+            return typeOf;
         }
     },
 
@@ -133,14 +139,42 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
             // Only aliases are allowed as template properties, everything else
             // should be rejected as an error.
             error = this._checkLabel(label, isAlias);
+
             if (error) {
                 return Promise.reject(error);
             }
 
-            // TODO: this.super returns noop here in some situations (just run
-            // montage-deserializer-spec to reproduce
-            //return this.super(value, context, label);
-            return Reviver.prototype.reviveRootObject.apply(this, arguments);
+            var object;
+
+            // Check if the optional "debugger" unit is set for this object
+            // and stop the execution. This is intended to provide a certain
+            // level of debugging in the serialization.
+            if (value.debugger) {
+                debugger;
+            }
+
+            if ("value" in value) {
+                // it's overriden by a user object
+                if (context.hasUserObject(label)) {
+                    object = context.getUserObject(label);
+                    context.setObjectLabel(object, label);
+                    return object;
+                }
+
+                return this.reviveValue(value.value, context, label);
+
+            } else if (Object.keys(value).length === 0) {
+                // it's an external object
+                if (context.hasUserObject(label)) {
+                    object = context.getUserObject(label);
+                    context.setObjectLabel(object, label);
+                    return object;
+                }
+
+                return this.reviveExternalObject(value, context, label);
+            }
+
+            return this.reviveCustomObject(value, context, label);
         }
     },
 
@@ -415,6 +449,149 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
                 return Promise.reject(ex);
             }
         }
+    },
+
+    _createAssignValueFunction: {
+        value: function(object, propertyName) {
+            return function(value) {
+                object[propertyName] = value;
+            }
+        }
+    },
+
+    getCustomObjectTypeOf: {
+        writable: true,
+        value: function() {}
+    },
+
+    reviveValue: {
+        value: function(value, context, label) {
+            var type = this.getTypeOf(value);
+
+            if (type === "string" || type === "number" || type === "boolean" || type === "null" || type === "undefined") {
+                return this.reviveNativeValue(value, context, label);
+            } else if (type === "regexp") {
+                return this.reviveRegExp(value, context, label);
+            } else if (type === "reference") {
+                return this.reviveObjectReference(value, context, label);
+            } else if (type === "array") {
+                return this.reviveArray(value, context, label);
+            } else if (type === "object") {
+                return this.reviveObjectLiteral(value, context, label);
+            } else {
+                return this._callReviveMethod("revive" + type, value, context, label);
+            }
+        }
+    },
+
+    reviveNativeValue: {
+        value: function(value, context, label) {
+            if (label) {
+                context.setObjectLabel(value, label);
+            }
+
+            return value;
+        }
+    },
+
+    reviveObjectLiteral: {
+        value: function(value, context, label) {
+            var item,
+                promises = [];
+
+            if (label) {
+                context.setObjectLabel(value, label);
+            }
+
+            for (var propertyName in value) {
+                item = this.reviveValue(value[propertyName], context);
+
+                if (Promise.is(item)) {
+                    promises.push(
+                        item.then(this._createAssignValueFunction(
+                                value, propertyName)
+                        )
+                    );
+                } else {
+                    value[propertyName] = item;
+                }
+            }
+
+            if (promises.length === 0) {
+                return value;
+            } else {
+                return Promise.all(promises).then(function() {
+                    return value;
+                });
+            }
+        }
+    },
+
+    reviveRegExp: {
+        value: function(value, context, label) {
+            var value = value["/"],
+                regexp = new RegExp(value.source, value.flags);
+
+            if (label) {
+                context.setObjectLabel(regexp, label);
+            }
+
+            return regexp;
+        }
+    },
+
+    reviveObjectReference: {
+        value: function(value, context, label) {
+            var value = value["@"],
+                object = context.getObject(value);
+
+            return object;
+        }
+    },
+
+    reviveArray: {
+        value: function(value, context, label) {
+            var item,
+                promises = [];
+
+            if (label) {
+                context.setObjectLabel(value, label);
+            }
+
+            for (var i = 0, ii = value.length; i < ii; i++) {
+                item = this.reviveValue(value[i], context);
+
+                if (Promise.is(item)) {
+                    promises.push(
+                        item.then(this._createAssignValueFunction(value, i))
+                    );
+                } else {
+                    value[i] = item;
+                }
+            }
+
+            if (promises.length === 0) {
+                return value;
+            } else {
+                return Promise.all(promises).then(function() {
+                    return value;
+                });
+            }
+        }
+    },
+
+    reviveExternalObject: {
+        value: function(value, context, label) {
+            return Promise.reject(
+                new Error("External object '" + label + "' not found in user objects.")
+            );
+        }
+    },
+
+    _callReviveMethod: {
+        value: function(methodName, value, context, label) {
+            return this[methodName](value, context, label);
+        }
     }
 
 }, /** @lends MontageReviver. */ {
@@ -432,6 +609,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     },
     // Cache of location descriptors indexed by locationId
     _locationDescCache: {value: Object.create(null)},
+
+    customObjectRevivers: {value: Object.create(null)},
 
     // Location Id is in the form of <moduleId>[<objectName>] where
     // [<objectName>] is optional. When objectName is missing it is derived
@@ -492,6 +671,46 @@ var MontageReviver = exports.MontageReviver = Montage.specialize.call(Reviver, /
     getTypeOf: {
         value: function (value) {
             return this.prototype.getTypeOf.call(this, value);
+        }
+    },
+
+    addCustomObjectReviver: {
+        value: function(reviver) {
+            var customObjectRevivers = this.customObjectRevivers;
+
+            for (var methodName in reviver) {
+                if (methodName === "getTypeOf") {
+                    continue;
+                }
+
+                if (typeof reviver[methodName] === "function"
+                    && /^revive/.test(methodName)) {
+                    if (typeof customObjectRevivers[methodName] === "undefined") {
+                        customObjectRevivers[methodName] = reviver[methodName].bind(reviver);
+                    } else {
+                        return new Error("Reviver '" + methodName + "' is already registered.");
+                    }
+                }
+            }
+
+            this.prototype.getCustomObjectTypeOf = this.makeGetCustomObjectTypeOf(reviver.getTypeOf);
+        }
+    },
+
+    resetCustomObjectRevivers: {
+        value: function() {
+            this.customObjectRevivers = Object.create(null);
+            this.prototype.getCustomObjectTypeOf = function() {};
+        }
+    },
+
+    makeGetCustomObjectTypeOf:{
+        value: function (getCustomObjectTypeOf) {
+            var previousGetCustomObjectTypeOf = this.prototype.getCustomObjectTypeOf;
+
+            return function(value) {
+                return getCustomObjectTypeOf(value) || previousGetCustomObjectTypeOf(value);
+            }
         }
     }
 
