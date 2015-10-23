@@ -1064,7 +1064,8 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
             // cleanup current content
             components = this.childComponents;
-            for (i = 0, component; (component = components[i]); i++) {
+
+            while ((component = components[0])) {
                 component.detachFromParentComponent();
             }
 
