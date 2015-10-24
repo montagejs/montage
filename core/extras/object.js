@@ -94,7 +94,7 @@ Object.defineProperty(Object, "defineBinding", {
         // Migration instructions:
         //
         // Replace Object.defineBinding with
-        // import Bindings from "montage/core/bindings"
+        // import Bindings from "montage/core/core".Bindings
         // Bindings.defineBinding(target, targetPath, descriptor);
         // - Use "<-", "<->", and "source" in place of
         //   "boundObjectPropertyPath", "oneway", and "boundObject".

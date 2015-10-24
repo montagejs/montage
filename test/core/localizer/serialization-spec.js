@@ -36,7 +36,7 @@ var Montage = require("montage").Montage,
     Deserializer = require("montage/core/serialization").Deserializer,
     TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Map = require("montage/collections/map"),
-    Bindings = require("montage/core/bindings").Bindings,
+    Bindings = require("montage/core/core").Bindings,
     FrbBindings = require("montage/frb/bindings");
 
 var stripPP = function stripPrettyPrintting(str) {
@@ -161,22 +161,22 @@ TestPageLoader.queueTest("fallback/fallback", {directory: module.directory}, fun
             it("creates a binding from the localizer to the object", function () {
                 var iframeRequire = testPage.iframe.contentWindow.mr;
 
-                return iframeRequire.async("montage/core/bindings")
-                .then(function (exports) {
-                    var iframeBindings = exports.Bindings,
-                        bindings;
+                return iframeRequire.async("montage/core/core")
+                    .then(function (exports) {
+                        var iframeBindings = exports.Bindings,
+                            bindings;
 
-                    bindings = iframeBindings.getBindings(test.binding);
+                        bindings = iframeBindings.getBindings(test.binding);
 
-                    expect(test.binding.value).toBe("Hello World");
-                    expect(bindings.value).toBeDefined();
+                        expect(test.binding.value).toBe("Hello World");
+                        expect(bindings.value).toBeDefined();
 
-                    test.bindingInput.value = "Earth";
-                    waitsFor(function () { return test.binding.value !== "Hello World"; });
-                    runs(function () {
-                        expect(test.binding.value).toBe("Hello Earth");
+                        test.bindingInput.value = "Earth";
+                        waitsFor(function () { return test.binding.value !== "Hello World"; });
+                        runs(function () {
+                            expect(test.binding.value).toBe("Hello Earth");
+                        });
                     });
-                });
             });
 
             it("can localize two properties", function () {

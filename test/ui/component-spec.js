@@ -35,7 +35,7 @@ var Montage = require("montage").Montage,
     Template = require("montage/core/template").Template,
     DocumentPart = require("montage/core/document-part").DocumentPart,
     Alias = require("montage/core/serialization/alias").Alias;
-var Bindings = require("montage/core/bindings").Bindings;
+var Bindings = require("montage/core/core").Bindings;
 var MockDOM = require("mocks/dom");
 
 TestPageLoader.queueTest("draw/draw", function (testPage) {
