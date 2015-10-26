@@ -91,7 +91,7 @@ Object.defineProperty(Montage, "specialize", {
         if (prototypeProperties.constructor && prototypeProperties.constructor.value) {
             constructor = prototypeProperties.constructor.value;
         } else if (prototypeProperties.didCreate && prototypeProperties.didCreate.value) {
-            constructor = Montage.deprecate(null, prototypeProperties.didCreate.value, "didCreate", "constructor");
+            constructor = deprecate.deprecate(null, prototypeProperties.didCreate.value, "didCreate", "constructor");
             //constructor = prototypeProperties.didCreate.value;
         } else {
             constructor = function Anonymous() {
