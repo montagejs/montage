@@ -877,6 +877,16 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                             dY = this.pointerStartEventPosition.pageY - contactPoint.clientY;
 
                         shouldClaimPointer = Composer.isCoordinateOutsideRadius(dX, dY, threshold);
+
+                        if (shouldClaimPointer) {
+                            // Updates translate start position when the claiming pointer policy is set to ”move".
+                            this.pointerStartEventPosition.pageX = contactPoint.clientX;
+                            this.pointerStartEventPosition.pageY = contactPoint.clientY;
+                            this.pointerStartEventPosition.target = contactPoint.target;
+                            this.pointerStartEventPosition.timeStamp = event.timeStamp;
+                            this._pointerX = contactPoint.clientX;
+                            this._pointerY = contactPoint.clientY;
+                        }
                     }
 
                     if (!shouldClaimPointer) {
