@@ -5,7 +5,6 @@
 require("collections/shim");
 require("./shim/object");
 require("./shim/array");
-require("./shim/string");
 require("./extras/object");
 require("./extras/date");
 require("./extras/element");

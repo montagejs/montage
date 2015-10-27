@@ -294,6 +294,7 @@ if (typeof window !== "undefined") {
                     promiseRequire.inject("bluebird", Promise);
                     //This prevents bluebird to be loaded twice by mousse's code
                     promiseRequire.inject("js/browser/bluebird", Promise);
+                    montageRequire.inject("core/shim/string", String);
 
                     // weakMapRequire.inject("weak-map", window.WeakMap);
 
@@ -464,7 +465,7 @@ if (typeof window !== "undefined") {
             if (!location)
                 return;
 
-            if (_endsWith(location, ".html") || _endsWith(location, ".html.load.js")) {
+            if (location.endsWith(".html") || location.endsWith(".html.load.js")) {
                 var match = location.match(/(.*\/)?(?=[^\/]+)/);
 
                 if (match) {
@@ -666,7 +667,8 @@ if (typeof window !== "undefined") {
             var pending = {
                 "require": "node_modules/mr/require.js",
                 "require/browser": "node_modules/mr/browser.js",
-                "promise": "node_modules/bluebird/js/browser/bluebird.js"
+                "promise": "node_modules/bluebird/js/browser/bluebird.js",
+                "shim-string": "core/shim/string.js" // needed for the `endsWith` function.
                 /*"promise": "packages/mr/packages/q/q.js"*/
             };
 
@@ -731,6 +733,7 @@ if (typeof window !== "undefined") {
 
             }
 
+            global.bootstrap("shim-string");
 
             // one module loaded for free, for use in require.js, browser.js
             global.bootstrap("mini-url", function (require, exports) {
