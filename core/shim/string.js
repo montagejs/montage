@@ -36,8 +36,10 @@ if (!String.prototype.startsWith) {
 if (!String.prototype.endsWith) {
     Object.defineProperty(String.prototype, 'endsWith', {
         value: function (end) {
-            return this.length >= end.length &&
-                this.slice(this.length - end.length, this.length) === end;
+            var selfLength = this.length,
+                endLength = end.length;
+
+            return selfLength >= endLength && this.indexOf(end, selfLength - endLength) !== -1;
         },
         writable: true,
         configurable: true
