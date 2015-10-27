@@ -165,21 +165,21 @@ exports.SegmentedBar = AbstractButton.specialize( /** @lends SegmentedBar.protot
     handlePress: {
         value: function (event) {
             this._setComponentDataFromEvent(event);
-            AbstractButton.handlePress.call(this);
+            AbstractButton.prototype.handlePress.call(this);
         }
     },
 
     handleKeyup: {
         value: function (event) {
             this._setComponentDataFromEvent(event);
-            AbstractButton.handleKeyup.call(this);
+            AbstractButton.prototype.handleKeyup.call(this);
         }
     },
 
     handleLongPress: {
         value: function (event) {
             this._setComponentDataFromEvent(event);
-            AbstractButton.handleLongPress.call(this);
+            AbstractButton.prototype.handleLongPress.call(this);
         }
     },
 

@@ -240,11 +240,11 @@ describe("test/base/abstract-radio-button-spec", function () {
     });
 
     describe("aria", function () {
-        var RadioButton = Montage.create(AbstractRadioButton, {}),
+        var RadioButton = AbstractRadioButton.specialize(),
             aRadioButton;
 
         beforeEach(function () {
-            aRadioButton = RadioButton.create();
+            aRadioButton = new RadioButton();
             aRadioButton.element = MockDOM.element();
         });
 

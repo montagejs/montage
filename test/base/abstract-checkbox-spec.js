@@ -14,7 +14,7 @@ describe("test/base/abstract-checkbox-spec", function () {
         });
 
         it("can be instantiated as a subtype", function () {
-            var CheckboxSubtype = AbstractCheckbox.specialize( {});
+            var CheckboxSubtype = AbstractCheckbox.specialize();
             var aCheckboxSubtype = null;
             expect(function () {
                 aCheckboxSubtype = new CheckboxSubtype();
@@ -24,7 +24,7 @@ describe("test/base/abstract-checkbox-spec", function () {
     });
 
     describe("properties", function () {
-        var Checkbox = AbstractCheckbox.specialize( {}),
+        var Checkbox = AbstractCheckbox.specialize(),
             aCheckbox;
 
         beforeEach(function () {
@@ -156,7 +156,7 @@ describe("test/base/abstract-checkbox-spec", function () {
     });
 
     describe("draw", function () {
-        var Checkbox = AbstractCheckbox.specialize( {}),
+        var Checkbox = AbstractCheckbox.specialize(),
             aCheckbox;
 
         beforeEach(function () {
@@ -175,7 +175,7 @@ describe("test/base/abstract-checkbox-spec", function () {
     });
 
     describe("events", function () {
-        var Checkbox = AbstractCheckbox.specialize( {}),
+        var Checkbox = AbstractCheckbox.specialize(),
             aCheckbox, anElement, listener;
 
         beforeEach(function () {
@@ -244,11 +244,11 @@ describe("test/base/abstract-checkbox-spec", function () {
     });
 
     describe("aria", function () {
-        var Checkbox = Montage.create(AbstractCheckbox, {}),
+        var Checkbox = AbstractCheckbox.specialize(),
             aCheckbox;
 
         beforeEach(function () {
-            aCheckbox = Checkbox.create();
+            aCheckbox = new Checkbox();
             aCheckbox.element = MockDOM.element();
         });
 

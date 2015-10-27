@@ -28,19 +28,6 @@ var ARRAY_PROTOTYPE = Array.prototype;
 
 var OBJECT_PROTOTYPE = Object.prototype;
 
-// The CONSTRUCTOR_COMPATIBILITY flag marks areas that allow the migration from
-// Montage.create to Constructor.specialize The following is done:
-// - Any properties defined on the prototype that are used on the constructor
-//   fire a deperecation warning prompting the developer to move them to the
-//   second argument of specialize().
-// - Adds a create method to the constructor can be used as Proto.create().
-// - Adds support for 'didCreate' so that it can be used interchangeably with
-//   the 'constructor' property.
-// - When calling Montage.create with a function as the first argument we use
-//   the function as a constructor or call specialize on it to create a
-//   subtype.
-var CONSTRUCTOR_COMPATIBILITY = true;
-
 /**
  * The Montage constructor provides conveniences for sub-typing
  * ([specialize]{@link Montage.specialize}) and common methods for Montage
@@ -59,7 +46,6 @@ Montage.callDeprecatedFunction = deprecate.deprecateMethod(Montage, deprecate.ca
 
 var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;
 var PROTO_PROPERTIES_BLACKLIST = {"_montage_metadata": 1, "__state__": 1};
-var FUNCTION_PROPERTIES = Object.getOwnPropertyNames(Function);
 
 /**
  * Customizes a type with idiomatic JavaScript constructor and prototype
@@ -80,7 +66,7 @@ var FUNCTION_PROPERTIES = Object.getOwnPropertyNames(Function);
  */
 Object.defineProperty(Montage, "specialize", {
     value: function specialize(prototypeProperties, constructorProperties) {
-        var constructor, prototype, names, propertyName, property, i, constructorProperty,
+        var constructor, prototype, names, propertyName, property, i, length,
             // check if this constructor has Montage capabilities
             parent = this,
             foreignParent = typeof this.specialize === "undefined";
@@ -90,37 +76,47 @@ Object.defineProperty(Montage, "specialize", {
 
         if (prototypeProperties.constructor && prototypeProperties.constructor.value) {
             constructor = prototypeProperties.constructor.value;
-        } else if (prototypeProperties.didCreate && prototypeProperties.didCreate.value) {
-            constructor = Montage.deprecate(null, prototypeProperties.didCreate.value, "didCreate", "constructor");
-            //constructor = prototypeProperties.didCreate.value;
+
         } else {
             constructor = function Anonymous() {
                 return this.superForValue("constructor")() || this;
                 //return parent.apply(this, arguments) || this;
             };
         }
+
         if (PROTO_IS_SUPPORTED) {
             constructor.__proto__ = parent;
         } else {
             names = Object.getOwnPropertyNames(parent);
-            for (var i = 0; i < names.length; i++) {
+
+            for (i = 0, length = names.length; i < length; i++) {
                 propertyName = names[i];
+
                 if (!(PROTO_PROPERTIES_BLACKLIST.hasOwnProperty(propertyName))) {
                     property = Object.getOwnPropertyDescriptor(constructor, propertyName);
+
                     if (!property || property.configurable) {
                         Montage.defineProperty(constructor, propertyName, Object.getOwnPropertyDescriptor(parent, propertyName));
                     }
                 }
             }
+
             constructor.__constructorProto__ = parent;
+
             Montage.defineProperty(constructor, "isPrototypeOf", {
                 value: function (object) {
+                    var prototype;
+
                     while (object !== null) {
-                        if(Object.getPrototypeOf(object) === this) {
+                        prototype = Object.getPrototypeOf(object);
+
+                        if(prototype === this) {
                             return true;
                         }
-                        object = Object.getPrototypeOf(object);
+
+                        object = prototype;
                     }
+
                     return false;
                 },
                 enumerable: false
@@ -129,84 +125,70 @@ Object.defineProperty(Montage, "specialize", {
 
         prototype = Object.create(this.prototype);
 
-        if(foreignParent) {
+        if (foreignParent) {
             // give the constructor all the properties of Montage
             names = Object.getOwnPropertyNames(Montage);
-            for ( i = 0; i < names.length; i++) {
+
+            for (i = 0, length = names.length; i < length; i++) {
                 propertyName = names[i];
                 property = Object.getOwnPropertyDescriptor(constructor, propertyName);
+
                 if (!property || property.configurable) {
                     Montage.defineProperty(constructor, propertyName, Object.getOwnPropertyDescriptor(Montage, propertyName));
                 }
             }
+
             // give the prototype all the properties of Montage.prototype
             names = Object.getOwnPropertyNames(Montage.prototype);
-            for ( i = 0; i < names.length; i++) {
+
+            for (i = 0, length = names.length; i < length; i++) {
                 propertyName = names[i];
                 property = Object.getOwnPropertyDescriptor(constructor, propertyName);
+
                 if (!property || property.configurable) {
                     Montage.defineProperty(prototype, propertyName, Object.getOwnPropertyDescriptor(Montage.prototype, propertyName));
                 }
             }
         }
 
+        if ("blueprint" in prototypeProperties) {
+            Montage.defineProperty(constructor, "blueprint", prototypeProperties.blueprint);
+        }
+
+        if ("blueprintModuleId" in prototypeProperties) {
+            Montage.defineProperty(constructor, "blueprintModuleId", prototypeProperties.blueprintModuleId);
+        }
+
         Montage.defineProperties(prototype, prototypeProperties);
 
-        if (CONSTRUCTOR_COMPATIBILITY) {
-            // to catch class properties
-            constructorProperty = function (original, constructor, propertyName) {
-                function deprecationWrapper() {
-                    if(this === constructor) {
-                        deprecate.deprecationWarning(Montage.getInfoForObject(constructor).objectName + "."
-                            + propertyName + " should be moved to constructorProperties", null, 3);
-                    }
-                    return original.apply(this, arguments);
-                }
-                deprecationWrapper.deprecatedFunction = original;
-                return deprecationWrapper;
-            };
-            for (propertyName in prototypeProperties) {
-                if(FUNCTION_PROPERTIES.has(propertyName)) {
-                    // illegal properties on function
-                    delete prototypeProperties[propertyName];
-                } else {
-                    property = prototypeProperties[propertyName];
-                    if(property.value && typeof property.value === "function" && !property.value.__isConstructor__) {
-                        property.value = constructorProperty(property.value, constructor, propertyName);
-                    } else {
-                        if(property.get) {
-                            property.get = constructorProperty(property.get, constructor, propertyName);
-                        }
-                        if(property.set) {
-                            property.set = constructorProperty(property.set, constructor, propertyName);
-                        }
-                    }
-                }
-            }
-            Montage.defineProperties(constructor, prototypeProperties);
-            Montage.defineProperty(constructor, "create", {
-                value: function () {
-                    return new constructor();
-                },
-                enumerable: false
-            });
-        }
-        // end compatibility code
         // needs to be done afterwards so that it overrides any prototype properties
         Montage.defineProperties(constructor, constructorProperties);
-        Montage.defineProperty(constructor, "__isConstructor__", {
-            value: true,
-            enumerable: false
+
+        Montage.defineProperties(constructor, {
+            __isConstructor__: {
+                value: true,
+                enumerable: false
+            },
+
+            _superCache: {
+                value: {},
+                enumerable: false
+            }
         });
-        Montage.defineProperty(constructor, "_superCache", {
-            value: {},
-            enumerable: false
-        });
+
         constructor.prototype = prototype;
+
         Montage.defineProperty(prototype, "constructor", {
             value: constructor,
             enumerable: false
         });
+
+        // Super needs
+        Montage.defineProperty(constructor, "constructor", {
+            value: constructor,
+            enumerable: false
+        });
+
         return constructor;
 
     },
@@ -226,37 +208,6 @@ if (!PROTO_IS_SUPPORTED) {
         }
     };
 }
-
-/**
- * @deprecated
- */
-Object.defineProperty(Montage, "create", {
-    configurable: true,
-    value: function (aPrototype, propertyDescriptors) {
-        deprecate.deprecationWarning("Montage.create()", "Montage.specialize() or new Component()");
-        if (aPrototype !== undefined && (typeof aPrototype !== "object"
-                && /* CONSTRUCTOR_COMPATIBILITY*/typeof aPrototype !== "function")) {
-            throw new TypeError("Object prototype may only be an Object or null, not '" + aPrototype + "'");
-        }
-        aPrototype = typeof aPrototype === "undefined" ? this : aPrototype;
-        // CONSTRUCTOR_COMPATIBILITY
-        // if aPrototype is a function then we behave as a constructor.
-        if (typeof aPrototype === "function") {
-            if (!propertyDescriptors) {
-                return new aPrototype();
-            } else {
-                return aPrototype.specialize(propertyDescriptors);
-            }
-            // Otherwise behave like Object.create()
-        } else {
-            var result = Object.create(aPrototype);
-            if(propertyDescriptors) {
-                Montage.defineProperties(result, propertyDescriptors);
-            }
-            return result;
-        }
-    }
-});
 
 var extendedPropertyAttributes = [SERIALIZABLE];
 

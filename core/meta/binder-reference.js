@@ -12,7 +12,7 @@ var BinderModule = require("./binder");
 
 var logger = require("../logger").logger("blueprint");
 
-exports.BinderReference = RemoteReference.create(RemoteReference, {
+exports.BinderReference = RemoteReference.specialize({
 
     constructor: {
         value: function BinderReference() {

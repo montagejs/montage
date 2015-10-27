@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
-    Bindings = require("montage/core/bindings").Bindings,
+    Bindings = require("montage/core/core").Bindings,
     Converter = require("montage/core/converter/converter").Converter;
 
 var TestConverter = Converter.specialize( {
@@ -48,6 +48,8 @@ var TestConverter = Converter.specialize( {
 
 });
 
+var testConverter = new TestConverter();
+
 describe("bindings/binding-converter-spec", function () {
 
     var target, source, bindingDescriptor;
@@ -59,9 +61,9 @@ describe("bindings/binding-converter-spec", function () {
         bindingDescriptor = {
             "<->": "bar",
             source: source,
-            converter: TestConverter
+            converter: testConverter
         };
-    })
+    });
 
     describe("involved in a two way binding", function () {
 

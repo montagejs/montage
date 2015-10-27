@@ -31,11 +31,11 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Component = require("montage/ui/component").Component,
-    Serializer = require("montage/core/serialization").Serializer,
+    Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer,
     Template = require("montage/core/template").Template,
     DocumentPart = require("montage/core/document-part").DocumentPart,
     Alias = require("montage/core/serialization/alias").Alias;
-var Bindings = require("montage/core/bindings").Bindings;
+var Bindings = require("montage/core/core").Bindings;
 var MockDOM = require("mocks/dom");
 
 TestPageLoader.queueTest("draw/draw", function (testPage) {
@@ -677,7 +677,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                 };
                 a.parentComponent = owner;
 
-                var getter = Component._makeTemplateObjectGetter(owner, "test");
+                var getter = Component.prototype._makeTemplateObjectGetter(owner, "test");
 
                 expect(getter()).toEqual(a);
                 expect(getter()).toEqual(a);
@@ -694,7 +694,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                 a.parentComponent = owner;
                 b.parentComponent = owner;
 
-                var getter = Component._makeTemplateObjectGetter(owner, "test");
+                var getter = Component.prototype._makeTemplateObjectGetter(owner, "test");
 
                 expect(getter()).toEqual([a, b]);
                 expect(getter()).toEqual([a, b]);
@@ -779,7 +779,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                     },
                     validation;
 
-                validation = Component._validateTemplateArguments(
+                validation = Component.prototype._validateTemplateArguments(
                     templateArguments, templateParameters);
                 expect(validation).toBeUndefined();
             });
@@ -793,7 +793,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                     },
                     validation;
 
-                validation = Component._validateTemplateArguments(
+                validation = Component.prototype._validateTemplateArguments(
                     templateArguments, templateParameters);
                 expect(validation).toBeDefined();
             });
@@ -806,7 +806,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                     },
                     validation;
 
-                validation = Component._validateTemplateArguments(
+                validation = Component.prototype._validateTemplateArguments(
                     templateArguments, templateParameters);
                 expect(validation).toBeDefined();
             });
@@ -821,7 +821,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                     },
                     validation;
 
-                validation = Component._validateTemplateArguments(
+                validation = Component.prototype._validateTemplateArguments(
                     templateArguments, templateParameters);
                 expect(validation).toBeDefined();
             });
@@ -836,7 +836,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                     },
                     validation;
 
-                validation = Component._validateTemplateArguments(
+                validation = Component.prototype._validateTemplateArguments(
                     templateArguments, templateParameters);
                 expect(validation).toBeDefined();
             });
@@ -847,9 +847,9 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                     center,
                     text;
 
-                Component._bindTemplateParametersToArguments.call(component);
+                Component.prototype._bindTemplateParametersToArguments.call(component);
 
-                parameters = Template._getParameters(component._templateElement);
+                parameters = Template.prototype._getParameters(component._templateElement);
                 center = component.templateObjects.center;
                 text = component._templateElement.querySelector(".text");
 
@@ -866,9 +866,9 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                     leftText,
                     rightText;
 
-                Component._bindTemplateParametersToArguments.call(component);
+                Component.prototype._bindTemplateParametersToArguments.call(component);
 
-                parameters = Template._getParameters(component._templateElement);
+                parameters = Template.prototype._getParameters(component._templateElement);
                 left = component.templateObjects.left;
                 right = component.templateObjects.right;
                 leftText = left.element.querySelector(".leftText");
@@ -885,9 +885,9 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                     center,
                     text;
 
-                Component._bindTemplateParametersToArguments.call(component);
+                Component.prototype._bindTemplateParametersToArguments.call(component);
 
-                parameters = Template._getParameters(component._templateElement);
+                parameters = Template.prototype._getParameters(component._templateElement);
                 center = component.templateObjects.center;
                 text = component._templateElement.querySelector(".text");
 
@@ -904,7 +904,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                     center,
                     text;
 
-                Component._bindTemplateParametersToArguments.call(component);
+                Component.prototype._bindTemplateParametersToArguments.call(component);
 
                 left = component.templateObjects.left;
                 right = component.templateObjects.right;
@@ -1211,7 +1211,7 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
             describe("using classList before the element is set", function () {
                 var aComponent;
                 it("should update the classList when the element is set", function () {
-                    aComponent = Component.specialize( {hasTemplate: { value: false}}).create();
+                    aComponent = new (Component.specialize( {hasTemplate: { value: false}}))();
                     var anElement = MockDOM.element();
                     anElement.classList.add("foo");
                     expect(aComponent.classList.contains("foo")).toBeFalsy();
@@ -1220,14 +1220,14 @@ TestPageLoader.queueTest("draw/draw", function (testPage) {
                 });
                 it("should not fail when classList is used in constructor", function () {
                     expect(function () {
-                        aComponent = Component.specialize( {
+                        new (Component.specialize( {
                             hasTemplate: { value: false },
                             constructor: {
                                 value: function () {
                                     this.classList.contains("foo");
                                 }
                             }
-                        }).create();
+                        }))();
                     }).not.toThrow();
 
                 });

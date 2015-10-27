@@ -701,13 +701,13 @@ TestPageLoader.queueTest("repetition/repetition", function (testPage) {
 
         describe("Repetition in a external component", function () {
             it("should draw the repetition", function () {
-                var eventManager = testPage.window.document.application.eventManager;
+                var eventManager = application.eventManager;
 
                 var componentit1 = eventManager.eventHandlerForElement(querySelector(".componentrep1"));
                 var componentit2 = eventManager.eventHandlerForElement(querySelector(".componentrep2"));
 
                 componentit1.listObjects = [{text: "rep1-0"}, {text: "rep1-1"}];
-                componentit2.listObjects = [{text: "rep2-0"}, {text: "rep2-1"}];;
+                componentit2.listObjects = [{text: "rep2-0"}, {text: "rep2-1"}];
 
                 testPage.waitForComponentDraw(querySelector(".componentrep2 > ul").component);
 

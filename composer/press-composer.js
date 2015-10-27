@@ -139,21 +139,11 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     // Optimisation so that we don't set a timeout if we do not need to
     addEventListener: {
         value: function (type, listener, useCapture) {
-            Composer.addEventListener.call(this, type, listener, useCapture);
+            Composer.prototype.addEventListener.call(this, type, listener, useCapture);
             if (type === "longPress") {
                 this._shouldDispatchLongPress = true;
             }
         }
-    },
-
-    UNPRESSED: {
-        value: 0
-    },
-    PRESSED: {
-        value: 1
-    },
-    CANCELLED: {
-        value: 2
     },
 
     _state: {
@@ -666,6 +656,16 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         }
     }
 
+} , {
+    UNPRESSED: {
+        value: 0
+    },
+    PRESSED: {
+        value: 1
+    },
+    CANCELLED: {
+        value: 2
+    }
 });
 
 PressComposer.prototype.captureMSPointerDown = PressComposer.prototype.capturePointerdown;

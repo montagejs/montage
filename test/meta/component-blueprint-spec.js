@@ -6,7 +6,7 @@ var Component = require("montage/ui/component").Component;
 var Selector = require("montage/core/selector").Selector;
 var Blueprint = require("montage/core/meta/blueprint").Blueprint;
 var Promise = require("montage/core/promise").Promise;
-var Serializer = require("montage/core/serialization").Serializer;
+var Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer;
 
 TestPageLoader.queueTest("component-blueprint-test/component-blueprint-test", function (testPage) {
     describe("meta/component-blueprint-spec", function () {

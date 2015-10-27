@@ -201,7 +201,7 @@ var AbstractToggleButton = exports.AbstractToggleButton = AbstractControl.specia
     // Optimisation
     addEventListener: {
         value: function (type, listener, useCapture) {
-            AbstractControl.addEventListener.call(this, type, listener, useCapture);
+            AbstractControl.prototype.addEventListener.call(this, type, listener, useCapture);
             if (type === "longAction") {
                 this._pressComposer.addEventListener("longPress", this, false);
             }

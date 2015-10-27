@@ -1,8 +1,8 @@
 var ModuleBlueprint = require("montage/core/meta/module-blueprint").ModuleBlueprint;
 var ModuleReference = require("montage/core/module-reference").ModuleReference;
 
-var Serializer = require("montage/core/serialization").Serializer;
-var Deserializer = require("montage/core/serialization").Deserializer;
+var Serializer = require("montage/core/serialization/serializer/montage-serializer").MontageSerializer;
+var Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer;
 
 describe("meta/module-blueprint-spec", function () {
 
