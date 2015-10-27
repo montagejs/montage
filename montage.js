@@ -493,7 +493,7 @@ if (typeof window !== "undefined") {
         // mini-url library
         makeResolve: function () {
 
-          if(window.URL) {
+          if(this._hasURLSupport()) {
             return function (base, relative) {
               return new URL(relative, base).href;
             }
@@ -539,6 +539,22 @@ if (typeof window !== "undefined") {
             };
           }
 
+        },
+
+        __hasURLSupport: null,
+
+        _hasURLSupport: function () {
+            if (!this.__hasURLSupport) {
+                // Testing for window.URL will not help here as it does exist in IE10 and IE11.
+                // but IE supports just the File API specification.
+                try { // window IE 10+ support
+                    this.__hasURLSupport = !!(new URL("")); // 1 parameter required at least.
+                } catch (e) {
+                    this.__hasURLSupport = false;
+                }
+            }
+
+            return this.__hasURLSupport;
         },
 
         load: function (location,loadCallback) {
