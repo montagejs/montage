@@ -469,11 +469,11 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     },
 
     _mouseRadiusThreshold: {
-        value: 5 //px
+        value: 2 //px
     },
 
     _touchRadiusThreshold: {
-        value: 12 //px
+        value: 8 //px
     },
 
     _listenToWheelEvent: {
