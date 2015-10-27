@@ -2153,8 +2153,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      */
     draw: {
         enumerable: false,
-        value: function () {
-        }
+        value: Function.noop
     },
 
     /**
@@ -2190,8 +2189,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      */
     didDraw: {
         enumerable: false,
-        value: function () {
-        }
+        value: Function.noop
     },
 
     /**

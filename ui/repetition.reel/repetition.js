@@ -6,7 +6,6 @@ var Component = require("../component").Component;
 var Template = require("../../core/template").Template;
 var RangeController = require("../../core/range-controller").RangeController;
 var Promise = require("../../core/promise").Promise;
-var browser = require("../../core/browser").browser;
 var PressComposer = require("../../composer/press-composer").PressComposer;
 
 var Map = require("collections/map");

@@ -533,9 +533,6 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
 
     _walkRootObjects: {
         value: function (visitor, objects) {
-            var object,
-                type;
-
             for (var label in objects) {
                 this._walkRootObject(visitor, objects, label);
             }
@@ -565,9 +562,7 @@ var SerializationInspector = Montage.specialize(/** @lends SerializationInspecto
         value: function (visitor, parentObject, key, label, parent) {
             var object = parentObject[key],
                 type = MontageReviver.getTypeOf(object),
-                value,
-                serialization,
-                data;
+                value;
 
             // Create the value representing this object in the serialization.
             value = {

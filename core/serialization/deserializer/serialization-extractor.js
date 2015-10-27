@@ -132,9 +132,6 @@ var SerializationExtractor = Montage.specialize( {
 
     _collectLabelsInLocalizations: {
         value: function (unitSerialization, labels) {
-            var property,
-                data;
-
             for (var propertyName in unitSerialization) {
                 this._collectLabelsInLocalizationProperty(
                     unitSerialization[propertyName], labels);

@@ -5,7 +5,6 @@
 require("collections/shim");
 require("./shim/object");
 require("./shim/array");
-require("./shim/string");
 require("./extras/object");
 require("./extras/date");
 require("./extras/element");
@@ -1013,8 +1012,7 @@ Object.defineProperty(Object.prototype, "_uuid", {
 Object.defineProperty(Object.prototype, "uuid", {
     configurable: true,
     get: defaultUuidGet,
-    set: function () {
-    }
+    set: Function.noop
 });
 
 Montage.defineProperty(Montage, "identifier", {

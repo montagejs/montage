@@ -294,6 +294,7 @@ if (typeof window !== "undefined") {
                     promiseRequire.inject("bluebird", Promise);
                     //This prevents bluebird to be loaded twice by mousse's code
                     promiseRequire.inject("js/browser/bluebird", Promise);
+                    montageRequire.inject("core/shim/string", String);
 
                     // weakMapRequire.inject("weak-map", window.WeakMap);
 
@@ -442,37 +443,54 @@ if (typeof window !== "undefined") {
         };
     };
 
+    function _endsWith (str, suffix) {
+        if (typeof str.endsWith === "function") {
+            return str.endsWith(suffix);
+        }
+
+        return str.indexOf(suffix, str.length - suffix.length) !== -1;
+    }
+
     /**
      * Allows the reel's html file to be loaded via require.
      *
      * @see Compiler middleware in require/require.js
      * @param config
-     * @param compiler
+     * @param compile
      */
     exports.TemplateCompiler = function (config, compile) {
         return function (module) {
-            if (!module.location)
+            var location = module.location;
+
+            if (!location)
                 return;
-            var match = module.location.match(/(.*\/)?(?=[^\/]+\.html(?:\.load\.js)?$)/);
-            if (match) {
-                module.dependencies = module.dependencies || [];
-                module.exports = {
-                    directory: match[1],
-                    content: module.text
-                };
-                // XXX deprecated
-                Object.defineProperty(module.exports, "root", {
-                    get: function () {
-                        if (typeof console === "object") {
-                            console.warn("'root' property is deprecated on template modules.  Use 'directory' instead of root[1]");
+
+            if (location.endsWith(".html") || location.endsWith(".html.load.js")) {
+                var match = location.match(/(.*\/)?(?=[^\/]+)/);
+
+                if (match) {
+                    module.dependencies = module.dependencies || [];
+                    module.exports = {
+                        directory: match[1],
+                        content: module.text
+                    };
+
+                    // XXX deprecated
+                    // todo: need to be removed.
+                    Object.defineProperty(module.exports, "root", {
+                        get: function () {
+                            if (typeof console === "object") {
+                                console.warn("'root' property is deprecated on template modules.  Use 'directory' instead of root[1]");
+                            }
+                            return match;
                         }
-                        return match;
-                    }
-                });
-                return module;
-            } else {
-                compile(module);
+                    });
+
+                    return module;
+                }
             }
+
+            compile(module);
         };
     };
 
@@ -649,7 +667,8 @@ if (typeof window !== "undefined") {
             var pending = {
                 "require": "node_modules/mr/require.js",
                 "require/browser": "node_modules/mr/browser.js",
-                "promise": "node_modules/bluebird/js/browser/bluebird.js"
+                "promise": "node_modules/bluebird/js/browser/bluebird.js",
+                "shim-string": "core/shim/string.js" // needed for the `endsWith` function.
                 /*"promise": "packages/mr/packages/q/q.js"*/
             };
 
@@ -714,6 +733,7 @@ if (typeof window !== "undefined") {
 
             }
 
+            global.bootstrap("shim-string");
 
             // one module loaded for free, for use in require.js, browser.js
             global.bootstrap("mini-url", function (require, exports) {

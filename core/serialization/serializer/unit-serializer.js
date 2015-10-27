@@ -1,11 +1,5 @@
 var Montage = require("../../core").Montage;
 
-function UnitSerializer(visitor, malker, object) {
-    this._visitor = visitor;
-    this._malker = malker;
-    this._object = object;
-}
-
 var UnitSerializer = Montage.specialize.call(Object, {
     _malker: {value: null},
     _visitor: {value: null},
@@ -56,10 +50,5 @@ var UnitSerializer = Montage.specialize.call(Object, {
         }
     }
 });
-
-var ObjectReference = {
-    thisIsAReferenceCreatedByMontageSerializer: true,
-    reference: null
-};
 
 exports.UnitSerializer = UnitSerializer;

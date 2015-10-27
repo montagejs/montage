@@ -2230,12 +2230,18 @@ if (typeof window !== "undefined") { // client-side
         },
 
         _touchNeedTracking: {
-            value: ["touchstart", "touchend"]
+            value: {
+                touchstart: true,
+                touchend: true
+            }
         },
 
-
         _mouseEventTypeEmulatedList: {
-            value: ["mousedown", "mouseup", "click"]
+            value: {
+                mousedown: true,
+                mouseup: true,
+                click: true
+            }
         },
 
         _trackingTouchList: {
@@ -2258,13 +2264,13 @@ if (typeof window !== "undefined") { // client-side
 
         _wouldTouchTriggerSimulatedEvent: {
             value: function (event) {
-                return this._touchNeedTracking.indexOf(event.type) > -1;
+                return !!this._touchNeedTracking[event.type];
             }
         },
 
         _couldEventBeSimulated: {
             value: function (event) {
-                return this._mouseEventTypeEmulatedList.indexOf(event.type) > -1;
+                return !!this._mouseEventTypeEmulatedList[event.type];
             }
         },
 
