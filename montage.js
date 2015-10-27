@@ -465,7 +465,7 @@ if (typeof window !== "undefined") {
                 return;
 
             if (_endsWith(location, ".html") || _endsWith(location, ".html.load.js")) {
-                var match = location.match(/(.*\/)?(?=[^\/]+\.html(?:\.load\.js)?$)/);
+                var match = location.match(/(.*\/)?(?=[^\/]+)/);
 
                 if (match) {
                     module.dependencies = module.dependencies || [];
