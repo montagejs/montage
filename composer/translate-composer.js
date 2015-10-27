@@ -46,6 +46,13 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         writable: false
     },
 
+    CLAIM_POINTER_POLICIES: {
+        value: {
+            DEFAULT: "default", // claiming pointers on the capture phase. (first move event)
+            MOVE: "move" // claiming pointers on the capture phase + check if a real move has been encountered.
+        }
+    },
+
     // When set to true, do not respond to events, claim pointers, or prevent default
     enabled: {
         value: true
@@ -505,21 +512,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: null
     },
 
-    claimPointerPolicy: {
-        set: function (policy) {
-            if (policy === TranslateComposer.CLAIM_POINTER_POLICIES.DEFAULT || policy === TranslateComposer.CLAIM_POINTER_POLICIES.MOVE) {
-                this._claimPointerPolicy = policy;
-            }
-        },
-        get: function () {
-            if (!this._claimPointerPolicy) {
-                this._claimPointerPolicy = TranslateComposer.CLAIM_POINTER_POLICIES.DEFAULT;
-            }
-
-            return this._claimPointerPolicy;
-        }
-    },
-
     load: {
         value: function () {
             if (window.PointerEvent) {
@@ -808,21 +800,25 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             this._pointerY = y;
 
             if (window.PointerEvent) {
+                this._element.addEventListener("pointerdown", this, false);
                 document.addEventListener("pointermove", this, true);
                 document.addEventListener("pointerup", this, false);
                 document.addEventListener("pointercancel", this, false);
 
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                this._element.addEventListener("MSPointerDown", this, false);
                 document.addEventListener("MSPointerMove", this, true);
                 document.addEventListener("MSPointerUp", this, false);
                 document.addEventListener("MSPointerCancel", this, false);
 
             } else {
                 if (this._observedPointer === "mouse") {
+                    this._element.addEventListener("mousedown", this, false);
                     document.addEventListener("mousemove", this, true);
                     document.addEventListener("mouseup", this, false);
 
                 } else {
+                    this._element.addEventListener("touchstart", this, false);
                     this._element.addEventListener("touchmove", this, true);
                     this._element.addEventListener("touchend", this, false);
                     this._element.addEventListener("touchcancel", this, false);
@@ -837,6 +833,13 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             }
 
             this._isFirstMove = true;
+        }
+    },
+
+    _handleStart: {
+        value: function (event) {
+            this._claimPointerPolicy = this.eventManager.componentClaimingPointer(this._observedPointer) ?
+                this.CLAIM_POINTER_POLICIES.MOVE : this.CLAIM_POINTER_POLICIES.DEFAULT;
         }
     },
 
@@ -868,7 +871,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
                 if (claimant) {
                     var shouldClaimPointer = true;
 
-                    if (this.claimPointerPolicy === TranslateComposer.CLAIM_POINTER_POLICIES.MOVE) {
+                    if (this._claimPointerPolicy === this.CLAIM_POINTER_POLICIES.MOVE) {
                         var threshold = this._observedPointer === "mouse" ? this._mouseRadiusThreshold : this._touchRadiusThreshold,
                             dX = this.pointerStartEventPosition.pageX - contactPoint.clientX,
                             dY = this.pointerStartEventPosition.pageY - contactPoint.clientY;
@@ -1073,21 +1076,25 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
     _releaseInterest: {
         value: function () {
             if (window.PointerEvent) {
+                this._element.removeEventListener("pointerdown", this, false);
                 document.removeEventListener("pointermove", this, true);
                 document.removeEventListener("pointerup", this, false);
                 document.removeEventListener("pointercancel", this, false);
 
             } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                this._element.removeEventListener("MSPointerDown", this, false);
                 document.removeEventListener("MSPointerMove", this, true);
                 document.removeEventListener("MSPointerUp", this, false);
                 document.removeEventListener("MSPointerCancel", this, false);
 
             } else {
                 if (this._observedPointer === "mouse") {
+                    this._element.removeEventListener("mousedown", this, false);
                     document.removeEventListener("mousemove", this, true);
                     document.removeEventListener("mouseup", this, false);
 
                 } else {
+                    this._element.removeEventListener("touchstart", this, false);
                     this._element.removeEventListener("touchmove", this, true);
                     this._element.removeEventListener("touchend", this, false);
                     this._element.removeEventListener("touchcancel", this, false);
@@ -1383,15 +1390,6 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         }
     }
 
-}, {
-
-    CLAIM_POINTER_POLICIES: {
-        value: {
-            DEFAULT: "default", // claiming pointers on the capture phase.
-            MOVE: "move" // claiming pointers on the capture phase + check if a real move has been encountered.
-        }
-    }
-
 });
 
 TranslateComposer.prototype.captureMSPointerDown = TranslateComposer.prototype.capturePointerdown;
@@ -1399,3 +1397,7 @@ TranslateComposer.prototype.captureMSPointerMove = TranslateComposer.prototype.c
 TranslateComposer.prototype.handleMSPointerUp = TranslateComposer.prototype.handlePointerup;
 TranslateComposer.prototype.handleMSPointerCancel = TranslateComposer.prototype.handlePointercancel;
 TranslateComposer.prototype.handleMousewheel = TranslateComposer.prototype.handleWheel;
+TranslateComposer.prototype.handleMSPointerDown = TranslateComposer.prototype._handleStart;
+TranslateComposer.prototype.handlePointerdown = TranslateComposer.prototype._handleStart;
+TranslateComposer.prototype.handleMousedown = TranslateComposer.prototype._handleStart;
+TranslateComposer.prototype.handleTouchstart = TranslateComposer.prototype._handleStart;
