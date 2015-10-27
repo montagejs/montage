@@ -3,7 +3,9 @@ var AbstractControl = require("./abstract-control").AbstractControl,
     PressComposer = require("../../composer/press-composer").PressComposer,
     KeyComposer = require("../../composer/key-composer").KeyComposer;
 
-var CLASS_PREFIX = "montage-RadioButton";
+var CLASS_MONTAGE_DISABLED = "montage--disabled",
+    CLASS_MONTAGE_ACTIVE = "montage--active",
+    CLASS_MONTAGE_CHECKED = "montage-RadioButton--checked";
 
 /**
  * @class AbstractRadioButton
@@ -27,27 +29,6 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
             if(this.constructor === AbstractRadioButton) {
                 throw new Error("AbstractRadioButton cannot be instantiated.");
             }
-            AbstractControl.constructor.call(this); // super
-            this._pressComposer = new PressComposer();
-            this.addComposer(this._pressComposer);
-
-            this._keyComposer = new KeyComposer();
-            this._keyComposer.component = this;
-            this._keyComposer.keys = "space";
-            this.addComposer(this._keyComposer);
-
-            this.defineBindings({
-                // classList management
-                "classList.has('montage--disabled')": {
-                    "<-": "!enabled"
-                },
-                "classList.has('montage--active')": {
-                    "<-": "active"
-                },
-                "classList.has('montage-RadioButton--checked')": {
-                    "<-": "checked"
-                }
-            });
         }
     },
 
@@ -55,8 +36,27 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
      * Whether the user is pressing the radio button.
      * @type {boolean}
      */
-    active: {
+    _active: {
         value: false
+    },
+
+    active: {
+        set: function (_active) {
+            _active = !!_active;
+
+            if (this._active !== _active) {
+                this._active = _active;
+
+                if (_active) {
+                    this.classList.add(this.activeClass);
+                } else {
+                    this.classList.remove(this.activeClass);
+                }
+            }
+        },
+        get: function () {
+            return this._active;
+        }
     },
 
     _checked: {
@@ -68,11 +68,84 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
      * @type {boolean}
      */
     checked: {
-        set: function (value) {
-            this._checked = value;
+        set: function (_checked) {
+            _checked = !!_checked;
+
+            if (this._checked !== _checked) {
+                this._checked = _checked;
+
+                if (_checked) {
+                    this.classList.add(this.checkedClass);
+                } else {
+                    this.classList.remove(this.checkedClass);
+                }
+            }
         },
         get: function () {
             return this._checked;
+        }
+    },
+
+    _disabledClass: {
+        value: null
+    },
+
+    disabledClass: {
+        set: function (_disabledClass) {
+            var previousClass = this.disabledClass; // need to call the getter
+
+            if (_disabledClass && typeof _disabledClass === "string" && previousClass !== _disabledClass) {
+                this._swapClassNameIfNeeded(previousClass, _disabledClass);
+                this._disabledClass = _disabledClass;
+            }
+        },
+        get: function () {
+            return this._disabledClass || CLASS_MONTAGE_DISABLED;
+        }
+    },
+
+    _activeClass: {
+        value: null
+    },
+
+    activeClass: {
+        set: function (_activeClass) {
+            var previousClass = this.activeClass; // need to call the getter
+
+            if (_activeClass && typeof _activeClass === "string" && previousClass !== _activeClass) {
+                this._swapClassNameIfNeeded(previousClass, _activeClass);
+                this._activeClass = _activeClass;
+            }
+        },
+        get: function () {
+            return this._activeClass || CLASS_MONTAGE_ACTIVE;
+        }
+    },
+
+    _checkedClass: {
+        value: null
+    },
+
+    checkedClass: {
+        set: function (_checkedClass) {
+            var previousClass = this.checkedClass; // need to call the getter
+
+            if (_checkedClass && typeof _checkedClass === "string" && previousClass !== _checkedClass) {
+                this._swapClassNameIfNeeded(previousClass, _checkedClass);
+                this._checkedClass = _checkedClass;
+            }
+        },
+        get: function () {
+            return this._checkedClass || CLASS_MONTAGE_CHECKED;
+        }
+    },
+
+    _swapClassNameIfNeeded: {
+        value: function (_previous, _new) {
+            if (_previous && _new && this.classList.has(_previous)) {
+                this.classList.remove(_previous);
+                this.classList.add(_new);
+            }
         }
     },
 
@@ -80,12 +153,43 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
      * Whether this radio button is enabled.
      * @type {boolean}
      */
-    enabled: {
+    _enabled: {
         value: true
     },
 
-    _keyComposer: {
+    enabled: {
+        set: function (_enabled) {
+            _enabled = !!_enabled;
+
+            if (this._enabled !== _enabled) {
+                this._enabled = _enabled;
+
+                if (!_enabled) {
+                    this.classList.add(this.disabledClass);
+                } else {
+                    this.classList.remove(this.disabledClass);
+                }
+            }
+        },
+        get: function () {
+            return this._enabled;
+        }
+    },
+
+    __keyComposer: {
         value: null
+    },
+
+    _keyComposer: {
+        get: function () {
+            if (!this.__keyComposer) {
+                this.__keyComposer = new KeyComposer();
+                this.__keyComposer.keys = "space";
+                this.addComposer(this.__keyComposer);
+            }
+
+            return this.__keyComposer;
+        }
     },
 
     _radioButtonController: {
@@ -110,16 +214,25 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
         }
     },
 
-    _pressComposer: {
+    __pressComposer: {
         value: null
+    },
+
+    _pressComposer: {
+        get: function () {
+            if (!this.__pressComposer) {
+                this.__pressComposer = new PressComposer();
+                this.addComposer(this.__pressComposer);
+            }
+
+            return this.__pressComposer;
+        }
     },
 
     enterDocument: {
         value: function (firstTime) {
             if (firstTime) {
                 this.element.setAttribute("role", "radio");
-                this._keyComposer.addEventListener("keyPress", this, false);
-                this._keyComposer.addEventListener("keyRelease", this, false);
             }
         }
     },
@@ -193,6 +306,9 @@ var AbstractRadioButton = exports.AbstractRadioButton = AbstractControl.speciali
 
     prepareForActivationEvents: {
         value: function () {
+            this._keyComposer.addEventListener("keyPress", this, false);
+            this._keyComposer.addEventListener("keyRelease", this, false);
+
             this._pressComposer.addEventListener("pressStart", this, false);
             this._pressComposer.addEventListener("press", this, false);
             this._pressComposer.addEventListener("pressCancel", this, false);
