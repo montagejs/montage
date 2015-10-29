@@ -403,8 +403,8 @@
         </div>
 
         <h2>Inside Succession with overridden animation</h2>
+        <br>
         <div>
-            <!--<button data-montage-id="pushComponent">Push Component</button>-->
             <button data-montage-id="push">Push</button>
             <button data-montage-id="pushx5">Push x5</button>
             <button data-montage-id="pop">Pop</button>
@@ -415,22 +415,24 @@
         </div>
         <br/>
         <div>
-            <button data-montage-id="toggleOverflow">Toggle Overflow</button>
-            <button data-montage-id="setSuccessionBuildInOut">Set Succession build-in / out</button>
-            <button data-montage-id="clearSuccessionBuildInOut">Clear Succession build-in / out (undefined)</button>
-            <button data-montage-id="disableSuccessionBuildInOut">Disable Succession build-in / out (null)</button>
+            <button data-montage-id="toggleOverflow">Toggle Container Overflow</button>
+            <button data-montage-id="setSuccessionBuildInOut">Set Succession builds to CSS animation</button>
+            <button data-montage-id="clearSuccessionBuildInOut">Clear builds (undefined)</button>
+            <button data-montage-id="disableSuccessionBuildInOut">Disable builds (null)</button>
         </div>
 
         <div class="wrapper">
             <div data-montage-id="succession1" class="succession container overflow-hidden"></div>
             <div class="stack">
-                Last component which finished build-in: <code data-montage-id="lastBuildInComponentIdentifier"></code>
-                <br/>
-                Last component which finished build-out: <code data-montage-id="lastBuildOutComponentIdentifier"></code>
-                <br/>
                 Build-in Override: <code data-montage-id="buildInOverride"></code>
                 <br/>
                 Build-out Override: <code data-montage-id="buildOutOverride"></code>
+                <br/>
+                Heard from event:
+                <br>
+                Last component built-in: <code data-montage-id="lastBuildInComponentIdentifier"></code>
+                <br/>
+                Last component built-out: <code data-montage-id="lastBuildOutComponentIdentifier"></code>
 
                 <h3>The stack</h3>
                 <ul data-montage-id="stack">

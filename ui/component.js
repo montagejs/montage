@@ -3166,19 +3166,13 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         this.classList.remove(this.getBuildInTransitionCssClass());
                     }
                     this.buildInTransitionCssClassOverride = undefined;
-                    // IE 10 / 11 do not support CustomEvent constructor
-                    event = document.createEvent("CustomEvent");
-                    event.initCustomEvent("buildInEnd", true, false, null);
-                    this.dispatchEvent(event);
+                    this.dispatchEventNamed("buildInEnd", true, true);
                 }
                 if (this._isBuildingOut) {
                     this._isBuildingOut = false;
                     // Parent will take care of removal of class, element, etc.
                     this.parentComponent._childComponentDidBuildOut(this);
-                    // IE 10 / 11 do not support CustomEvent constructor
-                    event = document.createEvent("CustomEvent");
-                    event.initCustomEvent("buildOutEnd", true, false, null);
-                    this.dispatchEvent(event);
+                    this.dispatchEventNamed("buildOutEnd", true, true);
                 }
             }
         }
