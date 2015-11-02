@@ -1,6 +1,6 @@
 {
   "name": "montage",
-  "version": "0.15.2",
+  "version": "0.16.0",
   "description": "Build your next application with a browser based platform that really gets the web.",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
     "frb": "~0.2.18",
     "htmlparser2": "~3.0.5",
     "mousse": "montagejs/mousse#7155f978f3d6a2325bca36effd50150f185e1fe4",
-    "mr": "montagejs/mr#cad8762811dd847cf7c1c70f2bc8bbf3ea084254",
+    "mr": "montagejs/mr#master",
     "bluebird":"~3.0.2",
     "q-io": "~1.11.0"
   },
