@@ -1,12 +1,10 @@
 /*jshint node:true, browser:false */
-
 var FS = require("q-io/fs");
 
 var MontageBoot = require("./montage");
 
 var Require = require("mr/require");
 require("mr/node");
-var Promise = require("q");
 var URL = require("url");
 
 var htmlparser = require("htmlparser2");
@@ -231,4 +229,3 @@ var collectSerializationDependencies = function (text, dependencies) {
 function parsePrototypeForModule(prototype) {
     return prototype.replace(/\[[^\]]+\]$/, "");
 }
-
