@@ -839,28 +839,6 @@ if (typeof window !== "undefined") {
                     Promise.longStackSupport = !!state;
                 });
 
-                // Setup bluebird Promise custom scheduler:
-                if (typeof MessageChannel !== "undefined") {
-                    Promise.setScheduler((function() {
-                        // modern browsers
-                        // http://www.nonblocking.io/2011/06/windownexttick.html
-                        var channel = new MessageChannel();
-                        // At least Safari Version 6.0.5 (8536.30.1) intermittently cannot
-                        // create working message ports the first time a page loads.
-                        var _scheduleExec = function _scheduleExec() {
-                            _scheduleExec.queuedFn();
-                        };
-                        channel.port1.onmessage = _scheduleExec;
-                        var _schedulePost = function _schedulePost(fn)  {
-                            _schedulePost._scheduleExec.queuedFn = fn;
-                            _schedulePost.channel.port2.postMessage(0);
-                        };
-                        _schedulePost.channel = channel;
-                        _schedulePost._scheduleExec = _scheduleExec;
-                        return _schedulePost;
-                    })());
-                }
-
                 // Load the event-manager
                 defaultEventManager = new EventManager().initWithWindow(window);
 
