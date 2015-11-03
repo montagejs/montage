@@ -12,12 +12,25 @@ var Component = require("ui/component").Component;
  */
 exports.ImageGallery = Component.specialize(/** @lends ImageGallery# */ {
 
+    scroll: {
+        get: function () {
+            return this._flow && this._flow.scroll || 0;
+        },
+        set: function (value) {
+            if (this._flow && this._flow.scroll !== value) {
+                this._flow.scroll = value;
+            }
+        }
+    },
+
     _scroll: {
         set: function (value) {
             var index = value ? Math.round(value) : 0;
             if (index !== this._currentImageIndex) {
                 this.dispatchBeforeOwnPropertyChange("currentImageIndex", this.currentImageIndex);
+                this.dispatchBeforeOwnPropertyChange("scroll", this.currentImageIndex);
                 this._currentImageIndex = index;
+                this.dispatchOwnPropertyChange("scroll", index);
                 this.dispatchOwnPropertyChange("currentImageIndex", index);
                 this._isCurrentImageFirst = (this.currentImageIndex < 1);
                 this._isCurrentImageLast = (!this.images || (this.currentImageIndex === this.images.length - 1));

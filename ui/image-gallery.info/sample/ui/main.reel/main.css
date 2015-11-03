@@ -72,3 +72,36 @@
     background-position: center center;
     background-size: 90px 90px;
 }
+
+.Main-slider {
+    position: relative;
+    height: 5px;
+    width:700px;
+    top: 0px;
+    background-color: transparent;
+    outline: none;
+    left: 0px;
+    right: 16px;
+}
+
+.Main-sliderFill {
+    background-color: #2e2e2e;
+    /* height: 5px; */
+    top: 5px;
+    height: 5px;
+    z-index: 999;
+    left: 8px;
+    position: absolute;
+    right: 0px;
+}
+
+
+.Main-sliderThumb {
+    height: 16px;
+    width: 16px;
+    background-color: #C1C1C1;
+    position: absolute;
+    opacity: 1;
+    z-index: 999;
+    border-radius: 50%;
+}

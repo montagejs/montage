@@ -35,6 +35,20 @@
                     "ui/main.reel/asset/seurat.jpg"
                 ]
             }
+        },
+        "slider": {
+            "prototype": "ui/slider",
+            "properties": {
+               "element": {"#": "slider"},
+               "_sliderThumbElement": {"#": "sliderThumb"},
+               "hasTemplate": false,
+               "step": 1,
+               "min": 0
+            },
+            "bindings": {
+                "max": {"<-": "@imageGallery.images.length - 1"},
+                "value": {"<->": "@imageGallery.scroll"}
+            }
         }
     }
     </script>
@@ -44,6 +58,10 @@
         <div data-montage-id="imageGallery" class="Main-imageGallery"></div>
         <div data-montage-id="currentImageIndex" class="Main-currentImageIndex"></div>
         <div class="Main-imageOrigin">Courtesy National Gallery of Art, Washington</div>
+        <div data-montage-id="slider" class="Main-slider">
+            <div data-montage-id="sliderFill" class="Main-sliderFill"></div>
+            <div data-montage-id="sliderThumb" class="Main-sliderThumb"></div>
+        </div>
     </div>
 </body>
 </html>
