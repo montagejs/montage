@@ -59,7 +59,7 @@ exports.ImageGallery = Component.specialize(/** @lends ImageGallery# */ {
         }
     },
 
-    scrollToImageAtIndex: {
+    scrollToImageIndex: {
         value: function (index) {
             this._flow.startScrollingIndexToOffset(index, 0);
         }

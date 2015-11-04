@@ -25,7 +25,7 @@ exports.Main = Component.specialize(/** @lends Main# */ {
             if (isActive !== this._isSliderActive) {
                 this.__isSliderActive = isActive;
                 if (!isActive) {
-                    this._gallery.scrollToImageAtIndex(this._gallery.currentImageIndex);
+                    this._gallery.scrollToImageIndex(this._gallery.currentImageIndex);
                 }
             }
         }
