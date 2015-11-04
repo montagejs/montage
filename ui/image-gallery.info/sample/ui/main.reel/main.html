@@ -10,22 +10,26 @@
     {
         "owner": {
             "properties": {
-                "element": {"#": "owner"}
-            }
-        },
-        "currentImageIndex": {
-            "prototype": "montage/ui/text.reel",
-            "properties": {
-                "element": {"#": "currentImageIndex"}
+                "element": {"#": "owner"},
+                "_gallery": {"@": "gallery"}
             },
             "bindings": {
-                "value": {"<-": "'Image ' + (@imageGallery.currentImageIndex + 1) + ' of ' + @imageGallery.images.length"}
+                "_isSliderActive": {"<-": "@slider.active"}
             }
         },
-        "imageGallery": {
+        "index": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "index"}
+            },
+            "bindings": {
+                "value": {"<-": "'Image ' + (@gallery.currentImageIndex + 1) + ' of ' + @gallery.images.length"}
+            }
+        },
+        "gallery": {
             "prototype": "montage/ui/image-gallery.reel",
             "properties": {
-                "element": {"#": "imageGallery"},
+                "element": {"#": "gallery"},
                 "images": [
                     "ui/main.reel/asset/cezanne.jpg",
                     "ui/main.reel/asset/gaugin.jpg",
@@ -40,14 +44,13 @@
             "prototype": "ui/slider",
             "properties": {
                "element": {"#": "slider"},
-               "_sliderThumbElement": {"#": "sliderThumb"},
+               "_sliderThumbElement": {"#": "sliderKnob"},
                "hasTemplate": false,
-               "step": 1,
                "min": 0
             },
             "bindings": {
-                "max": {"<-": "@imageGallery.images.length - 1"},
-                "value": {"<->": "@imageGallery.scroll"}
+                "max": {"<-": "@gallery.images.length - 1"},
+                "value": {"<->": "@gallery.scroll"}
             }
         }
     }
@@ -55,12 +58,12 @@
 </head>
 <body>
     <div data-montage-id="owner" class="Main">
-        <div data-montage-id="imageGallery" class="Main-imageGallery"></div>
-        <div data-montage-id="currentImageIndex" class="Main-currentImageIndex"></div>
-        <div class="Main-imageOrigin">Courtesy National Gallery of Art, Washington</div>
+        <div data-montage-id="gallery" class="Main-gallery"></div>
+        <div data-montage-id="index" class="Main-index"></div>
+        <div class="Main-origin">Courtesy National Gallery of Art, Washington</div>
         <div data-montage-id="slider" class="Main-slider">
-            <div data-montage-id="sliderFill" class="Main-sliderFill"></div>
-            <div data-montage-id="sliderThumb" class="Main-sliderThumb"></div>
+            <div data-montage-id="sliderTrack" class="Main-sliderTrack"></div>
+            <div data-montage-id="sliderKnob" class="Main-sliderKnob"></div>
         </div>
     </div>
 </body>

@@ -12,6 +12,19 @@ var Component = require("ui/component").Component;
  */
 exports.ImageGallery = Component.specialize(/** @lends ImageGallery# */ {
 
+    images: {
+        get: function () {
+            return this._images;
+        },
+        set: function (value) {
+            if (value !== this._images) {
+                this._images = value;
+                this._currentImageIndex = null;
+                this.scroll = 0;
+            }
+        }
+    },
+
     scroll: {
         get: function () {
             return this._flow && this._flow.scroll || 0;
@@ -19,6 +32,8 @@ exports.ImageGallery = Component.specialize(/** @lends ImageGallery# */ {
         set: function (value) {
             if (this._flow && this._flow.scroll !== value) {
                 this._flow.scroll = value;
+            } else {
+                this._scroll = value;
             }
         }
     },
@@ -38,26 +53,15 @@ exports.ImageGallery = Component.specialize(/** @lends ImageGallery# */ {
         }
     },
 
-    images: {
-        get: function () {
-            return this._images;
-        },
-        set: function (value) {
-            if (value !== this._images) {
-                this._images = value;
-                this._currentImageIndex = null;
-                if (this._flow) {
-                    this._flow.scroll = 0;
-                } else {
-                    this._scroll = 0;
-                }
-            }
-        }
-    },
-
     currentImageIndex: {
         get: function () {
             return this._currentImageIndex || 0;
+        }
+    },
+
+    scrollToImageAtIndex: {
+        value: function (index) {
+            this._flow.startScrollingIndexToOffset(index, 0);
         }
     },
 
