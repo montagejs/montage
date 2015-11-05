@@ -31,7 +31,7 @@
     "htmlparser2": "~3.0.5",
     "mousse": "montagejs/mousse#7155f978f3d6a2325bca36effd50150f185e1fe4",
     "mr": "montagejs/mr#master",
-    "bluebird":"~2.10.2",
+    "bluebird":"~3.0.5",
     "q-io": "~1.11.0"
   },
   "devDependencies": {
