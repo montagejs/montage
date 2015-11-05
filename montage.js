@@ -667,7 +667,7 @@ if (typeof window !== "undefined") {
             var pending = {
                 "require": "node_modules/mr/require.js",
                 "require/browser": "node_modules/mr/browser.js",
-                "promise": "node_modules/bluebird/js/browser/bluebird.js",
+                "promise": "node_modules/bluebird/js/browser/bluebird.min.js",
                 "shim-string": "core/shim/string.js" // needed for the `endsWith` function.
                 /*"promise": "packages/mr/packages/q/q.js"*/
             };
@@ -696,7 +696,7 @@ if (typeof window !== "undefined") {
                 var montageLocation = resolve(window.location, params.montageLocation);
 
                 //Special Case bluebird for now:
-                browser.load(resolve(montageLocation, "node_modules/bluebird/js/browser/bluebird.js"),function() {
+                browser.load(resolve(montageLocation, "node_modules/bluebird/js/browser/bluebird.min.js"),function() {
                     //global.bootstrap cleans itself from window once all known are loaded. "bluebird" is not known, so needs to do it first
                     global.bootstrap("bluebird", function (require, exports) {
                         return window.Promise;
@@ -833,11 +833,6 @@ if (typeof window !== "undefined") {
                 var deprecate = montageRequire("core/deprecate");
 
                 var defaultEventManager, application;
-
-                // Setup Promise's longStackTrace support option
-                logger("Promise stacktrace support", function (state) {
-                    Promise.longStackSupport = !!state;
-                });
 
                 // Load the event-manager
                 defaultEventManager = new EventManager().initWithWindow(window);
