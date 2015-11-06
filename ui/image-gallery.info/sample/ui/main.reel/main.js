@@ -13,7 +13,28 @@ exports.Main = Component.specialize(/** @lends Main# */ {
      */
 
     _gallery: { // Set in serialization.
-        value: undefined
+        get: function () {
+            return this.__gallery;
+        },
+        set: function (gallery) {
+            var images = [];
+            this.__gallery = gallery;
+            if (this.__gallery) {
+                // Simulates lazy loading of images.
+                this.__gallery.images = images;
+                window.setTimeout(function () {
+                    images.splice(
+                        0, images.length,
+                        "ui/main.reel/asset/cezanne.jpg",
+                        "ui/main.reel/asset/gaugin.jpg",
+                        "ui/main.reel/asset/monet.jpg",
+                        "ui/main.reel/asset/renoir.jpg",
+                        "image_that_can_not_be_loaded",
+                        "ui/main.reel/asset/seurat.jpg"
+                    );
+                }, 0);
+            }
+        }
     },
 
     _isSliderActive: { // Bound in serialization.
