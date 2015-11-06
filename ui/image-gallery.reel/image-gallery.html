@@ -11,7 +11,7 @@
                 "_flow": {"@": "flow"}
             },
             "bindings": {
-                "_scroll": {"<-" : "@flow.scroll"}
+                "_flowScroll": {"<-" : "@flow.scroll"}
             }
         },
         "flow": {
@@ -90,7 +90,7 @@
                 }
             },
             "bindings": {
-                "enabled": {"<-" : "!@owner._isCurrentImageFirst"}
+                "enabled": {"<-" : "@owner.currentImageIndex > 0"}
             },
             "listeners": [
                 {
@@ -107,7 +107,7 @@
                 }
             },
             "bindings": {
-                "enabled": {"<-" : "!@owner._isCurrentImageLast"}
+                "enabled": {"<-" : "@owner.currentImageIndex < @owner.images.length - 1"}
             },
             "listeners": [
                 {

@@ -14,12 +14,13 @@ exports.ImageGallery = Component.specialize(/** @lends ImageGallery# */ {
 
     images: {
         get: function () {
+            this._images = this._images || [];
             return this._images;
         },
         set: function (value) {
-            if (value !== this._images) {
+            if (value && value.length ? value !== this._images :
+                                        this._images && this._images.length) {
                 this._images = value;
-                this._currentImageIndex = null;
                 this.scroll = 0;
             }
         }
@@ -27,54 +28,62 @@ exports.ImageGallery = Component.specialize(/** @lends ImageGallery# */ {
 
     scroll: {
         get: function () {
-            return this._flow && this._flow.scroll || 0;
+            return this._flow ? this._flow.scroll : this._flowScroll;
         },
         set: function (value) {
-            if (this._flow && this._flow.scroll !== value) {
+            value = Number(value) || 0;
+            if (!this._flow) {
+                this._flowScroll = value;
+            } else if (value !== this._flow.scroll) {
                 this._flow.scroll = value;
-            } else {
-                this._scroll = value;
             }
         }
     },
 
-    _scroll: {
+    _flowScroll: {
+        get: function () {
+            return this.__flowScroll || 0;
+        },
         set: function (value) {
-            var index = value ? Math.round(value) : 0;
-            if (index !== this._currentImageIndex) {
+            value = Number(value) || 0;
+            if (Math.round(value) !== this.currentImageIndex) {
+                this.dispatchBeforeOwnPropertyChange("scroll", this._flowScroll);
                 this.dispatchBeforeOwnPropertyChange("currentImageIndex", this.currentImageIndex);
-                this.dispatchBeforeOwnPropertyChange("scroll", this.currentImageIndex);
-                this._currentImageIndex = index;
-                this.dispatchOwnPropertyChange("scroll", index);
-                this.dispatchOwnPropertyChange("currentImageIndex", index);
-                this._isCurrentImageFirst = (this.currentImageIndex < 1);
-                this._isCurrentImageLast = (!this.images || (this.currentImageIndex === this.images.length - 1));
+                this.__flowScroll = value;
+                this.dispatchOwnPropertyChange("currentImageIndex", this.currentImageIndex);
+                this.dispatchOwnPropertyChange("scroll", this._flowScroll);
+            } else if (value ? value !== this.__flowScroll : this.__flowScroll) {
+                this.dispatchBeforeOwnPropertyChange("scroll", this._flowScroll);
+                this.__flowScroll = value;
+                this.dispatchOwnPropertyChange("scroll", this._flowScroll);
             }
         }
     },
 
     currentImageIndex: {
         get: function () {
-            return this._currentImageIndex || 0;
+            return Math.round(this._flowScroll);
         }
     },
 
     scrollToImageIndex: {
         value: function (index) {
-            this._flow.startScrollingIndexToOffset(index, 0);
+            if (this._flow) {
+                this._flow.startScrollingIndexToOffset(index, 0);
+            }
         }
     },
 
     handlePreviousAction: {
         value: function () {
-            this._flow.startScrollingIndexToOffset(this.currentImageIndex - 1, 0);
+            this.scrollToImageIndex(this.currentImageIndex - 1);
 
         }
     },
 
     handleNextAction: {
         value: function () {
-            this._flow.startScrollingIndexToOffset(this.currentImageIndex + 1, 0);
+            this.scrollToImageIndex(this.currentImageIndex + 1);
         }
     }
 
