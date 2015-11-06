@@ -723,7 +723,8 @@ if (typeof window !== "undefined") { // client-side
                     configurable: true,
                     value: aWindow.addEventListener
                 });
-                Object.getPrototypeOf(aWindow.document).nativeAddEventListener = aWindow.document.addEventListener;
+
+                aWindow.document.nativeAddEventListener = aWindow.document.addEventListener;
                 aWindow.XMLHttpRequest.prototype.nativeAddEventListener = aWindow.XMLHttpRequest.prototype.addEventListener;
                 if (aWindow.Worker) {
                     aWindow.Worker.prototype.nativeAddEventListener = aWindow.Worker.prototype.addEventListener;
@@ -737,7 +738,8 @@ if (typeof window !== "undefined") { // client-side
                     configurable: true,
                     value: aWindow.removeEventListener
                 });
-                Object.getPrototypeOf(aWindow.document).nativeRemoveEventListener = aWindow.document.removeEventListener;
+
+                aWindow.document.nativeRemoveEventListener = aWindow.document.removeEventListener;
                 aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener = aWindow.XMLHttpRequest.prototype.removeEventListener;
                 if (aWindow.Worker) {
                     aWindow.Worker.prototype.nativeRemoveEventListener = aWindow.Worker.prototype.removeEventListener;
@@ -752,7 +754,7 @@ if (typeof window !== "undefined") { // client-side
                     configurable: true,
                     value: (aWindow.XMLHttpRequest.prototype.addEventListener =
                         aWindow.Element.prototype.addEventListener =
-                            Object.getPrototypeOf(aWindow.document).addEventListener =
+                            aWindow.document.addEventListener =
                                 function (eventType, listener, useCapture) {
                                     return aWindow.defaultEventManager.registerEventListener(this, eventType, listener, !!useCapture);
                                 })
@@ -769,7 +771,7 @@ if (typeof window !== "undefined") { // client-side
                     configurable: true,
                     value: (aWindow.XMLHttpRequest.prototype.removeEventListener =
                         aWindow.Element.prototype.removeEventListener =
-                            Object.getPrototypeOf(aWindow.document).removeEventListener =
+                            aWindow.document.removeEventListener =
                                 function (eventType, listener, useCapture) {
                                     return aWindow.defaultEventManager.unregisterEventListener(this, eventType, listener, !!useCapture);
                                 })
@@ -884,7 +886,8 @@ if (typeof window !== "undefined") { // client-side
                     configurable: true,
                     value: aWindow.nativeAddEventListener
                 });
-                Object.getPrototypeOf(aWindow.document).addEventListener = aWindow.document.nativeAddEventListener;
+
+                aWindow.document.addEventListener = aWindow.document.nativeAddEventListener;
                 aWindow.XMLHttpRequest.prototype.addEventListener = aWindow.XMLHttpRequest.prototype.nativeAddEventListener;
                 if (aWindow.Worker) {
                     aWindow.Worker.prototype.addEventListener = aWindow.Worker.prototype.nativeAddEventListener;
@@ -895,7 +898,8 @@ if (typeof window !== "undefined") { // client-side
                     configurable: true,
                     value: aWindow.nativeRemoveEventListener
                 });
-                Object.getPrototypeOf(aWindow.document).removeEventListener = aWindow.document.nativeRemoveEventListener;
+
+                aWindow.document.removeEventListener = aWindow.document.nativeRemoveEventListener;
                 aWindow.XMLHttpRequest.prototype.removeEventListener = aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener;
                 if (aWindow.Worker) {
                     aWindow.Worker.prototype.removeEventListener = aWindow.Worker.prototype.nativeRemoveEventListener;
@@ -931,7 +935,7 @@ if (typeof window !== "undefined") { // client-side
                 delete aWindow.Element.prototype.nativeAddEventListener;
                 delete aWindow.nativeAddEventListener;
 
-                delete Object.getPrototypeOf(aWindow.document).nativeAddEventListener;
+                delete aWindow.document.nativeAddEventListener;
                 delete aWindow.XMLHttpRequest.prototype.nativeAddEventListener;
                 if (aWindow.Worker) {
                     delete aWindow.Worker.prototype.nativeAddEventListener;
@@ -940,7 +944,7 @@ if (typeof window !== "undefined") { // client-side
                 delete aWindow.Element.prototype.nativeRemoveEventListener;
                 delete aWindow.nativeRemoveEventListener;
 
-                delete Object.getPrototypeOf(aWindow.document).nativeRemoveEventListener;
+                delete aWindow.document.nativeRemoveEventListener;
                 delete aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener;
                 if (aWindow.Worker) {
                     delete aWindow.Worker.prototype.nativeRemoveEventListener;
