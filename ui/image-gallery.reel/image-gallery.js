@@ -18,7 +18,7 @@ exports.ImageGallery = Component.specialize(/** @lends ImageGallery# */ {
             return this._images;
         },
         set: function (value) {
-            if (value ? value !== this._images : this._images && this._images.length) {
+            if (value ? value !== this._images : this._images) {
                 this._images = value;
                 this.scroll = 0;
             }
