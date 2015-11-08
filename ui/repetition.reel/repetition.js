@@ -586,8 +586,8 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * "active" CSS class) when the user touches or clicks it, and toggles
      * whether the corresponding content is selected.
      *
-     * Selection may be enabled and disabled at any time in the life cycle of
-     * the repetition.  The repetition watches changes to this property.
+     * Selection may be enabled and disabled at any time.  The repetition
+     * watches changes to this property.
      *
      * All repetitions support selection, whether it is used or not.  This
      * property merely dictates whether the repetition handles gestures for

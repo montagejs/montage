@@ -14,7 +14,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
 /** @lends AbstractNumberField# */
 {
 
-    // Lifecycle
+    // Life Cycle
 
     constructor: {
         value: function AbstractNumberField() {
@@ -91,7 +91,6 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
         }
     },
 
-
     prepareForActivationEvents: {
         value: function() {
             this._upKeyComposer.addEventListener("keyPress", this, false);
@@ -110,8 +109,7 @@ var AbstractNumberField = exports.AbstractNumberField = AbstractControl.speciali
     },
 
 
-    // Event Handlers
-
+    // Event Handling
 
     acceptsActiveTarget: {
         value: true
