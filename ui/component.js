@@ -38,9 +38,263 @@ var Montage = require("../core/core").Montage,
 var ATTR_LE_COMPONENT = "data-montage-le-component",
     ATTR_LE_ARG = "data-montage-le-arg",
     ATTR_LE_ARG_BEGIN = "data-montage-le-arg-begin",
-    ATTR_LE_ARG_END = "data-montage-le-arg-end",
-    ANIMATIONEND_EVENT_NAME = window.onanimationend === undefined && window.onwebkitanimationend !== undefined ?
-        "webkitAnimationEnd" : "animationend";
+    ATTR_LE_ARG_END = "data-montage-le-arg-end";
+
+var CssBasedAnimation = Montage.specialize({
+
+    component: {
+        value: null
+    },
+
+    fromCssClass: {
+        value: null
+    },
+
+    cssClass: {
+        value: null
+    },
+
+    toCssClass: {
+        value: null
+    },
+
+    hasOneFrameDelay: {
+        value: false
+    },
+
+    _animationAndTransitionProperties: {
+        value: [
+            "-webkit-animation",
+            "-moz-animation",
+            "-ms-animation",
+            "animation",
+            "-webkit-transition",
+            "-moz-transition",
+            "-ms-transition",
+            "transition"
+        ]
+    },
+
+    _emptyArray: {
+        value: []
+    },
+
+    /**
+     * Parses the computed style value for a css time property and
+     * returns an array of numbers representing seconds.
+     * For example, the time value string "1s, 2s" will return [1, 2]
+     */
+    _parseComputedStyleTimeValue: {
+        value: function (timeValue) {
+            var result,
+                i;
+
+            if (timeValue === "") {
+                return this._emptyArray;
+            }
+            result = timeValue.replace(/s| /g, "").split(",");
+            for (i = 0; i < result.length; i++) {
+                result[i] = +result[i];
+            }
+            return result;
+        }
+    },
+
+    /**
+     * Returns an boundary estimate of the maximum time an element would
+     * take to complete its css animations and/or transitions.
+     */
+    _getMaxAnimationTime: {
+        value: function () {
+            var computedStyle,
+                durations,
+                delays,
+                maxTime = 0,
+                time,
+                length,
+                i, j;
+
+            if (this.component && this.component.element) {
+                computedStyle = window.getComputedStyle(this.component.element)
+                for (i = 0; i < this._animationAndTransitionProperties.length; i++) {
+                    durations = this._parseComputedStyleTimeValue(
+                        computedStyle.getPropertyValue(this._animationAndTransitionProperties[i] + "-duration")
+                    );
+                    delays = this._parseComputedStyleTimeValue(
+                        computedStyle.getPropertyValue(this._animationAndTransitionProperties[i] + "-delay")
+                    );
+                    length = Math.max(durations.length, delays.length);
+                    for (j = 0; j < length; j++) {
+                        if (typeof durations[j] === "undefined") {
+                            time = durations[0] || 0;
+                        } else {
+                            time = durations[j];
+                        }
+                        if (typeof delays[j] === "undefined") {
+                            time += delays[0] || 0;
+                        } else {
+                            time += delays[j];
+                        }
+                        if (time > maxTime) {
+                            maxTime = time;
+                        }
+                    }
+                }
+                if (maxTime > 0) {
+                    // Browsers take several miliseconds since you add the css animation
+                    // or transition property and it really starts. It can range from
+                    // very few miliseconds in desktop to a couple of hundreds in mobile
+                    // devices, so we are adding 300 miliseconds as a safety value that
+                    // should cover the most of the cases.
+                    maxTime += .3;
+                }
+            }
+            return maxTime;
+        }
+    },
+
+    _onAnimationsCompletedTimeout: {
+        value: null
+    },
+
+    _cancelOnAnimationsCompletedEvent: {
+        value: function () {
+            window.clearTimeout(this._onAnimationsCompletedTimeout);
+        }
+    },
+
+    _onAnimationsCompleted: {
+        value: function (callback) {
+            var maxTime = this._getMaxAnimationTime(),
+                self;
+
+            if (!maxTime) {
+                callback.call(this);
+                return;
+            }
+            self = this;
+            this._cancelOnAnimationsCompletedEvent();
+            this._onAnimationsCompletedTimeout = window.setTimeout(function () {
+                callback.call(self);
+            }, maxTime * 1000);
+         }
+    },
+
+    _needsToMeasureAnimationTimeOnNextDraw: {
+        value: false
+    },
+
+    _needsToMeasureAnimationTime: {
+        value: false
+    },
+
+    handleDidDraw: {
+        value: function (event) {
+            if (this._needsToMeasureAnimationTimeOnNextDraw) {
+                if (this.fromCssClass) {
+                    this.component.classList.remove(this.fromCssClass);
+                }
+                if (this.cssClass) {
+                    this.component.classList.add(this.cssClass);
+                }
+                if (this.toCssClass) {
+                    this.component.classList.add(this.toCssClass);
+                }
+                this._needsToMeasureAnimationTimeOnNextDraw = false;
+                this._needsToMeasureAnimationTime = true;
+                this.component.needsDraw = true;
+            } else {
+                if (this._needsToMeasureAnimationTime) {
+                    this._onAnimationsCompleted(function () {
+                        if (this._finishedDeferred) {
+                            this._finishedDeferred.resolve();
+                            this._finishedDeferred = null;
+                        }
+                    });
+                    this.component.removeEventListener("didDraw", this, false);
+                    this._needsToMeasureAnimationTime = false;
+                }
+            }
+        }
+    },
+
+    _finishedDeferred: {
+        value: null
+    },
+
+    finished: {
+        get: function () {
+            if (!this._finishedDeferred) {
+                this._finishedDeferred = Promise.defer();
+            }
+            return this._finishedDeferred.promise;
+        }
+    },
+
+    play: {
+        value: function () {
+            if (this.component) {
+                if (!this._finishedDeferred || this._cancelled) {
+                    this._cancelled = false;
+                    this._finishedDeferred = Promise.defer();
+                }
+                this.component.needsDraw = true;
+                if (this.fromCssClass) {
+                    if (this.fromCssClass) {
+                        this.component.classList.add(this.fromCssClass);
+                    }
+                    if (this.cssClass) {
+                        this.component.classList.remove(this.cssClass);
+                    }
+                    if (this.toCssClass) {
+                        this.component.classList.remove(this.toCssClass);
+                    }
+                    this._needsToMeasureAnimationTime = false;
+                    this._needsToMeasureAnimationTimeOnNextDraw = true;
+                } else {
+                    if (this.hasOneFrameDelay) {
+                        this._needsToMeasureAnimationTime = false;
+                        this._needsToMeasureAnimationTimeOnNextDraw = true;
+                    } else {
+                        if (this.cssClass) {
+                            this.component.classList.add(this.cssClass);
+                        }
+                        if (this.toCssClass) {
+                            this.component.classList.add(this.toCssClass);
+                        }
+                        this._needsToMeasureAnimationTime = true;
+                        this._needsToMeasureAnimationTimeOnNextDraw = false;
+                    }
+                }
+                this.component.addEventListener("didDraw", this, false);
+            }
+        }
+    },
+
+    _cancelled: {
+        value: false
+    },
+
+    cancel: {
+        value: function () {
+            this._cancelled = true;
+            if (this.fromCssClass) {
+                this.component.classList.remove(this.fromCssClass);
+            }
+            if (this.cssClass) {
+                this.component.classList.remove(this.cssClass);
+            }
+            if (this.toCssClass) {
+                this.component.classList.remove(this.toCssClass);
+            }
+            this.component.removeEventListener("didDraw", this, false);
+            if (this._finishedDeferred) {
+                this._finishedDeferred.reject();
+            }
+        }
+    }
+
+});
 
 /**
  * @class Component
@@ -71,56 +325,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
      * @example "userSettingsPanel"
      *
      * @name Component#identifier
-     * @property {String}
-     */
-
-    /**
-     * A CSS class that enables build-in CSS transition & animation.
-     * This class is the starting point for CSS transition.
-     * For CSS animation, it should contain all the start / end implementation.
-     *
-     * @name Component#buildInCssClass
-     * @property {?String}
-     *
-     */
-
-    /**
-     * A CSS class that marks the end of build-in CSS transition.
-     * Use {@link Component.buildInCssClass} for CSS animation.
-     *
-     * @name Component#buildInTransitionCssClass
-     * @property {?String}
-     */
-
-    /**
-     * A CSS class that enables build-out CSS transition & animation.
-     *
-     * @name Component#buildOutCssClass
-     * @property {String}
-     */
-
-    /**
-     * A CSS class that enables build-in CSS transition & animation.
-     * This class is the starting point for CSS transition.
-     * For CSS animation, it should contain all the start / end implementation.
-     *
-     * @name Component#buildInCssClassOverride
-     * @property {?String}
-     *
-     */
-
-    /**
-     * A CSS class that marks the end of build-in CSS transition.
-     * Use {@link Component.buildInCssClass} for CSS animation.
-     *
-     * @name Component#buildInTransitionCssClassOverride
-     * @property {?String}
-     */
-
-    /**
-     * A CSS class that enables build-out CSS transition & animation.
-     *
-     * @name Component#buildOutCssClassOverride
      * @property {String}
      */
 
@@ -908,24 +1112,16 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
     addChildComponent: {
         value: function (childComponent) {
-            // incoming component isn't one of the childComponents yet
             if (this.childComponents.indexOf(childComponent) === -1) {
                 this.childComponents.push(childComponent);
-                childComponent._prepareForEnterDocument();
                 childComponent._parentComponent = this;
-
+                childComponent._prepareForEnterDocument();
                 if (childComponent.needsDraw &&
                     !this.rootComponent.isComponentWaitingNeedsDraw(childComponent)) {
                     childComponent._addToParentsDrawList();
                 }
-
-            // incoming component is already a childComponent, may be currently building out,
-            // _performBuildIn here if necessary, as _enterDocument won't be triggered
-            } else {
-                if (childComponent.getBuildInCssClass() && !childComponent._isBuildingIn) {
-                    childComponent._performBuildIn();
-                }
             }
+            childComponent._shouldBuildIn = true;
         }
     },
 
@@ -951,125 +1147,17 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                         newParentComponent.addChildComponent(childComponent);
                     }
                 }
-
                 parentComponent.addChildComponent(this);
             }
         }
     },
 
-    /**
-     * Flag used to prevent multiple build-in animations from running simultaneously.
-     *
-     * @private
-     * @property {boolean}
-     */
-    _isBuildingIn: {
-        value: false
-    },
-
-    /**
-     * Flag used to prevent multiple build-out animations from running simultaneously.
-     *
-     * @private
-     * @property {boolean}
-     */
-    _isBuildingOut: {
-        value: false
-    },
-
-    /**
-     * Detach component from parent & component tree if component is not building out.
-     * Detached components cannot draw. If Component has build-out transition and will be
-     * removed by parent, detach will happen after parent removes this Component
-     * due to needing Component to perform draw cycles for build-out transition.
-     *
-     * @function
-     */
     detachFromParentComponent: {
-        value: function () {
-            if (!this._firstDraw &&
-                this._inDocument &&
-                this.getBuildOutCssClass() &&
-                !this._isBuildingOut) {
-
-                this._performBuildOut();
-
-            } else if (!this._isBuildingOut) {
-                this._detachFromParentComponent();
-            }
-        }
-    },
-
-    /**
-     * @private
-     * @function
-     * @see Component#detachFromParentComponent
-     */
-    _detachFromParentComponent: {
         value: function () {
             var parentComponent = this.parentComponent;
 
             if (parentComponent) {
                 parentComponent.removeChildComponent(this);
-            }
-        }
-    },
-
-    __componentsPendingBuildOut: {
-        value: null
-    },
-
-    _componentsPendingBuildOut: {
-        get: function () {
-            return this.__componentsPendingBuildOut || (this.__componentsPendingBuildOut = []);
-        }
-    },
-
-    __componentsCompletedBuildOut: {
-        value: null
-    },
-
-    _componentsCompletedBuildOut: {
-        get: function () {
-            return this.__componentsCompletedBuildOut || (this.__componentsCompletedBuildOut = []);
-        }
-    },
-
-    _childComponentWillBuildOut: {
-        value: function (component) {
-            if (this._componentsPendingBuildOut.indexOf(component) < 0) {
-                this._componentsPendingBuildOut.push(component);
-            }
-        }
-    },
-
-    _childComponentDidBuildOut: {
-        value: function (component) {
-            var i, componentToRemove;
-
-            if (this._componentsCompletedBuildOut.indexOf(component) < 0) {
-                this._componentsCompletedBuildOut.push(component);
-            }
-
-            // All components that need to build out have finished building out,
-            // clear them out of the component tree & DOM in next draw
-            if (this._componentsPendingBuildOut.length === this._componentsCompletedBuildOut.length) {
-                for (i = 0; i < this._componentsCompletedBuildOut.length; i++) {
-                    componentToRemove = this._componentsCompletedBuildOut[i];
-                    componentToRemove.classList.remove(componentToRemove.getBuildOutCssClass());
-                    componentToRemove.buildOutCssClassOverride = undefined;
-                }
-                this._componentsPendingBuildOut.length = 0;
-                this.needsDraw = true;
-            }
-        }
-    },
-
-    _childComponentCancelBuildOut: {
-        value: function (component) {
-            var i = this._componentsPendingBuildOut.indexOf(component);
-            if (i > -1) {
-                this._componentsPendingBuildOut.splice(i, 1);
             }
         }
     },
@@ -1253,11 +1341,10 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         value: null
     },
 
-    /**
-     * @property
-     * @param {Element}
-     * @see Component#_performDomContentChanges
-     */
+    _elementsToAppend: {
+        value: null
+    },
+
     domContent: {
         serializable: false,
         get: function () {
@@ -1273,6 +1360,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 i,
                 component;
 
+            if (!this._elementsToAppend) {
+                this._elementsToAppend = [];
+            }
             this._newDomContent = value;
             this.needsDraw = true;
 
@@ -1280,28 +1370,39 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 this._shouldClearDomContentOnNextDraw = true;
             }
 
-            // Call lifecycle hook if implemented
             if (typeof this.contentWillChange === "function") {
                 this.contentWillChange(value);
             }
 
             // cleanup current content
             components = this.childComponents;
-
-            for (i = 0, component; (component = components[i]); i++) {
-                component.detachFromParentComponent();
+            if (value) {
+                if (!this._componentsPendingBuildOut) {
+                    this._componentsPendingBuildOut = [];
+                }
+                for (i = components.length - 1; i >= 0; i--) {
+                    if (this._componentsPendingBuildOut.indexOf(components[i]) === -1) {
+                        this._componentsPendingBuildOut.push(components[i]);
+                    }
+                }
+            } else {
+                this._componentsPendingBuildOut = [];
+                for (i = components.length - 1; i >= 0; i--) {
+                    components[i]._shouldBuildOut = true;
+                }
             }
-
             if (value instanceof Element) {
+                this._elementsToAppend.push(value);
                 this._findAndDetachComponents(value, componentsToAdd);
             } else if (value && value[0]) {
                 for (i = 0; i < value.length; i++) {
+                    this._elementsToAppend.push(value[i]);
                     this._findAndDetachComponents(value[i], componentsToAdd);
                 }
             }
 
             // not sure if I can rely on _parentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
-            for (i = 0, component; (component = componentsToAdd[i]); i++) {
+            for (i = 0; (component = componentsToAdd[i]); i++) {
                 this.addChildComponent(component);
             }
         }
@@ -1951,7 +2052,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
             if (this._needsEnterDocument) {
                 this._needsEnterDocument = false;
-                this._inDocument = true;
+                this._willEnterDocument();
                 this._enterDocument(firstDraw);
                 if (typeof this.enterDocument === "function") {
                     this.enterDocument(firstDraw);
@@ -2343,183 +2444,44 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
-    getBuildInCssClass: {
-        value: function () {
-            return typeof this.buildInCssClassOverride !== "undefined" ?
-                this.buildInCssClassOverride : this.buildInCssClass;
-        }
-    },
-
-    getBuildInTransitionCssClass: {
-        value: function () {
-            return typeof this.buildInTransitionCssClassOverride !== "undefined" ?
-                this.buildInTransitionCssClassOverride : this.buildInTransitionCssClass;
-        }
-    },
-
-    getBuildOutCssClass: {
-        value: function () {
-            return typeof this.buildOutCssClassOverride !== "undefined" ?
-                this.buildOutCssClassOverride : this.buildOutCssClass;
-        }
-    },
-
-    /**
-     * Perform build-in animation, if defined.
-     *
-     * @private
-     * @function
-     * @see Component#buildInCssClass
-     * @see Component#buildInTransitionCssClass
-     */
-    _performBuildIn: {
-        value: function () {
-            var buildInCssClass = this.getBuildInCssClass(),
-                buildInTransitionCssClass = this.getBuildInTransitionCssClass(),
-                buildOutCssClass = this.getBuildOutCssClass();
-
-            this._isBuildingIn = true;
-
-            // Component may be in the process of building out; already has event listeners
-            if (this._isBuildingOut) {
-                this._isBuildingOut = false;
-
-                // Clear this component out of parent's _componentsPendingBuildOut, otherwise if
-                // it doesn't build-out again, it'll prevent other components that did build-out
-                // from being cleared out of the DOM by parent
-                this.parentComponent._childComponentCancelBuildOut(this);
-
-                if (this.classList.contains(buildOutCssClass)) {
-                    this.classList.remove(buildOutCssClass);
-                }
-                this.buildOutCssClassOverride = undefined;
-
-            } else {
-                this.element.addEventListener("transitionend", this, false);
-                this.element.addEventListener(ANIMATIONEND_EVENT_NAME, this, false);
-            }
-
-            if (!this.classList.contains(buildInCssClass)) {
-                this.classList.add(buildInCssClass);
-            }
-
-            if (buildInTransitionCssClass && !this.classList.contains(buildInTransitionCssClass)) {
-                this.classList.add(buildInTransitionCssClass);
-            }
-        }
-    },
-
-    /**
-     * Perform build-out animation, if defined.
-     *
-     * @private
-     * @function
-     * @see Component#buildOutCssClass
-     */
-    _performBuildOut: {
-        value: function () {
-            var buildInCssClass = this.getBuildInCssClass(),
-                buildInTransitionCssClass = this.getBuildInTransitionCssClass(),
-                buildOutCssClass = this.getBuildOutCssClass();
-
-            this.parentComponent._childComponentWillBuildOut(this);
-            this._isBuildingOut = true;
-
-            // Component may be in the process of building in
-            if (this._isBuildingIn) {
-                this._isBuildingIn = false;
-
-                if (this.classList.contains(buildInCssClass)) {
-                    this.classList.remove(buildInCssClass);
-                }
-                if (buildInTransitionCssClass &&
-                    this.classList.contains(buildInTransitionCssClass)) {
-                    this.classList.remove(buildInTransitionCssClass);
-                }
-
-                this.buildInCssClassOverride = undefined;
-                this.buildInTransitionCssClassOverride = undefined;
-
-            } else {
-                this.element.addEventListener("transitionend", this, false);
-                this.element.addEventListener(ANIMATIONEND_EVENT_NAME, this, false);
-            }
-
-            if (!this.classList.contains(buildOutCssClass)) {
-                this.classList.add(buildOutCssClass);
-            }
-        }
-    },
-
-    /**
-     * Performs the actual work of swapping out `domContent`.
-     *
-     * @private
-     * @function
-     * @see Component#domContent
-     */
     _performDomContentChanges: {
         value: function () {
-            var newDomContent = this._newDomContent,
-                oldDomContent = this._element.children[this._element.children.length - 1];
+            var contents = this._newDomContent,
+                oldContent = this._element.childNodes[this._element.childNodes.length - 1],
+                element,
+                elementToAppend,
+                i;
 
-            // removal needs to happen before addition, as addition adds correct
-            // parent / child element relationship for _replaceElementWithTemplate
-            if (this._newDomContent || this._shouldClearDomContentOnNextDraw) {
-                this._performDomContentRemoval();
-            }
+            if (contents || this._shouldClearDomContentOnNextDraw) {
+                element = this._element;
 
-            if (this._newDomContent) {
-                this._performDomContentAddition();
-            }
-
-            if (typeof this.contentDidChange === "function") {
-                this.contentDidChange(newDomContent, oldDomContent);
-            }
-        }
-    },
-
-    /**
-     * @private
-     * @function
-     */
-    _performDomContentAddition: {
-        value: function () {
-            var element = this._element,
-                contents = this._newDomContent
-
-            if (Element.isElement(this._newDomContent)) {
-                this._element.appendChild(this._newDomContent);
-
-            } else { // array of Elements
-                for (var i = 0, content; (content = this._newDomContent[i]); i++) {
-                    element.appendChild(content);
+                // Setting the innerHTML to clear the children will not work on
+                // IE because it modifies the underlying child nodes. Here's the
+                // test case that shows this issue: http://jsfiddle.net/89X6F/
+                for (i = element.childNodes.length - 1; i >= 0; i--) {
+                    if (!element.childNodes[i].component) {
+                        element.removeChild(element.childNodes[i]);
+                    }
                 }
-            }
 
-            this._newDomContent = null;
-        }
-    },
-
-    /**
-     * @private
-     * @function
-     */
-    _performDomContentRemoval: {
-        value: function () {
-            var element = this._element;
-
-            childNodesCount = element.childNodes.length;
-            for (var i = 0; i < childNodesCount; i++) {
-                if (!element.firstChild.component ||
-                    (element.firstChild.component && !element.firstChild.component.getBuildOutCssClass())) {
-
-                    element.removeChild(element.firstChild);
+                if (this._elementsToAppend) {
+                    while (this._elementsToAppend.length) {
+                        elementToAppend = this._elementsToAppend.shift();
+                        if (!element.contains(elementToAppend)) {
+                            element.appendChild(elementToAppend);
+                        }
+                    }
                 }
-                // else will be removed by parent after build-out finishes
-            }
 
-            this._shouldClearDomContentOnNextDraw = false;
+                this._newDomContent = null;
+                if (typeof this.contentDidChange === "function") {
+                    this.contentDidChange(
+                        this._element.childNodes[this._element.childNodes.length - 1],
+                        oldContent
+                    );
+                }
+                this._shouldClearDomContentOnNextDraw = false;
+            }
         }
     },
 
@@ -2998,6 +2960,258 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     },
 
+    __shouldBuildIn: {
+        value: true
+    },
+
+    _shouldBuildIn: {
+        get: function () {
+            return this.__shouldBuildIn;
+        },
+        set: function (value) {
+            var index;
+
+            value = !!value;
+            this.__shouldBuildIn = value;
+            if (value) {
+                if (this.parentComponent && this.parentComponent._componentsPendingBuildOut) {
+                    index = this.parentComponent._componentsPendingBuildOut.indexOf(this);
+                    if (index !== -1) {
+                        this.parentComponent._componentsPendingBuildOut.splice(index, 1);
+                    }
+                }
+                this._shouldBuildOut = false;
+                if (this._inDocument) {
+                    this._buildIn();
+                }
+            }
+        }
+    },
+
+    __shouldBuildOut: {
+        value: false
+    },
+
+    _shouldBuildOut: {
+        get: function () {
+            return this.__shouldBuildOut;
+        },
+        set: function (value) {
+            value = !!value;
+            this.__shouldBuildOut = value;
+            if (value) {
+                this._shouldBuildIn = false;
+                if (this._inDocument) {
+                    this._buildOut();
+                }
+            }
+        }
+    },
+
+    buildInInitialAnimation: {
+        get: function () {
+            var animation = null;
+
+            if (this._activeBuildInAnimation && typeof this._activeBuildInAnimation === "object") {
+                if (typeof this._activeBuildInAnimation.cssClass !== "undefined") {
+                    animation = new CssBasedAnimation();
+                    animation.component = this;
+                    animation.fromCssClass = this._activeBuildInAnimation.fromCssClass;
+                    animation.cssClass = this._activeBuildInAnimation.cssClass;
+                    animation.toCssClass = this._activeBuildInAnimation.toCssClass;
+                }
+            }
+            return animation;
+        }
+    },
+
+    buildInSwitchAnimation: {
+        get: function () {
+            var animation = null;
+
+            if (this._activeBuildInAnimation && typeof this._activeBuildInAnimation === "object") {
+                if (typeof this._activeBuildInAnimation.cssClass !== "undefined") {
+                    animation = new CssBasedAnimation();
+                    animation.component = this;
+                    animation.cssClass = this._activeBuildInAnimation.cssClass;
+                    animation.toCssClass = this._activeBuildInAnimation.toCssClass;
+                }
+            }
+            return animation;
+        }
+    },
+
+    buildOutInitialAnimation: {
+        get: function () {
+            var animation = null;
+
+            if (this._activeBuildOutAnimation && typeof this._activeBuildOutAnimation === "object") {
+                if (typeof this._activeBuildOutAnimation.cssClass !== "undefined") {
+                    animation = new CssBasedAnimation();
+                    animation.component = this;
+                    animation.hasOneFrameDelay = true;
+                    animation.fromCssClass = this._activeBuildOutAnimation.fromCssClass;
+                    animation.cssClass = this._activeBuildOutAnimation.cssClass;
+                    animation.toCssClass = this._activeBuildOutAnimation.toCssClass;
+                }
+            }
+            return animation;
+        }
+    },
+
+    buildOutSwitchAnimation: {
+        get: function () {
+            var animation = null;
+
+            if (this._activeBuildOutAnimation && typeof this._activeBuildOutAnimation === "object") {
+                if (typeof this._activeBuildOutAnimation.cssClass !== "undefined") {
+                    animation = new CssBasedAnimation();
+                    animation.component = this;
+                    animation.cssClass = this._activeBuildOutAnimation.cssClass;
+                    animation.toCssClass = this._activeBuildOutAnimation.toCssClass;
+                }
+            }
+            return animation;
+        }
+    },
+
+    buildInAnimation: {
+        value: null
+    },
+
+    buildOutAnimation: {
+        value: null
+    },
+
+    buildInAnimationOverride: {
+        value: null
+    },
+
+    buildOutAnimationOverride: {
+        value: null
+    },
+
+    _activeBuildInAnimation: {
+        value: null
+    },
+
+    _activeBuildOutAnimation: {
+        value: null
+    },
+
+    _updateActiveBuildAnimations: {
+        value: function () {
+            if (this.buildInAnimationOverride) {
+                this._activeBuildInAnimation = this.buildInAnimationOverride;
+            } else {
+                this._activeBuildInAnimation = this.buildInAnimation;
+            }
+            if (this.buildOutAnimationOverride) {
+                this._activeBuildOutAnimation = this.buildOutAnimationOverride;
+            } else {
+                this._activeBuildOutAnimation = this.buildOutAnimation;
+            }
+        }
+    },
+
+    _currentBuildAnimation: {
+        value: null
+    },
+
+    _buildIn: {
+        value: function () {
+            var self = this;
+
+            if (this._currentBuildAnimation) {
+                this._currentBuildAnimation.cancel();
+            }
+            if (this._isElementAttachedToParent) {
+                this._currentBuildAnimation = this.buildInSwitchAnimation;
+            } else {
+                this._updateActiveBuildAnimations();
+                this._currentBuildAnimation = this.buildInInitialAnimation;
+            }
+            if (this._currentBuildAnimation) {
+                this._currentBuildAnimation.play();
+                this._currentBuildAnimation.finished.then(function () {
+                    self._currentBuildAnimation.cancel();
+                    self._currentBuildAnimation = null;
+                });
+            }
+        }
+    },
+
+    _buildOut: {
+        value: function () {
+            var self = this;
+
+            if (this._currentBuildAnimation) {
+                this._currentBuildAnimation.cancel();
+                this._currentBuildAnimation = this.buildOutSwitchAnimation;
+            } else {
+                this._updateActiveBuildAnimations();
+                this._currentBuildAnimation = this.buildOutInitialAnimation;
+            }
+            if (this._currentBuildAnimation) {
+                this._currentBuildAnimation.play();
+                this._currentBuildAnimation.finished.then(function () {
+                    self._currentBuildAnimation.cancel();
+                    self._currentBuildAnimation = null;
+                    self.detachFromParentComponent();
+                    self.buildInAnimationOverride = null;
+                    self.buildOutAnimationOverride = null;
+                    self._element.parentNode.removeChild(self._element);
+                    self._isElementAttachedToParent = false;
+                });
+            } else {
+                this.detachFromParentComponent();
+                this.buildInAnimationOverride = null;
+                this.buildOutAnimationOverride = null;
+                if (this._isElementAttachedToParent) {
+                    if (this._element.parentNode) {
+                        this._element.parentNode.removeChild(this._element);
+                    }
+                    this._isElementAttachedToParent = false;
+                }
+            }
+        }
+    },
+    _willEnterDocument: {
+
+        value: function () {
+            var event;
+
+            event = new CustomEvent("willEnterDocument", {
+                details: {
+                    component: this
+                },
+                bubbles: false
+            });
+            this.dispatchEvent(event);
+            this._inDocument = true;
+            if (this.parentComponent) {
+                this.parentComponent._childWillEnterDocument();
+            }
+            if (this.__shouldBuildIn) {
+                this._buildIn();
+            }
+            this._isElementAttachedToParent = true;
+            if (this.__shouldBuildOut) {
+                this._buildOut();
+            }
+        }
+    },
+
+    _childWillEnterDocument: {
+        value: function () {
+            if (this._componentsPendingBuildOut) {
+                while (this._componentsPendingBuildOut.length) {
+                    this._componentsPendingBuildOut.pop()._shouldBuildOut = true;
+                }
+            }
+        }
+    },
+
     /**
      * This function is called when the component element is added to the
      * document's DOM tree.
@@ -3014,7 +3228,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             var originalElement;
 
             if (firstTime) {
-// The element is now ready, so we can read the attributes that
+                // The element is now ready, so we can read the attributes that
                 // have been set on it.
                 originalElement = this.originalElement;
 
@@ -3068,10 +3282,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     }
                 }
             }
-
-            if (this.getBuildInCssClass() && !this._isBuildingIn) {
-                this._performBuildIn();
-            }
         }
     },
 
@@ -3082,9 +3292,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     _draw: {
         value: function () {
             var element = this.element,
-                descriptor,
-                component,
-                i;
+                descriptor;
 
             //Buffered/deferred element attribute values
             if(this.__elementAttributeValues !== null) {
@@ -3120,61 +3328,9 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                     }
                 }
             }
+
             // classList
             this._drawClassListIntoComponent();
-
-            // Trigger CSS transition
-            if (this.classList.contains(this.getBuildInCssClass()) &&
-                this.classList.contains(this.getBuildInTransitionCssClass())) {
-
-                this.classList.remove(this.getBuildInCssClass());
-            }
-
-            // All children that need to build out have done so; detach & remove them
-            if (!this._componentsPendingBuildOut.length && this._componentsCompletedBuildOut.length) {
-                for (i = this._componentsCompletedBuildOut.length; i > 0; i--) {
-                    component = this._componentsCompletedBuildOut[i - 1];
-                    component._detachFromParentComponent();
-                    component.element.parentElement.removeChild(component.element);
-                    this._componentsCompletedBuildOut.pop();
-                }
-            }
-
-        }
-    },
-
-    /**
-     * @private
-     * @function
-     *
-     * @todo may still leave event listeners in some versions of Firefox;
-     *  may be fixed with nativeRemoveEventListener & delegating to this.eventManager
-     */
-    handleTransitionend: {
-        value: function (event) {
-            if (event && event.target === this.element) {
-                event.stopPropagation();
-                this.element.removeEventListener("transitionend", this, false);
-                this.element.removeEventListener(ANIMATIONEND_EVENT_NAME, this, false);
-                if (this._isBuildingIn) {
-                    this._isBuildingIn = false;
-                    if (this.classList.contains(this.getBuildInCssClass())) {
-                        this.classList.remove(this.getBuildInCssClass());
-                    }
-                    this.buildInCssClassOverride = undefined;
-                    if (this.classList.contains(this.getBuildInTransitionCssClass())) {
-                        this.classList.remove(this.getBuildInTransitionCssClass());
-                    }
-                    this.buildInTransitionCssClassOverride = undefined;
-                    this.dispatchEventNamed("buildInEnd", true, true);
-                }
-                if (this._isBuildingOut) {
-                    this._isBuildingOut = false;
-                    // Parent will take care of removal of class, element, etc.
-                    this.parentComponent._childComponentDidBuildOut(this);
-                    this.dispatchEventNamed("buildOutEnd", true, true);
-                }
-            }
         }
     },
 
@@ -3411,10 +3567,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
         }
     }
 });
-
-Component.prototype.handleAnimationend =
-    Component.prototype.handleWebkitAnimationEnd =
-        Component.prototype.handleTransitionend;
 
 /**
  * @class RootComponent
@@ -4093,8 +4245,14 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                 console.groupCollapsed("didDraw - " + needsDrawList.length +
                                     (needsDrawList.length > 1 ? " components." : " component."));
             }
+            if (!this._didDrawEvent) {
+                this._didDrawEvent = new CustomEvent("didDraw", {
+                    bubbles: false
+                });
+            }
             for (i = 0; i < j; i++) {
                 component = needsDrawList[i];
+                component.dispatchEvent(this._didDrawEvent);
                 component.didDraw(this._frameTime);
                 if (!component._completedFirstDraw) {
                     firstDrawEvent = document.createEvent("CustomEvent");

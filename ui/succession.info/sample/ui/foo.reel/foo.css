@@ -7,3 +7,19 @@
     background: dodgerblue;
     overflow: auto;
 }
+
+.fooBuildInFrom {
+    opacity: 0;
+}
+
+.fooBuildIn {
+    transition: all 1s ease-in;
+}
+
+.fooBuildOut {
+    transition: all 1s ease-in;
+}
+
+.fooBuildOutTo {
+    opacity: 0;
+}

@@ -57,7 +57,7 @@ exports.Main = Component.specialize({
             // enable logger to work
             Montage.getInfoForObject(this).objectName = 'Bar';
 
-            component.identifier = 'Bar' + this.barCount;
+            //component.identifier = 'Bar' + this.barCount;
             component.title = component.title + this.barCount;
 
             //component.buildInCssClass = null;
@@ -79,7 +79,7 @@ exports.Main = Component.specialize({
                 component = this.foo;
             }
 
-            component.delegate = this.succession1;
+            //component.delegate = this.succession1;
             this.succession1.push(component);
         }
     },
@@ -159,7 +159,7 @@ exports.Main = Component.specialize({
 
     handlePushx5Action: {
         value: function () {
-            var numberOfPushes = 5,
+            var numberOfPushes = 10,
                 self = this;
 
             var pushInterval = window.setInterval(function () {
@@ -170,7 +170,7 @@ exports.Main = Component.specialize({
                 if (numberOfPushes === 0) {
                     window.clearInterval(pushInterval);
                 }
-            }, 500)
+            }, 50)
         }
     },
 
@@ -200,35 +200,38 @@ exports.Main = Component.specialize({
 
     handleSetSuccessionBuildInOutAction: {
         value: function () {
-            this.succession1.contentBuildInCssClass = "bounceInDown";
-            this.succession1.contentBuildInTransitionCssClass = null;
-            this.succession1.contentBuildOutCssClass = "bounceOutDown";
+            var suffix = this.succession1.contentBuildInAnimation && this.succession1.contentBuildInAnimation.cssClass === "buildIn" ? "2" : "";
+
+            this.succession1.contentBuildInAnimation = {
+                fromCssClass: "buildInFrom" + suffix,
+                cssClass: "buildIn" + suffix
+            };
+            this.succession1.contentBuildOutAnimation = {
+                cssClass: "buildOut" + suffix,
+                toCssClass: "buildOutTo" + suffix,
+            };
         }
     },
 
     handleClearSuccessionBuildInOutAction: {
         value: function () {
-            this.succession1.contentBuildInCssClass = undefined;
-            this.succession1.contentBuildInTransitionCssClass = undefined;
-            this.succession1.contentBuildOutCssClass = undefined;
+            this.succession1.contentBuildInAnimation = {};
+            this.succession1.contentBuildOutAnimation = {};
         }
     },
 
     handleDisableSuccessionBuildInOutAction: {
         value: function () {
-            this.succession1.contentBuildInCssClass = null;
-            this.succession1.contentBuildInTransitionCssClass = null;
-            this.succession1.contentBuildOutCssClass = null;
+            this.succession1.contentBuildInAnimation = null;
+            this.succession1.contentBuildOutAnimation = null;
         }
     },
 
     handleDetachAction: {
         value: function () {
-            this.templateObjects.Bar2.detachFromParentComponent();
-            this.templateObjects.text.detachFromParentComponent();
-
-            this.templateObjects.Bar3.detachFromParentComponent();
-
+            this.templateObjects.Bar2._shouldBuildOut = true;
+            this.templateObjects.text._shouldBuildOut = true;
+            this.templateObjects.Bar3._shouldBuildOut = true;
             this.templateObjects.Container.domContent = this.templateObjects.innerText.element;
         }
     },
@@ -240,7 +243,7 @@ exports.Main = Component.specialize({
             self.templateObjects.substitution.switchValue =
                 self.templateObjects.substitution.switchValue === 'Foo' ? 'Bar' : 'Foo';
 
-            window.setTimeout(function () {
+            /*window.setTimeout(function () {
                 self.templateObjects.substitution.switchValue =
                     self.templateObjects.substitution.switchValue === 'Foo' ? 'Bar' : 'Foo';
             }, 500)
@@ -248,7 +251,7 @@ exports.Main = Component.specialize({
             window.setTimeout(function () {
                 self.templateObjects.substitution.switchValue =
                     self.templateObjects.substitution.switchValue === 'Foo' ? 'Bar' : 'Foo';
-            }, 1000)
+            }, 1000)*/
         }
     },
 

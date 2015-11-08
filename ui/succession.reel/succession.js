@@ -15,26 +15,14 @@ var Component = require("ui/component").Component;
  * @augments Component
  */
 exports.Succession = Component.specialize(/** @lends Succession.prototype */{
-    /**
-     * Overrides content's `buildInCssClass`.
-     *
-     * @see Component#buildInCssClass
-     */
-    contentBuildInCssClass: {value: undefined},
 
-    /**
-     * Overrides content's `buildInTransitionCssClass`.
-     *
-     * @see Component#buildInTransitionCssClass
-     */
-    contentBuildInTransitionCssClass: {value: undefined},
+    contentBuildInAnimation: {
+        value: null
+    },
 
-    /**
-     * Overrides content's `buildOutCssClass`.
-     *
-     * @see Component#buildOutCssClass
-     */
-    contentBuildOutCssClass: {value: undefined},
+    contentBuildOutAnimation: {
+        value: null
+    },
 
     constructor: {
         value: function () {
@@ -84,12 +72,12 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
         set: function (value) {
             if (this.content && this.content.length) {
                 this._prepareForBuild();
-                this.domContent = null;
                 this.content.length = 0;
             }
-
             if (value) {
                 this.push(value);
+            } else {
+                this.domContent = null;
             }
         }
     },
@@ -157,28 +145,13 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
      */
     _prepareForBuild: {
         value: function (incoming) {
-            var outgoingBackup, incomingBackup,
-                buildInCssClassOverride, buildInTransitionCssClassOverride, buildOutCSSClassOverride;
-
             if (incoming) {
-                if (typeof this.contentBuildInCssClass !== 'undefined' &&
-                    incoming.buildInCssClassOverride !== this.contentBuildInCssClass) {
-
-                    incoming.buildInCssClassOverride = this.contentBuildInCssClass;
-
-                    // buildInTransitionCssClass shouldn't be overridden if buildInCssClass wasn't overridden
-                    // not checking undefined b/c we may desire CSS animation instead of transition
-                    if (incoming.buildInTransitionCssClassOverride !== this.contentBuildInTransitionCssClass) {
-                        incoming.buildInTransitionCssClassOverride = this.contentBuildInTransitionCssClass;
-                    }
-                }
+                incoming.buildInAnimationOverride = this.contentBuildInAnimation;
+                incoming.buildOutAnimationOverride = this.contentBuildOutAnimation;
             }
-
-            if (this.top) { // outgoing
-                if (typeof this.contentBuildOutCssClass !== 'undefined' &&
-                    this.top.buildOutCssClassOverride !== this.contentBuildOutCssClass) {
-                    this.top.buildOutCssClassOverride = this.contentBuildOutCssClass;
-                }
+            if (this.top) {
+                this.top.buildInAnimationOverride = this.contentBuildInAnimation;
+                this.top.buildOutAnimationOverride = this.contentBuildOutAnimation;
             }
         }
     },

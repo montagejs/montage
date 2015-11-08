@@ -8,3 +8,19 @@
     border: 5px orangered solid;
     box-sizing: border-box;
 }
+
+.barBuildInFrom {
+    opacity: 0;
+}
+
+.barBuildIn {
+    transition: all 1s ease-in;
+}
+
+.barBuildOut {
+    transition: all 1s ease-in;
+}
+
+.barBuildOutTo {
+    opacity: 0;
+}
