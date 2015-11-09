@@ -32,6 +32,7 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     logger = require("montage/core/logger").logger("deserializer-spec"),
     Deserializer = require("montage/core/serialization/deserializer/montage-deserializer").MontageDeserializer,
+    deserialize = require("montage/core/serialization/deserializer/montage-deserializer").deserialize,
     Alias = require("montage/core/serialization/alias").Alias,
     Bindings = require("montage/frb"),
     defaultEventManager = require("montage/core/event/event-manager").defaultEventManager,
@@ -1203,6 +1204,137 @@ describe("serialization/montage-deserializer-spec", function () {
             } catch (ex) {
                 expect(ex).toBeDefined();
             }
+        });
+    });
+
+    describe("deserialization", function() {
+        it("should deserialize a serialization string", function() {
+            var serialization = {
+                    "string": {
+                        "value": "a string"
+                    },
+
+                    "number": {
+                        "value": 42
+                    },
+
+                    "literal": {
+                        "value": {
+                            "string": "a string",
+                            "number": 42
+                        }
+                    }
+                },
+                serializationString = JSON.stringify(serialization),
+                expectedResult = {
+                    string: "a string",
+                    number: 42,
+                    literal: {
+                        string: "a string",
+                        number: 42
+                    }
+                },
+                deserializer = new Deserializer().init(serializationString, require);
+
+            return deserializer.deserialize().then(function(objects) {
+                expect(objects).toEqual(expectedResult);
+            });
+        });
+
+        it("should deserialize an object from a serialization string", function() {
+            var serialization = {
+                    "root": {
+                        "value": "a string"
+                    }
+                },
+                serializationString = JSON.stringify(serialization),
+                deserializer = new Deserializer().init(serializationString, require);
+
+            return deserializer.deserializeObject().then(function(object) {
+                expect(object).toBe("a string");
+            });
+        });
+
+        it("should deserialize an external object from a serialization string", function() {
+            var serialization = {
+                    "external": {}
+                },
+                userObjects = {
+                    "external": {}
+                },
+                serializationString = JSON.stringify(serialization),
+                deserializer = new Deserializer().init(serializationString, require);
+
+            return deserializer.deserialize(userObjects).then(function(objects) {
+                expect(userObjects.external).toBe(objects.external);
+            });
+        });
+
+        it("should fail deserializing a missing external object from a serialization string", function() {
+            var serialization = {
+                    "external": {}
+                },
+                serializationString = JSON.stringify(serialization),
+                deserializer = new Deserializer().init(serializationString, require);
+
+            return deserializer.deserialize().then(function(objects) {
+                expect("test").toBe("fail");
+            }, function() {
+                expect(true).toBe(true);
+            });
+        });
+
+        it("should be oblivious to Object.prototype aditions", function() {
+            Object.defineProperty(Object.prototype, "clear", {
+                value: function() {},
+                writable: true,
+                configurable: true
+            });
+
+            var serialization = {
+                    "clear": {
+                        "value": "a string"
+                    }
+                },
+                serializationString = JSON.stringify(serialization),
+                deserializer = new Deserializer().init(serializationString, require);
+
+            return deserializer.deserialize().then(function(object) {
+                delete Object.prototype.clear;
+
+                expect(object.clear).toBe("a string");
+            });
+        });
+
+        describe("shorthand", function() {
+            it("should deserialize an object from a serialization string", function() {
+                var serialization = {
+                        "root": {
+                            "value": "a string"
+                        }
+                    },
+                    serializationString = JSON.stringify(serialization);
+
+                return deserialize(serializationString, require).then(function(object) {
+                    expect(object).toEqual("a string");
+                });
+            });
+        });
+
+        describe("errors", function() {
+            it("should warn about invalid format", function() {
+                // property name is missing quotes
+                var serializationString = '{string: "a string"}';
+
+                return new Promise(function (resolve, reject) {
+                    deserialize(serializationString, require); // will fail
+
+                }).then(function(objects) {
+                    // never executed
+                }, function(reason) {
+                    expect(reason).toBeDefined();
+                });
+            })
         });
     });
 });
