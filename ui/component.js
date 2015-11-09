@@ -26,6 +26,7 @@ var Montage = require("../core/core").Montage,
     drawListLogger = require("../core/logger").logger("drawing list").color.blue(),
     needsDrawLogger = require("../core/logger").logger("drawing needsDraw").color.violet(),
     drawLogger = require("../core/logger").logger("drawing").color.blue(),
+    WeakMap = require("collections/weak-map"),
 
     Set = require("collections/set");
 
@@ -1358,7 +1359,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                         this._expandComponentPromise = new Promise(function(resolve, reject) {
                             self._instantiateTemplate().then(function() {
                                 self._isComponentExpanded = true;
-                                self._addTemplateStyles();
+                                self._addTemplateStylesIfNeeded();
                                 self.needsDraw = true;
                                 resolve();
                             },reject)
@@ -1851,21 +1852,12 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         }
     },
 
-    _addTemplateStyles: {
+    _addTemplateStylesIfNeeded: {
         value: function () {
-            var part = this._templateDocumentPart,
-                resources,
-                styles,
-                _document;
+            var part = this._templateDocumentPart;
 
             if (part) {
-                resources = part.template.getResources();
-                _document = this.element.ownerDocument;
-                styles = resources.createStylesForDocument(_document);
-
-                for (var i = 0, style; (style = styles[i]); i++) {
-                    this.rootComponent.addStylesheet(style);
-                }
+                this.rootComponent.addStyleSheetsFromTemplate(part.template);
             }
         }
     },
@@ -2946,6 +2938,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         value: function RootComponent() {
             this._drawTree = this._drawTree.bind(this);
             this._readyToDrawListIndex = {};
+            this._addedStyleSheetsByTemplate = new WeakMap();
         }
     },
 
@@ -3317,7 +3310,31 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             this._needsStylesheetsDraw = true;
         }
     },
+    _addedStyleSheetsByTemplate: {
+        value: null
+    },
+    addStyleSheetsFromTemplate: {
+        value: function(template) {
+            if(!this._addedStyleSheetsByTemplate.has(template)) {
+                var resources = template.getResources()
+                    , _document = this.element
+                    , styles = resources.createStylesForDocument(_document);
 
+                for (var i = 0, style; (style = styles[i]); i++) {
+                    this.addStylesheet(style);
+                }
+                this._addedStyleSheetsByTemplate.set(template,true);
+            }
+        }
+    },
+    __bufferDocumentFragment: {
+        value: null,
+    },
+    _bufferDocumentFragment: {
+         get: function() {
+             return this.__bufferDocumentFragment || ( this.__bufferDocumentFragment = this._element.createDocumentFragment());
+        }
+    },
     /**
      * @private
      */
@@ -3325,11 +3342,16 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         value: function () {
             var documentResources = this._documentResources,
                 stylesheets = this._stylesheets,
-                stylesheet;
+                stylesheet,
+                documentHead = documentResources._document.head,
+                bufferDocumentFragment = this._bufferDocumentFragment;
 
             while ((stylesheet = stylesheets.shift())) {
-                documentResources.addStyle(stylesheet);
+                documentResources.addStyle(stylesheet,bufferDocumentFragment);
             }
+
+            documentHead.insertBefore(bufferDocumentFragment, documentHead.firstChild);
+
             this._needsStylesheetsDraw = false;
         }
     },
