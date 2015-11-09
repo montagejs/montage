@@ -163,7 +163,7 @@ var DocumentResources = Montage.specialize({
 
             if (url) {
                 self._addResource(url);
-                
+
                 promise = new Promise(function(resolve, reject){
                     // We wait until all scripts are loaded, this is important
                     // because templateDidLoad might need to access objects that
@@ -177,7 +177,7 @@ var DocumentResources = Montage.specialize({
                         clearTimeout(loadingTimeout);
                         resolve(event);
                     };
-                    
+
                     script.addEventListener("load", scriptLoadedFunction, false);
                     script.addEventListener("error", scriptLoadedFunction, false);
 
@@ -230,7 +230,7 @@ var DocumentResources = Montage.specialize({
     },
 
     addStyle: {
-        value: function (element) {
+        value: function (element, DOMParent) {
             var url = element.getAttribute("href"),
                 documentHead;
 
@@ -245,12 +245,12 @@ var DocumentResources = Montage.specialize({
                     // fixme: Quick workaround for IE 11. Need a better patch.
                     // -> link DOM elements are loaded before they are attached to the DOM
                     element.setAttribute("href", url);
-                    
+
                     element.addEventListener("load", this, false);
                     element.addEventListener("error", this, false);
                 }
             }
-            documentHead = this._document.head;
+            documentHead = DOMParent || this._document.head;
             documentHead.insertBefore(element, documentHead.firstChild);
         }
     },
@@ -367,4 +367,3 @@ var DocumentResources = Montage.specialize({
 });
 
 exports.DocumentResources = DocumentResources;
-
