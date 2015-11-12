@@ -999,10 +999,12 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
      */
     handleDataMapChange: {
         value: function(event) {
-            var self = this;
-            this.localized = this._messageFunction.then(function (fn) {
-                return fn(self._data.toObject())
+            if (this._key) {
+                var self = this;
+                this.localized = this._messageFunction.then(function (fn) {
+                    return fn(self._data.toObject())
                 });
+            }
         }
     },
 
