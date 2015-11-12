@@ -635,7 +635,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
         }
     },
 
-    _dispatchLocaleChangeHasNeeded: {
+    _dispatchLocaleChangeAsNeeded: {
         value: function (previousLocale, component) {
             if (component && (component.localizer === null || component.localizer === void 0 || component.localizer === this)) {
                 if (typeof component.localizerDidChangeLocale === "function") {
@@ -655,7 +655,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
             if (!_component) {
                 _component = this.component || rootComponent;
 
-                if (!this._dispatchLocaleChangeHasNeeded(previousLocale, _component)) {
+                if (!this._dispatchLocaleChangeAsNeeded(previousLocale, _component)) {
                     return;
                 }
             }
@@ -670,7 +670,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                 for (var i = 0; i < childComponents.length; i++) {
                     child = childComponents[i];
 
-                    if (this._dispatchLocaleChangeHasNeeded(previousLocale, child)) {
+                    if (this._dispatchLocaleChangeAsNeeded(previousLocale, child)) {
                         if (child._childComponents) {
                             this._dispatchLocaleChange(previousLocale, child);
                         }
