@@ -61,9 +61,10 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                 defaultLocaleStored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
             }
 
-            var defaultLocale = this.callDelegateMethod("localizerWillUseLocale", this);
+            var locateCandidate = locale || defaultLocaleStored || window.navigator.userLanguage || window.navigator.language || Localizer.defaultLocale,
+                defaultLocale = this.callDelegateMethod("localizerWillUseLocale", this, locateCandidate);
 
-            this.locale = defaultLocale || defaultLocaleStored || locale || window.navigator.userLanguage || window.navigator.language || Localizer.defaultLocale;
+            this.locale = defaultLocale || locateCandidate;
             this._isInitialized = true;
 
             this.loadMessages();
@@ -634,8 +635,8 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
         }
     },
 
-    _dispatchLocaleChangeIfNeeded: {
-        value: function (component, previousLocale) {
+    _dispatchLocaleChangeHasNeeded: {
+        value: function (previousLocale, component) {
             if (component && (component.localizer === null || component.localizer === void 0 || component.localizer === this)) {
                 if (typeof component.localizerDidChangeLocale === "function") {
                     component.localizerDidChangeLocale(this, previousLocale, this._locale);
@@ -654,7 +655,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
             if (!_component) {
                 _component = this.component || rootComponent;
 
-                if (!this._dispatchLocaleChangeIfNeeded(_component, previousLocale)) {
+                if (!this._dispatchLocaleChangeHasNeeded(previousLocale, _component)) {
                     return;
                 }
             }
@@ -669,7 +670,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                 for (var i = 0; i < childComponents.length; i++) {
                     child = childComponents[i];
 
-                    if (this._dispatchLocaleChangeIfNeeded(child, previousLocale)) {
+                    if (this._dispatchLocaleChangeHasNeeded(previousLocale, child)) {
                         if (child._childComponents) {
                             this._dispatchLocaleChange(previousLocale, child);
                         }
