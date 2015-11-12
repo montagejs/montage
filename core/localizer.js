@@ -55,13 +55,15 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
      */
     initWithLocale: {
         value: function (locale) {
-            var defaultLocale = this.callDelegateMethod("localizerWillUseLocale");
+            var defaultLocaleStored;
 
-            if (!defaultLocale && this.shouldStoreLocale && typeof window !== "undefined" && window.localStorage) {
-                defaultLocale = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+            if (this.storesLocale && typeof window !== "undefined" && window.localStorage) {
+                defaultLocaleStored = window.localStorage.getItem(LOCALE_STORAGE_KEY);
             }
 
-            this.locale = defaultLocale || locale || window.navigator.userLanguage || window.navigator.language || Localizer.defaultLocale;
+            var defaultLocale = this.callDelegateMethod("localizerWillUseLocale", this);
+
+            this.locale = defaultLocale || defaultLocaleStored || locale || window.navigator.userLanguage || window.navigator.language || Localizer.defaultLocale;
             this._isInitialized = true;
 
             this.loadMessages();
@@ -80,7 +82,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
     },
 
 
-    shouldStoreLocale: {
+    storesLocale: {
         value: false
     },
 
@@ -214,7 +216,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                     });
                 }
 
-                if (this.shouldStoreLocale && typeof window !== "undefined" && window.localStorage) {
+                if (this.storesLocale && typeof window !== "undefined" && window.localStorage) {
                     // If possible, save locale
                     try {
                         window.localStorage.setItem(LOCALE_STORAGE_KEY, value);
@@ -622,7 +624,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
      */
     reset: {
         value: function () {
-            if (this.shouldStoreLocale && typeof window !== "undefined" && window.localStorage) {
+            if (this.storesLocale && typeof window !== "undefined" && window.localStorage) {
                 window.localStorage.removeItem(LOCALE_STORAGE_KEY);
             }
 
@@ -632,14 +634,28 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
         }
     },
 
+    _dispatchLocaleChangeIfNeeded: {
+        value: function (component, previousLocale) {
+            if (component && (component.localizer === null || component.localizer === void 0 || component.localizer === this)) {
+                if (typeof component.localizerDidChangeLocale === "function") {
+                    component.localizerDidChangeLocale(this, previousLocale, this._locale);
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+    },
+
 
     _dispatchLocaleChange: {
         value: function (previousLocale, _component) {
             if (!_component) {
                 _component = this.component || rootComponent;
 
-                if (typeof _component.LocalizerDidChangeLocale === "function") {
-                    _component.LocalizerDidChangeLocale(this, previousLocale, this._locale);
+                if (!this._dispatchLocaleChangeIfNeeded(_component, previousLocale)) {
+                    return;
                 }
             }
 
@@ -653,12 +669,10 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                 for (var i = 0; i < childComponents.length; i++) {
                     child = childComponents[i];
 
-                    if (typeof child.LocalizerDidChangeLocale === "function") {
-                        child.LocalizerDidChangeLocale(this, previousLocale, this._locale);
-                    }
-
-                    if (child._childComponents) {
-                        this._dispatchLocaleChange(previousLocale, child);
+                    if (this._dispatchLocaleChangeIfNeeded(child, previousLocale)) {
+                        if (child._childComponents) {
+                            this._dispatchLocaleChange(previousLocale, child);
+                        }
                     }
                 }
             }
@@ -671,7 +685,7 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
         value: function () {
             if (!defaultLocalizer) {
                 defaultLocalizer = new Localizer();
-                defaultLocalizer.shouldStoreLocale = true;
+                defaultLocalizer.storesLocale = true;
             }
 
             return defaultLocalizer;
@@ -680,11 +694,8 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
 
     defaultLocalizerWithDelegate: {
         value: function (delegate) {
-            if (!defaultLocalizer) {
-                defaultLocalizer = new Localizer();
-                defaultLocalizer.shouldStoreLocale = true;
-                defaultLocalizer.delegate = delegate;
-            }
+            this.defaultLocalizer();
+            defaultLocalizer.delegate = delegate;
 
             return defaultLocalizer;
         }
