@@ -165,8 +165,8 @@ describe("core/localizer-spec", function () {
                 expect(localized).toBe("Hello, after");
             });
         });
-        
-        
+
+
 //https://developer.mozilla.org/en-US/docs/Mozilla/JavaScript_code_modules/Promise.jsm/Deferred
         it("waits for the localizer to have messages", function waitsForTheLocalizerToHaveMessages() {
             var resolveTrigger = function resolveTrigger(resolveHandler) {
@@ -199,11 +199,11 @@ describe("core/localizer-spec", function () {
     describe("Localizer", function (){
         var l;
         beforeEach(function () {
-            l = new Localizer.Localizer().init("en");
+            l = new Localizer.Localizer().initWithLocale("en");
         });
 
         it("can be created with a foreign language code", function () {
-            var l = new Localizer.Localizer().init("no");
+            var l = new Localizer.Localizer().initWithLocale("no");
             expect(l.messageFormat).not.toBe(null);
         });
 
@@ -359,7 +359,7 @@ describe("core/localizer-spec", function () {
             });
 
             it("loads non-English messages", function () {
-                var l = new Localizer.Localizer().init("no");
+                var l = new Localizer.Localizer().initWithLocale("no");
                 return require.loadPackage(module.directory + "localizer/fallback/", {}).then(function (r){
                     l.require = r;
                     return l.loadMessages();
@@ -370,7 +370,7 @@ describe("core/localizer-spec", function () {
             });
 
             it("loads the fallback messages", function () {
-                var l = new Localizer.Localizer().init("no-x-compiled");
+                var l = new Localizer.Localizer().initWithLocale("no-x-compiled");
                 return require.loadPackage(module.directory + "localizer/fallback/", {}).then(function (r){
                     l.require = r;
                     return l.loadMessages();
@@ -404,16 +404,17 @@ describe("core/localizer-spec", function () {
         describe("delegate", function () {
             it("is called to determine the default locale to use", function () {
                 var delegate = {
-                    getDefaultLocale: function () {
+                    localizerWillUseLocale: function () {
                         return "en-x-delegate";
                     }
                 };
 
-                spyOn(delegate, 'getDefaultLocale').andCallThrough();
+                spyOn(delegate, 'localizerWillUseLocale').andCallThrough();
 
                 Localizer.defaultLocalizer.delegate = delegate;
+                Localizer.defaultLocalizer.initWithLocale();
 
-                expect(delegate.getDefaultLocale).toHaveBeenCalled();
+                expect(delegate.localizerWillUseLocale).toHaveBeenCalled();
                 expect(Localizer.defaultLocalizer.locale).toBe("en-x-delegate");
             });
         });

@@ -11,6 +11,7 @@
  */
 var Montage = require("./core").Montage,
     MessageFormat = require("./messageformat"),
+    rootComponent = require("../ui/component").__root__,
     logger = require("./logger").logger("localizer"),
     Serializer = require("./serialization/serializer/montage-serializer").MontageSerializer,
     Deserializer = require("./serialization/deserializer/montage-deserializer").MontageDeserializer,
@@ -47,38 +48,90 @@ var reLanguageTagValidator = /^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/;
  */
 var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.prototype # */ {
 
-    constructor: {
-        value: function Localizer() {
-            this.super();
-        }
-    },
-
     /**
      * @function
-     * @param {string} [locale] The RFC-5646 language tag this localizer
-     * should use. Defaults to defaultLocalizer.locale
+     * @param {string} [locale] The RFC-5646 language tag this localizer should use. Defaults to defaultLocalizer.locale
      * @returns {Localizer} The Localizer object it was called on.
      */
-    init: {
+    initWithLocale: {
         value: function (locale) {
-            this.locale = locale || defaultLocalizer.locale;
+            var defaultLocale = this.callDelegateMethod("localizerWillUseLocale");
+
+            if (!defaultLocale && this.shouldStoreLocale && typeof window !== "undefined" && window.localStorage) {
+                defaultLocale = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+            }
+
+            this.locale = defaultLocale || locale || window.navigator.userLanguage || window.navigator.language || Localizer.defaultLocale;
+            this._isInitialized = true;
+
+            this.loadMessages();
 
             return this;
         }
     },
 
-    /**
-     * @function
-     * @param {string} locale The RFC-5646 language tag this localizer should use.
-     * @param {Object} messages A map from keys to messages. Each message should either be a string or an object with a "message" property.
-     * @returns {Localizer} The Localizer object it was called on.
-     */
-    initWithMessages: {
-        value: function (locale, messages) {
-            this.locale = locale;
-            this.messages = messages;
 
-            return this;
+    initWithLocaleAndDelegate: {
+        value: function (locale, delegate) {
+            this.delegate = delegate;
+
+            return this.initWithLocale(locale);
+        }
+    },
+
+
+    shouldStoreLocale: {
+        value: false
+    },
+
+
+    component: {
+        value: null
+    },
+
+
+    _delegate: {
+        value: null
+    },
+
+    /**
+     * Delegate to get the default locale or the locale messages.
+     * Should implement a `getDefaultLocale` method that returns
+     * a language-tag string that can be passed to {@link locale}
+     * Should implement a `localizerWillLoadMessages` method that returns
+     * a Promise that will return a "messages" object with a combination of keys/messages.
+     *
+     * @example
+     * myDelegate.localizerWillLoadMessages = function () {
+     *     return Promise(function (resolve, reject){
+     *          return {
+     *              language_key: "English",
+     *              hello_key: "Hello"
+     *          };
+     *     });
+     * }
+     *
+     * @type Object
+     * @default null
+     */
+    delegate: {
+        set: function (delegate) {
+            if (!this._delegate && delegate && typeof delegate === "object") {
+                this._delegate = delegate;
+            }
+        },
+        get: function () {
+            return this._delegate;
+        }
+    },
+
+    _isInitialized: {
+        value: false
+    },
+
+    isInitialized: {
+        get: function () {
+            return this._isInitialized;
         }
     },
 
@@ -146,9 +199,30 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
             if (!reLanguageTagValidator.test(value)) {
                 throw new TypeError("Language tag '" + value + "' is not valid. It must match http://tools.ietf.org/html/rfc5646 (alphanumeric characters separated by hyphens)");
             }
+
             if (this._locale !== value) {
+                var previousLocale = this._locale;
+
                 this._locale = value;
                 this.messageFormat = new MessageFormat(value);
+
+                if (previousLocale && previousLocale !== this._locale) {
+                    var self = this;
+
+                    this.loadMessages().then(function () {
+                        self._dispatchLocaleChange(previousLocale);
+                    });
+                }
+
+                if (this.shouldStoreLocale && typeof window !== "undefined" && window.localStorage) {
+                    // If possible, save locale
+                    try {
+                        window.localStorage.setItem(LOCALE_STORAGE_KEY, value);
+                    } catch (e) {
+                        // LocalStorage quota might have been exceeded
+                        // iOS Safari emits a quota exceeded error from private mode always
+                    }
+                }
             }
         }
     },
@@ -250,19 +324,22 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
             if (typeof timeout !== "number") {
                 timeout = 5000;
             }
+
             this.messages = null;
 
-            var self = this;
-            var promise = this._manifest;
+            var self = this,
+                promise = this.callDelegateMethod("localizerWillLoadMessages");
 
-            if (timeout) {
+            if (promise) {
                 promise = promise.timeout(timeout);
+
+            } else {
+                promise = this._manifest.timeout(timeout).then(function (manifest) {
+                    return self._loadMessageFiles(manifest.files);
+                });
             }
 
-            return this.messagesPromise = promise.get("files").then(function (files) {
-                return self._loadMessageFiles(files);
-
-            }).then(function (localesMessages) {
+            return this.messagesPromise = promise.then(function (localesMessages) {
                 return self._collapseMessages(localesMessages);
 
             },function(error) {
@@ -273,8 +350,8 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                 if (typeof callback === "function") {
                     callback(messages);
                 }
-                return messages;
 
+                return messages;
             });
         }
     },
@@ -497,104 +574,44 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
     */
     localize: {
         value: function (key, defaultMessage, defaultOnFail, callback) {
-            var promise, self = this;
             defaultOnFail = (typeof defaultOnFail === "undefined") ? true : defaultOnFail;
 
-            if (!this.messagesPromise) {
+            var self = this,
+                promise;
+
+            if (!this._isInitialized) {
+                promise = new Promise(function () {
+                    self.initWithLocale();
+
+                    return self.messagesPromise.then(function () {
+                        return self.localize(key, defaultMessage, defaultOnFail, callback);
+                    });
+                });
+
+            } else if (!this.messagesPromise) {
                 promise = Promise.resolve(this.localizeSync(key, defaultMessage));
                 promise.then(callback);
                 return promise;
-            }
 
-            var l = function () {
-                var messageFn = self.localizeSync(key, defaultMessage);
-                if (typeof callback === "function") {
-                    callback(messageFn);
-                }
-                return messageFn;
-            };
-
-            if (defaultOnFail) {
-                // Try and localize the message, no matter what the outcome
-                return this.messagesPromise.then(l, l);
             } else {
-                return this.messagesPromise.then(l);
-            }
-        }
-    }
+                var l = function () {
+                        var messageFn = self.localizeSync(key, defaultMessage);
+                        if (typeof callback === "function") {
+                            callback(messageFn);
+                        }
+                        return messageFn;
+                    };
 
-});
+                if (defaultOnFail) {
+                    // Try and localize the message, no matter what the outcome
+                    promise = this.messagesPromise.then(l, l);
 
-/**
- * @class DefaultLocalizer
- * @extends Localizer
- */
-var DefaultLocalizer = Localizer.specialize( /** @lends DefaultLocalizer# */ {
-
-    init: {
-        value: function () {
-            var defaultLocale = this.callDelegateMethod("getDefaultLocale");
-
-            if (!defaultLocale && typeof window !== "undefined") {
-                if (window.localStorage) {
-                    defaultLocale = window.localStorage.getItem(LOCALE_STORAGE_KEY);
-                }
-                defaultLocale = defaultLocale || window.navigator.userLanguage || window.navigator.language;
-            }
-
-            defaultLocale = defaultLocale || "en";
-            this.locale = defaultLocale;
-
-            this.loadMessages();
-
-            return this;
-        }
-    },
-
-    _delegate: {
-        value: null
-    },
-
-    /**
-     * Delegate to get the default locale.
-     * Should implement a `getDefaultLocale` method that returns
-     * a language-tag string that can be passed to {@link locale}
-     * @type Object
-     * @default null
-     */
-    delegate: {
-        get: function () {
-            return this._delegate;
-        },
-        set: function (value) {
-            if (this._delegate !== value) {
-                this._delegate = value;
-                this.init();
-            }
-        }
-    },
-
-    locale: {
-        get: function () {
-            return this._locale;
-        },
-        set: function (value) {
-            try {
-                Object.getPropertyDescriptor(Localizer.prototype, "locale").set.call(this, value);
-            } catch (e) {
-                value = "en";
-                Object.getPropertyDescriptor(Localizer.prototype, "locale").set.call(this, value);
-            }
-
-            // If possible, save locale
-            if (typeof window !== "undefined" && window.localStorage) {
-                try {
-                    window.localStorage.setItem(LOCALE_STORAGE_KEY, value);
-                } catch (e) {
-                    // LocalStorage quota might have been exceeded
-                    // iOS Safari emits a quota exceeded error from private mode always
+                } else {
+                    promise = this.messagesPromise.then(l);
                 }
             }
+
+            return promise;
         }
     },
 
@@ -605,12 +622,76 @@ var DefaultLocalizer = Localizer.specialize( /** @lends DefaultLocalizer# */ {
      */
     reset: {
         value: function () {
-            if (typeof window !== "undefined" && window.localStorage) {
+            if (this.shouldStoreLocale && typeof window !== "undefined" && window.localStorage) {
                 window.localStorage.removeItem(LOCALE_STORAGE_KEY);
             }
-            this.init();
+
+            this.initWithLocale();
+
             return this._locale;
         }
+    },
+
+
+    _dispatchLocaleChange: {
+        value: function (previousLocale, _component) {
+            if (!_component) {
+                _component = this.component || rootComponent;
+
+                if (typeof _component.LocalizerDidChangeLocale === "function") {
+                    _component.LocalizerDidChangeLocale(this, previousLocale, this._locale);
+                }
+            }
+
+            // Get the private `_childComponents` in order to avoid to create an empty array,
+            // indeed childComponents is set lazily.
+            var childComponents = _component._childComponents;
+
+            if (childComponents) {
+                var child;
+
+                for (var i = 0; i < childComponents.length; i++) {
+                    child = childComponents[i];
+
+                    if (typeof child.LocalizerDidChangeLocale === "function") {
+                        child.LocalizerDidChangeLocale(this, previousLocale, this._locale);
+                    }
+
+                    if (child._childComponents) {
+                        this._dispatchLocaleChange(previousLocale, child);
+                    }
+                }
+            }
+        }
+    }
+
+}, {
+
+    defaultLocalizer: {
+        value: function () {
+            if (!defaultLocalizer) {
+                defaultLocalizer = new Localizer();
+                defaultLocalizer.shouldStoreLocale = true;
+            }
+
+            return defaultLocalizer;
+        }
+    },
+
+    defaultLocalizerWithDelegate: {
+        value: function (delegate) {
+            if (!defaultLocalizer) {
+                defaultLocalizer = new Localizer();
+                defaultLocalizer.shouldStoreLocale = true;
+                defaultLocalizer.delegate = delegate;
+            }
+
+            return defaultLocalizer;
+        }
+    },
+
+    defaultLocale: {
+        value: "en"
     }
 
 });
@@ -629,19 +710,36 @@ var DefaultLocalizer = Localizer.specialize( /** @lends DefaultLocalizer# */ {
  * value will be saved in
  *
  * "montage_locale" (LOCALE_STORAGE_KEY).
- * @type {DefaultLocalizer}
- * @static
  */
-var defaultLocalizer = exports.defaultLocalizer = new DefaultLocalizer().init();
+var defaultLocalizer;
 
-/**
- * The localize function from {@link defaultLocalizer} provided for
+Object.defineProperty(exports, "defaultLocalizer", {
+    get: function () {
+        return Localizer.defaultLocalizer();
+    }
+});
+
+
+/** The localize function from {@link defaultLocalizer} provided for
  * convenience.
  *
  * @function
  * @see Localizer#localize
  */
-exports.localize = defaultLocalizer.localize.bind(defaultLocalizer);
+var _localize;
+
+Object.defineProperty(exports, "localize", {
+    get: function () {
+        if (!_localize) {
+            var _defaultLocalizer = Localizer.defaultLocalizer();
+
+            _localize = _defaultLocalizer.bind(_defaultLocalizer);
+        }
+
+        return _localize;
+    }
+});
+
 
 /**
  * Tracks a message function and its data for changes in order to generate a
@@ -661,6 +759,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
             // _dataObject is set in the data setter.
             this.defineBinding("_data", {"<-": "_dataObject.toMap()"});
             this._data.addMapChangeListener(this, "data");
+            this.addPathChangeListener("localizer.locale", this, "handleLocaleChange");
         }
     },
 
@@ -683,11 +782,15 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
     },
 
     _localizer: {
-        value: defaultLocalizer
+        value: null
     },
 
     localizer: {
         get: function () {
+            if (!this._localizer) {
+                this._localizer = Localizer.defaultLocalizer();
+            }
+
             return this._localizer;
         },
         set: function (value) {
@@ -741,6 +844,14 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
 
     _isLocalizeQueued: {
         value: false
+    },
+
+    handleLocaleChange: {
+        value: function () {
+            if (this._key && this._localizer && this._localizer.isInitialized) {
+                this._localize();
+            }
+        }
     },
 
     _localize: {
@@ -894,7 +1005,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
             result.defaultMessage = this._defaultMessage;
 
             // only serialize localizer if it isn't the default one
-            if (this._localizer !== defaultLocalizer) {
+            if (this._localizer !== Localizer.defaultLocalizer()) {
                 result.localizer = this._localizer;
             }
 
