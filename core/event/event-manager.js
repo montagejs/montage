@@ -2262,7 +2262,9 @@ if (typeof window !== "undefined") { // client-side
 
         _isIOSPlatform: {
             get: function () {
-                return this.__isIOSPlatform = this.__isIOSPlatform || (/iphone|ipod|ipad/gi).test(navigator.platform);
+                // window.indexedDB -> only supported by WKWebView
+                return this.__isIOSPlatform = this.__isIOSPlatform ||
+                    (/^iphone|^ipod|^ipad/gi).test(navigator.platform) && !!window.indexedDB;
             }
         },
 
@@ -2345,7 +2347,7 @@ if (typeof window !== "undefined") { // client-side
             value: function (event) {
                 if (this.blocksEmulatedEvents && !window.PointerEvent && !(window.MSPointerEvent && window.navigator.msPointerEnabled)) {
                     /**
-                     * Under IOS emulated mouse events have a timestamp set to 0.
+                     * Under IOS emulated mouse events have a timestamp set to 0. (Just WKWebView not UIWebView)
                      * Plus, this property can't be used for Firefox.
                      * Firefox has an open bug since 2004: the property timeStamp is not populated correctly.
                      * -> https://bugzilla.mozilla.org/show_bug.cgi?id=238041
@@ -2397,7 +2399,12 @@ if (typeof window !== "undefined") { // client-side
                     timeoutIDs[touchIdentifier] = setTimeout(function () {
                         delete touchList.touchesEnd[touchIdentifier];
                         delete timeoutIDs[touchIdentifier];
-                    }, 300); // 300ms -> click delay.
+                    }, 400);
+                    /**
+                     * 400ms -> need a higher timeout than the click delay for UIWebViews.
+                     * Probably related to the fact Apple pauses JavaScript execution during scrolls on UIWebViews.
+                     * http://developer.telerik.com/featured/scroll-event-change-ios-8-big-deal/
+                     */
 
                     delete touchList.touchesStart[touchIdentifier];
                     touchList.touchesEnd[touchIdentifier] = touchEvent.target;
