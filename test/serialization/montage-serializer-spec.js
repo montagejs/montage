@@ -298,6 +298,19 @@ describe("serialization/montage-serializer-spec", function () {
                 expect(JSON.parse(serialization))
                 .toEqual(expectedSerialization);
             });
+
+            it("should work when object has no constructor", function() {
+                var object = {
+                    "o": Object.create(null)
+                };
+
+                serializationTest = function() {
+                    serializer.serializeObject(object);
+                }
+
+                expect(serializationTest).not.toThrow();
+
+            })
         });
 
         describe("elements", function () {
