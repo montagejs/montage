@@ -69,7 +69,7 @@ exports.MontageLabeler = Montage.specialize({
 
             if (identifier && this._labelRegexp.test(identifier)) {
                 objectName = object.identifier;
-            } else if (object && typeof object === "object" && "getInfoForObject" in object || "getInfoForObject" in object.constructor ) {
+            } else if (object && typeof object === "object" && "getInfoForObject" in object || (!!object.constructor && "getInfoForObject" in object.constructor )) {
                 objectName = Montage.getInfoForObject(object).objectName;
                 objectName = objectName.toLowerCase();
             } else {

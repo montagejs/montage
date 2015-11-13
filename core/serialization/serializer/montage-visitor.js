@@ -39,7 +39,7 @@ var MontageVisitor = Montage.specialize({
                 return "Module";
             } else if (object instanceof Alias) {
                 return "Alias";
-            } else if ("getInfoForObject" in object || "getInfoForObject" in object.constructor) {
+            } else if ("getInfoForObject" in object || (!!object.constructor && "getInfoForObject" in object.constructor)) {
                 return "MontageObject";
             } else if (object.thisIsAReferenceCreatedByMontageSerializer) {
                 return "MontageReference";
