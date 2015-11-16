@@ -367,6 +367,16 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         }
     },
 
+    _cancelPressIfCenterPositionChange: {
+        value: function (event) {
+            this._saveInitialCenterPositionIfNeeded();
+
+            if (this._positionChanged) {
+                this._cancelPress(event);
+            }
+        }
+    },
+
     _handleMove: {
         value: function (event) {
             if (this._observedPointer === null) {
@@ -378,11 +388,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 (event.changedTouches && this._changedTouchisObserved(event.changedTouches) !== false)) &&
                 this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
 
-                this._saveInitialCenterPositionIfNeeded();
-
-                if (this._positionChanged) {
-                    this._cancelPress(event);
-                }
+                this._cancelPressIfCenterPositionChange(event);
             }
         }
     },
@@ -397,11 +403,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
             if ((event.target === this.element || event.target === window ||
                 (typeof event.target.contains === "function" && event.target.contains(this.element)) || this.element.contains(event.target))) {
 
-                this._saveInitialCenterPositionIfNeeded();
-
-                if (this._positionChanged) {
-                    this._cancelPress(event);
-                }
+                this._cancelPressIfCenterPositionChange(event);
             }
         }
     },
@@ -441,7 +443,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 (typeof event.target.contains === "function" && event.target.contains(this.element)) ||
                 this.element.contains(event.target)) {
 
-                this._cancelPress(event);
+                this._cancelPressIfCenterPositionChange(event);
             }
         }
     },
