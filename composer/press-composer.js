@@ -369,7 +369,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         value: function (event) {
             this._saveInitialCenterPositionIfNeeded();
 
-            if (this._positionChanged) {
+            if (this._isPositionChanged(event)) {
                 this._cancelPress(event);
             }
         }
@@ -510,18 +510,34 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         }
     },
 
-    _positionChanged: {
-        get: function () {
+    _isPositionChanged: {
+        get: function (event) {
             if (this.element instanceof HTMLElement) {
                 var boundingClientRect = this.element.getBoundingClientRect(),
-                    newCenterPositionX = boundingClientRect.left + (boundingClientRect.width/2),
-                    newCenterPositionY = boundingClientRect.top + (boundingClientRect.height/2);
+                    newCenterPositionX = boundingClientRect.left + (boundingClientRect.width / 2),
+                    newCenterPositionY = boundingClientRect.top + (boundingClientRect.height / 2);
 
-                return this._initialCenterPositionX !== newCenterPositionX || this._initialCenterPositionY !== newCenterPositionY;
+                if (this._initialCenterPositionX !== newCenterPositionX || this._initialCenterPositionY !== newCenterPositionY) {
+                    var type = event.type,
+                        deltaX = Math.abs(this._initialCenterPositionX - newCenterPositionX),
+                        deltaY = Math.abs(this._initialCenterPositionY - newCenterPositionY),
+                        radius = this._observedPointer === "mouse" || type === "wheel" || type === "mousewheel" || type === "scroll" ?
+                            this._mouseRadiusThreshold : this._touchRadiusThreshold;
+
+                    return Composer.isCoordinateOutsideRadius(deltaX, deltaY, radius);
+                }
             }
 
             return false;
         }
+    },
+
+    _mouseRadiusThreshold: {
+        value: 2 //px
+    },
+
+    _touchRadiusThreshold: {
+        value: 4 //px
     },
 
     _addPointerDownListener: {
