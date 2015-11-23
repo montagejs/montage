@@ -25,6 +25,7 @@
       }
     }
   },
+  "production": true,
   "dependencies": {
     "collections": "~1.2.2",
     "frb": "~0.2.18",

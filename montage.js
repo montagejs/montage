@@ -414,9 +414,8 @@ if (typeof window !== "undefined") {
      */
     exports.ReelLoader = function (config, load) {
         return function (id, module) {
-            var match = reelExpression.exec(id);
-            if (match) {
-                module.redirect = id + "/" + match[1];
+            if (id.endsWith(".reel")) {
+                module.redirect = id + "/" + reelExpression.exec(id)[1];
                 return module;
             } else {
                 return load(id, module);
@@ -433,8 +432,7 @@ if (typeof window !== "undefined") {
      */
     exports.MetaCompiler = function (config, compile) {
         return function (module) {
-            var json = (module.location || "").match(metaExpression);
-            if (json) {
+            if (module.location && module.location.endsWith(".meta")) {
                 module.exports = JSON.parse(module.text);
                 return module;
             } else {
@@ -442,14 +440,6 @@ if (typeof window !== "undefined") {
             }
         };
     };
-
-    function _endsWith (str, suffix) {
-        if (typeof str.endsWith === "function") {
-            return str.endsWith(suffix);
-        }
-
-        return str.indexOf(suffix, str.length - suffix.length) !== -1;
-    }
 
     /**
      * Allows the reel's html file to be loaded via require.
