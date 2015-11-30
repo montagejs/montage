@@ -1053,19 +1053,23 @@ Montage.defineProperty(Montage, "equals", {
 Montage.defineProperty(Montage.prototype, "callDelegateMethod", {
     value: function (name) {
         var delegate = this.delegate, delegateFunctionName, delegateFunction;
-        if (typeof this.identifier === "string") {
-            delegateFunctionName = this.identifier + name.toCapitalized();
-            if (delegate && typeof (delegateFunction = delegate[delegateFunctionName]) === "function") {
+
+        if (delegate) {
+            if (typeof this.identifier === "string") {
+                delegateFunctionName = this.identifier + name.toCapitalized();
+
+                if (typeof (delegateFunction = delegate[delegateFunctionName]) === "function") {
+                    // remove first argument
+                    ARRAY_PROTOTYPE.shift.call(arguments);
+                    return delegateFunction.apply(delegate, arguments);
+                }
+            }
+
+            if (typeof (delegateFunction = delegate[name]) === "function") {
                 // remove first argument
                 ARRAY_PROTOTYPE.shift.call(arguments);
                 return delegateFunction.apply(delegate, arguments);
             }
-        }
-
-        if (delegate && typeof (delegateFunction = delegate[name]) === "function") {
-            // remove first argument
-            ARRAY_PROTOTYPE.shift.call(arguments);
-            return delegateFunction.apply(delegate, arguments);
         }
     }
 });
