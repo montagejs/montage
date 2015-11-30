@@ -21,7 +21,7 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     ENUMERABLE = "enumerable",
     DISTINCT = "distinct",
     SERIALIZABLE = "serializable",
-    MODIFY = "modify";
+    UNDERSCORE_UNICODE = 95;
 
 var ARRAY_PROTOTYPE = Array.prototype;
 
@@ -288,8 +288,7 @@ Object.defineProperty(Montage, "defineProperty", {
             }
         }
 
-
-        if (!descriptor.hasOwnProperty(ENUMERABLE) && prop.charAt(0) === UNDERSCORE) {
+        if (!descriptor.hasOwnProperty(ENUMERABLE) && prop.charCodeAt(0) === UNDERSCORE_UNICODE) {
             descriptor.enumerable = false;
         }
         if (!descriptor.hasOwnProperty(SERIALIZABLE)) {

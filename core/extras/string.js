@@ -49,7 +49,7 @@ Object.defineProperty(String.prototype, "contains", {
  */
 Object.defineProperty(String.prototype, "toCapitalized", {
     value: function () {
-        return this.charAt(0).toUpperCase() + this.slice(1);
+        return this[0].toUpperCase() + this.slice(1);
     },
     writable: true,
     configurable: true
