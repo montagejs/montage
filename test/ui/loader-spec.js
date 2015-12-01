@@ -1,10 +1,9 @@
 /*global require,exports,describe,it,expect */
 var Montage = require("montage").Montage,
     TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
-    PRELOADING = 0,
-    BOOTSTRAPPING = 1,
-    LOADING = 2,
-    LOADED = 3;
+    BOOTSTRAPPING = 0,
+    LOADING = 1,
+    LOADED = 2;
 
 TestPageLoader.queueTest("loader/loader-test", function (testPage) {
     var test;
@@ -17,15 +16,6 @@ TestPageLoader.queueTest("loader/loader-test", function (testPage) {
         // These tests need to run in order, also, they're not deterministic
         // we don't have enough mocks to drive the loader yet.
         // These tests should be consider sanity tests.
-        it("should be in the PRELOADING stage or after", function () {
-            var loader = test.templateObjects.owner;
-
-            if (loader.currentStage === PRELOADING) {
-                waitsFor(function () {
-                    return loader.currentStage > PRELOADING;
-                }, "PRELOADING is over", 2000);
-            }
-        });
 
         it("should be in the BOOTSTRAPPING stage or after", function () {
             var loader = test.templateObjects.owner;

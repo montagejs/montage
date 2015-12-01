@@ -2,27 +2,6 @@
 if (typeof window !== "undefined") {
     document._montageTiming = {};
     document._montageTiming.loadStartTime = Date.now();
-
-    // Give a threshold before we decide we need to show the bootstrapper progress
-    // Applications that use our loader will interact with this timeout
-    // and class name to coordinate a nice loading experience. Applications that do not will
-    // just go about business as usual and draw their content as soon as possible.
-    window.addEventListener("DOMContentLoaded", function () {
-        var bootstrappingDelay = 1000;
-        document._montageStartBootstrappingTimeout = setTimeout(function () {
-            document._montageStartBootstrappingTimeout = null;
-
-            var root = document.documentElement;
-            if(!!root.classList) {
-                root.classList.add("montage-app-bootstrapping");
-            } else {
-                root.className = root.className + " montage-app-bootstrapping";
-            }
-
-            document._montageTiming.bootstrappingStartTime = Date.now();
-        }, bootstrappingDelay);
-    });
-
 }
 
 (function (definition) {
@@ -642,6 +621,21 @@ if (typeof window !== "undefined") {
             function domLoad() {
                 document.removeEventListener("DOMContentLoaded", domLoad, true);
                 DOM = true;
+
+                // Give a threshold before we decide we need to show the bootstrapper progress
+                // Applications that use our loader will interact with this timeout
+                // and class name to coordinate a nice loading experience. Applications that do not will
+                // just go about business as usual and draw their content as soon as possible.
+                var root = document.documentElement;
+
+                if(!!root.classList) {
+                    root.classList.add("montage-app-bootstrapping");
+                } else {
+                    root.className = root.className + " montage-app-bootstrapping";
+                }
+
+                document._montageTiming.bootstrappingStartTime = Date.now();
+
                 callbackIfReady();
             }
 
