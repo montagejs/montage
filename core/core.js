@@ -488,21 +488,31 @@ Object.defineProperty(Montage, "defineProperty", {
 
         } else {
             // clear the cache in any descendants that use this property for super()
-            var superDependencies, i, j;
             if (obj._superDependencies) {
-                if (typeof descriptor.value === "function" && (superDependencies = obj._superDependencies[prop + ".value"])) {
-                    for (i=0,j=superDependencies.length;i<j;i++) {
-                        delete superDependencies[i]._superCache[prop + ".value"];
+                var superDependencies, i, j;
+
+                if (typeof descriptor.value === "function") {
+                    var propValueKey = prop + ".value";
+
+                    if ((superDependencies = obj._superDependencies[propValueKey])) {
+                        for (i = 0, j = superDependencies.length; i < j; i++) {
+                            delete superDependencies[i]._superCache[propValueKey];
+                        }
                     }
-                }
-                if (typeof descriptor.get === "function" && (superDependencies = obj._superDependencies[prop + ".get"])) {
-                    for (i=0,j=superDependencies.length;i<j;i++) {
-                        delete superDependencies[i]._superCache[prop + ".get"];
+                } else {
+                    var propGetKey = prop + ".get",
+                        propSetKey = prop + ".set";
+
+                    if (typeof descriptor.get === "function" && (superDependencies = obj._superDependencies[propGetKey])) {
+                        for (i = 0, j = superDependencies.length; i < j; i++) {
+                            delete superDependencies[i]._superCache[propGetKey];
+                        }
                     }
-                }
-                if (typeof descriptor.set === "function" && (superDependencies = obj._superDependencies[prop + ".set"])) {
-                    for (i=0,j=superDependencies.length;i<j;i++) {
-                        delete superDependencies[i]._superCache[prop + ".set"];
+
+                    if (typeof descriptor.set === "function" && (superDependencies = obj._superDependencies[propSetKey])) {
+                        for (i = 0, j = superDependencies.length; i < j; i++) {
+                            delete superDependencies[i]._superCache[propSetKey];
+                        }
                     }
                 }
             }
