@@ -946,7 +946,7 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint.pro
                 var newBlueprint = new this();
 
                 for (var name in target) {
-                    if ((name.charAt(0) !== "_") && (target.hasOwnProperty(name))) {
+                    if ((name[0] !== "_") && (target.hasOwnProperty(name))) {
                         // We don't want to list private properties
                         var value = target[name];
                         var propertyBlueprint;

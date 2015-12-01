@@ -719,7 +719,7 @@ var Montage = require("../core").Montage,
         var n = this.getTimezoneOffset() * -10 / 6, r;
         if (n < 0) {
             r = (n - 10000).toString();
-            return r.charAt(0) + r.substr(2);
+            return r[0] + r.substr(2);
         } else {
             r = (n + 10000).toString();
             return "+" + r.substr(1);
@@ -884,7 +884,7 @@ var Montage = require("../core").Montage,
 
         return format ? format.replace(/(\\)?(dd?d?d?|MM?M?M?|yy?y?y?|hh?|HH?|mm?|ss?|tt?|S)/g,
             function (m) {
-                if (m.charAt(0) === "\\") {
+                if (m[0] === "\\") {
                     return m.replace("\\", "");
                 }
                 x.h = x.getHours;
@@ -1279,7 +1279,7 @@ var Montage = require("../core").Montage,
 
         return format ? format.replace(/(\\)?(dd?d?d?|MM?M?M?|yy?y?y?|hh?|HH?|mm?|ss?|tt?|S)/g,
             function (m) {
-                if (m.charAt(0) === "\\") {
+                if (m[0] === "\\") {
                     return m.replace("\\", "");
                 }
                 x.h = x.getHours;
