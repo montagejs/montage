@@ -14,8 +14,6 @@ var AbstractProgressBar = exports.AbstractProgressBar = AbstractControl.speciali
             if (this.constructor === AbstractProgressBar) {
                 throw new Error("AbstractProgressBar cannot be instantiated.");
             }
-
-            this.super();
         }
     }
 

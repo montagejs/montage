@@ -27,7 +27,7 @@ var AbstractToggleSwitch = exports.AbstractToggleSwitch = AbstractControl.specia
             if(this.constructor === AbstractToggleSwitch) {
                 throw new Error("AbstractToggleSwitch cannot be instantiated.");
             }
-            this.super();
+
             this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
 

@@ -9,14 +9,6 @@ var Montage = require("./core").Montage;
  * @extends Montage
  */
 exports.ModuleReference = Montage.specialize( /** @lends ModuleReference.prototype */ {
-    /**
-     * @constructs ModuleReference
-     */
-    constructor: {
-        value: function ModuleReference() {
-            return this.super();
-        }
-    },
 
     initWithIdAndRequire: {
         value: function (id, require) {

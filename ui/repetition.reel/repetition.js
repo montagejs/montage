@@ -161,7 +161,6 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
      */
     constructor: {
         value: function Iteration() {
-            this.super();
             if (logger.isDebug) {
                 logger.debug("Iteration:%s create iteration %O", Object.hash(this), this);
             }
@@ -953,8 +952,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      */
     constructor: {
         value: function Repetition() {
-            this.super();
-
             // XXX Note: Any property added to initialize in constructor must
             // also be accounted for in _teardownIterationTemplate to reset the
             // repetition.

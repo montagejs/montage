@@ -34,15 +34,6 @@ exports.Condition = Component.specialize( /** @lends Condition.prototype # */ {
     },
 
     /**
-     * @constructs Condition
-     */
-    constructor: {
-        value: function Condition() {
-            this.super();
-        }
-    },
-
-    /**
      * The boolean value that specifies if the contents of the condition are
      * visible (`true`) or hidden (`false`).
      * `null` is equivalent to `false`.

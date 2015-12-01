@@ -28,7 +28,6 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder.prototype # 
      */
     constructor: {
         value: function Binder() {
-            this.superForValue("constructor")();
             this._name = null;
             this.binderModuleId = null;
             this.isDefault = false;

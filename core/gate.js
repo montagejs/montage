@@ -13,12 +13,6 @@ var Montage = require("./core").Montage,
  */
 var Gate = exports.Gate = Montage.specialize(/** @lends Gate.prototype # */ {
 
-    constructor: {
-        value: function Gate() {
-            this.super();
-        }
-    },
-
     /**
      * @function
      * @returns {Gate} A new Gate instance.

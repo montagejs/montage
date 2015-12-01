@@ -19,12 +19,6 @@ var Defaults = {
  */
 exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends DerivedPropertyBlueprint# */ {
 
-    constructor: {
-        value: function DerivedPropertyBlueprint() {
-            this.superForValue("constructor")();
-        }
-    },
-
     serializeSelf: {
         value: function (serializer) {
             if (this.dependencies.length > 0) {

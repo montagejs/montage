@@ -14,10 +14,6 @@ var MontageVisitor = Montage.specialize({
     labeler: {value: null},
     _objectsSerialization: {value: null},
 
-    constructor: {
-        value: function MontageVisitor() {}
-    },
-
     initWithBuilderAndLabelerAndRequireAndUnits: {
         value: function (builder, labeler, require, units) {
             this.builder = builder;

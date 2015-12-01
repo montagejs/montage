@@ -16,7 +16,6 @@ var AbstractTextArea = exports.AbstractTextArea = Component.specialize(
             if(this.constructor === AbstractTextArea) {
                 throw new Error("AbstractTextArea cannot be instantiated.");
             }
-            Component.constructor.call(this); // super
 
             this.defineBindings({
                 // classList management

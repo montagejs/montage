@@ -15,11 +15,6 @@ var State = exports.State = Montage.specialize( /** @lends State# */{
         value: null
     },
 
-    constructor: {
-        value: function State() {
-            this.super();
-        }
-    },
 
     /**
      * Initializes a State object with a set of options.

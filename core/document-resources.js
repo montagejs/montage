@@ -12,7 +12,6 @@ var DocumentResources = Montage.specialize({
 
     constructor: {
         value: function DocumentResources() {
-            this.super();
             this._expectedStyles = [];
             this._isPollingDocumentStyleSheets = !this._isLinkLoadEventAvailable();
         }

@@ -124,10 +124,6 @@ var Value = exports.Value = Montage.specialize({
  */
 var ElementReference = exports.ElementReference = Value.specialize(/** @lends ElementReference# */ {
 
-    constructor: {
-        value: function ElementReference() {}
-    },
-
     initWithRootAndId: {
         value: function (root, id) {
             Value.call(this, root, id);
@@ -147,10 +143,6 @@ var ElementReference = exports.ElementReference = Value.specialize(/** @lends El
  * @extends Value
  */
 var ModuleReference = exports.ModuleReference = Value.specialize( /** @lends ModuleReference# */ {
-
-    constructor: {
-        value: function ModuleReference() {}
-    },
 
     initWithRootAndModuleId: {
         value: function (root, moduleId) {

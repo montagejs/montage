@@ -12,7 +12,6 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
 
     constructor: {
         value: function FlowTranslateComposer() {
-            this.super();
             this.handleMousewheel = this.handleWheel;
         }
     },

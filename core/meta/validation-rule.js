@@ -18,12 +18,6 @@ var logger = require("../logger").logger("blueprint");
  */
 var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize( /** @lends PropertyValidationRule# */ {
 
-    constructor: {
-        value: function PropertyValidationRule() {
-            this.superForValue("constructor")();
-        }
-    },
-
     /**
      * Initialize a newly allocated blueprint validation rule.
      * @function

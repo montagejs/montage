@@ -26,7 +26,7 @@ var AbstractLink = exports.AbstractLink = AbstractControl.specialize(
             if(this.constructor ===  AbstractLink) {
                 throw new Error("AbstractLink cannot be instantiated.");
             }
-            AbstractControl.constructor.call(this); // super
+
             this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
 

@@ -37,7 +37,6 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint.pro
 
     constructor: {
         value: function Blueprint() {
-            this.superForValue("constructor")();
             this._eventBlueprints = [];
             this.defineBinding("eventBlueprints", {"<-": "_eventBlueprints.concat(parent.eventBlueprints)"});
         }

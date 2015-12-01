@@ -285,15 +285,6 @@ var KeyManagerProxy = Montage.specialize(  {
     },
 
     /**
-     * @private
-     */
-    constructor: {
-        value: function () {
-            // console.log("PROXY CREATED")
-        }
-    },
-
-    /**
      * Register a `KeyComposer` with the default `KeyManager`.
      * @function
      * @param {Object} keyComposer. A key composer object.

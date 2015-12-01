@@ -14,7 +14,6 @@ var Text = require("../text.reel/text").Text,
 var Label = exports.Label = Text.specialize({
     constructor: {
         value: function () {
-            this.super();
             this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
         }

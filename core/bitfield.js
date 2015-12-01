@@ -17,12 +17,6 @@ var Montage = require("./core").Montage;
  */
 var BitField = exports.BitField = Montage.specialize( /** @lends BitField */ {
 
-    constructor: {
-        value: function BitField() {
-            this.super();
-        }
-    },
-
     /**
      * Creates a new BitField object containing the fields provided in the
      * propertyDescriptor parameter.

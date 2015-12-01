@@ -459,8 +459,6 @@ if (typeof window !== "undefined") { // client-side
          */
         constructor: {
             value: function EventManager () {
-                this.super();
-
                 this._trackingTouchList = {
                     touchesStart: Object.create(null),
                     touchesEnd: Object.create(null)
