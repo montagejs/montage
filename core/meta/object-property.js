@@ -134,14 +134,21 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     addPropertyStorage: {
         value: function (prototype, attribute) {
             var storageKey = "_" + attribute.name,
+                lazyStorageKey = "_" + storageKey,
                 storageDefinition = null;
             if (!prototype.hasOwnProperty(storageKey)) {
                 if (attribute.isToMany) {
-                    storageDefinition = {
-                        value:[],
+                    Montage.defineProperty(prototype, lazyStorageKey, {
+                        value: null,
                         enumerable: false,
-                        serializable: true,
-                        distinct: true
+                        serializable: false
+                    });
+                    storageDefinition = {
+                        get: function() {
+                            return this[lazyStorageKey] || (this[lazyStorageKey] = []);
+                        },
+                        enumerable: false,
+                        serializable: true
                     };
                 } else {
                     storageDefinition = {
@@ -238,14 +245,21 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     addPropertyStoredValue: {
         value: function (prototype, attribute) {
             var storedValueKey = attribute.name + "$Storage",
+                privateStoredValueKey = "_"+storedValueKey,
                 storedValueDefinition = null;
             if (!prototype.hasOwnProperty(storedValueKey)) {
                 if (attribute.isToMany) {
+                    Montage.defineProperty(prototype, privateStoredValueKey, {
+                        value: null,
+                        enumerable: false,
+                        serializable: false
+                    });
                     storedValueDefinition = {
-                        value:[],
+                        get: function() {
+                            return this[privateStoredValueKey] || (this[privateStoredValueKey] = []);
+                        },
                         enumerable: false,
                         serializable: false,
-                        distinct: true
                     };
                 } else {
                     storedValueDefinition = {

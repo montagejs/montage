@@ -317,218 +317,37 @@ Object.defineProperty(Montage, "defineProperty", {
             getAttributeProperties(obj, SERIALIZABLE)[prop] = descriptor.serializable;
         }
 
-        // TODO replace this with Object.clone from collections - @kriskowal
-        //this is added to enable value properties with [] or Objects that are new for every instance
-        if (descriptor.distinct === true && typeof descriptor.value === "object") {
-            (function (prop,internalProperty, value, obj) {
-                var defineInternalProperty = function (obj, internalProperty, value) {
-                    Object.defineProperty(obj, internalProperty, {
-                        enumerable: false,
-                        configurable: true,
-                        writable: true,
-                        value: value
-                    });
-                };
-                if (value.constructor === Object && Object.getPrototypeOf(value) === OBJECT_PROTOTYPE) {
-                    // we have an object literal {...}
-                    if (Object.keys(value).length !== 0) {
-                        Object.defineProperty(obj, prop, {
-                            configurable: true,
-                            get: function () {
-                                //Special case for object to copy the values
-                                var returnValue = this[internalProperty];
-                                if (!returnValue) {
-                                    var k;
-                                    returnValue = {};
-                                    for (k in value) {
-                                        returnValue[k] = value[k];
-                                    }
-                                    if(!this.hasOwnProperty(internalProperty)) {
-                                        defineInternalProperty(this, internalProperty, returnValue);
-                                    } else {
-                                        this[internalProperty] = returnValue;
-                                    }
-                                }
-                                return returnValue;
-                            },
-                            set: function (value) {
-                                if(!this.hasOwnProperty(internalProperty)) {
-                                    defineInternalProperty(this, internalProperty, value);
-                                } else {
-                                    this[internalProperty] = value;
-                                }
-                            }
-                        });
-                    } else {
-                        Object.defineProperty(obj, prop, {
-                            configurable: true,
-                            get: function () {
-                                var returnValue = this[internalProperty];
-                                if (!returnValue) {
-                                    returnValue = {};
-                                    if (this.hasOwnProperty(internalProperty))  {
-                                        this[internalProperty] = returnValue;
-                                    } else {
-                                        defineInternalProperty(this, internalProperty, returnValue);
-                                    }
-                                }
-                                return returnValue;
-                            },
-                            set: function (value) {
-                                if(!this.hasOwnProperty(internalProperty)) {
-                                    defineInternalProperty(this, internalProperty, value);
-                                } else {
-                                    this[internalProperty] = value;
-                                }
-                            }
-                        });
+        // clear the cache in any descendants that use this property for super()
+        if (obj._superDependencies) {
+            var superDependencies, i, j;
+
+            if (typeof descriptor.value === "function") {
+                var propValueKey = prop + ".value";
+
+                if ((superDependencies = obj._superDependencies[propValueKey])) {
+                    for (i = 0, j = superDependencies.length; i < j; i++) {
+                        delete superDependencies[i]._superCache[propValueKey];
                     }
-
-                } else if ((value.__proto__ || Object.getPrototypeOf(value)) === ARRAY_PROTOTYPE) {
-                    // we have an array literal [...]
-                    if (value.length !== 0) {
-                        Object.defineProperty(obj, prop, {
-                            configurable: true,
-                            get: function () {
-                                //Special case for object to copy the values
-                                var returnValue = this[internalProperty];
-                                if (!returnValue) {
-                                    var i, k;
-                                    returnValue = [];
-                                    for (i = 0; typeof (k = value[i]) !== "undefined"; i++) {
-                                        returnValue[i] = k;
-                                    }
-                                    if(!this.hasOwnProperty(internalProperty)) {
-                                        defineInternalProperty(this, internalProperty, returnValue);
-                                    } else {
-                                        this[internalProperty] = returnValue;
-                                    }
-                                }
-                                return returnValue;
-                            },
-                            set: function (value) {
-                                if(!this.hasOwnProperty(internalProperty)) {
-                                    defineInternalProperty(this, internalProperty, value);
-                                } else {
-                                    this[internalProperty] = value;
-                                }
-                            }
-                        });
-
-                    } else {
-                        Object.defineProperty(obj, prop, {
-                            configurable: true,
-                            get: function () {
-                                var returnValue = this[internalProperty];
-                                if (!returnValue) {
-                                    returnValue = [];
-                                    if (this.hasOwnProperty(internalProperty))  {
-                                        this[internalProperty] = returnValue;
-                                    } else {
-                                        defineInternalProperty(this, internalProperty, returnValue);
-                                    }
-                                }
-                                return returnValue;
-                            },
-                            set: function (value) {
-                                if(!this.hasOwnProperty(internalProperty)) {
-                                    defineInternalProperty(this, internalProperty, value);
-                                } else {
-                                    this[internalProperty] = value;
-                                }
-                            }
-                        });
-                    }
-                    //This case is to deal with objects that are created with a constructor
-                } else if (value.constructor.prototype === Object.getPrototypeOf(value)) {
-                    Object.defineProperty(obj, prop, {
-                        configurable: true,
-                        get: function () {
-                            //Special case for object to copy the values
-                            var returnValue = this[internalProperty];
-                            if (!returnValue) {
-                                var k;
-                                returnValue = new value.constructor;
-                                for (k in value) {
-                                    returnValue[k] = value[k];
-                                }
-                                if(!this.hasOwnProperty(internalProperty)) {
-                                    defineInternalProperty(this, internalProperty, returnValue);
-                                } else {
-                                    this[internalProperty] = returnValue;
-                                }
-                            }
-                            return returnValue;
-                        },
-                        set: function (value) {
-                            if(!this.hasOwnProperty(internalProperty)) {
-                                defineInternalProperty(this, internalProperty, value);
-                            } else {
-                                this[internalProperty] = value;
-                            }
-                        }
-                    });
-
-
-                } else {
-                    Object.defineProperty(obj, prop, {
-                        configurable: true,
-                        get: function () {
-                            var returnValue = this[internalProperty];
-                            if (!returnValue) {
-                                returnValue = Object.create(value.__proto__ || Object.getPrototypeOf(value));
-                                if (this.hasOwnProperty(internalProperty))  {
-                                    this[internalProperty] = returnValue;
-                                } else {
-                                    defineInternalProperty(this, internalProperty, returnValue);
-                                }
-                            }
-                            return returnValue;
-                        },
-                        set: function (value) {
-                            if(!this.hasOwnProperty(internalProperty)) {
-                                defineInternalProperty(this, internalProperty, value);
-                            } else {
-                                this[internalProperty] = value;
-                            }
-                        }
-                    });
                 }
-            })(prop, UNDERSCORE + prop, descriptor.value, obj);
+            } else {
+                var propGetKey = prop + ".get",
+                    propSetKey = prop + ".set";
 
-        } else {
-            // clear the cache in any descendants that use this property for super()
-            if (obj._superDependencies) {
-                var superDependencies, i, j;
-
-                if (typeof descriptor.value === "function") {
-                    var propValueKey = prop + ".value";
-
-                    if ((superDependencies = obj._superDependencies[propValueKey])) {
-                        for (i = 0, j = superDependencies.length; i < j; i++) {
-                            delete superDependencies[i]._superCache[propValueKey];
-                        }
+                if (typeof descriptor.get === "function" && (superDependencies = obj._superDependencies[propGetKey])) {
+                    for (i = 0, j = superDependencies.length; i < j; i++) {
+                        delete superDependencies[i]._superCache[propGetKey];
                     }
-                } else {
-                    var propGetKey = prop + ".get",
-                        propSetKey = prop + ".set";
+                }
 
-                    if (typeof descriptor.get === "function" && (superDependencies = obj._superDependencies[propGetKey])) {
-                        for (i = 0, j = superDependencies.length; i < j; i++) {
-                            delete superDependencies[i]._superCache[propGetKey];
-                        }
-                    }
-
-                    if (typeof descriptor.set === "function" && (superDependencies = obj._superDependencies[propSetKey])) {
-                        for (i = 0, j = superDependencies.length; i < j; i++) {
-                            delete superDependencies[i]._superCache[propSetKey];
-                        }
+                if (typeof descriptor.set === "function" && (superDependencies = obj._superDependencies[propSetKey])) {
+                    for (i = 0, j = superDependencies.length; i < j; i++) {
+                        delete superDependencies[i]._superCache[propSetKey];
                     }
                 }
             }
-
-            return Object.defineProperty(obj, prop, descriptor);
         }
+
+        return Object.defineProperty(obj, prop, descriptor);
     }
 });
 
