@@ -18,7 +18,6 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
      */
     constructor: {
         value: function Flow() {
-            this.super();
             // The template has a binding from these visibleIndexes to
             // the frustum controller's visibleIndexes.  We manage the
             // array within the flow and use it also in the flow

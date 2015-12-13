@@ -16,14 +16,6 @@ var Component = require("../component").Component;
  * @extends Component
  */
 exports.Text = Component.specialize( /** @lends Text.prototype # */ {
-    /**
-     * @constructs Text
-     */
-    constructor: {
-        value: function Text() {
-            this.super();
-        }
-    },
 
     hasTemplate: {
         value: false

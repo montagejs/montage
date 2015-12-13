@@ -127,12 +127,6 @@ var Template = Montage.specialize( /** @lends Template# */ {
         }
     },
 
-    constructor: {
-        value: function Template() {
-            this.super();
-        }
-    },
-
     /**
      * Initializes the Template with an empty document.
      *
@@ -736,7 +730,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
                         );
                     }, false);
                     req.send();
-                    
+
                 });
 
                 return deferred;

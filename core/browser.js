@@ -6,7 +6,6 @@ var regExAppleWebKit = new RegExp(/AppleWebKit\/([\d.]+)/);
 var Browser = Montage.specialize({
     constructor: {
         value: function Browser(userAgent) {
-            this.super();
             this._userAgent = userAgent;
             this._analyze(userAgent);
         }

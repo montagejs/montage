@@ -17,10 +17,6 @@ var MontageSerializer = Montage.specialize({
     _serializationIndentation: {value: 2},
     _malker: {value: null},
 
-    constructor: {
-        value: function MontageSerializer() {}
-    },
-
     initWithRequire: {
         value: function (_require) {
             this._require = _require;

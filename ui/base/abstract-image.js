@@ -17,7 +17,7 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
             if(this.constructor === AbstractImage) {
                 throw new Error("AbstractImage cannot be instantiated.");
             }
-            Component.constructor.call(this); // super
+
             this._image = new Image();
             this._image.onload = this.handleImageLoad.bind(this);
             this.addPathChangeListener("_ownerDocumentPart", this, "_rebaseSrc");

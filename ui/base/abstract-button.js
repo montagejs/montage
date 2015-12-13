@@ -38,7 +38,6 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
             if(this.constructor ===  AbstractButton) {
                 throw new Error("AbstractButton cannot be instantiated.");
             }
-            this.super();
             this._pressComposer = new PressComposer();
             this.addComposer(this._pressComposer);
             this._pressComposer.defineBinding("longPressThreshold ", {"<-": "holdThreshold", source: this});

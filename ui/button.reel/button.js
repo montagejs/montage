@@ -170,7 +170,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 this.__pressComposer = new PressComposer();
                 this.__pressComposer.defineBinding("longPressThreshold ", {"<-": "holdThreshold", source: this});
                 this.addComposer(this.__pressComposer);
-            } 
+            }
             return this.__pressComposer;
         }
     },
@@ -180,12 +180,6 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     blur: { value: function() { this._element.blur(); } },
     focus: { value: function() { this._element.focus(); } },
     // click() deliberately omitted (it isn't available on <button> anyways)
-
-    constructor: {
-        value: function Button () {
-            this.super();
-        }
-    },
 
     prepareForActivationEvents: {
         value: function() {
@@ -290,7 +284,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
             if (Control.prototype.enterDocument) {
                 Control.enterDocument.prototype.apply(this, arguments);
             }
-            
+
             if(firstDraw) {
                 // this._isInputElement = (this.originalElement.tagName === "INPUT");
                 // Only take the value from the element if it hasn't been set

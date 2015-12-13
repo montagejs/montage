@@ -5,10 +5,6 @@ var UnitSerializer = Montage.specialize.call(Object, {
     _visitor: {value: null},
     _object: {value: null},
 
-    constructor: {
-        value: function UnitSerializer() {}
-    },
-
     initWithMalkerAndVisitorAndObject: {
         value: function (malker, visitor, object) {
             this._malker = malker;

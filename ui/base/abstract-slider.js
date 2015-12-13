@@ -27,7 +27,7 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
             if (this.constructor === AbstractSlider) {
                 throw new Error("AbstractSlider cannot be instantiated.");
             }
-            AbstractControl.constructor.call(this); // super
+
             //this is so that when we read properties from the dom they are not overwritten
             this._propertyNamesUsed = {};
             this.addOwnPropertyChangeListener("_sliderMagnitude", this);

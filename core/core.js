@@ -46,6 +46,10 @@ Montage.callDeprecatedFunction = deprecate.deprecateMethod(Montage, deprecate.ca
 var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;
 var PROTO_PROPERTIES_BLACKLIST = {"_montage_metadata": 1, "__state__": 1};
 
+Object.defineProperty(Montage, "_hasUserDefinedConstructor", {
+    value: false
+});
+
 /**
  * Customizes a type with idiomatic JavaScript constructor and prototype
  * inheritance, using ECMAScript 5 property descriptors with customizations
@@ -75,12 +79,19 @@ Object.defineProperty(Montage, "specialize", {
 
         if (prototypeProperties.constructor && prototypeProperties.constructor.value) {
             constructor = prototypeProperties.constructor.value;
+            constructor._hasUserDefinedConstructor = true;
 
         } else {
-            constructor = function Anonymous() {
-                return this.superForValue("constructor")() || this;
-                //return parent.apply(this, arguments) || this;
-            };
+            if (this._hasUserDefinedConstructor) {
+                constructor = function Anonymous() {
+                    return this.superForValue("constructor")() || this;
+                    //return parent.apply(this, arguments) || this;
+                };
+            } else {
+                constructor = function Anonymous() {
+                    return this;
+                }
+            }
         }
 
         if (PROTO_IS_SUPPORTED) {

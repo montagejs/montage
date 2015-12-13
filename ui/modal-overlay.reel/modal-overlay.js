@@ -11,14 +11,6 @@ var CLASS_PREFIX = "montage-ModalOverlay";
  * @extends Overlay
  */
 exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay.prototype # */ {
-    /**
-     * @constructs ModalOverlay
-     */
-    constructor: {
-        value: function ModalOverlay() {
-            this.super();
-        }
-    },
 
     enterDocument: {
         value: function (firstTime) {

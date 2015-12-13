@@ -44,7 +44,6 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
 
     constructor: {
         value: function Logger() {
-            this.super();
             addColorProperty(this);
         }
     },
@@ -287,12 +286,6 @@ exports.logger = function (loggerName, onStateChange, dontStoreState) {
 };
 
 LoggerUI = Montage.specialize( /** @lends LoggerUI# */{
-
-    constructor: {
-        value: function LoggerUI() {
-            this.super();
-        }
-    },
 
     init: {
         value: function () {

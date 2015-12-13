@@ -19,12 +19,6 @@ var logger = require("../logger").logger("blueprint");
  */
 var PropertyValidationSemantics = exports.PropertyValidationSemantics = Semantics.specialize( /** @lends PropertyValidationSemantics# */ {
 
-    constructor: {
-        value: function PropertyValidationSemantics() {
-            this.superForValue("constructor")();
-        }
-    },
-
     /**
      * Create a new semantic evaluator with the blueprint.
      * @function

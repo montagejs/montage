@@ -37,12 +37,6 @@ var Exception = exports.Exception = Montage.specialize(/** @lends Exception# */ 
         value: null
     },
 
-    constructor: {
-        value: function Exception() {
-            this.super();
-        }
-    },
-
     /**
      * @function
      * @param {string} message The message to be initialized.

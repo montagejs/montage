@@ -16,12 +16,6 @@ exports.Enum = Montage.specialize( /** @lends Enum# */ {
         value: 0
     },
 
-    constructor: {
-        value: function Enum() {
-            this.super();
-        }
-    },
-
     /**
      * @function
      * @returns itself

@@ -19,7 +19,6 @@ exports.Slot = Component.specialize( /** @lends Slot.prototype # */ {
 
     constructor: {
         value: function Slot() {
-            this.super();
             this.content = null;
         }
     },
