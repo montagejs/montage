@@ -29,6 +29,29 @@ if (typeof window !== "undefined") {
             })(storageKey)
         });
     };
+
+    /**
+     * Workaround for IE 11, it doesn't set defaultPrevented for custom events when preventDefault is called.
+     * https://code.google.com/p/dart/issues/detail?id=20350
+     */
+    var EventPrototype = window.Event.prototype,
+        preventDefault = EventPrototype.preventDefault;
+
+    Object.defineProperty(EventPrototype, "_isDefaultPrevented", {
+        enumerable: false,
+        configurable: false,
+        writable: true,
+        value: false
+    });
+
+    EventPrototype.preventDefault = function () {
+        preventDefault.apply(this, arguments);
+
+        if (this.cancelable) {
+            this._isDefaultPrevented = true;
+        }
+    };
+
     /**
         @class MutableEvent
     */
@@ -43,8 +66,10 @@ if (typeof window !== "undefined") {
 
                 for (key in event) {
 
+
                     //  Don't overwrite keys we have installed
-                    if (this[key]) {
+                    // fixme the property target is set to null but it needs to be wrapped
+                    if (typeof this[key] !== "undefined" && key !== "target") {
                         continue;
                     }
 
@@ -82,6 +107,12 @@ if (typeof window !== "undefined") {
             }
         },
 
+        defaultPrevented: {
+            value: function () {
+                return this._event ? this.getPreventDefault() : false;
+            }
+        },
+
         /**
          * @function
          */
@@ -90,7 +121,7 @@ if (typeof window !== "undefined") {
                 if (this._event.getPreventDefault) {
                     return this._event.getPreventDefault();
                 }
-                return this._event.defaultPrevented;
+                return this._event._isDefaultPrevented;
             }
         },
 

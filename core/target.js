@@ -101,7 +101,7 @@ exports.Target = Montage.specialize( /** @lends Target.prototype */{
             targettedEvent.target = this;
             defaultEventManager.handleEvent(targettedEvent);
 
-            return !event.defaultPrevented;
+            return !targettedEvent.getPreventDefault();
         }
     },
 
@@ -120,7 +120,7 @@ exports.Target = Montage.specialize( /** @lends Target.prototype */{
             event.target = this;
             defaultEventManager.handleEvent(event);
 
-            return !event.defaultPrevented;
+            return !event.getPreventDefault();
         }
     },
 
