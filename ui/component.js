@@ -2956,7 +2956,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     needsDraw: {
         enumerable: true,
         get: function () {
-            return false;
+            return !!this._needsDraw;
         },
         set: function (value) {
             if (this._needsDraw !== value) {
@@ -3317,7 +3317,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         value: function(template) {
             if(!this._addedStyleSheetsByTemplate.has(template)) {
                 var resources = template.getResources()
-                    , _document = this.element
+                    , _document = this.element.ownerDocument
                     , styles = resources.createStylesForDocument(_document);
 
                 for (var i = 0, style; (style = styles[i]); i++) {
@@ -3332,7 +3332,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     },
     _bufferDocumentFragment: {
          get: function() {
-             return this.__bufferDocumentFragment || ( this.__bufferDocumentFragment = this._element.createDocumentFragment());
+             return this.__bufferDocumentFragment || ( this.__bufferDocumentFragment = this._element.ownerDocument.createDocumentFragment());
         }
     },
     /**
@@ -3650,10 +3650,10 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         get:function () {
             return this._element;
         },
-        set:function (value) {
-            defaultEventManager.registerEventHandlerForElement(this, value);
-            this._element = value;
-            this._documentResources = DocumentResources.getInstanceForDocument(value);
+        set:function (document) {
+            defaultEventManager.registerEventHandlerForElement(this, document);
+            this._element = document.documentElement;
+            this._documentResources = DocumentResources.getInstanceForDocument(document);
         }
     }
 });
