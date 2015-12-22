@@ -54,7 +54,7 @@ var MontageStudioLoader = exports.MontageStudioLoader = Loader.specialize(/** @l
         value: 3500
     },
 
-    minimumLoadingDuration: {
+    minimumFirstLoadingDuration: {
         value: 6000
     },
 

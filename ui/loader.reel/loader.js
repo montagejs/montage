@@ -1,12 +1,15 @@
 /**
  * @module "montage/ui/loader.reel"
  */
-var Component = require("../component").Component,
+var ComponentModule = require("../component"),
+    Component = ComponentModule.Component,
+    RootComponent = ComponentModule.__root__,
     logger = require("../../core/logger").logger("loader"),
     defaultEventManager = require("../../core/event/event-manager").defaultEventManager,
     MONTAGE_LOADER_ELEMENT_ID = "montage-app-loader",
     BOOTSTRAPPING_CLASS_NAME = "montage-app-bootstrapping",
     LOADING_CLASS_NAME = "montage-app-loading",
+    FIRST_LOADING_CLASS_NAME = "montage-app-first-loading",
     LOADED_CLASS_NAME = "montage-app-loaded";
 
 /**
@@ -59,6 +62,14 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
      */
     minimumLoadingDuration: {
         value: 0
+    },
+
+    minimumFirstLoadingDuration: {
+        value: null
+    },
+
+    minimumFirstBootstrappingDuration: {
+        value: null
     },
 
     _initializedModules: {
@@ -147,17 +158,15 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
 
             this._currentStage = currentStage;
 
-            var rootComponent = this.parentComponent;
-
             // Reflect the current loading stage
             if (LOADING === currentStage) {
-                rootComponent.classList.remove(BOOTSTRAPPING_CLASS_NAME);
-                rootComponent.classList.add(LOADING_CLASS_NAME);
+                RootComponent.classList.remove(BOOTSTRAPPING_CLASS_NAME);
+                RootComponent.classList.add(LOADING_CLASS_NAME);
 
             } else if (LOADED === currentStage && this._contentToRemove) {
-                rootComponent.classList.remove(BOOTSTRAPPING_CLASS_NAME);
-                rootComponent.classList.remove(LOADING_CLASS_NAME);
-                rootComponent.classList.add(LOADED_CLASS_NAME);
+                RootComponent.classList.remove(BOOTSTRAPPING_CLASS_NAME);
+                RootComponent.classList.remove(LOADING_CLASS_NAME);
+                RootComponent.classList.add(LOADED_CLASS_NAME);
 
                 this.needsDraw = true;
             }
@@ -240,6 +249,7 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
                 logger.debug(this, "enterDocument");
             }
 
+            this._loadLoaderContext();
             this._loadMainComponent();
 
             this.readyToShowLoader = true;
@@ -265,6 +275,23 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
                 timing.bootstrappingEndTime = bootstrappingEndTime;
 
                 this._revealLoader();
+            }
+        }
+    },
+
+    _loadLoaderContext: {
+        value: function () {
+            if (this.application.isFirstLaunch) {
+                // RootComponent
+                RootComponent.classList.add(FIRST_LOADING_CLASS_NAME);
+
+                if (this.minimumFirstLoadingDuration !== null) {
+                    this.minimumLoadingDuration = this.minimumFirstLoadingDuration;
+                }
+
+                if (this.minimumFirstBootstrappingDuration !== null) {
+                    this.minimumBootstrappingDuration = this.minimumFirstBootstrappingDuration;
+                }
             }
         }
     },
