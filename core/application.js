@@ -16,6 +16,8 @@ var Target = require("./target").Target,
 
 require("./dom");
 
+var ALREADY_LAUNCH_KEY_SUFFIX = "-already-launch";
+
 /**
  * The application is a singleton, it initially loads and oversees the running program.
  * It is also responsible for window management.
@@ -48,6 +50,20 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
      */
     parentApplication: {
         value: null
+    },
+
+    name: {
+        value: null
+    },
+
+    _isFirstLaunch: {
+        value: null
+    },
+
+    isFirstLaunch: {
+        get: function () {
+            return this._isFirstLaunch;
+        }
     },
 
     /**
@@ -415,6 +431,9 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             var rootComponent,
                 self = this;
 
+            this.name = applicationRequire.packageDescription.name;
+            this._loadApplicationContext();
+
             // assign to the exports so that it is available in the deserialization of the template
             exports.application = self;
 
@@ -433,6 +452,25 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                     return self;
                 });
             });
+        }
+    },
+
+    _loadApplicationContext: {
+        value: function () {
+            if (localStorage) {
+                if (this._isFirstLaunch === null) {
+                    var alreadyLaunchLocalStorageKey = this.name + ALREADY_LAUNCH_KEY_SUFFIX,
+                        hasAlreadyBeenLaunch = localStorage.getItem(alreadyLaunchLocalStorageKey);
+
+                    if (hasAlreadyBeenLaunch === null) {
+                        localStorage.setItem(alreadyLaunchLocalStorageKey, true);
+                    }
+
+                    this._isFirstLaunch = !hasAlreadyBeenLaunch;
+                }
+            } else {
+                this._isFirstLaunch = false; //fallback?
+            }
         }
     },
 
