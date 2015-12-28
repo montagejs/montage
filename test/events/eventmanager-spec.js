@@ -206,8 +206,8 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                 var listener = new Montage();
                 testDocument.addEventListener("mousedown", listener, false);
 
-                expect(eventManager.registeredEventListenersForEventType_onTarget_("mousedown",testDocument,false).has(listener)).toBe(true);
-                expect(eventManager.registeredEventListenersForEventType_onTarget_("mousedown",testDocument,true)).toBeNull();
+                expect(eventManager.registeredEventListenersForEventType_onTarget_phase_("mousedown",testDocument,false).has(listener)).toBe(true);
+                expect(eventManager.registeredEventListenersForEventType_onTarget_phase_("mousedown",testDocument,true)).toBeNull();
             });
 
             it("should add a native event listener when the first listener for an eventType is added for a target", function () {
@@ -277,14 +277,14 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                 var rootEventSpy = {};
                 testDocument.documentElement.addEventListener("foo", rootEventSpy, false);
 
-                var bubbleTestDocumentListeners = eventManager.registeredEventListenersForEventType_onTarget_("foo",testDocument,false);
-                var bubbleTestDocumentElementListeners = eventManager.registeredEventListenersForEventType_onTarget_("foo",testDocument.documentElement,false);
+                var bubbleTestDocumentListeners = eventManager.registeredEventListenersForEventType_onTarget_phase_("foo",testDocument,false);
+                var bubbleTestDocumentElementListeners = eventManager.registeredEventListenersForEventType_onTarget_phase_("foo",testDocument.documentElement,false);
 
                 expect(bubbleTestDocumentListeners.has(docEventSpy)).toBeTruthy();
                 expect(bubbleTestDocumentElementListeners.has(rootEventSpy)).toBeTruthy();
 
-                var captureTestDocumentListeners = eventManager.registeredEventListenersForEventType_onTarget_("foo",testDocument,true);
-                var captureTestDocumentElementListeners = eventManager.registeredEventListenersForEventType_onTarget_("foo",testDocument.documentElement,true);
+                var captureTestDocumentListeners = eventManager.registeredEventListenersForEventType_onTarget_phase_("foo",testDocument,true);
+                var captureTestDocumentElementListeners = eventManager.registeredEventListenersForEventType_onTarget_phase_("foo",testDocument.documentElement,true);
 
                 expect(captureTestDocumentListeners).toBeNull();
                 expect(captureTestDocumentElementListeners).toBeNull();
@@ -297,16 +297,10 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                 var rootEventSpy = {};
                 testDocument.documentElement.addEventListener("bar", rootEventSpy, false);
 
-                var listeners = eventManager.registeredEventListenersForEventType_onTarget_("bar", testDocument),
-                        docListenerEntry = listeners[docEventSpy.uuid],
-                        rootListenerEntry = listeners[rootEventSpy.uuid];
+                var listeners = eventManager.registeredEventListenersForEventType_onTarget_("bar", testDocument);
 
-                expect(docListenerEntry).toBeTruthy();
-                expect(rootListenerEntry).toBeFalsy();
-
-                expect(docListenerEntry.capture).toBeFalsy();
-                expect(docListenerEntry.bubble).toBeTruthy();
-                expect(docListenerEntry.listener).toBe(docEventSpy);
+                expect(listeners.has(docEventSpy)).toBeTruthy();
+                expect(listeners.has(rootEventSpy)).toBeFalsy();
             });
 
         });
@@ -325,8 +319,8 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                 testDocument.removeEventListener("mousedown", listener2, false);
 
                 var listeners = eventManager.registeredEventListenersForEventType_("mousedown");
-                expect(listeners[listener.uuid]).toBeTruthy();
-                expect(listeners[listener2.uuid]).toBeFalsy();
+                expect(listeners.has(listener)).toBeTruthy();
+                expect(listeners.has(listener2)).toBeFalsy();
             });
 
             it("should remove a registered eventType when the last listener is removed", function () {
@@ -405,6 +399,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
 
                 it("should present the event to any listeners along the propagation path registered in the capture phase first", function () {
 
+                    console.log("should present the event to any listeners along the propagation path registered in the capture phase first");
                     var captureCalled = false,
                             bubbleCalled = false;
 
@@ -412,6 +407,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                         captureMousedown: function () {
                             expect(bubbleCalled).toBe(false);
                             captureCalled = true;
+                            console.log("mousedownCaptureSpy.captureMousedown");
                         }
                     };
 
@@ -419,6 +415,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                         handleMousedown: function () {
                             expect(captureCalled).toBe(true);
                             bubbleCalled = true;
+                            console.log("mousedownBubbleSpy.handleMousedown");
                         }
                     };
 
@@ -437,6 +434,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
 
                 it("should present an event to capture listeners in the capture phase based on the DOM hierarchy from top to target, not in the order they registered", function () {
 
+                    console.log("should present an event to capture listeners in the capture phase based on the DOM hierarchy from top to target, not in the order they registered");
                     var calledHandlers = [];
 
                     var windowSpy = {
