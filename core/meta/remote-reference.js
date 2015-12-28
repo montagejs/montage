@@ -1,4 +1,3 @@
-"use strict";
 /**
  * @module montage/core/remote-reference
  * @requires montage/core/core
@@ -104,4 +103,3 @@ exports.RemoteReference = Montage.specialize({
     blueprint: require("../core")._blueprintDescriptor
 
 });
-

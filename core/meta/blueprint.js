@@ -1,4 +1,3 @@
-"use strict";
 
 /**
  * @module montage/core/meta/blueprint
@@ -978,4 +977,3 @@ var UnknownBlueprint = Object.freeze(new Blueprint().initWithName("Unknown"));
 
 var UnknownPropertyBlueprint = Object.freeze(new PropertyBlueprint().initWithNameBlueprintAndCardinality("Unknown", null, 1));
 var UnknownEventBlueprint = Object.freeze(new EventBlueprint().initWithNameAndBlueprint("Unknown", null));
-

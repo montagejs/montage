@@ -1,4 +1,3 @@
-"use strict";
 /**
  * @module montage/core/meta/association-reference
  * @requires core/logger
@@ -67,4 +66,3 @@ exports.AssociationBlueprint = PropertyBlueprint.specialize( /** @lends Associat
     }
 
 });
-

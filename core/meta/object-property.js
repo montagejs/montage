@@ -1,4 +1,3 @@
-"use strict";
 
 /**
  * @module montage/data/object-property
@@ -394,4 +393,3 @@ var ObjectProperty = exports.ObjectProperty = Montage.specialize( /** @lends Obj
     }
 
 });
-

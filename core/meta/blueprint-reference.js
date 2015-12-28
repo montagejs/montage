@@ -1,4 +1,3 @@
-"use strict";
 
 /**
  * @module montage/core/meta/blueprint-reference
@@ -83,4 +82,3 @@ exports.BlueprintReference = RemoteReference.specialize( {
     }
 
 });
-

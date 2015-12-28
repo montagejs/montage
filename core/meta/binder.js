@@ -1,4 +1,3 @@
-"use strict";
 
 /**
  * @module montage/core/meta/binder
@@ -290,4 +289,3 @@ var Binder = exports.Binder = Montage.specialize( /** @lends Binder.prototype # 
     }
 
 });
-

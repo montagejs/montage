@@ -1,4 +1,3 @@
-"use strict";
 /**
  * @module montage/core/meta/validation-rule
  * @requires montage/core/core
@@ -172,4 +171,3 @@ var PropertyValidationRule = exports.PropertyValidationRule = Montage.specialize
     blueprint: require("../core")._blueprintDescriptor
 
 });
-
