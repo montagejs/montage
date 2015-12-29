@@ -86,16 +86,16 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                     }
                 });
 
-                it("should fire pressCancel when surrenderPointer is called", function () {
+                it("should end the interaction when surrenderPointer is called", function () {
                     var pressListener = testPage.addListener(test.press_composer, null, "press");
-                    var cancelListener = testPage.addListener(test.press_composer, null, "pressCancel");
+                    var endInteractionSpy = spyOn(test.press_composer, "_endInteraction").andCallThrough();
 
                     testPage.mouseEvent({target: test.example.element}, "mousedown");
 
                     test.press_composer.surrenderPointer(-1, test.example);
 
                     expect(pressListener).not.toHaveBeenCalled();
-                    expect(cancelListener).toHaveBeenCalled();
+                    expect(endInteractionSpy).toHaveBeenCalled();
 
                     testPage.mouseEvent({target: test.example.element}, "mouseup");
 
@@ -103,14 +103,13 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
 
                     if (window.Touch) {
                         pressListener = testPage.addListener(test.press_composer, null, "press");
-                        cancelListener = testPage.addListener(test.press_composer, null, "pressCancel");
 
                         testPage.touchEvent({target: test.example.element}, "touchstart");
 
                         test.press_composer.surrenderPointer(-1, test.example);
 
                         expect(pressListener).not.toHaveBeenCalled();
-                        expect(cancelListener).toHaveBeenCalled();
+                        expect(endInteractionSpy).toHaveBeenCalled();
 
                         testPage.touchEvent({target: test.innerComponent.element}, "touchend");
 
@@ -296,7 +295,7 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                     test.inner_press_composer._endInteraction();
                 });
 
-                it("should fire pressStart for both composers", function () {
+                it("should fire pressStart for inner composer", function () {
                     var inner_listener = testPage.addListener(test.inner_press_composer, null, "pressStart"),
                         outer_listener = testPage.addListener(test.outer_press_composer, null, "pressStart");
 
@@ -304,7 +303,7 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                     testPage.mouseEvent({target: test.innerComponent.element}, "mouseup");
 
                     expect(inner_listener).toHaveBeenCalled();
-                    expect(outer_listener).toHaveBeenCalled();
+                    expect(outer_listener).not.toHaveBeenCalled();
 
                     if (window.Touch) {
                         /* Touch */
@@ -315,7 +314,7 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                         testPage.touchEvent({target: test.innerComponent.element}, "touchend");
 
                         expect(inner_listener).toHaveBeenCalled();
-                        expect(outer_listener).toHaveBeenCalled();
+                        expect(outer_listener).not.toHaveBeenCalled();
                     }
                 });
 
@@ -348,20 +347,20 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
 
                 });
 
-                it("should fire pressCancel for outer composer", function () {
+                it("should not fire PressStart for outer composer", function () {
                     var inner_listener = testPage.addListener(test.inner_press_composer, null, "pressCancel"),
-                        outer_listener = testPage.addListener(test.outer_press_composer, null, "pressCancel");
+                        outer_listener = testPage.addListener(test.outer_press_composer, null, "pressStart");
 
                     testPage.mouseEvent({target: test.innerComponent.element}, "mousedown");
                     testPage.mouseEvent({target: test.innerComponent.element}, "mouseup");
 
-                    expect(outer_listener).toHaveBeenCalled();
+                    expect(outer_listener).not.toHaveBeenCalled();
                     expect(inner_listener).not.toHaveBeenCalled();
 
                     if (window.Touch) {
                         /* Touch */
                         inner_listener = testPage.addListener(test.inner_press_composer, null, "pressCancel");
-                        outer_listener = testPage.addListener(test.outer_press_composer, null, "pressCancel");
+                        outer_listener = testPage.addListener(test.outer_press_composer, null, "pressStart");
 
                         var boundingRect = test.innerComponent.element.getBoundingClientRect(),
                             clientX = boundingRect.left,
@@ -370,7 +369,7 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                         testPage.touchEvent({clientX:clientX, clientY: clientY, target: test.innerComponent.element}, "touchstart");
                         testPage.touchEvent({clientX:clientX, clientY: clientY, target: test.innerComponent.element}, "touchend");
 
-                        expect(outer_listener).toHaveBeenCalled();
+                        expect(outer_listener).not.toHaveBeenCalled();
                         expect(inner_listener).not.toHaveBeenCalled();
                     }
                 });
@@ -378,34 +377,34 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                 // touchend's target is always the same as touch start, so this
                 // test doesn't apply
                 describe("outer_listener", function () {
-                    var _endInteractionSpy;
+                    var _dispatchPressStartSpy;
                     beforeEach(function () {
-                        _endInteractionSpy = spyOn(test.outer_press_composer, "_endInteraction")
+                        _dispatchPressStartSpy = spyOn(test.outer_press_composer, "_dispatchPressStart").andCallThrough();
                     });
 
-                    it("should _endInteraction when the touch is released elsewhere", function () {
+                    it("should not fire a PressStart event when the mouse is released elsewhere", function () {
                         testPage.mouseEvent({target: test.innerComponent.element}, "mousedown");
                         testPage.mouseEvent({target: testPage.document}, "mouseup");
-                        expect(_endInteractionSpy).toHaveBeenCalled();
+                        expect(_dispatchPressStartSpy).not.toHaveBeenCalled();
                     });
 
-                    it("should _endInteraction when the mouse/touch is released within the element but unclaimed", function () {
+                    it("should not fire a PressStart event when the mouse is released within the element but unclaimed", function () {
                         testPage.mouseEvent({target: test.innerComponent.element}, "mousedown");
                         testPage.mouseEvent({target: test.inner2Component.element}, "mouseup");
-                        expect(_endInteractionSpy).toHaveBeenCalled();
+                        expect(_dispatchPressStartSpy).not.toHaveBeenCalled();
                     });
 
                     if (window.Touch) {
-                        it("should _endInteraction when the touch is released elsewhere", function () {
+                        it("should not fire a PressStart event when the touch is released elsewhere", function () {
                             testPage.touchEvent({target: test.innerComponent.element}, "touchstart");
                             testPage.touchEvent({target: testPage.document}, "touchend");
-                            expect(_endInteractionSpy).toHaveBeenCalled();
+                            expect(_dispatchPressStartSpy).not.toHaveBeenCalled();
                         });
 
-                        it("should _endInteraction when the touch is released within the element but unclaimed", function () {
+                        it("should not fire a PressStart event when the touch is released within the element but unclaimed", function () {
                             testPage.touchEvent({target: test.innerComponent.element}, "touchstart");
                             testPage.touchEvent({target: test.inner2Component.element}, "touchend");
-                            expect(_endInteractionSpy).toHaveBeenCalled();
+                            expect(_dispatchPressStartSpy).not.toHaveBeenCalled();
                         });
                     }
                 });

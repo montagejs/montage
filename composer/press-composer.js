@@ -259,7 +259,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 return false;
             }
 
-            this._cancelPress();
+            this.cancelPress();
 
             return true;
         }
@@ -314,9 +314,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 }
 
                 if (this._observedPointer !== null && this.component.eventManager.claimPointer(this._observedPointer, this)) {
-                    this._shouldSaveInitialCenterPosition = true;
-                    this._addEventListeners();
-                    this._dispatchPressStart(event);
+                    this._addPointerDownListener();
 
                 } else {
                     this._observedPointer = null;
@@ -427,12 +425,32 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 this.component.eventManager.claimPointer(this._observedPointer, this);
 
                 if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                    this._shouldSaveInitialCenterPosition = true;
-                    this._addEventListeners();
-                    this._dispatchPressStart(event);
+                    this._addPointerDownListener();
+
                 } else{
                     this._observedPointer = null;
                 }
+            }
+        }
+    },
+
+
+    /**
+     * Handle every kind of interactions (touch, mouse or pointer),
+     * in order to check if a press composer still claims the observed pointer in the bubbling phase.
+     * @private
+     */
+    _handlePointerDown: {
+        value: function (event) {
+            this._removePointerDownListener();
+
+            if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                this._shouldSaveInitialCenterPosition = true;
+                this._addEventListeners();
+                this._dispatchPressStart(event);
+
+            } else {
+                this._observedPointer = null;
             }
         }
     },
@@ -495,6 +513,44 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
                 newCenterPositionY = boundingClientRect.top + (boundingClientRect.height/2);
 
             return this._initialCenterPositionX !== newCenterPositionX || this._initialCenterPositionY !== newCenterPositionY;
+        }
+    },
+
+    _addPointerDownListener: {
+        value: function () {
+            if (window.PointerEvent) {
+                this._element.addEventListener("pointerdown", this, false);
+
+            } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                this._element.addEventListener("MSPointerDown", this, false);
+
+            } else {
+                if (this._observedPointer === "mouse") {
+                    this._element.addEventListener("mousedown", this, false);
+
+                } else {
+                    this._element.addEventListener("touchstart", this, false);
+                }
+            }
+        }
+    },
+
+    _removePointerDownListener: {
+        value: function () {
+            if (window.PointerEvent) {
+                this._element.removeEventListener("pointerdown", this, false);
+
+            } else if (window.MSPointerEvent && window.navigator.msPointerEnabled) {
+                this._element.removeEventListener("MSPointerDown", this, false);
+
+            } else {
+                if (this._observedPointer === "mouse") {
+                    this._element.removeEventListener("mousedown", this, false);
+
+                } else {
+                    this._element.removeEventListener("touchstart", this, false);
+                }
+            }
         }
     },
 
@@ -678,6 +734,10 @@ PressComposer.prototype.handlePointermove = PressComposer.prototype._handleMove;
 PressComposer.prototype.handleTouchmove = PressComposer.prototype._handleMove;
 PressComposer.prototype.handleMousemove = PressComposer.prototype._handleMove;
 PressComposer.prototype.handleMousewheel = PressComposer.prototype.handleWheel;
+PressComposer.prototype.handleMSPointerDown = PressComposer.prototype._handlePointerDown;
+PressComposer.prototype.handlePointerdown = PressComposer.prototype._handlePointerDown;
+PressComposer.prototype.handleMousedown = PressComposer.prototype._handlePointerDown;
+PressComposer.prototype.handleTouchstart = PressComposer.prototype._handlePointerDown;
 
 /*
  * @class PressEvent
