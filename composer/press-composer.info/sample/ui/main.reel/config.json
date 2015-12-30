@@ -1,0 +1,24 @@
+{
+    "cases": [
+        {
+            "label": "hit box",
+            "arg": "hit-box"
+        },
+        {
+            "label": "nested hit boxes",
+            "arg": "nest-hit-box"
+        },
+        {
+            "label": "draggable hit box",
+            "arg": "drag-hit-box"
+        },
+        {
+            "label": "list",
+            "arg": "regular-list"
+        },
+        {
+            "label": "list with buttons",
+            "arg": "inner-press-list"
+        }
+    ]
+}

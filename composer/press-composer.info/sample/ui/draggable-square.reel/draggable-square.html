@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="draggable-square.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"}
+            }
+        },
+
+        "hitBox": {
+            "prototype": "../square.reel",
+            "properties": {
+                "element": {"#": "square"},
+                "label": "Drag Me!"
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="DraggableSquare">
+        <div data-montage-id="square"></div>
+    </div>
+</body>
+</html>
