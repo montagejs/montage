@@ -1091,10 +1091,8 @@ if (typeof window !== "undefined") { // client-side
              enumerable: false,
              value: function registerEventListener(target, eventType, listener, useCapture) {
                  var result;
-                 //console.profile("registerEventListener");
-               result = this._registerEventListener(target, eventType, listener, useCapture ? this._registeredCaptureEventListeners : this._registeredBubbleEventListeners);
-               //console.profileEnd("registerEventListener");
-               return result;
+                 result = this._registerEventListener(target, eventType, listener, useCapture ? this._registeredCaptureEventListeners : this._registeredBubbleEventListeners);
+                 return result;
 
             }
         },
@@ -1111,10 +1109,6 @@ if (typeof window !== "undefined") { // client-side
                     isNewTarget = false,
                     returnResult = false,
                     listeners;
-
-                // if (typeof target.uuid === "undefined") {
-                //     throw new Error("EventManager cannot observe a target without a uuid: " + (target.outerHTML || target));
-                // }
 
                 if (!eventTypeRegistration) {
                     // First time this eventType has been requested
