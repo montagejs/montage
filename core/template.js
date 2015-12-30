@@ -15,7 +15,7 @@ var Montage = require("./core").Montage,
  * @extends Montage
  */
 var Template = Montage.specialize( /** @lends Template# */ {
-    _SERIALIZATON_SCRIPT_TYPE: {value: "text/montage-serialization"},
+    _SERIALIZATION_SCRIPT_TYPE: {value: "text/montage-serialization"},
     _ELEMENT_ID_ATTRIBUTE: {value: "data-montage-id"},
     PARAM_ATTRIBUTE: {value: "data-param"},
 
@@ -684,7 +684,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      */
     getInlineObjectsString: {
         value: function (doc) {
-            var selector = "script[type='" + this._SERIALIZATON_SCRIPT_TYPE + "']",
+            var selector = "script[type='" + this._SERIALIZATION_SCRIPT_TYPE + "']",
                 script = doc.querySelector(selector);
 
             if (script) {
@@ -803,7 +803,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
      */
     _removeObjects: {
         value: function (doc) {
-            var selector = "script[type='" + this._SERIALIZATON_SCRIPT_TYPE + "'], link[rel='serialization']";
+            var selector = "script[type='" + this._SERIALIZATION_SCRIPT_TYPE + "'], link[rel='serialization']";
 
             Array.prototype.forEach.call(
                 doc.querySelectorAll(selector),
@@ -819,7 +819,7 @@ var Template = Montage.specialize( /** @lends Template# */ {
             if (objectsString) {
                 var script = doc.createElement("script");
 
-                script.setAttribute("type", this._SERIALIZATON_SCRIPT_TYPE);
+                script.setAttribute("type", this._SERIALIZATION_SCRIPT_TYPE);
                 script.textContent = JSON.stringify(JSON.parse(objectsString), null, 4);
                 doc.head.appendChild(script);
             }
@@ -1397,7 +1397,7 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
                 for (var i = 0, ii = templateScripts.length; i < ii; i++) {
                     script = templateScripts[i];
 
-                    if (script.type !== this.template._SERIALIZATON_SCRIPT_TYPE) {
+                    if (script.type !== this.template._SERIALIZATION_SCRIPT_TYPE) {
                         scripts.push(script);
                     }
                 }
