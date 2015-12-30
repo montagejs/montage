@@ -178,7 +178,7 @@ describe("test/base/abstract-link-spec", function () {
             aLink.prepareForActivationEvents();
 
             listeners = em.registeredEventListenersForEventType_onTarget_("press", aLink._pressComposer);
-            expect(listeners[aLink.uuid].listener).toBe(aLink);
+            expect(listeners.has(aLink)).toBe(true);
         });
 
         describe("once prepareForActivationEvents is called", function () {

@@ -27,7 +27,7 @@
   },
   "production": true,
   "dependencies": {
-    "collections": "~1.2.2",
+    "collections": "~3.0.0",
     "frb": "~0.2.18",
     "htmlparser2": "~3.0.5",
     "mr": "montagejs/mr#master",

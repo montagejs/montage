@@ -1,4 +1,3 @@
-"use strict";
 
 /**
  * @module montage/core/meta/binder-reference
@@ -80,4 +79,3 @@ exports.BinderReference = RemoteReference.specialize({
     }
 
 });
-

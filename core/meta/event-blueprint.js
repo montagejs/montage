@@ -1,4 +1,3 @@
-"use strict";
 /**
  * @module montage/core/meta/property-blueprint
  * @requires montage/core/core
@@ -154,4 +153,3 @@ exports.EventBlueprint = Montage.specialize( /** @lends EventBlueprint# */ {
     blueprint: require("../core")._blueprintDescriptor
 
 });
-

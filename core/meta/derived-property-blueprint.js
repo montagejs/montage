@@ -1,4 +1,3 @@
-"use strict";
 /**
  * @module montage/core/blueprint
  * @requires core/logger
@@ -88,4 +87,3 @@ exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends Deri
     }
 
 });
-

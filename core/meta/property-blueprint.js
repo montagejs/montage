@@ -1,4 +1,3 @@
-"use strict";
 /**
  * @module montage/core/meta/property-blueprint
  * @requires montage/core/core
@@ -282,4 +281,3 @@ exports.PropertyBlueprint = Montage.specialize( /** @lends PropertyBlueprint# */
     blueprint:require("../core")._blueprintDescriptor
 
 });
-

@@ -1048,9 +1048,10 @@ describe("serialization/montage-deserializer-spec", function () {
 
             return deserializer.deserializeObject()
             .then(function (root) {
+                var registeredEventListenersForRootAction = defaultEventManager.registeredEventListenersForEventType_onTarget_("action",root);
                 expect(root.prop1).toBe(3.14);
-                expect(defaultEventManager.registeredEventListeners.action).toBeDefined();
-                expect(root.uuid in defaultEventManager.registeredEventListeners.action).toBeTruthy();
+                expect(registeredEventListenersForRootAction).toBeDefined();
+                expect(registeredEventListenersForRootAction.length).toEqual(1);
                 expect(root._bindingDescriptors).toBeFalsy();
             }).catch(function(reason) {
                 console.log(reason.stack);
@@ -1096,9 +1097,10 @@ describe("serialization/montage-deserializer-spec", function () {
 
             return deserializer.deserializeObject()
             .then(function (root) {
+                var registeredEventListenersForRootAction = defaultEventManager.registeredEventListenersForEventType_onTarget_("action",root);
                 expect(root.prop1).toBe(3.14);
-                expect(defaultEventManager.registeredEventListeners.action).toBeDefined();
-                expect(root.uuid in defaultEventManager.registeredEventListeners.action).toBeTruthy();
+                expect(registeredEventListenersForRootAction).toBeDefined();
+                expect(registeredEventListenersForRootAction.length).toEqual(1);
                 expect(Object.keys(Bindings.getBindings(root)).length).toBeGreaterThan(0);
             }).catch(function(reason) {
                 console.log(reason.stack);

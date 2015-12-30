@@ -1,4 +1,3 @@
-"use strict";
 /**
  * @module montage/core/meta/validation-semantics
  * @requires montage/core/core
@@ -87,4 +86,3 @@ for (var operator in Semantics.operators) {
 for (var evaluator in Semantics.evaluators) {
     PropertyValidationSemantics.evaluators[evaluator] = Semantics.evaluators[evaluator];
 }
-
