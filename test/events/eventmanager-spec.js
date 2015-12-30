@@ -399,7 +399,6 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
 
                 it("should present the event to any listeners along the propagation path registered in the capture phase first", function () {
 
-                    console.log("should present the event to any listeners along the propagation path registered in the capture phase first");
                     var captureCalled = false,
                             bubbleCalled = false;
 
@@ -407,7 +406,6 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                         captureMousedown: function () {
                             expect(bubbleCalled).toBe(false);
                             captureCalled = true;
-                            console.log("mousedownCaptureSpy.captureMousedown");
                         }
                     };
 
@@ -415,7 +413,6 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                         handleMousedown: function () {
                             expect(captureCalled).toBe(true);
                             bubbleCalled = true;
-                            console.log("mousedownBubbleSpy.handleMousedown");
                         }
                     };
 
@@ -434,7 +431,6 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
 
                 it("should present an event to capture listeners in the capture phase based on the DOM hierarchy from top to target, not in the order they registered", function () {
 
-                    console.log("should present an event to capture listeners in the capture phase based on the DOM hierarchy from top to target, not in the order they registered");
                     var calledHandlers = [];
 
                     var windowSpy = {
