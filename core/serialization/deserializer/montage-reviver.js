@@ -478,6 +478,8 @@ var MontageReviver = exports.MontageReviver = Montage.specialize(/** @lends Mont
                 return this.reviveArray(value, context, label);
             } else if (type === "object") {
                 return this.reviveObjectLiteral(value, context, label);
+            } else if (type === "Element") {
+                return this.reviveElement(value, context, label);
             } else {
                 return this._callReviveMethod("revive" + type, value, context, label);
             }
