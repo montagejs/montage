@@ -1356,15 +1356,11 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             if (!this._expandComponentPromise) {
                     if (this.hasTemplate) {
                         var self = this;
-                        this._expandComponentPromise = new Promise(function(resolve, reject) {
-                            self._instantiateTemplate().then(function() {
-                                self._isComponentExpanded = true;
-                                self._addTemplateStylesIfNeeded();
-                                self.needsDraw = true;
-                                resolve();
-                            },reject)
-                            .catch(console.error);
-                        });
+                        this._expandComponentPromise = this._instantiateTemplate().then(function() {
+                            self._isComponentExpanded = true;
+                            self._addTemplateStylesIfNeeded();
+                            self.needsDraw = true;
+                        }).catch(console.error);
                     } else {
                         this._isComponentExpanded = true;
                         this._expandComponentPromise = Promise.resolve();
