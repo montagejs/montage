@@ -1086,7 +1086,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                 eventManager.registerEventHandlerForElement(handler, element);
                 eventManager.unregisterEventHandlerForElement(element);
                 expect(eventManager.eventHandlerForElement(element)).toBeUndefined();
-                expect(eventManager._elementEventHandlerByUUID[handler.uuid]).toBeUndefined();
+                expect(eventManager._elementEventHandlerByElement.get(handler)).toBeUndefined();
             });
 
             it("should override an element's previous event handler", function () {
@@ -1094,10 +1094,10 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                     handler2 = {name: "handler2"};
 
                 eventManager.registerEventHandlerForElement(handler1, element);
-                expect(eventManager._elementEventHandlerByUUID[handler1.uuid]).toBeDefined();
+                expect(eventManager._elementEventHandlerByElement.get(element)).toBeDefined();
+                expect(eventManager.eventHandlerForElement(element)).toBe(handler1);
                 eventManager.registerEventHandlerForElement(handler2, element);
                 expect(eventManager.eventHandlerForElement(element)).toBe(handler2);
-                expect(eventManager._elementEventHandlerByUUID[handler1.uuid]).toBeUndefined();
             });
 
             it("should install an event handler on an element after the previous one has been uninstalled", function () {
