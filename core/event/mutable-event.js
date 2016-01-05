@@ -10,7 +10,6 @@ if (typeof window !== "undefined") {
     var _eventConstructorsByType = {};
 
     var wrapProperty = function (obj, key) {
-
         var storageKey = "_" + key;
 
         Montage.defineProperty(obj, storageKey, {value: undefined});
@@ -18,7 +17,7 @@ if (typeof window !== "undefined") {
         Montage.defineProperty(obj, key, {
             get:(function (key, storageKey) {
                 return function () {
-                    return this.hasOwnProperty(storageKey) ? this[storageKey] : (this._event ? this._event[key] : undefined);
+                    return this.hasOwnProperty(storageKey) ? this[storageKey] : this._event[key];
                 };
             })(key, storageKey),
 
@@ -40,7 +39,6 @@ if (typeof window !== "undefined") {
         _initPrototypeWithEvent: {
             value: function (event) {
                 var key;
-
                 for (key in event) {
 
                     //  Don't overwrite keys we have installed
@@ -203,4 +201,3 @@ if (typeof window !== "undefined") {
     });
 
 } // client-side
-
