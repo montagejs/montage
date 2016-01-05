@@ -241,20 +241,20 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                             expect(longListener).not.toHaveBeenCalled();
 
                             testPage.mouseEvent({target: test.example.element}, "mouseup");
+
+                            if (window.Touch) {
+                                longListener = testPage.addListener(test.press_composer, null, "longPress");
+
+                                testPage.touchEvent({target: test.example.element}, "touchstart");
+
+                                waits(test.press_composer.longPressThreshold - 100);
+                                runs(function () {
+                                    expect(longListener).not.toHaveBeenCalled();
+
+                                    testPage.touchEvent({target: test.example.element}, "touchend");
+                                });
+                            }
                         });
-
-                        if (window.Touch) {
-                            longListener = testPage.addListener(test.press_composer, null, "longPress");
-
-                            testPage.touchEvent({target: test.example.element}, "touchstart");
-
-                            waits(test.press_composer.longPressThreshold - 100);
-                            runs(function () {
-                                expect(longListener).not.toHaveBeenCalled();
-
-                                testPage.touchEvent({target: test.example.element}, "touchend");
-                            });
-                        }
                     });
 
                     describe("longPressThreshold", function () {
