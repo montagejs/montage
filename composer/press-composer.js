@@ -342,7 +342,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
             if (target && this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 if (this.element === target || this.element.contains(target)) {
-                    this._dispatchPress(event);
+                    this._dispatchPress(event, typeof event.pointerId === "undefined" ? target : null);
 
                 } else {
                     this._dispatchPressCancel(event);
@@ -680,13 +680,22 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     _dispatchPress: {
         enumerable: false,
-        value: function (event) {
+        value: function (event, touchEndTargetElement) {
             if (this._shouldDispatchLongPress) {
                 clearTimeout(this._longPressTimeout);
                 this._longPressTimeout = null;
             }
 
-            this.dispatchEvent(this._createPressEvent("press", event));
+            var pressEvent = this._createPressEvent("press", event);
+
+            // The target of touchend events is actually the same element on which the touch point started.
+            // So, we override the property targetElement of the PressEvent with the element on which the touch point has been released.
+            if (touchEndTargetElement) {
+                pressEvent.targetElement = touchEndTargetElement;
+            }
+
+            this.dispatchEvent(pressEvent);
+
             this._state = PressComposer.UNPRESSED;
         }
     },
