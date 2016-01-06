@@ -16,6 +16,8 @@ var Target = require("./target").Target,
 
 require("./dom");
 
+var FIRST_LOAD_KEY_SUFFIX = "-is-first-load";
+
 /**
  * The application is a singleton, it initially loads and oversees the running program.
  * It is also responsible for window management.
@@ -48,6 +50,20 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
      */
     parentApplication: {
         value: null
+    },
+
+    name: {
+        value: null
+    },
+
+    _isFirstLoad: {
+        value: null
+    },
+
+    isFirstLoad: {
+        get: function () {
+            return this._isFirstLoad;
+        }
     },
 
     /**
@@ -415,6 +431,9 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
             var rootComponent,
                 self = this;
 
+            this.name = applicationRequire.packageDescription.name;
+            this._loadApplicationContext();
+
             // assign to the exports so that it is available in the deserialization of the template
             exports.application = self;
 
@@ -433,6 +452,21 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
                     return self;
                 });
             });
+        }
+    },
+
+    _loadApplicationContext: {
+        value: function () {
+            if (this._isFirstLoad === null) {
+                var alreadyLoadedLocalStorageKey = this.name + FIRST_LOAD_KEY_SUFFIX,
+                    hasAlreadyBeenLoaded = localStorage.getItem(alreadyLoadedLocalStorageKey);
+
+                if (hasAlreadyBeenLoaded === null) {
+                    localStorage.setItem(alreadyLoadedLocalStorageKey, true);
+                }
+
+                this._isFirstLoad = !hasAlreadyBeenLoaded;
+            }
         }
     },
 

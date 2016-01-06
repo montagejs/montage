@@ -1,12 +1,15 @@
 /**
  * @module "montage/ui/loader.reel"
  */
-var Component = require("../component").Component,
+var ComponentModule = require("../component"),
+    Component = ComponentModule.Component,
+    RootComponent = ComponentModule.__root__,
     logger = require("../../core/logger").logger("loader"),
     defaultEventManager = require("../../core/event/event-manager").defaultEventManager,
     MONTAGE_LOADER_ELEMENT_ID = "montage-app-loader",
     BOOTSTRAPPING_CLASS_NAME = "montage-app-bootstrapping",
     LOADING_CLASS_NAME = "montage-app-loading",
+    FIRST_LOADING_CLASS_NAME = "montage-app-first-load",
     LOADED_CLASS_NAME = "montage-app-loaded";
 
 /**
@@ -61,8 +64,37 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
         value: 0
     },
 
+    minimumFirstLoadingDuration: {
+        value: null
+    },
+
+    minimumFirstBootstrappingDuration: {
+        value: null
+    },
+
     _initializedModules: {
         value: null
+    },
+
+    element: {
+        get: function () {
+            if (!this._element) {
+                if (!this.hasTemplate) {
+                    this.element = document.documentElement;
+
+                } else {
+                    // If a loader component has no element, but has a template we need to create a default element,
+                    // otherwise the html element is going to be used for this component.
+                    this.element = document.createElement("div");
+                    document.body.appendChild(this.element);
+                }
+            }
+
+            return this._element;
+        },
+        set: function (element) {
+            Object.getOwnPropertyDescriptor(Component.prototype, "element").set.call(this, element);
+        }
     },
 
     /**
@@ -115,16 +147,29 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
         get: function () {
             return this._currentStage;
         },
-        set: function (value) {
-            if (value === this._currentStage) {
+        set: function (currentStage) {
+            if (currentStage === this._currentStage) {
                 return;
             }
 
             if (logger.isDebug) {
-                logger.debug(this, "CURRENT STAGE: " + value);
+                logger.debug(this, "CURRENT STAGE: " + currentStage);
             }
-            this._currentStage = value;
-            this.needsDraw = true;
+
+            this._currentStage = currentStage;
+
+            // Reflect the current loading stage
+            if (LOADING === currentStage) {
+                RootComponent.classList.remove(BOOTSTRAPPING_CLASS_NAME);
+                RootComponent.classList.add(LOADING_CLASS_NAME);
+
+            } else if (LOADED === currentStage && this._contentToRemove) {
+                RootComponent.classList.remove(BOOTSTRAPPING_CLASS_NAME);
+                RootComponent.classList.remove(LOADING_CLASS_NAME);
+                RootComponent.classList.add(LOADED_CLASS_NAME);
+
+                this.needsDraw = true;
+            }
         }
     },
 
@@ -198,18 +243,14 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
 
     // Implementation
 
-    templateDidLoad: {
+    enterDocument: {
         value: function () {
             if (logger.isDebug) {
-                logger.debug(this, "templateDidLoad");
+                logger.debug(this, "enterDocument");
             }
 
+            this._loadLoaderContext();
             this._loadMainComponent();
-
-            if (!this.element) {
-                this.element = document.documentElement;
-                this.attachToParentComponent();
-            }
 
             this.readyToShowLoader = true;
 
@@ -234,6 +275,23 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
                 timing.bootstrappingEndTime = bootstrappingEndTime;
 
                 this._revealLoader();
+            }
+        }
+    },
+
+    _loadLoaderContext: {
+        value: function () {
+            if (this.application.isFirstLoad) {
+                // RootComponent
+                RootComponent.classList.add(FIRST_LOADING_CLASS_NAME);
+
+                if (this.minimumFirstLoadingDuration !== null) {
+                    this.minimumLoadingDuration = this.minimumFirstLoadingDuration;
+                }
+
+                if (this.minimumFirstBootstrappingDuration !== null) {
+                    this.minimumBootstrappingDuration = this.minimumFirstBootstrappingDuration;
+                }
             }
         }
     },
@@ -317,7 +375,7 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
     mainComponentEnterDocument: {
         value: function () {
             var mainComponent = this._mainComponent,
-                insertionElement;
+                insertionElement = document.body;
 
             if (logger.isDebug) {
                 logger.debug(this, "main preparing to draw");
@@ -330,7 +388,6 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
 
             // If installing classnames on the documentElement (to affect as high a level as possible)
             // make sure content only ends up inside the body
-            insertionElement = this.element === document.documentElement ? document.body : this.element;
             this._contentToRemove.selectNodeContents(insertionElement);
 
             // Add new content so mainComponent can actually draw
@@ -414,22 +471,11 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
 
     draw: {
         value: function () {
-            // Reflect the current loading stage
-            if (LOADING === this.currentStage) {
-                this.element.classList.remove(BOOTSTRAPPING_CLASS_NAME);
-                this.element.classList.add(LOADING_CLASS_NAME);
-
-            } else if (LOADED === this.currentStage && this._contentToRemove) {
-
-                this.element.classList.remove(BOOTSTRAPPING_CLASS_NAME);
-                this.element.classList.remove(LOADING_CLASS_NAME);
-
-                if(this.removeContentOnLoad || this._forceContentRemoval) {
+            if (LOADED === this._currentStage && this._contentToRemove) {
+                if (this.removeContentOnLoad || this._forceContentRemoval) {
                     this._contentToRemove.extractContents();
                     this._contentToRemove = null;
                 }
-
-                this.element.classList.add(LOADED_CLASS_NAME);
 
                 var loadEvent = document.createEvent("CustomEvent");
                 loadEvent.initCustomEvent("componentLoaded", true, true, this._mainComponent);
