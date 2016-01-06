@@ -444,17 +444,6 @@ if (typeof window !== "undefined") {
                         content: module.text
                     };
 
-                    // XXX deprecated
-                    // todo: need to be removed.
-                    Object.defineProperty(module.exports, "root", {
-                        get: function () {
-                            if (typeof console === "object") {
-                                console.warn("'root' property is deprecated on template modules.  Use 'directory' instead of root[1]");
-                            }
-                            return match;
-                        }
-                    });
-
                     return module;
                 }
             }
@@ -797,8 +786,7 @@ if (typeof window !== "undefined") {
                 "core/core",
                 "core/event/event-manager",
                 "core/serialization/deserializer/montage-reviver",
-                "core/logger",
-                "core/deprecate"
+                "core/logger"
             ];
 
             var Promise = montageRequire("core/promise").Promise;
@@ -814,7 +802,6 @@ if (typeof window !== "undefined") {
                 var EventManager = montageRequire("core/event/event-manager").EventManager;
                 var MontageReviver = montageRequire("core/serialization/deserializer/montage-reviver").MontageReviver;
                 var logger = montageRequire("core/logger").logger;
-                var deprecate = montageRequire("core/deprecate");
 
                 var defaultEventManager, application;
 
@@ -840,17 +827,9 @@ if (typeof window !== "undefined") {
                 return appModulePromise.then(function (exports) {
                     var Application = exports[(applicationLocation ? applicationLocation.objectName : "Application")];
                     application = new Application();
-                    Object.defineProperty(window.document, "application", {
-                        get: deprecate.deprecateMethod(
-                            null,
-                            function () {
-                                return exports.application;
-                            },
-                            "document.application is deprecated, use require(\"montage/core/application\").application instead."
-                            )
-                    });
                     defaultEventManager.application = application;
                     application.eventManager = defaultEventManager;
+
                     return application._load(applicationRequire, function() {
                         if (params.module) {
                             // If a module was specified in the config then we initialize it now

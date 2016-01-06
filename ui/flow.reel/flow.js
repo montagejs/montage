@@ -6,8 +6,6 @@ var Component = require("../component").Component,
     FlowBezierSpline = require("./flow-bezier-spline").FlowBezierSpline,
     RangeController = require("../../core/range-controller").RangeController;
 
-var deprecationWarning = require("../../core/deprecate").deprecationWarning;
-
 /**
  * @class Flow
  * @extends Component
@@ -1752,18 +1750,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
 
     observeProperty: {
         value: function (key, emit, scope) {
-            if (
-                key === "currentIteration" ||
-                key === "objectAtCurrentIteration" ||
-                key === "contentAtCurrentIteration"
-            ) {
-                deprecationWarning(key,":iteration.object");
-                if (this._repetition) {
-                    return this._repetition.observeProperty(key, emit, scope);
-                }
-            } else {
-                return observeProperty(this, key, emit, scope);
-            }
+            return observeProperty(this, key, emit, scope);
         }
     },
 
