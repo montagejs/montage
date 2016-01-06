@@ -9,7 +9,7 @@ var ComponentModule = require("../component"),
     MONTAGE_LOADER_ELEMENT_ID = "montage-app-loader",
     BOOTSTRAPPING_CLASS_NAME = "montage-app-bootstrapping",
     LOADING_CLASS_NAME = "montage-app-loading",
-    FIRST_LOADING_CLASS_NAME = "montage-app-first-loading",
+    FIRST_LOADING_CLASS_NAME = "montage-app-first-load",
     LOADED_CLASS_NAME = "montage-app-loaded";
 
 /**
@@ -281,7 +281,7 @@ exports.Loader = Component.specialize( /** @lends Loader.prototype # */ {
 
     _loadLoaderContext: {
         value: function () {
-            if (this.application.isFirstLaunch) {
+            if (this.application.isFirstLoad) {
                 // RootComponent
                 RootComponent.classList.add(FIRST_LOADING_CLASS_NAME);
 

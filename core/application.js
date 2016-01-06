@@ -16,7 +16,7 @@ var Target = require("./target").Target,
 
 require("./dom");
 
-var ALREADY_LAUNCH_KEY_SUFFIX = "-already-launch";
+var FIRST_LOAD_KEY_SUFFIX = "-is-first-load";
 
 /**
  * The application is a singleton, it initially loads and oversees the running program.
@@ -56,13 +56,13 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
         value: null
     },
 
-    _isFirstLaunch: {
+    _isFirstLoad: {
         value: null
     },
 
-    isFirstLaunch: {
+    isFirstLoad: {
         get: function () {
-            return this._isFirstLaunch;
+            return this._isFirstLoad;
         }
     },
 
@@ -457,19 +457,15 @@ var Application = exports.Application = Target.specialize( /** @lends Applicatio
 
     _loadApplicationContext: {
         value: function () {
-            if (localStorage) {
-                if (this._isFirstLaunch === null) {
-                    var alreadyLaunchLocalStorageKey = this.name + ALREADY_LAUNCH_KEY_SUFFIX,
-                        hasAlreadyBeenLaunch = localStorage.getItem(alreadyLaunchLocalStorageKey);
+            if (this._isFirstLoad === null) {
+                var alreadyLoadedLocalStorageKey = this.name + FIRST_LOAD_KEY_SUFFIX,
+                    hasAlreadyBeenLoaded = localStorage.getItem(alreadyLoadedLocalStorageKey);
 
-                    if (hasAlreadyBeenLaunch === null) {
-                        localStorage.setItem(alreadyLaunchLocalStorageKey, true);
-                    }
-
-                    this._isFirstLaunch = !hasAlreadyBeenLaunch;
+                if (hasAlreadyBeenLoaded === null) {
+                    localStorage.setItem(alreadyLoadedLocalStorageKey, true);
                 }
-            } else {
-                this._isFirstLaunch = false; //fallback?
+
+                this._isFirstLoad = !hasAlreadyBeenLoaded;
             }
         }
     },
