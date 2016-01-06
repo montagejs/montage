@@ -12,7 +12,15 @@
                 {"type": "action", "listener": {"@": "owner"}}
             ]
         },
-
+        "abstractSliderField": {
+            "prototype": "montage/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "abstractSliderField"}
+            },
+            "bindings": {
+                "value": {"<->": "@abstractSlider.value"}
+            }
+        },
         "slider": {
             "prototype": "montage/ui/slider.reel",
             "properties": {
@@ -30,14 +38,15 @@
                 "value": {"<->": "@slider.value"}
             }
         },
-
         "sliderRange": {
             "prototype": "montage/ui/slider.reel",
             "properties": {
                 "element": {"#": "slider-range"}
-            }
+            },
+            "listeners": [
+                {"type": "action", "listener": {"@": "owner"}}
+            ]
         },
-
         "sliderRangeField": {
             "prototype": "montage/ui/text-field.reel",
             "properties": {
@@ -47,7 +56,6 @@
                 "value": {"<->": "@sliderRange.value"}
             }
         }
-
     }
     </script>
 </head>
