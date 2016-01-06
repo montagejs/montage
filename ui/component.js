@@ -2755,13 +2755,19 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         value: function (element) {
             if (element && element.classList && element.classList.length > 0) {
                 // important to initializae the classList first, so that the listener doesn't get installed.
-                var classList = this.classList;
+                if (!this._classList) {
+                    // we don't want to subscribe then unsubscribe and subscribe again to the ClassList Changes,
+                    // So we don't access to the getter of the property classList.
+                    this._classList = new Set();
 
-                if (this._unsubscribeToClassListChanges) {
-                    this._unsubscribeToClassListChanges();
+                } else {
+                    if (this._unsubscribeToClassListChanges) {
+                        this._unsubscribeToClassListChanges();
+                    }
                 }
 
-                classList.addEach(element.classList);
+                this._classList.addEach(element.classList);
+
                 this._subscribeToToClassListChanges();
             }
         }
