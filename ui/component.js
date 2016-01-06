@@ -1739,10 +1739,10 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             if (this._needsEnterDocument) {
                 this._needsEnterDocument = false;
                 this._inDocument = true;
+                this._enterDocument(firstDraw);
                 if (typeof this.enterDocument === "function") {
                     this.enterDocument(firstDraw);
                 }
-                this._enterDocument(firstDraw);
             }
             if (firstDraw) {
                 this.originalElement = null;
@@ -2571,9 +2571,14 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      * Stores values that need to be set on the element. Cleared each draw cycle.
      * @private
      */
-    _elementAttributeValues: {
-        value: null
-    },
+     __elementAttributeValues: {
+         value: null
+     },
+     _elementAttributeValues: {
+         get: function() {
+             return this.__elementAttributeValues || (this.__elementAttributeValues = {});
+         }
+     },
 
     /**
      * Stores the descriptors of the properties that can be set on this control
@@ -2632,10 +2637,6 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                         descriptor = this._getElementAttributeDescriptor(name, this);
                         // check if this attribute from the markup is a well-defined attribute of the component
                         if(descriptor || (typeof this[name] !== 'undefined')) {
-                            // at this point we know that we will need it so create it.
-                            if(this._elementAttributeValues === null) {
-                                this._elementAttributeValues = {};
-                            }
                             // only set the value if a value has not already been set by binding
                             if(typeof this._elementAttributeValues[name] === 'undefined') {
                                 this._elementAttributeValues[name] = value;
@@ -2653,10 +2654,6 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                     // check if this element has textContent
                     var textContent = originalElement.textContent;
 
-                    // if no attributes were needed this yet, we need it now
-                    if(this._elementAttributeValues === null) {
-                        this._elementAttributeValues = {};
-                    }
 
                     if(typeof this._elementAttributeValues.textContent === 'undefined') {
                         this._elementAttributeValues.textContent = textContent;
@@ -2668,12 +2665,13 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
                 // Set defaults for any properties that weren't serialised or set
                 // as attributes on the element.
+                //Benoit: This shouldn't be needed on each instance if properly set on the prototype TODO #memory #performance improvement
                 if (this._elementAttributeDescriptors) {
                     for (attributeName in this._elementAttributeDescriptors) {
                         descriptor = this._elementAttributeDescriptors[attributeName];
                         var _name = "_"+attributeName;
                         if (this[_name] === null && descriptor !== null && "value" in descriptor) {
-                            this[_name] = this._elementAttributeDescriptors[attributeName].value;
+                            this[_name] = descriptor.value;
                         }
                     }
                 }
@@ -2686,35 +2684,38 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         value: function () {
             var element = this.element, descriptor;
 
-            for(var attributeName in this._elementAttributeValues) {
-                if(this._elementAttributeValues.hasOwnProperty(attributeName)) {
-                    var value = this[attributeName];
-                    descriptor = this._getElementAttributeDescriptor(attributeName, this);
-                    if(descriptor) {
+            //Buffered/deferred element attribute values
+            if(this.__elementAttributeValues !== null) {
+                for(var attributeName in this._elementAttributeValues) {
+                    if(this._elementAttributeValues.hasOwnProperty(attributeName)) {
+                        var value = this[attributeName];
+                        descriptor = this._getElementAttributeDescriptor(attributeName, this);
+                        if(descriptor) {
 
-                        if(descriptor.dataType === 'boolean') {
-                            if(value === true) {
-                                element[attributeName] = true;
-                                element.setAttribute(attributeName, attributeName.toLowerCase());
-                            } else {
-                                element[attributeName] = false;
-                                element.removeAttribute(attributeName);
-                            }
-                        } else {
-                            if(typeof value !== 'undefined') {
-                                if(attributeName === 'textContent') {
-                                    element.textContent = value;
+                            if(descriptor.dataType === 'boolean') {
+                                if(value === true) {
+                                    element[attributeName] = true;
+                                    element.setAttribute(attributeName, attributeName.toLowerCase());
                                 } else {
-                                    //https://developer.mozilla.org/en/DOM/element.setAttribute
-                                    element.setAttribute(attributeName, value);
+                                    element[attributeName] = false;
+                                    element.removeAttribute(attributeName);
                                 }
+                            } else {
+                                if(typeof value !== 'undefined') {
+                                    if(attributeName === 'textContent') {
+                                        element.textContent = value;
+                                    } else {
+                                        //https://developer.mozilla.org/en/DOM/element.setAttribute
+                                        element.setAttribute(attributeName, value);
+                                    }
 
+                                }
                             }
+
                         }
 
+                        delete this._elementAttributeValues[attributeName];
                     }
-
-                    delete this._elementAttributeValues[attributeName];
                 }
             }
             // classList
@@ -2850,6 +2851,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      * @param {object} properties An object that contains the properties you want to add.
      * @private
      */
+     //TODO, this should be renamed addAttributeProperties
     addAttributes: {
         value: function (properties) {
             var i, descriptor, property, object;
@@ -2875,6 +2877,45 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             }
         }
     },
+
+
+    //TODO, this should be renamed attributePropertySetter
+    defineAttributeSetter: {
+        value: function (name, _name, descriptor) {
+            return (function (name, attributeName, setter) {
+                return function (value, fromInput) {
+                    var descriptor = this._getElementAttributeDescriptor(name, this);
+
+                    // if requested dataType is boolean (eg: checked, readonly etc)
+                    // coerce the value to boolean
+                    if(descriptor && "boolean" === descriptor.dataType) {
+                        value = ( (value || value === "") ? true : false);
+                    }
+
+                    // If the set value is different to the current one,
+                    // update it here, and set it to be updated on the
+                    // element in the next draw cycle.
+                    if((typeof value !== 'undefined') && this[attributeName] !== value) {
+                        setter ? setter.call(this,value) : (this[attributeName] = value);
+                        this._elementAttributeValues[name] = value;
+                        if(fromInput === false) {
+                            this.needsDraw = true;
+                        }
+                    }
+                };
+            }(name, _name, descriptor.set));
+        }
+    },
+    //TODO, this should be renamed attributePropertySetter
+    defineAttributeGetter: {
+        value: function (_name) {
+            return (function (attributeName) {
+                return function () {
+                    return this[attributeName];
+                };
+            }(_name));
+        }
+    },
     /**
      * Adds a property to the component with the specified name.
      * This method is used internally by the framework convert a DOM element's
@@ -2891,6 +2932,8 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
      * @param {Object} descriptor An object that specifies the new properties default attributes such as configurable and enumerable.
      * @private
      */
+     //https://github.com/kangax/html-minifier/issues/63 for a list of boolean attributes
+     //TODO, this should be renamed defineAttributeProperty
     defineAttribute: {
         value: function (name, descriptor) {
             descriptor = descriptor || {};
@@ -2900,40 +2943,15 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             var newDescriptor = {
                 configurable: (typeof descriptor.configurable === 'undefined') ? true: descriptor.configurable,
                 enumerable: (typeof descriptor.enumerable === 'undefined') ?  true: descriptor.enumerable,
-                set: (function (name, attributeName) {
-                    return function (value) {
-                        var descriptor = this._getElementAttributeDescriptor(name, this);
-
-                        // if requested dataType is boolean (eg: checked, readonly etc)
-                        // coerce the value to boolean
-                        if(descriptor && "boolean" === descriptor.dataType) {
-                            value = ( (value || value === "") ? true : false);
-                        }
-
-                        // If the set value is different to the current one,
-                        // update it here, and set it to be updated on the
-                        // element in the next draw cycle.
-                        if((typeof value !== 'undefined') && this[attributeName] !== value) {
-                            this[attributeName] = value;
-                            // at this point we know that we will need it so create it once.
-                            if(this._elementAttributeValues === null) {
-                                this._elementAttributeValues = {};
-                            }
-                            this._elementAttributeValues[name] = value;
-                            this.needsDraw = true;
-                        }
-                    };
-                }(name, _name)),
-                get: (function (name, attributeName) {
-                    return function () {
-                        return this[attributeName];
-                    };
-                }(name, _name))
+                set: this.defineAttributeSetter(name, _name, descriptor),
+                get: descriptor.get || this.defineAttributeGetter(_name)
             };
 
             // Define _ property
             // TODO this.constructor.defineProperty
-            Montage.defineProperty(this.prototype, _name, {value: null});
+            if(!this.prototype.hasOwnProperty(_name)) {
+                Montage.defineProperty(this.prototype, _name, {value: descriptor.value});
+            }
             // Define property getter and setter
             Montage.defineProperty(this.prototype, name, newDescriptor);
         }
@@ -3681,7 +3699,8 @@ function loggerToString (object) {
     //jshint +W106
 }
 
-//http://www.w3.org/TR/html5/elements.html#global-attributes
+https://github.com/kangax/html-minifier/issues/63
+//http://www.w3.org/TR/html-markup/global-attributes.html
 Component.addAttributes( /** @lends module:montage/ui/control.Control# */ {
 
 /**

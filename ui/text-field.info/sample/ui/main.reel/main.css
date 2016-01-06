@@ -1,0 +1,128 @@
+@font-face {
+    src: url('../../node_modules/contour/assets/fonts/contour/contour.woff?39e5tl') format('woff');
+    font-family: 'Contour';
+    font-style: normal;
+    font-weight: normal;
+}
+
+@font-face {
+    src: url('../../node_modules/contour/assets/fonts/proxima-nova/proxima-nova-regular.woff?39e5tl') format('woff');
+    font-family: 'Proxima Nova';
+    font-style: normal;
+    font-weight: normal;
+}
+
+@font-face {
+    src: url('../../node_modules/contour/assets/fonts/proxima-nova/proxima-nova-semibold.woff?39e5tl') format('woff');
+    font-family: 'Proxima Nova';
+    font-style: normal;
+    font-weight: 600;
+}
+
+@font-face {
+    src: url('../../node_modules/contour/assets/fonts/proxima-nova/proxima-nova-bold.woff?39e5tl') format('woff');
+    font-family: 'Proxima Nova';
+    font-style: normal;
+    font-weight: bold;
+}
+
+body,
+html,
+.Main {
+    background-color: darkgrey;
+    height: 100%;
+    margin: 0;
+}
+
+.Main {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    font-family: "Proxima Nova", sans-serif;
+    justify-content: center;
+}
+
+.Main-panel-body {
+    overflow-y: auto;
+    flex: 2;
+}
+
+.Main-panel {
+    background-color: whitesmoke;
+    display: flex;
+    flex-flow: column;
+    margin: 40px;
+    width: 320px;
+    height: 320px;
+}
+
+.Main-panel.Main-dark .Main-panel-title {
+    background-color: #676767;
+    border-bottom: none;
+}
+
+.Main-panel.Main-dark .Main-panel-title.contour-TitleBar--areSettingsHighlighted .contour-TitleBar-gearIcon,
+.Main-panel.Main-dark .Main-panel-title .contour-TitleBar-button:hover {
+    color: #2979ca;
+}
+
+.Main-panel.Main-light .Main-panel-title {
+    background-color: white;
+    border-bottom: 1px solid #d5dce7;
+}
+
+.Main-panel.Main-light .Main-panel-title.contour-TitleBar--areSettingsHighlighted .contour-TitleBar-gearIcon,
+.Main-panel.Main-light .Main-panel-title .contour-TitleBar-button:hover {
+    color: #3a8fcf;
+}
+
+/*
+ * The 50% overlay images added by the following four :after rules are used as
+ * references when testing the position of the title bar elements.
+ */
+
+.Main--positionTest .Main-panel-title:after {
+    bottom: 0;
+    content: "";
+    left: 0;
+    opacity: 0.5;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.Main--positionTest .Main-panel-title1::after {
+    background: url("mockup--hazards.png");
+    background-repeat: no-repeat;
+    background-size: 320px;
+}
+
+.Main--positionTest .Main-panel-title2::after {
+    background: url("mockup--filtered-hazards.png");
+    background-repeat: no-repeat;
+    background-size: 320px;
+}
+
+.Main--positionTest .Main-panel-title3::after {
+    background: url("mockup--settings.png");
+    background-repeat: no-repeat;
+    background-size: 320px;
+}
+
+.Main--positionTest .Main-panel-title4::after {
+    background: url("mockup--hazards.png");
+    background-repeat: no-repeat;
+    background-size: 320px;
+}
+
+.Main--positionTest .Main-panel-title5::after {
+    background: url("mockup--filtered-hazards.png");
+    background-repeat: no-repeat;
+    background-size: 320px;
+}
+
+.Main--positionTest .Main-panel-title6::after {
+    background: url("mockup--settings.png");
+    background-repeat: no-repeat;
+    background-size: 320px;
+}

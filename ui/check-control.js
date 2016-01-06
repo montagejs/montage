@@ -25,8 +25,6 @@ exports.CheckControl =  Control.specialize({
     
     // HTMLInputElement methods
 
-    blur: { value: function() { this._element.blur(); } },
-    focus: { value: function() { this._element.focus(); } },
     // click() deliberately omitted, use checked = instead
 
     // Callbacks

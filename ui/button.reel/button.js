@@ -176,9 +176,6 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     },
 
     // HTMLInputElement/HTMLButtonElement methods
-
-    blur: { value: function() { this._element.blur(); } },
-    focus: { value: function() { this._element.focus(); } },
     // click() deliberately omitted (it isn't available on <button> anyways)
 
     prepareForActivationEvents: {
