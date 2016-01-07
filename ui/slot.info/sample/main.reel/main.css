@@ -1,0 +1,7 @@
+.main{ }
+
+#slot {
+    margin: 1em;
+    padding: 2em;
+    border: 1px dotted silver;
+}
