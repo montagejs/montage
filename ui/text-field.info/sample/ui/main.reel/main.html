@@ -13,220 +13,28 @@
                 "element": {"#": "main"}
             }
         },
-        "titleBar1": {
-            "prototype": "contour/ui/control/title-bar.reel",
+
+        "native": {
+            "prototype": "montage/ui/text-field.reel",
             "properties": {
-                "element": {"#": "titleBar1"},
-                "isLarge": true,
-                "title": "Hazards",
-                "hasBack": true,
-                "hasClose": true
-            },
-            "listeners": [
-                {"type": "backAction", "listener": {"@": "owner"}},
-                {"type": "closeAction", "listener": {"@": "owner"}}
-            ]
-        },
-        "titleBar1Description": {
-            "prototype": "ui/description.reel",
-            "properties": {
-                "element": {"#": "titleBar1Description"},
-                "name": "example 1",
-                "size": "large",
-                "color": "light",
-                "elements": [
-                    "No back controls",
-                    "A left justified title",
-                    "A highlighted settings icon"
-                ]
-            }
-        },
-        "titleBar2": {
-            "prototype": "contour/ui/control/title-bar.reel",
-            "properties": {
-                "element": {"#": "titleBar2"},
-                "isSmall": true,
-                "title": "Filtered Hazards",
-                "hasBack": false,
-                "hasSettings": true,
-                "areSettingsHighlighted": true
-            },
-            "listeners": [
-                {"type": "settingsAction", "listener": {"@": "owner"}}
-            ]
-        },
-        "titleBar2Description": {
-            "prototype": "ui/description.reel",
-            "properties": {
-                "element": {"#": "titleBar2Description"},
-                "name": "example 2",
-                "size": "small",
-                "color": "light",
-                "elements": [
-                    "No back controls",
-                    "A left justified title",
-                    "A highlighted settings icon"
-                ]
-            }
-        },
-        "titleBar3": {
-            "prototype": "contour/ui/control/title-bar.reel",
-            "properties": {
-                "element": {"#": "titleBar3"},
-                "isSmall": true,
-                "title": "Settings",
-                "hasBack": true,
-                "hasDone": true,
-                "hasSettings": false
-            },
-            "listeners": [
-                {"type": "backAction", "listener": {"@": "owner"}}
-            ]
-        },
-        "titleBar3Description": {
-            "prototype": "ui/description.reel",
-            "properties": {
-                "element": {"#": "titleBar3Description"},
-                "name": "example 3",
-                "size": "small",
-                "color": "light",
-                "elements": [
-                    "A back chevron and \"done\" text",
-                    "A centered title",
-                    "No settings controls"
-                ]
-            }
-        },
-        "titleBar4": {
-            "prototype": "contour/ui/control/title-bar.reel",
-            "properties": {
-                "element": {"#": "titleBar4"},
-                "isLarge": true,
-                "title": "Hazards",
-                "hasBack": true,
-                "hasClose": true
-            },
-            "listeners": [
-                {"type": "backAction", "listener": {"@": "owner"}},
-                {"type": "closeAction", "listener": {"@": "owner"}}
-            ]
-        },
-        "titleBar4Description": {
-            "prototype": "ui/description.reel",
-            "properties": {
-                "element": {"#": "titleBar4Description"},
-                "name": "example 1",
-                "size": "large",
-                "color": "dark",
-                "elements": [
-                    "No back controls",
-                    "A left justified title",
-                    "A highlighted settings icon"
-                ]
-            }
-        },
-        "titleBar5": {
-            "prototype": "contour/ui/control/title-bar.reel",
-            "properties": {
-                "element": {"#": "titleBar5"},
-                "isSmall": true,
-                "title": "Filtered Hazards",
-                "hasBack": false,
-                "hasSettings": true,
-                "areSettingsHighlighted": true
-            },
-            "listeners": [
-                {"type": "settingsAction", "listener": {"@": "owner"}}
-            ]
-        },
-        "titleBar5Description": {
-            "prototype": "ui/description.reel",
-            "properties": {
-                "element": {"#": "titleBar5Description"},
-                "name": "example 2",
-                "size": "small",
-                "color": "dark",
-                "elements": [
-                    "No back controls",
-                    "A left justified title",
-                    "A highlighted settings icon"
-                ]
-            }
-        },
-        "titleBar6": {
-            "prototype": "contour/ui/control/title-bar.reel",
-            "properties": {
-                "element": {"#": "titleBar6"},
-                "isSmall": true,
-                "title": "Settings",
-                "hasBack": true,
-                "hasDone": true,
-                "hasSettings": false
-            },
-            "listeners": [
-                {"type": "backAction", "listener": {"@": "owner"}}
-            ]
-        },
-        "titleBar6Description": {
-            "prototype": "ui/description.reel",
-            "properties": {
-                "element": {"#": "titleBar6Description"},
-                "name": "example 3",
-                "size": "small",
-                "color": "dark",
-                "elements": [
-                    "A back chevron and \"done\" text",
-                    "A centered title",
-                    "No settings controls"
-                ]
+                "element": {"#": "text-field-native"}
             }
         }
+
     }
     </script>
 </head>
 <body>
-    <div data-montage-id="main" class="Main"> <!-- class="Main Main--positionTest" -->
-        <!--
-          -- TO DO: Add examples for all combinations of sizes and elements, add
-          -- corresponding positioning test images, and fix title bar to give
-          -- the correct element positions for all those combinations.
-          -->
-        <div class="Main-panel Main-light">
-            <div data-montage-id="titleBar1" class="Main-panel-title Main-titleBar1"></div>
-            <div class="Main-panel-body">
-                <div data-montage-id="titleBar1Description" class="Main-description"></div>
-            </div>
-        </div>
-        <div class="Main-panel Main-light">
-            <div data-montage-id="titleBar2" class="Main-panel-title Main-titleBar2"></div>
-            <div class="Main-panel-body">
-                <div data-montage-id="titleBar2Description" class="Main-description"></div>
-            </div>
-        </div>
-        <div class="Main-panel Main-light">
-            <div data-montage-id="titleBar3" class="Main-panel-title Main-titleBar3"></div>
-            <div class="Main-panel-body">
-                <div data-montage-id="titleBar3Description" class="Main-description"></div>
-            </div>
-        </div>
-        <div class="Main-panel Main-dark">
-            <div data-montage-id="titleBar4" class="Main-panel-title Main-titleBar4"></div>
-            <div class="Main-panel-body">
-                <div data-montage-id="titleBar4Description" class="Main-description"></div>
-            </div>
-        </div>
-        <div class="Main-panel Main-dark">
-            <div data-montage-id="titleBar5" class="Main-panel-title Main-titleBar5"></div>
-            <div class="Main-panel-body">
-                <div data-montage-id="titleBar5Description" class="Main-description"></div>
-            </div>
-        </div>
-        <div class="Main-panel Main-dark">
-            <div data-montage-id="titleBar6" class="Main-panel-title Main-titleBar6"></div>
-            <div class="Main-panel-body">
-                <div data-montage-id="titleBar6Description" class="Main-description"></div>
-            </div>
-        </div>
+    <div data-montage-id="main" class="Main">
+        <header>Text Field Test</header>
+
+        <section class="text-fields">
+            <input type="text" data-montage-id="text-field-native" class="text-field native"/>
+
+            <!-- @benoit add a custom one with content editable set to true ?-->
+
+        </section>
+
     </div>
 </body>
 </html>
