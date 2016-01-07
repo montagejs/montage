@@ -1,0 +1,10 @@
+{
+	"name": "anchor.info",
+	"private": true,
+    "dependencies": {
+        "montage": "*"
+    },
+    "mappings": {
+        "montage": "../../../../"
+    }
+}
