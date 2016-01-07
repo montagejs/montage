@@ -1,7 +1,0 @@
-{
-	"name": "checkbox.info",
-	"private": true,
-	"dependencies": {
-		"montage": "../.."
-	}
-}
