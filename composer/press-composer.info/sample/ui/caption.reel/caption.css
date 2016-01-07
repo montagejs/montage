@@ -1,0 +1,58 @@
+.Caption {
+    padding: 4px 8px;
+    display: -webkit-flex;
+    display: flex;
+    flex: 1;
+    -webkit-align-items: center;
+    -ms-align-items: center;
+    align-items: center;
+    border-right: 1px solid #DDD;
+}
+
+.Caption-color {
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    margin-right: 8px;
+}
+
+.Caption-label {
+    text-transform: capitalize;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+
+@media only screen
+and (max-device-width : 667px) {
+
+
+    .Caption-color {
+        height: 18px;
+        width: 18px;
+        margin-right: 6px;
+    }
+
+    .Caption {
+        padding: 4px 6px;
+    }
+}
+
+@media only screen
+and (max-device-width : 480px) {
+    .Caption-label {
+        font-size: .6em;
+    }
+
+    .Caption-color {
+        height: 9px;
+        width: 9px;
+        margin-right: 4px;
+    }
+
+    .Caption {
+        padding: 4px;
+    }
+}

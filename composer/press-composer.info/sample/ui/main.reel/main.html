@@ -128,6 +128,27 @@
             "bindings": {
                 "label": {"<-": "@innerPressList:iteration.object"}
             }
+        },
+
+        "captions": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "captions"},
+                "isSelectionEnabled": true
+            },
+            "bindings": {
+                "content": {"<-": "@cases.selection.0.captions"}
+            }
+        },
+
+         "caption": {
+            "prototype": "../caption.reel",
+            "properties": {
+                "element": {"#": "caption"}
+            },
+            "bindings": {
+                "caption": {"<-": "@captions:iteration.object"}
+            }
         }
     }
     </script>
@@ -160,6 +181,11 @@
                 </div>
             </div>
         </div>
+        <footer>
+            <div data-montage-id="captions" class="Captions">
+                <div data-montage-id="caption" class="Caption"></div>
+            </div>
+        </footer>
     </div>
 </body>
 </html>

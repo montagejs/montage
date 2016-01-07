@@ -2,6 +2,9 @@ html, body {
     height: 100%;
     width: 100%;
     margin: 0;
+    font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: #555;
 }
 
 .PressComposer {
@@ -39,6 +42,11 @@ html, body {
     justify-content: center;
     border-right: 1px solid #DDD;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
+    text-transform: capitalize;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .PressComposer-case.selected {
@@ -81,7 +89,14 @@ html, body {
 @media only screen
 and (max-device-width : 667px) {
     .PressComposer-case {
-        font-size: .8em;
+        font-size: .75em;
         padding: 4px;
     }
+}
+
+.PressComposer .Captions {
+    display: -webkit-flex;
+    display: flex;
+    flex: 1;
+    border-top: 1px solid #DDD;
 }
