@@ -1,0 +1,32 @@
+.List {
+    width: 300px;
+    border: 1px solid #CCC;
+    height: 400px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.List .Cell {
+    height: 35px;
+    border-bottom: 1px solid #CCC;
+    line-height: 35px;
+    text-align: center;
+}
+
+.List .Cell:last-child {
+    border-bottom: none;
+}
+
+.List .Cell.active {
+    background-color: #c0def4;
+    color: white;
+}
+
+.List .Cell.selected {
+    background-color: #5bc0de;
+    color: white;
+}

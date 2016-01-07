@@ -1,0 +1,4 @@
+.DraggableSquare.dragging .Square{
+    background-color: #5bc0de;
+    color: white;
+}
