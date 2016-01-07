@@ -11,38 +11,20 @@
         "owner": {
             "properties": {
                 "element": {"#": "main"}
-            }
-        },
-        "abstractSlider": {
-            "prototype": "montage/ui/base/abstract-slider",
-            "properties": {
-                "element": {"#": "abstractSlider"},
-                "hasTemplate": false,
-                "_sliderThumbElement": {"#": "abstractSliderThumb"}
             },
             "listeners": [
                 {"type": "action", "listener": {"@": "owner"}}
             ]
         },
-        "abstractSliderField": {
-            "prototype": "montage/ui/text-field.reel",
-            "properties": {
-                "element": {"#": "abstractSliderField"}
-            },
-            "bindings": {
-                "value": {"<->": "@abstractSlider.value"}
-            }
-        },
+
         "slider": {
             "prototype": "montage/ui/slider.reel",
             "properties": {
                 "element": {"#": "slider"},
                 "thumbElement": {"#": "sliderThumb"}
-            },
-            "listeners": [
-                {"type": "action", "listener": {"@": "owner"}}
-            ]
+            }
         },
+
         "sliderField": {
             "prototype": "montage/ui/text-field.reel",
             "properties": {
@@ -52,15 +34,14 @@
                 "value": {"<->": "@slider.value"}
             }
         },
+
         "sliderRange": {
             "prototype": "montage/ui/slider.reel",
             "properties": {
                 "element": {"#": "slider-range"}
-            },
-            "listeners": [
-                {"type": "action", "listener": {"@": "owner"}}
-            ]
+            }
         },
+
         "sliderRangeField": {
             "prototype": "montage/ui/text-field.reel",
             "properties": {
@@ -70,43 +51,27 @@
                 "value": {"<->": "@sliderRange.value"}
             }
         }
-        
+
     }
     </script>
 </head>
 <body>
-    asxas as asd klsck ds sd
-     ds sdcds
-     ';
-     ds  asd;
-     sf;
-     s  fdfgdfg  gfgfkgjkl dfgkljfgklj  l;kf;ef;'wef  fgkldjgkldfjg  dfkgjlkdfjgk kdfgjlk
-    <div data-montage-id="main" class="Main"> <!-- class="Main Main--positionTest" -->
-        dfgdfg ldf dfgk;ldfkg;dlfkg d dfl;kg;ldfkgl;df df g;lkdf;lgkdfl;g dl;fgkl;dfgkdf
-        <div data-montage-id="abstractSlider" class="abstract-slider A">
-            <div data-montage-id="abstractSliderThumb" class="slider-thumb"></div>
-        </div>
-        <input type="text" data-montage-id="abstractSliderField">
-        fdafg fdg dfg adfg  dfgad;fkp3elq[wo osdkl;v,f dfopopr   rfkerf er]erfe rf erf  erfijeirjq;lwkdskadxcjkxhvirehfi eff,dfo r fopefjoekf[pwe dkosdvodf o]
-        fdafg fdg dfg adfg  dfgad;fkp3elq[wo osdkl;v,f dfopopr   rfkerf er]erfe rf erf  erfijeirjq;lwkdskadxcjkxhvirehfi eff,dfo r fopefjoekf[pwe dkosdvodf o]
-        fdafg fdg dfg adfg  dfgad;fkp3elq[wo osdkl;v,f dfopopr   rfkerf er]erfe rf erf  erfijeirjq;lwkdskadxcjkxhvirehfi eff,dfo r fopefjoekf[pwe dkosdvodf o]
+    <div data-montage-id="main" class="Main">
+        <header>Anchor Test</header>
 
-        <div data-montage-id="slider" class="slider A">
-            <div data-montage-id="sliderThumb" class="slider-thumb A"></div>
-        </div>
-        <input type="text" data-montage-id="slider-field">
-        fdafg fdg dfg adfg  dfgad;fkp3elq[wo osdkl;v,f dfopopr   rfkerf er]erfe rf erf  erfijeirjq;lwkdskadxcjkxhvirehfi eff,dfo r fopefjoekf[pwe dkosdvodf o]
-        fdafg fdg dfg adfg  dfgad;fkp3elq[wo osdkl;v,f dfopopr   rfkerf er]erfe rf erf  erfijeirjq;lwkdskadxcjkxhvirehfi eff,dfo r fopefjoekf[pwe dkosdvodf o]
-        fdafg fdg dfg adfg  dfgad;fkp3elq[wo osdkl;v,f dfopopr   rfkerf er]erfe rf erf  erfijeirjq;lwkdskadxcjkxhvirehfi eff,dfo r fopefjoekf[pwe dkosdvodf o]
-        fdafg fdg dfg adfg  dfgad;fkp3elq[wo osdkl;v,f dfopopr   rfkerf er]erfe rf erf  erfijeirjq;lwkdskadxcjkxhvirehfi eff,dfo r fopefjoekf[pwe dkosdvodf o]
+        <section class="sliders">
+            <div class="slider-container">
+                <div data-montage-id="slider" class="slider A">
+                    <div data-montage-id="sliderThumb" class="slider-thumb A"></div>
+                </div>
+                <input type="text" data-montage-id="slider-field" class="input-text">
+            </div>
 
-        <input type="range" min="20" max="80" value="34" data-montage-id="slider-range" class="slider">
-        <input type="text" data-montage-id="slider-range-field">
-        fdafg fdg dfg adfg  dfgad;fkp3elq[wo osdkl;v,f dfopopr   rfkerf er]erfe rf erf  erfijeirjq;lwkdskadxcjkxhvirehfi eff,dfo r fopefjoekf[pwe dkosdvodf o]
-        fdafg fdg dfg adfg  dfgad;fkp3elq[wo osdkl;v,f dfopopr   rfkerf er]erfe rf erf  erfijeirjq;lwkdskadxcjkxhvirehfi eff,dfo r fopefjoekf[pwe dkosdvodf o]
-        fdafg fdg dfg adfg  dfgad;fkp3elq[wo osdkl;v,f dfopopr   rfkerf er]erfe rf erf  erfijeirjq;lwkdskadxcjkxhvirehfi eff,dfo r fopefjoekf[pwe dkosdvodf o]
-        fdafg fdg dfg adfg  dfgad;fkp3elq[wo osdkl;v,f dfopopr   rfkerf er]erfe rf erf  erfijeirjq;lwkdskadxcjkxhvirehfi eff,dfo r fopefjoekf[pwe dkosdvodf o]
-
+            <div class="slider-container">
+                <input type="range" min="20" max="80" value="34" data-montage-id="slider-range" class="slider">
+                <input type="text" data-montage-id="slider-range-field" class="input-text">
+            </div>
+        </section>
     </div>
 </body>
 </html>

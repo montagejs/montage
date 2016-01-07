@@ -9,11 +9,6 @@ var Component = require("montage/ui/component").Component;
  * @extends Component
  */
 exports.Main = Component.specialize(/** @lends Main.prototype */ {
-    constructor: {
-        value: function Main() {
-            this.super();
-        }
-    },
 
     handleSliderAction: {
         value: function (event) {
@@ -21,4 +16,5 @@ exports.Main = Component.specialize(/** @lends Main.prototype */ {
             console.log("handleSliderAction");
         }
     }
+
 });
