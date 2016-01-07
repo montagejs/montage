@@ -190,6 +190,10 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         value: function () {
             this._pressComposer.addEventListener("press", this, false);
             this._pressComposer.addEventListener("pressCancel", this, false);
+
+            //fixme: @benoit: we should maybe have a flag for this kind of event.
+            // can be tricky with the event delegation for example if we don't add it.
+            // same issue for: the pressComposer and the translate composer.
             this._pressComposer.addEventListener("longPress", this, false);
         }
     },
