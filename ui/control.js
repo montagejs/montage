@@ -380,10 +380,13 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
     _errorMessage: {value: null},
 
     /**
-        The message to display when the component is in an error state.
-        @type {string}
-        @default null
-*/
+     * The message to display when the component is in an error state.
+     * @type {string}
+     * @default null
+     * @todo: @benoit: we should maybe take a look at ValidityState
+     * https://developer.mozilla.org/en/docs/Web/API/ValidityState
+     * https://msdn.microsoft.com/en-us/library/windows/apps/hh441292.aspx
+     */
     errorMessage: {
         get: function () {
             return this._errorMessage;
