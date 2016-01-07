@@ -1,7 +1,0 @@
-{
-	"name": "text-field.info",
-	"private": true,
-	"dependencies": {
-		"montage": "../.."
-	}
-}
