@@ -1,6 +1,7 @@
 {
     "name": "text-area-sample",
     "version": "0.1.0",
+    "private": true,
     "dependencies": {
         "montage": "*"
     },

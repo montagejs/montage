@@ -1,6 +1,6 @@
 {
-    "name": "button.info",
-    "version": "0.0.1",
+    "name": "button-sample",
+    "version": "0.1.0",
     "private": true,
     "dependencies": {
         "montage": "*"

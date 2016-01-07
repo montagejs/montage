@@ -1,15 +1,11 @@
 {
     "name": "slider-sample",
     "version": "0.1.0",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/montagejs/montage.git"
-    },
+    "private": true,
     "dependencies": {
-        "montage": "../../.."
+        "montage": "*"
     },
-    "scripts": {
-        "postinstall": "npm link ../../.."
-    },
-    "bundle": [ "ui/main.reel" ]
+    "mappings": {
+        "montage": "../../../../"
+    }
 }

@@ -1,6 +1,6 @@
 {
-	"name": "radio.info",
-    "version": "0.0.1",
+	"name": "radio-sample",
+    "version": "0.1.0",
 	"private": true,
     "dependencies": {
         "montage": "*"
