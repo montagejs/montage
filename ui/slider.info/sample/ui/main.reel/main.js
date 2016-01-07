@@ -16,4 +16,5 @@ exports.Main = Component.specialize(/** @lends Main.prototype */ {
             console.log("handleSliderAction");
         }
     }
+
 });
