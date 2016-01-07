@@ -1,7 +1,11 @@
 {
-	"name": "button.info",
-	"private": true,
-	"dependencies": {
-		"montage": "../.."
-	}
+    "name": "button.info",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "montage": "*"
+    },
+    "mappings": {
+        "montage": "../../../"
+    }
 }
