@@ -1,0 +1,10 @@
+{
+    "name": "text-area-sample",
+    "version": "0.1.0",
+    "dependencies": {
+        "montage": "*"
+    },
+    "mappings": {
+        "montage": "../../../"
+    }
+}
