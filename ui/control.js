@@ -136,15 +136,18 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
     _focusBlur: {
         value: undefined
     },
+
     focus: {
-        value: function() {
+        value: function () {
             this._focusBlur = 1;
             this.needsDraw = true;
+
             if(!this.preparedForActivationEvents) {
                 this._prepareForActivationEvents();
             }
         }
     },
+
     blur: {
         value: function() {
             this._focusBlur = 0;
@@ -163,6 +166,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         enumerable: false,
         value: false
     },
+
     draw: {
         value: function () {
             if (this._focusBlur === 1) {
@@ -181,15 +185,18 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
             return (shouldBeginEditing !== false);
         }
     },
+
     willBecomeActiveTarget: {
         value: function (event) {
             this.hasFocus = true;
             this.callDelegateMethod("didBeginEditing", this);
         }
     },
+
     surrendersActiveTarget: {
         value: function (event) {
             var shouldEnd = this.callDelegateMethod("shouldEndEditing", this);
+
             if (shouldEnd === false) {
                 return false;
             } else {
@@ -198,31 +205,35 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
                 //Check if that's not redundant with "didEndEditing" triggered from handleBlur
                 this.callDelegateMethod("didEndEditing", this);
             }
+
             return true;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Event Handler} event TODO
-    */
+
+    /**
+     * Description TODO
+     * @function
+     * @param {Event Handler} event TODO
+     */
     handleFocus: {
         enumerable: false,
-        value: function(event) {
+        value: function (event) {
             this.hasFocus = true;
         }
     },
+
     handleBlur: {
         enumerable: false,
-        value: function(event) {
+        value: function (event) {
             this.hasFocus = false;
             this.callDelegateMethod("didEndEditing", this);
             //This create an issue in textfield, to investigate
             this.dispatchActionEvent();
         }
     },
+
     _value: {
-        value: 'on'
+        value: null
     },
 
     /**
@@ -230,9 +241,9 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
      * @type {String}
      */
     elementValue: {
-        get: function() {
+        get: function () {
             return this.element.value;
-        },
+        }
     },
     /*
     The value associated with the checkbox. Per the WC3 specification, if the element has a <code>value</code> attribute then the value of that attribute's value is returned; otherwise, it returns "on".
@@ -254,10 +265,10 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
     @default "on"
     */
     value: {
-        get: function() {
+        get: function () {
             return this._value;
         },
-        set: function(value, fromInput) {
+        set: function (value, fromInput) {
 
             if(this._setValue(value)) {
                 this._elementAttributeValues[name] = value;
@@ -297,7 +308,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
     },
 
     _setValue : {
-        value: function(value) {
+        value: function (value) {
             if(value !== this._value) {
                 if (!this.delegate || this.callDelegateMethod("shouldAcceptValue", this, value) === false) {
                     console.log("_setValue past first step value is ",value);
@@ -356,10 +367,10 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
     @default false
 */
     error: {
-        get: function() {
+        get: function () {
             return this._error;
         },
-        set: function(v) {
+        set: function (v) {
             this._error = v;
             this.errorMessage = this._error ? this._error.message : null;
             this.needsDraw = true;
