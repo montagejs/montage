@@ -1181,10 +1181,8 @@ if (typeof window !== "undefined") { // client-side
                 // console.log("EventManager.unregisterEventListener", target, eventType, listener, useCapture)
 
                 var eventTypeRegistration = registeredEventListeners[eventType],
-                    listenerRegistration,
-                    phase,
-                    listenerUUID,
-                    installedListener;
+                    listeners,
+                    map;
 
                 if (!eventTypeRegistration) {
                     // this eventType wasn't being observed at all
@@ -1202,7 +1200,11 @@ if (typeof window !== "undefined") { // client-side
                     return;
                 }
                 if(this._currentDispatchedTargetListeners.has(listeners)) {
-                    (this._currentDispatchedTargetListeners.get(listeners) || (this._currentDispatchedTargetListeners.set(listeners,new Map()))).set(listener,true);
+                    map = this._currentDispatchedTargetListeners.get(listeners);
+                    if(!map) {
+                        this._currentDispatchedTargetListeners.set(listeners,(map = new Map()));
+                    }
+                    map.set(listener,true);
 
                 } else {
                     this.spliceOne(listeners,listeners.indexOf(listener));
