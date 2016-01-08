@@ -402,7 +402,6 @@ if (typeof window !== "undefined") {
         };
     };
 
-    var metaExpression = /\.meta/;
     /**
      * Allows the .meta files to be loaded as json
      * @see Compiler middleware in require/require.js
