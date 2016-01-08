@@ -65,10 +65,14 @@
 
    Removes the mousse package from the dependencies, it has been move into montage.
 
+-  **Mr**
+
+   Updates the Mr package to version v0.16.0.
+
 -  **Performance**
 
-   The loading time is at least 15% faster.
-   Global performance improvements.
+      The loading time is at least 15% faster.
+      Global performance improvements.
 
 ### v0.15.2
 
