@@ -28,11 +28,11 @@
  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
  </copyright> */
-var Montage = require("montage").Montage,
-    TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
+var TestPageLoader = require("montage-testing/testpageloader").TestPageLoader,
     Point = require("montage/core/geometry/point").Point,
-    convertPointFromNodeToPage = require("montage/core/dom").convertPointFromNodeToPage,
-    convertPointFromPageToNode = require("montage/core/dom").convertPointFromPageToNode;
+    convertPointFromNodeToPage = Point.convertPointFromNodeToPage,
+    convertPointFromPageToNode = Point.convertPointFromPageToNode;
+
 
 TestPageLoader.queueTest("dom/dom", function (testPage) {
     describe("core/dom-spec", function () {
