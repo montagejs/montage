@@ -4,7 +4,6 @@
  * @module montage/core/dom
  * @requires montage/core/geometry/point
 */
-
 var Point = require("./geometry/point").Point,
     NodePrototype = Node.prototype,
     ElementPrototype = Element.prototype;
