@@ -2,10 +2,6 @@ var Montage = require("../../core").Montage,
     MontageInterpreter = require("./montage-interpreter").MontageInterpreter,
     MontageReviver = require("./montage-reviver").MontageReviver;
 
-if (!require.config.production) {
-    var JSHINT = require("../../jshint").JSHINT;
-}
-
 var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
 
     _interpreter: {
@@ -33,7 +29,7 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
             try {
                 this._serialization = JSON.parse(serializationString);
             } catch (ex) {
-                throw new Error(this._formatSerializationSyntaxError(serializationString));
+                return this._formatSerializationSyntaxError(serializationString);
             }
 
             this._serializationString = serializationString;
@@ -92,25 +88,27 @@ var MontageDeserializer = exports.MontageDeserializer = Montage.specialize({
                 gutterSize,
                 line;
 
-            if (!JSHINT(source)) {
-                error = JSHINT.errors[0];
-                lines = source.split("\n");
-                gutterSize = (gutterPadding + lines.length).length;
-                line = error.line - 1;
+            return require.async("core/jshint").then(function (module) {
+                if (!module.JSHINT(source)) {
+                    error = module.JSHINT.errors[0];
+                    lines = source.split("\n");
+                    gutterSize = (gutterPadding + lines.length).length;
+                    line = error.line - 1;
 
-                for (var i = 0, l = lines.length; i < l; i++) {
-                    lines[i] = (new Array(gutterSize - (i + 1 + "").length + 1)).join(i === line ? ">" : " ") +
-                        (i + 1) + " " + lines[i];
+                    for (var i = 0, l = lines.length; i < l; i++) {
+                        lines[i] = (new Array(gutterSize - (i + 1 + "").length + 1)).join(i === line ? ">" : " ") +
+                            (i + 1) + " " + lines[i];
+                    }
+                    message = "Syntax error at line " + error.line +
+                        (origin ? " from " + origin : "") + ":\n" +
+                        error.evidence + "\n" + error.reason + "\n" +
+                        lines.join("\n");
+                } else {
+                    message = "Syntax error in the serialization but not able to find it!\n" + source;
                 }
-                message = "Syntax error at line " + error.line +
-                    (origin ? " from " + origin : "") + ":\n" +
-                    error.evidence + "\n" + error.reason + "\n" +
-                    lines.join("\n");
-            } else {
-                message = "Syntax error in the serialization but not able to find it!\n" + source;
-            }
 
-            return message;
+                throw new Error(message);
+            });
         }
     }
 
