@@ -1,7 +1,0 @@
-{
-	"name": "segment.info",
-	"private": true,
-	"dependencies": {
-		"montage": "../.."
-	}
-}
