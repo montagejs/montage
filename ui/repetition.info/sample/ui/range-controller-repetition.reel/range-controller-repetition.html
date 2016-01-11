@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="range-controller-repetition.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "properties": {
+                    "element": {"#": "owner"}
+                }
+            },
+            "rangeController": {
+                "prototype": "montage/core/range-controller"
+            },
+            "items": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "items"},
+                    "contentController": {"@": "rangeController"}
+                }
+            },
+            "item": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "item"}
+                },
+                "bindings": {
+                    "value": {"<-": "@items:iteration.object.quote"},
+                    "classList.has('RangeControllerRepetition--highlight')": {"<-": "@items:iteration.object.important"}
+                }
+            },
+            "changeButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "changeButton"},
+                    "label": "Change Content"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner">
+        <div data-montage-id="items" class="RangeControllerRepetition">
+            <div data-montage-id="item" class="Cell"></div>
+        </div>
+        <button data-montage-id="changeButton" class="RangeControllerRepetition-changeButton"></button>
+    </div>
+</body>
+</html>

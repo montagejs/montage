@@ -1,0 +1,28 @@
+{
+    "cases": [
+        {
+            "label": "a simple repetition",
+            "arg": "a-simple-repetition",
+            "captions": [
+            ]
+        },
+        {
+            "label": "RangeController",
+            "arg": "range-controller-repetition",
+            "captions": [
+            ]
+        },
+        {
+            "label": "sorting and filtering",
+            "arg": "sorting-and-filtering",
+            "captions": [
+            ]
+        },
+        {
+            "label": "select repetition items",
+            "arg": "select-repetition-items",
+            "captions": [
+            ]
+        }
+    ]
+}

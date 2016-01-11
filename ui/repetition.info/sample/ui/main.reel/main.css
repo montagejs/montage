@@ -1,0 +1,77 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: #555;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.Repetition {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    height: 100%;
+}
+
+.Repetition-cases {
+    display: -webkit-flex;
+    display: flex;
+    height: 60px;
+    width: 100%;
+    border-bottom: 1px solid #DDD;
+}
+
+.Repetition-case {
+    display: -webkit-flex;
+    display: flex;
+    padding: 8px;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    -webkit-align-items: center;
+    -ms-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    -ms-justify-content: center;
+    justify-content: center;
+    border-right: 1px solid #DDD;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    text-transform: capitalize;
+}
+
+.Repetition-case.selected {
+    color: #43b5de;
+}
+
+.Repetition-case.active {
+    opacity: .7;
+}
+
+.Repetition-case:hover {
+    cursor: pointer;
+}
+
+.RepetitionCase-label {
+    text-align: center;
+}
+
+.Repetition-substitution {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    -webkit-justify-content: center;
+    -ms-justify-content: center;
+    justify-content: center;
+    -webkit-align-items: center;
+    -ms-align-items: center;
+    align-items: center;
+}

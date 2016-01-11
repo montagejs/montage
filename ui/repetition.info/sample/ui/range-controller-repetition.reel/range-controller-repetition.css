@@ -1,0 +1,33 @@
+.RangeControllerRepetition {
+    width: 300px;
+    border: 1px solid #CCC;
+    height: 350px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    cursor: default;
+}
+
+.RangeControllerRepetition .Cell {
+    border-bottom: 1px solid #CCC;
+    line-height: 50px;
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.RangeControllerRepetition .Cell:last-child {
+    border-bottom: none;
+}
+
+.RangeControllerRepetition-changeButton {
+    margin-top: 10px;
+    font-size: 17px;
+}
+
+.RangeControllerRepetition--highlight {
+    font-weight: bold;
+}

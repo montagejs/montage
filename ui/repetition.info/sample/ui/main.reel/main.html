@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "properties": {
+                    "element": {"#": "main"}
+                }
+            },
+            "cases": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "cases"},
+                    "isSelectionEnabled": true
+                },
+                "bindings": {
+                    "content": {"<-": "@owner.configuration.cases"}
+                }
+            },
+            "case": {
+                "prototype": "montage/ui/component",
+                "properties": {
+                    "element": {"#": "case"},
+                    "hasTemplate": false
+                },
+                "bindings": {
+                    "case": {"<-": "@cases:iteration.object"}
+                }
+            },
+            "caseLabel": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "case-label"}
+                },
+                "bindings": {
+                    "value": {"<-": "@cases:iteration.object.label"}
+                }
+            },
+            "casesSubstitution": {
+                "prototype": "montage/ui/substitution.reel",
+                "properties": {
+                    "element": {"#": "cases-substitution"}
+                },
+                "bindings": {
+                    "switchValue": {"<-": "@cases.selection.0.arg"}
+                }
+            },
+            "aSimpleRepetition": {
+                "prototype": "../a-simple-repetition.reel",
+                "properties": {
+                    "element": {"#": "a-simple-repetition"}
+                },
+                "bindings": {
+                    "content": {"<-": "@owner.myListProperty"}
+                }
+            },
+            "rangeControllerRepetition": {
+                "prototype": "../range-controller-repetition.reel",
+                "properties": {
+                    "element": {"#": "range-controller-repetition"}
+                },
+                "bindings": {
+                    "content": {"<-": "@owner.myListProperty"}
+                }
+            },
+            "sortingAndFiltering": {
+                "prototype": "../sorting-and-filtering.reel",
+                "properties": {
+                    "element": {"#": "sorting-and-filtering"}
+                },
+                "bindings": {
+                    "content": {"<-": "@owner.myListProperty"}
+                }
+            },
+            "selectRepetitionItems": {
+                "prototype": "../select-repetition-items.reel",
+                "properties": {
+                    "element": {"#": "select-repetition-items"}
+                },
+                "bindings": {
+                    "content": {"<-": "@owner.myListProperty"}
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="Repetition">
+        <nav data-montage-id="cases" class="Repetition-cases">
+            <div data-montage-id="case" class="Repetition-case">
+                <div data-montage-id="case-label" class="RepetitionCase-label"></div>
+            </div>
+        </nav>
+        <div data-montage-id="cases-substitution" class="Repetition-substitution">
+            <div data-montage-id="a-simple-repetition" data-arg="a-simple-repetition"></div>
+            <div data-montage-id="range-controller-repetition" data-arg="range-controller-repetition"></div>
+            <div data-montage-id="sorting-and-filtering" data-arg="sorting-and-filtering"></div>
+            <div data-montage-id="select-repetition-items" data-arg="select-repetition-items"></div>
+        </div>
+    </div>
+</body>
+</html>

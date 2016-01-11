@@ -1,0 +1,47 @@
+.SelectRepetitionItems {
+    width: 300px;
+    border: 1px solid #CCC;
+    height: 357px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    cursor: pointer;
+}
+
+.SelectRepetitionItems .Cell {
+    border-bottom: 1px solid #CCC;
+    line-height: 50px;
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.SelectRepetitionItems .Cell:last-child {
+    border-bottom: none;
+}
+
+.SelectRepetitionItems .Cell.active {
+    background-color: #c0def4;
+    color: white;
+}
+
+.SelectRepetitionItems .Cell.selected {
+    background-color: #5bc0de;
+    color: white;
+}
+
+.SelectRepetitionItems-changeButton {
+    margin-top: 10px;
+    font-size: 17px;
+}
+
+.SelectRepetitionItems--highlight {
+    font-weight: bold;
+}
+
+.SelectRepetitionItems-log {
+    margin-top: 10px;
+}

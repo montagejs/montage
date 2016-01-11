@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="select-repetition-items.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "properties": {
+                    "element": {"#": "owner"}
+                }
+            },
+            "rangeController": {
+                "prototype": "montage/core/range-controller",
+                "bindings": {
+                    "content": {"<-": "@owner.content"}
+                }
+            },
+            "items": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "items"},
+                    "contentController": {"@": "rangeController"},
+                    "isSelectionEnabled": true
+                }
+            },
+            "item": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "item"}
+                },
+                "bindings": {
+                    "value": {"<-": "@items:iteration.object.quote"},
+                    "classList.has('SelectRepetitionItems--highlight')": {"<-": "@items:iteration.object.important"}
+                }
+            },
+            "log": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "log"}
+                },
+                "bindings": {
+                    "value": {"<-": "@owner.message"}
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner">
+        <div data-montage-id="items" class="SelectRepetitionItems">
+            <div data-montage-id="item" class="Cell"></div>
+        </div>
+        <div data-montage-id="log" class="SelectRepetitionItems-log"></div>
+    </div>
+</body>
+</html>
