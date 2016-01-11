@@ -1,0 +1,10 @@
+{
+	"name": "segmented-bar.info",
+	"private": true,
+    "dependencies": {
+        "montage": "*"
+    },
+    "mappings": {
+        "montage": "../../../"
+    }
+}

@@ -15,22 +15,22 @@
             }
         },
         "rangeController": {
-            "prototype": "core/range-controller",
+            "prototype": "montage/core/range-controller",
             "bindings": {
                 "content": {"<-": "@owner.data"}
             }
         },
         "treeController": {
-            "prototype": "core/tree-controller",
+            "prototype": "montage/core/tree-controller",
             "properties": {
                 "childrenPath": "regions"
             },
             "bindings": {
-                "content": {"<-": "@owner.tree"}
+                "data": {"<-": "@owner.tree"}
             }
         },
         "text": {
-            "prototype": "ui/text.reel",
+            "prototype": "montage/ui/text.reel",
             "properties": {
                 "element": {"#": "text"}
             },
@@ -39,7 +39,7 @@
             }
         },
         "segmentedBar1": {
-            "prototype": "ui/segmented-bar.reel",
+            "prototype": "montage/ui/segmented-bar.reel",
             "properties": {
                 "element": {"#": "segmentedBar1"}
             },
@@ -54,7 +54,7 @@
             ]
         },
         "segment1": {
-            "prototype": "ui/segment.reel",
+            "prototype": "montage/ui/segment.reel",
             "properties": {
                 "element": {"#": "segment1"}
             },
@@ -64,7 +64,7 @@
             }
         },
         "segmentedBar2": {
-            "prototype": "ui/segmented-bar.reel",
+            "prototype": "montage/ui/segmented-bar.reel",
             "properties": {
                 "element": {"#": "segmentedBar2"},
                 "dataController": {"@": "rangeController"},
@@ -78,7 +78,7 @@
             ]
         },
         "segment2": {
-            "prototype": "ui/segment.reel",
+            "prototype": "montage/ui/segment.reel",
             "properties": {
                 "element": {"#": "segment2"}
             },
@@ -88,7 +88,7 @@
             }
         },
         "segmentedBar3": {
-            "prototype": "ui/segmented-bar.reel",
+            "prototype": "montage/ui/segmented-bar.reel",
             "properties": {
                 "element": {"#": "segmentedBar3"},
                 "dataController": {"@": "treeController"}
@@ -101,7 +101,7 @@
             ]
         },
         "segment3": {
-            "prototype": "ui/segment.reel",
+            "prototype": "montage/ui/segment.reel",
             "properties": {
                 "element": {"#": "segment3"}
             },
@@ -111,7 +111,7 @@
             }
         },
         "segmentedBar4": {
-            "prototype": "ui/segmented-bar.reel",
+            "prototype": "montage/ui/segmented-bar.reel",
             "properties": {
                 "element": {"#": "segmentedBar4"},
                 "dataController": {"@": "rangeController"},
@@ -125,7 +125,7 @@
             ]
         },
         "segment4": {
-            "prototype": "ui/segment.reel",
+            "prototype": "montage/ui/segment.reel",
             "properties": {
                 "element": {"#": "segment4"}
             },
