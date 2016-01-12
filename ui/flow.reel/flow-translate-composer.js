@@ -1,8 +1,6 @@
-var Montage = require("../../core/core").Montage,
-    TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
-    defaultEventManager = require("../../core/event/event-manager").defaultEventManager,
+var TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
     Point = require("../../core/geometry/point").Point,
-    convertPointFromPageToNode = require("../../core/dom").convertPointFromPageToNode;
+    convertPointFromPageToNode = Point.convertPointFromPageToNode;
 
 /**
  * @class FlowTranslateComposer
