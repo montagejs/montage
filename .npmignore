@@ -11,3 +11,4 @@ TEST-*.xml
 spec
 test
 tools
+*.info/
