@@ -1,5 +1,5 @@
 .idea
-/node_modules
+node_modules
 npm-debug.log
 .DS_Store
 atlassian-ide-plugin.xml
