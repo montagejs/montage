@@ -20,6 +20,7 @@ var Montage = require("./core").Montage,
     FrbBindings = require("frb/bindings"),
     stringify = require("frb/stringify"),
     expand = require("frb/expand"),
+    Map = require("collections/map"),
     Scope = require("frb/scope");
 
 // Add all locales to MessageFormat object
@@ -766,11 +767,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
      */
     constructor: {
         value: function () {
-            // _data Map needs to track changes on existing properties of
-            // _dataObject, .toMap() provides this behaviour.
-            // _dataObject is set in the data setter.
-            this.defineBinding("_data", {"<-": "_dataObject.toMap()"});
-            this._data.addMapChangeListener(this, "data");
+            //todo: optimisation? set a flag on the localizer to listen when the locale change?
             this.addPathChangeListener("localizer.locale", this, "handleLocaleChange");
         }
     },
@@ -907,27 +904,13 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
             // Don't use fcall, so that if the `data` object is completely
             // changed we have the latest version.
             this.localized = this._messageFunction.then(function (fn) {
-                return fn(self._data.toObject());
+                return self._optimizedMessageCallBack(fn);
             });
         }
     },
 
     _messageFunction: {
         value: Promise.resolve(EMPTY_STRING_FUNCTION)
-    },
-
-    /**
-     * The data needed for the message. Properties on this object can be
-     * bound to.
-     *
-     * This object will be wrapped in a MessageData object to watch all
-     * properties for changes so that the localized message can be updated.
-     *
-     * @type {MessageData}
-     * @default null
-     */
-    _dataObject: {
-        value: null
     },
 
     _data: {
@@ -937,15 +920,38 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
     // Receives an object literal and creates a Map that tracks it.
     data: {
         get: function () {
+            if (!this._data) {
+                this._data = new Map();
+                this._data.addMapChangeListener(this, "data");
+            }
+
             return this._data;
         },
-        set: function (value) {
-            if (this._dataObject === value) {
+        set: function (data) {
+            if (this._data === data) {
                 return;
             }
 
-            // _data is bound to _dataObject.toMap()
-            this._dataObject = value;
+            if (data) {
+                // optimisation avoid to call the getter and remove/add listeners
+                if (!this._data) {
+                    this._data = new Map();
+
+                } else {
+                    this.data.removeMapChangeListener(this, "data");
+
+                    if (this._data.length) {
+                        this._data.clear();
+                    }
+                }
+
+                for (var d in data) {
+                    this.data.set(d, data[d]);
+                }
+
+                this._data.addMapChangeListener(this, "data");
+                this.handleDataMapChange();
+            }
         }
     },
 
@@ -955,7 +961,6 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
     },
 
     _localizedDeferred: {
-        //value: new Promise()
         value: Promise.resolve()
     },
     /**
@@ -998,13 +1003,25 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
      * @private
      */
     handleDataMapChange: {
-        value: function(event) {
+        value: function (event) {
             if (this._key) {
                 var self = this;
+
                 this.localized = this._messageFunction.then(function (fn) {
-                    return fn(self._data.toObject())
+                    return self._optimizedMessageCallBack(fn);
                 });
             }
+        }
+    },
+
+    // Optimisation: avoid to create garbage and useless Map objects.
+    _optimizedMessageCallBack: {
+        value: function (fn) {
+            if (this._data) {
+                return fn(this.data.toObject());
+            }
+
+            return fn();
         }
     },
 
@@ -1049,13 +1066,13 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                 result[DEFAULT_MESSAGE_KEY] = this._defaultMessage;
             }
 
-            var dataBindings = FrbBindings.getBindings(this._data);
+            var dataBindings = FrbBindings.getBindings(this.data);
 
             // NOTE: Can't use `Montage.getSerializablePropertyNames(this._data)`
             // because the properties we want to serialize are not defined
             // using `Montage.defineProperty`, and so don't have
             // `serializable: true` as part of the property descriptor.
-            data = this._data.toObject();
+            data = this.data.toObject();
 
             for (var p in data) {
                 if (data.hasOwnProperty(p) &&
@@ -1075,7 +1092,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
 
                 if (!result.data) result.data = {};
                 result.data[key] = {};
-                this._serializeBinding(this._data, result.data[key], dataBindings[b], serializer);
+                this._serializeBinding(this.data, result.data[key], dataBindings[b], serializer);
             }
 
             return result;
@@ -1134,14 +1151,21 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
 var createMessageBinding = function (object, prop, key, defaultMessage, data, deserializer) {
     var message = new Message();
 
-    for (var d in data) {
-        if (typeof data[d] === "string") {
-            message.data.set(d, data[d]);
-        } else {
-            Bindings.defineBinding(message.data, ".get('"+ d + "')", data[d], {
-                components: deserializer
-            });
+    if (data) {
+        // optimisation
+        var dataMap = message._data = Map();
+
+        for (var d in data) {
+            if (typeof data[d] === "string") {
+                dataMap.set(d, data[d]);
+            } else {
+                Bindings.defineBinding(dataMap, ".get('" + d + "')", data[d], {
+                    components: deserializer
+                });
+            }
         }
+
+        dataMap.addMapChangeListener(message, "data");
     }
 
     if (typeof key === "object") {
