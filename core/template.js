@@ -449,11 +449,12 @@ var Template = Montage.specialize( /** @lends Template# */ {
             var elements = rootElement.querySelectorAll("*[" + this.PARAM_ATTRIBUTE + "]"),
                 elementsCount = elements.length,
                 element,
+                parameterName,
                 parameters = {};
 
             for (var i = 0; i < elementsCount; i++) {
                 element = elements[i];
-                var parameterName = this.getParameterName(element);
+                parameterName = this.getParameterName(element);
 
                 if (parameterName in parameters) {
                     throw new Error('The parameter "' + parameterName + '" is' +
@@ -1409,18 +1410,22 @@ var TemplateResources = Montage.specialize( /** @lends TemplateResources# */ {
 
     loadScripts: {
         value: function (targetDocument) {
-            var scripts,
-                promises = [];
+            var scripts = this.getScripts(),
+                ii = scripts.length;
 
-            scripts = this.getScripts();
+            if (ii) {
+                var promises = [];
 
-            for (var i = 0, ii = scripts.length; i < ii; i++) {
-                promises.push(
-                    this.loadScript(scripts[i], targetDocument)
-                );
+                for (var i = 0; i < ii; i++) {
+                    promises.push(
+                        this.loadScript(scripts[i], targetDocument)
+                    );
+                }
+
+                return Promise.all(promises);
             }
 
-            return Promise.all(promises);
+            return Promise.resolve();
         }
     },
 
