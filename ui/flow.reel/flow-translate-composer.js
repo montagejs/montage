@@ -526,6 +526,10 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
         value: null
     },
 
+    _computePointedElement_spline: {
+        value: []
+    },
+
     // TODO doc
     /**
      */
@@ -545,7 +549,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     y2 = this._pointerY - this._element.clientHeight * .5,
                     perspective = (this._element.offsetHeight * .5) / Math.tan((flow._viewpointFov * flow._doublePI) * (1 / 720)),
                     z2, tmp,
-                    splines = [],
+                    splines = this._computePointedElement_spline,
                     visibleIndexes = flow._visibleIndexes,
                     length = visibleIndexes.length,
                     pathIndex,
@@ -600,6 +604,7 @@ var FlowTranslateComposer = exports.FlowTranslateComposer = TranslateComposer.sp
                     }
                 }
                 this._closerIndex = closerIndex;
+                splines.length = 0;
             }
         }
     },
