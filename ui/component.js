@@ -48,6 +48,9 @@ var ATTR_LE_COMPONENT = "data-montage-le-component",
 var Component = exports.Component = Target.specialize( /** @lends Component.prototype # */ {
     DOM_ARG_ATTRIBUTE: {value: "data-arg"},
 
+    drawListLogger: {
+        value: drawListLogger
+    },
     /**
      * A delegate is an object that has helper methods specific to particular
      * components.
@@ -2194,17 +2197,15 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             if (!this._addedToDrawList) {
                 var parentComponent = this.parentComponent;
 
-                if (!parentComponent) {
-                    if (drawListLogger.isDebug) {
-                        drawListLogger.debug(this, "parentComponent is null");
-                    }
-                } else {
+                if (parentComponent) {
                     parentComponent._addToDrawList(this);
-                    if (drawListLogger.isDebug) {
+                    if (this.drawListLogger.isDebug) {
                         //jshint -W106
-                        drawListLogger.debug(loggerToString(this) + " added to " + loggerToString(parentComponent)  + "'s drawList");
+                        this.drawListLogger.debug(loggerToString(this) + " added to " + loggerToString(parentComponent)  + "'s drawList");
                         //jshint +W106
                     }
+                } else if (this.drawListLogger.isDebug) {
+                        this.drawListLogger.debug(this, "parentComponent is null");
                 }
             }
         }
@@ -3118,8 +3119,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     _addToDrawList: {
         value: function (childComponent) {
             this.__addToDrawList(childComponent);
-            if (drawListLogger.isDebug) {
-                drawListLogger.debug(this, this.canDrawGate.value, this.requestedAnimationFrame);
+            if (this.drawListLogger.isDebug) {
+                this.drawListLogger.debug(this, this.canDrawGate.value, this.requestedAnimationFrame);
             }
             this.drawTree();
         },
