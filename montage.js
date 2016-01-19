@@ -650,9 +650,7 @@ if (typeof window !== "undefined") {
             var pending = {
                 "require": "node_modules/mr/require.js",
                 "require/browser": "node_modules/mr/browser.js",
-                "promise": "node_modules/bluebird/js/browser/bluebird.min.js",
                 "shim-string": "core/shim/string.js" // needed for the `endsWith` function.
-                /*"promise": "packages/mr/packages/q/q.js"*/
             };
 
             // register module definitions for deferred,
@@ -667,9 +665,7 @@ if (typeof window !== "undefined") {
                     // equivalent to an array length check
                     return;
                 }
-                // if we get past the for loop, bootstrapping is complete.  get rid
-                // of the bootstrap function and proceed.
-                delete global.bootstrap;
+
                 allModulesLoaded();
             };
 
@@ -687,21 +683,18 @@ if (typeof window !== "undefined") {
                     global.bootstrap("promise", function (require, exports) {
                         return window.Promise;
                     });
+
+                    for (var id in pending) {
+                        browser.load(resolve(montageLocation, pending[id]));
+                    }
                 });
-
-                for (var id in pending) {
-                    browser.load(resolve(montageLocation, pending[id]));
-                }
-
-                //pending.promise = "node_modules/bluebird/js/browser/bluebird.js";
-                //pending["weak-map"] = "node_modules/weak-map/weak-map.js";
-
             }
             else {
-                window.nativePromise = window.Promise;
-                Object.defineProperty(window,"Promise",{
-                    set: function(PromiseValue) {
+                pending.promise = "node_modules/bluebird/js/browser/bluebird.min.js";
 
+                window.nativePromise = window.Promise;
+                Object.defineProperty(window,"Promise", {
+                    set: function(PromiseValue) {
                         Object.defineProperty(window,"Promise",{value:PromiseValue});
 
                         global.bootstrap("bluebird", function (require, exports) {
@@ -710,10 +703,8 @@ if (typeof window !== "undefined") {
                         global.bootstrap("promise", function (require, exports) {
                             return window.Promise;
                         });
-
                     }
-                })
-
+                });
             }
 
             global.bootstrap("shim-string");
@@ -745,7 +736,11 @@ if (typeof window !== "undefined") {
                 URL = bootRequire("mini-url");
                 Promise = bootRequire("promise");
                 Require = bootRequire("require");
+
+                // if we get past the for loop, bootstrapping is complete.  get rid
+                // of the bootstrap function and proceed.
                 delete global.bootstrap;
+
                 callbackIfReady();
             }
 
