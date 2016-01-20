@@ -1,6 +1,6 @@
 "use strict";
 
-var Component = require("ui/component").Component;
+var Component = require("montage/ui/component").Component;
 
 exports.Baz = Component.specialize({
     title: {value: "Baz Component"},

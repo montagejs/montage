@@ -1,12 +1,10 @@
 "use strict";
 
-var Component = require("ui/component").Component,
-    Montage = require("core/core").Montage,
-    Foo = require("ui/succession.info/sample/ui/foo.reel").Foo,
-    Bar = require("ui/succession.info/sample/ui/bar.reel").Bar,
-    observe = require("frb/observe");
-    //Passage = require("ui/passage").Passage,
-    //generateUUID = require('core/uuid').generate;
+var Component = require("montage/ui/component").Component,
+    Montage = require("montage/core/core").Montage,
+    Foo = require("ui/foo.reel").Foo,
+    Bar = require("ui/bar.reel").Bar,
+    observe = require("montage/frb/observe");
 
 exports.Main = Component.specialize({
     fooCount: {value: 0},
