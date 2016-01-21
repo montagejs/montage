@@ -87,16 +87,13 @@ exports.Slot = Component.specialize( /** @lends Slot.prototype # */ {
     },
 
     /**
-     * Informs the `delegate` that `slotDidSwitchContent(slot, newContent,
-     * oldContent)`
+     * Informs the `delegate` that `slotDidSwitchContent(slot)`
      * @function
-     * @param newContent
-     * @param oldContent
      */
     contentDidChange: {
-        value: function (newContent, oldContent) {
+        value: function () {
             if (this.delegate && typeof this.delegate.slotDidSwitchContent === "function") {
-                this.delegate.slotDidSwitchContent(this, newContent, (newContent ? newContent.component : null), oldContent, (oldContent ? oldContent.component : null));
+                this.delegate.slotDidSwitchContent(this);
             }
         }
     }

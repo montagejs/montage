@@ -2447,7 +2447,6 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
     _performDomContentChanges: {
         value: function () {
             var contents = this._newDomContent,
-                oldContent = this._element.childNodes[this._element.childNodes.length - 1],
                 element,
                 elementToAppend,
                 i;
@@ -2475,10 +2474,7 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
 
                 this._newDomContent = null;
                 if (typeof this.contentDidChange === "function") {
-                    this.contentDidChange(
-                        this._element.childNodes[this._element.childNodes.length - 1],
-                        oldContent
-                    );
+                    this.contentDidChange();
                 }
                 this._shouldClearDomContentOnNextDraw = false;
             }
@@ -3125,19 +3121,21 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
             if (this._currentBuildAnimation) {
                 this._currentBuildAnimation.cancel();
             }
-            if (this._isElementAttachedToParent) {
-                this._currentBuildAnimation = this.buildInSwitchAnimation;
-            } else {
-                this._updateActiveBuildAnimations();
-                this._currentBuildAnimation = this.buildInInitialAnimation;
-            }
-            if (this._currentBuildAnimation) {
-                this._currentBuildAnimation.play();
-                this._currentBuildAnimation.finished.then(function () {
-                    self._currentBuildAnimation.cancel();
-                    self._currentBuildAnimation = null;
-                    self.dispatchEventNamed("buildInEnd", true, true);
-                }, function () {});
+            if (this._element && this._element.parentNode && this._element.parentNode.component) {
+                if (this._isElementAttachedToParent) {
+                    this._currentBuildAnimation = this.buildInSwitchAnimation;
+                } else {
+                    this._updateActiveBuildAnimations();
+                    this._currentBuildAnimation = this.buildInInitialAnimation;
+                }
+                if (this._currentBuildAnimation) {
+                    this._currentBuildAnimation.play();
+                    this._currentBuildAnimation.finished.then(function () {
+                        self._currentBuildAnimation.cancel();
+                        self._currentBuildAnimation = null;
+                        self.dispatchEventNamed("buildInEnd", true, true);
+                    }, function () {});
+                }
             }
         }
     },
@@ -3153,28 +3151,32 @@ var Component = exports.Component = Target.specialize(/** @lends Component.proto
                 this._updateActiveBuildAnimations();
                 this._currentBuildAnimation = this.buildOutInitialAnimation;
             }
-            if (this._currentBuildAnimation) {
-                this._currentBuildAnimation.play();
-                this._currentBuildAnimation.finished.then(function () {
-                    var parent = self.parentComponent;
-                    self._currentBuildAnimation.cancel();
-                    self._currentBuildAnimation = null;
-                    self.detachFromParentComponent();
-                    self.buildInAnimationOverride = null;
-                    self.buildOutAnimationOverride = null;
-                    self._element.parentNode.removeChild(self._element);
-                    self._isElementAttachedToParent = false;
-                    parent.dispatchEventNamed("buildOutEnd", true, true);
-                }, function () {});
-            } else {
-                this.detachFromParentComponent();
-                this.buildInAnimationOverride = null;
-                this.buildOutAnimationOverride = null;
-                if (this._isElementAttachedToParent) {
-                    if (this._element.parentNode) {
-                        this._element.parentNode.removeChild(this._element);
+            if (this._element && this._element.parentNode && this._element.parentNode.component) {
+                if (this._currentBuildAnimation) {
+                    this._currentBuildAnimation.play();
+                    this._currentBuildAnimation.finished.then(function () {
+                        var parent = self.parentComponent;
+                        self._currentBuildAnimation.cancel();
+                        self._currentBuildAnimation = null;
+                        self.detachFromParentComponent();
+                        self.buildInAnimationOverride = null;
+                        self.buildOutAnimationOverride = null;
+                        if (self._element.parentNode.component) {
+                            self._element.parentNode.removeChild(self._element);
+                        }
+                        self._isElementAttachedToParent = false;
+                        parent.dispatchEventNamed("buildOutEnd", true, true);
+                    }, function () {});
+                } else {
+                    this.detachFromParentComponent();
+                    this.buildInAnimationOverride = null;
+                    this.buildOutAnimationOverride = null;
+                    if (this._isElementAttachedToParent) {
+                        if (this._element.parentNode && this._element.parentNode.component) {
+                            this._element.parentNode.removeChild(this._element);
+                        }
+                        this._isElementAttachedToParent = false;
                     }
-                    this._isElementAttachedToParent = false;
                 }
             }
         }
