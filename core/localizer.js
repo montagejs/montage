@@ -584,27 +584,26 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                 promise;
 
             if (!this._isInitialized) {
-                promise = new Promise(function () {
-                    self.initWithLocale();
+                this.initWithLocale();
 
-                    return self.messagesPromise.then(function () {
-                        return self.localize(key, defaultMessage, defaultOnFail, callback);
-                    });
+                promise = this.messagesPromise.then(function () {
+                    return (self.localize(key, defaultMessage, defaultOnFail, callback));
                 });
 
             } else if (!this.messagesPromise) {
                 promise = Promise.resolve(this.localizeSync(key, defaultMessage));
                 promise.then(callback);
-                return promise;
 
             } else {
                 var l = function () {
-                        var messageFn = self.localizeSync(key, defaultMessage);
-                        if (typeof callback === "function") {
-                            callback(messageFn);
-                        }
-                        return messageFn;
-                    };
+                    var messageFn = self.localizeSync(key, defaultMessage);
+
+                    if (typeof callback === "function") {
+                        callback(messageFn);
+                    }
+
+                    return messageFn;
+                };
 
                 if (defaultOnFail) {
                     // Try and localize the message, no matter what the outcome
@@ -807,7 +806,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                 return;
             }
             this._localizer = value;
-            this._localize();
+            this.localize();
         }
     },
 
@@ -830,7 +829,10 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
             }
 
             this._key = value;
-            this._localize();
+
+            if (this.__messageFunction) {
+                this.localize();
+            }
         }
     },
 
@@ -847,59 +849,48 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
                 return;
             }
             this._defaultMessage = value;
-            this._localize();
-        }
-    },
 
-    _isLocalizeQueued: {
-        value: false
+            if (this.__messageFunction) {
+                this.localize();
+            }
+        }
     },
 
     handleLocaleChange: {
         value: function () {
             if (this._key && this._localizer && this._localizer.isInitialized) {
-                this._localize();
+                this.localize();
             }
         }
     },
 
-    _localize: {
+    localize: {
         value: function () {
-            // Optimization: only run this function in the next tick. So that
-            // if the key, defaultKey and data are set individually we don't
-            // try and localize each time.
-            if (this._isLocalizeQueued) return;
-            this._isLocalizeQueued = true;
+            if (!this._key && !this._defaultMessage) {
+                // TODO: Revisit when components inside repetitions aren't
+                // uselessly instatiated.
+                // While it might seem like we should reject here, when
+                // repetitions get set up both the key and default message
+                // are null/undefined. By rejecting the developer would
+                // get an error whenever they use localization with a
+                // repetition.
+                // Instead we show a less severe "warning", so the issue
+                // is still surfaced
+                console.warn("Both key and default message are falsey for",
+                    this, "If this is in a repetition this warning can be ignored");
+
+                this._messageFunction = Promise.resolve(EMPTY_STRING_FUNCTION);
+
+                return;
+            }
 
             var self = this;
-            // Set up a new promise now, so anyone accessing it in this tick
-            // won't get the old one.
-            var temp = new Promise(function(resolve, reject) {
-                self._isLocalizeQueued = false;
 
-                if (!self._key && !self._defaultMessage) {
-                    // TODO: Revisit when components inside repetitions aren't
-                    // uselessly instatiated.
-                    // While it might seem like we should reject here, when
-                    // repetitions get set up both the key and default message
-                    // are null/undefined. By rejecting the developer would
-                    // get an error whenever they use localization with a
-                    // repetition.
-                    // Instead we show a less severe "warning", so the issue
-                    // is still surfaced
-                    console.warn("Both key and default message are falsey for",
-                        self, "If this is in a repetition this warning can be ignored");
-                    resolve(EMPTY_STRING_FUNCTION);
-                    return;
-                }
-
-                // Replace the _messageFunction promise with the real one.
-                resolve(self._localizer.localize(
-                    self._key,
-                    self._defaultMessage
-                ));
-            });
-            this._messageFunction = temp;
+            // Replace the _messageFunction promise with the real one.
+            this._messageFunction = Promise.resolve(this._localizer.localize(
+                this._key,
+                this._defaultMessage
+            ));
 
             // Don't use fcall, so that if the `data` object is completely
             // changed we have the latest version.
@@ -909,8 +900,21 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
         }
     },
 
+    __messageFunction: {
+        value: null
+    },
+
     _messageFunction: {
-        value: Promise.resolve(EMPTY_STRING_FUNCTION)
+        set: function (messageFunction) {
+            this.__messageFunction = messageFunction;
+        },
+        get: function () {
+            if (!this.__messageFunction) {
+                this.__messageFunction = Promise.resolve(EMPTY_STRING_FUNCTION);
+            }
+
+            return this.__messageFunction;
+        }
     },
 
     _data: {
@@ -970,7 +974,7 @@ var Message = exports.Message = Montage.specialize( /** @lends Message.prototype
     */
     localized: {
         get: function() {
-            this._localize();
+            this.localize();
             return this._localizedDeferred;
         },
         set: function (value) {
@@ -1155,11 +1159,17 @@ var createMessageBinding = function (object, prop, key, defaultMessage, data, de
         // optimisation
         var dataMap = message._data = Map();
 
-        for (var d in data) {
-            if (typeof data[d] === "string") {
-                dataMap.set(d, data[d]);
-            } else {
-                Bindings.defineBinding(dataMap, ".get('" + d + "')", data[d], {
+        var d, property, typeOfProperty;
+
+        for (d in data) {
+            property = data[d];
+            typeOfProperty = typeof property;
+
+            if (typeOfProperty === "string") {
+                dataMap.set(d, property);
+
+            } else if (typeOfProperty === "object") {
+                Bindings.defineBinding(dataMap, ".get('" + d + "')", property, {
                     components: deserializer
                 });
             }
@@ -1173,18 +1183,18 @@ var createMessageBinding = function (object, prop, key, defaultMessage, data, de
             components: deserializer
         });
     } else {
-        message.key = key;
+        message._key = key;
     }
 
     if (typeof defaultMessage === "object") {
-        //console.log("Define default binding: ", defaultMessage);
         Bindings.defineBinding(message, "defaultMessage", defaultMessage, {
             components: deserializer
         });
-        //console.log(FrbBindings.getBindings(message).source, deserializer.getObjectByLabel("source"));
-    } else {
-        message.defaultMessage = defaultMessage;
+    } else if (typeof defaultMessage === "string") {
+        message._defaultMessage = defaultMessage;
     }
+
+    message.localize();
 
     Bindings.defineBinding(object, prop, {
         // TODO: Remove when possible to bind to promises and replace with
