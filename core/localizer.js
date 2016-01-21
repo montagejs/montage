@@ -240,6 +240,8 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
      * array of strings, each containing a locale tag.
      * @type Promise
      * @default null
+     *
+     * @returns {Promise.<Array.<String>>}
      */
     availableLocales: {
         get: function () {
@@ -247,9 +249,11 @@ var Localizer = exports.Localizer = Montage.specialize( /** @lends Localizer.pro
                 return this._availableLocales;
             }
 
-            return this._availableLocales = this._manifest.get("files").get(LOCALES_DIRECTORY).get("files").then(function (locales) {
-                return Object.keys(locales);
-            });
+            return this._availableLocales = this.callDelegateMethod("localizerWillPromiseAvailableLocales", this) ||
+
+                this._manifest.get("files").get(LOCALES_DIRECTORY).get("files").then(function (locales) {
+                    return Object.keys(locales);
+                });
         }
     },
 
