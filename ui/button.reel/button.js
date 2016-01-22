@@ -207,12 +207,6 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     handlePressStart: {
         value: function(event) {
             this.active = true;
-
-            if (event.touch) {
-                // Prevent default on touchmove so that if we are inside a scroller,
-                // it scrolls and not the webpage
-                document.addEventListener("touchmove", this, false);
-            }
         }
     },
 
@@ -223,7 +217,6 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         value: function(event) {
             this.active = false;
             this._dispatchActionEvent();
-            document.removeEventListener("touchmove", this, false);
             if (!this._preventFocus) {
                 this._element.focus();
             }
@@ -260,12 +253,6 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         value: function(event) {
             this.active = false;
             document.removeEventListener("touchmove", this, false);
-        }
-    },
-
-    handleTouchmove: {
-        value: function(event) {
-            event.preventDefault();
         }
     },
 
