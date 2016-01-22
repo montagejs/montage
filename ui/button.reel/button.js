@@ -213,10 +213,6 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                 // it scrolls and not the webpage
                 document.addEventListener("touchmove", this, false);
             }
-
-            if (!this._preventFocus) {
-                this._element.focus();
-            }
         }
     },
 
@@ -228,6 +224,9 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
             this.active = false;
             this._dispatchActionEvent();
             document.removeEventListener("touchmove", this, false);
+            if (!this._preventFocus) {
+                this._element.focus();
+            }
         }
     },
 
