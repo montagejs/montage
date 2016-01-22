@@ -7,7 +7,16 @@ var Component = require("montage/ui/component").Component,
     observe = require("montage/frb/observe");
 
 exports.Main = Component.specialize({
-    fooCount: {value: 0},
+    /**
+     * Starts with 1 because 1 Foo is declared in serialization as default content for succession1
+     */
+    fooCount: {
+        value: 1
+    },
+
+    succession1: {
+        value: undefined
+    },
 
     foo: {
         get: function () {
@@ -44,7 +53,9 @@ exports.Main = Component.specialize({
         }
     },
 
-    barCount: {value: 0},
+    barCount: {
+        value: 0
+    },
 
     bar: {
         get: function () {
@@ -69,16 +80,13 @@ exports.Main = Component.specialize({
     handlePushAction: {
         value: function () {
             var component;
-
-            if (this.succession1.top) {
-                component = this.succession1.top instanceof Foo ?
+            if (this.succession1.content) {
+                component = this.succession1.content instanceof Foo ?
                     this.bar : this.foo;
             } else {
                 component = this.foo;
             }
-
-            //component.delegate = this.succession1;
-            this.succession1.push(component);
+            this.succession1.history.push(component);
         }
     },
 
@@ -86,9 +94,9 @@ exports.Main = Component.specialize({
     //    value: function () {
     //        var source, destination;
     //
-    //        if (this.succession1.top) {
-    //            source = this.succession1.top.destination;
-    //            destination = this.succession1.top.destination instanceof Foo ?
+    //        if (this.succession1.content) {
+    //            source = this.succession1.content.destination;
+    //            destination = this.succession1.content.destination instanceof Foo ?
     //                this.bar : this.foo;
     //        } else {
     //            source = null;
@@ -104,13 +112,13 @@ exports.Main = Component.specialize({
     //        //passage.buildOutCssClass = "zoomOutDown";
     //        passage.sourceData = {};
     //
-    //        this.succession1.push(passage);
+    //        this.succession1.history.push(passage);
     //    }
     //},
 
     handlePopAction: {
         value: function () {
-            this.succession1.pop();
+            this.succession1.history.pop();
         }
     },
 

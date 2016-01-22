@@ -17,67 +17,59 @@ var Component = require("ui/component").Component;
 exports.Succession = Component.specialize(/** @lends Succession.prototype */{
 
     contentBuildInAnimation: {
-        value: null
+        value: undefined
     },
 
     contentBuildOutAnimation: {
-        value: null
-    },
-
-    constructor: {
-        value: function () {
-            this.defineBindings({
-                /**
-                 * The top Passage of the Succession stack.
-                 * It is coerce to `null` as `undefined` causes issues with `Slot`.
-                 *
-                 * @property {Passage} top
-                 * @readonly
-                 * @namespace Succession
-                 */
-                "top": {"<-": "this.content[this.content.length - 1]"},
-                /**
-                 * The Passage immediately below the top of Succession stack.
-                 *
-                 * @property {Passage} previous
-                 * @readonly
-                 * @namespace Succession
-                 */
-                "previous": {"<-": "this.content[this.content.length - 2]"},
-                /**
-                 * The beginning Passage of the Succession stack.
-                 *
-                 * @property {Passage} first
-                 * @readonly
-                 * @namespace Succession
-                 */
-                "first": {"<-": "this.content[0]"}
-            });
-        }
-    },
-
-    _content: {
-        value: null
+        value: undefined
     },
 
     /**
-     * A stack consisted of {@link Passage}s.
-     *
-     * @property {Array}
+     * Setting content to a component will add the component to `history`.
+     * Setting content to null will clear `history`.
      */
     content: {
         get: function () {
-            return this._content || (this._content = []);
+            return this.history.length ? this.history[this.history.length - 1] : undefined;
         },
-        set: function (value) {
-            if (this.content && this.content.length) {
-                this._prepareForBuild();
-                this.content.length = 0;
-            }
-            if (value) {
-                this.push(value);
+        set: function (component) {
+            if (component) {
+                this.history.push(component);
             } else {
-                this.domContent = null;
+                this.history.clear();
+            }
+        }
+    },
+
+    _firstComponent: {
+        value: undefined
+    },
+
+    _history: {
+        value: undefined
+    },
+
+    /**
+     * A stack consisted of {@link Component}s.
+     *
+     * @property {Array}
+     */
+    history: {
+        get: function () {
+            if (!this._history) {
+                this._history = [];
+                this._history.addBeforeRangeChangeListener(this);
+                this._history.addRangeChangeListener(this);
+            }
+            return this._history;
+        },
+        set: function (history) {
+            history = Array.isArray(history) ? history : [];
+            if (this.history !== history) {
+                if (!this.history.length && history.length) {
+                    this._firstComponent = history[0];
+                }
+                this.history.splice.apply(this.history, [0, this.history.length].concat(history));
             }
         }
     },
@@ -92,66 +84,23 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
     },
 
     /**
-     * Push a new Passage onto the Stack.
-     * If a Component is supplied, a Passage will be created based on what's currently on the stack.
-     *
-     * @function
-     * @param {Passage|Component} value
-     */
-    push: {
-        value: function (value) {
-            var element;
-
-            // Push may happen when Succession hasn't enterDocument yet
-            if (this.parentComponent) {
-                this._prepareForBuild(value);
-            }
-
-            this.content.push(value);
-            this._updateDomContent();
-        }
-    },
-
-    /**
-     * Pop off the topmost Passage on the Stack.
-     *
-     * @function
-     */
-    pop: {
-        value: function () {
-            if (this.top) {
-                var restore = this.top;
-
-                this._prepareForBuild(this.previous);
-                this.content.pop();
-
-                if (this.content.length) {
-                    this._updateDomContent();
-                } else {
-                    this.domContent = null;
-                }
-            }
-        }
-    },
-
-    /**
      * Override build-in / out animation; checks for whether properties are undefined,
      * as null is used to disable passage animation.
      *
      * Priority from most important: Succession -> Passage -> Component
      *
-     * @function
      * @private
+     * @function
      */
     _prepareForBuild: {
-        value: function (incoming) {
-            if (incoming) {
-                incoming.buildInAnimationOverride = this.contentBuildInAnimation;
-                incoming.buildOutAnimationOverride = this.contentBuildOutAnimation;
-            }
-            if (this.top) {
-                this.top.buildInAnimationOverride = this.contentBuildInAnimation;
-                this.top.buildOutAnimationOverride = this.contentBuildOutAnimation;
+        value: function (content) {
+            if (content) {
+                if (this.contentBuildInAnimation) {
+                    content.buildInAnimationOverride = this.contentBuildInAnimation;
+                }
+                if (this.contentBuildOutAnimation) {
+                    content.buildOutAnimationOverride = this.contentBuildOutAnimation;
+                }
             }
         }
     },
@@ -160,24 +109,127 @@ exports.Succession = Component.specialize(/** @lends Succession.prototype */{
      * Ensure components generated by instantiating in JavaScript instead of
      * declaring in template serialization has an element.
      *
-     * @function
      * @private
+     * @function
+     * @param {Component} content
      */
-    _updateDomContent: {
-        value: function () {
-            var element;
-
-            if (!this.top.element) {
-                element = document.createElement("div");
-                element.id = this.top.identifier || "appendDiv";
-                this.top.element = element;
-
+    _updateDomContentWith: {
+        value: function (content) {
+            if (content) {
+                var element;
+                if (!content.element) {
+                    element = document.createElement("div");
+                    element.id = content.identifier || "appendDiv";
+                    content.element = element;
+                } else {
+                    element = content.element;
+                }
+                this.domContent = element;
+                content.needsDraw = true;
             } else {
-                element = this.top.element;
+                this.domContent = null;
             }
+        }
+    },
 
-            this.domContent = element;
-            this.top.needsDraw = true;
+    // =============================================================================================
+    // Event Handlers
+    // =============================================================================================
+
+    /**
+     * Prepare outgoing content; need to prepare before range actually changes because we need to
+     * prepare on outgoing content and handleRangeChange happens after outgoing content is gone
+     */
+    handleRangeWillChange: {
+        value: function (plus, minus, index) {
+            this._prepareForBuild(this.content);
+        }
+    },
+    /**
+     * Sets classes on Succession depending on how history was changed
+     * Prepare incoming content
+     */
+    handleRangeChange: {
+        value: function (plus, minus, index) {
+            //console.log(this.content && this.content.title);
+            //console.log(plus[0] && plus[0].title);
+            //console.log(minus[0] && minus[0].title);
+            var length = this.history ? this.history.length : 0,
+                isChanged = plus.length || minus.length,
+                isChangeVisible = isChanged && index + plus.length === length,
+                isPush = isChangeVisible && !minus.length && index,
+                isPop = isChangeVisible && !plus.length && length,
+                isReplace = isChangeVisible && !isPush && !isPop && length,
+                isClear = isChangeVisible && !length;
+            // Set appropriate classes and update the succession if necessary.
+            if (isChangeVisible) {
+                this.classList[isPush ? "add" : "remove"]("montage-Succession--push");
+                this.classList[isPop ? "add" : "remove"]("montage-Succession--pop");
+                this.classList[isReplace ? "add" : "remove"]("montage-Succession--replace");
+                this.classList[isClear ? "add" : "remove"]("montage-Succession--clear");
+                this._prepareForBuild(this.content);
+                this.dispatchBeforeOwnPropertyChange("content", this.content);
+                this._updateDomContentWith(this.content);
+                this.dispatchOwnPropertyChange("content", this.content);
+            }
+        }
+    },
+
+    handleBuildInEnd: {
+        value: function (event) {
+            this.needsCssClassCleanup = true;
+            this.needsDraw = true;
+        }
+    },
+
+    handleBuildOutEnd: {
+        value: function (event) {
+            this.needsCssClassCleanup = true;
+            this.needsDraw = true;
+        }
+    },
+
+    // =============================================================================================
+    // Life Cycle Hooks
+    // =============================================================================================
+
+    /**
+     * The first time, extract the argument component (if any) and insert it into the succession
+     * without animation. Must wait for argument component's template to be expanded as
+     * parent replaces template with component's element.
+     *
+     * TODO: Component's extractDomArgument("*") does not seem to be working so the
+     *       content argument must explicitly be named "content".
+     */
+    enterDocument: {
+        value: function (isFirstTime) {
+            var contentElement = isFirstTime && this.extractDomArgument("content"),
+                contentComponent = contentElement && contentElement.component,
+                self = this;
+            if (contentComponent) {
+                contentComponent.expandComponent().then(function () {
+                    self.history.push(contentComponent);
+                });
+            }
+            if (isFirstTime) {
+                this.addEventListener("buildInEnd", this);
+                this.addEventListener("buildOutEnd", this);
+            }
+        }
+    },
+
+    draw: {
+        value: function () {
+            if (this.needsCssClassCleanup) {
+                this.needsCssClassCleanup = false;
+                this.classList.deleteEach([
+                    "montage-Succession--push",
+                    "montage-Succession--pop",
+                    "montage-Succession--replace",
+                    "montage-Succession--clear"
+                ]);
+            }
         }
     }
+
 });

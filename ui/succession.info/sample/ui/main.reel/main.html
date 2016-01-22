@@ -12,15 +12,18 @@
             "properties": {
                 "element": {"#": "Main"},
                 "succession1": {"@": "succession1"}
-            }
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                }
+            ]
         },
         "succession1": {
             "prototype": "montage/ui/succession.reel",
             "properties": {
                 "element": {"#": "succession1"}
-            },
-            "bindings": {
-                "top.destination.destinationData": {"<-": "this.top.destinationData"}
             },
             "listeners": [
                 {
@@ -33,137 +36,77 @@
                 }
             ]
         },
+        "succession1DefaultContent": {
+            "prototype": "ui/foo.reel",
+            "properties": {
+                "element": {"#": "succession1DefaultContent"}
+            }
+        },
         "push": {
             "prototype": "montage/ui/button.reel",
             "properties": {
                 "element": {"#": "push"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
+            }
         },
         "pushx5": {
             "prototype": "montage/ui/button.reel",
             "properties": {
                 "element": {"#": "pushx5"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
+            }
         },
         "pop": {
             "prototype": "montage/ui/button.reel",
             "properties": {
                 "element": {"#": "pop"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
+            }
         },
         "popx5": {
             "prototype": "montage/ui/button.reel",
             "properties": {
                 "element": {"#": "popx5"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
+            }
         },
         "contentComponent": {
             "prototype": "montage/ui/button.reel",
             "properties": {
                 "element": {"#": "contentComponent"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
+            }
         },
         "contentNull": {
             "prototype": "montage/ui/button.reel",
             "properties": {
                 "element": {"#": "contentNull"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
+            }
         },
         "multiOp": {
             "prototype": "montage/ui/button.reel",
             "properties": {
                 "element": {"#": "multiOp"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
+            }
         },
         "toggleOverflow": {
             "prototype": "montage/ui/button.reel",
             "properties": {
                 "element": {"#": "toggleOverflow"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
+            }
         },
         "setSuccessionBuildInOut": {
             "prototype": "montage/ui/button.reel",
             "properties": {
                 "element": {"#": "setSuccessionBuildInOut"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
+            }
         },
         "clearSuccessionBuildInOut": {
             "prototype": "montage/ui/button.reel",
             "properties": {
                 "element": {"#": "clearSuccessionBuildInOut"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
+            }
         },
         "disableSuccessionBuildInOut": {
             "prototype": "montage/ui/button.reel",
             "properties": {
                 "element": {"#": "disableSuccessionBuildInOut"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
+            }
         },
 
 
@@ -173,7 +116,7 @@
                 "element": {"#": "stack"}
             },
             "bindings": {
-                "content": {"<-": "@succession1.content.reversed()"}
+                "content": {"<-": "@succession1.history.reversed()"}
             }
         },
         "lastBuildInComponentIdentifier": {
@@ -256,13 +199,7 @@
             "prototype": "montage/ui/button.reel",
             "properties": {
                 "element": {"#": "SubstitutionMultiOp"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
+            }
         },
         "substitution": {
             "prototype": "montage/ui/substitution.reel",
@@ -293,13 +230,7 @@
             "prototype": "montage/ui/button.reel",
             "properties": {
                 "element": {"#": "detach"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
+            }
         },
         "Bar2": {
             "prototype": "ui/bar.reel",
@@ -355,13 +286,7 @@
             "prototype": "montage/ui/button.reel",
             "properties": {
                 "element": {"#": "conditionToggle"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"}
-                }
-            ]
+            }
         },
         "condition": {
             "prototype": "montage/ui/condition.reel",
@@ -420,7 +345,9 @@
         </div>
 
         <div class="wrapper">
-            <div data-montage-id="succession1" class="succession container overflow-hidden"></div>
+            <div data-montage-id="succession1" class="succession container overflow-hidden">
+                <div data-montage-id="succession1DefaultContent" data-arg="content"></div>
+            </div>
             <div class="stack">
                 Build-in Override: <code data-montage-id="buildInOverride"></code>
                 <br/>
