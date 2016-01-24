@@ -136,16 +136,6 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         }
     },
 
-    // Optimisation so that we don't set a timeout if we do not need to
-    addEventListener: {
-        value: function (type, listener, useCapture) {
-            Composer.prototype.addEventListener.call(this, type, listener, useCapture);
-            if (type === "longPress") {
-                this._shouldDispatchLongPress = true;
-            }
-        }
-    },
-
     _state: {
         value: 0
     },
@@ -155,7 +145,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
         }
     },
 
-    _shouldDispatchLongPress: {
+    shouldDispatchLongPress: {
         value: false
     },
 
@@ -668,7 +658,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
             this._state = PressComposer.PRESSED;
             this.dispatchEvent(this._createPressEvent("pressStart", event));
 
-            if (this._shouldDispatchLongPress) {
+            if (this.shouldDispatchLongPress) {
                 var self = this;
 
                 this._longPressTimeout = setTimeout(function () {
@@ -681,7 +671,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     _dispatchPress: {
         enumerable: false,
         value: function (event, touchEndTargetElement) {
-            if (this._shouldDispatchLongPress) {
+            if (this.shouldDispatchLongPress) {
                 clearTimeout(this._longPressTimeout);
                 this._longPressTimeout = null;
             }
@@ -703,7 +693,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     _dispatchLongPress: {
         enumerable: false,
         value: function (event) {
-            if (this._shouldDispatchLongPress) {
+            if (this.shouldDispatchLongPress) {
                 this.dispatchEvent(this._createPressEvent("longPress", event));
                 this._longPressTimeout = null;
             }
@@ -713,7 +703,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     _dispatchPressCancel: {
         enumerable: false,
         value: function (event) {
-            if (this._shouldDispatchLongPress) {
+            if (this.shouldDispatchLongPress) {
                 clearTimeout(this._longPressTimeout);
                 this._longPressTimeout = null;
             }

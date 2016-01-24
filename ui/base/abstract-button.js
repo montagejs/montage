@@ -185,13 +185,28 @@ var AbstractButton = exports.AbstractButton = AbstractControl.specialize( /** @l
         }
     },
 
-    // Optimisation
-    addEventListener: {
-        value: function (type, listener, useCapture) {
-            AbstractControl.prototype.addEventListener.call(this, type, listener, useCapture);
-            if (type === "longAction") {
-                this._pressComposer.addEventListener("longPress", this, false);
+    _shouldDispatchLongAction: {
+        value: false
+    },
+
+    shouldDispatchLongAction: {
+        set: function (shouldDispatchLongAction) {
+            shouldDispatchLongAction = !!shouldDispatchLongAction;
+
+            if (this._shouldDispatchLongAction !== shouldDispatchLongAction) {
+                this._shouldDispatchLongAction = shouldDispatchLongAction;
+
+                if (shouldDispatchLongAction) {
+                    this._pressComposer.shouldDispatchLongPress = shouldDispatchLongAction;
+                    this._pressComposer.addEventListener("longPress", this, false);
+                } else {
+                    this._pressComposer.shouldDispatchLongPress = shouldDispatchLongAction;
+                    this._pressComposer.removeEventListener("longPress", this, false);
+                }
             }
+        },
+        get: function () {
+            return this._shouldDispatchLongAction;
         }
     },
 

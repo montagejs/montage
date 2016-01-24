@@ -189,13 +189,30 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         }
     },
 
-    // Optimisation
-    addEventListener: {
-        value: function(type, listener, useCapture) {
-            this.super(type, listener, useCapture);
-            if (type === "longAction") {
-                this._pressComposer.addEventListener("longPress", this, false);
+    _shouldDispatchLongAction: {
+        value: false
+    },
+
+    shouldDispatchLongAction: {
+        set: function (shouldDispatchLongAction) {
+            shouldDispatchLongAction = !!shouldDispatchLongAction;
+
+            if (this._shouldDispatchLongAction !== shouldDispatchLongAction) {
+                this._shouldDispatchLongAction = shouldDispatchLongAction;
+
+                if (shouldDispatchLongAction) {
+                    this._pressComposer.shouldDispatchLongPress = shouldDispatchLongAction;
+                    this._pressComposer.addEventListener("longPress", this, false);
+
+                    console.log("add Press")
+                } else {
+                    this._pressComposer.shouldDispatchLongPress = shouldDispatchLongAction;
+                    this._pressComposer.removeEventListener("longPress", this, false);
+                }
             }
+        },
+        get: function () {
+            return this._shouldDispatchLongAction;
         }
     },
 
@@ -246,6 +263,8 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
             // When we fire the "hold" event we don't want to fire the
             // "action" event as well.
             this._pressComposer.cancelPress();
+
+            console.log("long press")
 
             var longActionEvent = document.createEvent("CustomEvent");
             longActionEvent.initCustomEvent("longAction", true, true, null);
