@@ -499,20 +499,28 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
 
     _saveInitialCenterPosition: {
         value: function () {
-            var boundingClientRect = this.element.getBoundingClientRect();
+            // Makes sure we compute the position of a PressComposer’s element only on HTMLElement.
+            // Indeed a press composer can be used on other objects such as document, window…
+            if (this.element instanceof HTMLElement) {
+                var boundingClientRect = this.element.getBoundingClientRect();
 
-            this._initialCenterPositionX = boundingClientRect.left + (boundingClientRect.width/2);
-            this._initialCenterPositionY = boundingClientRect.top + (boundingClientRect.height/2);
+                this._initialCenterPositionX = boundingClientRect.left + (boundingClientRect.width / 2);
+                this._initialCenterPositionY = boundingClientRect.top + (boundingClientRect.height / 2);
+            }
         }
     },
 
     _positionChanged: {
         get: function () {
-            var boundingClientRect = this.element.getBoundingClientRect(),
-                newCenterPositionX = boundingClientRect.left + (boundingClientRect.width/2),
-                newCenterPositionY = boundingClientRect.top + (boundingClientRect.height/2);
+            if (this.element instanceof HTMLElement) {
+                var boundingClientRect = this.element.getBoundingClientRect(),
+                    newCenterPositionX = boundingClientRect.left + (boundingClientRect.width/2),
+                    newCenterPositionY = boundingClientRect.top + (boundingClientRect.height/2);
 
-            return this._initialCenterPositionX !== newCenterPositionX || this._initialCenterPositionY !== newCenterPositionY;
+                return this._initialCenterPositionX !== newCenterPositionX || this._initialCenterPositionY !== newCenterPositionY;
+            }
+
+            return false;
         }
     },
 
