@@ -405,6 +405,10 @@ var Template = Montage.specialize( /** @lends Template# */ {
             var deserializer = this._deserializer,
                 optimizationPromise;
 
+            if (Promise.is(deserializer)) {
+                return deserializer; // Promise return (error raised while deserializing)
+            }
+
             optimizationPromise = this._optimizeObjectsInstantiation();
 
             if (optimizationPromise) {
