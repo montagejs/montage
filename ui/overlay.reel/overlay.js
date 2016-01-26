@@ -6,18 +6,10 @@ var Component = require("../component").Component,
     PressComposer = require("../../composer/press-composer").PressComposer,
     defaultEventManager = require("../../core/event/event-manager").defaultEventManager;
 
-var CLASS_PREFIX = "montage-Overlay";
+var CLASS_PREFIX = "montage-Overlay",
+    VISIBLE_CLASS_NAME = CLASS_PREFIX + "--visible";
 
 /**
- * This component uses a "trick" to measure its element when it is shown.
- * Since the element is "display: none" when it's hidden it's not possible to
- * measure it at willDraw in order to calculate the correct position to center it.
- * The solution used is to have two draws when it is shown. The first draw only
- * makes the element part of the layout of the browser while still being invisible
- * to the user, this is achieved by setting "visiblity: hidden" and the --visible
- * class that has a "display: block". A second draw is then forced.
- * On the second draw the element is now measurable and the visibility is set
- * back to "visible". This mechanism is controlled by the _isDisplayed flag.
  *
  * @class Overlay
  * @extends Component
@@ -30,13 +22,36 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
      * @memberof Overlay
      * @param {Event} event
      */
+    __pressComposer: {
+        value: null
+    },
 
     _pressComposer: {
+        get: function () {
+            if (!this.__pressComposer) {
+                this.__pressComposer = new PressComposer();
+                this.addComposerForElement(this._pressComposer, this.element.ownerDocument);
+            }
+
+            return this.__pressComposer;
+        }
+    },
+
+    __keyComposer: {
         value: null
     },
 
     _keyComposer: {
-        value: null
+        get: function () {
+            if (!this.__keyComposer) {
+                this.__keyComposer = new KeyComposer();
+                this.__keyComposer.keys = "escape";
+                this.__keyComposer.identifier = "escape";
+                this.addComposerForElement(this.__keyComposer, this.element.ownerDocument.defaultView);
+            }
+
+            return this.__keyComposer;
+        }
     },
 
     _anchor: {
@@ -90,11 +105,6 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
         }
     },
 
-    // True when the overlay element is measurable by the browser.
-    _isDisplayed: {
-        value: false
-    },
-
     _resizeHandlerTimeout: {
         value: null
     },
@@ -128,6 +138,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
         set: function (value) {
             if (value !== this._dismissOnExternalInteraction) {
                 this._dismissOnExternalInteraction = value;
+
                 if (value) {
                     this._pressComposer.addEventListener("pressStart", this, false);
                 } else {
@@ -142,30 +153,11 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
 
     enterDocument: {
         value: function (firstTime) {
-            var body,
-                _window;
-
             if (firstTime) {
                 // Need to move the element to be a child of the document to
                 // escape possible offset parent container.
-                body = this.element.ownerDocument.body;
-                body.appendChild(this.element);
+                this.element.ownerDocument.body.appendChild(this.element);
                 this.attachToParentComponent();
-
-                _window = this.element.ownerDocument.defaultView;
-                _window.addEventListener("resize", this);
-
-                this._pressComposer = new PressComposer();
-                this.addComposerForElement(this._pressComposer, this.element.ownerDocument);
-
-                if (this._dismissOnExternalInteraction) {
-                    this._pressComposer.addEventListener("pressStart", this, false);
-                }
-
-                this._keyComposer = new KeyComposer();
-                this._keyComposer.keys = "escape";
-                this._keyComposer.identifier = "escape";
-                this.addComposerForElement(this._keyComposer, _window);
             }
         }
     },
@@ -198,13 +190,18 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
                 }
 
                 this.attachToParentComponent();
-                this.classList.add(CLASS_PREFIX + "--visible");
+                this.classList.add(VISIBLE_CLASS_NAME);
                 this.loadComposer(this._pressComposer);
                 this.loadComposer(this._keyComposer);
                 this._isShown = true;
                 this.needsDraw = true;
 
                 this._keyComposer.addEventListener("keyPress", this, false);
+                this.element.ownerDocument.defaultView.addEventListener("resize", this);
+
+                if (this._dismissOnExternalInteraction) {
+                    this._pressComposer.addEventListener("pressStart", this, false);
+                }
             }
         }
     },
@@ -213,7 +210,7 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
         value: function () {
             if (this._isShown) {
                 // detachFromParentComponent happens at didDraw
-                this.classList.remove(CLASS_PREFIX + "--visible");
+                this.classList.remove(VISIBLE_CLASS_NAME);
                 this.unloadComposer(this._pressComposer);
                 this.unloadComposer(this._keyComposer);
                 this._isShown = false;
@@ -224,6 +221,11 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
                 }
 
                 this._keyComposer.removeEventListener("keyPress", this, false);
+                this.element.ownerDocument.defaultView.removeEventListener("resize", this);
+
+                if (this._dismissOnExternalInteraction) {
+                    this._pressComposer.removeEventListener("pressStart", this, false);
+                }
             }
         }
     },
@@ -300,12 +302,10 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
 
     willDraw: {
         value: function () {
-            // Only calculate the position if the element is part of the layout,
-            // otherwise it's not possible to measure the element.
-            if (this._isDisplayed && this._isShown) {
+            if (this._isShown) {
                 this._calculatePosition();
-            }
-            if (!this._isShown) {
+
+            } else {
                 this.callDelegateMethod("didHideOverlay", this);
             }
         }
@@ -314,24 +314,16 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
     draw: {
         value: function () {
             if (this._isShown) {
-                // The element is displayed when it is measurable.
-                if (this._isDisplayed) {
-                    this._reposition();
-                    this.element.style.visibility = "visible";
-                } else {
-                    // Make the element part of the layout (this is achieved by
-                    // the "--visible" class) but hide it from view.
-                    // This will make it possible to measure the element in the
-                    // next draw cycle at willDraw without causing a flash.
-                    this.element.style.visibility = "hidden";
-                    this._isDisplayed = true;
-                    this.callDelegateMethod("didShowOverlay", this);
-                    // Trigger the new draw cycle so we can finally measure the
-                    // element.
-                    this.needsDraw = true;
-                }
+                var position = this._drawPosition;
+
+                this.element.style.top = position.top + "px";
+                this.element.style.left = position.left + "px";
+                this.element.style.visibility = "visible";
+
+                this.callDelegateMethod("didShowOverlay", this);
+
             } else {
-                this._isDisplayed = false;
+                this.element.style.visibility = "hidden";
             }
         }
     },
@@ -341,15 +333,6 @@ exports.Overlay = Component.specialize( /** @lends Overlay.prototype # */ {
             if (!this._isShown) {
                 this.detachFromParentComponent();
             }
-        }
-    },
-
-    _reposition: {
-        value: function () {
-            var position = this._drawPosition;
-
-            this.element.style.top = position.top + "px";
-            this.element.style.left = position.left + "px";
         }
     },
 
