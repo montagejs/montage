@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="list.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"},
+                "cells": {"@": "cells"}
+            },
+            "bindings": {
+                "selectedCell": {"<-": "@cells.selection.one()"}
+            }
+        },
+
+        "cells": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "cells"},
+                "isSelectionEnabled": true
+            },
+            "bindings": {
+                "content": {"<-": "@owner.content"}
+            }
+        },
+
+        ":iteration": {
+           "alias": "@cells:iteration"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="List">
+        <div data-montage-id="cells">
+            <div data-param="*"></div>
+        </div>
+    </div>
+</body>
+</html>

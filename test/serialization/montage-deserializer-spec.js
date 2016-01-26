@@ -1198,14 +1198,10 @@ describe("serialization/montage-deserializer-spec", function () {
         it("should fail initialization if serialization is malformed", function () {
             var serializationString = "{root:}";
 
-            try {
-                deserializer.init(
-                    serializationString, require);
-                // should never execute
-                expect(true).toBe(false);
-            } catch (ex) {
+            // return a promise when failling.
+            return deserializer.init(serializationString, require).catch(function (ex) {
                 expect(ex).toBeDefined();
-            }
+            });
         });
     });
 

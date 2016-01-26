@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <!-- <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
@@ -29,15 +28,21 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> -->
+
 <!--
  fast/dom/Window/webkitConvertPoint.html
 -->
+
+<!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>DOM Test</title>
     <script src="../../../montage.js" data-package="../../"></script>
-    <script type="text/montage-serialization">{
+    <!-- normalize for different browsers' positioning quirks, for "should return correct position" tests -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css"/>
+    <script type="text/montage-serialization">
+    {
         "application": {
             "prototype": "montage/core/application",
             "properties": {
@@ -65,57 +70,58 @@ POSSIBILITY OF SUCH DAMAGE.
                 "value": "Loaded"
             }
         }
-    }</script>
+    }
+    </script>
     <style>
-        body {
-            font-size: 20px;
-        }
-        h1 {
-            font-size: 20px;
-        }
+        /* Autoprefixer > 1%, last 2 versions, Firefox ESR, Opera 12.1 */
 
-        /*
-        Different browsers lay things out with pixel differences, so we do
-        this to normalise.
-        */
-        body > * {
-            position: absolute;
-            top: 23px;
-            left: 46px;
-        }
+        /* Further normalize for different browsers' font rendering differences */
+        body {font-size: 20px; line-height: 1;}
+        h1 {font-size: 20px;}
 
-        .border {
-            border: #000088 double thick;
-        }
+        .border {border: 1px solid #000088;}
+
         .translate {
             -webkit-transform: translate(10px);
-            -o-transform: translate(10px);
-            -moz-transform: translate(10px);
+            -ms-transform: translate(10px);
             transform: translate(10px);
         }
-        .scale_rotate {
+
+        .scale-rotate {
             -webkit-transform-origin: top left;
-            -webkit-transform: translate(10px,10px) rotate(66deg) scale(0.3);
-            -o-transform-origin: top left;
-            -o-transform: translate(10px,10px) rotate(66deg) scale(0.3);
-            -moz-transform-origin: top left;
-            -moz-transform: translate(10px,10px) rotate(66deg) scale(0.3);
+            -ms-transform-origin: top left;
             transform-origin: top left;
-            transform: translate(10px,10px) rotate(66deg) scale(0.3);
+
+            -webkit-transform: translate(10px, 10px) rotate(66deg) scale(0.3);
+            -ms-transform: translate(10px, 10px) rotate(66deg) scale(0.3);
+            transform: translate(10px, 10px) rotate(66deg) scale(0.3);
         }
     </style>
 </head>
 <body>
     <h1 data-montage-id="convertPoint1">Lorem Ipsum</h1>
+
     <p data-montage-id="convertPoint2">Lorem Ipsum</p>
+
     <p data-montage-id="convertPoint3">Lorem Ipsum <a>dolor sit amet</a></p>
+
     <p data-montage-id="convertPoint4">Lorem Ipsum <a class="border">dolor sit amet</a></p>
-    <p class="translate">Lorem Ipsum <a data-montage-id="convertPoint5" class="border">dolor sit amet</a></p>
-    <p class="translate">Lorem Ipsum <a data-montage-id="convertPoint6" class="border">dolor sit amet,<br>consectetur</a></p>
-    <p class="scale_rotate">Lorem Ipsum <a class="border">dolor sit amet,<br><span data-montage-id="convertPoint7">consectetur</span></a></p>
+
+    <p class="translate">
+        Lorem Ipsum <a data-montage-id="convertPoint5" class="border">dolor sit amet</a>
+    </p>
+
+    <p class="translate">
+        Lorem Ipsum <a data-montage-id="convertPoint6" class="border">dolor sit amet,<br>consectetur</a>
+    </p>
+
+    <p class="scale-rotate">
+        Lorem Ipsum <a class="border">dolor sit amet,<br><span data-montage-id="convertPoint7">consectetur</span></a>
+    </p>
 
     <span data-montage-id="text" class="classOne"></span>
-    <svg data-montage-id="svg" class="classTwo" xmlns="http://www.w3.org/2000/svg" version="1.1" width="300" height="300">
+    <svg data-montage-id="svg" class="classTwo" xmlns="http://www.w3.org/2000/svg" version="1.1" width="300"
+         height="300">
         <defs>
             <linearGradient id="r-c9ca85a05ecd40fe8d826de7ae31fcc4" x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0%" stop-color="#ffffff"></stop>
@@ -126,7 +132,9 @@ POSSIBILITY OF SUCH DAMAGE.
                 <stop offset="100%" stop-color="#000000" stop-opacity="0"></stop>
             </linearGradient>
         </defs>
-        <path fill="#ff0000" stroke="none" d="M150,3A147,147,0,0,1,156.36800661309204,3.1379950709659568L155.06841342674673,33.10983281158515A117,117,0,0,0,150,33Z" transform=""></path>
+        <path fill="#ff0000" stroke="none"
+              d="M150,3A147,147,0,0,1,156.36800661309204,3.1379950709659568L155.06841342674673,33.10983281158515A117,117,0,0,0,150,33Z"
+              transform=""></path>
     </svg>
 </body>
 </html>

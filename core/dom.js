@@ -4,9 +4,7 @@
  * @module montage/core/dom
  * @requires montage/core/geometry/point
 */
-
-var Point = require("./geometry/point").Point,
-    NodePrototype = Node.prototype,
+var NodePrototype = Node.prototype,
     ElementPrototype = Element.prototype;
 
 /**
@@ -176,99 +174,3 @@ NodePrototype.parentOf = function (child) {
     return child ? true : false;
 
 };
-
-var _offsetForElement = function (element) {
-    var boundingClientRect,
-        elementsDocument = element.ownerDocument,
-        elementsDocumentElement,
-        elementsBody,
-        elementsWindow;
-
-    if ( element && elementsDocument ) {
-        elementsDocumentElement = elementsDocument.documentElement;
-        elementsBody = elementsDocument.body;
-        elementsWindow = elementsDocument.defaultView;
-
-        if ( element !== elementsBody ) {
-            boundingClientRect = element.getBoundingClientRect();
-            if ( elementsDocumentElement.parentOf(element) ) {
-                var clientTop  = elementsDocumentElement.clientTop  || elementsBody.clientTop  || 0,
-                    clientLeft = elementsDocumentElement.clientLeft || elementsBody.clientLeft || 0,
-                    scrollTop  = elementsWindow.pageYOffset || elementsDocumentElement.scrollTop  || elementsBody.scrollTop,
-                    scrollLeft = elementsWindow.pageXOffset || elementsDocumentElement.scrollLeft || elementsBody.scrollLeft,
-                    top  = boundingClientRect.top  + scrollTop  - clientTop,
-                    left = boundingClientRect.left + scrollLeft - clientLeft;
-                return { top: top, left: left };
-            } else {
-                return { top: boundingClientRect.top, left: boundingClientRect.left };
-            }
-
-        } else {
-            return { top: elementsBody.offsetTop, left: elementsBody.offsetLeft };
-        }
-    } else {
-        return null;
-    }
-};
-
-var _webKitPoint = null;
-
-var webkitImplementation = function () {
-    exports.convertPointFromNodeToPage = function (element, point) {
-        if(point) {
-            _webKitPoint.x = point.x;
-            _webKitPoint.y = point.y;
-        } else {
-            _webKitPoint.x = 0;
-            _webKitPoint.y = 0;
-        }
-        point = webkitConvertPointFromNodeToPage(element, _webKitPoint);
-        return point ? new Point().init(point.x, point.y) : null;
-    };
-
-    exports.convertPointFromPageToNode = function (element, point) {
-        if(point) {
-            _webKitPoint.x = point.x;
-            _webKitPoint.y = point.y;
-        } else {
-            _webKitPoint.x = 0;
-            _webKitPoint.y = 0;
-        }
-        point = webkitConvertPointFromPageToNode(element, _webKitPoint);
-        return point ? new Point().init(point.x, point.y) : null;
-    };
-};
-
-var shimImplementation = function () {
-    exports.convertPointFromNodeToPage = function (element, point) {
-        if (!element || typeof element.x !== "undefined") {
-            return null;
-        }
-        var offset;
-        if (offset =_offsetForElement(element)) {
-            return new Point().init((point ? point.x:0)+offset.left, (point ? point.y:0)+offset.top);
-        } else {
-            return new Point().init((point ? point.x:0), (point ? point.y:0));
-        }
-    };
-
-    exports.convertPointFromPageToNode = function (element, point) {
-        if (!element || typeof element.x !== "undefined") {
-            return null;
-        }
-        var offset;
-        if (offset =_offsetForElement(element)) {
-            return new Point().init((point ? point.x:0)-offset.left, (point ? point.y:0)-offset.top);
-        } else {
-            return new Point().init((point ? point.x:0), (point ? point.y:0));
-        }
-    };
-};
-
-if (typeof WebKitPoint !== "undefined") {
-    _webKitPoint = new WebKitPoint(0,0);
-    webkitImplementation();
-} else {
-    shimImplementation();
-}
-

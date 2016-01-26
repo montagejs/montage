@@ -25,10 +25,10 @@ TestPageLoader.queueTest("segmented-bar-test", function (testPage) {
                 expect(segmentedBarComponent).toBeDefined();
             });
 
-            it("should instantiate with TreeController", function () {
-                segmentedBarComponent = testPage.getElementById("segmentedBar3").component;
-                expect(segmentedBarComponent).toBeDefined();
-            });
+            //it("should instantiate with TreeController", function () {
+            //    segmentedBarComponent = testPage.getElementById("segmentedBar3").component;
+            //    expect(segmentedBarComponent).toBeDefined();
+            //});
 
             it("should render according to parentElement's dimensions", function () {
                 expect(segmentedBarComponent.element.clientHeight).toEqual(30);
@@ -85,10 +85,10 @@ TestPageLoader.queueTest("segmented-bar-test", function (testPage) {
                 expect(segmentElements[3].component.templateObjects.text.element.textContent).toEqual("region4");
             });
 
-            it("should render with correct text label from TreeController", function () {
-                segmentElements = testPage.querySelectorAll("[data-montage-id=segment3]");
-                expect(segmentElements[1].component.templateObjects.text.element.textContent).toEqual("CA");
-            });
+            //it("should render with correct text label from TreeController", function () {
+            //    segmentElements = testPage.querySelectorAll("[data-montage-id=segment3]");
+            //    expect(segmentElements[1].component.templateObjects.text.element.textContent).toEqual("CA");
+            //});
 
             it("should render with correct width in horizontal orientation", function () {
                 expect(segmentElements[0].clientWidth).toEqual(96);

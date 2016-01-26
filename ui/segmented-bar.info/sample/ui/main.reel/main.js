@@ -1,11 +1,8 @@
-"use strict";
-
-var Component = require("ui/component").Component;
+var Component = require("montage/ui/component").Component;
 
 exports.Main = Component.specialize({
     handleAction: {
         value: function (event) {
-            console.log("heard");
             if (event.detail) {
                 this.currentSegment = event.detail.get('data').label;
             }

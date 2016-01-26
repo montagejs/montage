@@ -1169,6 +1169,8 @@ if (typeof window !== "undefined") { // client-side
          unregisterEventListener: {
              enumerable: false,
              value: function unregisterEventListener(target, eventType, listener, useCapture) {
+                 //console.log("EventManager.unregisterEventListener", target, eventType, listener, useCapture);
+
                  return useCapture
                     ? this._unregisterEventListener(target, eventType, listener, this._registeredCaptureEventListeners, this._registeredBubbleEventListeners)
                     : this._unregisterEventListener(target, eventType, listener, this._registeredBubbleEventListeners, this._registeredCaptureEventListeners);
@@ -1178,13 +1180,10 @@ if (typeof window !== "undefined") { // client-side
             enumerable: false,
             value: function _unregisterEventListener (target, eventType, listener, registeredEventListeners, otherPhaseRegisteredEventListeners) {
 
-                // console.log("EventManager.unregisterEventListener", target, eventType, listener, useCapture)
 
                 var eventTypeRegistration = registeredEventListeners[eventType],
-                    listenerRegistration,
-                    phase,
-                    listenerUUID,
-                    installedListener;
+                    listeners,
+                    map;
 
                 if (!eventTypeRegistration) {
                     // this eventType wasn't being observed at all
@@ -1202,7 +1201,11 @@ if (typeof window !== "undefined") { // client-side
                     return;
                 }
                 if(this._currentDispatchedTargetListeners.has(listeners)) {
-                    (this._currentDispatchedTargetListeners.get(listeners) || (this._currentDispatchedTargetListeners.set(listeners,new Map()))).set(listener,true);
+                    map = this._currentDispatchedTargetListeners.get(listeners);
+                    if(!map) {
+                        this._currentDispatchedTargetListeners.set(listeners,(map = new Map()));
+                    }
+                    map.set(listener,true);
 
                 } else {
                     this.spliceOne(listeners,listeners.indexOf(listener));
@@ -1222,7 +1225,7 @@ if (typeof window !== "undefined") { // client-side
 
                     eventTypeRegistration.delete(target);
 
-                    if (eventTypeRegistration.size === 0 && !otherPhaseEventTypeRegistration || (otherPhaseEventTypeRegistration && otherPhaseEventTypeRegistration.size === 0)) {
+                    if (eventTypeRegistration.size === 0 && (!otherPhaseEventTypeRegistration || (otherPhaseEventTypeRegistration && otherPhaseEventTypeRegistration.size === 0))) {
                         // If no targets for this eventType; stop observing this event
                         delete registeredEventListeners[eventType];
                         this._stopObservingTarget_forEventType_(target, eventType);

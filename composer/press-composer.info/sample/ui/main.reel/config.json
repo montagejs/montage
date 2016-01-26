@@ -1,0 +1,110 @@
+{
+    "cases": [
+        {
+            "label": "hit box",
+            "arg": "hit-box",
+            "captions": [
+                {
+                    "color": "DDD",
+                    "label": "inactive"
+                },
+                {
+                    "color": "f1e33f",
+                    "label": "active"
+                },
+                {
+                    "color": "2ecc71",
+                    "label": "pressed"
+                },
+                {
+                    "color": "e74c3c",
+                    "label": "cancel"
+                }
+            ]
+        },
+        {
+            "label": "nested hit boxes",
+            "arg": "nest-hit-box",
+            "captions": [
+                {
+                    "color": "DDD",
+                    "label": "inactive"
+                },
+                {
+                    "color": "f1e33f",
+                    "label": "active"
+                },
+                {
+                    "color": "2ecc71",
+                    "label": "pressed"
+                },
+                {
+                    "color": "e74c3c",
+                    "label": "cancel"
+                }
+            ]
+        },
+        {
+            "label": "draggable hit box",
+            "arg": "drag-hit-box",
+            "captions": [
+                {
+                    "color": "DDD",
+                    "label": "inactive"
+                },
+                {
+                    "color": "f1e33f",
+                    "label": "active"
+                },
+                {
+                    "color": "2ecc71",
+                    "label": "pressed"
+                },
+                {
+                    "color": "e74c3c",
+                    "label": "cancel"
+                },
+                {
+                    "color": "5bc0de",
+                    "label": "dragging"
+                }
+            ]
+        },
+        {
+            "label": "list",
+            "arg": "regular-list",
+            "captions": [
+                {
+                    "color": "FFF",
+                    "label": "inactive"
+                },
+                {
+                    "color": "c0def4",
+                    "label": "active"
+                },
+                {
+                    "color": "5bc0de",
+                    "label": "selected"
+                }
+            ]
+        },
+        {
+            "label": "list with buttons",
+            "arg": "inner-press-list",
+            "captions": [
+                {
+                    "color": "FFF",
+                    "label": "inactive"
+                },
+                {
+                    "color": "c0def4",
+                    "label": "active"
+                },
+                {
+                    "color": "5bc0de",
+                    "label": "selected"
+                }
+            ]
+        }
+    ]
+}

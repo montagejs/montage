@@ -79,7 +79,8 @@ exports.SegmentedBar = AbstractButton.specialize( /** @lends SegmentedBar.protot
 
                 if (dataController instanceof TreeController) {
                     // Ensure TreeController always flattens
-                    dataController.initiallyExpanded = true;
+                    //dataController.initiallyExpanded = true;
+                    //dataController.expandAll = true;
 
                     // Repetition only accepts RangeController;
                     // cannot do `new RangeController(dataController.iterations)`, need a binding,

@@ -1,0 +1,7 @@
+{
+	"name": "slot.info",
+	"private": true,
+	"dependencies": {
+		"montage": "../.."
+	}
+}

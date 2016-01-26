@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "main"}
+            }
+        },
+
+        "cases": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "cases"},
+                "isSelectionEnabled": true
+            },
+            "bindings": {
+                "content": {"<-": "@owner.configuration.cases"}
+            }
+        },
+
+        "case": {
+            "prototype": "montage/ui/component",
+            "properties": {
+                "element": {"#": "case"},
+                "hasTemplate": false
+            },
+            "bindings": {
+                "case": {"<-": "@cases:iteration.object"}
+            }
+        },
+
+        "caseLabel": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "case-label"}
+            },
+            "bindings": {
+                "value": {"<-": "@cases:iteration.object.label"}
+            }
+        },
+
+        "casesSubstitution": {
+            "prototype": "montage/ui/substitution.reel",
+            "properties": {
+                "element": {"#": "cases-substitution"}
+            },
+            "bindings": {
+                "switchValue": {"<-": "@cases.selection.0.arg"}
+            }
+        },
+
+        "hitBox": {
+            "prototype": "../square.reel",
+            "properties": {
+                "element": {"#": "hit-box"},
+                "label": "Hit Me!"
+            }
+        },
+
+        "nestHitBox1": {
+            "prototype": "../square.reel",
+            "properties": {
+                "element": {"#": "nest-hit-box-1"}
+            }
+        },
+
+        "nestHitBox2": {
+            "prototype": "../square.reel",
+            "properties": {
+                "element": {"#": "nest-hit-box-2"}
+            }
+        },
+
+        "nestHitBox3": {
+            "prototype": "../square.reel",
+            "properties": {
+                "element": {"#": "nest-hit-box-3"}
+            }
+        },
+
+        "draggableHitBox": {
+            "prototype": "../draggable-square.reel",
+            "properties": {
+                "element": {"#": "drag-hit-box"}
+            }
+        },
+
+        "regularList": {
+            "prototype": "../list.reel",
+            "properties": {
+                "element": {"#": "regular-list"}
+            },
+            "bindings": {
+                "content": {"<-": "@owner.numbers"}
+            }
+        },
+
+        "regularListNumberLabel": {
+            "prototype": "montage/ui/text.reel",
+            "properties": {
+                "element": {"#": "regular-list-number-label"}
+            },
+            "bindings": {
+                "value": {"<-": "@regularList:iteration.object"}
+            }
+        },
+
+        "innerPressList": {
+            "prototype": "../list.reel",
+            "properties": {
+                "element": {"#": "inner-press-list"}
+            },
+            "bindings": {
+                "content": {"<-": "@owner.numbers"}
+            }
+        },
+
+        "innerPressListButton": {
+            "prototype": "montage/ui/button.reel",
+            "properties": {
+                "element": {"#": "inner-press-list-number-label"}
+            },
+            "bindings": {
+                "label": {"<-": "@innerPressList:iteration.object"}
+            }
+        },
+
+        "captions": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "captions"},
+                "isSelectionEnabled": true
+            },
+            "bindings": {
+                "content": {"<-": "@cases.selection.0.captions"}
+            }
+        },
+
+         "caption": {
+            "prototype": "../caption.reel",
+            "properties": {
+                "element": {"#": "caption"}
+            },
+            "bindings": {
+                "caption": {"<-": "@captions:iteration.object"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="main" class="PressComposer">
+        <nav data-montage-id="cases" class="PressComposer-cases">
+            <div data-montage-id="case" class="PressComposer-case">
+                <div data-montage-id="case-label" class="PressComposerCase-label"></div>
+            </div>
+        </nav>
+
+        <div data-montage-id="cases-substitution" class="PressComposer-substitution">
+            <div data-montage-id="hit-box" data-arg="hit-box"></div>
+            <div data-arg="nest-hit-box">
+                <div data-montage-id="nest-hit-box-1">
+                    <div data-montage-id="nest-hit-box-2" class="NestBox">
+                        <div data-montage-id="nest-hit-box-3" class="NestBox"></div>
+                    </div>
+                </div>
+
+            </div>
+            <div data-montage-id="drag-hit-box" data-arg="drag-hit-box"></div>
+            <div data-montage-id="regular-list" data-arg="regular-list">
+                <div data-montage-id="regular-list-number-label" class="Cell"></div>
+            </div>
+            <div data-montage-id="inner-press-list" data-arg="inner-press-list" class="InnerPressList">
+                <div class="Cell">
+                    <button data-montage-id="inner-press-list-number-label"></button>
+                </div>
+            </div>
+        </div>
+        <footer>
+            <div data-montage-id="captions" class="Captions">
+                <div data-montage-id="caption" class="Caption"></div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
