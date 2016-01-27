@@ -30,12 +30,6 @@ var ModuleBlueprint = exports.ModuleBlueprint = Blueprint.specialize(/** @lends 
         }
     },
 
-    initWithNameAndModuleId: {
-        value: function  () {
-            throw new Error("Use initWithModuleAndExportName");
-        }
-    },
-
     serializeSelf: {
         value: function (serializer) {
             if (!this.module) {
