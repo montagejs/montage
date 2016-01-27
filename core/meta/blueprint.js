@@ -4,11 +4,9 @@
  * @requires montage/core/core
  * @requires core/exception
  * @requires core/promise
- * @requires core/logger
  */
 var Montage = require("../core").Montage;
 var Promise = require("../promise").Promise;
-var ObjectProperty = require("./object-property").ObjectProperty;
 var BinderModule = require("./binder");
 var BlueprintReference = require("./blueprint-reference").BlueprintReference;
 var PropertyBlueprint = require("./property-blueprint").PropertyBlueprint;
@@ -16,8 +14,6 @@ var AssociationBlueprint = require("./association-blueprint").AssociationBluepri
 var DerivedPropertyBlueprint = require("./derived-property-blueprint").DerivedPropertyBlueprint;
 var EventBlueprint = require("./event-blueprint").EventBlueprint;
 var PropertyValidationRule = require("./validation-rule").PropertyValidationRule;
-var deprecate = require("../deprecate");
-var logger = require("../logger").logger("blueprint");
 
 var Defaults = {
     name: "default",
@@ -53,18 +49,6 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint.pro
 
             return this;
         }
-    },
-
-    /**
-     * @function
-     * @param {string} name
-     * @param {string} moduleId
-     * @returns itself
-     */
-    initWithNameAndModuleId: {
-        value: deprecate.deprecateMethod(void 0, function (name) {
-            return this.initWithName(name);
-        }, "Blueprint#initWithNameAndModuleId", "ModuleBlueprint#initWithModuleAndExportName")
     },
 
     serializeSelf: {
@@ -174,23 +158,26 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint.pro
      * @returns newPrototype
      */
     create: {
-        value: function (aPrototype, propertyDescriptor) {
+        value: function (aPrototype, propertyDescriptor, constructorDescriptor) {
             if ((typeof aPrototype === "undefined") || (Blueprint.prototype.isPrototypeOf(aPrototype))) {
                 var parentCreate = Object.getPrototypeOf(Blueprint).create;
-                return parentCreate.call(this, (typeof aPrototype === "undefined" ? this : aPrototype), propertyDescriptor);
+
+                return parentCreate.call(this, (typeof aPrototype === "undefined" ? this : aPrototype), propertyDescriptor, constructorDescriptor);
             }
 
             var newConstructor;
 
-            if (!propertyDescriptor) {
+            if (typeof aPrototype.specialize !== "function" && !propertyDescriptor) {
                 newConstructor = new aPrototype();
+
             } else {
-                newConstructor = aPrototype.specialize(propertyDescriptor);
+                newConstructor = aPrototype.specialize(propertyDescriptor, constructorDescriptor);
             }
 
             this.ObjectProperty.applyWithBlueprint(newConstructor.prototype, this);
             // We have just created a custom prototype lets use it.
             this.customPrototype = true;
+
             return newConstructor;
         }
     },
@@ -277,15 +264,6 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint.pro
         value: null
     },
 
-    blueprintInstanceModuleId: {
-        get: function () {
-            throw new Error("blueprintInstanceModuleId is deprecated, use blueprintInstanceModule instead");
-        },
-        set: function () {
-            throw new Error("blueprintInstanceModuleId is deprecated, use blueprintInstanceModule instead");
-        }
-    },
-
     /**
      * The identifier is the same as the name and is used to make the
      * serialization of a blueprint humane.
@@ -349,24 +327,6 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint.pro
                 this._parentReference = null;
                 this._parent = null;
             }
-        }
-    },
-
-    moduleId: {
-        get: function () {
-            throw new Error("Blueprint#moduleId is deprecated, use ModuleBlueprint#module instead");
-        },
-        set: function () {
-            throw new Error("Blueprint#moduleId is deprecated, use ModuleBlueprint#module instead");
-        }
-    },
-
-    prototypeName: {
-        get: function () {
-            throw new Error("Blueprint#prototypeName is deprecated, use ModuleBlueprint#exportName instead");
-        },
-        set: function () {
-            throw new Error("Blueprint#prototypeName is deprecated, use ModuleBlueprint#exportName instead");
         }
     },
 
@@ -922,12 +882,6 @@ var Blueprint = exports.Blueprint = Montage.specialize( /** @lends Blueprint.pro
 
 
 }, {
-
-    getBlueprintWithModuleId: {
-        value: deprecate.deprecateMethod(void 0, function (moduleId, _require) {
-            return require("./module-blueprint").ModuleBlueprint.getBlueprintWithModuleId(moduleId, _require);
-        }, "Blueprint.getBlueprintWithModuleId", "ModuleBlueprint.getBlueprintWithModuleId")
-    },
 
     /**
      * Creates a default blueprint with all enumerable properties.
