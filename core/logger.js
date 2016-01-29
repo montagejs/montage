@@ -86,9 +86,19 @@ Logger = exports.Logger = Montage.specialize(/** @lends Logger# */ {
      * @type {Array}
      * @default {Array} []
      */
+    _buffer: {
+        value: null
+    },
+
+    /**
+     * @private
+     * @type {Array}
+     * @default {Array} []
+     */
     buffer: {
-        value: [],
-        distinct: true
+        get: function() {
+            return this._buffer || (this._buffer = []);
+        }
     },
 
     /**
@@ -508,4 +518,3 @@ if (typeof window !== "undefined") {
     }
 }
 var colors = exports.logger("colors");
-

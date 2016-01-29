@@ -64,12 +64,23 @@ exports.DerivedPropertyBlueprint = PropertyBlueprint.specialize( /** @lends Deri
 
     /**
      * List of property blueprints this derived property blueprint depends on.
+     * @private
+     * @type {Array.<PropertyBlueprint>}
+     * @default []
+     */
+    _dependencies: {
+        value: null
+    },
+
+    /**
+     * List of property blueprints this derived property blueprint depends on.
      * @type {Array.<PropertyBlueprint>}
      * @default []
      */
     dependencies: {
-        value: [],
-        distinct:true
+        get: function() {
+            return this._dependencies || (this._dependencies = []);
+        }
     },
 
     /**
