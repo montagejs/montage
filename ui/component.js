@@ -1722,9 +1722,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             if (this.needsDraw) {
                 rootComponent.addToDrawCycle(this);
             }
-            if (firstDraw && this.prepareForDraw) {
-                Montage.callDeprecatedFunction(this, this.prepareForDraw, "prepareForDraw", "enterDocument(firstTime)");
-            }
+
             if (this._needsEnterDocument) {
                 this._needsEnterDocument = false;
                 this._inDocument = true;

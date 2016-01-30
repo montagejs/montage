@@ -3,7 +3,6 @@
  */
 var Montage = require("../../core/core").Montage;
 var Component = require("../component").Component;
-var Template = require("../../core/template").Template;
 var RangeController = require("../../core/range-controller").RangeController;
 var Promise = require("../../core/promise").Promise;
 var PressComposer = require("../../composer/press-composer").PressComposer;
@@ -11,12 +10,7 @@ var PressComposer = require("../../composer/press-composer").PressComposer;
 var Map = require("collections/map");
 var Set = require("collections/set");
 
-var deprecationWarning = require("../../core/deprecate").deprecationWarning;
 var logger = require("../../core/logger").logger("repetition").color.magenta();
-
-var Observers = require("frb/observers");
-var observeProperty = Observers.observeProperty;
-var observeKey = Observers.observeKey;
 
 var TIMEOUT_BEFORE_ITERATION_BECOME_ACTIVE = 60;
 
@@ -174,10 +168,7 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
             // DOM.  The repetition manages the boundary markers around each
             // drawn index.
             this._fragment = null;
-            // The corresponding "content" is tracked in
-            // repetition._contentForIteration instead of on the iteration
-            // itself.  The bindings in the iteration template react to changes
-            // in that map.
+
             this._childComponents = null;
             // The position that this iteration occupies in the controller.
             // This is updated synchronously in response to changes to
@@ -527,12 +518,6 @@ var Iteration = exports.Iteration = Montage.specialize( /** @lends Iteration.pro
  * Ensures that the document contains iterations in the same order as provided
  * by the content controller.
  *
- * The repetition provides the
- * [objectAtCurrentIteration]{@link Repetition#objectAtCurrentIteration} and
- * [currentIteration]{@link Repetition#currentIteration} properties that can be
- * bound to by the contents of the repetition during the instantiation of the
- * iteration.
- *
  * The repetition strives to avoid moving iterations on, off, or around on the
  * document, prefering to inject or retract iterations between ones that remain
  * in their respective order, or even just rebind existing iterations to
@@ -665,27 +650,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * @type {Array.<Iteration>}
      */
     iterations: {value: null},
-
-    /**
-     * The user may bind to the `currentIteration` when the repetition
-     * instantiates a new iteration.  The template guarantees that child
-     * components can safely bind to the containing repetition.
-     *
-     * At present, you cannot bind to a grandparent repetition's
-     * `currentIteration`, so it becomes the responsibility of the parent
-     * repetition to bind its parent repetition's `currentIteration` to a
-     * property of itself so its children can access their grandparent.
-     * @type {Iteration}
-     * @deprecated
-     */
-    currentIteration: {value: null},
-
-    /**
-     * The user may bind the the `currentIteration.object` with this shorthand.
-     * @type {Object}
-     * @deprecated
-     */
-    objectAtCurrentIteration: {value: null},
 
     // For the template:
     // ----
@@ -1013,29 +977,10 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // (and when it is initially created), it gets put in the
             // _freeIterations list.
             this._freeIterations = []; // push/pop LIFO
-            // Whenever an iteration template is instantiated, it may have
-            // bindings to the repetition's "contentAtCurrentIteration".  The
-            // repetition delegates "contentAtCurrentIteration" to a mapping
-            // from iterations to content, which it can dynamically update as
-            // the iterations are reused, thereby updating the bindings.
-            this._contentForIteration = Map();
             // We track the direct child nodes of every iteration so we can
             // look up which iteration a mouse or touch event occurs on, for
             // the purpose of selection tracking.
             this._iterationForElement = Map();
-            // This variable is updated in the context of deserializing the
-            // iteration template so bindings to "contentAtCurrentIteration" are
-            // attached to the proper "iteration".  The "_contentForIteration"
-            // provides the level of indirection that allows iterations to be
-            // paired with different content during their lifetime, but the
-            // template and components for each iteration will always be tied
-            // to the same Iteration instance.
-            this.currentIteration = null;
-            // A memo key used by Template.createWithComponent to uniquely
-            // identify this repetition (and equivalent instances if this is
-            // nested in another repetition) so that it can memoize the
-            // template instance:
-            this._templateId = null;
 
             // This promise synchronizes the creation of new iterations.
             this._iterationCreationPromise = Promise.resolve();
@@ -1323,10 +1268,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
             // purge the existing iterations
             this._iterationTemplate = null;
-            this._contentForIteration.clear();
             this._iterationForElement.clear();
-            this.currentIteration = null;
-            this._templateId = null;
             this._requestedIterations = 0;
             this._createdIterations = 0;
             this._canDrawInitialContent = false;
@@ -1447,8 +1389,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                     instances,
                     promise;
 
-                self.currentIteration = iteration;
-
                 // We need to extend the instances of the template to add the
                 // iteration object that is specific to each iteration template
                 // instance.
@@ -1474,7 +1414,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                         iteration._childComponents = part.childComponents;
                         self.constructIteration(iteration);
                     });
-                    self.currentIteration = null;
+
                     return iteration;
                 });
 
@@ -1514,60 +1454,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
         }
     },
 
-    /**
-     * This ties `contentAtCurrentIteration` to an iteration.
-     * `currentIteration` is only current in the stack of instantiating a
-     * template, so this method is a hook that the redirects
-     * `contentAtCurrentIteration` property change listeners to a map change
-     * listener on the `_contentForIteration` map instead.  The binding then
-     * reacts to changes to the map as iterations are reused with different
-     * content at different positions in the DOM.
-     * @private
-     */
-    observeProperty: {
-        value: function (key, emit, scope) {
-            if (key === "contentAtCurrentIteration" || key === "objectAtCurrentIteration") {
-                if (key === "contentAtCurrentIteration") {
-                    deprecationWarning("contentAtCurrentIteration",":iteration.object");
-                } else if (key === "objectAtCurrentIteration"){
-                    deprecationWarning("objectAtCurrentIteration",":iteration.object");
-                }
-                // delegate to the mapping from iterations to content for the
-                // current iteration
-                return observeKey(
-                    this._contentForIteration,
-                    this.currentIteration,
-                    emit,
-                    scope
-                );
-            } else if (key === "currentIteration") {
-                deprecationWarning("currentIteration",":iteration");
-                // Shortcut since this property is sticky -- won't change in
-                // the course of instantiating an iteration and should not
-                // dispatch a change notification when we instantiate the next.
-                return emit(this.currentIteration);
-            } else {
-                // fall back to normal property observation
-                return observeProperty(this, key, emit, scope);
-            }
-        }
-    },
-
-    /**
-     * This makes bindings to `currentIteration` stick regardless of how the
-     * repetition manipulates the property, and prevents a getter/setter pair
-     * from being attached to the property.  `makePropertyObservable` is called
-     * by in the `listen/property-changes` module in the Collections package.
-     * @private
-     */
-    makePropertyObservable: {
-        value: function (key) {
-            if (key !== "currentIteration") {
-                return Montage.makePropertyObservable.call(this, key);
-            }
-        }
-    },
-
     // Reacting to changes in the controlled visible content:
     // ----
 
@@ -1603,11 +1489,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
     _freeIterations: {value: null},
 
     /**
-     * @private
-     */
-    _contentForIteration: {value: null},
-
-    /**
      * Reacts to changes in the controller's organized content by altering the
      * modeled iterations.  This may require additional iterations to be
      * instantiated.  The repetition may redraw when all of the instantiated
@@ -1637,7 +1518,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                 freedIterations,
                 freedIteration,
                 iterations = this.iterations,
-                contentForIteration = this._contentForIteration,
                 reusableIterationsCount = Math.min(plusLength, minusLength),
                 removeIterationsCount = minusLength - reusableIterationsCount,
                 addIterationsCount = plusLength - reusableIterationsCount,
@@ -1662,7 +1542,6 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
 
             for (i = 0; i < reusableIterationsCount; i++, index++) {
                 iterations[index].object = organizedContent[index];
-                contentForIteration.set(iterations[index], organizedContent[index]);
             }
 
             if (removeIterationsCount > 0) {
@@ -1704,9 +1583,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
                     }
                     var content = organizedContent[start + i];
                     iteration.object = content;
-                    // This updates the "repetition.contentAtCurrentIteration"
-                    // bindings.
-                    contentForIteration.set(iteration, content);
+
                     plusIterations[j] = iteration;
                 }
                 iterations.swap(index, 0, plusIterations);
