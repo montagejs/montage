@@ -333,3 +333,5 @@ var Environment = exports.Environment = Montage.specialize({
     }
 
 });
+
+exports.currentEnvironment = new Environment();
