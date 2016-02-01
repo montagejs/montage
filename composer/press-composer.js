@@ -511,7 +511,7 @@ var PressComposer = exports.PressComposer = Composer.specialize(/** @lends Press
     },
 
     _isPositionChanged: {
-        get: function (event) {
+        value: function (event) {
             if (this.element instanceof HTMLElement) {
                 var boundingClientRect = this.element.getBoundingClientRect(),
                     newCenterPositionX = boundingClientRect.left + (boundingClientRect.width / 2),
