@@ -9,7 +9,15 @@
             "owner": {
                 "properties": {
                     "element": {"#": "modalOverlay"},
-                    "modalMaskElement": {"#": "modalMask"}
+                    "modalMaskElement": {"#": "modalMask"},
+                    "_slotComponent": {"@": "slot"}
+                }
+            },
+
+            "slot": {
+                "prototype": "ui/slot.reel",
+                "properties": {
+                    "element": {"#": "slot"}
                 }
             }
         }
@@ -17,9 +25,11 @@
 </head>
 <body>
     <div data-montage-id="modalOverlay" class="montage-Overlay montage-ModalOverlay">
-        <div data-montage-id="modalMask"
-             class="montage-ModalOverlay-modalMask"></div>
-        <div data-param="*"></div>
+        <div data-montage-id="modalMask" class="montage-ModalOverlay-modalMask"></div>
+        <div data-montage-id="slot">
+            <!--FIXME: Backward Compatibility-->
+            <div data-param="*"></div>
+        </div>
     </div>
 </body>
 </html>

@@ -17,12 +17,6 @@ exports.Slot = Component.specialize( /** @lends Slot.prototype # */ {
         value: false
     },
 
-    constructor: {
-        value: function Slot() {
-            this.content = null;
-        }
-    },
-
     /**
      * An optional helper object.  The slot consults
      * `delegate.slotElementForComponent(component):Element` if available for

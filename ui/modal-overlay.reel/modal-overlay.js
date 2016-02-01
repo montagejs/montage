@@ -41,6 +41,10 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay.prototype # */
         value: true
     },
 
+    _slotComponent: {
+        value: null
+    },
+
     /**
      * Returns a promise for the show of the overlay. A modal overlay might not
      * be immediately shown if another modal overlay is being shown. When this
@@ -48,7 +52,7 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay.prototype # */
      * overlay be shown.
      */
     show: {
-        value: function () {
+        value: function (component) {
             var queue = this._queue,
                 ix = queue.indexOf(this),
                 promise;
@@ -69,6 +73,11 @@ exports.ModalOverlay = Overlay.specialize(/** @lends ModalOverlay.prototype # */
                      });
                     promise = this._showPromise.promise;
                 }
+
+                if (component) {
+                    this._slotComponent.content = component;
+                }
+
                 queue.push(this);
 
                 // The overlay is scheduled to draw so we just return the
