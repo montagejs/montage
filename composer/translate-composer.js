@@ -841,9 +841,7 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function (changedTouches) {
             var touch = null, tmp;
 
-            for (var i = 0, length = changedTouches.length; i < length && touch === null; i++) {
-                tmp = changedTouches[i];
-
+            for (var i = 0; (tmp = changedTouches[i]) && touch === null; i++) {
                 if (tmp.identifier === this._observedPointer) {
                     touch = tmp;
                 }
@@ -916,6 +914,10 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
         value: function (event, x, y) {
             var translateY = this._translateY,
                 translateX = this._translateX,
+                minTranslateY = this._minTranslateY,
+                maxTranslateY = this._maxTranslateY,
+                minTranslateX = this._minTranslateX,
+                maxTranslateX = this._maxTranslateX,
                 canMove = true,
                 isNegativeDeltaY,
                 isNegativeDeltaX,
@@ -944,16 +946,16 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             if (deltaY) {
                 isNegativeDeltaY = this._isNegativeNumber(deltaY);
 
-                if (this.minTranslateY !== null) {
+                if (minTranslateY !== null) {
                     // can moves if the current position is at the extreme top, but "scrolling" down or no extreme.
-                    canMove = translateY !== this.minTranslateY || (translateY === this.minTranslateY && isNegativeDeltaY);
+                    canMove = translateY !== minTranslateY || (translateY === minTranslateY && isNegativeDeltaY);
                 }
 
 
-                if (this.maxTranslateY !== null) {
+                if (maxTranslateY !== null) {
                     if (canMove) {
                         // can moves if the current position is at the extreme bottom, but "scrolling" up or no extreme.
-                        canMove = translateY !== this.maxTranslateY || (translateY === this.maxTranslateY && !isNegativeDeltaY);
+                        canMove = translateY !== maxTranslateY || (translateY === maxTranslateY && !isNegativeDeltaY);
                     }
                 }
             }
@@ -961,17 +963,17 @@ var TranslateComposer = exports.TranslateComposer = Composer.specialize(/** @len
             if (deltaX) {
                 isNegativeDeltaX = this._isNegativeNumber(deltaX);
 
-                if (this.minTranslateX !== null) {
+                if (minTranslateX !== null) {
                     if (canMove) {
                         // can moves if the current position is at the extreme left, but "scrolling" right or no extreme.
-                        canMove = translateX !== this.minTranslateX || (translateX === this.minTranslateX && isNegativeDeltaX);
+                        canMove = translateX !== minTranslateX || (translateX === minTranslateX && isNegativeDeltaX);
                     }
                 }
 
-                if (this.maxTranslateX !== null) {
+                if (maxTranslateX !== null) {
                     if (canMove) {
                         // can moves if the current position is at the extreme right, but "scrolling" left or no extreme.
-                        canMove = translateX !== this.maxTranslateX || (translateX === this.maxTranslateX && !isNegativeDeltaX);
+                        canMove = translateX !== maxTranslateX || (translateX === maxTranslateX && !isNegativeDeltaX);
                     }
                 }
             }
@@ -1405,3 +1407,9 @@ TranslateComposer.prototype.handleMSPointerDown = TranslateComposer.prototype._h
 TranslateComposer.prototype.handlePointerdown = TranslateComposer.prototype._handleStart;
 TranslateComposer.prototype.handleMousedown = TranslateComposer.prototype._handleStart;
 TranslateComposer.prototype.handleTouchstart = TranslateComposer.prototype._handleStart;
+
+if(Math.sign !== void 0) {
+    TranslateComposer.prototype._isNegativeNumber = function(_number) {
+        return Math.sign(_number) === -1;
+    }
+}
