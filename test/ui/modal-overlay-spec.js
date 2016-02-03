@@ -125,6 +125,7 @@ describe("ui/modal-overlay-spec", function () {
         it("should show the modal mask", function () {
             aModalOverlay._isShown = true;
 
+            aModalOverlay.willDraw();
             aModalOverlay.draw();
 
             expect(aModalOverlay.modalMaskElement.classList.contains("montage-ModalOverlay-modalMask--visible")).toBe(true);
