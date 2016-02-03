@@ -34,10 +34,8 @@
 //
 /**
  * @module montage/core/converter/number-converter
- * @requires montage/core/core
  * @requires montage/core/converter/converter
  */
-var Montage = require("../core").Montage;
 var Converter = require("./converter").Converter;
 var Validator = require("./converter").Validator;
 var isNumber = require("./converter").isNumber;

@@ -1,9 +1,7 @@
 /**
  * @module montage/core/converter/upper-case-converter
- * @requires montage/core/core
  * @requires montage/core/converter/converter
  */
-var Montage = require("../core").Montage;
 var Converter = require("./converter").Converter;
 
 /**

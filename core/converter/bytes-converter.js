@@ -1,10 +1,8 @@
 /**
  * @module montage/core/converter/bytes-converter
- * @requires montage/core/core
  * @requires montage/core/converter/converter
  * @requires montage/core/converter/number-converter
  */
-var Montage = require("../core").Montage;
 var Converter = require("./converter").Converter;
 var _numericValueToString = require("./number-converter")._numericValueToString;
 var _stringToNumericValue = require("./number-converter")._stringToNumericValue;
