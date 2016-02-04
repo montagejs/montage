@@ -3,6 +3,17 @@
  @requires montage
  */
 var Montage = require("../core").Montage;
+var wrapPropertyGetter = function (key, storageKey) {
+        return function () {
+            return this.hasOwnProperty(storageKey) ? this[storageKey] : this._event[key];
+        };
+    },
+    wrapPropertySetter = function (storageKey) {
+        return function (value) {
+            this[storageKey] = value;
+        };
+    };
+
 
 // XXX Does not presently function server-side
 if (typeof window !== "undefined") {
@@ -15,17 +26,8 @@ if (typeof window !== "undefined") {
         Montage.defineProperty(obj, storageKey, {value: undefined});
 
         Montage.defineProperty(obj, key, {
-            get:(function (key, storageKey) {
-                return function () {
-                    return this.hasOwnProperty(storageKey) ? this[storageKey] : this._event[key];
-                };
-            })(key, storageKey),
-
-            set: (function (storageKey) {
-                return function (value) {
-                    this[storageKey] = value;
-                };
-            })(storageKey)
+            get: wrapPropertyGetter(key, storageKey),
+            set: wrapPropertySetter(storageKey)
         });
     };
     /**
@@ -38,11 +40,11 @@ if (typeof window !== "undefined") {
     */
         _initPrototypeWithEvent: {
             value: function (event) {
-                var key;
+                var key, proto = this.__proto__;
                 for (key in event) {
 
                     //  Don't overwrite keys we have installed
-                    if (this[key]) {
+                    if (key in this || Object.getOwnPropertyDescriptor(proto,key)) {
                         continue;
                     }
 
@@ -155,7 +157,141 @@ if (typeof window !== "undefined") {
                 this.preventDefault();
                 this.stopPropagation();
             }
+        },
+
+        _eventPhase: {
+            value: void 0
+        },
+        /**
+         * @type {Property}
+         * @default {Element} null
+         */
+        eventPhase: {
+            get: function () {
+                return (this._eventPhase !== void 0) ? this._eventPhase : this._event.eventPhase;
+            },
+            set: function (value) {
+                this._eventPhase = value;
+            }
+        },
+        _target: {
+            value: void 0
+        },
+        /**
+         * @type {Property}
+         * @default {Element} null
+         */
+        target: {
+            get: function () {
+                return (this._target !== void 0) ? this._target : this._event.target;
+            },
+            set: function (value) {
+                this._target = value;
+            }
+        },
+        _currentTarget: {
+            value: void 0
+        },
+        /**
+         * @type {Property}
+         * @default {Element} null
+         */
+        currentTarget: {
+            get: function () {
+                return (this._currentTarget !== void 0) ? this._currentTarget : this._event.currentTarget;
+            },
+            set: function (value) {
+                this._currentTarget = value;
+            }
+        },
+        _type: {
+            value: void 0
+        },
+        /**
+         * @type {Property}
+         * @default {Element} null
+         */
+        type: {
+            get: function () {
+                return (this._type !== void 0) ? this._type : this._event.type;
+            },
+            set: function (value) {
+                this._type = value;
+            }
+        },
+        _bubbles: {
+            value: void 0
+        },
+        /**
+         * @type {Property}
+         * @default {Element} null
+         */
+        bubbles: {
+            get: function () {
+                return (this._bubbles !== void 0) ? this._bubbles : this._event.bubbles;
+            },
+            set: function (value) {
+                this._bubbles = value;
+            }
+        },
+        /**
+         * @type {Property}
+         * @default {Element} null
+         */
+        touches: {
+            get: function () {
+                return this._event.touches;
+            }
+        },
+        /**
+         * @type {Property}
+         * @default {Element} null
+         */
+        changedTouches: {
+            get: function () {
+                return this._event.changedTouches;
+            }
+        },
+        /**
+         * @type {Property}
+         * @default {Element} null
+         */
+        targetTouches: {
+            get: function () {
+                return this._event.targetTouches;
+            }
+        },
+        _defaultPrevented: {
+            value: void 0
+        },
+        /**
+         * @type {Property}
+         * @default {Element} null
+         */
+        defaultPrevented: {
+            get: function () {
+                return (this._defaultPrevented !== void 0) ? this._defaultPrevented : this._event.defaultPrevented;
+            },
+            set: function (value) {
+                this._defaultPrevented = value;
+            }
+        },
+        _timeStamp: {
+            value: void 0
+        },
+        /**
+         * @type {Property}
+         * @default {Element} null
+         */
+        timeStamp: {
+            get: function () {
+                return (this._timeStamp !== void 0) ? this._timeStamp : this._event.timeStamp;
+            },
+            set: function (value) {
+                this._timeStamp = value;
+            }
         }
+
     }, {
 
         /**

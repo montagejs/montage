@@ -33,6 +33,8 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
             // dispatches handle_numberOfIterationsChange
             this.addOwnPropertyChangeListener("_numberOfIterations", this);
             window.addEventListener("resize", this, false);
+
+            this._newVisibleIndexes =  [];
         }
     },
 
@@ -219,22 +221,31 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 nextHandlers = [],
                 previousHandlers = [],
                 densities = [],
-                i, j;
+                i, j,
+                splinePathParameters,
+                pathUnits = path.units,
+                units = pathUnits ? Object.keys(pathUnits) : void 0,
+                unit,
+                iPathKnot;
 
-            splinePath.parameters = {};
-            for (i in path.units) {
-                splinePath.parameters[i] = {
-                    data: [],
-                    units: path.units[i]
-                };
+            splinePath._parameterKeys = units;
+            splinePathParameters = splinePath.parameters = {};
+            if(units) {
+                for (i=0;(unit = units[i]);i++) {
+                    splinePathParameters[unit] = {
+                        data: [],
+                        units: pathUnits[unit]
+                    };
+                }
             }
             for (i = 0; i < length; i++) {
-                knots[i] = pathKnots[i].knotPosition;
-                previousHandlers[i] = pathKnots[i].previousHandlerPosition;
-                nextHandlers[i] = pathKnots[i].nextHandlerPosition;
-                densities[i] = pathKnots[i].previousDensity; // TODO: implement previous/next density
-                for (j in path.units) {
-                    splinePath.parameters[j].data.push(pathKnots[i][j]);
+                iPathKnot = pathKnots[i];
+                knots[i] = iPathKnot.knotPosition;
+                previousHandlers[i] = iPathKnot.previousHandlerPosition;
+                nextHandlers[i] = iPathKnot.nextHandlerPosition;
+                densities[i] = iPathKnot.previousDensity; // TODO: implement previous/next density
+                for (j in pathUnits) {
+                    splinePathParameters[j].data.push(iPathKnot[j]);
                 }
             }
             splinePath.knots = knots;
@@ -282,36 +293,37 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 pathLength,
                 parametersLength,
                 knot,
-                i, j, k;
+                i, j, k,
+                iSplinePath;
 
-            for (i = 0; i < length; i++) {
-                pathLength = this.splinePaths[i].knots.length;
+            for (i = 0; (iSplinePath = this.splinePaths[i]); i++) {
+                pathLength = iSplinePath.knots.length;
                 path = {
                     knots: [],
                     units: {}
                 };
                 for (j = 0; j < pathLength; j++) {
                     knot = {
-                        knotPosition: this.splinePaths[i].knots[j]
+                        knotPosition: iSplinePath.knots[j]
                     };
-                    if (this.splinePaths[i].nextHandlers && this.splinePaths[i].nextHandlers[j]) {
-                        knot.nextHandlerPosition = this.splinePaths[i].nextHandlers[j];
+                    if (iSplinePath.nextHandlers && iSplinePath.nextHandlers[j]) {
+                        knot.nextHandlerPosition = iSplinePath.nextHandlers[j];
                     }
-                    if (this.splinePaths[i].previousHandlers && this.splinePaths[i].previousHandlers[j]) {
-                        knot.previousHandlerPosition = this.splinePaths[i].previousHandlers[j];
+                    if (iSplinePath.previousHandlers && iSplinePath.previousHandlers[j]) {
+                        knot.previousHandlerPosition = iSplinePath.previousHandlers[j];
                     }
                     // TODO implememnt previous/next densities
-                    if (this.splinePaths[i].densities && this.splinePaths[i].densities[j]) {
-                        knot.previousDensity = this.splinePaths[i].densities[j];
-                        knot.nextDensity = this.splinePaths[i].densities[j];
+                    if (iSplinePath.densities && iSplinePath.densities[j]) {
+                        knot.previousDensity = iSplinePath.densities[j];
+                        knot.nextDensity = iSplinePath.densities[j];
                     }
                     path.knots.push(knot);
                 }
-                for (j in this.splinePaths[i].parameters) {
-                    path.units[j] = this.splinePaths[i].parameters[j].units;
-                    parametersLength = this.splinePaths[i].parameters[j].data.length;
+                for (j in iSplinePath.parameters) {
+                    path.units[j] = iSplinePath.parameters[j].units;
+                    parametersLength = iSplinePath.parameters[j].data.length;
                     for (k = 0; k < parametersLength; k++) {
-                        path.knots[k][j] = this.splinePaths[i].parameters[j].data[k];
+                        path.knots[k][j] = iSplinePath.parameters[j].data[k];
                     }
                 }
                 if (this._paths[i].hasOwnProperty("headOffset")) {
@@ -1280,7 +1292,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
         value: function (newVisibleIndexes, newContentIndexes) {
             var oldVisibleIndexes = this._visibleIndexes,
                 oldIndexesLength = oldVisibleIndexes && !isNaN(oldVisibleIndexes.length) ? oldVisibleIndexes.length : 0,
-                holes = [],
+                holes,
                 j,
                 i;
 
@@ -1310,15 +1322,17 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 if (typeof newContentIndexes[oldVisibleIndexes[i]] === "number") {
                     newVisibleIndexes[newContentIndexes[oldVisibleIndexes[i]]] = null;
                 } else {
-                    holes.push(i);
+                    (holes || (holes = [])).push(i);
                 }
             }
 
             // Fill the holes
-            for (i = j = 0; (j < holes.length) && (i < newVisibleIndexes.length); i++) {
-                if (newVisibleIndexes[i] !== null) {
-                    oldVisibleIndexes.set(holes[j], newVisibleIndexes[i]);
-                    j++;
+            if(holes) {
+                for (i = j = 0; (j < holes.length) && (i < newVisibleIndexes.length); i++) {
+                    if (newVisibleIndexes[i] !== null) {
+                        oldVisibleIndexes.set(holes[j], newVisibleIndexes[i]);
+                        j++;
+                    }
                 }
             }
             // Add new values to the end if the visible indexes have grown
@@ -1408,7 +1422,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
     },
 
     willDraw: {
-        value: function (timestamp) {
+        value: function Flow_willDraw(timestamp) {
             var intersections,
                 index,
                 i,
@@ -1420,7 +1434,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 mod,
                 div,
                 iterations,
-                newVisibleIndexes = [],
+                newVisibleIndexes = this._newVisibleIndexes,
                 // newContentIndexes is a reverse-lookup hash of
                 // newVisibleIndexes, which we keep in sync manually.
                 newContentIndexes = {},
@@ -1544,7 +1558,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                             position = j + this._getSlideOffset(index) - offset;
                             if ((position >= intersections[i][0]) && (position <= intersections[i][1]) && (typeof newContentIndexes[index] === "undefined")) {
                                 newContentIndexes[index] = newVisibleIndexes.length;
-                                newVisibleIndexes.push(index);
+                                newVisibleIndexes[newVisibleIndexes.length] = index;
                             }
                             j++;
                         } while ((position <= intersections[i][1]) && (j < iterations));
@@ -1553,31 +1567,28 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 this._needsComputeVisibleRange = false;
             }
             this._updateVisibleIndexes(newVisibleIndexes, newContentIndexes);
+            newVisibleIndexes.length = 0;
         }
     },
 
     draw: {
-        value: function (timestamp) {
+        value: function Flow_draw(timestamp) {
             var i,
                 length = this._repetition._drawnIterations.length,
-                slideIndex, slideTime,
-                j,
                 iteration,
                 element,
                 elementChildren,
-                pathsLength = this._paths.length,
-                pathIndex,
                 pos,
-                pos3,
-                positionKeys,
-                positionKeyCount,
-                jPositionKey,
+                perspective,
                 visibleIndexes = this._visibleIndexes,
                 viewpointPosition = this._viewpointPosition,
                 viewpointTargetPoint = this._viewpointTargetPoint,
                 indexTime,
                 rotation,
-                offset;
+                offset,
+                _splinePaths = this._splinePaths,
+                iSplinePath,
+                cssText;
 
             if (this._isTransitioningScroll) {
                 this.needsDraw = true;
@@ -1595,23 +1606,40 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                     tmpZ = vX * -Math.sin(-yAngle) + vZ * Math.cos(-yAngle);
                     xAngle = Math.atan2(-vY, -tmpZ);
                     this._element.style[this._transformPerspective]= perspective + "px";
-                    this._cameraElement.style[this._transform] =
-                        "translate3d(0,0," + perspective + "px)rotateX(" + xAngle + "rad)rotateY(" + (-yAngle) + "rad)" +
-                        "translate3d(" + (-viewpointPosition[0]) + "px," + (-viewpointPosition[1]) + "px," + (-viewpointPosition[2]) + "px)";
+                    cssText = "translate3d(0,0,";
+                    cssText += perspective;
+                    cssText += "px)rotateX(";
+                    cssText += xAngle;
+                    cssText += "rad)rotateY(";
+                    cssText += (-yAngle);
+                    cssText += "rad)";
+                    cssText += "translate3d(";
+                    cssText += (-viewpointPosition[0]);
+                    cssText += "px,";
+                    cssText += (-viewpointPosition[1]);
+                    cssText += "px,";
+                    cssText += (-viewpointPosition[2]);
+                    cssText += "px)";
+
+                    this._cameraElement.style[this._transform] = cssText;
                     this._element.classList.remove("camera-disabled");
                 } else {
                     this._element.style[this._transformPerspective]= this._perspective + "px";
-                    this._cameraElement.style[this._transform] = "translate3d(" + (.5 * this._width - viewpointPosition[0]) + "px, " + (.5 * this._height - viewpointPosition[1]) + "px,0)";
+                    cssText = "translate3d(" ;
+                    cssText += (.5 * this._width - viewpointPosition[0]);
+                    cssText += "px, ";
+                    cssText += (.5 * this._height - viewpointPosition[1]);
+                    cssText += "px,0)";
+                    this._cameraElement.style[this._transform] = cssText;
                     this._element.classList.add("camera-disabled");
                 }
                 this._isCameraUpdated = false;
             }
-            if (this.splinePaths.length) {
+            if (_splinePaths.length) {
                 for (i = 0; i < length; i++) {
-                    offset = this.offset(this._visibleIndexes[i]);
-                    pathIndex = offset.pathIndex;
-                    slideTime = offset.slideTime;
-                    indexTime = this._splinePaths[pathIndex]._convertSplineTimeToBezierIndexTime(slideTime);
+                    offset = this.offset(visibleIndexes[i]);
+                    iSplinePath = _splinePaths[offset.pathIndex];
+                    indexTime = iSplinePath._convertSplineTimeToBezierIndexTime(offset.slideTime);
                     iteration = this._repetition._drawnIterations[i];
                     element = iteration.cachedFirstElement || iteration.firstElement;
                     if (indexTime !== null) {
@@ -1627,15 +1655,24 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                                 elementChildren.classList.remove("active");
                             }
                         }
-                        pos = this._splinePaths[pathIndex].getPositionAtIndexTime(indexTime, this._sceneScale);
-                        rotation = this._splinePaths[pathIndex].getRotationAtIndexTime(indexTime);
-                        element.setAttribute("style",
-                            this._transformCss + ":translate3d(" + (((pos[0] * 100000) >> 0) * .00001) + "px," + (((pos[1] * 100000) >> 0) * .00001) + "px," + (((pos[2] * 100000) >> 0) * .00001) + "px)" +
-                            (rotation[2] ? "rotateZ(" + (((rotation[2] * 100000) >> 0) * .00001) + "rad)" : "") +
-                            (rotation[1] ? "rotateY(" + (((rotation[1] * 100000) >> 0) * .00001) + "rad)" : "") +
-                            (rotation[0] ? "rotateX(" + (((rotation[0] * 100000) >> 0) * .00001) + "rad)" : "") + ";" +
-                            this._splinePaths[pathIndex].getStyleAtIndexTime(indexTime)
-                        );
+                        pos = iSplinePath.getPositionAtIndexTime(indexTime, this._sceneScale);
+                        rotation = iSplinePath.getRotationAtIndexTime(indexTime);
+                        cssText = this._transformCss;
+                        cssText += ":translate3d(";
+                        cssText += (((pos[0] * 100000) >> 0) * .00001);
+                        cssText += "px,";
+                        cssText += (((pos[1] * 100000) >> 0) * .00001);
+                        cssText += "px,";
+                        cssText += (((pos[2] * 100000) >> 0) * .00001) ;
+                        cssText += "px)";
+                        cssText += (rotation[2] ? "rotateZ(" + (((rotation[2] * 100000) >> 0) * .00001) + "rad)" : "");
+                        cssText += (rotation[1] ? "rotateY(" + (((rotation[1] * 100000) >> 0) * .00001) + "rad)" : "");
+                        cssText += (rotation[0] ? "rotateX(" + (((rotation[0] * 100000) >> 0) * .00001) + "rad)" : "");
+                        cssText += ";";
+                        cssText += iSplinePath.getStyleAtIndexTime(indexTime);
+
+                        element.setAttribute("style",cssText);
+
                     } else {
                         element.setAttribute("style", "display:none");
                     }
@@ -1662,7 +1699,7 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
     /**
      */
     _updateLength: {
-        value: function () {
+        value: function _updateLength() {
             if (this._paths) {
                 var iPath,
                     pathsLength = this._paths.length,
@@ -1899,14 +1936,14 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
     _removeSlideOffset: {
         value: function (index) {
             if (typeof this._slideOffsets[index] !== "undefined") {
-                var keys, i, integerKey;
+                var keys, i, integerKey, keysLength;
 
                 delete this._slideOffsets[index];
                 this._slideOffsetsLength--;
                 if (index === this._minSlideOffsetIndex) {
                     keys = Object.keys(this._slideOffsets);
                     this._minSlideOffsetIndex = 2e9;
-                    for (i = 0; i < keys.length; i++) {
+                    for (i = 0, keysLength = keys.length; i < keysLength; i++) {
                         integerKey = keys[i] | 0;
                         if (integerKey < this._minSlideOffsetIndex) {
                             this._minSlideOffsetIndex = integerKey;
@@ -1916,9 +1953,10 @@ var Flow = exports.Flow = Component.specialize( /** @lends Flow.prototype # */ {
                 if (index === this._maxSlideOffsetIndex) {
                     if (typeof keys === "undefined") {
                         keys = Object.keys(this._slideOffsets);
+                        keysLength = keys.length;
                     }
                     this._maxSlideOffsetIndex = -1;
-                    for (i = 0; i < keys.length; i++) {
+                    for (i = 0; i < keysLength; i++) {
                         integerKey = keys[i] | 0;
                         if (integerKey > this._maxSlideOffsetIndex) {
                             this._maxSlideOffsetIndex = integerKey;

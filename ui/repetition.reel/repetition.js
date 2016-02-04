@@ -1046,13 +1046,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
      * @private
      */
     _setupRequirements: {
-        value: "[" +
-            "!_iterationTemplate.defined()," +
-            "!_newDomContent.defined()," +
-            "!_shouldClearDomContentOnNextDraw," +
-            "_isComponentExpanded," +
-            "_ownerDocumentPart.defined()" +
-        "].every{}"
+        value: "[!_iterationTemplate.defined(),!_newDomContent.defined(),!_shouldClearDomContentOnNextDraw,_isComponentExpanded,_ownerDocumentPart.defined()].every{}"
     },
 
     /**

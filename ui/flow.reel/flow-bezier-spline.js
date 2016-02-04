@@ -6,7 +6,12 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
         value: function FlowBezierSpline() {
             this._knots = [];
             this._densities = [];
+            this._getStyleAtIndexTimeBuffer = [];
         }
+    },
+
+    _parameterKeys : {
+        value: void 0
     },
 
     knots: {
@@ -66,7 +71,6 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
         },
         set: function (value) {
             this._parameters = value;
-            this._parametersLength = this._parameters.length;
         }
     },
 
@@ -206,7 +210,9 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
             return [rotateX, rotateY, rotateZ];
         }
     },
-
+    _getStyleAtIndexTimeBuffer: {
+        value: null
+    },
     getStyleAtIndexTime: {
         value: function (indexTime) {
             var index = indexTime[0],
@@ -215,28 +221,38 @@ var FlowBezierSpline = exports.FlowBezierSpline = Montage.specialize( {
                 y = 1 - time,
                 j,
                 parameterName,
-                style = "",
+                jStyle,
                 parameterKeys,
                 parameterKeyCount,
                 jParameter,
-                jParameterData;
+                jParameterData,
+                _getStyleAtIndexTimeBuffer = this._getStyleAtIndexTimeBuffer;
 
-            parameterKeys = Object.keys(_parameters);
-            parameterKeyCount = parameterKeys.length;
-            for (j = 0; j < parameterKeyCount; j++) {
-                parameterName = parameterKeys[j];
-                jParameter = _parameters[parameterName];
-                jParameterData = jParameter.data;
-                if (
-                    (parameterName !== "rotateX") &&
-                    (parameterName !== "rotateY") &&
-                    (parameterName !== "rotateZ") &&
-                    (typeof jParameterData[index] !== "undefined") &&
-                    (typeof jParameterData[index + 1] !== "undefined")) {
-                    style += parameterName + ":" + ((((jParameterData[index] * y + jParameterData[index + 1] * time)  * 100000) >> 0) * .00001) + jParameter.units + ";";
+            _getStyleAtIndexTimeBuffer.length = 0;
+            parameterKeys = this._parameterKeys;
+            if(parameterKeys) {
+                parameterKeyCount = parameterKeys.length;
+                for (j = 0; j < parameterKeyCount; j++) {
+                    parameterName = parameterKeys[j];
+                    jParameter = _parameters[parameterName];
+                    jParameterData = jParameter.data;
+                    if (
+                        (parameterName !== "rotateX") &&
+                        (parameterName !== "rotateY") &&
+                        (parameterName !== "rotateZ") &&
+                        (jParameterData[index] !== void 0) &&
+                        (jParameterData[index + 1] !== void 0)) {
+                            jStyle = parameterName;
+                            jStyle += ":";
+                            jStyle += ((((jParameterData[index] * y + jParameterData[index + 1] * time)  * 100000) >> 0) * .00001);
+                            jStyle += jParameter.units;
+                            jStyle += ";";
+
+                            _getStyleAtIndexTimeBuffer.push(jStyle);
+                    }
                 }
             }
-            return style;
+            return _getStyleAtIndexTimeBuffer.join("");
         }
     },
 
