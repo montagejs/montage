@@ -1,3 +1,79 @@
+### v0.16.0
+
+-  **Core**
+
+   Avoids to call a parent constructor if no one has been defined.
+
+-  **EventManager**
+
+   Filtering simulated events is slightly faster.
+   Adds support of events filtering for UIWEbViews.
+   Better support for Cordova.
+   Global performance improvements.
+
+-  **Translate Composer**
+
+   Updates mouse and touch radius threshold.
+   Decides automatically which "claim" policy it needs to use.
+
+-  **Press Composer**
+
+   Checks if the position of the PressComposer element changed while scrolling.
+   Avoids for outer press composers to raise pressStart events when they surrender their observed pointers.
+   Avoids to add or remove useless listeners for outer press composers before they surrender their observed pointers.
+   Set the correct target element to the press event when a touchend event is raised.
+   Add PressComposer.info.
+
+-  **Application**
+
+   Add the property isFirstLaunch.
+
+-  **Loader**
+
+   The loading class name states are set on the html element.
+   Add the properties minimumFirstLoadingDuration and minimumFirstBootstrappingDuration.
+   Add support of template for Loader components.
+   Add Montage Studio Loader Component.
+
+-  **Component**
+
+   Makes sure a component detaches all its child components when its dom content change.
+
+-  **Flow**
+
+   Adds wheel support for x/y axis.
+   Performances improved for Safari/IOS.
+
+-  **Localizer**
+
+   Resolves an issue that was not update the messages when the locale property of the defaultLocalizer changes.
+   Adds a method `localizerDidChangeLocale` that can be implemented by components in order to be aware when the locale property of the defaultLocalizer changes.
+   Adds a delegate method `localizerWillLoadMessages` that can provide a ”messages" object with a combination of keys/messages.
+   Adds a static method `defaultLocalizerWithDelegate` on Localizer in order to set the delegate of the defaultLocalizer. (Returns the defaultLocalizer)
+   Adds a static method `defaultLocalizer` on Localizer in order to get the defaultLocalizer.
+   Adds a flag to activate the locale storage, `shouldStoreLocale`.
+
+-  **Collections**
+
+   Updates the Collections package to version v3.0.0.
+
+-  **Q**
+
+   Removes the Q package from the dependencies, replaced by the Bluebird module.
+
+-  **Mouse**
+
+   Removes the mousse package from the dependencies, it has been move into montage.
+
+-  **Mr**
+
+   Updates the Mr package to version v0.16.0.
+
+-  **Performance**
+
+      The loading time is at least 15% faster.
+      Global performance improvements.
+
 ### v0.15.2
 
 -  **EventManager**
