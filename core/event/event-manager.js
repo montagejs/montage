@@ -39,7 +39,7 @@ if (typeof window !== "undefined") { // client-side
         (function () {
             var onFirstTouchstart;
 
-            document.addEventListener("touchstart", onFirstTouchstart = function (event) {
+            document.addEventListener("touchstart", onFirstTouchstart = function onFirstTouchstart(event) {
                 window.Touch = event.touches[0].constructor;
                 if (document.nativeRemoveEventListener) {
                     document.nativeRemoveEventListener("touchstart", onFirstTouchstart, true);
@@ -108,141 +108,6 @@ if (typeof window !== "undefined") { // client-side
             enumerable: false,
             writable: true,
             value: 0
-        }
-    });
-
-    var _PointerStorage = Montage.specialize({
-
-        memory: {
-            value: {}
-        },
-        add: {
-            value: function (identifier, clientX, clientY, timeStamp) {
-                var identifierEntry;
-                if (!(identifierEntry = this.memory[identifier])) {
-                    identifierEntry = this.memory[identifier] = new _PointerStorageMemoryEntry(identifier);
-                }
-                if (!(data = identifierEntry.data[identifierEntry.pos])) {
-                    data = identifierEntry.data[identifierEntry.pos] = new _StoredEvent(clientX, clientY, timeStamp);
-                }
-                else {
-                    data.clientX = clientX;
-                    data.clientY = clientY;
-                    data.timeStamp = timeStamp;
-                }
-                if (identifierEntry.size < identifierEntry.data.length) {
-                    identifierEntry.size++;
-                }
-                identifierEntry.pos = (identifierEntry.pos + 1) % identifierEntry.data.length;
-            }
-        },
-        remove: {
-            value: function (identifier) {
-                delete this.memory[identifier];
-            }
-        },
-        clear: {
-            value: function (identifier) {
-                if (this.memory[identifier]) {
-                    this.memory[identifier].size = 0;
-                    this.memory[identifier].velocity.velocity.clearCache();
-                }
-            }
-        },
-        getMemory: {
-            value: function (identifier) {
-                return this.memory[identifier];
-            }
-        },
-        isStored: {
-            value: function (identifier) {
-                return (this.memory[identifier] && (this.memory[identifier].size > 0));
-            }
-        },
-
-        /**
-         * Created a dedicated type, _PointerVelocity and cached the instance of _PointerVelocity used per identifier,
-         * which is typically mouse/touch. This
-         */
-
-        pointerVelocity: {
-            value: function (identifier) {
-                if (this.memory[identifier]) {
-                    return this.memory[identifier].velocity;
-                }
-            }
-        },
-        storeEvent: {
-            value: function (event) {
-                var i;
-                switch (event.type) {
-                    case "mousedown":
-                        defaultEventManager._isMouseDragging = true;
-                    // roll into mousemove. break omitted intentionally.
-                    case "mousemove":
-                        if (defaultEventManager._isStoringMouseEventsWhileDraggingOnly) {
-                            if (defaultEventManager._isMouseDragging) {
-                                this.add("mouse", event.clientX, event.clientY, event.timeStamp);
-                                Object.defineProperty(event, "velocity", {
-                                    get: function () {
-                                        return defaultEventManager.pointerMotion("mouse").velocity;
-                                    },
-                                    set: function () {
-                                    }
-                                });
-                            }
-                        } else {
-                            this.add("mouse", event.clientX, event.clientY, event.timeStamp);
-                            Object.defineProperty(event, "velocity", {
-                                get: function () {
-                                    return defaultEventManager.pointerMotion("mouse").velocity;
-                                },
-                                set: function () {
-                                }
-                            });
-                        }
-                        break;
-                    case "mouseup":
-                        this.add("mouse", event.clientX, event.clientY, event.timeStamp);
-                        Object.defineProperty(event, "velocity", {
-                            get: function () {
-                                return defaultEventManager.pointerMotion("mouse").velocity;
-                            },
-                            set: function () {
-                            }
-                        });
-                        break;
-                    case "touchstart":
-                    case "touchmove":
-                        for (i = 0; i < event.touches.length; i++) {
-                            this.add(event.touches[i].identifier, event.touches[i].clientX, event.touches[i].clientY, event.timeStamp);
-                        }
-                        break;
-                    case "touchend":
-                        for (i = 0; i < event.changedTouches.length; i++) {
-                            this.add(event.changedTouches[i].identifier, event.changedTouches[i].clientX, event.changedTouches[i].clientY, event.timeStamp);
-                        }
-                        break;
-                }
-            }
-        },
-        removeEvent: {
-            value: function (event) {
-                var i;
-                switch (event.type) {
-                    case "mouseup":
-                        defaultEventManager._isMouseDragging = false;
-                        if (defaultEventManager._isStoringMouseEventsWhileDraggingOnly) {
-                            this.clear("mouse");
-                        }
-                        break;
-                    case "touchend":
-                        for (i = 0; i < event.changedTouches.length; i++) {
-                            this.remove(event.changedTouches[i].identifier);
-                        }
-                        break;
-                }
-            }
         }
     });
 
@@ -339,9 +204,11 @@ if (typeof window !== "undefined") { // client-side
 
 
     function _serializeObjectRegisteredEventListenersForPhase(serializer,object,registeredEventListeners,eventListenerDescriptors,capture) {
-        var type, listenerRegistrations, listeners;
-        for (type in registeredEventListeners) {
-            listenerRegistrations = registeredEventListeners[type];
+        var type, listenerRegistrations, listeners, mapIter;
+        mapIter = registeredEventListeners.keys();
+
+        while (type = mapIter.next().value) {
+            listenerRegistrations = registeredEventListeners.get(type);
             listeners = listenerRegistrations && listenerRegistrations.get(object);
             if(listeners && listeners.length > 0) {
                 listeners.forEach(function(aListener) {
@@ -356,7 +223,7 @@ if (typeof window !== "undefined") { // client-side
     }
 
 
-    Serializer.defineSerializationUnit("listeners", function (serializer, object) {
+    Serializer.defineSerializationUnit("listeners", function listenersSerializationUnit(serializer, object) {
         var eventManager = defaultEventManager,
             uuid = object.uuid,
             eventListenerDescriptors = [],
@@ -372,7 +239,7 @@ if (typeof window !== "undefined") { // client-side
         }
     });
 
-    Deserializer.defineDeserializationUnit("listeners", function (deserializer, object, listeners) {
+    Deserializer.defineDeserializationUnit("listeners", function listenersDeserializationUnit(deserializer, object, listeners) {
         for (var i = 0, listener; (listener = listeners[i]); i++) {
             object.addEventListener(listener.type, listener.listener, listener.capture);
         }
@@ -394,18 +261,17 @@ if (typeof window !== "undefined") { // client-side
          */
         constructor: {
             value: function EventManager () {
-                this._trackingTouchList = {
-                    touchesStart: Object.create(null),
-                    touchesEnd: Object.create(null)
-                };
+                this._trackingTouchStartList = Object.create(null);
+                this._trackingTouchEndList = Object.create(null);
+
                 this._claimedPointers = {};
-                this._registeredCaptureEventListeners = Object.create(null);
-                this._registeredBubbleEventListeners = Object.create(null);
+                this._registeredCaptureEventListeners = new Map();
+                this._registeredBubbleEventListeners = new Map();
                 this._observedTarget_byEventType_ = Object.create(null);
-                this._currentDispatchedTargetListeners = new WeakMap();
+                this._currentDispatchedTargetListeners = new Map();
                 this._elementEventHandlerByElement = new WeakMap();
                 this._isIOSPlatform = (/^iphone|^ipod|^ipad/gi).test(navigator.platform) && !!window.indexedDB;
-
+                this._isBrowserSupportPointerEvents = !!(window.PointerEvent || (window.MSPointerEvent && window.navigator.msPointerEnabled));
                 return this;
             }
         },
@@ -419,6 +285,9 @@ if (typeof window !== "undefined") { // client-side
                 }
                 arr.length--;
             },
+        },
+        _isBrowserSupportPointerEvents: {
+            value: void 0
         },
         /**
          * Utility
@@ -705,7 +574,7 @@ if (typeof window !== "undefined") { // client-side
                     value: (aWindow.XMLHttpRequest.prototype.addEventListener =
                         aWindow.Element.prototype.addEventListener =
                             aWindow.document.addEventListener =
-                                function (eventType, listener, useCapture) {
+                                function addEventListener(eventType, listener, useCapture) {
                                     return aWindow.defaultEventManager.registerEventListener(this, eventType, listener, !!useCapture);
                                 })
                 });
@@ -722,7 +591,7 @@ if (typeof window !== "undefined") { // client-side
                     value: (aWindow.XMLHttpRequest.prototype.removeEventListener =
                         aWindow.Element.prototype.removeEventListener =
                             aWindow.document.removeEventListener =
-                                function (eventType, listener, useCapture) {
+                                function removeEventListener(eventType, listener, useCapture) {
                                     return aWindow.defaultEventManager.unregisterEventListener(this, eventType, listener, !!useCapture);
                                 })
                 });
@@ -946,8 +815,8 @@ if (typeof window !== "undefined") { // client-side
          */
         registeredEventListenersForEventType_: {
             value: function (eventType) {
-                var captureRegistration = this._registeredCaptureEventListeners[eventType],
-                    bubbleRegistration = this._registeredBubbleEventListeners[eventType],
+                var captureRegistration = this._registeredCaptureEventListeners.get(eventType),
+                    bubbleRegistration = this._registeredBubbleEventListeners.get(eventType),
                     result = null;
 
                 if(captureRegistration) {
@@ -989,8 +858,8 @@ if (typeof window !== "undefined") { // client-side
             enumerable: false,
             value: function (eventType, target) {
 
-                var captureRegistration = this._registeredCaptureEventListeners[eventType],
-                    bubbleRegistration = this._registeredBubbleEventListeners[eventType],
+                var captureRegistration = this._registeredCaptureEventListeners.get(eventType),
+                    bubbleRegistration = this._registeredBubbleEventListeners.get(eventType),
                     listeners,
                     result = null;
 
@@ -1023,21 +892,20 @@ if (typeof window !== "undefined") { // client-side
         registeredEventListenersForEventType_onTarget_phase_: {
             enumerable: false,
             value: function (eventType, target, capture) {
+                if(!target) return null;
                 return this._registeredEventListenersForEventType_onTarget_registeredEventListeners_(eventType, target, (capture ? this._registeredCaptureEventListeners : this._registeredBubbleEventListeners));
             }
         },
         _registeredEventListenersForEventType_onTarget_registeredEventListeners_: {
-            enumerable: false,
             value: function (eventType, target, registeredEventListeners) {
 
-                var eventRegistration = registeredEventListeners[eventType];
-
-                if (!eventRegistration || !target) {
-                    return null;
-                } else {
-                    return eventRegistration.get(target) || null;
-                }
-            }
+                //0.02224230716159459 on Samsung Galaxy Tab3 7"
+                var result = registeredEventListeners.get(eventType);
+                return result
+                ? result.get(target)
+                : null;
+            },
+            enumerable: false
         },
 
         /**
@@ -1055,17 +923,20 @@ if (typeof window !== "undefined") { // client-side
                     eventRegistration,
                     _registeredCaptureEventListeners = this._registeredCaptureEventListeners,
                     _registeredBubbleEventListeners = this._registeredBubbleEventListeners,
-                    observedEventListeners = [];
+                    observedEventListeners = [],
+                    mapIter;
 
-                for (eventType in _registeredCaptureEventListeners) {
-                    eventRegistration = this.registeredEventListeners[eventType];
+                mapIter = _registeredCaptureEventListeners.keys();
+                while (eventType = mapIter.next().value) {
+                    eventRegistration = this.registeredEventListeners.get(eventType);
                     if (eventRegistration.has(target)) {
                         observedEventListeners.push(eventType);
                     }
                 }
 
-                for (eventType in _registeredBubbleEventListeners) {
-                    eventRegistration = this.registeredEventListeners[eventType];
+                mapIter = _registeredBubbleEventListeners.keys();
+                while (eventType = mapIter.next().value) {
+                    eventRegistration = this.registeredEventListeners.get(eventType);
                     if (eventRegistration.has(target)) {
                         observedEventListeners.push(eventType);
                     }
@@ -1110,7 +981,7 @@ if (typeof window !== "undefined") { // client-side
 
                 // console.log("EventManager.registerEventListener", target, eventType, listener, useCapture)
 
-                var eventTypeRegistration = registeredEventListeners[eventType],
+                var eventTypeRegistration = registeredEventListeners.get(eventType),
                     listenerRegistration,
                     phase,
                     isNewTarget = false,
@@ -1119,7 +990,7 @@ if (typeof window !== "undefined") { // client-side
 
                 if (!eventTypeRegistration) {
                     // First time this eventType has been requested
-                    eventTypeRegistration = registeredEventListeners[eventType] = new Map();
+                    registeredEventListeners.set(eventType, (eventTypeRegistration = new Map()));
                     listeners = [listener];
                     eventTypeRegistration.set(target,listeners);
 
@@ -1181,7 +1052,7 @@ if (typeof window !== "undefined") { // client-side
             value: function _unregisterEventListener (target, eventType, listener, registeredEventListeners, otherPhaseRegisteredEventListeners) {
 
 
-                var eventTypeRegistration = registeredEventListeners[eventType],
+                var eventTypeRegistration = registeredEventListeners.get(eventType),
                     listeners,
                     map;
 
@@ -1220,14 +1091,14 @@ if (typeof window !== "undefined") { // client-side
         _unregisterTargetForEventTypeIfNeeded: {
             value: function(target, eventType, listeners, registeredEventListeners, otherPhaseRegisteredEventListeners) {
                 if(listeners.length === 0) {
-                    var eventTypeRegistration = registeredEventListeners[eventType],
-                        otherPhaseEventTypeRegistration = otherPhaseRegisteredEventListeners[eventType];
+                    var eventTypeRegistration = registeredEventListeners.get(eventType),
+                        otherPhaseEventTypeRegistration = otherPhaseRegisteredEventListeners.get(eventType);
 
                     eventTypeRegistration.delete(target);
 
                     if (eventTypeRegistration.size === 0 && (!otherPhaseEventTypeRegistration || (otherPhaseEventTypeRegistration && otherPhaseEventTypeRegistration.size === 0))) {
                         // If no targets for this eventType; stop observing this event
-                        delete registeredEventListeners[eventType];
+                        //delete registeredEventListeners[eventType];
                         this._stopObservingTarget_forEventType_(target, eventType);
                     }
                 }
@@ -1348,7 +1219,7 @@ if (typeof window !== "undefined") { // client-side
                 // the same eventType of an activation event
                 if (!this._activationHandler) {
                     var eventManager = this;
-                    this._activationHandler = function (evt) {
+                    this._activationHandler = function _activationHandler(evt) {
                         var touchCount;
 
                         // Prepare any components associated with elements that may receive this event
@@ -1439,7 +1310,7 @@ if (typeof window !== "undefined") { // client-side
                     self = this;
 
                 for (eventType in registeredEventListeners) {
-                    eventRegistration = registeredEventListeners[eventType];
+                    eventRegistration = registeredEventListeners.get(eventType);
 
                     if(eventRegistration) {
                         eventRegistration.forEach(function(listeners, target, map) {
@@ -1458,8 +1329,8 @@ if (typeof window !== "undefined") { // client-side
 
                 // TODO for each component claiming a pointer, force them to surrender the pointer?
                 this._claimedPointers = {};
-                this._registeredCaptureEventListeners = Object.create(null);
-                this._registeredBubbleEventListeners = Object.create(null);
+                this._registeredCaptureEventListeners = new Map();
+                this._registeredBubbleEventListeners = new Map();
 
             }
         },
@@ -1481,7 +1352,7 @@ if (typeof window !== "undefined") { // client-side
         methodNameForBubblePhaseOfEventType: {
             enumerable: false,
             value: (function (_methodNameByEventType_,_methodNameByEventTypeIdentifier_) {
-                return function (eventType, identifier, capitalizedEventType, capitalizedIdentifier) {
+                return function methodNameForBubblePhaseOfEventType(eventType, identifier, capitalizedEventType, capitalizedIdentifier) {
                   var eventTypeBucket;
                   if(identifier) {
                     eventTypeBucket = _methodNameByEventTypeIdentifier_[eventType] || (_methodNameByEventTypeIdentifier_[eventType] = Object.create(null));
@@ -1504,7 +1375,7 @@ if (typeof window !== "undefined") { // client-side
         methodNameForCapturePhaseOfEventType: {
             enumerable: false,
             value: (function (_methodNameByEventType_,_methodNameByEventTypeIdentifier_) {
-                return function (eventType, identifier, capitalizedEventType, capitalizedIdentifier) {
+                return function methodNameForCapturePhaseOfEventType(eventType, identifier, capitalizedEventType, capitalizedIdentifier) {
                   var eventTypeBucket;
                   if(identifier) {
                     eventTypeBucket = _methodNameByEventTypeIdentifier_[eventType] || (_methodNameByEventTypeIdentifier_[eventType] = Object.create(null));
@@ -1771,11 +1642,12 @@ if (typeof window !== "undefined") { // client-side
                     return (this.memory[identifier] && (this.memory[identifier].size > 0));
                 },
                 storeEvent: function (mutableEvent) {
-                    var isBrowserSupportPointerEvents = !!(window.PointerEvent || (window.MSPointerEvent && window.navigator.msPointerEnabled)),
-                        event = mutableEvent instanceof MutableEvent ? mutableEvent._event : mutableEvent;
+                    var isBrowserSupportPointerEvents = this._isBrowserSupportPointerEvents,
+                        event = mutableEvent instanceof MutableEvent ? mutableEvent._event : mutableEvent,
+                        pointerType = event.pointerType;
 
                     if ((isBrowserSupportPointerEvents &&
-                        (mutableEvent.pointerType === "mouse" || (window.MSPointerEvent && mutableEvent.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE))) ||
+                        (pointerType === "mouse" || (window.MSPointerEvent && pointerType === window.MSPointerEvent.MSPOINTER_TYPE_MOUSE))) ||
                         (!isBrowserSupportPointerEvents && event instanceof MouseEvent)) {
 
                         switch (mutableEvent.type) {
@@ -1803,33 +1675,33 @@ if (typeof window !== "undefined") { // client-side
                                 break;
                         }
                     } else if ((isBrowserSupportPointerEvents &&
-                        (mutableEvent.pointerType === "touch" || (window.MSPointerEvent && mutableEvent.pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH))) ||
+                        (pointerType === "touch" || (window.MSPointerEvent && pointerType === window.MSPointerEvent.MSPOINTER_TYPE_TOUCH))) ||
                         (window.TouchEvent !== void 0 && !isBrowserSupportPointerEvents && event instanceof TouchEvent)) {
 
-                        switch (mutableEvent.type) {
+                        switch (event.type) {
                             case "pointerdown":
                             case "MSPointerDown":
                             case "pointermove":
                             case "MSPointerMove":
                             case "pointerup":
                             case "MSPointerUp":
-                                this._storeTouch(mutableEvent.pointerId, mutableEvent.clientX, mutableEvent.clientY, mutableEvent.timeStamp);
+                                this._storeTouch(event.pointerId, event.clientX, event.clientY, event.timeStamp);
                                 break;
 
                             case "touchstart":
                             case "touchmove":
-                                this._storeTouches(mutableEvent.touches, mutableEvent.timeStamp);
+                                this._storeTouches(event.touches, event.timeStamp);
                                 break;
 
                             case "touchend":
-                                this._storeTouches(mutableEvent.changedTouches, mutableEvent.timeStamp);
+                                this._storeTouches(event.changedTouches, event.timeStamp);
                                 break;
                         }
                     }
                 },
 
                 removeEvent: function (mutableEvent) {
-                    var isBrowserSupportPointerEvents = !!(window.PointerEvent || (window.MSPointerEvent && window.navigator.msPointerEnabled)),
+                    var isBrowserSupportPointerEvents = this._isBrowserSupportPointerEvents,
                         event = mutableEvent instanceof MutableEvent ? mutableEvent._event : mutableEvent;
 
                     if ((isBrowserSupportPointerEvents &&
@@ -1876,8 +1748,7 @@ if (typeof window !== "undefined") { // client-side
                 _storeTouches: function (touches, timeStamp) {
                     var touch;
 
-                    for (var i = 0; i < touches.length; i++) {
-                        touch = touches[i];
+                    for (var i = 0; (touch = touches[i]); i++) {
                         this._storeTouch(touch.identifier, touch.clientX, touch.clientY, timeStamp);
                     }
                 },
@@ -1951,30 +1822,7 @@ if (typeof window !== "undefined") { // client-side
                     f2, c2, d2, b2, a2, s2, e2,
                     f3, c3, d3, b3, a3, s3, e3;
                 do {
-                    f0 = 0;
-                    c0 = 0;
-                    d0 = 0;
-                    b0 = 0;
-                    a0 = 0;
-                    s0 = 0;
-                    f1 = 0;
-                    c1 = 0;
-                    d1 = 0;
-                    b1 = 0;
-                    a1 = 0;
-                    s1 = 0;
-                    f2 = 0;
-                    c2 = 0;
-                    d2 = 0;
-                    b2 = 0;
-                    a2 = 0;
-                    s2 = 0;
-                    f3 = 0;
-                    c3 = 0;
-                    d3 = 0;
-                    b3 = 0;
-                    a3 = 0;
-                    s3 = 0;
+                    f0 = c0 = d0 = b0 = a0 = s0 = f1 = c1 = d1 = b1 = a1 = s1 = f2 = c2 = d2 = b2 = a2 = s2 = f3 = c3 = d3 = b3 = a3 = s3 = 0;
                     for (i = 0; i < dl; i++) {
                         e = data[i];
                         t = e.t;
@@ -2124,6 +1972,9 @@ if (typeof window !== "undefined") { // client-side
             }
         },
 
+        _pointerMotion : {
+            value: null
+        },
         /**
          @function
          @param {attribute} identifier
@@ -2131,83 +1982,7 @@ if (typeof window !== "undefined") { // client-side
         pointerMotion: {
             value: function (identifier) {
                 if (defaultEventManager._pointerStorage.isStored(identifier)) {
-                    var velocity = {};
-                    Object.defineProperties(velocity, {
-                        _data: {
-                            enumerable: false,
-                            writable: true,
-                            value: null
-                        },
-                        _x: {
-                            enumerable: false,
-                            writable: true,
-                            value: null
-                        },
-                        _y: {
-                            enumerable: false,
-                            writable: true,
-                            value: null
-                        },
-                        _speed: {
-                            enumerable: false,
-                            writable: true,
-                            value: null
-                        },
-                        _angle: {
-                            enumerable: false,
-                            writable: true,
-                            value: null
-                        },
-                        x: {
-                            get: function () {
-                                if (this._x === null) {
-                                    if (this._data === null) {
-                                        this._data = defaultEventManager._getPointerVelocityData(identifier);
-                                    }
-                                    this._x = defaultEventManager._calculatePointerVelocity(this._data.time, this._data.x);
-                                }
-                                return this._x;
-                            },
-                            set: function () {
-                            }
-                        },
-                        y: {
-                            get: function () {
-                                if (this._y === null) {
-                                    if (this._data === null) {
-                                        this._data = defaultEventManager._getPointerVelocityData(identifier);
-                                    }
-                                    this._y = defaultEventManager._calculatePointerVelocity(this._data.time, this._data.y);
-                                }
-                                return this._y;
-                            },
-                            set: function () {
-                            }
-                        },
-                        speed: {
-                            get: function () {
-                                if (this._speed === null) {
-                                    this._speed = Math.sqrt(this.x * this.x + this.y * this.y);
-                                }
-                                return this._speed;
-                            },
-                            set: function () {
-                            }
-                        },
-                        angle: {
-                            get: function () {
-                                if (this._angle === null) {
-                                    this._angle = Math.atan2(this.y, this.x);
-                                }
-                                return this._angle;
-                            },
-                            set: function () {
-                            }
-                        }
-                    });
-                    return {
-                        velocity: velocity
-                    };
+                    return this._pointerMotion || (this._pointerMotion = {velocity: (new _PointerVelocity()).initWithIdentifier(identifier)});
                 } else {
                     return undefined;
                 }
@@ -2241,7 +2016,10 @@ if (typeof window !== "undefined") { // client-side
             })
         },
 
-        _trackingTouchList: {
+        _trackingTouchStartList: {
+            value: null
+        },
+        _trackingTouchEndList: {
             value: null
         },
 
@@ -2314,9 +2092,9 @@ if (typeof window !== "undefined") { // client-side
                 if (aWindow && !this._isWindowListeningOnTouchCancel(aWindow)) {
                     var self = this;
 
-                    aWindow.addEventListener("touchcancel", function (event) {
+                    aWindow.addEventListener("touchcancel", function touchcancelListener(event) {
                         var changedTouches = event.changedTouches,
-                            touchesStartList = self._trackingTouchList.touchesStart,
+                            touchesStartList = self._trackingTouchStartList,
                             identifier;
 
                         for (var i = 0, length = changedTouches.length; i < length; i++) {
@@ -2398,8 +2176,8 @@ if (typeof window !== "undefined") { // client-side
 
         _trackTouch: {
             value: function (touchEvent, touchIdentifier) {
-                var touchList = this._trackingTouchList,
-                    timeoutIDs = this._trackingTouchTimeoutIDs;
+                var timeoutIDs = this._trackingTouchTimeoutIDs,
+                    trackingTouchEndList = this._trackingTouchEndList;
 
                 if (touchEvent.type === "touchstart") {
                     /**
@@ -2413,11 +2191,11 @@ if (typeof window !== "undefined") { // client-side
                         delete timeoutIDs[touchIdentifier];
                     }
 
-                    touchList.touchesStart[touchIdentifier] = touchEvent.target;
+                    this._trackingTouchStartList[touchIdentifier] = touchEvent.target;
 
                 } else { // touchend
                     timeoutIDs[touchIdentifier] = setTimeout(function () {
-                        delete touchList.touchesEnd[touchIdentifier];
+                        delete trackingTouchEndList[touchIdentifier];
                         delete timeoutIDs[touchIdentifier];
                     }, 400);
                     /**
@@ -2426,8 +2204,8 @@ if (typeof window !== "undefined") { // client-side
                      * http://developer.telerik.com/featured/scroll-event-change-ios-8-big-deal/
                      */
 
-                    delete touchList.touchesStart[touchIdentifier];
-                    touchList.touchesEnd[touchIdentifier] = touchEvent.target;
+                    delete this._trackingTouchStartList[touchIdentifier];
+                    this._trackingTouchEndList[touchIdentifier] = touchEvent.target;
                 }
             }
         },
@@ -2442,7 +2220,7 @@ if (typeof window !== "undefined") { // client-side
          */
         _isEmulatedEvent: {
             value: function (event) {
-                var trackingTouchList = this._trackingTouchList.touchesStart,
+                var trackingTouchList =  this._trackingTouchStartList,
                     mouseTarget = event.target,
                     response = false,
                     identifier;
@@ -2460,7 +2238,7 @@ if (typeof window !== "undefined") { // client-side
                 }
 
                 if (!response) {
-                    trackingTouchList = this._trackingTouchList.touchesEnd;
+                    trackingTouchList = this._trackingTouchEndList;
 
                     for (identifier in trackingTouchList) {
                         if ((response = trackingTouchList[identifier] === mouseTarget)) break;
@@ -2533,6 +2311,7 @@ if (typeof window !== "undefined") { // client-side
         handleEvent: {
             enumerable: false,
             value: function (event) {
+                //console.groupTime("handleEvent");
                 //console.profile("handleEvent "+event.type);
                 if (!this._shouldDispatchEvent(event)) {
                     return void 0;
@@ -2686,6 +2465,7 @@ if (typeof window !== "undefined") { // client-side
 
                 if (this._isStoringPointerEvents) {
                     this._pointerStorage.removeEvent(event);
+                    if(this._pointerMotion) this._pointerMotion.velocity.clearCache();
                 }
 
                 if (this.monitorDOMModificationInEventHandling) {
@@ -2694,6 +2474,7 @@ if (typeof window !== "undefined") { // client-side
                     document.body.removeEventListener("DOMCharacterDataModified", this.domModificationEventHandler, true);
                 }
                 //console.profileEnd("handleEvent "+event.type);
+                //console.groupTimeEnd("handleEvent");
             }
         },
 
@@ -2703,13 +2484,28 @@ if (typeof window !== "undefined") { // client-side
         _invokeTargetListenerForEvent: {
             value: function (iTarget, jListener, mutableEvent, identifierSpecificPhaseMethodName, phaseMethodName) {
                 var listenerFunction;
-                if ((identifierSpecificPhaseMethodName && typeof (listenerFunction = jListener[identifierSpecificPhaseMethodName]) === FUNCTION_TYPE)
-                    || (typeof (listenerFunction = jListener[phaseMethodName]) === FUNCTION_TYPE)
-                    || (typeof (listenerFunction = jListener.handleEvent) === FUNCTION_TYPE)) {
-                    listenerFunction.call(jListener, mutableEvent);
-                } else if (typeof jListener === FUNCTION_TYPE) {
+
+                if (typeof jListener === FUNCTION_TYPE) {
                     jListener.call(iTarget, mutableEvent);
                 }
+                else if(identifierSpecificPhaseMethodName && typeof jListener[identifierSpecificPhaseMethodName] === FUNCTION_TYPE) {
+                    jListener[identifierSpecificPhaseMethodName](mutableEvent);
+                }
+                else if(typeof jListener[phaseMethodName] === FUNCTION_TYPE) {
+                    jListener[phaseMethodName](mutableEvent);
+                }
+                else if(typeof jListener.handleEvent === FUNCTION_TYPE) {
+                    jListener.handleEvent(mutableEvent);
+                }
+
+
+                // if ((identifierSpecificPhaseMethodName && typeof (listenerFunction = jListener[identifierSpecificPhaseMethodName]) === FUNCTION_TYPE)
+                //     || (typeof (listenerFunction = jListener[phaseMethodName]) === FUNCTION_TYPE)
+                //     || (typeof (listenerFunction = jListener.handleEvent) === FUNCTION_TYPE)) {
+                //     listenerFunction.call(jListener, mutableEvent);
+                // } else if (typeof jListener === FUNCTION_TYPE) {
+                //     jListener.call(iTarget, mutableEvent);
+                // }
             }
         },
 
