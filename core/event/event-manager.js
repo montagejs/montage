@@ -2498,14 +2498,6 @@ if (typeof window !== "undefined") { // client-side
                     jListener.handleEvent(mutableEvent);
                 }
 
-
-                // if ((identifierSpecificPhaseMethodName && typeof (listenerFunction = jListener[identifierSpecificPhaseMethodName]) === FUNCTION_TYPE)
-                //     || (typeof (listenerFunction = jListener[phaseMethodName]) === FUNCTION_TYPE)
-                //     || (typeof (listenerFunction = jListener.handleEvent) === FUNCTION_TYPE)) {
-                //     listenerFunction.call(jListener, mutableEvent);
-                // } else if (typeof jListener === FUNCTION_TYPE) {
-                //     jListener.call(iTarget, mutableEvent);
-                // }
             }
         },
 
