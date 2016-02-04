@@ -27,8 +27,14 @@ var Montage = require("../core/core").Montage,
     needsDrawLogger = require("../core/logger").logger("drawing needsDraw").color.violet(),
     drawLogger = require("../core/logger").logger("drawing").color.blue(),
     WeakMap = require("collections/weak-map"),
-
+    Map = require("collections/map"),
     Set = require("collections/set");
+
+    if (typeof window !== "undefined") { // client-side
+
+        Map = window.Map || Map;
+        WeakMap = window.WeakMap || WeakMap;
+    }
 
 /**
  * @const
@@ -2940,7 +2946,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     constructor: {
         value: function RootComponent() {
             this._drawTree = this._drawTree.bind(this);
-            this._readyToDrawListIndex = {};
+            this._readyToDrawListIndex = new Map();
             this._addedStyleSheetsByTemplate = new WeakMap();
         }
     },
@@ -3496,7 +3502,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
         value: function (component) {
             var needsDrawListIndex = this._readyToDrawListIndex, length, composer;
 
-            if (needsDrawListIndex.hasOwnProperty(component.uuid)) {
+            if (needsDrawListIndex.has(component)) {
                 // Requesting a draw of a component that has already been drawn in the current cycle
                 if (drawLogger.isDebug) {
                     if(this !== rootComponent) {
@@ -3506,7 +3512,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                 return;
             }
             this._readyToDrawList.push(component);
-            this._readyToDrawListIndex[component.uuid] = true;
+            this._readyToDrawListIndex.set(component, true);
 
             component._updateComponentDom();
         }
