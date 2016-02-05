@@ -387,22 +387,25 @@ if (typeof window !== "undefined") {
             var defaultFactory = module.factory;
             module.factory = function (require, exports, module) {
                 defaultFactory.call(this, require, exports, module);
-                for (var name in exports) {
-                    var object = exports[name];
+                var keys = Object.keys(exports),
+                    i, object;
+                for (var i=0, name;(name=keys[i]); i++) {
+                    //keys.push(name);
                     // avoid attempting to initialize a non-object
-                    if (!(object instanceof Object)) {
-                    // avoid attempting to reinitialize an aliased property
-                    //jshint -W106
-                    } else if (object.hasOwnProperty("_montage_metadata") && !object._montage_metadata.isInstance) {
-                        object._montage_metadata.aliases.push(name);
-                        object._montage_metadata.objectName = name;
-                        //jshint +W106
-                    } else if (!Object.isSealed(object)) {
-                        var id = module.id.replace(
-                            reverseReelExpression,
-                            reverseReelFunction
-                        );
-                        object._montage_metadata = new MontageMetaData(require,id,name);
+                    if (((object = exports[name]) instanceof Object)) {
+                        // avoid attempting to reinitialize an aliased property
+                        //jshint -W106
+                        if (object.hasOwnProperty("_montage_metadata") && !object._montage_metadata.isInstance) {
+                            object._montage_metadata.aliases.push(name);
+                            object._montage_metadata.objectName = name;
+                            //jshint +W106
+                        } else if (!Object.isSealed(object)) {
+                            var id = module.id.replace(
+                                reverseReelExpression,
+                                reverseReelFunction
+                            );
+                            object._montage_metadata = new MontageMetaData(require,id,name);
+                        }
                     }
                 }
             };
