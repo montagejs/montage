@@ -68,7 +68,7 @@ if (typeof window !== "undefined") {
 
             var montageLocation = URL.resolve(config.location, params.montageLocation);
 
-            config.moduleTypes = ["html", "meta"];
+            config.moduleTypes = ["html", "meta", "mjson"];
 
             // setup the reel loader
             config.makeLoader = function (config) {
@@ -437,7 +437,7 @@ if (typeof window !== "undefined") {
      */
     exports.MetaCompiler = function (config, compile) {
         return function (module) {
-            if (module.location && module.location.endsWith(".meta")) {
+            if (module.location && (module.location.endsWith(".meta") || module.location.endsWith(".mjson"))) {
                 module.exports = JSON.parse(module.text);
                 return module;
             } else {
