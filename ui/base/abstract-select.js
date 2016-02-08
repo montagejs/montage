@@ -28,28 +28,11 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
      */
     constructor: {
         value: function AbstractSelect() {
-            if(this.constructor === AbstractSelect) {
+            if (this.constructor === AbstractSelect) {
                 throw new Error("AbstractSelect cannot be instantiated.");
             }
 
-            this._pressComposer = new PressComposer();
-            this.addComposer(this._pressComposer);
-            this.contentController = new RangeController();
-
-            this.addPathChangeListener("contentController", this, "handleContentControllerChange");
-
             this.defineBindings({
-                "content": {
-                    "<->": "contentController.content"
-                },
-                // FIXME: due to issues with 2 way bindings with rangeContent()
-                // we aren't currently able to have this "value" binding.
-                // "value": {
-                //     "<->": "values.one()"
-                // },
-                "contentController.multiSelect": {
-                    "<-": "multiSelect"
-                },
                 // classList management
                 "classList.has('montage--disabled')": {
                     "<-": "!enabled"
@@ -59,12 +42,8 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
                 }
             });
 
-            // Need to draw when "content" or "values" change
+            // Need to draw when "content" change
             this.addRangeAtPathChangeListener("content", this, "handleContentRangeChange");
-
-            // TODO: "value" <-> "values.one()"
-            this.addRangeAtPathChangeListener("values", this, "handleValuesRangeChange");
-            this.classList.add("matte-Select");
         }
     },
 
@@ -83,20 +62,58 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
         value: true
     },
 
-    _pressComposer: {
-        value: null
-    },
-
     active: {
         value: false
     },
 
     content: {
+        get: function () {
+            if (this._contentController) {
+                return this._contentController.content;
+            }
+
+            return null;
+        },
+        set: function (content) {
+            if (content !== this.contentController.content) {
+                this._contentController.content = content;
+            }
+        }
+    },
+
+    __pressComposer: {
+        value: null
+    },
+
+    _pressComposer: {
+        get: function() {
+            if (!this.__pressComposer) {
+                this.__pressComposer = new PressComposer();
+                this.addComposer(this.__pressComposer);
+            }
+
+            return this.__pressComposer;
+        }
+    },
+
+    _contentController: {
         value: null
     },
 
     contentController: {
-        value: null
+        get: function () {
+            if (!this._contentController) {
+                this._contentController = new RangeController();
+            }
+
+            return this._contentController;
+        },
+        set: function (contentController) {
+            if (this._contentController !== contentController) {
+                this._contentController  = contentController;
+                this.content  = contentController.content;
+            }
+        }
     },
 
     _labelPropertyName: {
@@ -110,6 +127,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
             } else {
                 this._labelPropertyName = "label";
             }
+
             this._contentIsDirty = true;
             this.needsDraw = true;
         },
@@ -129,10 +147,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
         set: function (value) {
             if (value !== this._value) {
                 this._value = value;
-                // TODO: "value" <-> "values.one()"
-                if (this.values[0] !== value) {
-                    this.values.splice(0, this.values.length, value);
-                }
+
                 this.needsDraw = true;
             }
         }
@@ -146,16 +161,37 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
         get: function () {
             return this._values;
         },
-        set: function (value) {
-            var args = [0, this._values.length].concat(value);
-            this._values.splice.apply(this._values, args);
+        set: function (values) {
+            if (this.multiSelect && values !== this._values) {
+                this._values = values;
 
-            this.needsDraw = true;
+                this.needsDraw = true;
+            }
         }
     },
 
     multiSelect: {
-        value: false
+        get: function () {
+            return this.contentController.multiSelect;
+        },
+        set: function (multiSelect) {
+            multiSelect = !!multiSelect;
+
+            if (multiSelect !== this.contentController.multiSelect) {
+                this.contentController.multiSelect = multiSelect;
+
+                if (multiSelect) {
+                    this.addRangeAtPathChangeListener("values", this, "handleValuesRangeChange");
+                    this.value = null;
+                    this.values =  this._contentController.selection;
+
+                } else {
+                    //FIXME: removeRangeAtPathChangeListener not implemented?
+                    //this.removeRangeAtPathChangeListener("values", this, "handleValuesRangeChange");
+                    this.values = null;
+                }
+            }
+        }
     },
 
     _contentIsDirty: {
@@ -165,8 +201,6 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
     prepareForActivationEvents: {
         value: function () {
             this._pressComposer.addEventListener("pressStart", this, false);
-            this._pressComposer.addEventListener("press", this, false);
-            this._pressComposer.addEventListener("pressCancel", this, false);
         }
     },
 
@@ -179,11 +213,15 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
         value: function (event) {
             this.active = true;
 
+            //TODO need to be tested.
             if (event.touch) {
                 // Prevent default on touchmove so that if we are inside a scroller,
                 // it scrolls and not the webpage
                 document.addEventListener("touchmove", this, false);
             }
+
+            this._pressComposer.addEventListener("press", this, false);
+            this._pressComposer.addEventListener("pressCancel", this, false);
         }
     },
 
@@ -199,7 +237,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
             }
 
             this.dispatchActionEvent();
-            document.removeEventListener("touchmove", this, false);
+            this._removeEventListeners();
         }
     },
 
@@ -210,7 +248,7 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
     handlePressCancel: {
         value: function (event) {
             this.active = false;
-            document.removeEventListener("touchmove", this, false);
+            this._removeEventListeners();
         }
     },
 
@@ -220,47 +258,44 @@ var AbstractSelect = exports.AbstractSelect = AbstractControl.specialize( /** @l
         }
     },
 
-    handleContentRangeChange: {
+    _removeEventListeners: {
         value: function () {
-            // When the content changes we need to update the "value" if none is
-            // set (new content) or if the previous "value" was removed in this
-            // range change.
-            // FIXME: we only operate on the selection and not on the "values"
-            // to avoid issues with 2-way binding to rangeContent().
-            if (this.contentController.selection.length === 0 &&
-                this.contentController.organizedContent.length > 0) {
-                this.contentController.selection.push(this.contentController.organizedContent[0]);
-            }
-
-            this._contentIsDirty = true;
-            this.needsDraw = true;
-        }
-    },
-
-    handleValuesRangeChange: {
-        value: function () {
-            // TODO: "value" <-> "values.one()"
-            if (this.values.length > 0) {
-                this.value = this.values.one();
-            }
-            this.needsDraw = true;
-        }
-    },
-
-    handleContentControllerChange: {
-        value: function (value) {
-            if (value) {
-                this._values = value.selection;
-                this.handleValuesRangeChange();
-            }
+            document.removeEventListener("touchmove", this, false);
+            this._pressComposer.removeEventListener("press", this, false);
+            this._pressComposer.removeEventListener("pressCancel", this, false);
         }
     },
 
     enterDocument: {
         value: function (firstDraw) {
-            if(firstDraw) {
+            if (firstDraw) {
                 this.element.setAttribute("role", "listbox");
             }
+        }
+    },
+
+    handleValuesRangeChange: {
+        value: function () {
+            //FIXME: removeRangeAtPathChangeListener not implemented
+            if (this.multiSelect) {
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    handleContentRangeChange: {
+        value: function () {
+            var content = this.content;
+
+            if (this.multiSelect) {
+                this.values =  this._contentController.selection;
+
+            } else {
+                this.value = content && content.length ? content[0] : null;
+            }
+
+            this._contentIsDirty = true;
+            this.needsDraw = true;
         }
     }
 
