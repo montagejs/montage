@@ -70,9 +70,9 @@
             "readOnly": false,
             "valueType": "enum",
             "enumValues": [
+                "inherit",
                 "true",
-                "false",
-                "inherit"
+                "false"
             ],
             "helpKey": ""
         }
@@ -126,9 +126,9 @@
             "readOnly": false,
             "valueType": "enum",
             "enumValues": [
+                "auto",
                 "true",
-                "false",
-                "auto"
+                "false"
             ],
             "helpKey": ""
         }
