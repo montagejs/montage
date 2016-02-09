@@ -19,8 +19,8 @@
 var Montage = require("../core").Montage,
     UUID = require("../uuid"),
     MutableEvent = require("./mutable-event").MutableEvent,
-    Serializer = require("core/serialization/serializer/montage-serializer").MontageSerializer,
-    Deserializer = require("core/serialization/deserializer/montage-deserializer").MontageDeserializer,
+    Serializer = require("../serialization/serializer/montage-serializer").MontageSerializer,
+    Deserializer = require("../serialization/deserializer/montage-deserializer").MontageDeserializer,
     Map = require("collections/map"),
     WeakMap = require("collections/weak-map"),
     defaultEventManager;
