@@ -2177,8 +2177,9 @@ if (typeof window !== "undefined") { // client-side
 
         _trackTouch: {
             value: function (touchEvent, touch) {
-                var touchList = this._trackingTouchList,
-                    timeoutIDs = this._trackingTouchTimeoutIDs,
+                var timeoutIDs = this._trackingTouchTimeoutIDs,
+                    trackingTouchStartList = this._trackingTouchStartList,
+                    trackingTouchEndList = this._trackingTouchEndList,
                     touchIdentifier = touch.identifier;
 
                 touch.timeStamp = touchEvent.timeStamp;
@@ -2195,7 +2196,7 @@ if (typeof window !== "undefined") { // client-side
                         delete timeoutIDs[touchIdentifier];
                     }
 
-                    touchList.touchesStart[touchIdentifier] = touch;
+                    trackingTouchStartList[touchIdentifier] = touch;
 
                 } else { // touchend
                     timeoutIDs[touchIdentifier] = setTimeout(function () {
@@ -2208,8 +2209,8 @@ if (typeof window !== "undefined") { // client-side
                      * http://developer.telerik.com/featured/scroll-event-change-ios-8-big-deal/
                      */
 
-                    delete touchList.touchesStart[touchIdentifier];
-                    touchList.touchesEnd[touchIdentifier] = touch;
+                    delete trackingTouchStartList[touchIdentifier];
+                    trackingTouchEndList[touchIdentifier] = touch;
                 }
             }
         },
@@ -2224,8 +2225,6 @@ if (typeof window !== "undefined") { // client-side
          */
         _isEmulatedEvent: {
             value: function (event) {
-                var response = false;
-
                 /**
                  * Can't use the position, indeed the emulated mouse events are not at the same position
                  * than the touch events than triggered them. Doesn't work with a radius as well.
@@ -2234,10 +2233,10 @@ if (typeof window !== "undefined") { // client-side
                  * Needs to check both maps for devices with multiples pointers
                  * (touchstart + mousedown -> mouseup -> click) or (touchstart + delay ≈ 600ms -> mousedown)
                  */
-                response = this._findEmulatedEventIdentifierWithEventAndTrackingTouchList(event, this._trackingTouchList.touchesStart) > -1;
+                var response = this._findEmulatedEventIdentifierWithEventAndTrackingTouchList(event, this._trackingTouchStartList) > -1;
 
                 if (!response) {
-                    var trackingTouchList = this._trackingTouchList.touchesEnd,
+                    var trackingTouchList = this._trackingTouchEndList,
                         identifier = this._findEmulatedEventIdentifierWithEventAndTrackingTouchList(event, trackingTouchList);
 
                     // Faster "awake", can be useful for devices with multiple pointers. (simultaneous click/touch)
