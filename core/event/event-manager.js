@@ -271,7 +271,6 @@ if (typeof window !== "undefined") { // client-side
                 this._observedTarget_byEventType_ = Object.create(null);
                 this._currentDispatchedTargetListeners = new Map();
                 this._elementEventHandlerByElement = new WeakMap();
-                this._isBrowserSupportPointerEvents = !!(window.PointerEvent || (window.MSPointerEvent && window.navigator.msPointerEnabled));
                 return this;
             }
         },
@@ -285,9 +284,6 @@ if (typeof window !== "undefined") { // client-side
                 }
                 arr.length--;
             }
-        },
-        _isBrowserSupportPointerEvents: {
-            value: void 0
         },
         /**
          * Utility
@@ -1642,7 +1638,7 @@ if (typeof window !== "undefined") { // client-side
                     return (this.memory[identifier] && (this.memory[identifier].size > 0));
                 },
                 storeEvent: function (mutableEvent) {
-                    var isBrowserSupportPointerEvents = this._isBrowserSupportPointerEvents,
+                    var isBrowserSupportPointerEvents = currentEnvironment.isBrowserSupportPointerEvents,
                         event = mutableEvent instanceof MutableEvent ? mutableEvent._event : mutableEvent,
                         pointerType = event.pointerType;
 
@@ -1701,7 +1697,7 @@ if (typeof window !== "undefined") { // client-side
                 },
 
                 removeEvent: function (mutableEvent) {
-                    var isBrowserSupportPointerEvents = this._isBrowserSupportPointerEvents,
+                    var isBrowserSupportPointerEvents = currentEnvironment.isBrowserSupportPointerEvents,
                         event = mutableEvent instanceof MutableEvent ? mutableEvent._event : mutableEvent;
 
                     if ((isBrowserSupportPointerEvents &&

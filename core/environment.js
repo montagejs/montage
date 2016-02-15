@@ -55,6 +55,21 @@ var Environment = exports.Environment = Montage.specialize({
         }
     },
 
+    _isBrowserSupportPointerEvents: {
+        value: null
+    },
+
+    isBrowserSupportPointerEvents: {
+        get: function () {
+            if (this._isBrowserSupportPointerEvents === null) {
+                this._isBrowserSupportPointerEvents = !!(window.PointerEvent ||
+                    (window.MSPointerEvent && window.navigator.msPointerEnabled));
+            }
+
+            return this._isBrowserSupportPointerEvents;
+        }
+    },
+
     _isIOSDevice: {
         value: null
     },
