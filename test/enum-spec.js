@@ -78,4 +78,25 @@ function () {
             expect(TestEnum.THREE).toEqual(3);
         });
     });
+
+    describe("initialization with members and values",
+        function () {
+            var TestEnum = new Enum().initWithMembersAndValues(["ZERO","ONE","TWO"], ["ZERO","ONE","TWO"]);
+
+            it("should define a property",
+                function () {
+                    expect(Object.getOwnPropertyDescriptor(TestEnum, "ZERO")).not.toBeNull();
+                    expect(Object.getOwnPropertyDescriptor(TestEnum, "ONE")).not.toBeNull();
+                    expect(Object.getOwnPropertyDescriptor(TestEnum, "TWO")).not.toBeNull();
+                }
+            );
+            it("should be use incremental values",
+                function () {
+                    expect(TestEnum.ZERO).toEqual("ZERO");
+                    expect(TestEnum.ONE).toEqual("ONE");
+                    expect(TestEnum.TWO).toEqual("TWO");
+                }
+            );
+        }
+    );
 });
