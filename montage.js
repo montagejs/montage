@@ -254,7 +254,7 @@ if (typeof window !== "undefined") {
 
             applicationRequirePromise
             .then(function (applicationRequire) {
-                applicationRequire.loadPackage({
+                return applicationRequire.loadPackage({
                     location: montageLocation,
                     hash: params.montageHash
                 })
@@ -390,7 +390,6 @@ if (typeof window !== "undefined") {
                 var keys = Object.keys(exports),
                     i, object;
                 for (var i=0, name;(name=keys[i]); i++) {
-                    //keys.push(name);
                     // avoid attempting to initialize a non-object
                     if (((object = exports[name]) instanceof Object)) {
                         // avoid attempting to reinitialize an aliased property
@@ -693,8 +692,71 @@ if (typeof window !== "undefined") {
             if (typeof BUNDLE === "undefined") {
                 var montageLocation = resolve(window.location, params.montageLocation);
 
+
                 //Special Case bluebird for now:
                 browser.load(resolve(montageLocation, "node_modules/bluebird/js/browser/bluebird.min.js"),function() {
+
+                    if ((typeof MutationObserver !== "undefined") &&
+                              !(typeof window !== "undefined" &&
+                                window.navigator &&
+                                window.navigator.standalone)) {
+                                    (function() {
+                                        var div = document.createElement("div");
+                                        var opts = {attributes: true, attributeFilter:["class"]};
+                                        var toggleScheduled = false;
+                                        var div2 = document.createElement("div");
+                                        var o2 = new MutationObserver(function() {
+                                            div.classList.toggle("foo");
+                                          toggleScheduled = false;
+                                        });
+                                        o2.observe(div2, opts);
+
+                                        var scheduleToggle = function() {
+                                            if (toggleScheduled) return;
+                                            toggleScheduled = true;
+                                            div2.classList.toggle("foo");
+                                        };
+
+                                        scheduledFunctions = [];
+                                        var o = new MutationObserver(function() {
+                                            scheduledFunctions.pop()();
+                                        });
+                                        o.observe(div, opts);
+
+                                        window.Promise.setScheduler( function montageMutationObserverSchedule(fn) {
+                                          scheduledFunctions.unshift(fn);
+                                          scheduleToggle();
+                                      });
+                                    })();
+
+                    } else if(window.postMessage !== void 0) {
+                        // Only add setZeroTimeout to the window object, and hide everything
+                        // else in a closure.
+                        (function() {
+                            var timeouts = [];
+                            var messageName = "zero-timeout-message";
+
+                            window.Promise.setScheduler(function setZeroTimeout(fn) {
+                                timeouts.push(fn);
+                                window.postMessage(messageName, "*");
+                            });
+
+                            function handleMessage(event) {
+                                if (event.source == window && event.data == messageName) {
+                                    event.stopPropagation();
+                                    if (timeouts.length > 0) {
+                                        var fn = timeouts.shift();
+                                        fn();
+                                    }
+                                }
+                            }
+
+                            window.addEventListener("message", handleMessage, true);
+
+                        })();
+                    }
+
+
                     //global.bootstrap cleans itself from window once all known are loaded. "bluebird" is not known, so needs to do it first
                     global.bootstrap("bluebird", function (require, exports) {
                         return window.Promise;
@@ -706,7 +768,9 @@ if (typeof window !== "undefined") {
                     for (var id in pending) {
                         browser.load(resolve(montageLocation, pending[id]));
                     }
+
                 });
+
             }
             else {
                 pending.promise = "node_modules/bluebird/js/browser/bluebird.min.js";
