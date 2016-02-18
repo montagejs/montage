@@ -55,18 +55,15 @@ var Environment = exports.Environment = Montage.specialize({
         }
     },
 
-    _isBrowserSupportPointerEvents: {
+    _supportsPointerEvents: {
         value: null
     },
 
-    isBrowserSupportPointerEvents: {
+    supportsPointerEvents: {
         get: function () {
-            if (this._isBrowserSupportPointerEvents === null) {
-                this._isBrowserSupportPointerEvents = !!(window.PointerEvent ||
-                    (window.MSPointerEvent && window.navigator.msPointerEnabled));
-            }
-
-            return this._isBrowserSupportPointerEvents;
+            return typeof this._supportsPointerEvents !== "boolean" ?
+                (this._supportsPointerEvents = !!(window.PointerEvent ||
+                (window.MSPointerEvent && window.navigator.msPointerEnabled))) : this._supportsPointerEvents;
         }
     },
 
@@ -76,11 +73,8 @@ var Environment = exports.Environment = Montage.specialize({
 
     isIOSDevice: {
         get: function () {
-            if (this._isIOSDevice === null) {
-                this._isIOSDevice = /iphone|ipad|ipod/.test(this.device);
-            }
-
-            return this._isIOSDevice;
+            return typeof this._isIOSDevice !== "boolean" ?
+                (this._isIOSDevice = /iphone|ipad|ipod/.test(this.device)) : this._isIOSDevice;
         }
     },
 
@@ -90,11 +84,8 @@ var Environment = exports.Environment = Montage.specialize({
 
     isAndroidDevice: {
         get: function () {
-            if (this._isAndroidDevice === null) {
-                this._isAndroidDevice = this.platformName === Environment.ANDROID;
-            }
-
-            return this._isAndroidDevice;
+            return typeof this._isAndroidDevice !== "boolean" ?
+                (this._isAndroidDevice = this.platformName === Environment.Platform.ANDROID) : this._isAndroidDevice;
         }
     },
 
@@ -108,12 +99,9 @@ var Environment = exports.Environment = Montage.specialize({
 
     isMobileDevice: {
         get: function () {
-            if (this._isMobileDevice === null) {
-                // Android 4.4+ Chrome, Opera mobile 12+, Firefox 11.0+, Safari, IE (no tablet)
-                this._isMobileDevice = /mobile/gi.test(this.userAgent);
-            }
-
-            return this._isMobileDevice;
+            // Android 4.4+ Chrome, Opera mobile 12+, Firefox 11.0+, Safari, IE (no tablet)
+            return typeof this._isMobileDevice !== "boolean" ?
+                (this._isMobileDevice = /mobile/gi.test(this.userAgent)) : this._isMobileDevice;
         }
     },
 
@@ -129,11 +117,8 @@ var Environment = exports.Environment = Montage.specialize({
 
     isStandalone: {
         get: function () {
-            if (this._isStandalone === null) {
-                this._isStandalone = !!('standalone' in navigator && navigator.standalone);
-            }
-
-            return this._isStandalone;
+            return typeof this._isStandalone !== "boolean" ?
+                (this._isStandalone = !!('standalone' in navigator && navigator.standalone)) : this._isStandalone;
         }
     },
 
@@ -143,23 +128,23 @@ var Environment = exports.Environment = Montage.specialize({
 
     platformName: {
         get: function () {
-            if (this._platformName === null) {
+            if (typeof this._platformName !== "string") {
                 var match = this.userAgent.match(/android|windows\sphone|windows|macintosh|linux|cros/gi);
 
                 if (match && match.length) {
                     var firstCandidate = match[0];
 
-                    if (firstCandidate === Environment.LINUX && match[1] === Environment.ANDROID) {
-                        firstCandidate = Environment.ANDROID;
+                    if (firstCandidate === Environment.Platform.LINUX && match[1] === Environment.Platform.ANDROID) {
+                        firstCandidate = Environment.Platform.ANDROID;
 
                     } else if (firstCandidate === CROS) {
-                        firstCandidate = Environment.CHROME_OS;
+                        firstCandidate = Environment.Platform.CHROME_OS;
                     }
 
                     this._platformName = firstCandidate;
 
                 } else if (this.isIOSDevice) {
-                    this._platformName = Environment.IOS;
+                    this._platformName = Environment.Platform.IOS;
 
                 } else {
                     this._platformName = UNKNOWN;
@@ -176,7 +161,7 @@ var Environment = exports.Environment = Montage.specialize({
 
     browserVersion: {
         get: function () {
-            if (this._browserVersion === null) {
+            if (typeof this._browserVersion !== "string") {
                 this._analyzeBrowser();
             }
 
@@ -190,7 +175,7 @@ var Environment = exports.Environment = Montage.specialize({
 
     browserName: {
         get: function () {
-            if (this._browserName === null) {
+            if (typeof this._browserName !== "string") {
                 this._analyzeBrowser();
             }
 
@@ -204,11 +189,8 @@ var Environment = exports.Environment = Montage.specialize({
 
     isWKWebView: {
         get: function () {
-            if (this._isWKWebView === null) {
-                this._isWKWebView = this.isIOSDevice && !!window.indexedDB;
-            }
-
-            return this._isWKWebView;
+            return typeof this._isWKWebView !== "boolean" ?
+                (this._isWKWebView = this.isIOSDevice && !!window.indexedDB) : this._isWKWebView;
         }
     },
 
@@ -218,23 +200,22 @@ var Environment = exports.Environment = Montage.specialize({
 
     isUIWebView: {
         get: function () {
-            if (this._isUIWebView === null) {
-                this._isUIWebView = !this.isWKWebView;
-            }
-
-            return this._isUIWebView;
+            return typeof this._isUIWebView !== "boolean" ?
+                (this._isUIWebView = !this.isWKWebView) : this._isUIWebView;
         }
     },
 
     _analyzeBrowser: {
         value: function () {
             var userAgent = this.userAgent,
+                browserName = '',
+                browserVersion = '',
                 match;
 
             if (userAgent.indexOf(OPR) > -1) {
                 match = userAgent.match(/(opr(?=\/))\/?\s*([\d+\.?]+)/i);
 
-            } else if (userAgent.indexOf(Environment.EDGE) > -1) {
+            } else if (userAgent.indexOf(Environment.Browser.EDGE) > -1) {
                 match = userAgent.match(/(edge(?=\/))\/?\s*([\d+\.?]+)/i);
 
             }  else {
@@ -242,15 +223,14 @@ var Environment = exports.Environment = Montage.specialize({
             }
 
             if (match && match.length > 1) {
-                var browserName = match[1],
-                    browserVersion;
+                browserName = match[1];
 
-                if (browserName === Environment.SAFARI) {
+                if (browserName === Environment.Browser.SAFARI) {
                     // Support only safari 3.0+
                     browserVersion = userAgent.match(/version\/([\d+\.?]+)/i)[1];
 
-                } else if (browserName === Environment.CHROME || browserName=== Environment.FIREFOX || browserName === FXIOS ||
-                    browserName === MSIE || browserName === Environment.OPERA || browserName === CRIOS || browserName=== Environment.EDGE) {
+                } else if (browserName === Environment.Browser.CHROME || browserName=== Environment.Browser.FIREFOX || browserName === FXIOS ||
+                    browserName === MSIE || browserName === Environment.Browser.OPERA || browserName === CRIOS || browserName=== Environment.Browser.EDGE) {
                     // Support any version of Chrome or FF, Opera < 15 and some internet explorer user agents.
                     browserVersion = match[2];
 
@@ -260,91 +240,71 @@ var Environment = exports.Environment = Montage.specialize({
                 }
 
                 if (browserName === TRIDENT || browserName === MSIE) {
-                    browserName = Environment.IE;
+                    browserName = Environment.Browser.IE;
 
                 } else if (browserName === OPR) {
                     // Opera 15+
-                    browserName = Environment.OPERA;
+                    browserName = Environment.Browser.OPERA;
 
                 } else if (browserName === CRIOS) {
                     // Chrome IOS
-                    browserName = Environment.CHROME;
+                    browserName = Environment.Browser.CHROME;
 
                 } else if (browserName === FXIOS) {
                     // FIREFOX IOS
-                    browserName = Environment.FIREFOX;
+                    browserName = Environment.Browser.FIREFOX;
                 }
-
-                this._browserName = browserName;
-                this._browserVersion = browserVersion;
             }
+
+            this._browserName = browserName;
+            this._browserVersion = browserVersion;
         }
     }
 
 }, {
 
-    IOS: {
-        value: "ios"
+    Device: {
+        value: {
+            IPHONE: "iphone",
+
+            IPAD: "ipad",
+
+            IPOD: "ipod"
+        }
     },
 
-    ANDROID: {
-        value: "android"
+    Platform: {
+        value: {
+            IOS: "ios",
+
+            ANDROID: "android",
+
+            WINDOWS_PHONE: "windows phone",
+
+            MACINTOSH: "macintosh",
+
+            WINDOWS: "windows",
+
+            LINUX: "linux",
+
+            CHROME_OS: "chrome os"
+        }
     },
 
-    WINDOWS_PHONE: {
-        value: "windows phone"
-    },
+    Browser: {
+        value: {
+            SAFARI: "safari",
 
-    IPHONE: {
-        value: "iphone"
-    },
+            FIREFOX: "firefox",
 
-    IPAD: {
-        value: "ipad"
-    },
+            CHROME: "chrome",
 
-    IPOD: {
-        value: "ipod"
-    },
+            OPERA: "opera",
 
-    MACINTOSH: {
-        value: "macintosh"
-    },
+            IE: "ie",
 
-    WINDOWS: {
-        value: "windows"
-    },
-
-    LINUX: {
-        value: "linux"
-    },
-
-    CHROME_OS: {
-        value: "chrome os"
-    },
-
-    SAFARI: {
-        value: "safari"
-    },
-
-    FIREFOX: {
-        value: "firefox"
-    },
-
-    CHROME: {
-        value: "chrome"
-    },
-
-    OPERA: {
-        value: "opera"
-    },
-
-    IE: {
-        value: "ie"
-    },
-
-    EDGE: {
-        value: "edge"
+            EDGE: "edge"
+        }
     }
 
 });

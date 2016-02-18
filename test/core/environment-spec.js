@@ -36,56 +36,56 @@ describe("environment-spec", function () {
 
         it("should detect when running on IOS", function () {
             environment = new Environment(USER_AGENTS.IOS_IPHONE);
-            expect(environment.platformName).toBe(Environment.IOS);
+            expect(environment.platformName).toBe(Environment.Platform.IOS);
             expect(environment.isMobileDevice).toBe(true);
             expect(environment.isIOSDevice).toBe(true);
         });
 
         it("should detect the correct IOS device", function () {
             environment = new Environment(USER_AGENTS.IOS_IPHONE);
-            expect(environment.device).toBe(Environment.IPHONE);
+            expect(environment.device).toBe(Environment.Device.IPHONE);
             expect(environment.isIOSDevice).toBe(true);
             expect(environment.isMobileDevice).toBe(true);
 
             environment = new Environment(USER_AGENTS.IOS_IPOD);
-            expect(environment.device).toBe(Environment.IPOD);
+            expect(environment.device).toBe(Environment.Device.IPOD);
             expect(environment.isIOSDevice).toBe(true);
             expect(environment.isMobileDevice).toBe(true);
 
             environment = new Environment(USER_AGENTS.IOS_IPAD);
-            expect(environment.device).toBe(Environment.IPAD);
+            expect(environment.device).toBe(Environment.Device.IPAD);
             expect(environment.isIOSDevice).toBe(true);
             expect(environment.isMobileDevice).toBe(true);
         });
 
         it("should detect the correct browser on IOS", function () {
             environment = new Environment(USER_AGENTS.IOS_CHROME);
-            expect(environment.device).toBe(Environment.IPHONE);
+            expect(environment.device).toBe(Environment.Device.IPHONE);
             expect(environment.isMobileDevice).toBe(true);
             expect(environment.isIOSDevice).toBe(true);
-            expect(environment.platformName).toBe(Environment.IOS);
-            expect(environment.browserName).toBe(Environment.CHROME);
+            expect(environment.platformName).toBe(Environment.Platform.IOS);
+            expect(environment.browserName).toBe(Environment.Browser.CHROME);
 
             environment = new Environment(USER_AGENTS.IOS_IPHONE);
-            expect(environment.device).toBe(Environment.IPHONE);
+            expect(environment.device).toBe(Environment.Device.IPHONE);
             expect(environment.isMobileDevice).toBe(true);
             expect(environment.isIOSDevice).toBe(true);
-            expect(environment.platformName).toBe(Environment.IOS);
-            expect(environment.browserName).toBe(Environment.SAFARI);
+            expect(environment.platformName).toBe(Environment.Platform.IOS);
+            expect(environment.browserName).toBe(Environment.Browser.SAFARI);
 
             environment = new Environment(USER_AGENTS.IOS_IPHONE);
-            expect(environment.device).toBe(Environment.IPHONE);
+            expect(environment.device).toBe(Environment.Device.IPHONE);
             expect(environment.isIOSDevice).toBe(true);
             expect(environment.isMobileDevice).toBe(true);
-            expect(environment.platformName).toBe(Environment.IOS);
-            expect(environment.browserName).toBe(Environment.SAFARI);
+            expect(environment.platformName).toBe(Environment.Platform.IOS);
+            expect(environment.browserName).toBe(Environment.Browser.SAFARI);
 
             environment = new Environment(USER_AGENTS.IOS_FIREFOX);
-            expect(environment.device).toBe(Environment.IPHONE);
+            expect(environment.device).toBe(Environment.Device.IPHONE);
             expect(environment.isIOSDevice).toBe(true);
             expect(environment.isMobileDevice).toBe(true);
-            expect(environment.platformName).toBe(Environment.IOS);
-            expect(environment.browserName).toBe(Environment.FIREFOX);
+            expect(environment.platformName).toBe(Environment.Platform.IOS);
+            expect(environment.browserName).toBe(Environment.Browser.FIREFOX);
         });
 
     });
@@ -94,7 +94,7 @@ describe("environment-spec", function () {
 
         it("should detect when running on android", function () {
             environment = new Environment(USER_AGENTS.ANDROID_NEXUS_CHROME);
-            expect(environment.platformName).toBe(Environment.ANDROID);
+            expect(environment.platformName).toBe(Environment.Platform.ANDROID);
             expect(environment.isMobileDevice).toBe(true);
             expect(environment.isAndroidDevice).toBe(true);
         });
@@ -102,39 +102,39 @@ describe("environment-spec", function () {
         it("should detect the correct browser on android", function () {
             environment = new Environment(USER_AGENTS.ANDROID_NEXUS_CHROME);
             expect(environment.isMobileDevice).toBe(true);
-            expect(environment.platformName).toBe(Environment.ANDROID);
-            expect(environment.browserName).toBe(Environment.CHROME);
+            expect(environment.platformName).toBe(Environment.Platform.ANDROID);
+            expect(environment.browserName).toBe(Environment.Browser.CHROME);
             expect(environment.isAndroidDevice).toBe(true);
 
             environment = new Environment(USER_AGENTS.ANDROID_FIREFOX);
             expect(environment.isMobileDevice).toBe(true);
-            expect(environment.platformName).toBe(Environment.ANDROID);
-            expect(environment.browserName).toBe(Environment.FIREFOX);
+            expect(environment.platformName).toBe(Environment.Platform.ANDROID);
+            expect(environment.browserName).toBe(Environment.Browser.FIREFOX);
             expect(environment.isAndroidDevice).toBe(true);
 
             environment = new Environment(USER_AGENTS.ANDROID_OPERA);
             expect(environment.isMobileDevice).toBe(true);
-            expect(environment.platformName).toBe(Environment.ANDROID);
-            expect(environment.browserName).toBe(Environment.OPERA);
+            expect(environment.platformName).toBe(Environment.Platform.ANDROID);
+            expect(environment.browserName).toBe(Environment.Browser.OPERA);
             expect(environment.isAndroidDevice).toBe(true);
 
             environment = new Environment(USER_AGENTS.ANDROID_FIREFOX_TABLET);
-            expect(environment.platformName).toBe(Environment.ANDROID);
-            expect(environment.browserName).toBe(Environment.FIREFOX);
+            expect(environment.platformName).toBe(Environment.Platform.ANDROID);
+            expect(environment.browserName).toBe(Environment.Browser.FIREFOX);
             expect(environment.isAndroidDevice).toBe(true);
             expect(environment.isMobileDevice).toBe(false);
             expect(environment.isAndroidTablet).toBe(true);
 
             environment = new Environment(USER_AGENTS.ANDROID_CHROME_TABLET);
-            expect(environment.platformName).toBe(Environment.ANDROID);
-            expect(environment.browserName).toBe(Environment.CHROME);
+            expect(environment.platformName).toBe(Environment.Platform.ANDROID);
+            expect(environment.browserName).toBe(Environment.Browser.CHROME);
             expect(environment.isAndroidDevice).toBe(true);
             expect(environment.isMobileDevice).toBe(false);
             expect(environment.isAndroidTablet).toBe(true);
 
             environment = new Environment(USER_AGENTS.ANDROID_OPERA_TABLET);
-            expect(environment.platformName).toBe(Environment.ANDROID);
-            expect(environment.browserName).toBe(Environment.OPERA);
+            expect(environment.platformName).toBe(Environment.Platform.ANDROID);
+            expect(environment.browserName).toBe(Environment.Browser.OPERA);
             expect(environment.isAndroidDevice).toBe(true);
             expect(environment.isMobileDevice).toBe(false);
             expect(environment.isAndroidTablet).toBe(true);
@@ -146,25 +146,25 @@ describe("environment-spec", function () {
 
         it("should detect when running on mac os x", function () {
             environment = new Environment(USER_AGENTS.MAC_CHROME);
-            expect(environment.platformName).toBe(Environment.MACINTOSH);
+            expect(environment.platformName).toBe(Environment.Platform.MACINTOSH);
         });
 
         it("should detect the correct browser on mac os x", function () {
             environment = new Environment(USER_AGENTS.MAC_CHROME);
-            expect(environment.platformName).toBe(Environment.MACINTOSH);
-            expect(environment.browserName).toBe(Environment.CHROME);
+            expect(environment.platformName).toBe(Environment.Platform.MACINTOSH);
+            expect(environment.browserName).toBe(Environment.Browser.CHROME);
 
             environment = new Environment(USER_AGENTS.MAC_FIREFOX);
-            expect(environment.platformName).toBe(Environment.MACINTOSH);
-            expect(environment.browserName).toBe(Environment.FIREFOX);
+            expect(environment.platformName).toBe(Environment.Platform.MACINTOSH);
+            expect(environment.browserName).toBe(Environment.Browser.FIREFOX);
 
             environment = new Environment(USER_AGENTS.MAC_OPERA);
-            expect(environment.platformName).toBe(Environment.MACINTOSH);
-            expect(environment.browserName).toBe(Environment.OPERA);
+            expect(environment.platformName).toBe(Environment.Platform.MACINTOSH);
+            expect(environment.browserName).toBe(Environment.Browser.OPERA);
 
             environment = new Environment(USER_AGENTS.MAC_SAFARI);
-            expect(environment.platformName).toBe(Environment.MACINTOSH);
-            expect(environment.browserName).toBe(Environment.SAFARI);
+            expect(environment.platformName).toBe(Environment.Platform.MACINTOSH);
+            expect(environment.browserName).toBe(Environment.Browser.SAFARI);
 
         });
 
@@ -174,33 +174,33 @@ describe("environment-spec", function () {
 
         it("should detect when running on windows", function () {
             environment = new Environment(USER_AGENTS.WINDOWS_CHROME);
-            expect(environment.platformName).toBe(Environment.WINDOWS);
+            expect(environment.platformName).toBe(Environment.Platform.WINDOWS);
         });
 
         it("should detect the correct browser on windows", function () {
             environment = new Environment(USER_AGENTS.WINDOWS_CHROME);
-            expect(environment.platformName).toBe(Environment.WINDOWS);
-            expect(environment.browserName).toBe(Environment.CHROME);
+            expect(environment.platformName).toBe(Environment.Platform.WINDOWS);
+            expect(environment.browserName).toBe(Environment.Browser.CHROME);
 
             environment = new Environment(USER_AGENTS.WINDOWS_OPERA);
-            expect(environment.platformName).toBe(Environment.WINDOWS);
-            expect(environment.browserName).toBe(Environment.OPERA);
+            expect(environment.platformName).toBe(Environment.Platform.WINDOWS);
+            expect(environment.browserName).toBe(Environment.Browser.OPERA);
 
             environment = new Environment(USER_AGENTS.WINDOWS_FIREFOX);
-            expect(environment.platformName).toBe(Environment.WINDOWS);
-            expect(environment.browserName).toBe(Environment.FIREFOX);
+            expect(environment.platformName).toBe(Environment.Platform.WINDOWS);
+            expect(environment.browserName).toBe(Environment.Browser.FIREFOX);
 
             environment = new Environment(USER_AGENTS.WINDOWS_IE_10);
-            expect(environment.platformName).toBe(Environment.WINDOWS);
-            expect(environment.browserName).toBe(Environment.IE);
+            expect(environment.platformName).toBe(Environment.Platform.WINDOWS);
+            expect(environment.browserName).toBe(Environment.Browser.IE);
 
             environment = new Environment(USER_AGENTS.WINDOWS_IE_11);
-            expect(environment.platformName).toBe(Environment.WINDOWS);
-            expect(environment.browserName).toBe(Environment.IE);
+            expect(environment.platformName).toBe(Environment.Platform.WINDOWS);
+            expect(environment.browserName).toBe(Environment.Browser.IE);
 
             environment = new Environment(USER_AGENTS.WINDOWS_EDGE);
-            expect(environment.platformName).toBe(Environment.WINDOWS);
-            expect(environment.browserName).toBe(Environment.EDGE);
+            expect(environment.platformName).toBe(Environment.Platform.WINDOWS);
+            expect(environment.browserName).toBe(Environment.Browser.EDGE);
         });
 
     });
@@ -209,15 +209,15 @@ describe("environment-spec", function () {
 
         it("should detect when running on windows phone", function () {
             environment = new Environment(USER_AGENTS.WINDOWS_PHONE_EDGE);
-            expect(environment.platformName).toBe(Environment.WINDOWS_PHONE);
+            expect(environment.platformName).toBe(Environment.Platform.WINDOWS_PHONE);
             expect(environment.isMobileDevice).toBe(true);
 
         });
 
         it("should detect the correct browser on windows phone", function () {
             environment = new Environment(USER_AGENTS.WINDOWS_PHONE_EDGE);
-            expect(environment.platformName).toBe(Environment.WINDOWS_PHONE);
-            expect(environment.browserName).toBe(Environment.EDGE);
+            expect(environment.platformName).toBe(Environment.Platform.WINDOWS_PHONE);
+            expect(environment.browserName).toBe(Environment.Browser.EDGE);
             expect(environment.isMobileDevice).toBe(true);
         });
 
@@ -227,15 +227,15 @@ describe("environment-spec", function () {
 
         it("should detect when running on linux", function () {
             environment = new Environment(USER_AGENTS.LINUX_CHROME);
-            expect(environment.platformName).toBe(Environment.LINUX);
+            expect(environment.platformName).toBe(Environment.Platform.LINUX);
             expect(environment.isMobileDevice).toBe(false);
 
         });
 
         it("should detect the correct browser on windows phone", function () {
             environment = new Environment(USER_AGENTS.LINUX_CHROME);
-            expect(environment.platformName).toBe(Environment.LINUX);
-            expect(environment.browserName).toBe(Environment.CHROME);
+            expect(environment.platformName).toBe(Environment.Platform.LINUX);
+            expect(environment.browserName).toBe(Environment.Browser.CHROME);
         });
 
     });
@@ -244,15 +244,15 @@ describe("environment-spec", function () {
 
         it("should detect when running on chrome os", function () {
             environment = new Environment(USER_AGENTS.LINUX_CHROME);
-            expect(environment.platformName).toBe(Environment.LINUX);
+            expect(environment.platformName).toBe(Environment.Platform.LINUX);
             expect(environment.isMobileDevice).toBe(false);
 
         });
 
         it("should detect the correct browser on chrome os", function () {
             environment = new Environment(USER_AGENTS.CHROME_OS);
-            expect(environment.platformName).toBe(Environment.CHROME_OS);
-            expect(environment.browserName).toBe(Environment.CHROME);
+            expect(environment.platformName).toBe(Environment.Platform.CHROME_OS);
+            expect(environment.browserName).toBe(Environment.Browser.CHROME);
         });
 
     });

@@ -271,6 +271,7 @@ if (typeof window !== "undefined") { // client-side
                 this._observedTarget_byEventType_ = Object.create(null);
                 this._currentDispatchedTargetListeners = new Map();
                 this._elementEventHandlerByElement = new WeakMap();
+                this.environment = currentEnvironment;
                 return this;
             }
         },
@@ -2144,14 +2145,14 @@ if (typeof window !== "undefined") { // client-side
                      * Firefox has an open bug since 2004: the property timeStamp is not populated correctly.
                      * -> https://bugzilla.mozilla.org/show_bug.cgi?id=238041
                      */
-                    if (currentEnvironment.isIOSDevice && currentEnvironment.isWKWebView) {
+                    if (this.environment.isIOSDevice && this.environment.isWKWebView) {
                         return !(event.timeStamp === 0);
                     }
 
                     /**
                      * No needs do dispatch mouse events on android devices.
                      */
-                    if (currentEnvironment.isAndroidDevice && this._couldEventBeSimulated(event)) {
+                    if (this.environment.isAndroidDevice && this._couldEventBeSimulated(event)) {
                         return false;
                     }
 
