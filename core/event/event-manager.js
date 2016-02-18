@@ -23,6 +23,7 @@ var Montage = require("../core").Montage,
     Deserializer = require("core/serialization/deserializer/montage-deserializer").MontageDeserializer,
     Map = require("collections/map"),
     WeakMap = require("collections/weak-map"),
+    currentEnvironment = require("../environment").currentEnvironment,
     defaultEventManager;
 
 // XXX Does not presently function server-side
@@ -270,8 +271,7 @@ if (typeof window !== "undefined") { // client-side
                 this._observedTarget_byEventType_ = Object.create(null);
                 this._currentDispatchedTargetListeners = new Map();
                 this._elementEventHandlerByElement = new WeakMap();
-                this._isIOSPlatform = (/^iphone|^ipod|^ipad/gi).test(navigator.platform) && !!window.indexedDB;
-                this._isBrowserSupportPointerEvents = !!(window.PointerEvent || (window.MSPointerEvent && window.navigator.msPointerEnabled));
+                this.environment = currentEnvironment;
                 return this;
             }
         },
@@ -284,10 +284,7 @@ if (typeof window !== "undefined") { // client-side
                     index++
                 }
                 arr.length--;
-            },
-        },
-        _isBrowserSupportPointerEvents: {
-            value: void 0
+            }
         },
         /**
          * Utility
@@ -1642,7 +1639,7 @@ if (typeof window !== "undefined") { // client-side
                     return (this.memory[identifier] && (this.memory[identifier].size > 0));
                 },
                 storeEvent: function (mutableEvent) {
-                    var isBrowserSupportPointerEvents = this._isBrowserSupportPointerEvents,
+                    var isBrowserSupportPointerEvents = currentEnvironment.isBrowserSupportPointerEvents,
                         event = mutableEvent instanceof MutableEvent ? mutableEvent._event : mutableEvent,
                         pointerType = event.pointerType;
 
@@ -1701,7 +1698,7 @@ if (typeof window !== "undefined") { // client-side
                 },
 
                 removeEvent: function (mutableEvent) {
-                    var isBrowserSupportPointerEvents = this._isBrowserSupportPointerEvents,
+                    var isBrowserSupportPointerEvents = currentEnvironment.isBrowserSupportPointerEvents,
                         event = mutableEvent instanceof MutableEvent ? mutableEvent._event : mutableEvent;
 
                     if ((isBrowserSupportPointerEvents &&
@@ -2027,10 +2024,6 @@ if (typeof window !== "undefined") { // client-side
             value: Object.create(null)
         },
 
-        _isIOSPlatform: {
-            value: null
-        },
-
         _wouldTouchTriggerSimulatedEvent: {
             value: function (event) {
 
@@ -2126,9 +2119,11 @@ if (typeof window !== "undefined") { // client-side
         _shouldDispatchEventCondition: {
             value: undefined
         },
+
         _evaluateShouldDispatchEventCondition: {
             value: function() {
-                this._shouldDispatchEventCondition = (this.blocksEmulatedEvents && !window.PointerEvent && !(window.MSPointerEvent && window.navigator.msPointerEnabled));
+                this._shouldDispatchEventCondition = (this.blocksEmulatedEvents && !window.PointerEvent &&
+                !(window.MSPointerEvent && window.navigator.msPointerEnabled));
             }
         },
 
@@ -2150,8 +2145,15 @@ if (typeof window !== "undefined") { // client-side
                      * Firefox has an open bug since 2004: the property timeStamp is not populated correctly.
                      * -> https://bugzilla.mozilla.org/show_bug.cgi?id=238041
                      */
-                    if (this._isIOSPlatform) {
+                    if (this.environment.isIOSDevice && this.environment.isWKWebView) {
                         return !(event.timeStamp === 0);
+                    }
+
+                    /**
+                     * No needs do dispatch mouse events on android devices.
+                     */
+                    if (this.environment.isAndroidDevice && this._couldEventBeSimulated(event)) {
+                        return false;
                     }
 
                     // Checks if the event may trigger simulated events.
@@ -2162,7 +2164,7 @@ if (typeof window !== "undefined") { // client-side
                         this._listenToTouchCancelIfNeeded(event);
 
                         for (var i = 0, length = changedTouches.length; i < length; i++) {
-                            this._trackTouch(event, changedTouches[i].identifier);
+                            this._trackTouch(event, changedTouches[i]);
                         }
 
                     } else if (this._couldEventBeSimulated(event)) { // Determines if mouse events are simulated.
@@ -2175,9 +2177,13 @@ if (typeof window !== "undefined") { // client-side
         },
 
         _trackTouch: {
-            value: function (touchEvent, touchIdentifier) {
+            value: function (touchEvent, touch) {
                 var timeoutIDs = this._trackingTouchTimeoutIDs,
-                    trackingTouchEndList = this._trackingTouchEndList;
+                    trackingTouchStartList = this._trackingTouchStartList,
+                    trackingTouchEndList = this._trackingTouchEndList,
+                    touchIdentifier = touch.identifier;
+
+                touch.timeStamp = touchEvent.timeStamp;
 
                 if (touchEvent.type === "touchstart") {
                     /**
@@ -2191,7 +2197,7 @@ if (typeof window !== "undefined") { // client-side
                         delete timeoutIDs[touchIdentifier];
                     }
 
-                    this._trackingTouchStartList[touchIdentifier] = touchEvent.target;
+                    trackingTouchStartList[touchIdentifier] = touch;
 
                 } else { // touchend
                     timeoutIDs[touchIdentifier] = setTimeout(function () {
@@ -2204,8 +2210,8 @@ if (typeof window !== "undefined") { // client-side
                      * http://developer.telerik.com/featured/scroll-event-change-ios-8-big-deal/
                      */
 
-                    delete this._trackingTouchStartList[touchIdentifier];
-                    this._trackingTouchEndList[touchIdentifier] = touchEvent.target;
+                    delete trackingTouchStartList[touchIdentifier];
+                    trackingTouchEndList[touchIdentifier] = touch;
                 }
             }
         },
@@ -2220,11 +2226,6 @@ if (typeof window !== "undefined") { // client-side
          */
         _isEmulatedEvent: {
             value: function (event) {
-                var trackingTouchList =  this._trackingTouchStartList,
-                    mouseTarget = event.target,
-                    response = false,
-                    identifier;
-
                 /**
                  * Can't use the position, indeed the emulated mouse events are not at the same position
                  * than the touch events than triggered them. Doesn't work with a radius as well.
@@ -2233,19 +2234,14 @@ if (typeof window !== "undefined") { // client-side
                  * Needs to check both maps for devices with multiples pointers
                  * (touchstart + mousedown -> mouseup -> click) or (touchstart + delay ≈ 600ms -> mousedown)
                  */
-                for (identifier in trackingTouchList) {
-                    if ((response = trackingTouchList[identifier] === mouseTarget)) break;
-                }
+                var response = this._findEmulatedEventIdentifierWithEventAndTrackingTouchList(event, this._trackingTouchStartList) > -1;
 
                 if (!response) {
-                    trackingTouchList = this._trackingTouchEndList;
-
-                    for (identifier in trackingTouchList) {
-                        if ((response = trackingTouchList[identifier] === mouseTarget)) break;
-                    }
+                    var trackingTouchList = this._trackingTouchEndList,
+                        identifier = this._findEmulatedEventIdentifierWithEventAndTrackingTouchList(event, trackingTouchList);
 
                     // Faster "awake", can be useful for devices with multiple pointers. (simultaneous click/touch)
-                    if (response && event.type === "click") {
+                    if ((response = identifier > -1) && event.type === "click") {
                         var timeoutIDs = this._trackingTouchTimeoutIDs,
                             timeoutID = timeoutIDs[identifier];
 
@@ -2259,6 +2255,67 @@ if (typeof window !== "undefined") { // client-side
                 }
 
                 return response;
+            }
+        },
+
+        _emulatedEventTimestampThreshold: {
+            value: 20 //ms
+        },
+
+        _emulatedEventRadiusThreshold: {
+            value: 20 //px
+        },
+
+        /**
+         * @function
+         * @private
+         *
+         */
+        _findEmulatedEventIdentifierWithEventAndTrackingTouchList: {
+            value: function (mouseEvent, trackingTouchList) {
+                var mouseTarget = mouseEvent.target,
+                    identifier = -1,
+                    touch;
+
+                for (identifier in trackingTouchList) {
+                    touch = trackingTouchList[identifier];
+
+                    if (touch.target === mouseTarget ||
+                        this._couldEmulatedEventHasWrongTarget(
+                            touch.clientX,
+                            touch.clientY,
+                            mouseEvent.clientX,
+                            mouseEvent.clientY,
+                            this._emulatedEventRadiusThreshold,
+                            touch.timeStamp,
+                            mouseEvent.timeStamp,
+                            this._emulatedEventTimestampThreshold
+                        )) break;
+                }
+
+                return identifier;
+            }
+        },
+
+        /**
+         * @function
+         * @private
+         * @description Check if a mouse event can not be a simulated event even if the target is different.
+         * Indeed, Touch Events and simulated Mouse Events can have a different target and not the same position on Chrome.
+         *
+         */
+        _couldEmulatedEventHasWrongTarget: {
+            value: function (touchX, touchY, mouseX, mouseY, radiusThreshold, touchTimestamp, mouseTimestamp, timestampThreshold) {
+                var dTimestamp = mouseTimestamp - touchTimestamp;
+
+                if (dTimestamp <= timestampThreshold) {
+                    var dX = touchX - mouseY,
+                        dY = touchY - mouseY;
+
+                    return dX * dX + dY * dY > radiusThreshold * radiusThreshold;
+                }
+
+                return false;
             }
         },
 
@@ -2311,8 +2368,6 @@ if (typeof window !== "undefined") { // client-side
         handleEvent: {
             enumerable: false,
             value: function (event) {
-                //console.groupTime("handleEvent");
-                //console.profile("handleEvent "+event.type);
                 if (!this._shouldDispatchEvent(event)) {
                     return void 0;
                 }

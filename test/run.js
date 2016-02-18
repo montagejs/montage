@@ -39,6 +39,7 @@ require("montage-testing").run(require, [
     "core/core-spec",
     "core/core-require-spec",
     "core/dom-spec",
+    "core/environment-spec",
     "core/localizer-spec",
     "core/media-controller-spec",
     "core/range-controller-spec",
