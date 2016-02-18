@@ -4,7 +4,14 @@
  * @module montage/ui/base/abstract-image.reel
  */
 var Component = require("../component").Component,
-    URL = require("../../core/mini-url");
+    URL = require("../../core/mini-url"),
+    Map = require("collections/map");
+
+    if (typeof window !== "undefined") { // client-side
+        Map = window.Map || Map;
+    }
+
+
 
 /**
  * @class AbstractImage
@@ -18,8 +25,6 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
                 throw new Error("AbstractImage cannot be instantiated.");
             }
 
-            this._image = new Image();
-            this._image.onload = this.handleImageLoad.bind(this);
             this.addPathChangeListener("_ownerDocumentPart", this, "_rebaseSrc");
         }
     },
@@ -63,8 +68,11 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
 
     _loadImage: {
         value: function (src) {
-            this._image.src = src;
-            this._isLoadingImage = !this._image.complete;
+                if(!this._image || src !== this._image.src ) {
+                    if(this._image) this.constructor.checkinImage(this._image);
+                    this._image = this.constructor.checkoutImageWithURL(src,this);
+                    this._isLoadingImage = !this._image.complete;
+                }
         }
     },
 
@@ -190,11 +198,86 @@ var AbstractImage = exports.AbstractImage = Component.specialize( /** @lends Abs
         }
     },
 
-    handleImageLoad: {
+    handleLoad: {
         value: function () {
             this._isLoadingImage = false;
             this.needsDraw = true;
         }
     }
-});
+},
 
+//Construtor methods
+{
+    "checkoutImageWithURL": {
+        value: function(url,imageComponent) {
+            var cachedImage = this._imageCache.get(url);
+
+            if (!cachedImage) {
+                cachedImage = this._imagePool.pop() || new Image();
+                cachedImage.addEventListener("load",imageComponent,false);
+                cachedImage.src = url;
+                this._imageCache.set(url,cachedImage);
+                this._imageCacheSize++;
+            }
+            else if (!cachedImage.complete) {
+                cachedImage.addEventListener("load",imageComponent,false);
+            }
+            else {
+                imageComponent.handleLoad({target:cachedImage});
+            }
+            //In case
+            this._imagesToClear.delete(cachedImage);
+            this._imageReferenceCount.set(cachedImage,(this._imageReferenceCount.get(cachedImage)||0)+1);
+
+            return cachedImage;
+        }
+    },
+    "checkinImage": {
+        value: function(image) {
+            var currentCount = this._imageReferenceCount.get(image)-1;
+            if (currentCount === 0) {
+                this._imagesToClear.set(image,Date.now());
+                if(!this._clearImageInterval) {
+                    this._clearImageInterval = window.setInterval(this._clearImage, this.clearCacheInterval, this);
+                }
+            }
+            else {
+                this._imageReferenceCount.set(image,currentCount);
+            }
+        }
+    },
+    "_clearImage": {
+        value: function(self) {
+            self._imagesToClear.forEach(function(lastUsed, image, imagesToClear) {
+                if((Date.now() - lastUsed) > this.maxTimeUnused) {
+                    console.log("clearImage ",image.src);
+                    self._imagePool.push(image);
+                    self._imageReferenceCount.delete(image);
+                    self._imageCache.delete(image.src);
+                    image.src = void 0;
+                }
+            });
+        }
+    },
+    _imagePool: {
+        value: []
+    },
+    _imagesToClear: {
+        value: new Map()
+    },
+    _imageReferenceCount: {
+        value: new Map()
+    },
+    _imageCache: {
+        value: new Map()
+    },
+    clearCacheInterval: {
+        value: 60000
+    },
+    maxTimeUnused: {
+        value: 60000
+    },
+    _imageCacheSize: {
+        value: 0
+    }
+});
