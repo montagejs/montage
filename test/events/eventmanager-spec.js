@@ -206,7 +206,7 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                 var listener = new Montage();
                 testDocument.addEventListener("mousedown", listener, false);
 
-                expect(eventManager.registeredEventListenersForEventType_onTarget_phase_("mousedown",testDocument,false).has(listener)).toBe(true);
+                expect(eventManager.registeredEventListenersForEventType_onTarget_phase_("mousedown",testDocument,false)).toEqual(listener);
                 expect(eventManager.registeredEventListenersForEventType_onTarget_phase_("mousedown",testDocument,true)).toBeNull();
             });
 
@@ -280,8 +280,8 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
                 var bubbleTestDocumentListeners = eventManager.registeredEventListenersForEventType_onTarget_phase_("foo",testDocument,false);
                 var bubbleTestDocumentElementListeners = eventManager.registeredEventListenersForEventType_onTarget_phase_("foo",testDocument.documentElement,false);
 
-                expect(bubbleTestDocumentListeners.has(docEventSpy)).toBeTruthy();
-                expect(bubbleTestDocumentElementListeners.has(rootEventSpy)).toBeTruthy();
+                expect(bubbleTestDocumentListeners).toEqual(docEventSpy);
+                expect(bubbleTestDocumentElementListeners).toEqual(rootEventSpy);
 
                 var captureTestDocumentListeners = eventManager.registeredEventListenersForEventType_onTarget_phase_("foo",testDocument,true);
                 var captureTestDocumentElementListeners = eventManager.registeredEventListenersForEventType_onTarget_phase_("foo",testDocument.documentElement,true);
@@ -299,8 +299,8 @@ TestPageLoader.queueTest("eventmanagertest/eventmanagertest", function (testPage
 
                 var listeners = eventManager.registeredEventListenersForEventType_onTarget_("bar", testDocument);
 
-                expect(listeners.has(docEventSpy)).toBeTruthy();
-                expect(listeners.has(rootEventSpy)).toBeFalsy();
+                expect(listeners).toEqual(docEventSpy);
+                expect(listeners).toEqual(rootEventSpy);
             });
 
         });

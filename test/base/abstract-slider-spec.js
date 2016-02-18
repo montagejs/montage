@@ -349,7 +349,7 @@ describe("test/base/abstract-slider-spec", function () {
                 aSlider.prepareForActivationEvents();
 
                 listeners = em.registeredEventListenersForEventType_onTarget_("translateStart", aSlider._translateComposer);
-                expect(listeners.has(aSlider)).toBe(true);
+                expect(listeners).toEqual(aSlider);
             });
             it("should listen for translate only after prepareForActivationEvents", function () {
                 var listeners,
@@ -364,7 +364,7 @@ describe("test/base/abstract-slider-spec", function () {
                 aSlider.prepareForActivationEvents();
 
                 listeners = em.registeredEventListenersForEventType_onTarget_("translate", aSlider._translateComposer);
-                expect(listeners.has(aSlider)).toBe(true);
+                expect(listeners).toEqual(aSlider);
             });
             it("should listen for translateEnd only after prepareForActivationEvents", function () {
                 var listeners,
@@ -379,7 +379,7 @@ describe("test/base/abstract-slider-spec", function () {
                 aSlider.prepareForActivationEvents();
 
                 listeners = em.registeredEventListenersForEventType_onTarget_("translateEnd", aSlider._translateComposer);
-                expect(listeners.has(aSlider)).toBe(true);
+                expect(listeners).toEqual(aSlider);
             });
         });
     });
