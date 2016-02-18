@@ -50,7 +50,7 @@ Object.defineProperty(String.prototype, "contains", {
 Object.defineProperty(String.prototype, "toCapitalized", {
     value: function toCapitalized() {
         var value;
-        return toCapitalized.cache.get(this) || (toCapitalized.cache.set(this,(value = this[0].toUpperCase() + this.slice(1))) ? value : null);
+        return toCapitalized.cache.get(String(this)) || (toCapitalized.cache.set(String(this),(value = this[0].toUpperCase() + this.slice(1))) ? value : null);
     },
     writable: true,
     configurable: true
