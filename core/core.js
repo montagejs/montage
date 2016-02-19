@@ -19,11 +19,22 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     ENUMERABLE = "enumerable",
     DISTINCT = "distinct",
     SERIALIZABLE = "serializable",
-    UNDERSCORE_UNICODE = 95;
-
-var ARRAY_PROTOTYPE = Array.prototype;
-
-var OBJECT_PROTOTYPE = Object.prototype;
+    UNDERSCORE_UNICODE = 95,
+    ARRAY_PROTOTYPE = Array.prototype,
+    OBJECT_PROTOTYPE = Object.prototype,
+    accessorPropertyDescriptor = {
+        get: void 0,
+        set: void 0,
+        configurable: false,
+        enumerable: false,
+        writable: false
+    },
+    valuePropertyDescriptor = {
+        value: void 0,
+        configurable: false,
+        enumerable: false,
+        writable: false
+    };
 
 /**
  * The Montage constructor provides conveniences for sub-typing
@@ -38,9 +49,8 @@ var Montage = exports.Montage = function Montage() {};
 var PROTO_IS_SUPPORTED = {}.__proto__ === Object.prototype;
 var PROTO_PROPERTIES_BLACKLIST = {"_montage_metadata": 1, "__state__": 1};
 
-Object.defineProperty(Montage, "_hasUserDefinedConstructor", {
-    value: false
-});
+valuePropertyDescriptor.value = false;
+Object.defineProperty(Montage, "_hasUserDefinedConstructor", valuePropertyDescriptor);
 
 /**
  * Customizes a type with idiomatic JavaScript constructor and prototype
@@ -59,8 +69,8 @@ Object.defineProperty(Montage, "_hasUserDefinedConstructor", {
  * derrives prototypically from `this`, with a prototype that inherits
  * `this.prototype`, with the given property descriptors applied.
  */
-Object.defineProperty(Montage, "specialize", {
-    value: function specialize(prototypeProperties, constructorProperties) {
+
+valuePropertyDescriptor.value = function specialize(prototypeProperties, constructorProperties) {
         var constructor, prototype, names, propertyName, property, i, length,
             // check if this constructor has Montage capabilities
             parent = this,
@@ -193,11 +203,13 @@ Object.defineProperty(Montage, "specialize", {
 
         return constructor;
 
-    },
-    writable: true,
-    configurable: true,
-    enumerable: false
-});
+    };
+valuePropertyDescriptor.writable = false;
+valuePropertyDescriptor.configurable = false;
+valuePropertyDescriptor.enumerable = false;
+Object.defineProperty(Montage, "specialize", valuePropertyDescriptor);
+
+
 if (!PROTO_IS_SUPPORTED) {
     // If the __proto__ property isn't supported than we need to patch up behavior for constructor functions
     var originalGetPrototypeOf = Object.getPrototypeOf;
@@ -217,13 +229,18 @@ var extendedPropertyAttributes = [SERIALIZABLE];
 /**
  * @member external:Object#extendedPropertyAttributes
  */
+
+ valuePropertyDescriptor.writable = true;
+ valuePropertyDescriptor.configurable = false;
+ valuePropertyDescriptor.enumerable = false;
+
 extendedPropertyAttributes.forEach(function (name) {
-    Object.defineProperty(Object.prototype, UNDERSCORE + name + ATTRIBUTE_PROPERTIES, {
-        enumerable: false,
-        configurable: false,
-        writable: true,
-        value: {}
-    });
+    var propertyName = UNDERSCORE;
+
+    propertyName += name;
+    propertyName += ATTRIBUTE_PROPERTIES;
+    valuePropertyDescriptor.value = {};
+    Object.defineProperty(Object.prototype, propertyName, valuePropertyDescriptor);
 });
 
 /**
@@ -256,9 +273,8 @@ extendedPropertyAttributes.forEach(function (name) {
  *     writable: true | false
  * });
  */
-Object.defineProperty(Montage, "defineProperty", {
-
-    value: function (obj, prop, descriptor) {
+valuePropertyDescriptor.writable = valuePropertyDescriptor.configurable = valuePropertyDescriptor.enumerable = false;
+valuePropertyDescriptor.value = function Montage_defineProperty(obj, prop, descriptor) {
         if (! (typeof obj === "object" || typeof obj === "function") || obj === null) {
             throw new TypeError("Object must be an object, not '" + obj + "'");
         }
@@ -338,10 +354,9 @@ Object.defineProperty(Montage, "defineProperty", {
                 }
             }
         }
-
         return Object.defineProperty(obj, prop, descriptor);
-    }
-});
+    };
+Object.defineProperty(Montage, "defineProperty", valuePropertyDescriptor);
 
 /**
  * Defines one or more new properties to an object, or modifies existing
@@ -752,101 +767,9 @@ Montage.defineProperty(Montage, "getInfoForObject", {
     }
 });
 
-// TODO figure out why this code only works in this module.  Attempts to move
-// it to core/extras/object resulted in _uuid becoming enumerable and tests
-// breaking. - @kriskowal
-
-var UUID = require("./uuid");
-
-// HACK: This is to fix an IE10 bug where a getter on the window prototype chain
-// gets some kind of proxy Window object which cannot have properties defined
-// on it, instead of the `window` itself. Adding the uuid directly to the
-// window removes the needs to call the getter.
-if (typeof window !== "undefined") {
-    window.uuid = UUID.generate();
-}
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
-var uuidGetGenerator = function () {
-
-    var uuid = UUID.generate(),
-        info = Montage.getInfoForObject(this);
-    try {
-        if (info !== null && info.isInstance === false) {
-            this._uuid = uuid;
-            Object.defineProperty(this, "uuid", {
-                get: function () {
-                    if (this.hasOwnProperty("uuid")) {
-                        // we are calling uuid on the prototype
-                        return this._uuid;
-                    } else {
-                        // we are calling uuid on instance of this prototype
-                        return uuidGetGenerator.call(this);
-                    }
-                }
-            });
-        } else {
-            //This is needed to workaround some bugs in Safari where re-defining uuid doesn't work for DOMWindow.
-            if (info.isInstance) {
-                Object.defineProperty(this, "uuid", {
-                    configurable: true,
-                    enumerable: false,
-                    writable: false,
-                    value: uuid
-                });
-            }
-            //This is really because re-defining the property on DOMWindow actually doesn't work, so the original property with the getter is still there and return this._uuid if there.
-            if (this instanceof Element || !info.isInstance || !(VALUE in (Object.getOwnPropertyDescriptor(this, "uuid")||{})) || !(PROTO in this /* lame way to detect IE */)) {
-                //This is needed to workaround some bugs in Safari where re-defining uuid doesn't work for DOMWindow.
-                this._uuid = uuid;
-            }
-        }
-    } catch(e) {
-        // NOTE Safari (as of Version 5.0.2 (6533.18.5, r78685)
-        // doesn't seem to allow redefining an existing property on a DOM Element
-        // Still want to redefine the property where possible for speed
-    }
-
-    // NOTE Safari (as of Version 6.1 8537.71) has a bug related to ES5
-    // property values. In some situations, even when the uuid has already
-    // been defined as a property value, accessing the uuid of an object can
-    // make it go through the defaultUuidGet as if the property descriptor
-    // was still the original one. When that happens, a new uuid is created
-    // for that object. To avoid this, we always make sure that the object
-    // has a _uuid that will be looked up at defaultUuidGet() before
-    // generating a new one. This mechanism was created to work around an
-    // issue with Safari that didn't allow redefining property descriptors
-    // in DOM elements.
-    this._uuid = uuid;
-
-    return uuid;
-};
-
-var defaultUuidGet = function defaultUuidGet() {
-    return (hasOwnProperty.call(this, "_uuid") ? this._uuid : uuidGetGenerator.call(this));
-};
-
-/**
-    @private
-*/
-Object.defineProperty(Object.prototype, "_uuid", {
-    enumerable: false,
-    value: null,
-    writable: true
-});
-
-/**
-    Contains an object's unique ID.
-    @member external:Object#uuid
-    @default null
-*/
-Object.defineProperty(Object.prototype, "uuid", {
-    configurable: true,
-    get: defaultUuidGet,
-    set: Function.noop,
-    enumerable: false
-});
 
 Montage.defineProperty(Montage, "identifier", {
     value: null,
@@ -868,7 +791,7 @@ Montage.defineProperty(Montage.prototype, "identifier", {
 Montage.defineProperty(Montage.prototype, "equals", {
     value: function (anObject) {
         if (!anObject) return false;
-        return this === anObject || this.uuid === anObject.uuid;
+        return this === anObject || (this.uuid && this.uuid === anObject.uuid);
     }
 });
 
@@ -1145,17 +1068,45 @@ Montage.defineProperties(Montage.prototype, bindingPropertyDescriptors);
 
 // Paths
 
-var WeakMap = require("collections/weak-map");
-var Map = require("collections/map");
+var WeakMap = require("collections/weak-map"),
+    Map = global.Map ? global.Map : require("collections/map"),
+    parse = require("frb/parse"),
+    evaluate = require("frb/evaluate"),
+    assign = require("frb/assign"),
+    bind = require("frb/bind"),
+    compileObserver = require("frb/compile-observer"),
+    Scope = require("frb/scope"),
+    Observers = require("frb/observers"),
+    autoCancelPrevious = Observers.autoCancelPrevious;
 
-var parse = require("frb/parse");
-var evaluate = require("frb/evaluate");
-var assign = require("frb/assign");
-var bind = require("frb/bind");
-var compileObserver = require("frb/compile-observer");
-var Scope = require("frb/scope");
-var Observers = require("frb/observers");
-var autoCancelPrevious = Observers.autoCancelPrevious;
+
+var PathChangeDescriptor = function PathChangeDescriptor() {
+    this._willChangeListeners = null;
+    this._changeListeners = null;
+	return this;
+}
+
+Object.defineProperties(PathChangeDescriptor.prototype,{
+	_willChangeListeners: {
+		value:null,
+		writable: true
+	},
+	willChangeListeners: {
+		get: function() {
+			return this._willChangeListeners || (this._willChangeListeners = new Map());
+		}
+	},
+	_changeListeners: {
+		value:null,
+		writable: true
+	},
+    changeListeners: {
+		get: function() {
+			return this._changeListeners || (this._changeListeners = new Map());
+		}
+	}
+
+});
 
 var pathChangeDescriptors = new WeakMap();
 
@@ -1283,7 +1234,7 @@ var pathPropertyDescriptors = {
     getPathChangeDescriptors: {
         value: function () {
             if (!pathChangeDescriptors.has(this)) {
-                pathChangeDescriptors.set(this, {});
+                pathChangeDescriptors.set(this, new Map());
             }
             return pathChangeDescriptors.get(this);
         }
@@ -1305,19 +1256,12 @@ var pathPropertyDescriptors = {
     getPathChangeDescriptor: {
         value: function (path, handler, beforeChange) {
             var descriptors = Montage.getPathChangeDescriptors.call(this);
-            if (!Object.owns(descriptors, path)) {
-                descriptors[path] = {
-                    willChangeListeners: new Map(), // handler to descriptor
-                    changeListeners: new Map()
-                };
+            if (!descriptors.has(path)) {
+                descriptors.set(path, new PathChangeDescriptor);
             }
 
-            descriptors = descriptors[path];
-            if (beforeChange) {
-                descriptors = descriptors.willChangeListeners;
-            } else {
-                descriptors = descriptors.changeListeners;
-            }
+            descriptors = descriptors.get(path);
+            descriptors = beforeChange ? descriptors.willChangeListeners : descriptors.changeListeners;
 
             if (!descriptors.has(handler)) {
                 descriptors.set(handler, {
@@ -1432,17 +1376,17 @@ var pathPropertyDescriptors = {
             var descriptorsForObject = Montage.getPathChangeDescriptors.call(this);
             var phase = beforeChange ? "willChangeListeners" : "changeListeners";
 
-            if (!Object.owns(descriptorsForObject, path)) {
+            var descriptorsForPath = descriptorsForObject.get(path);
+            if (!descriptorsForPath) {
                 throw new Error("Can't find " + phase + " for " + JSON.stringify(path));
             }
-            var descriptorsForPath = descriptorsForObject[path];
             var descriptorsForPhase = descriptorsForPath[phase];
             if (!descriptorsForPhase.has(handler)) {
                 throw new Error("Can't find " + phase + " for " + JSON.stringify(path));
             }
             var descriptor = descriptorsForPhase.get(handler);
             descriptor.cancel();
-            descriptorsForPhase["delete"](handler);
+            descriptorsForPhase.delete(handler);
             if (
                 descriptorsForPath.willChangeListeners.length === 0 &&
                 descriptorsForPath.changeListeners.length === 0

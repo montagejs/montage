@@ -7,9 +7,8 @@ var RangeController = require("../../core/range-controller").RangeController;
 var Promise = require("../../core/promise").Promise;
 var PressComposer = require("../../composer/press-composer").PressComposer;
 
-var Map = require("collections/map");
-var Set = require("collections/set");
-
+var Map = global.Map ? global.Map : require("collections/map");
+var Set = global.Set ? global.Set : require("collections/set");
 var logger = require("../../core/logger").logger("repetition").color.magenta();
 
 var TIMEOUT_BEFORE_ITERATION_BECOME_ACTIVE = 60;
@@ -980,7 +979,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // We track the direct child nodes of every iteration so we can
             // look up which iteration a mouse or touch event occurs on, for
             // the purpose of selection tracking.
-            this._iterationForElement = Map();
+            this._iterationForElement = new Map();
 
             // This promise synchronizes the creation of new iterations.
             this._iterationCreationPromise = Promise.resolve();
@@ -997,7 +996,7 @@ var Repetition = exports.Repetition = Component.specialize(/** @lends Repetition
             // and iterations on the DOM:
             // ---
 
-            this._dirtyClassListIterations = Set();
+            this._dirtyClassListIterations = new Set();
             // We can draw when we have created all requested iterations.
             this._requestedIterations = 0;
             this._createdIterations = 0;

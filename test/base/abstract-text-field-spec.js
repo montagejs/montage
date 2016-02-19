@@ -225,7 +225,7 @@ describe("test/base/abstract-text-field-spec", function () {
             aTextField.prepareForActivationEvents();
 
             listeners = em.registeredEventListenersForEventType_onTarget_("keyPress", aTextField._keyComposer);
-            expect(listeners.has(aTextField)).toBe(true);
+            expect(listeners).toEqual(aTextField);
         });
 
         describe("once prepareForActivationEvents is called", function () {

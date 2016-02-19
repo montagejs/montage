@@ -32,6 +32,7 @@ var Montage = require("montage").Montage;
 // TODO [June 20 2011 PJYF] This s temporary implementation of WeakMap to let the browser catch up.
 var WeakMap = require("collections/weak-map");
 var Map = require("collections/map");
+var UUID = require("montage/core/uuid");
 
 describe("core/core-spec", function () {
 
@@ -75,6 +76,9 @@ describe("core/core-spec", function () {
         describe("regular objects", function () {
 
             it("should have a unique uuid defined", function () {
+                Montage.defineUuidProperty(object);
+                Montage.defineUuidProperty(object2);
+
                 expect(object.uuid).toBeTruthy();
                 expect(object2.uuid).toBeTruthy();
                 expect(object.uuid).not.toBe(object2.uuid);
@@ -91,12 +95,16 @@ describe("core/core-spec", function () {
             describe("getting prototypes uuid", function () {
 
                 it("should have a unique uuid defined", function () {
+                    Montage.defineUuidProperty(A);
+                    Montage.defineUuidProperty(BSubClassOfA);
                     expect(A.uuid).toBeTruthy();
                     expect(BSubClassOfA.uuid).toBeTruthy();
                     expect(A.uuid).not.toEqual(BSubClassOfA.uuid);
                 });
 
                 it("shouldn't affect the instances' uuid", function () {
+                    Montage.defineUuidProperty(a);
+                    Montage.defineUuidProperty(b);
                     expect(a.uuid).toBeTruthy();
                     expect(b.uuid).toBeTruthy();
                     expect(a.uuid).not.toEqual(A.uuid);
@@ -113,6 +121,9 @@ describe("core/core-spec", function () {
             });
 
             it("should have a unique uuid defined", function () {
+                Montage.defineUuidProperty(a);
+                Montage.defineUuidProperty(a2);
+                Montage.defineUuidProperty(b);
                 expect(a.uuid).toBeTruthy();
                 expect(a2.uuid).toBeTruthy();
                 expect(a.uuid).not.toEqual(a2.uuid);
@@ -122,11 +133,14 @@ describe("core/core-spec", function () {
             });
 
             it("should have a constant uuid", function () {
+                Montage.defineUuidProperty(a);
+                Montage.defineUuidProperty(b);
                 expect(a.uuid).toBe(a.uuid);
                 expect(b.uuid).toBe(b.uuid);
             });
 
             it("should be equal based on uuid", function () {
+                Montage.defineUuidProperty(a);
                 expect(a.equals(a2)).toBeFalsy();
                 var a3 = new Montage();
                 a3.__proto__ = null;

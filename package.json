@@ -31,12 +31,12 @@
     "frb": "~0.2.18",
     "htmlparser2": "~3.0.5",
     "mr": "montagejs/mr#master",
-    "bluebird":"~3.0.5",
+    "bluebird":"~3.2.2",
     "q-io": "~1.11.0"
   },
   "devDependencies": {
     "jshint": "~2.4.4",
-    "montage-testing": "montagejs/montage-testing#9eca56fcec3051de6ba0b24e397e309976c14c29"
+    "montage-testing": "montagejs/montage-testing"
   },
   "scripts": {
     "test": "node test/node/node-spec.js",

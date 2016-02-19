@@ -197,7 +197,7 @@ describe("test/base/abstract-checkbox-spec", function () {
             aCheckbox.prepareForActivationEvents();
 
             listeners = em.registeredEventListenersForEventType_onTarget_("press", aCheckbox._pressComposer);
-            expect(listeners.has(aCheckbox)).toBe(true);
+            expect(listeners).toEqual(aCheckbox);
         });
 
         describe("once prepareForActivationEvents is called", function () {

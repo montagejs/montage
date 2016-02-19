@@ -28,7 +28,7 @@ var Montage = require("../core/core").Montage,
     drawLogger = require("../core/logger").logger("drawing").color.blue(),
     WeakMap = require("collections/weak-map"),
     Map = require("collections/map"),
-    Set = require("collections/set");
+    Set = require("core/set");
 
     if (typeof window !== "undefined") { // client-side
 
@@ -1258,18 +1258,22 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
                 var self = this;
 
+
                 this._loadComponentTreeDeferred = this.expandComponent()
                     .then(function() {
                         if (self.hasTemplate || self.shouldLoadComponentTree) {
-                            var promises = [],
-                                childComponents = self.childComponents,
+                            var promises,
+                                childComponents = self._childComponents,
                                 childComponent;
+                            if(childComponents && childComponents.length) {
+                                promises = []
+                                for (var i = 0; (childComponent = childComponents[i]); i++) {
+                                    promises.push(childComponent.loadComponentTree());
+                                }
 
-                            for (var i = 0; (childComponent = childComponents[i]); i++) {
-                                promises.push(childComponent.loadComponentTree());
+                                return Promise.all(promises);
                             }
-
-                            return Promise.all(promises);
+                            return Promise.resolve(null);
                         }
                     })
                     .then(function() {
@@ -2199,7 +2203,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
         enumerable: false,
         value: function () {
             if (!this._addedToDrawList) {
-                var parentComponent = this.parentComponent;
+                var parentComponent = this._parentComponent;
 
                 if (parentComponent) {
                     parentComponent._addToDrawList(this);
@@ -2242,7 +2246,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     needsDraw: {
         enumerable: false,
         get: function () {
-            return !!this._needsDraw;
+            return this._needsDraw;
         },
         set: function (value) {
             if (this.isDeserializing) {
@@ -2250,13 +2254,14 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                 this._needsDrawInDeserialization = true;
                 return;
             }
+            value = !!value;
             if (this._needsDraw !== value) {
                 if (needsDrawLogger.isDebug) {
                     //jshint -W106
                     needsDrawLogger.debug("needsDraw toggled " + value + " for " + this._montage_metadata.objectName);
                     //jshint +W106
                 }
-                this._needsDraw = !!value;
+                this._needsDraw = value;
                 if (value) {
                     if (this.canDrawGate.value) {
                         this._addToParentsDrawList();
@@ -3007,8 +3012,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
      */
     componentBlockDraw: {
         value: function (component) {
-            this._cannotDrawList = (this._cannotDrawList ? this._cannotDrawList : {});
-            this._cannotDrawList[component.uuid] = component;
+            this._cannotDrawList = (this._cannotDrawList ? this._cannotDrawList : new Set());
+            this._cannotDrawList.add(component);
             if (this._clearNeedsDrawTimeOut) {
                 window.clearTimeout(this._clearNeedsDrawTimeOut);
                 this._clearNeedsDrawTimeOut = null;
@@ -3019,7 +3024,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     // TODO: implement this with a flag on the component
     isComponentWaitingNeedsDraw: {
         value: function (component) {
-            return component.uuid in this._cannotDrawList ||
+            return this._cannotDrawList.has(component) ||
                 this._needsDrawList.indexOf(component) >= 0;
         }
     },
@@ -3035,9 +3040,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                 if (!this._cannotDrawList) {
                     return;
                 }
-                delete this._cannotDrawList[component.uuid];
+                this._cannotDrawList.delete(component);
                 this._needsDrawList.push(component);
-                if (Object.keys(this._cannotDrawList).length === 0 && this._needsDrawList.length > 0) {
+                if (this._cannotDrawList.size === 0 && this._needsDrawList.length > 0) {
                     if (!this._clearNeedsDrawTimeOut) {
                         var self = this;
                         // Wait to clear the needsDraw list as components could be loaded synchronously
@@ -3083,9 +3088,9 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                 return;
             }
 
-            delete this._cannotDrawList[component.uuid];
+            this._cannotDrawList.delete(component);
 
-            if (Object.keys(this._cannotDrawList).length === 0 && this._needsDrawList.length > 0) {
+            if (this._cannotDrawList.size === 0 && this._needsDrawList.length > 0) {
                 if (!this._clearNeedsDrawTimeOut) {
                     var self = this;
                     this._clearNeedsDrawTimeOut = window.setTimeout(function () {
@@ -3535,7 +3540,8 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
     drawIfNeeded:{
         value: function drawIfNeeded() {
             var needsDrawList = this._readyToDrawList, component, i, j, start = 0, firstDrawEvent,
-                composerList = this._composerList, composer, composerListLength;
+                composerList = this._composerList, composer, composerListLength,
+                isDrawLoggerDebug = drawLogger.isDebug;
 
             needsDrawList.length = 0;
             this._readyToDrawListIndex.clear();
@@ -3561,7 +3567,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             //
             // willDraw
             //
-            if (drawLogger.isDebug) {
+            if (isDrawLoggerDebug) {
                 console.groupCollapsed("willDraw - " + needsDrawList.length +
                     (needsDrawList.length > 1 ? " components." : " component."));
             }
@@ -3571,7 +3577,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                     if (typeof component.willDraw === "function") {
                         component.willDraw(this._frameTime);
                     }
-                    if (drawLogger.isDebug) {
+                    if (isDrawLoggerDebug) {
                         drawLogger.debug("Level " + component._treeLevel + " " + loggerToString(component));
                     }
                 }
@@ -3582,7 +3588,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
             //
             // draw
             //
-            if (drawLogger.isDebug) {
+            if (isDrawLoggerDebug) {
                 console.groupEnd();
                 console.group("draw - " + needsDrawList.length +
                                     (needsDrawList.length > 1 ? " components." : " component."));
@@ -3600,14 +3606,14 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                 component = needsDrawList[i];
                 component._draw(this._frameTime);
                 component.draw(this._frameTime);
-                if (drawLogger.isDebug) {
+                if (isDrawLoggerDebug) {
                     drawLogger.debug("Level " + component._treeLevel + " " + loggerToString(component));
                 }
             }
             //
             // didDraw
             //
-            if (drawLogger.isDebug) {
+            if (isDrawLoggerDebug) {
                 console.groupEnd();
                 console.groupCollapsed("didDraw - " + needsDrawList.length +
                                     (needsDrawList.length > 1 ? " components." : " component."));
@@ -3621,7 +3627,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
                     component.dispatchEvent(firstDrawEvent);
                     component._completedFirstDraw = true;
                 }
-                if (drawLogger.isDebug) {
+                if (isDrawLoggerDebug) {
                     drawLogger.debug("Level " + component._treeLevel + " " + loggerToString(component));
                 }
             }
@@ -3636,7 +3642,7 @@ var RootComponent = Component.specialize( /** @lends RootComponent.prototype */{
 
 
 
-            if (drawLogger.isDebug) {
+            if (isDrawLoggerDebug) {
                 console.groupEnd();
             }
 

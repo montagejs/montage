@@ -181,7 +181,7 @@ describe("test/base/abstract-radio-button-spec", function () {
             aRadioButton.prepareForActivationEvents();
 
             listeners = em.registeredEventListenersForEventType_onTarget_("press", aRadioButton._pressComposer);
-            expect(listeners.has(aRadioButton)).toBe(true);
+            expect(listeners).toEqual(aRadioButton);
         });
         describe("once prepareForActivationEvents is called", function () {
             beforeEach(function () {
