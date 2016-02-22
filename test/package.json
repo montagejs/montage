@@ -18,5 +18,6 @@
         "connect": "2.7.x",
         "commander": "1.1.x",
         "wd": "0.0.x"
-    }
+    },
+    "manifest": true
 }
