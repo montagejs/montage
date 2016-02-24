@@ -34,7 +34,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     /**
      * The object a UserInterfaceDescriptor describes. This would be an ObjectDescriptor/blueprint ot a PropertyDescriptor/PropertyBlueprint
      *
-     * @returns {object} discribedObject
+     * @type {object} discribedObject
      */
     discribedObject/* or modelDescriptor ?*/: {
         value: void 0
@@ -43,7 +43,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     /**
      * An expression that enables a UserInterfaceDescriptor to get a display name from its discribedObject.
      * Like "fullName" or firstName + " "+ lastName
-     * @returns {MontageExpression} displayNameExpression
+     * @type {MontageExpression} displayNameExpression
      */
     displayNameExpression: {
         value: void 0
@@ -52,7 +52,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     /**
      * An expression that enables a UserInterface to get a display name from its discribedObject.
      *
-     * @returns {Component} iconComponent
+     * @type {Component} iconComponent
      */
     iconComponent: {
         value: void 0
@@ -62,7 +62,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     /**
      * A component to be used to create new objects like discribedObject
      *
-     * @returns {Component} creatorComponent
+     * @type {Component} creatorComponent
      */
     creatorComponent: {
         value: void 0
@@ -71,7 +71,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     /**
      * A component to be used to inspect discribedObject
      *
-     * @returns {Component} inspectorComponent
+     * @type {Component} inspectorComponent
      */
     inspectorComponent: {
         value: void 0
@@ -82,7 +82,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
      * compared to in a separate area, which is handled by inspectorComponent.
      * This is especially relevant for authoring tools.
      *
-     * @returns {Component} inspectorComponent
+     * @type {Component} inspectorComponent
      */
     inlineIspectorComponent: {
         value: void 0
@@ -91,7 +91,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     /**
      * A component to be used to inspect a collection of discribedObject
      *
-     * @returns {Component} collectionComponent
+     * @type {Component} collectionComponent
      */
     collectionComponent: {
         value: void 0
@@ -100,7 +100,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     /**
      * A component to be used to represent a single discribedObject in a collection of collection of discribedObject
      *
-     * @returns {Component} collectionItemComponent
+     * @type {Component} collectionItemComponent
      */
     collectionItemComponent: {
         value: void 0
@@ -109,7 +109,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     /**
      * An array of UserInterfaceDescriptors that describe the PropertyDescriptors/PropertyBlueprints of this object's discribedObject/modelDescriptor
      *
-     * @returns {Component} collectionItemComponent
+     * @type {Component} collectionItemComponent
      */
     userInterfacePropertyDescriptors: {
         value: void 0
