@@ -34,18 +34,18 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     /**
      * The object a UserInterfaceDescriptor describes. This would be an ObjectDescriptor/blueprint ot a PropertyDescriptor/PropertyBlueprint
      *
-     * @type {object} discribedObject
+     * @type {object} describedObject
      */
-    discribedObject/* or modelDescriptor ?*/: {
+    describedObject/* or modelDescriptor ?*/: {
         value: void 0
     },
 
     /**
      * An expression that enables a UserInterfaceDescriptor to get a display name from its discribedObject.
      * Like "fullName" or firstName + " "+ lastName
-     * @type {MontageExpression} displayNameExpression
+     * @type {MontageExpression} nameExpression
      */
-    displayNameExpression: {
+    nameExpression: {
         value: void 0
     },
 
@@ -82,23 +82,23 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
      * compared to in a separate area, which is handled by inspectorComponent.
      * This is especially relevant for authoring tools.
      *
-     * @type {Component} inspectorComponent
+     * @type {Component} inlineIspectorComponent
      */
     inlineIspectorComponent: {
         value: void 0
     },
 
     /**
-     * A component to be used to inspect a collection of discribedObject
+     * A component to be used to inspect a collection of describedObject
      *
-     * @type {Component} collectionComponent
+     * @type {Component} collectionInspectorComponent
      */
-    collectionComponent: {
+    collectionInspectorComponent: {
         value: void 0
     },
 
     /**
-     * A component to be used to represent a single discribedObject in a collection of collection of discribedObject
+     * A component to be used to represent a single describedObject in a collection of describedObject
      *
      * @type {Component} collectionItemComponent
      */
@@ -107,11 +107,11 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     },
 
     /**
-     * An array of UserInterfaceDescriptors that describe the PropertyDescriptors/PropertyBlueprints of this object's discribedObject/modelDescriptor
+     * An array of UserInterfaceDescriptors that describe the PropertyDescriptors/PropertyBlueprints of this object's describedObject/modelDescriptor
      *
-     * @type {Component} collectionItemComponent
+     * @type {Component} propertyUserInterfaceDescriptors
      */
-    userInterfacePropertyDescriptors: {
+    propertyUserInterfaceDescriptors: {
         value: void 0
     }
 
