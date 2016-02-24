@@ -41,7 +41,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     },
 
     /**
-     * An expression that enables a UserInterfaceDescriptor to get a display name from its discribedObject.
+     * An expression that enables a UserInterfaceDescriptor to get a display name from its describedObject.
      * Like "fullName" or firstName + " "+ lastName
      * @type {MontageExpression} nameExpression
      */
@@ -50,7 +50,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     },
 
     /**
-     * An expression that enables a UserInterface to get a display name from its discribedObject.
+     * An expression that enables a UserInterface to get a display name from its describedObject.
      *
      * @type {Component} iconComponent
      */
@@ -60,7 +60,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
 
 
     /**
-     * A component to be used to create new objects like discribedObject
+     * A component to be used to create new objects like describedObject
      *
      * @type {Component} creatorComponent
      */
@@ -69,7 +69,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     },
 
     /**
-     * A component to be used to inspect discribedObject
+     * A component to be used to inspect describedObject
      *
      * @type {Component} inspectorComponent
      */
@@ -78,7 +78,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     },
 
     /**
-     * A component to be used to inspect discribedObject inline, over/around the object itself.
+     * A component to be used to inspect describedObject inline, over/around the object itself.
      * compared to in a separate area, which is handled by inspectorComponent.
      * This is especially relevant for authoring tools.
      *
