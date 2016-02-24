@@ -34,9 +34,9 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     /**
      * The object a UserInterfaceDescriptor describes. This would be an ObjectDescriptor/blueprint ot a PropertyDescriptor/PropertyBlueprint
      *
-     * @type {object} describedObject
+     * @type {object} descriptor
      */
-    describedObject/* or modelDescriptor ?*/: {
+    descriptor: {
         value: void 0
     },
 
