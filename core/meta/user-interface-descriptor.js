@@ -82,7 +82,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
      * compared to in a separate area, which is handled by inspectorComponent.
      * This is especially relevant for authoring tools.
      *
-     * @type {Component} inlineInspectorComponent
+     * @type {Component} editorComponent
      */
     editorComponent: {
         value: void 0
