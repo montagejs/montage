@@ -84,7 +84,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
      *
      * @type {Component} inlineInspectorComponent
      */
-    inlineInspectorComponent: {
+    editorComponent: {
         value: void 0
     },
 
