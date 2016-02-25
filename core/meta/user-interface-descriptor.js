@@ -32,7 +32,7 @@ When serializing their states, a table view that is data driven, the user tweaks
  */
 var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.specialize( /** @lends UserInterfaceDescriptor.prototype # */ {
     /**
-     * The object a UserInterfaceDescriptor describes. This would be an ObjectDescriptor/blueprint ot a PropertyDescriptor/PropertyBlueprint
+     * The object a UserInterfaceDescriptor describes. This is intented be an ObjectDescriptor/blueprint or a PropertyDescriptor/PropertyBlueprint
      *
      * @type {object} descriptor
      */
@@ -50,7 +50,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     },
 
     /**
-     * An expression that enables a UserInterface to get a display name from its describedObject.
+     * A component to be used to visually represent an object described by the descriptor
      *
      * @type {Component} iconComponent
      */
@@ -60,7 +60,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
 
 
     /**
-     * A component to be used to create new objects like describedObject
+     * A component to be used to create new objects as described by descriptor
      *
      * @type {Component} creatorComponent
      */
@@ -69,7 +69,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     },
 
     /**
-     * A component to be used to inspect describedObject
+     * A component to be used to inspect an object described by descriptor
      *
      * @type {Component} inspectorComponent
      */
@@ -78,8 +78,8 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     },
 
     /**
-     * A component to be used to inspect describedObject inline, over/around the object itself.
-     * compared to in a separate area, which is handled by inspectorComponent.
+     * A component to be used to edit descriptor's described object directly, over/around the object itself.
+     * compared to the inspectorComponent that indirectly interact with the object.
      * This is especially relevant for authoring tools.
      *
      * @type {Component} editorComponent
@@ -89,7 +89,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     },
 
     /**
-     * A component to be used to inspect a collection of describedObject
+     * A component to be used to inspect a collection of descriptor's described object
      *
      * @type {Component} collectionInspectorComponent
      */
@@ -98,7 +98,7 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     },
 
     /**
-     * A component to be used to represent a single describedObject in a collection of describedObject
+     * A component to be used to represent a single instance of descriptor's described object in a collection of described objects
      *
      * @type {Component} collectionItemComponent
      */
@@ -107,7 +107,8 @@ var UserInterfaceDescriptor = exports.UserInterfaceDescriptor = Montage.speciali
     },
 
     /**
-     * An array of UserInterfaceDescriptors that describe the PropertyDescriptors/PropertyBlueprints of this object's describedObject/modelDescriptor
+     * An array of UserInterfaceDescriptors that individually describe the PropertyDescriptors/PropertyBlueprints of this object's descriptor's PropertyDescriptors
+     * An ObjectDescriptor/Blueprint has groups of propery descriptors that should be respected in term of organization
      *
      * @type {Component} propertyUserInterfaceDescriptors
      */
