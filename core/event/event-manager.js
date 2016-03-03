@@ -1633,6 +1633,7 @@ if (typeof window !== "undefined") { // client-side
             enumerable: false,
             value: {
                 memory: {},
+                velocity: {},
                 add: function (identifier, data) {
                     if (!this.memory[identifier]) {
                         this.memory[identifier] = {
@@ -1741,8 +1742,8 @@ if (typeof window !== "undefined") { // client-side
 
                         if (mutableEvent.type === "touchend" || mutableEvent.type === "pointerup" || mutableEvent.type === "MSPointerUp") {
                             if (mutableEvent.changedTouches) {
-                                for (var i = 0; i < mutableEvent.changedTouches.length; i++) {
-                                    this.remove(mutableEvent.changedTouches[i].identifier);
+                                for (var i = 0, changedTouches = mutableEvent.changedTouches, iChangedTouch; (iChangedTouch = changedTouches[i]); i++) {
+                                    this.remove(iChangedTouch.identifier);
                                 }
                             } else {
                                 this.remove(mutableEvent.pointerId);
@@ -1802,7 +1803,6 @@ if (typeof window !== "undefined") { // client-side
                         y: [],
                         time: []
                     };
-
                 memory = defaultEventManager._pointerStorage.getMemory(identifier);
                 memoryLength = memory.data.length;
                 evt = memory.data[((memory.pos - 1) + memoryLength) % memoryLength];
@@ -1992,9 +1992,6 @@ if (typeof window !== "undefined") { // client-side
             }
         },
 
-        _pointerMotion : {
-            value: null
-        },
         /**
          @function
          @param {attribute} identifier
@@ -2002,7 +1999,7 @@ if (typeof window !== "undefined") { // client-side
         pointerMotion: {
             value: function (identifier) {
                 if (defaultEventManager._pointerStorage.isStored(identifier)) {
-                    return this._pointerMotion || (this._pointerMotion = {velocity: (new _PointerVelocity()).initWithIdentifier(identifier)});
+                    return {velocity: (new _PointerVelocity()).initWithIdentifier(identifier)};
                 } else {
                     return undefined;
                 }
@@ -2554,7 +2551,6 @@ if (typeof window !== "undefined") { // client-side
 
                 if (this._isStoringPointerEvents) {
                     this._pointerStorage.removeEvent(event);
-                    if(this._pointerMotion) this._pointerMotion.velocity.clearCache();
                 }
 
                 if (this.monitorDOMModificationInEventHandling) {

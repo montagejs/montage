@@ -410,11 +410,11 @@
 
     }
     100% {
-        opacity:.6
+        opacity:.6;
         transform:rotate(360deg);
     }
     100% {
-        opacity:.6
+        opacity:.6;
         transform:rotate(0deg);
     }
 }
