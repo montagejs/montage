@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="sorting-and-filtering.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "properties": {
+                    "element": {"#": "owner"}
+                }
+            },
+            "rangeController": {
+                "prototype": "montage/core/range-controller",
+                "bindings": {
+                    "content": {"<-": "@owner.content"}
+                }
+            },
+            "items": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "items"},
+                    "contentController": {"@": "rangeController"}
+                }
+            },
+            "item": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "item"}
+                },
+                "bindings": {
+                    "value": {"<-": "@items:iteration.object.quote"},
+                    "classList.has('SortingAndFiltering--highlight')": {"<-": "@items:iteration.object.important"}
+                }
+            },
+            "filterButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "filterButton"},
+                    "label": "Filter"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "sortButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "sortButton"},
+                    "label": "Sort"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner">
+        <div data-montage-id="items" class="SortingAndFiltering">
+            <div data-montage-id="item" class="Cell"></div>
+        </div>
+        <div class="SortingAndFiltering-bottomBar">
+            <button data-montage-id="filterButton" class="SortingAndFiltering-bottomBar-button"></button>
+            <button data-montage-id="sortButton" class="SortingAndFiltering-bottomBar-button"></button>
+        </div>
+    </div>
+</body>
+</html>

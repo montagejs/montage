@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="a-simple-repetition.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "properties": {
+                    "element": {"#": "owner"}
+                }
+            },
+            "items": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "items"}
+                },
+                "bindings": {
+                    "content": {"<-": "@owner.content"}
+                }
+            },
+            "item": {
+                "prototype": "montage/ui/text.reel",
+                "properties": {
+                    "element": {"#": "item"}
+                },
+                "bindings": {
+                    "value": {"<-": "@items:iteration.object.quote"},
+                    "classList.has('ASimpleRepetition--highlight')": {"<-": "@items:iteration.object.important"}
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="owner" class="ASimpleRepetition">
+        <div data-montage-id="items">
+            <div data-montage-id="item" class="Cell"></div>
+        </div>
+    </div>
+</body>
+</html>

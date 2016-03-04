@@ -1,0 +1,28 @@
+.ASimpleRepetition {
+    width: 300px;
+    border: 1px solid #CCC;
+    height: 385px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    cursor: default;
+}
+
+.ASimpleRepetition .Cell {
+    border-bottom: 1px solid #CCC;
+    line-height: 50px;
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ASimpleRepetition .Cell:last-child {
+    border-bottom: none;
+}
+
+.ASimpleRepetition--highlight {
+    font-weight: bold;
+}

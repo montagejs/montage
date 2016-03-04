@@ -1,0 +1,51 @@
+.SortingAndFiltering {
+    width: 300px;
+    border: 1px solid #CCC;
+    height: 350px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    cursor: default;
+}
+
+.SortingAndFiltering .Cell {
+    border-bottom: 1px solid #CCC;
+    line-height: 50px;
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.SortingAndFiltering .Cell:last-child {
+    border-bottom: none;
+}
+
+.SortingAndFiltering-changeButton {
+    margin-top: 10px;
+    font-size: 17px;
+}
+
+.SortingAndFiltering--highlight {
+    font-weight: bold;
+}
+
+.SortingAndFiltering-bottomBar {
+    display: -webkit-flex;
+    display: flex;
+    width: 300px;
+    margin-top: 10px;
+}
+
+.SortingAndFiltering-bottomBar-button {
+    flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    font-size: 17px;
+}
+
+.SortingAndFiltering-bottomBar-button:first-child {
+    margin-right: 5px;
+}
