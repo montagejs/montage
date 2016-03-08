@@ -2,17 +2,12 @@
 var AbstractControl = require("./abstract-control").AbstractControl,
     KeyComposer = require("../../composer/key-composer").KeyComposer;
 
-var CLASS_PREFIX = "montage-TextField";
-
-
 
 /**
  * @class AbstractTextField
  * @extends AbstractControl
  */
-var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
-/** @lends AbstractTextField# */
-{
+var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(/** @lends AbstractTextField# */ {
 
     /**
      * Dispatched when the textfield is activated when the user presses enter.
@@ -20,17 +15,11 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
      * @memberof AbstractTextField
      * @param {Event} event
      */
-
     constructor: {
         value: function AbstractTextField() {
             if(this.constructor === AbstractTextField) {
                 throw new Error("AbstractTextField cannot be instantiated.");
             }
-
-            this._keyComposer = new KeyComposer();
-            this._keyComposer.component = this;
-            this._keyComposer.keys = "enter";
-            this.addComposer(this._keyComposer);
 
             this.defineBindings({
                 // classList management
@@ -47,8 +36,7 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
 
     acceptsActiveTarget: {
         get: function () {
-            var shouldBeginEditing = this.callDelegateMethod("shouldBeginEditing", this);
-            return (shouldBeginEditing !== false);
+            return (this.callDelegateMethod("shouldBeginEditing", this) !== false);
         }
     },
 
@@ -92,6 +80,17 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
         }
     },
 
+    /**
+     * An optional converter for transforming the `value` into the
+     * corresponding rendered text.
+     * Converters are called at time of draw.
+     * @type {?Converter}
+     * @default null
+     */
+    converter: {
+        value: null
+    },
+
     _hasFocus: {
         value: false
     },
@@ -102,8 +101,21 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
         }
     },
 
-    _keyComposer: {
+    __keyComposer: {
         value: null
+    },
+
+    _keyComposer: {
+        get: function () {
+            if (!this.__keyComposer) {
+                this.__keyComposer = new KeyComposer();
+                this.__keyComposer.component = this;
+                this.__keyComposer.keys = "enter";
+                this.addComposer(this.__keyComposer);
+            }
+
+            return this.__keyComposer;
+        }
     },
 
     handleKeyPress: {
@@ -133,17 +145,28 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
 
     draw: {
         value: function () {
-            var value = this.value;
-            if (value === null ||  typeof value === "undefined") {
-                this.element.value = "";
-            } else if ( typeof value === "boolean" ||  typeof value === "object" ||  typeof value === "number") {
-                this.element.value = value.toString();
-            } else {
-                this.element.value = value;
+            var displayValue = this.value,
+                typeOfDisplayValue;
+
+            if (this.converter) {
+                displayValue = this.converter.convert(displayValue);
             }
+
+            typeOfDisplayValue = typeof displayValue;
+
+            if (displayValue === null || typeOfDisplayValue === "undefined") {
+                this.element.value = "";
+            } else if (typeOfDisplayValue === "boolean" || typeOfDisplayValue === "object" || typeOfDisplayValue === "number") {
+                this.element.value = displayValue.toString();
+            } else {
+                this.element.value = displayValue;
+            }
+
             if (this.placeholderValue != null) {
                 this.element.setAttribute("placeholder", this.placeholderValue);
             }
+
+            this.element.disabled = !this.enabled;
         }
     },
 
@@ -168,23 +191,36 @@ var AbstractTextField = exports.AbstractTextField = AbstractControl.specialize(
 
     surrendersActiveTarget: {
         value: function (event) {
-            var shouldEnd = this.callDelegateMethod("shouldEndEditing", this);
-            if (shouldEnd === false) {
+            if (this.callDelegateMethod("shouldEndEditing", this) === false) {
                 return false;
-            } else {
-                this._hasFocus = false;
-                this.callDelegateMethod("didEndEditing", this);
             }
+
+            this._hasFocus = false;
+            this.callDelegateMethod("didEndEditing", this);
+
             return true;
         }
     },
 
     _updateValueFromDom: {
         value: function () {
-            if (this._value !== this.element.value) {
-                this._value = this.element.value;
+            var displayedValue,
+                value = displayedValue = this.element.value;
+
+            if (this.converter) {
+                value = this.converter.revert(displayedValue);
+            }
+
+            if (this._value !== value) {
+                this._value = value;
+
                 this.dispatchOwnPropertyChange("value", this._value);
                 this.callDelegateMethod("didChange", this);
+            }
+
+            if (this.converter) {
+                //safer -> be sure this._value is set before request a draw.
+                this.needsDraw = true;
             }
         }
     }
