@@ -20,7 +20,8 @@
             "enumValues": [
                 "hide",
                 "remove"
-            ]
+            ],
+            "defaultValue": "hide"
         }
     },
     "blueprint_component_reference": {
