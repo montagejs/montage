@@ -164,6 +164,7 @@ describe("test/ui/button-spec", function () {
                 expect(listeners).toBeNull();
 
                 aButton.addEventListener("longAction", listener, false);
+                aButton.shouldDispatchLongAction = true;
 
                 listeners = em.registeredEventListenersForEventType_onTarget_("longPress", aButton._pressComposer);
                 expect(listeners).toEqual(aButton);
@@ -171,6 +172,7 @@ describe("test/ui/button-spec", function () {
             it("should fires a 'longAction' event when the PressComposer fires a longPress", function () {
                 var callback = jasmine.createSpy();
                 aButton.addEventListener("longAction", callback, false);
+                aButton.shouldDispatchLongAction = true;
                 aButton._pressComposer.dispatchEventNamed("longPress");
                 expect(callback).toHaveBeenCalled();
             });

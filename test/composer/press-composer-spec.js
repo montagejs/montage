@@ -208,6 +208,7 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                     it("is fired after longPressThreshold", function () {
                         var listener = testPage.addListener(test.press_composer, null, "longPress");
 
+                        test.press_composer.shouldDispatchLongPress = true;
                         testPage.mouseEvent({target: test.example.element}, "mousedown");
 
                         waits(test.press_composer.longPressThreshold);
@@ -233,6 +234,7 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
 
                     it("isn't fired if the press is released before the timeout", function () {
                         var longListener = testPage.addListener(test.press_composer, null, "longPress");
+                        test.press_composer.shouldDispatchLongPress = true;
 
                         testPage.mouseEvent({target: test.example.element}, "mousedown");
 
@@ -262,6 +264,7 @@ TestPageLoader.queueTest("press-composer-test/press-composer-test", function (te
                             var listener = testPage.addListener(test.press_composer, null, "longPress");
                             var timeout = test.press_composer.longPressThreshold - 500;
                             test.press_composer.longPressThreshold = timeout;
+                            test.press_composer.shouldDispatchLongPress = true;
 
                             testPage.mouseEvent({target: test.example.element}, "mousedown");
 
