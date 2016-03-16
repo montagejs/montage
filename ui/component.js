@@ -142,11 +142,11 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     },
 
     _domArguments: {
-        value: null
+        value: void 0
     },
 
     _domArgumentNames: {
-        value: null
+        value: void 0
     },
 
     /**
@@ -347,7 +347,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
     _initDomArguments: {
         value: function () {
             var candidates,
-                domArguments = {},
+                domArguments,
                 name,
                 node,
                 element = this.element;
@@ -356,6 +356,9 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
             // Need to make sure that we filter dom args that are for nested
             // components and not for this component.
+            if(candidates.length) {
+                domArguments = {};
+            }
             nextCandidate:
             for (var i = 0, candidate; (candidate = candidates[i]); i++) {
                 node = candidate;
@@ -375,11 +378,15 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             this._domArguments = domArguments;
         }
     },
-
+    _sharedEmptyArray: {
+        value: []
+    },
     getDomArgumentNames: {
         value: function () {
-            if (!this._domArgumentNames) {
-                this._domArgumentNames = Object.keys(this._domArguments);
+            if (this._domArgumentNames === void 0) {
+                this._domArgumentNames = this._domArguments
+                    ? Object.keys(this._domArguments)
+                    : this._sharedEmptyArray;
             }
             return this._domArgumentNames;
         }
@@ -1900,7 +1907,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
             var label = this._montage_metadata.label;
             //jshint +W106
             var argumentNames = this.getDomArgumentNames();
-            if (argumentNames.length === 0) {
+            if (!argumentNames || argumentNames.length === 0) {
                 this._leTagStarArgument(ownerModuleId, label, this.element);
             } else {
                 for (var i = 0, name; name = /*assign*/argumentNames[i]; i++) {
@@ -1968,7 +1975,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
     _bindTemplateParametersToArguments: {
         value: function () {
-            var parameters = this._templateDocumentPart.parameters,
+            var parameters = this._templateDocumentPart ? this._templateDocumentPart.parameters : null,
                 parameter,
                 templateArguments,
                 argument,
@@ -1980,10 +1987,16 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
             templateArguments = this._domArguments;
 
-            if (!this._template.hasParameters() &&
+            if (!this._template.hasParameters() && templateArguments &&
                 templateArguments.length === 1) {
                 return;
             }
+
+            //No arguments passed, we're going to check if we have defaults
+            if(!templateArguments) {
+
+            }
+
 
             validation = this._validateTemplateArguments(
                 templateArguments, parameters);
@@ -1993,20 +2006,45 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
             for (var key in parameters) {
                 parameter = parameters[key];
-                argument = templateArguments[key];
+                argument = templateArguments ? templateArguments[key] : void 0;
 
-                if (key === "*") {
-                    range = this._element.ownerDocument.createRange();
-                    range.selectNodeContents(this._element);
-                    contents = range.extractContents();
+                if ((key === "*") || (key === "each")) {
+                    if (this._element.childElementCount === 0) {
+                     //We're missing an argument, we're going to check if we have a default
+                         if(parameter && parameter.childElementCount > 0) {
+                             range = this._element.ownerDocument.createRange();
+                             range.selectNodeContents(parameter);
+                             parameter.parentNode.replaceChild(range.extractContents(),parameter);
+
+                            //Should we re-construct the structure from the default?
+                            //  if(!templateArguments) {
+                            //      templateArguments = this._domArguments = {"*":};
+                            //
+                            //  }
+                         }
+                         else {
+                            //  throw new Error('No arguments provided for ' +
+                            //  this.templateModuleId + '. Arguments needed for data-param: ' +
+                            //  key + '.');
+                            //Remove the data-parm="*" element
+                            parameter.parentNode.removeChild(parameter);
+                         }
+                    }
+                    else {
+                        range = this._element.ownerDocument.createRange();
+                        range.selectNodeContents(this._element);
+                        contents = range.extractContents();
+                    }
                 } else {
                     contents = argument;
                 }
 
-                components = this._findAndDetachComponents(contents);
-                parameter.parentNode.replaceChild(contents, parameter);
-                for (var i = 0; (component = components[i]); i++) {
-                    component.attachToParentComponent();
+                if(contents) {
+                    components = this._findAndDetachComponents(contents);
+                    parameter.parentNode.replaceChild(contents, parameter);
+                    for (var i = 0; (component = components[i]); i++) {
+                        component.attachToParentComponent();
+                    }
                 }
             }
         }
@@ -2014,26 +2052,26 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
 
     _validateTemplateArguments: {
         value: function (templateArguments, templateParameters) {
-            var parameterNames = Object.keys(templateParameters),
+            var parameterNames = templateParameters ? Object.keys(templateParameters) : void 0,
                 argumentNames,
                 param;
 
             // If the template does not have parameters it is up to the
             // component to use its arguments.
-            if (parameterNames.length === 0) {
+            if (!parameterNames || parameterNames.length === 0) {
                 return;
             }
 
-            if (templateArguments == null) {
-                if (parameterNames.length > 0) {
-                    return new Error('No arguments provided for ' +
-                    this.templateModuleId + '. Arguments needed: ' +
-                    parameterNames + '.');
-                }
-            } else {
+            // if (templateArguments == null) {
+            //     if (parameterNames.length > 0) {
+            //         return new Error('No arguments provided for ' +
+            //         this.templateModuleId + '. Arguments needed: ' +
+            //         parameterNames + '.');
+            //     }
+            // } else {
                 if ("*" in templateParameters) {
-                    argumentNames = Object.keys(templateArguments);
-                    if (argumentNames.length > 0) {
+                    argumentNames = templateArguments ? Object.keys(templateArguments) : void 0;
+                    if (argumentNames && argumentNames.length > 0) {
                         return new Error('Arguments "' + argumentNames +
                         '" were given to component but no named parameters ' +
                         'are defined in ' + this.templateModuleId);
@@ -2055,7 +2093,7 @@ var Component = exports.Component = Target.specialize( /** @lends Component.prot
                         }
                     }
                 }
-            }
+            // }
         }
     },
 

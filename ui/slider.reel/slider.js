@@ -6,7 +6,10 @@
 
 var Control = require("ui/control").Control,
     TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
-    KeyComposer = require("../../composer/key-composer").KeyComposer;
+    KeyComposer = require("../../composer/key-composer").KeyComposer,
+    Map = global.Map ? global.Map : require("collections/map"),
+    WeakMap = require("collections/weak-map");
+;
 
 /**
  * Wraps the a &lt;input type="range"> element with binding support for the element's standard attributes.
@@ -22,16 +25,40 @@ var Slider = exports.Slider = Control.specialize({
             Control.constructor.call(this); // super
             //this is so that when we read properties from the dom they are not overwritten
             this._propertyNamesUsed = {};
+            this._values = [0];
+
+            this._isThumbElementTranslating = new WeakMap();
+            this._percentageValues = new Array();
+            this._previousPercentageValues = new Array();
+            this._thumbElementOffset = new WeakMap();
+
             this.addOwnPropertyChangeListener("_sliderMagnitude", this);
             this.addOwnPropertyChangeListener("_min", this);
             this.addOwnPropertyChangeListener("_max", this);
             this.addOwnPropertyChangeListener("_value", this);
+            this.addOwnPropertyChangeListener("values", this);
             this.addOwnPropertyChangeListener("_step", this);
             this.addOwnPropertyChangeListener("axis", this);
 
+            //this._values.addRangeChangeListener(this, "values");
+            // this._values.addRangeChangeListener(this);
+            this.addRangeAtPathChangeListener("_values",this);
+
         }
     },
-    
+
+    handleValuesRangeChange: {
+        value: function (plus, minus, index) {
+            this.needsDraw = true;
+        }
+    },
+    handleRangeChange: {
+        value: function (plus, minus, index) {
+            this.handlePropertyChange(plus[0], "values", this);
+            //this.needsDraw = true;
+        }
+    },
+
     /**
      * @private
      */
@@ -55,23 +82,119 @@ var Slider = exports.Slider = Control.specialize({
             }
         }
     },
-    
-    thumbElement: {
-        value:null,
-    },
 
+    thumbElement: {
+        value: void 0,
+    },
+    _spacer: {
+        value: void 0,
+    },
+    thumbElements: {
+        value: void 0,
+    },
+    _values: {
+        value: void 0,
+    },
+    values: {
+        get: function() {
+            return this._values;
+        },
+        set: function (values) {
+            if (this._values !== values) {
+                this._values = values;
+                this.needsDraw = true;
+            }
+        }
+    },
+    _percentageValues: {
+        value: void 0,
+    },
+    _previousPercentageValues: {
+        value: void 0,
+    },
+    _translateComposers: {
+        value: void 0,
+    },
     enterDocument: {
         value: function (firstTime) {
             this.super(firstTime);
-            
+
             if (firstTime) {
-                
+
                 if(this.hasStandardElement) {
                     this.element.addEventListener('input', this);
                     this.element.addEventListener('change', this);
+
+                    // read initial values from the input type=range
+                    var used = this._propertyNamesUsed;
+                    // if (!used._min) {
+                    //     this.min = this.element.getAttribute('min') || this._min;
+                    // }
+                    // if (!used._max) {
+                    //     this.max = this.element.getAttribute('max') || this._max;
+                    // }
+                    // if (!used._step) {
+                    //     this.step = this.element.getAttribute('step') || this._step;
+                    // }
+
+                    if (!used._value) {
+                        this.value = this.element.getAttribute('value') || this._value;
+                    }
+                    delete this._propertyNamesUsed;
+
+                }
+                else {
+                    var isHorizontal = (this.orientation === "horizontal");
+
+                    this.thumbElements = [];
+                    var ownerDocument = this._element.ownerDocument,
+                        fragment = ownerDocument.createDocumentFragment(),
+                        spacer = this._spacer = this._element.firstElementChild,
+                        dimensionLength = this._dimensionLength,
+                        i=0, iThumbElement, offset = 0, iDimension = 0, iThumbWrapper;
+
+                    while((iThumbElement = spacer.firstElementChild)) {
+                        if(!iThumbElement.classList.contains("montage-Slider--thumb"))
+                            iThumbElement.classList.add("montage-Slider--thumb");
+
+                        iThumbWrapper = ownerDocument.createElement("div");
+                        iThumbWrapper.className = "montage-Slider--thumbWrapper";
+
+                        iDimension = isHorizontal ? iThumbElement.clientWidth : iThumbElement.clientHeight;
+                        //If the thumb has no size, or if it's horizontak and occupy the whole width, we're stepping in
+                        if(iDimension == 0 || (isHorizontal && iDimension === spacer.clientWidth)) {
+                            iThumbElement.classList.add("montage-Slider-thumb--default");
+                            iDimension = isHorizontal ? iThumbElement.clientWidth : iThumbElement.clientHeight;
+                    }
+
+                        /* marginLeft / marginTop must be the width of all previous thumbs */
+                        if(isHorizontal) {
+                            iThumbWrapper.style.marginLeft = offset + "px";
+                        }
+                        else {
+                            iThumbWrapper.style.marginTop = offset + "px";
+                        }
+
+                        offset += iDimension;
+                        // console.log(iThumbElement," offset is ",offset);
+
+                        this._thumbElementOffset.set(iThumbElement,offset);
+                        iThumbElement.parentNode.removeChild(iThumbElement);
+                        iThumbWrapper.appendChild(iThumbElement);
+                        fragment.appendChild(iThumbWrapper);
+                        this.thumbElements.push(iThumbWrapper);
+                    }
+                    // this._thumbWidth = offset;
+                    if(isHorizontal) {
+                        spacer.style.marginRight = offset + "px";
+                    }
+                    else {
+                        spacer.style.marginBottom = offset + "px";
+                    }
+                    spacer.appendChild(fragment);
                 }
 
-                // check for transform support
+                // check for transform support. This should really be central and soon not needed anymore
                 if("webkitTransform" in this.element.style) {
                     this._transform = "webkitTransform";
                 } else if("MozTransform" in this.element.style) {
@@ -81,23 +204,6 @@ var Slider = exports.Slider = Control.specialize({
                 } else {
                     this._transform = "transform";
                 }
-                // read initial values from the input type=range
-                var used = this._propertyNamesUsed;
-                // if (!used._min) {
-                //     this.min = this.element.getAttribute('min') || this._min;
-                // }
-                // if (!used._max) {
-                //     this.max = this.element.getAttribute('max') || this._max;
-                // }
-                // if (!used._step) {
-                //     this.step = this.element.getAttribute('step') || this._step;
-                // }
-                console.log("this.min",this.min,"this.max",this.max);
-                
-                if (!used._value) {
-                    this.value = this.element.getAttribute('value') || this._value;
-                }
-                delete this._propertyNamesUsed;
 
                 this.element.setAttribute("role", "slider");
                 this.element.tabIndex = "-1";
@@ -110,81 +216,125 @@ var Slider = exports.Slider = Control.specialize({
     prepareForActivationEvents: {
         value: function () {
             this.super();
-            
+
             if(!this.hasStandardElement) {
-            
-                //Setting up our TranslateComposer
-                this._translateComposer = new TranslateComposer();
-                this._translateComposer.identifier = "thumb";
-                this._translateComposer.axis = this.orientation;
-                this._translateComposer.hasMomentum = false;
-                this.addComposerForElement(this._translateComposer, this.thumbElement);
-                this._translateComposer.addEventListener('translateStart', this, false);
-                this._translateComposer.addEventListener('translate', this, false);
-                this._translateComposer.addEventListener('translateEnd', this, false);
 
-                // needs to be fixed for pointer handling
-                this.thumbElement.addEventListener("touchstart", this, false);
-                document.addEventListener("touchend", this, false);
-                this.thumbElement.addEventListener("mousedown", this, false);
-                document.addEventListener("mouseup", this, false);
+                var thumbElements = this.thumbElements;
+                if(thumbElements && thumbElements.length > 0) {
 
-                this._upKeyComposer = KeyComposer.createKey(this, "up", "increase");
-                this._downKeyComposer = KeyComposer.createKey(this, "down", "decrease");
-                this._rightKeyComposer = KeyComposer.createKey(this, "right", "increase");
-                this._leftKeyComposer = KeyComposer.createKey(this, "left", "decrease");
+                    if(!this._startTranslateValues) this._startTranslateValues = new Array(thumbElements.length);
+                    if(!this._startValues) this._startValues = new Array(thumbElements.length);
 
-                this._upKeyComposer.addEventListener("keyPress", this, false);
-                this._downKeyComposer.addEventListener("keyPress", this, false);
-                this._leftKeyComposer.addEventListener("keyPress", this, false);
-                this._rightKeyComposer.addEventListener("keyPress", this, false);
+
+                    this._translateComposers = new Map();
+
+                    for(var i=0, iThumbElement, iTranslateComposer;(iThumbElement = thumbElements[i]);i++) {
+
+                        //Setting up our TranslateComposer
+                        iTranslateComposer = new TranslateComposer();
+                        this._translateComposers.set(iTranslateComposer,i);
+                        iTranslateComposer.identifier = "thumb-"+i;
+                        iTranslateComposer.axis = this.orientation;
+                        iTranslateComposer.hasMomentum = false;
+
+                        this.addComposerForElement(iTranslateComposer, iThumbElement);
+                        iTranslateComposer.addEventListener('translateStart', this, false);
+                        iTranslateComposer.addEventListener('translate', this, false);
+                        iTranslateComposer.addEventListener('translateEnd', this, false);
+                    }
+
+                    this._upKeyComposer = KeyComposer.createKey(this, "up", "increase");
+                    this._downKeyComposer = KeyComposer.createKey(this, "down", "decrease");
+                    this._rightKeyComposer = KeyComposer.createKey(this, "right", "increase");
+                    this._leftKeyComposer = KeyComposer.createKey(this, "left", "decrease");
+
+                    this._upKeyComposer.addEventListener("keyPress", this, false);
+                    this._downKeyComposer.addEventListener("keyPress", this, false);
+                    this._leftKeyComposer.addEventListener("keyPress", this, false);
+                    this._rightKeyComposer.addEventListener("keyPress", this, false);
+
+                }
             }
-        }
-    },
-
-    willDraw: {
-        value: function () {
-            this._sliderMagnitude = this._calculateSliderMagnitude();
         }
     },
 
     _previousPercentage: {
         value: null
     },
+    _dimensionLength : {
+        get: function() {
+            var computedStyle = window.getComputedStyle(this._element);
+            return (this.orientation === "vertical")
+            ? (
+                this._spacer.clientHeight -
+                parseFloat(computedStyle.getPropertyValue("padding-top")) -
+                parseFloat(computedStyle.getPropertyValue("padding-bottom"))
+            )
+            : (
+            this._spacer.clientWidth -
+            parseFloat(computedStyle.getPropertyValue("padding-left")) -
+            parseFloat(computedStyle.getPropertyValue("padding-right"))
+            );
+        }
+    },
+    _drawThumbElement: {
+        value: function (thumbElement, index, isVertical, sliderMagnitude) {
+            var position, positionString;
 
+            if(isVertical) {
+                if (this._isThumbElementTranslating.get(thumbElement)) {
+                    position = (this._percentageValues[index] - this._previousPercentageValues[index]) * sliderMagnitude * 0.01;
+                    positionString = "translate3d(0,";
+                    positionString += position;
+                    positionString += "px,0)";
+                    thumbElement.style[this._transform] = positionString;
+                } else {
+                    thumbElement.style.top = (this._percentageValues[index]) + "%";
+                    delete thumbElement.style.left;
+                    thumbElement.style[this._transform] = "translate3d(0,0,0)";
+                    this._previousPercentageValues[index] = this._percentageValues[index];
+                }
+            }
+            else {
+
+                if (this._isThumbElementTranslating.get(thumbElement)) {
+                    position = (this._percentageValues[index] - this._previousPercentageValues[index]) * sliderMagnitude * 0.01;
+
+                    positionString = "translate3d(";
+                    positionString += position;
+                    positionString += "px,0,0)";
+                    thumbElement.style[this._transform] = positionString;
+                } else {
+                    var percent = this._percentageValues[index];
+                    thumbElement.style.left = percent+"%";
+                    delete thumbElement.style.top;
+                    thumbElement.style[this._transform] = "translate3d(0,0,0)";
+                    this._previousPercentageValues[index] = this._percentageValues[index];
+                }
+            }
+        }
+    },
     draw: {
         value: function () {
             if(!this.hasStandardElement) {
-                if (this.orientation === "vertical") {
-                    if (this._isUpdatingTranslate) {
-                        this.thumbElement.style[this._transform] =
-                            "translate3d(0," +
-                            (this._previousPercentage - this._valuePercentage) * this._sliderMagnitude * 0.01 +
-                            "px,0)";
-                        this._isUpdatingTranslate = false;
-                    } else {
-                        this.thumbElement.style.top = (100 - this._valuePercentage) + "%";
-                        this.thumbElement.style.left = 0;
-                        this.thumbElement.style[this._transform] = "translate3d(0,0,0)";
-                        this._previousPercentage = this._valuePercentage;
-                    }
-                } else {
-                    if (this._isUpdatingTranslate) {
-                        this.thumbElement.style[this._transform] =
-                            "translate3d(" +
-                            (this._valuePercentage - this._previousPercentage) * this._sliderMagnitude * 0.01 +
-                            "px,0,0)";
-                        this._isUpdatingTranslate = false;
-                    } else {
-                        this.thumbElement.style.left = this._valuePercentage + "%";
-                        this.thumbElement.style.top = 0;
-                        this.thumbElement.style[this._transform] = "translate3d(0,0,0)";
-                        this._previousPercentage = this._valuePercentage;
-                    }
+                console.log("this._values is ", this._values);
+                var isVertical = (this.orientation === "vertical"),
+                    sliderMagnitude = isVertical ? this._spacer.clientHeight: this._spacer.clientWidth;
+
+                for(var i=0, iThumbElement;(iThumbElement = this.thumbElements[i]);i++) {
+                    this._drawThumbElement(iThumbElement,i,isVertical,sliderMagnitude);
                 }
                 this.element.setAttribute("aria-valuemax", this.max);
                 this.element.setAttribute("aria-valuemin", this.min);
                 this.element.setAttribute("aria-valuenow", this.value);
+                this.element.setAttribute("aria-orientation", this.orientation);
+            }
+            else {
+                if (this._value != this.element.value) {
+                    this.element.value = (this._value == null ? '' : this._value);
+                }
+                this.element.setAttribute("max", this.max);
+                this.element.setAttribute("min", this.min);
             }
         }
     },
@@ -195,72 +345,72 @@ var Slider = exports.Slider = Control.specialize({
         value: true
     },
 
-    // handleTouchstart: {
-    //     value: function (e) {
-    //         this.active = true;
-    //         this.element.focus();
-    //         this._isUpdatingTranslate = true;
-    //     }
-    // },
-
-    // handleTouchend: {
-    //     value: function (e) {
-    //         this.active = false;
-    //     }
-    // },
-
-    // handleMousedown: {
-    //     value: function (e) {
-    //         console.log("handleMousedown");
-    //         this.active = true;
-    //         this.element.focus();
-    //         // gh-1304
-    //         // I did some experimentation based on using -webkit-user-select on the body element. Apart form the obvious
-    //         // browser compatibility problems, it made existing text selection pop in and out as the slider is
-    //         // interacted with. I'm worried about the possible side effects, but this might be the only solution.
-    //         // The problem it solves is more pressing than the potential downside at this point.
-    //         e.preventDefault();
-    //         this._isUpdatingTranslate = true;
-    //     }
-    // },
-
-    // handleMouseup: {
-    //     value: function (e) {
-    //         this.active = false;
-    //     }
-    // },
-
-    _isUpdatingTranslate: {
-        value: false
+    _isThumbElementTranslating: {
+        value: void 0
     },
-
-    handleThumbTranslateStart: {
+    _startTranslateValues: {
+        value: void 0
+    },
+    _startValues: {
+        value: void 0
+    },
+    handleTranslateStart: {
         value: function (e) {
             this.active = true;
+            var index = this._translateComposers.get(e.target);
+            this._currentThumbIndex = index;
             if(this.orientation === "vertical") {
-                this._startTranslate = e.translateY;
+                this._startTranslateValues[index] = e.translateY;
             } else {
-                this._startTranslate = e.translateX;
+                this._startTranslateValues[index]= e.translateX;
             }
-            this._startValue = this.value;
+            this._startBoundingClientRect = e.target.element.clientX;
+            this._startValues[index] = this.values[index];
         }
     },
 
-    handleThumbTranslate: {
+    handleTranslate: {
         value: function (event) {
+            var index = this._translateComposers.get(event.target),
+                sliderMagnitude = this._dimensionLength,
+                translate;
+                //sliderMagnitude = this._calculateSliderMagnitude();
+            this._currentThumbIndex = index;
             if(this.orientation === "vertical") {
-                this.value = this._startValue + ((this._startTranslate - event.translateY) / this._sliderMagnitude) * (this._max - this._min);
+                //this.value = this._startValues[index] + ((this._startTranslateValues[index] - event.translateY) / this._sliderMagnitude) * (this._max - this._min);
+                translate = event.translateY;
             } else {
-                this.value = this._startValue + ((event.translateX - this._startTranslate) / this._sliderMagnitude) * (this._max - this._min);
+                translate = event.translateX;
             }
-            this._isUpdatingTranslate = true;
+                // var max = this.values[index+1] || this._max,
+                //     min = this.values[index-1] || this._min,
+                //     diff = event.translateX - this._startTranslateValues[index];
+                //
+                // if(diff < min) diff = min;
+                // else if(diff > max) diff = max;
+                var max = this._max,
+                    min = this._min,
+                    value;
+                value = this._startValues[index] + ((translate - this._startTranslateValues[index]) / sliderMagnitude) * (max - min);
+                max = this.values[index+1];
+                max = (typeof max === "number" ? max : this._max);
+                min = this.values[index-1];
+                min = (typeof min === "number" ? min : this._min);
+                if(value <= min) value = min;
+                else if(value > max) value = max;
+                this.value = value;
+                // console.log("this._startValues[index] is ",this._startValues[index], "event.translateX is ",event.translateX," this._startTranslateValues[index] is ",this._startTranslateValues[index],", sliderMagnitude is ",sliderMagnitude);
+                // console.log("this.value = ",this.value, "min is ",min," max is ",max);
+
+            this._isThumbElementTranslating.set(event.target.element,true)
         }
     },
 
-    handleThumbTranslateEnd: {
+    handleTranslateEnd: {
         value: function (e) {
             this.active = false;
-            this._isUpdatingTranslate = false;
+            this._isThumbElementTranslating.set(e.target.element,false)
+
         }
     },
 
@@ -318,20 +468,12 @@ var Slider = exports.Slider = Control.specialize({
         value: function (pointer, composer) {
             // If the user is sliding us then we do not want anyone using
             // the pointer
-            return false;
+            return !this.active;
+            //return false;
         }
     },
 
     // Properties
-
-    /**
-     * This property is true when the slider is being interacted with, either through mouse click or touch event, otherwise false.
-     * @type {boolean}
-     * @default false
-     */
-    active: {
-        value: false
-    },
 
     _min: {
         value: 0
@@ -357,7 +499,7 @@ var Slider = exports.Slider = Control.specialize({
     //         }
     //     }
     // },
-    // 
+    //
     // max: {
     //     get: function () {
     //         return this._max;
@@ -385,7 +527,13 @@ var Slider = exports.Slider = Control.specialize({
     },
 
     _value: {
-        value: 50
+        get: function () {
+            return this.values[this._currentThumbIndex];
+        },
+        set: function (value) {
+            // this.values[this._currentThumbIndex] = value;
+            this.values.set(this._currentThumbIndex, value)
+        }
     },
 /*
 
@@ -396,7 +544,7 @@ Should introduce a validate method
         get: function () {
             return this._value;
         },
-        set: function (value, fromInput) {
+        set: function (value) {
             if (! isNaN(value = parseFloat(value))) {
                 if (value > this._max) {
                     value = this._max;
@@ -405,7 +553,7 @@ Should introduce a validate method
                 }
 
                 if (this._value !== value) {
-                    Object.getOwnPropertyDescriptor(Control.prototype, "value").set.call(this,value, fromInput);
+                    Object.getOwnPropertyDescriptor(Control.prototype, "value").set.call(this,value);
                 }
             }
         }
@@ -427,9 +575,16 @@ Should introduce a validate method
     },
 
     // Machinery
-
-    thumbElement: {
+    _currentThumbIndex:  {
+        value: 0
+    },
+    _thumbElement: {
         value: null
+    },
+    thumbElement: {
+        get: function() {
+            return this._thumbElement || (this._thumbElement = this._element.firstElementChild);
+        }
     },
 
     _translateComposer: {
@@ -456,29 +611,10 @@ Should introduce a validate method
         value: null
     },
 
-    _valuePercentage: {
+    _percentageValue: {
         value: null
     },
 
-    _calculateSliderMagnitude: {
-        value: function () {
-            var computedStyle = window.getComputedStyle(this._element);
-
-            if(this.orientation === "vertical") {
-                return (
-                    this._element.clientHeight -
-                    parseFloat(computedStyle.getPropertyValue("padding-top")) -
-                    parseFloat(computedStyle.getPropertyValue("padding-bottom"))
-                );
-            } else {
-                return (
-                    this._element.clientWidth -
-                    parseFloat(computedStyle.getPropertyValue("padding-left")) -
-                    parseFloat(computedStyle.getPropertyValue("padding-right"))
-                );
-            }
-        }
-    },
 
     handleAxisChange: {
         value: function () {
@@ -496,7 +632,7 @@ Should introduce a validate method
     },
 
     _propertyRegex: {
-        value: /_sliderMagnitude|_min|_max|_value|_step/
+        value: /_sliderMagnitude|_min|_max|_value|_values|values|_step/
     },
 
     handlePropertyChange: {
@@ -505,33 +641,52 @@ Should introduce a validate method
                 if(this._propertyNamesUsed) {
                     this._propertyNamesUsed[key] = true;
                 }
-                //adjust the value
-                if (this._value <= this._min) {
-                    //first the simple case
-                    this._value = this._min;
-                } else {
-                    var magnitude = this._value - this._min;
-                    var remainder = magnitude % this._step;
-                    if (remainder) {
-                        //if we have a remainder then we need to adjust the value
-                        // Inspired by http://www.w3.org/html/wg/drafts/html/master/forms.html#range-state-(type=range)
-                        // if we are in the middle of two stepped value then go for the larger one.
-                        var roundup = (remainder >= this._step * 0.5) && ((this._value - remainder) + this._step <= this._max);
-                        if (roundup) {
-                            this._value = (this._value - remainder) + this._step;
-                        } else {
-                            this._value = this._value - remainder;
+                var MIN = this._min,
+                    MAX = this._max,
+                    RANGE = this._max - this._min,
+                    valueOverriden = false;
+                for(var i=0, values = this._values, countI = values.length, value, min, max;i<countI;i++) {
+                    value = values[i];
+                    max = values[i+1] || MAX;
+                    min = values[i-1] || MIN;
+
+                    //adjust the value
+                    if (value <= min) {
+                        //first the simple case
+                        value = min;
+                    } else {
+                        var magnitude = value - min;
+                        var remainder = magnitude % this._step;
+                        if (remainder) {
+                            //if we have a remainder then we need to adjust the value
+                            // Inspired by http://www.w3.org/html/wg/drafts/html/master/forms.html#range-state-(type=range)
+                            // if we are in the middle of two stepped value then go for the larger one.
+                            var roundup = (remainder >= this._step * 0.5) && ((value - remainder) + this._step <= max);
+                            if (roundup) {
+                                value = (value - remainder) + this._step;
+                            } else {
+                                value = value - remainder;
+                            }
                         }
+
                     }
 
-                }
+                    //otherwise don't adjust the value just check it's within  min and max
+                    if (value > max) {
+                        value = max;
+                    }
 
-                //otherwise don't adjust the value just check it's within  min and max
-                if (this._value > this._max) {
-                    this._value = this._max;
-                }
+                    values[i] = value;
+                    if(i === this._currentThumbIndex) {
+                        this._value = value;
+                    }
 
-                this._valuePercentage = ((this._value - this._min) * 100) / (this._max - this._min);
+                    if(valueOverriden) {
+                        values[i] = value;
+                    }
+
+                    this._percentageValues[i] = ((value - MIN) * 100) / RANGE;
+                }
                 this.needsDraw = true;
             }
         }
@@ -540,7 +695,7 @@ Should introduce a validate method
         enumerable: false,
         value: function() {
             if (this.converter) {
-                if (this.converter.allowPartialConversion === true) {
+                if (this.converter.allowPartialConversion === true && this.updateOnInput === true) {
                     this.takeValueFromElement();
                 }
             } else {
@@ -561,8 +716,8 @@ Should introduce a validate method
             // this.hasFocus = false;
         }
     }
-    
-    
+
+
 });
 
 Slider.addAttributes( /** @lends module:"montage/ui/native/input-range.reel".InputRange# */ {

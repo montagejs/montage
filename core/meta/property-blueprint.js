@@ -24,6 +24,35 @@ var Defaults = {
     helpKey:""
 };
 
+
+/* TypeDescriptor */
+/* DeleteRules */
+
+/*
+Deny
+If there is at least one object at the relationship destination (employees), do not delete the source object (department).
+
+For example, if you want to remove a department, you must ensure that all the employees in that department are first transferred elsewhere (or fired!); otherwise, the department cannot be deleted.
+
+Nullify
+Remove the relationship between the objects but do not delete either object.
+
+This only makes sense if the department relationship for an employee is optional, or if you ensure that you set a new department for each of the employees before the next save operation.
+
+Cascade
+Delete the objects at the destination of the relationship when you delete the source.
+
+For example, if you delete a department, fire all the employees in that department at the same time.
+
+No Action
+Do nothing to the object at the destination of the relationship.
+
+Default
+Value that will be assigned ?
+
+*/
+
+
 /**
  * @class PropertyBlueprint
  */

@@ -46,6 +46,17 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
     },
 
     /**
+     * A promise that indicates an action event triggered an asynchronous task.
+     * The control will stop listening to user input until actionCompletionPromise
+     * is resoved or rejected, and uses CSS classes to represent the Promise resolution
+     * @property {Promise} value
+     * @default undefined
+     */
+    actionCompletionPromise: {
+        value: undefined
+    },
+
+    /**
      * @private
      * @property {Dict} value
      * @default null
@@ -90,7 +101,9 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
     },
 
     hasTemplate: {
-        value: false
+        get: function() {
+            return !this.hasStandardElement;
+        }
     },
 
     standardElementTagName: {
@@ -166,7 +179,10 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         enumerable: false,
         value: false
     },
-
+    // drawValue {
+    //     value: function () {
+    //     }
+    // },
     draw: {
         value: function () {
             if (this._focusBlur === 1) {
@@ -175,6 +191,7 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
                 this._element.blur();
             }
             this._focusBlur = void 0;
+            // this.drawValue();
         }
     },
 
@@ -270,9 +287,32 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         },
         set: function (value, fromInput) {
 
-            if(this._setValue(value)) {
-                this._elementAttributeValues[name] = value;
-                this.needsDraw = true;
+            if(value !== this._value) {
+                if (!this.delegate || this.callDelegateMethod("shouldAcceptValue", this, value) === false) {
+                    // console.log("_setValue past first step value is ",value);
+                    if(this.converter) {
+                        var convertedValue;
+                        try {
+                            //Where is the matching convert?
+                            convertedValue = this.converter.revert(value);
+                            this.error = null;
+                            this._value = convertedValue;
+                        } catch(e) {
+                            // unable to convert - maybe error
+                            this._value = value;
+                            this.error = e;
+                        }
+                    } else {
+                        this._value = value;
+                    }
+
+                    this.callDelegateMethod("didChange", this);
+
+                    this._elementAttributeValues["value"] = value;
+                    // if(!this.hasStandardElement || this.elementValue !== value) {
+                        this.needsDraw = true;
+                    //}
+                }
             }
 
             // if(value !== this._value) {
@@ -307,35 +347,35 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
         }
     },
 
-    _setValue : {
-        value: function (value) {
-            if(value !== this._value) {
-                if (!this.delegate || this.callDelegateMethod("shouldAcceptValue", this, value) === false) {
-                    console.log("_setValue past first step value is ",value);
-                    if(this.converter) {
-                        var convertedValue;
-                        try {
-                            //Where is the matching convert?
-                            convertedValue = this.converter.revert(value);
-                            this.error = null;
-                            this._value = convertedValue;
-                        } catch(e) {
-                            // unable to convert - maybe error
-                            this._value = value;
-                            this.error = e;
-                        }
-                    } else {
-                        this._value = value;
-                    }
-
-                    this.callDelegateMethod("didChange", this);
-
-                    return true;
-                }
-            }
-            return false;
-        }
-    },
+    // _setValue : {
+    //     value: function (value) {
+    //         if(value !== this._value) {
+    //             if (!this.delegate || this.callDelegateMethod("shouldAcceptValue", this, value) === false) {
+    //                 console.log("_setValue past first step value is ",value);
+    //                 if(this.converter) {
+    //                     var convertedValue;
+    //                     try {
+    //                         //Where is the matching convert?
+    //                         convertedValue = this.converter.revert(value);
+    //                         this.error = null;
+    //                         this._value = convertedValue;
+    //                     } catch(e) {
+    //                         // unable to convert - maybe error
+    //                         this._value = value;
+    //                         this.error = e;
+    //                     }
+    //                 } else {
+    //                     this._value = value;
+    //                 }
+    //
+    //                 this.callDelegateMethod("didChange", this);
+    //
+    //                 return true;
+    //             }
+    //         }
+    //         return false;
+    //     }
+    // },
 
     /**
         A reference to a Converter object whose <code>revert()</code> function is invoked when a new value is assigned to the TextInput object's <code>value</code> property. The revert() function attempts to transform the newly assigned value into a "typed" data property. For instance, a DateInput component could assign a DateConverter object to this property to convert a user-supplied date string into a standard date format.
@@ -400,11 +440,12 @@ var Control = exports.Control = Component.specialize(/** @lends module:montage/u
     // /**
     //   @private
     // */
-    // takeValueFromElement: {
-    //     value: function() {
-    //         Object.getPropertyDescriptor(this, "value").set.call(this, this.element.value, true);
-    //     }
-    // },
+    takeValueFromElement: {
+        value: function() {
+            this.value = this.elementValue;
+            // Object.getPropertyDescriptor(this, "value").set.call(this, this.element.value, true);
+        }
+    },
     /**
         Returns a Boolean value indicating whether the control dispatched its action event continuously when value changes.
 

@@ -27,7 +27,8 @@ exports.TextField = TextInput.specialize({
             if (!this.enabled || evt.keyComposer !== this._keyComposer) {
                 return;
             }
-            this._setValue();
+            //this._setValue();
+            this.takeValueFromElement();
             this.dispatchActionEvent();
         }
     },
@@ -42,4 +43,3 @@ exports.TextField = TextInput.specialize({
 
 
 });
-

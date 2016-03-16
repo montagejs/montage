@@ -43,6 +43,7 @@ b1.addEventListener("action", function(event) {
 }
 &lt;button data-montage-id="btnElement"></button>
 */
+
 var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/native/button.reel".Button# */ {
 
     /**
@@ -83,15 +84,20 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
             this.needsDraw = true;
         }
     },
+    standardElementTagName: {
+        value: "BUTTON"
+    },
 
+    /* TODO: remove when adding template capability */
+    hasTemplate: {
+        value: false
+    },
     /**
+        converter
         A Montage converter object used to convert or format the label displayed by the Button instance. When a new value is assigned to <code>label</code>, the converter object's <code>convert()</code> method is invoked, passing it the newly assigned label value.
         @type {Property}
         @default null
     */
-    converter: {
-        value: null
-    },
 
     /**
       Stores the node that contains this button's value. Only used for
@@ -129,7 +135,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
 
             this._label = "" + value;
 
-            if (this.hasStandardElement) {
+            if (this.isInputElement) {
                 this._value = value;
             }
 
@@ -169,7 +175,6 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
         get: function () {
             if (!this.__pressComposer) {
                 this.__pressComposer = new PressComposer();
-                this.__pressComposer.defineBinding("longPressThreshold ", {"<-": "holdThreshold", source: this});
                 this.addComposer(this.__pressComposer);
             }
 
@@ -261,10 +266,10 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     If this is an input element then the label is handled differently.
     @private
     */
-    // _isInputElement: {
-    //     value: false,
-    //     enumerable: false
-    // },
+    isInputElement: {
+        value: false,
+        enumerable: false
+    },
 
     enterDocument: {
         value: function (firstDraw) {
@@ -273,10 +278,10 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
             }
 
             if (firstDraw) {
-                // this._isInputElement = (this.originalElement.tagName === "INPUT");
+                this.isInputElement = (this.originalElement.tagName === "INPUT");
                 // Only take the value from the element if it hasn't been set
                 // elsewhere (i.e. in the serialization)
-                if (this.hasStandardElement) {
+                if (this.isInputElement) {
                     // NOTE: This might not be the best way to do this
                     // With an input element value and label are one and the same
                     Object.defineProperty(this, "value", {
@@ -291,15 +296,19 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
                     if (this._label === undefined) {
                         this.label = this.originalElement.value;
                     }
+                    //<button> && Custom
                 } else {
-                    if (!this.originalElement.firstChild) {
-                        this.originalElement.appendChild(document.createTextNode(""));
+                    if(!this.originalElement !== this.element && this._label === undefined) {
+                        this._label = this.originalElement.data;
                     }
-                    this._labelNode = this.originalElement.firstChild;
+                    if (!this.element.firstChild) {
+                        this.element.appendChild(document.createTextNode(""));
+                    }
+                    this._labelNode = this.element.firstChild;
                     // this.setLabelInitialValue(this._labelNode.data)
-                    if (this._label === undefined) {
-                        this._label = this._labelNode.data;
-                    }
+                    // if (this._label === undefined) {
+                    //     this._label = this._labelNode.data;
+                    // }
                 }
 
                 //this.classList.add("montage-Button");
@@ -317,7 +326,7 @@ var Button = exports.Button = Control.specialize(/** @lends module:"montage/ui/n
     _drawLabel: {
         enumerable: false,
         value: function (value) {
-            if (this.hasStandardElement) {
+            if (this.isInputElement) {
                 this._element.value = value;
             } else if (this._labelNode) {
                 this._labelNode.data = value;

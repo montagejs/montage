@@ -6,6 +6,6 @@
         "montage": "*"
     },
     "mappings": {
-        "montage": "../../../../"
+        "montage": "../../../"
     }
 }

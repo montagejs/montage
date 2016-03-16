@@ -497,4 +497,3 @@ var AbstractSlider = exports.AbstractSlider = AbstractControl.specialize( /** @l
     }
 
 });
-

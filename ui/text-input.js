@@ -15,7 +15,7 @@ var Control = require("ui/control").Control;
 
 */
 
-/* 
+/*
 
 To-DO: Move value logic with converter to Control
 
@@ -59,20 +59,27 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
     enterDocument: {
         value: function(firstTime) {
             if (firstTime) {
-                var el = this.element;
-                
-                if(this.hasStandardElement || el.contentEditable === "true") {
-                    el.addEventListener('input', this);
-                    el.addEventListener('change', this);
-                }
-                
+
                 if (this._value === this.constructor.prototype._value) {
-                    this.value = this.originalElement.textContent;
+                    this.value = this.originalElement ? this.originalElement.textContent : this._element.textContent;
                 }
-                
+
             }
         }
     },
+
+    prepareForActivationEvents: {
+        value: function () {
+            Control.prototype.prepareForActivationEvents.call(this);
+            var el = this.element;
+
+            if(this.hasStandardElement || el.contentEditable === "true") {
+                el.addEventListener('input', this);
+                el.addEventListener('change', this);
+            }
+        }
+    },
+
 
     _setElementValue: {
         value: function(value) {
@@ -85,13 +92,13 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
     draw: {
         enumerable: false,
         value: function() {
-            this.super();
+            Control.prototype.draw.call(this);
 
             var el = this.element;
 
-            if (!this._valueSyncedWithElement) {
+            //if (!this._valueSyncedWithElement) {
                 this._setElementValue(this.converter ? this.converter.convert(this._value) : this._value);
-            }
+            //}
 
             if (this.error) {
                 el.classList.add('montage--invalidText');
@@ -127,10 +134,10 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
             console.log("text-input handleInput");
             if (this.converter) {
                 if (this.converter.allowPartialConversion === true && this.updateOnInput === true) {
-                    this._setValue(this.element.value);
+                    this.takeValueFromElement();
                 }
             } else if(this.updateOnInput === true){
-                this._setValue(this.element.value);
+                this.takeValueFromElement();
             }
         }
     },
@@ -143,7 +150,7 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
         enumerable: false,
         value: function(event) {
             console.log("text-input handleChange");
-            this._setValue(this.element.value);
+            this.takeValueFromElement();
             this.dispatchActionEvent();
             this._hasFocus = false;
         }
@@ -158,7 +165,7 @@ var TextInput = exports.TextInput =  Control.specialize(/** @lends module:montag
         value: function(event) {
             console.log("text-input handleBlur");
             this.super(event) ;
-            this._setValue(this.element.value);
+            this.takeValueFromElement();
             this.dispatchActionEvent();
         }
     }
