@@ -161,7 +161,9 @@ var Slider = exports.Slider = Control.specialize({
                         i=0, iThumbElement, offset = 0, iDimension = 0, iThumbWrapper, iTrackElement;
 
                     while((iThumbElement = spacer.firstElementChild)) {
-                        if(!iThumbElement.classList.contains("montage-Slider--thumb"))
+                        //If iThumbElement has no childElement, and doesn't have the required flag "montage-Slider--thumb"
+                        //We'll gladly fix it, but that's as far as we can go
+                        if(!iThumbElement.firstElementChild && !iThumbElement.classList.contains("montage-Slider--thumb"))
                             iThumbElement.classList.add("montage-Slider--thumb");
 
                         iThumbWrapper = ownerDocument.createElement("div");
@@ -169,6 +171,12 @@ var Slider = exports.Slider = Control.specialize({
 
                         iTrackElement = ownerDocument.createElement("div");
                         iTrackElement.className = "montage-Slider--track";
+
+                        iDimension = isHorizontal ? iThumbElement.clientWidth : iThumbElement.clientHeight;
+                        //If the thumb has no size, or if it's horizontak and occupy the whole width, we're stepping in
+                        if(iDimension == 0 || (isHorizontal && iDimension === spacer.clientWidth)) {
+                            iThumbElement.classList.add("montage-Slider-thumb--default");
+                        }
 
                         iThumbElement.parentNode.removeChild(iThumbElement);
                         iThumbWrapper.appendChild(iThumbElement);
@@ -312,16 +320,16 @@ var Slider = exports.Slider = Control.specialize({
                     positionString += "px,0)";
                     thumbElement.style[this._transform] = positionString;
                 } else {
-                    thumbElement.style.top = (this._percentageValues[index]) + "%";
-                    delete thumbElement.style.top;
+                    thumbElement.style.top = percent + "%";
+                    delete thumbElement.style.left;
                     thumbElement.style[this._transform] = "translate3d(0,0,0)";
                     this._previousPercentageValues[index] = this._percentageValues[index];
                 }
 
-                var trackElementLeftPercent = index === 0 ? 0 : this._percentageValues[index-1],
+                var trackElemenTopPercent = index === 0 ? 0 : this._percentageValues[index-1],
                     height = index ? percent-this._percentageValues[index-1] : percent;
 
-                trackElement.style.top = trackElementLeftPercent+"%";
+                trackElement.style.top = trackElemenTopPercent+"%";
                 trackElement.style.marginTop = cumulatedThumbSize+"px";
 
                 trackElement.style.height = height+"%";
@@ -703,7 +711,7 @@ Should introduce a validate method
                     MAX = this._max,
                     RANGE = this._max - this._min,
                     valueOverriden = false;
-                for(var i=0, values = this._values, countI = values.length, value, min, max;i<countI;i++) {
+                for(var i=0, values = this.values, countI = values.length, value, min, max;i<countI;i++) {
                     value = values[i];
                     max = values[i+1] || MAX;
                     min = values[i-1] || MIN;
