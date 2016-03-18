@@ -8,8 +8,8 @@ var Control = require("ui/control").Control,
     TranslateComposer = require("../../composer/translate-composer").TranslateComposer,
     KeyComposer = require("../../composer/key-composer").KeyComposer,
     Map = global.Map ? global.Map : require("collections/map"),
-    WeakMap = require("collections/weak-map");
-;
+    WeakMap = require("collections/weak-map"),
+    MONTAGE_SLIDER_THUMB_CLASS = "montage-Slider--thumb";
 
 /**
  * Wraps the a &lt;input type="range"> element with binding support for the element's standard attributes.
@@ -30,7 +30,6 @@ var Slider = exports.Slider = Control.specialize({
             this._isThumbElementTranslating = new WeakMap();
             this._percentageValues = new Array();
             this._previousPercentageValues = new Array();
-            this._thumbElementOffset = new WeakMap();
 
             this.addOwnPropertyChangeListener("_sliderMagnitude", this);
             this.addOwnPropertyChangeListener("_min", this);
@@ -87,6 +86,9 @@ var Slider = exports.Slider = Control.specialize({
         value: void 0,
     },
     _spacer: {
+        value: void 0,
+    },
+    thumbWrappers: {
         value: void 0,
     },
     thumbElements: {
@@ -152,19 +154,31 @@ var Slider = exports.Slider = Control.specialize({
                 else {
                     var isHorizontal = (this.orientation === "horizontal");
 
+                    this.thumbWrappers= [];
                     this.thumbElements = [];
                     this.trackElements = [];
                     var ownerDocument = this._element.ownerDocument,
                         fragment = ownerDocument.createDocumentFragment(),
                         spacer = this._spacer = this._element.firstElementChild,
                         dimensionLength = this._dimensionLength,
-                        i=0, iThumbElement, offset = 0, iDimension = 0, iThumbWrapper, iTrackElement;
+                        i=0, iThumbElement, offset = 0, iDimension = 0, iThumbWrapper, iTrackElement, iThumbElementWithClass;
 
                     while((iThumbElement = spacer.firstElementChild)) {
-                        //If iThumbElement has no childElement, and doesn't have the required flag "montage-Slider--thumb"
-                        //We'll gladly fix it, but that's as far as we can go
-                        if(!iThumbElement.firstElementChild && !iThumbElement.classList.contains("montage-Slider--thumb"))
-                            iThumbElement.classList.add("montage-Slider--thumb");
+                        //If iThumbElement has no childElement, it got to be the thumb
+                        if(!iThumbElement.firstElementChild) {
+                            //If it doesn't have the required flag MONTAGE-SLIDER-THUMB-CLASS
+                            //We'll gladly fix it, but that's as far as we can go
+                            if(!iThumbElement.classList.contains(MONTAGE_SLIDER_THUMB_CLASS)) {
+                                iThumbElement.classList.add(MONTAGE_SLIDER_THUMB_CLASS);
+                            }
+                            iThumbElementWithClass = iThumbElement;
+                        }
+                        else {
+                            iThumbElementWithClass = iThumbElement.getElementsByClassName(MONTAGE_SLIDER_THUMB_CLASS)[0];
+                            if(!iThumbElementWithClass) {
+                                throw new Error("Slider couldn't identify a thumb element with "+MONTAGE_SLIDER_THUMB_CLASS+" class");
+                            }
+                        }
 
                         iThumbWrapper = ownerDocument.createElement("div");
                         iThumbWrapper.className = "montage-Slider--thumbWrapper";
@@ -172,10 +186,10 @@ var Slider = exports.Slider = Control.specialize({
                         iTrackElement = ownerDocument.createElement("div");
                         iTrackElement.className = "montage-Slider--track";
 
-                        iDimension = isHorizontal ? iThumbElement.clientWidth : iThumbElement.clientHeight;
+                        iDimension = isHorizontal ? iThumbElementWithClass.clientWidth : iThumbElementWithClass.clientHeight;
                         //If the thumb has no size, or if it's horizontak and occupy the whole width, we're stepping in
                         if(iDimension == 0 || (isHorizontal && iDimension === spacer.clientWidth)) {
-                            iThumbElement.classList.add("montage-Slider-thumb--default");
+                            iThumbElementWithClass.classList.add("montage-Slider-thumb--default");
                         }
 
                         iThumbElement.parentNode.removeChild(iThumbElement);
@@ -183,7 +197,8 @@ var Slider = exports.Slider = Control.specialize({
                         fragment.appendChild(iTrackElement);
                         fragment.appendChild(iThumbWrapper);
                         this.trackElements.push(iTrackElement);
-                        this.thumbElements.push(iThumbWrapper);
+                        this.thumbWrappers.push(iThumbWrapper);
+                        this.thumbElements.push(iThumbElementWithClass);
                     }
 
                     //Last track element:
@@ -195,13 +210,14 @@ var Slider = exports.Slider = Control.specialize({
                     spacer.appendChild(fragment);
 
                     i = 0;
-                    while((iThumbWrapper = this.thumbElements[i++])) {
-                        iThumbElement = iThumbWrapper.firstChild;
+                    while((iThumbWrapper = this.thumbWrappers[i])) {
+                        iThumbElement = this.thumbElements[i];
+
                         iDimension = isHorizontal ? iThumbElement.clientWidth : iThumbElement.clientHeight;
-                        //If the thumb has no size, or if it's horizontak and occupy the whole width, we're stepping in
-                        if(iDimension == 0 || (isHorizontal && iDimension === spacer.clientWidth)) {
-                            iThumbElement.classList.add("montage-Slider-thumb--default");
-                        }
+                        // //If the thumb has no size, or if it's horizontak and occupy the whole width, we're stepping in
+                        // if(iDimension == 0 || (isHorizontal && iDimension === spacer.clientWidth)) {
+                        //     iThumbElement.classList.add("montage-Slider-thumb--default");
+                        // }
 
                         /* marginLeft / marginTop must be the width of all previous thumbs */
                         if(isHorizontal) {
@@ -212,8 +228,7 @@ var Slider = exports.Slider = Control.specialize({
                         }
 
                         offset += iDimension;
-                        this._thumbElementOffset.set(iThumbElement,offset);
-                        console.log(iThumbElement," offset is ",offset);
+                        i++;
                     }
 
                     // this._thumbWidth = offset;
@@ -250,16 +265,16 @@ var Slider = exports.Slider = Control.specialize({
 
             if(!this.hasStandardElement) {
 
-                var thumbElements = this.thumbElements;
-                if(thumbElements && thumbElements.length > 0) {
+                var thumbWrappers = this.thumbWrappers;
+                if(thumbWrappers && thumbWrappers.length > 0) {
 
-                    if(!this._startTranslateValues) this._startTranslateValues = new Array(thumbElements.length);
-                    if(!this._startValues) this._startValues = new Array(thumbElements.length);
+                    if(!this._startTranslateValues) this._startTranslateValues = new Array(thumbWrappers.length);
+                    if(!this._startValues) this._startValues = new Array(thumbWrappers.length);
 
 
                     this._translateComposers = new Map();
 
-                    for(var i=0, iThumbElement, iTranslateComposer;(iThumbElement = thumbElements[i]);i++) {
+                    for(var i=0, iThumbElement, iTranslateComposer;(iThumbElement = thumbWrappers[i]);i++) {
 
                         //Setting up our TranslateComposer
                         iTranslateComposer = new TranslateComposer();
@@ -309,20 +324,20 @@ var Slider = exports.Slider = Control.specialize({
         }
     },
     _drawThumbElement: {
-        value: function (thumbElement, index, isVertical, sliderMagnitude,previousThumbElement, length, cumulatedThumbSize) {
+        value: function (thumbElementWrapper, thumbElement, index, isVertical, sliderMagnitude, length, cumulatedThumbSize) {
             var percent = this._percentageValues[index], position, positionString, trackElement = this.trackElements[index];
 
             if(isVertical) {
-                if (this._isThumbElementTranslating.get(thumbElement)) {
+                if (this._isThumbElementTranslating.get(thumbElementWrapper)) {
                     position = (this._percentageValues[index] - this._previousPercentageValues[index]) * sliderMagnitude * 0.01;
                     positionString = "translate3d(0,";
                     positionString += position;
                     positionString += "px,0)";
-                    thumbElement.style[this._transform] = positionString;
+                    thumbElementWrapper.style[this._transform] = positionString;
                 } else {
-                    thumbElement.style.top = percent + "%";
-                    delete thumbElement.style.left;
-                    thumbElement.style[this._transform] = "translate3d(0,0,0)";
+                    thumbElementWrapper.style.top = percent + "%";
+                    delete thumbElementWrapper.style.left;
+                    thumbElementWrapper.style[this._transform] = "translate3d(0,0,0)";
                     this._previousPercentageValues[index] = this._percentageValues[index];
                 }
 
@@ -339,24 +354,24 @@ var Slider = exports.Slider = Control.specialize({
                     trackElement = this.trackElements[index+1];
                     //We need the size of user-land element.
                     trackElement.style.top = percent+"%";
-                    trackElement.style.marginTop = (cumulatedThumbSize + thumbElement.firstChild.clientHeight)+"px";
+                    trackElement.style.marginTop = (cumulatedThumbSize + thumbElement.clientHeight)+"px";
                     trackElement.style.height = 100-percent+"%";
                 }
 
             }
             else {
 
-                if (this._isThumbElementTranslating.get(thumbElement)) {
+                if (this._isThumbElementTranslating.get(thumbElementWrapper)) {
                     position = (this._percentageValues[index] - this._previousPercentageValues[index]) * sliderMagnitude * 0.01;
 
                     positionString = "translate3d(";
                     positionString += position;
                     positionString += "px,0,0)";
-                    thumbElement.style[this._transform] = positionString;
+                    thumbElementWrapper.style[this._transform] = positionString;
                 } else {
-                    thumbElement.style.left = percent+"%";
-                    delete thumbElement.style.top;
-                    thumbElement.style[this._transform] = "translate3d(0,0,0)";
+                    thumbElementWrapper.style.left = percent+"%";
+                    delete thumbElementWrapper.style.top;
+                    thumbElementWrapper.style[this._transform] = "translate3d(0,0,0)";
                     this._previousPercentageValues[index] = this._percentageValues[index];
                 }
 
@@ -373,7 +388,7 @@ var Slider = exports.Slider = Control.specialize({
                     trackElement = this.trackElements[index+1];
                     //We need the size of user-land element.
                     trackElement.style.left = percent+"%";
-                    trackElement.style.marginLeft = (cumulatedThumbSize + thumbElement.firstChild.clientWidth)+"px";
+                    trackElement.style.marginLeft = (cumulatedThumbSize + thumbElement.clientWidth)+"px";
                     trackElement.style.width = 100-percent+"%";
                 }
 
@@ -388,10 +403,9 @@ var Slider = exports.Slider = Control.specialize({
                 var isVertical = (this.orientation === "vertical"),
                     sliderMagnitude = isVertical ? this._spacer.clientHeight: this._spacer.clientWidth;
 
-                for(var i=0, iThumbElement, previousThumbElement = null, countI = this.thumbElements.length, cumulatedThumbSize = 0;(iThumbElement = this.thumbElements[i]);i++) {
-                    this._drawThumbElement(iThumbElement,i,isVertical,sliderMagnitude,previousThumbElement, countI, cumulatedThumbSize);
-                    cumulatedThumbSize += isVertical ? iThumbElement.firstChild.clientHeight : iThumbElement.firstChild.clientWidth;
-                    previousThumbElement = iThumbElement;
+                for(var i=0, iThumbElementWrapper, iThumbElement, countI = this.thumbWrappers.length, cumulatedThumbSize = 0;(iThumbElementWrapper = this.thumbWrappers[i]);i++) {
+                    this._drawThumbElement(iThumbElementWrapper,(iThumbElement = this.thumbElements[i]), i,isVertical,sliderMagnitude, countI, cumulatedThumbSize);
+                    cumulatedThumbSize += isVertical ? iThumbElement.clientHeight : iThumbElement.clientWidth;
                 }
                 this.element.setAttribute("aria-valuemax", this.max);
                 this.element.setAttribute("aria-valuemin", this.min);
