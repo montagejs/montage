@@ -170,13 +170,6 @@ var Slider = exports.Slider = Control.specialize({
                         iTrackElement = ownerDocument.createElement("div");
                         iTrackElement.className = "montage-Slider--track";
 
-
-                        iDimension = isHorizontal ? iThumbElement.clientWidth : iThumbElement.clientHeight;
-                        //If the thumb has no size, or if it's horizontak and occupy the whole width, we're stepping in
-                        if(iDimension == 0 || (isHorizontal && iDimension === spacer.clientWidth)) {
-                            iThumbElement.classList.add("montage-Slider-thumb--default");
-                        }
-
                         iThumbElement.parentNode.removeChild(iThumbElement);
                         iThumbWrapper.appendChild(iThumbElement);
                         fragment.appendChild(iTrackElement);
@@ -198,6 +191,9 @@ var Slider = exports.Slider = Control.specialize({
                         iThumbElement = iThumbWrapper.firstChild;
                         iDimension = isHorizontal ? iThumbElement.clientWidth : iThumbElement.clientHeight;
                         //If the thumb has no size, or if it's horizontak and occupy the whole width, we're stepping in
+                        if(iDimension == 0 || (isHorizontal && iDimension === spacer.clientWidth)) {
+                            iThumbElement.classList.add("montage-Slider-thumb--default");
+                        }
 
                         /* marginLeft / marginTop must be the width of all previous thumbs */
                         if(isHorizontal) {
