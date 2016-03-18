@@ -3,9 +3,9 @@
     position: relative;
 }
 
-.montage-Slider[aria-orientation="horizontal"] {
+.montage-Slider[aria-orientation="horizontal"] .montage-Slider--track {
 }
-.montage-Slider[aria-orientation="vertical"] {
+.montage-Slider[aria-orientation="vertical"] .montage-Slider--track {
 }
 
 .montage-Slider--spacer {
@@ -28,8 +28,14 @@
     width:100%;
 }*/
 
+.montage-Slider .montage-Slider--track{
+    position: absolute;
+    z-index:0;
+}
+
 .montage-Slider .montage-Slider--thumbWrapper {
     position: absolute;
+    z-index:1;
     /*display:flex;*/
     /*align-items: center;*/
     /*top: 0;
